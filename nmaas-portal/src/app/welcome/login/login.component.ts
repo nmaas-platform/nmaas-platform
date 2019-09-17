@@ -58,8 +58,10 @@ export class LoginComponent implements OnInit {
       this.loading = true;
       this.error = '';
       this.auth.login(this.model.username, this.model.password)
-        .subscribe(result => {
+        .subscribe(() => {
           this.loading = false;
+          this.translate.setDefaultLang(this.auth.getSelectedLanguage());
+          this.translate.use(this.auth.getSelectedLanguage());
           this.router.navigate(['/']);
         }, err => {
           this.loading = false;
@@ -79,6 +81,8 @@ export class LoginComponent implements OnInit {
             .subscribe(result => {
                 if (result === true) {
                     this.ssoLoading = false;
+                    this.translate.setDefaultLang(this.auth.getSelectedLanguage());
+                    this.translate.use(this.auth.getSelectedLanguage());
                     this.router.navigate(['/']);
                 } else {
                     this.ssoError = 'Failed to propagate SSO user id';
@@ -87,7 +91,7 @@ export class LoginComponent implements OnInit {
             },
                 err => {
                     this.ssoLoading = false;
-                    this.ssoError = err;
+                    this.ssoError = err.message;
                 });
       }
     }
@@ -101,13 +105,13 @@ export class LoginComponent implements OnInit {
       if(this.resetPasswordForm.valid){
           this.userService.resetPasswordNotification(this.resetPasswordForm.controls['email'].value).subscribe(() => {
               this.modal.show();
-          }, err=>{
+          }, () =>{
               this.modal.show();
           });
       }
   }
 
-  private getMessage(err: string): string {
-    return err.match('') || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+  private getMessage(err: any): string {
+    return err['status'] === 401 ? 'LOGIN.LOGIN_FAILURE_MESSAGE' : err['status'] === 406 ? 'LOGIN.APPLICATION_UNDER_MAINTENANCE_MESSAGE' : err['status'] === 409 ? err['message'] : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
 }

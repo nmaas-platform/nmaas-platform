@@ -15,7 +15,7 @@
         "CONTENT": "The person ${newUser} has submitted the registration form and is waiting for your approval.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
@@ -26,7 +26,7 @@
         "CONTENT": "The person ${newUser} has submitted the registration form and is waiting for your approval.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
@@ -37,7 +37,7 @@
         "CONTENT": "The person ${newUser} has submitted the registration form and is waiting for your approval.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
@@ -45,10 +45,10 @@
       "subject": "NMaaS: Rejestracja nowego użytkownika",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "Użytkownik ${newUser} wypełnił formularz rejestracyjny i czeka na aktywacje konta",
-        "SENDER": "Z pozdrowieniami,<br />NMaaS Team",
+        "CONTENT": "Użytkownik ${newUser} wypełnił formularz rejestracyjny i czeka na aktywację konta.",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     }
   ]

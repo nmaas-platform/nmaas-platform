@@ -58,6 +58,8 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Override
 	public AppInstance create(Domain domain, Application application, String name) {
 		checkParam(domain);
+		if(!domain.isActive())
+			throw new IllegalArgumentException("Domain is inactive");
 		checkParam(application);
 		checkNameCharacters(name);
 		checkNameUniqueness(domain, name);
@@ -112,11 +114,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	public List<AppInstance> findAllByOwner(Long userId, Long domainId) {
 		User owner = getUser(userId);
 		Domain domain = getDomain(domainId);
-		return findAllByOwner(owner, domain);
+		return findAllByOwnerAndDomain(owner, domain);
 	}
 
 	@Override
-	public List<AppInstance> findAllByOwner(User owner, Domain domain) {
+	public List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain) {
 		checkParam(owner);
 		checkParam(domain);
 		return appInstanceRepo.findAllByOwnerAndDomain(owner, domain);

@@ -2,9 +2,8 @@ package net.geant.nmaas.portal.service.impl.security;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,8 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
 	@Autowired
 	private DomainService domains;
 
-	private final Map<Role, Permissions[]> globalPermMatrix = new HashMap<>();
-	private final Map<Role, Permissions[]> permMatrix = new HashMap<>();
+	private final EnumMap<Role, Permissions[]> globalPermMatrix = new EnumMap<>(Role.class);
+	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 
 
 	public DomainObjectPermissionCheck() {

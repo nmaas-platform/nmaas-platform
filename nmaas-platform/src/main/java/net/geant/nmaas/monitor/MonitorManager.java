@@ -1,5 +1,6 @@
 package net.geant.nmaas.monitor;
 
+import com.google.common.collect.ImmutableMap;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -79,6 +80,17 @@ public class MonitorManager {
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName)));
     }
 
+    public void changeJobState(String serviceName, boolean active){
+        MonitorEntry monitorEntry = this.repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
+                .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName.toUpperCase())));
+        monitorEntry.setActive(active);
+        this.repository.save(monitorEntry);
+    }
+
+    public boolean existsByServiceName(ServiceType serviceName){
+        return repository.existsByServiceName(serviceName);
+    }
+
     private void validateMonitorEntryUpdate(Date lastCheck, MonitorStatus status){
         if(status == null)
             throw new IllegalStateException("Status cannot be null");
@@ -111,7 +123,7 @@ public class MonitorManager {
     private MailAttributes getMailAttributes(String service){
         return MailAttributes.builder()
                 .mailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)
-                .otherAttribute(service)
+                .otherAttributes(ImmutableMap.of("serviceName" ,service))
                 .build();
     }
 }

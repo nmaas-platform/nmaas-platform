@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import {GenericDataService} from "./genericdata.service";
 import {AppConfigService} from "./appconfig.service";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {MonitorEntry} from "../model/monitorentry";
 import {Observable} from "rxjs";
+import {timeout} from "rxjs/operators";
+import {any} from "codelyzer/util/function";
+import {reject} from "q";
 
 @Injectable()
 export class MonitorService extends GenericDataService{
@@ -15,36 +18,32 @@ export class MonitorService extends GenericDataService{
     this.url = this.appConfig.getApiUrl() + '/monitor/'
   }
 
-  public createMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
-    return this.post(this.url, monitorEntry);
+  private createProperUrl(): string{
+    return (this.appConfig.getApiUrl() + '/monitor/');
   }
 
   public updateMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
-    return this.put(this.url, monitorEntry);
-  }
-
-  public deleteMonitorEntryAndJob(serviceName: string):Observable<any>{
-    return this.delete(this.url + serviceName);
+    return this.put(this.createProperUrl(), monitorEntry);
   }
 
   public getAllMonitorEntries():Observable<MonitorEntry[]>{
-    return this.get(this.url + 'all');
+      return this.get(this.createProperUrl() + 'all');
   }
 
   public getOneMonitorEntry(serviceName: string):Observable<MonitorEntry>{
-    return this.get(this.url + serviceName);
+    return this.get(this.createProperUrl() + serviceName);
   }
 
   public executeJob(serviceName: string):Observable<any>{
-    return this.http.post(this.url + serviceName + '/execute', null);
+    return this.http.post(this.createProperUrl() + serviceName + '/execute', null);
   }
 
   public resumeJob(serviceName: string): Observable<any>{
-    return this.http.patch(this.url + serviceName + '/resume', null);
+    return this.http.patch(this.createProperUrl() + serviceName + '/resume', null);
   }
 
   public pauseJob(serviceName: string): Observable<any> {
-    return this.http.patch(this.url + serviceName + '/pause', null);
+    return this.http.patch(this.createProperUrl() + serviceName + '/pause', null);
   }
 
 }

@@ -17,16 +17,29 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateModule, TranslateLoader, MissingTranslationHandler} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {TranslateService} from "@ngx-translate/core";
-import {TranslateLoaderImpl} from "./service/translate-loader-impl.service";
+import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
+import {TranslateLoaderImpl} from "./i18n/translate-loader-impl.service";
+import {ServiceUnavailableModule} from "./service-unavailable/service-unavailable.module";
+import {RouterModule} from "@angular/router";
+import {ServiceUnavailableService} from "./service-unavailable/service-unavailable.service";
+import {MonitorService} from "./service/monitor.service";
 
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
     return config.load();
+  }
+}
+
+export function serviceAvailableFactory(config: AppConfigService, http: HttpClient, provider: ServiceUnavailableService){
+  return function create() {
+    return config.load().then( () => {
+      return provider.validateServicesAvailability();
+    });
   }
 }
 
@@ -55,12 +68,14 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     AppMarketModule,
     SharedModule,
     WelcomeModule,
+    ServiceUnavailableModule,
     routing,
     TranslateModule.forRoot({
-      loader: {
+        missingTranslationHandler: {provide: MissingTranslationHandler, useClass: CustomMissingTranslationService},
+        loader: {
           provide: TranslateLoader,
           useFactory: HttpLoaderFactory,
-          deps: [HttpClient, AppConfigService]
+          deps: [HttpClient, AppConfigService, ServiceUnavailableService]
       }
     })
   ],
@@ -74,7 +89,14 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
         deps: [ AppConfigService ],
         multi: true,
     },
-      TranslateService
+    TranslateService,
+    ServiceUnavailableService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: serviceAvailableFactory,
+      deps: [AppConfigService, HttpClient, ServiceUnavailableService],
+      multi: true,
+    }
   ],
     exports:[
       TranslateModule
@@ -83,8 +105,8 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
 })
 export class AppModule { }
 
-export function HttpLoaderFactory(httpClient: HttpClient, appConfig: AppConfigService) {
+export function HttpLoaderFactory(httpClient: HttpClient, appConfig: AppConfigService, serviceAvailability: ServiceUnavailableService) {
     // return new TranslateHttpLoader(httpClient);// Use this if you want to get the language json from local asset folder
-  return new TranslateLoaderImpl(httpClient, appConfig);
+    return new TranslateLoaderImpl(httpClient, appConfig, serviceAvailability);
 }
 

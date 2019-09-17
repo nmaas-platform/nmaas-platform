@@ -32,7 +32,7 @@ public class AnsiblePlaybookStatus {
 
         public static Status fromValue(String statusValue) {
             return Arrays.stream(Status.values())
-                    .filter((status) -> statusValue.equals(status.getValue()))
+                    .filter(status -> statusValue.equals(status.getValue()))
                     .findAny()
                     .orElseThrow(() -> new IllegalArgumentException("Wrong status value."));
         }

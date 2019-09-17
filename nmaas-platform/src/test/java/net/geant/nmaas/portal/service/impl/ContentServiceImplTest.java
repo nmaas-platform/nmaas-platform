@@ -4,24 +4,25 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ContentServiceImplTest {
 
     @Mock
@@ -30,7 +31,7 @@ public class ContentServiceImplTest {
     @InjectMocks
     private ContentServiceImpl contentService;
 
-    @Before
+    @BeforeEach
     public void setup(){
         contentService = new ContentServiceImpl(contentRepository);
     }
@@ -68,15 +69,19 @@ public class ContentServiceImplTest {
         assertEquals(0, result.getId().longValue());
     }
 
-    @Test(expected = ObjectAlreadyExistsException.class)
+    @Test
     public void shouldNotCreateNewContentRecordDueToObjectAlreadyExist(){
-        when(contentRepository.findByName(anyString())).thenThrow(ObjectAlreadyExistsException.class);
-        contentService.createNewContentRecord("test", "lorem ipsum", "test");
+        assertThrows(ObjectAlreadyExistsException.class, () -> {
+            when(contentRepository.findByName(anyString())).thenThrow(ObjectAlreadyExistsException.class);
+            contentService.createNewContentRecord("test", "lorem ipsum", "test");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotCreateNewContentRecordDueToInvalidName(){
-        contentService.createNewContentRecord(null, "Lorem ipsum", "testTitle");
+        assertThrows(IllegalArgumentException.class, () -> {
+            contentService.createNewContentRecord(null, "Lorem ipsum", "testTitle");
+        });
     }
 
     @Test
@@ -93,21 +98,27 @@ public class ContentServiceImplTest {
         assertEquals("Lorem ipsum dolor sit", contentService.findByName("test").get().getContent());
     }
 
-    @Test(expected = net.geant.nmaas.portal.api.exception.ProcessingException.class)
+    @Test
     public void shouldNotAllowToUpdateDueToContentDoNotExist(){
-        Content testContent = new Content((long)0, "testName", "Lorem", "testTitle");
-        contentService.update(testContent);
+        assertThrows(ProcessingException.class, () -> {
+            Content testContent = new Content((long) 0, "testName", "Lorem", "testTitle");
+            contentService.update(testContent);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotAllowToUpdateDueToInvalidId(){
-        Content testContent = new Content(null, "testName", "Lorem ipsum", "testTitle");
-        contentService.update(testContent);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Content testContent = new Content(null, "testName", "Lorem ipsum", "testTitle");
+            contentService.update(testContent);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotAllowToUpdateDueToEmptyContent(){
-        contentService.update(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            contentService.update(null);
+        });
     }
 
     @Test
@@ -118,11 +129,13 @@ public class ContentServiceImplTest {
         verify(contentRepository).delete(testContent);
     }
 
-    @Test(expected = ProcessingException.class)
+    @Test
     public void shouldNotRemoveContentRecordDueToContentDoNotExist(){
-        Content testContent = new Content((long)0, "testName", "Lorem", "testTitle");
-        contentService.delete(testContent);
-        verify(contentRepository).delete(testContent);
+        assertThrows(ProcessingException.class, () -> {
+            Content testContent = new Content((long) 0, "testName", "Lorem", "testTitle");
+            contentService.delete(testContent);
+            verify(contentRepository).delete(testContent);
+        });
     }
 
 }

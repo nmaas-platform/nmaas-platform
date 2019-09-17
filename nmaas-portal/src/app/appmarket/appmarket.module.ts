@@ -10,8 +10,6 @@ import {AppListModule} from './applist/applist.module';
 import {AppDetailsComponent} from './appdetails/index';
 import {AppInstanceModule} from './appinstance/appinstance.module';
 
-import {NavbarComponent} from './navbar/index';
-
 import {SharedModule} from '../shared/shared.module';
 
 import {AppsService} from '../service/apps.service';
@@ -32,12 +30,15 @@ import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {SortService} from "../service/sort.service";
+import {AppManagementModule} from "./appmanagement/appmanagement.module";
+import {SessionService} from "../service/session.service";
+import {LocalDatePipe} from "../pipe/local-date.pipe";
+import {LanguageManagementModule} from "./admin/languagemanagement/languagemanagement.module";
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
-    NavbarComponent
   ],
   imports: [
     FormsModule,
@@ -47,6 +48,8 @@ import {SortService} from "../service/sort.service";
     SharedModule,
     AppListModule,
     AppInstanceModule,
+    AppManagementModule,
+    LanguageManagementModule,
     DomainsModule,
     UsersModule,
     AuthModule,
@@ -61,7 +64,6 @@ import {SortService} from "../service/sort.service";
   ],
   exports: [
     AppMarketComponent,
-      NavbarComponent
   ],
   providers: [
     AppsService,
@@ -71,6 +73,7 @@ import {SortService} from "../service/sort.service";
     UserService,
     ClusterService,
     SortService,
+    SessionService,
   ]
 
 })

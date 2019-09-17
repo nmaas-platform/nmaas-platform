@@ -1,0 +1,35 @@
+#service-denied{
+    margin-top: 20vh;
+}
+
+.border-denied{
+    padding: 25px;
+    border: 1px lightgray solid;
+    border-radius: 15px;
+}
+
+.content-denied{
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.lang-circle{
+    max-height: 48px !important;
+    max-width: 48px !important;
+    margin: 2px;
+    cursor: pointer;
+}
+
+.lang-circle-icon{
+    height: 36px;
+}
+
+.dropdown-lang{
+    margin-top: 20px;
+}
+
+.pull-right-drop{
+    float: right !important;
+    right: 0;
+    left: auto;
+}

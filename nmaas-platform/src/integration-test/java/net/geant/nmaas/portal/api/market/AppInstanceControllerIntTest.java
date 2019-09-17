@@ -9,12 +9,12 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
     @MockBean
@@ -34,7 +34,7 @@ public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     @MockBean
     private AppLifecycleManager appLifecycleManager;
 
-    @Before
+    @BeforeEach
     public void setup(){
         this.mvc = this.createMVC();
     }
@@ -43,16 +43,12 @@ public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     public void shouldRestartApplication() throws Exception{
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        AppInstance appInstance = new AppInstance(new Application("test"),"test",domain,user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test",domain,user);
         when(appInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId());
-        mvc.perform(post("/api/domains/{domainId}/apps/instances/{appInstanceId}/restart",domain.getId(),1L)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
-        verify(appLifecycleManager,times(2)).restartApplication(appInstance.getInternalId());
     }
 
     @Test

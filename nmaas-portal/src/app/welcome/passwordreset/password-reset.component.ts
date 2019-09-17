@@ -5,9 +5,8 @@ import {User} from "../../model";
 import {PasswordReset} from "../../model/passwordreset";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../../shared";
-import {ReCaptchaComponent} from "angular5-recaptcha";
-import {TranslateService} from '@ngx-translate/core';
 import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
+import {ReCaptchaV3Service} from "ng-recaptcha";
 
 @Component({
   selector: 'app-passwordreset',
@@ -17,14 +16,11 @@ import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
 })
 export class PasswordResetComponent implements OnInit {
 
-  public token:string;
-
   public user:User;
 
   public passwordReset:PasswordReset = new PasswordReset();
 
-  @ViewChild(ReCaptchaComponent)
-  public captcha: ReCaptchaComponent;
+  public token:string;
 
   @ViewChild(PasswordStrengthMeterComponent)
   passwordMeter: PasswordStrengthMeterComponent;
@@ -37,7 +33,7 @@ export class PasswordResetComponent implements OnInit {
               private userService: UserService,
               private router: Router,
               private route: ActivatedRoute,
-              private translate: TranslateService) {
+              private recaptchaV3Service: ReCaptchaV3Service) {
       this.form = fb.group(
           {
               newPassword: ['', [Validators.required, Validators.minLength(6)]],
@@ -57,15 +53,12 @@ export class PasswordResetComponent implements OnInit {
   }
 
   public resetPassword(){
-      let token = this.captcha.getResponse();
-      if(token.length < 1){
-          this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
-      } else {
-          if(this.form.valid){
+      if(this.form.valid) {
+          this.recaptchaV3Service.execute('password-reset').subscribe((captchaToken) => {
               this.passwordReset.password = this.form.controls['newPassword'].value;
               this.passwordReset.token = this.token;
-              this.userService.resetPassword(this.passwordReset).subscribe(()=>this.router.navigate(['/']),err=>this.errorMessage = err.message);
-          }
+              this.userService.resetPassword(this.passwordReset, captchaToken).subscribe(()=>this.router.navigate(['/']),err=>this.errorMessage = err.message);
+          });
       }
   }
 

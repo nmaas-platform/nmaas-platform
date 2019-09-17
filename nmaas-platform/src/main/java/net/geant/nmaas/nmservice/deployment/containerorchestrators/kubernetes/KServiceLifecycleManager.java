@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 
 public interface KServiceLifecycleManager {
 
@@ -8,7 +8,7 @@ public interface KServiceLifecycleManager {
 
     boolean checkServiceDeployed(Identifier deploymentId);
 
-    void deleteService(Identifier deploymentId);
+    void deleteServiceIfExists(Identifier deploymentId);
 
     void upgradeService(Identifier deploymentId);
 

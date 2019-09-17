@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {CanActivate, CanActivateChild, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
 import {AuthService} from './auth.service';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {isArray, isUndefined, isString} from 'util';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class RoleGuard implements CanActivate, CanActivateChild {
 
     for (let i = 0; i < allowedRoles.length; i++) {
       console.debug('Checking role: ' + allowedRoles[i]);
-      if (this.authService.hasRole(Role[Role[allowedRoles[i]]])) {
+      if (this.authService.hasRole(Role[allowedRoles[i]])) {
         console.debug('Allowed');
         return true;
       }
@@ -44,13 +44,13 @@ export class RoleGuard implements CanActivate, CanActivateChild {
       console.debug('ROLEGUARD: roles length: ' + route.data.roles.length);
       for (let i = 0; i < route.data.roles.length; i++) {
         console.debug('ROLEGUARD: role: ' + route.data.roles[i]);
-        roles.push(Role[Role[route.data.roles[i]]]);
+        roles.push(Role[(<string>route.data.roles[i])]);
       }
     } else if (isString(route.data.roles)) {
-      roles.push(Role[Role[route.data.roles]])
+      roles.push(Role[route.data.roles]);
     }
 
-    console.debug('ROLEGUARD: return roles' + roles);
+    console.debug('ROLEGUARD: return roles ' + roles);
 
     return roles;
   }

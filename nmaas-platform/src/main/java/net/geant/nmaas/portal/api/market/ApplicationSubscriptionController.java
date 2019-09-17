@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.domain.ApplicationBrief;
+import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
 @RestController
@@ -40,23 +39,14 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@Transactional
 	@ResponseStatus(HttpStatus.CREATED)
 	public void subscribe(@RequestBody ApplicationSubscriptionBase appSubscription) {
-		try {
-			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
-		}
-			
+		appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
 	}
 
 	@PostMapping("/request")
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'ANY')")
 	@Transactional
 	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) {
-		try {
-			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
-		}		
+		appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
 	}
 	
 	
@@ -65,11 +55,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@Transactional
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void unsubscribe(@PathVariable Long domainId, @PathVariable Long appId) {
-		try {
-			appSubscriptions.unsubscribe(appId, domainId);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to unsubscribe. " + e.getMessage());
-		}
+		appSubscriptions.unsubscribe(appId, domainId);
 	}
 	
 	@GetMapping("/apps/{appId}/domains/{domainId}")
@@ -99,14 +85,14 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@GetMapping("/domains/{domainId}/apps")
 	@Transactional(readOnly=true)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public List<ApplicationBrief> getDomainSubscribedApplications(@PathVariable Long domainId) {
-		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
+	public List<ApplicationBriefView> getDomainSubscribedApplications(@PathVariable Long domainId) {
+		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBriefView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps")
 	@Transactional(readOnly=true)
-	public List<ApplicationBrief> getSubscribedApplications() {
-		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());		
+	public List<ApplicationBriefView> getSubscribedApplications() {
+		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBriefView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps/{appId}")

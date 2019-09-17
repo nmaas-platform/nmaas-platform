@@ -1,0 +1,104 @@
+# --------------- #
+# Active profiles #
+# --------------- #
+#   profiles are used to customise platform operations in following areas
+#   - container orchestrator (options: env_kubernetes)
+#   - dcn setup (options: dcn_ansible, dcn_manual, dcn_none)
+#   - database (options: db_memory, db_standalone)
+spring.profiles.active=env_kubernetes, dcn_manual, db_standalone
+
+# ---------------- #
+# General settings #
+# ---------------- #
+server.port=${PLATFORM_PORT}
+portal.address=${PORTAL_HOST}
+admin.password=${ADMIN_PASSWORD}
+admin.email=${ADMIN_EMAIL}
+
+spring.mail.username=${SMTP_LOGIN}
+spring.mail.password=${SMTP_PASSWORD}
+spring.mail.host=${SMTP_HOST}
+spring.mail.port=${SMTP_PORT}
+spring.mail.properties.mail.smtp.auth=${USE_LOGIN_PASSWORD}
+spring.mail.properties.mail.smtp.starttls.enable=${USE_STARTTLS}
+spring.mail.properties.mail.smtp.starttls.required=${USE_STARTTLS}
+
+#HTTP filter options
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
+spring.http.encoding.force=true
+
+# ---------------- #
+# Database         #
+# ---------------- #
+# Standalone PostgreSQL
+db.standalone.jdbc-url=jdbc:postgresql://${POSTGRESQL_HOST}:5432/${POSTGRESQL_DBNAME}
+db.standalone.username=${POSTGRESQL_USERNAME}
+db.standalone.password=${POSTGRESQL_PASSWORD}
+#FlywayDB settings
+spring.flyway.locations=classpath:/db/migration
+
+# Common
+spring.h2.console.enabled=true
+spring.jpa.properties.hibernate.show_sql=false
+spring.jpa.properties.hibernate.format_sql=false
+spring.jpa.properties.hibernate.connection.autocommit=false
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show-sql=true
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+spring.mvc.favicon.enabled=false
+spring.devtools.add-properties=false
+
+# -------------------------------------------------------- #
+# NMaaS application deployment and configuration processes #
+# -------------------------------------------------------- #
+nmaas.service.deployment.check.interval=10
+nmaas.service.deployment.max.duration=300
+
+nmaas.portal.domains.codename.pattern=[a-z-]{2,8}
+nmaas.portal.modals.appinstall.pattern=[a-zA-Z0-9-]{3,10}
+nmaas.portal.domains.namespace.pattern=[a-z-]{0,64}
+
+# ------------------------------ #
+# Quartz scheduler configuration #
+# ------------------------------ #
+spring.quartz.job-store-type=jdbc
+spring.quartz.jdbc.initialize-schema=always
+spring.quartz.properties.org.quartz.jobStore.driverDelegateClass=org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+
+# ----- #
+# Other #
+# ----- #
+upload.dir=/nmaas/files/upload
+jwt.tokenValidFor=3600000
+jwt.refreshTokenValidFor=13600000
+jwt.issuer=NMaaS
+jwt.signingKey=${API_KEY}
+jwt.resetSigningKey=testResetKey
+jwt.resetTokenValidFor=1800000
+management.info.git.mode=full
+captcha.secret=${CAPTCHA_SECRET}
+
+# ------------------------ #
+# SAML proxy configuration #
+# ------------------------ #
+sso.loginUrl=${SSO_URL_LOGIN}
+sso.logoutUrl=${SSO_URL_LOGOUT}
+sso.timeout=${SSO_TIMEOUT}
+sso.key=${SSO_KEY}
+
+# ------------------ #
+# Helm configuration #
+# ------------------ #
+helm.address=${HELM_ADDRESS}
+helm.username=${HELM_USERNAME}
+helm.useLocalCharts=${HELM_USELOCALCHARTS}
+helm.repositoryName=${HELM_REPOSITORY}
+helm.chartsDirectory=${HELM_LOCALCHARTSDIR}
+helm.enableTls=${HELM_ENABLETLS}
+
+# --------------------- #
+# Janitor configuration #
+# --------------------- #
+janitor.address=${JANITOR_ADDRESS}
+janitor.port=${JANITOR_PORT}

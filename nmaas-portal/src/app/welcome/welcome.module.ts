@@ -1,7 +1,6 @@
 import {RegistrationService} from '../auth/registration.service';
 import {LoginComponent} from './login';
 import {LogoutComponent} from './logout/logout.component';
-import {ChangelogComponent} from './changelog/changelog.component';
 import {PipesModule} from '../pipe/pipes.module';
 import {SharedModule} from '../shared/shared.module';
 import {RegistrationComponent} from './registration/registration.component';
@@ -17,7 +16,6 @@ import {UserService} from '../service';
 import {CompleteComponent} from './complete/complete.component';
 import {ContentDisplayService} from '../service/content-display.service';
 import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
-import {ReCaptchaModule} from 'angular5-recaptcha';
 import {TranslateModule} from '@ngx-translate/core';
 import {ShibbolethService} from '../service/shibboleth.service';
 import { PasswordResetComponent } from './passwordreset/password-reset.component';
@@ -29,7 +27,6 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     WelcomeComponent,
     LoginComponent,
     LogoutComponent,
-    ChangelogComponent,
     RegistrationComponent,
     ProfileComponent,
     CompleteComponent,
@@ -45,7 +42,6 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     SharedModule,
     PipesModule,
     AppMarketModule,
-    ReCaptchaModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild()
   ],

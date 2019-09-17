@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.repositories;
 
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +17,8 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
     Optional<AppDeployment> findByDeploymentId(Identifier deploymentId);
 
     List<AppDeployment> findByDomainAndState(String domain, AppDeploymentState state);
+
+    Optional<AppDeployment> findByDeploymentNameAndDomain(String deploymentName, String domain);
 
     @Query("SELECT a.state FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
     Optional<AppDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);

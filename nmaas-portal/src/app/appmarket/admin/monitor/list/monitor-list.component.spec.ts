@@ -6,7 +6,7 @@ import {MonitorService} from "../../../../service/monitor.service";
 import {RouterTestingModule} from "@angular/router/testing";
 import {HttpClientModule} from "@angular/common/http";
 import {AppConfigService} from "../../../../service";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {TimeFormat} from "../../../../model/monitorentry";
 
 describe('MonitorListComponent', () => {
@@ -38,7 +38,7 @@ describe('MonitorListComponent', () => {
     appConfigService = fixture.debugElement.injector.get(AppConfigService);
     component = fixture.componentInstance;
     monitorService = fixture.debugElement.injector.get(MonitorService);
-    spyOn(monitorService, 'getAllMonitorEntries').and.returnValue(Observable.of([]));
+    spyOn(monitorService, 'getAllMonitorEntries').and.returnValue(of([]));
     fixture.detectChanges();
   });
 
@@ -53,15 +53,9 @@ describe('MonitorListComponent', () => {
   });
 
   it('should execute job', ()=>{
-     spyOn(monitorService,'executeJob').and.returnValue(Observable.of("test"));
+     spyOn(monitorService,'executeJob').and.returnValue(of("test"));
      component.executeJob("test");
      expect(monitorService.executeJob).toHaveBeenCalled();
-  });
-
-  it('should remove job', ()=>{
-      spyOn(monitorService, 'deleteMonitorEntryAndJob').and.returnValue(Observable.of("test"));
-      component.removeJob("test");
-      expect(monitorService.deleteMonitorEntryAndJob).toHaveBeenCalled();
   });
 
   it('should return 1 hour', ()=>{

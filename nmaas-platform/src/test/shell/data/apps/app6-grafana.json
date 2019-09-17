@@ -1,14 +1,34 @@
 {
     "name": "Grafana",
-    "version": "5.3.1",
+    "version": "5.4.3",
     "license": "Apache 2.0",
     "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-    "briefDescription": "The tool for beautiful monitoring and metric analytics.",
     "tags": [
         "monitoring",
         "visualization"
     ],
-    "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
+    "descriptions": [
+        {
+            "language": "en",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "de",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "fr",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "pl",
+            "briefDescription": "Grafana to rozwiązanie open source do analizowania i wizualizacji danych.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        }
+    ],
     "wwwUrl": "https://grafana.com/",
     "sourceUrl": "https://github.com/grafana/grafana",
     "issuesUrl": "https://github.com/grafana/grafana/issues",
@@ -19,13 +39,23 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-grafana",
-                "version": "1.0.1-alfa"
+                "version": "1.0.0"
             }
         },
         "defaultStorageSpace": 1,
-        "configFileRepositoryRequired": true
+        "exposesWebUI": true
     },
-    "configTemplate": {
+    "appConfigurationSpec": {
+        "configFileRepositoryRequired":true,
+        "templates": [
+            {
+                "configFileName":"datasource.yaml",
+                "configFileTemplateContent":"<#if source_name?has_content>apiVersion: 1\ndeleteDatasources:\n  - name: ${source_name}\n    orgId: 1\ndatasources:\n- name: ${source_name}\n  type: prometheus\n  access: proxy\n  orgId: 1\n  url: \"http://<#if prom_ext_addr?has_content>${prom_ext_addr}<#else>${prom_int_addr}</#if>\"\n  basicAuth: false\n  isDefault: true\n  version: 1\n  editable: true</#if>"
+            }
+        ]
+    },
+    "state": "ACTIVE",
+    "configWizardTemplate": {
         "template": {
             "components": [
                 {
@@ -84,6 +114,30 @@
                                             "inputFormat": "plain"
                                         },
                                         {
+                                            "label": "Existing Prometheus instance",
+                                            "hideLabel": true,
+                                            "optionsLabelPosition": "right",
+                                            "values": [
+                                                {
+                                                    "label": "NMaaS Prometheus instance",
+                                                    "value": "inCluster"
+                                                },
+                                                {
+                                                    "label": "External Prometheus instance",
+                                                    "value": "external"
+                                                }
+                                            ],
+                                            "inline": true,
+                                            "type": "radio",
+                                            "key": "prometheus",
+                                            "defaultValue": "external",
+                                            "conditional": {
+                                                "show": true,
+                                                "when": "use_name",
+                                                "eq": true
+                                            }
+                                        },
+                                        {
                                             "label": "Data Source name",
                                             "type": "textfield",
                                             "input": true,
@@ -92,28 +146,30 @@
                                                 "required": true
                                             },
                                             "inputFormat": "plain",
-                                            "conditional": {
-                                                "show": true,
-                                                "when": "use_name",
-                                                "eq": true,
-                                                "json": ""
-                                            }
+                                            "customConditional": "show = (row.use_name === true)"
                                         },
                                         {
                                             "label": "Prometheus instance address",
                                             "type": "textfield",
                                             "input": true,
-                                            "key": "source_addr",
+                                            "key": "prom_ext_addr",
                                             "validate": {
                                                 "required": true
                                             },
                                             "inputFormat": "plain",
-                                            "conditional": {
-                                                "show": true,
-                                                "when": "use_name",
-                                                "eq": true,
-                                                "json": ""
-                                            }
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'external')"
+                                        },
+                                        {
+                                            "label": "Select Prometheus instance",
+                                            "type": "select",
+                                            "key": "prom_int_addr",
+                                            "data": {
+                                                "values": "insert-app-instances-here"
+                                            },
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'inCluster')"
                                         }
                                     ]
                                 }
@@ -195,54 +251,6 @@
                     "theme": "primary",
                     "input": false,
                     "tableView": true
-                }
-            ]
-        }
-    },
-    "configurationUpdateTemplate": {
-        "template": {
-            "components": [
-                {
-                    "label": "Connect to existing Prometheus instance",
-                    "type": "checkbox",
-                    "defaultValue": false,
-                    "key": "use_name",
-                    "input": true,
-                    "inputFormat": "plain"
-                },
-                {
-                    "label": "Data Source name",
-                    "type": "textfield",
-                    "defaultValue": "",
-                    "input": true,
-                    "key": "source_name",
-                    "validate": {
-                        "required": true
-                    },
-                    "inputFormat": "plain",
-                    "conditional": {
-                        "show": true,
-                        "when": "use_name",
-                        "eq": true,
-                        "json": ""
-                    }
-                },
-                {
-                    "label": "Prometheus instance address",
-                    "type": "textfield",
-                    "defaultValue": "",
-                    "input": true,
-                    "key": "source_addr",
-                    "validate": {
-                        "required": true
-                    },
-                    "inputFormat": "plain",
-                    "conditional": {
-                        "show": true,
-                        "when": "use_name",
-                        "eq": true,
-                        "json": ""
-                    }
                 }
             ]
         }

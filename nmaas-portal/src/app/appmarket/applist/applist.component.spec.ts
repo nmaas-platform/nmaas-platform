@@ -17,7 +17,7 @@ import {RateComponent} from "../../shared/rate";
 import {PipesModule} from "../../pipe/pipes.module";
 import {AppInstallModalComponent} from "../../shared/modal/appinstall";
 import {ModalComponent} from "../../shared/modal";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 
 describe('ApplistComponent', () => {
   let component: AppListComponent;
@@ -54,7 +54,7 @@ describe('ApplistComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AppListComponent);
     component = fixture.componentInstance;
-    spyOn(fixture.debugElement.injector.get(TagService), 'getTags').and.returnValue(Observable.of([]));
+    spyOn(fixture.debugElement.injector.get(TagService), 'getTags').and.returnValue(of([]));
     fixture.detectChanges();
   });
 

@@ -1,9 +1,9 @@
-<nmaas-modal>
-  <div class="nmaas-modal-header">{{content?.title}}</div>
+<nmaas-modal styleModal="info">
+  <div class="nmaas-modal-header">{{ "FOOTER.NOTICE" | translate }}</div>
   <div class="nmaas-modal-body" style="height: 30%; max-height: 45vh;overflow-y: auto;">
     <div [innerHTML]="content?.content">Default content</div>
   </div>
   <div class="nmaas-modal-footer">
-    <a class="btn btn-primary text-center center-block" (click)="modal.hide()">Close Privacy Policy</a>
+    <a class="btn btn-primary text-center center-block" (click)="modal.hide()">{{ "TERMS_ACCEPTANCE.MODAL.CLOSE_BUTTON" | translate}}</a>
   </div>
-    <nmaas-modal>
+</nmaas-modal>

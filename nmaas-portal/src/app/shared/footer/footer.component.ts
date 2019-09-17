@@ -1,9 +1,8 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import {AppConfigService, ChangelogService} from "../../service";
-import {ModalComponent} from "../modal";
-import {ModalChangelogComponent} from "./modal-changelog/modal-changelog.component";
 import {GitInfo} from "../../model/gitinfo";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-footer',
@@ -15,25 +14,22 @@ export class FooterComponent implements OnInit {
 
   public gitInfo: GitInfo;
 
-  @ViewChild(ModalChangelogComponent)
-  private changeLog: ModalChangelogComponent;
-
-  @ViewChild(ModalComponent)
-  public modal:ModalComponent;
-
-  constructor(private changelogService:ChangelogService, private router:Router, public appConfigService: AppConfigService) {
+  constructor(private changelogService:ChangelogService, private router:Router,
+              public appConfigService: AppConfigService, public translate: TranslateService) {
   }
 
   ngOnInit() {
     if(this.appConfigService.getShowGitInfo()){
-        this.modal.setModalType("info");
-        this.modal.setStatusOfIcons(true);
         this.changelogService.getGitInfo().subscribe(info => this.gitInfo = info);
     }
   }
 
-  checkURL():boolean{
-    return this.router.url === "/welcome/login" || this.router.url === "/welcome/registration" || this.router.url === "/privacy";
+  public moveToTop() {
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
   }
 
 }

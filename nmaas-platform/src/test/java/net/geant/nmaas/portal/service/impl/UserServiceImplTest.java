@@ -1,40 +1,44 @@
 package net.geant.nmaas.portal.service.impl;
 
+import java.util.Arrays;
 import java.util.Collections;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.mockito.ArgumentMatchers.any;
+import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UserServiceImplTest {
 
     @Mock
@@ -43,12 +47,15 @@ public class UserServiceImplTest {
     @Mock
     UserRoleRepository userRoleRepository;
 
+    @Mock
+    ConfigurationManager configurationManager;
+
     @InjectMocks
     UserServiceImpl userService;
 
-    @Before
+    @BeforeEach
     public void setup(){
-        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), new ModelMapper());
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper());
     }
 
     @Test
@@ -92,6 +99,46 @@ public class UserServiceImplTest {
         UserRole userRole = new UserRole(user, domain, role);
         when(userRoleRepository.findByDomainAndUserAndRole(domain, user, role)).thenReturn(userRole);
         assertTrue(userService.hasPrivilege(user, domain, role));
+    }
+
+    @Test
+    void adminShouldUpdateData(){
+        User admin = new User("admin", true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_SYSTEM_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertTrue(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(admin, domain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void domainAdminShouldUpdateDataOfUserInHisDomain(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_DOMAIN_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertTrue(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, domain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void domainAdminShouldNotUpdateDataOfUserNotInHisDomain(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        Domain otherDomain = new Domain("domtest", "domtest");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_DOMAIN_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertFalse(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, otherDomain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void userShouldNotUpdateOtherUserData(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_USER)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertFalse(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, domain, Role.ROLE_USER))));
     }
 
     @Test
@@ -153,14 +200,18 @@ public class UserServiceImplTest {
         assertEquals("test1", resultUser.get().getUsername());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void existsByUsernameCheckParamShouldThrowException(){
-        userService.existsByUsername(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.existsByUsername(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void existsByIdCheckParamShouldThrowException(){
-        userService.existsById(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.existsById(null);
+        });
     }
 
     @Test
@@ -187,6 +238,7 @@ public class UserServiceImplTest {
         assertTrue(userService.existsById((long) 0));
     }
 
+    @Test
     public void existsByEmailShouldThrowTrue(){
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
         assertTrue(userService.existsByEmail("test@test.com"));
@@ -203,68 +255,81 @@ public class UserServiceImplTest {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         User user = userService.register(registration, domain, null);
         verify(userRepository, times(1)).save(any());
-        assertEquals(user.getRoles().size(), 1);
-        assertEquals(user.getRoles().get(0).getRole(), Role.ROLE_GUEST);
-        assertEquals(user.getRoles().get(0).getDomain(), domain);
+        assertEquals(1, user.getRoles().size());
+        assertEquals(Role.ROLE_GUEST, user.getRoles().get(0).getRole());
+        assertEquals(domain, user.getRoles().get(0).getDomain());
     }
 
     @Test
     public void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain(){
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain globalDomain = new Domain("GLOBAL", "GLOBAL");
         Domain domain = new Domain("Non Global", "NONGLO");
         User user = userService.register(registration, globalDomain, domain);
         verify(userRepository, times(1)).save(any());
-        assertEquals(user.getRoles().size(), 2);
-        assertEquals(user.getRoles().get(0).getDomain(), globalDomain);
-        assertEquals(user.getRoles().get(1).getDomain(), domain);
+        assertEquals(2, user.getRoles().size());
+        assertEquals(globalDomain, user.getRoles().get(0).getDomain());
+        assertEquals(domain, user.getRoles().get(1).getDomain());
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotRegisterUserWhenUserAlreadyExists(){
-        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
-        Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(userRepository.existsByUsername(registration.getUsername())).thenReturn(true);
-        userService.register(registration, domain, null);
+        assertThrows(SignupException.class, () -> {
+            Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
+            Domain domain = new Domain("GLOBAL", "GLOBAL");
+            when(userRepository.existsByUsername(registration.getUsername())).thenReturn(true);
+            userService.register(registration, domain, null);
+        });
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotRegisterUserWhenUserAlreadyExistsByMail(){
-        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
-        Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(userRepository.existsByEmail(registration.getEmail())).thenReturn(true);
-        userService.register(registration, domain, null);
+        assertThrows(SignupException.class, () -> {
+            Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
+            Domain domain = new Domain("GLOBAL", "GLOBAL");
+            when(userRepository.existsByEmail(registration.getEmail())).thenReturn(true);
+            userService.register(registration, domain, null);
+        });
     }
 
     @Test
     public void shouldRegisterSSOUser(){
         UserSSOLogin ssoUser = new UserSSOLogin("test|1234|id");
         Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         User user = userService.register(ssoUser, domain);
         verify(userRepository, times(1)).save(any());
         assertEquals(user.getSamlToken(), ssoUser.getUsername());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateShouldFailDueToEmptyUser(){
-        userService.update(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.update(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateShouldFailDueToEmptyUserId(){
-        User user = new User("test", true);
-        userService.update(user);
+        assertThrows(IllegalArgumentException.class, () -> {
+            User user = new User("test", true);
+            userService.update(user);
+        });
     }
 
-    @Test(expected = ProcessingException.class)
+    @Test
     public void updateShouldFailDueToUserDoNotExist(){
-        when(userRepository.existsById(anyLong())).thenReturn(false);
-        User user = new User("test", true);
-        user.setId((long) 0);
-        userService.update(user);
+        assertThrows(ProcessingException.class, () -> {
+            when(userRepository.existsById(anyLong())).thenReturn(false);
+            User user = new User("test", true);
+            user.setId((long) 0);
+            userService.update(user);
+        });
     }
 
     @Test
@@ -276,15 +341,19 @@ public class UserServiceImplTest {
         verify(userRepository).saveAndFlush(user);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteShouldFailDueToEmptyUser(){
-        userService.delete(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.delete(null);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteShouldFailDueToEmptyUserId(){
-        User user = new User("test", true);
-        userService.delete(user);
+        assertThrows(IllegalArgumentException.class, () -> {
+            User user = new User("test", true);
+            userService.delete(user);
+        });
     }
 
     @Test

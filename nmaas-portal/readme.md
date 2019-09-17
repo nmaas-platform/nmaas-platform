@@ -1,47 +1,44 @@
 # NMaaS Portal (GUI)
 
-##### Web-based GUI for browsing, subscription and deployment of services and tools offered by NMaaS.
-
---
+##### Web-based GUI for browsing, subscription and deployment of network management applications offered by NMaaS.
 
 #### Technologies
 ---
- * Angular 5 (5.2.x)
+ * Angular 7 (7.2.x)
  * Bootstrap 3
  * JWT authentication
- * Spring 5 with REST API for GUI backend
+ * Form.io 3.10
 
 #### Prerequisites
 ---
- + Install npm (>=5.0) and NodeJS (>=8.0)
+ + Install npm (>=6.0) and NodeJS (>=8.0)
  + Install git
  + (running on server) Install http server with *npm install -g angular-http-server*
  + (running tests) Install all required libraries as listed in *https://docs.browserless.io/blog/2018/04/25/chrome-linux.html*
 
-#### Build and run
----
-##### Local environment
+### Running Portal locally
 ---
   + Go to *nmaas-portal* directory in terminal or command line
   + First run requires typing *npm install* command in order to install all of missing dependencies
   + Run command *npm start*
   + After successful compilation go to *http://localhost:4200* in your browser (do not close terminal or command line)
 
-##### Server environment
+### Running Portal on dedicated machine
 ---
+  In order to run Portal on dedicated machine perform the following steps:
   + Build the Portal with *gradlew clean build* in the reactor directory.
     - In order to build for production environment use additional option *-Pprod*
   + The output archive *nmaas-portal-x.x.x.zip* file is created in *nmaas-portal/build/distributions* directory.
   + Run the http server in *nmaas-portal/build/app*
     - *nohup angular-http-server -p 9009 -s --cors > nmaas-portal.log 2> Error.err < /dev/null &*
 
-#### Tests
+### Tests
 ---
-  + Run *gradlew run testCoverage* in the reactor directory.
+  + Run *./gradlew run testCoverage* in this directory.
   + Results of tests are displayed on screen. 
   + More information about code quality (including code coverage, test status) are available in *nmaas-portal/coverage/index.html*
 
-#### Defaults
+### Defaults
 ---
   + Portal and Platform URLs:
     - Portal: *http://<HOSTNAME>:9009*
@@ -49,3 +46,7 @@
   + Admin user:
     - username: *admin*
     - password: *admin*
+    
+### Building and uploading Portal docker image
+---
+  In order to build a Portal Docker image first alter the *build_and_publish.sh* with custom REPOSITORY, PACKAGE and TAG values and execute *build_and_publish.sh* to automatically build and publish *nmaas-portal* image to selected Docker repository.

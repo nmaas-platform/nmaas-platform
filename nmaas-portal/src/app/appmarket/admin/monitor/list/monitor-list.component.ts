@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MonitorService} from "../../../../service/monitor.service";
-import {Router} from "@angular/router";
 import {MonitorEntry, ServiceType, TimeFormat} from "../../../../model/monitorentry";
-import {Time} from "@angular/common";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-montiorlist',
@@ -15,7 +14,7 @@ export class MonitorListComponent implements OnInit {
 
   private services: typeof ServiceType = ServiceType;
 
-  constructor(private monitorService: MonitorService, private router: Router) {
+  constructor(private monitorService: MonitorService, private translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -30,8 +29,19 @@ export class MonitorListComponent implements OnInit {
     this.monitorService.executeJob(serviceName).subscribe(val => this.update());
   }
 
-  public removeJob(serviceName: string){
-    this.monitorService.deleteMonitorEntryAndJob(serviceName).subscribe(val => this.update());
+  public changeJobState(monitorEntry: MonitorEntry){
+    if(monitorEntry.active){
+      this.monitorService.pauseJob(monitorEntry.serviceName).subscribe(() => monitorEntry.active = false);
+    } else {
+      this.monitorService.resumeJob(monitorEntry.serviceName).subscribe(() => monitorEntry.active = true);
+    }
+  }
+
+  public getCorrectStateLabel(active: boolean) : string {
+    if(active){
+      return this.translate.instant('MONITOR.DEACTIVATE_BUTTON');
+    }
+    return this.translate.instant('MONITOR.ACTIVATE_BUTTON');
   }
 
   public getIntervalCheck(checkInterval:number, timeFormat:TimeFormat):string{

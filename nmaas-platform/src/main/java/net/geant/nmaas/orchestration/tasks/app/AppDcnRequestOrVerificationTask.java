@@ -1,36 +1,29 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
+@AllArgsConstructor
 public class AppDcnRequestOrVerificationTask {
 
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
-    private DcnDeploymentProvider dcnDeployment;
-
-    @Autowired
-    public AppDcnRequestOrVerificationTask(
-            AppDeploymentRepositoryManager appDeploymentRepositoryManager,
-            DcnDeploymentProvider dcnDeployment) {
-        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
-        this.dcnDeployment = dcnDeployment;
-    }
+    private DcnDeploymentProvidersManager providersManager;
 
     /**
      * Checks current state of DCN for given client and depending on the result requests new DCN deployment
@@ -45,8 +38,8 @@ public class AppDcnRequestOrVerificationTask {
     public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) {
         try{
             final Identifier deploymentId = event.getRelatedTo();
-            final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
-            switch(dcnDeployment.checkState(domain)) {
+            final String domain = appDeploymentRepositoryManager.loadDomain(deploymentId);
+            switch(providersManager.getDcnDeploymentProvider(domain).checkState(domain)) {
                 case NONE:
                 case REMOVED:
                     return dcnDeploymentEvent(domain);

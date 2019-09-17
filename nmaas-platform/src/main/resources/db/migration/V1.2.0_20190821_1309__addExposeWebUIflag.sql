@@ -1,0 +1,1 @@
+alter table app_deployment_spec add column exposes_webui boolean;

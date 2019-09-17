@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.log4j.Log4j2;
@@ -8,17 +9,21 @@ import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.PasswordReset;
-import net.geant.nmaas.portal.api.domain.User;
 import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.api.domain.UserRole;
+import net.geant.nmaas.portal.api.domain.UserRoleView;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.utils.captcha.ValidateCaptcha;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,9 +34,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,6 +51,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,9 +103,9 @@ public class UsersController {
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-	public List<User> getUsers(Pageable pageable) {
+	public List<UserView> getUsers(Pageable pageable) {
 		return userService.findAll(pageable).getContent().stream()
-				.map(user -> modelMapper.map(user, User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 	
@@ -111,49 +117,40 @@ public class UsersController {
 		
 	@GetMapping(value="/users/{userId}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-	public User retrieveUser(@PathVariable("userId") Long userId) {
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);		
-		return modelMapper.map(user, User.class);
+	public UserView retrieveUser(@PathVariable("userId") Long userId) {
+		User user = getUser(userId);
+		return modelMapper.map(user, UserView.class);
 	}
 
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
-	public void updateUser(@PathVariable("userId") final Long userId,
-						   @RequestBody final UserRequest userRequest,
-						   final Principal principal) {
-		net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
+	public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) {
+		User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 
 		if(userRequest == null)
 			throw new MissingElementException("User request is null");
-		try {
-        	String message = getMessageWhenUserUpdated(userDetails, userRequest);
-			final net.geant.nmaas.portal.persistent.entity.User adminUser = userService.findByUsername(principal.getName()).orElseThrow(ProcessingException::new);
-			final String adminRoles = getRoleAsString(adminUser.getRoles());
-			final String userRoles = getRoleAsString(userDetails.getRoles());
-
-			if (userRequest.getFirstname() != null)
-				userDetails.setFirstname(userRequest.getFirstname());
-			if (userRequest.getLastname() != null)
-				userDetails.setLastname(userRequest.getLastname());
-			if (userRequest.getEmail() != null && !userRequest.getEmail().equalsIgnoreCase(userDetails.getEmail())) {
-				if(userService.existsByEmail(userRequest.getEmail())){
-					throw new ProcessingException("User with mail "+ userRequest.getEmail()+ " already exists.");
-				}
-				userDetails.setEmail(userRequest.getEmail());
+		if(!userDetails.getUsername().equals(principal.getName()) && !userService.canUpdateData(principal.getName(), userDetails.getRoles())){
+			throw new ProcessingException(principal.getName() + " was trying to edit data of user " + userDetails.getUsername() + " without required role.");
+		}
+       	String message = getMessageWhenUserUpdated(userDetails, userRequest);
+		final String userRoles = getRoleAsString(userDetails.getRoles());
+		if (userRequest.getFirstname() != null)
+			userDetails.setFirstname(userRequest.getFirstname());
+		if (userRequest.getLastname() != null)
+			userDetails.setLastname(userRequest.getLastname());
+		if (userRequest.getEmail() != null && !userRequest.getEmail().equalsIgnoreCase(userDetails.getEmail())) {
+			if(userService.existsByEmail(userRequest.getEmail())){
+				throw new ProcessingException("User with mail "+ userRequest.getEmail()+ " already exists.");
 			}
-			userService.update(userDetails);
-			if (!StringUtils.isEmpty(message)) {
-				log.info(String.format("User [%s] with role [%s] updated data of user [%s] with roles [%s]. The following changes are: [%s] ",
-						principal.getName(),
-						adminRoles,
-						userDetails.getUsername(),
-						userRoles,
-						message));
-				}
-			} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-				throw new ProcessingException("Unable to update user -> " + e.getMessage());
+			userDetails.setEmail(userRequest.getEmail());
+		}
+		userService.update(userDetails);
+		if (!StringUtils.isEmpty(message)) {
+			log.info(String.format("Data of user [%s] with role [%s] were updated. The following changes are: [%s] ",
+					userDetails.getUsername(),
+					userRoles,
+					message));
 			}
 	}
 	
@@ -166,9 +163,9 @@ public class UsersController {
 	
 	@GetMapping("/users/{userId}/roles")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-	public Set<UserRole> getUserRoles(@PathVariable Long userId) {
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
-		return user.getRoles().stream().map(ur -> modelMapper.map(ur, UserRole.class)).collect(Collectors.toSet());
+	public Set<UserRoleView> getUserRoles(@PathVariable Long userId) {
+		User user = getUser(userId);
+		return user.getRoles().stream().map(ur -> modelMapper.map(ur, UserRoleView.class)).collect(Collectors.toSet());
 	}
 
 	@DeleteMapping("/users/{userId}/roles")
@@ -176,7 +173,7 @@ public class UsersController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
 	public void removeUserRole(@PathVariable final Long userId,
-                               @RequestBody final UserRole userRole,
+                               @RequestBody final UserRoleView userRole,
                                final Principal principal) {
 		if(userRole == null)
 			throw new MissingElementException("userRole is null");
@@ -190,13 +187,12 @@ public class UsersController {
 		else
 			domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
+		User user = getUser(userId);
 
 		try {
 			domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
 
-            final net.geant.nmaas.portal.persistent.entity.User adminUser =
-                    userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
+            final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
 
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
@@ -239,18 +235,14 @@ public class UsersController {
 	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
 	@Transactional
 	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) {
-		net.geant.nmaas.portal.persistent.entity.User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
-		try {
-			Long domainId = domainService.getGlobalDomain().orElseThrow(ProcessingException::new).getId();
-			completeRegistration(userRequest, user, domainId);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) { //TODO: Refactor exceptions not to have same names
-			throw new ProcessingException("Unable to complete your registration");
-		}
+		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+		Long domainId = domainService.getGlobalDomain().orElseThrow(ProcessingException::new).getId();
+		completeRegistration(userRequest, user, domainId);
 	}
 
-	private void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) {
+	private void completeRegistration(UserRequest userRequest, User user, Long domainId) {
 		if(userService.existsByUsername(userRequest.getUsername())) {
-			throw new net.geant.nmaas.portal.exceptions.ProcessingException("User with same username already exists");
+			throw new ProcessingException("User with same username already exists");
 		} else {
 			user.setUsername(userRequest.getUsername());
 		}
@@ -273,8 +265,9 @@ public class UsersController {
 	@PostMapping("/users/reset/notification")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void sendResetPasswordNotification(@RequestBody String email){
-		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
-		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, generateResetPasswordUrl(this.jwtTokenService.getResetToken(email)));
+		User user = userService.findByEmail(email);
+		checkSSOUser(user);
+		this.sendMail(modelMapper.map(user, UserView.class), MailType.PASSWORD_RESET, ImmutableMap.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
 	}
 
 	private String generateResetPasswordUrl(String token){
@@ -287,23 +280,27 @@ public class UsersController {
 
 	@PostMapping("/users/reset/validate")
 	@ResponseStatus(HttpStatus.OK)
-	public User validateResetRequest(@RequestBody String token){
+	public UserView validateResetRequest(@RequestBody String token){
 		try {
 			Claims claims = jwtTokenService.getResetClaims(token);
-			return modelMapper.map(userService.findByEmail(claims.getSubject()), User.class);
-		} catch(JwtException e){
+			User user = userService.findByEmail(claims.getSubject());
+			checkSSOUser(user);
+			return modelMapper.map(user, UserView.class);
+		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Validation of reset request failed -> "+ e.getMessage());
 		}
 	}
 
 	@PostMapping("/users/reset")
+	@ValidateCaptcha
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void resetPassword(@RequestBody PasswordReset passwordReset){
+	public void resetPassword(@RequestBody PasswordReset passwordReset, @RequestParam String token){
 		try {
 			Claims claims = jwtTokenService.getResetClaims(passwordReset.getToken());
-			net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(claims.getSubject());
+			User user = userService.findByEmail(claims.getSubject());
+			checkSSOUser(user);
 			changePassword(user, passwordReset.getPassword());
-		} catch(JwtException e){
+		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Unable to reset password -> " + e.getMessage());
 		}
 	}
@@ -312,40 +309,40 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
 	public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) {
-		net.geant.nmaas.portal.persistent.entity.User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
-		try {
-			checkPassword(user, passwordChange.getPassword());
-			changePassword(user, passwordChange.getNewPassword());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to change password");
-		}
+		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
+		checkSSOUser(user);
+		checkPassword(user, passwordChange.getPassword());
+		changePassword(user, passwordChange.getNewPassword());
 	}
 
-	private void checkPassword(net.geant.nmaas.portal.persistent.entity.User user, String password) {
+	private void checkPassword(User user, String password) {
 		if(!passwordEncoder.matches(password, user.getPassword()))
-			throw new net.geant.nmaas.portal.exceptions.ProcessingException("Password mismatch");
+			throw new ProcessingException("Password mismatch");
 	}
 	
-	private void changePassword(net.geant.nmaas.portal.persistent.entity.User user, String password) {
+	private void changePassword(User user, String password) {
 		user.setPassword(passwordEncoder.encode(password));
 		userService.update(user);
 	}
 
+	private void checkSSOUser(User user) {
+    	if(StringUtils.isNotEmpty(user.getSamlToken()))
+    		throw new ProcessingException("SSO user cannot change or reset password");
+	}
+
 	@GetMapping("/domains/{domainId}/users")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-	public List<User> getDomainUsers(@PathVariable Long domainId) {
-		return domainService.getMembers(domainId).stream().map(domain -> modelMapper.map(domain, User.class)).collect(Collectors.toList());
+	public List<UserView> getDomainUsers(@PathVariable Long domainId) {
+		return domainService.getMembers(domainId).stream().map(domain -> modelMapper.map(domain, UserView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/domains/{domainId}/users/{userId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-	public User getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) {
-			try {
-			return modelMapper.map(domainService.getMember(domainId, userId), User.class);
+	public UserView getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) {
+    	try {
+			return modelMapper.map(domainService.getMember(domainId, userId), UserView.class);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException(e.getMessage());
 		}
 	}
 	
@@ -355,7 +352,7 @@ public class UsersController {
 	public void removeDomainUser(@PathVariable Long domainId, @PathVariable Long userId) {
 		Domain domain = getDomain(domainId);
 		
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
+		User user = getUser(userId);
 		
 		try {
 			domainService.removeMember(domain.getId(), user.getId());
@@ -369,7 +366,7 @@ public class UsersController {
 	public Set<Role> getUserRoles(@PathVariable Long domainId, @PathVariable Long userId) {
 		Domain domain = getDomain(domainId);
 		
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
+		User user = getUser(userId);
 
 		try {
 			return domainService.getMemberRoles(domain.getId(), user.getId());
@@ -384,7 +381,7 @@ public class UsersController {
 	@Transactional
 	public void addUserRole(@PathVariable final Long domainId,
 							@PathVariable final Long userId,
-							@RequestBody final UserRole userRole,
+							@RequestBody final UserRoleView userRole,
 							final Principal principal) {
 
 		if(userRole == null)
@@ -411,13 +408,12 @@ public class UsersController {
 			}
 		}
 
-		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
+		final User user = getUser(userId);
 
 		try {
 			domainService.addMemberRole(domain.getId(), user.getId(), role);
 
-            final net.geant.nmaas.portal.persistent.entity.User adminUser =
-                    userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
+            final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
             log.info(String.format("User [%s] with role [%s] added role [%s] to user [%s] in domain [%d].",
@@ -443,13 +439,12 @@ public class UsersController {
 		final Role role = convertRole(userRole);
 
 		final Domain domain = getDomain(domainId);
-		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
+		final User user = getUser(userId);
 
 		try {
 			domainService.removeMemberRole(domain.getId(), user.getId(), role);
 
-            final net.geant.nmaas.portal.persistent.entity.User adminUser =
-                    userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
+            final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
 
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
@@ -475,10 +470,9 @@ public class UsersController {
 							   final Principal principal) {
 		try {
 			userService.setEnabledFlag(userId, isEnabledFlag);
-			net.geant.nmaas.portal.persistent.entity.User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
-			net.geant.nmaas.portal.persistent.entity.User adminUser =
-					userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
-			List<Role> rolesList = adminUser.getRoles().stream().map(net.geant.nmaas.portal.persistent.entity.UserRole::getRole).collect(Collectors.toList());
+			User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
+			User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
+			List<Role> rolesList = adminUser.getRoles().stream().map(UserRole::getRole).collect(Collectors.toList());
 			List<String> rolesAsStringList = rolesList.stream().map(Role::authority).collect(Collectors.toList());
 			String roleAsString = String.join(",", rolesAsStringList);
 			String message = String.format("User [%s] with role [%s] [%s] account of user [%s].",
@@ -487,15 +481,22 @@ public class UsersController {
 					isEnabledFlag ? "activated" : "deactivated",
 					getUser(userId).getUsername());
 			if (isEnabledFlag) {
-				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_ACTIVATED, null);
+				this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_ACTIVATED, ImmutableMap.of("portalURL", portalAddress != null ? portalAddress : ""));
 			} else {
-				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_BLOCKED, null);
+				this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_BLOCKED, Collections.emptyMap());
 			}
 			log.info(message);
 		}catch(ObjectNotFoundException err){
 			throw new MissingElementException(err.getMessage());
 		}
     }
+
+    @PatchMapping("/users/{userId}/language")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@Transactional
+	public void setDefaultLanguage(@PathVariable Long userId, @RequestParam("defaultLanguage") final String defaultLanguage){
+    	this.userService.setUserLanguage(userId, defaultLanguage);
+	}
 
 	private Role convertRole(String userRole) {
 		Role role = null;
@@ -511,34 +512,30 @@ public class UsersController {
 		return domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 	}
 	
-	net.geant.nmaas.portal.persistent.entity.User getUser(Long userId) {
+	User getUser(Long userId) {
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 	}
 
-	String getRoleAsString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
+	String getRoleAsString(List<UserRole> userRoles){
         return String.join(", ", getRoleAsList(userRoles));
     }
 	
-	List<String> getRoleAsList(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
-        final List<Role> rolesList = userRoles.stream().map(net.geant.nmaas.portal.persistent.entity.UserRole::getRole).collect(Collectors.toList());
-        return rolesList.stream().map(Role::authority).collect(Collectors.toList());
-    }
-
-    String getRequestedRoleAsString(Set<UserRole> userRoles){
-        return String.join(",", getRequestedRoleAsList(userRoles));
-    }
-    
-    List<String> getRequestedRoleAsList(Set<UserRole> userRoles){
+	List<String> getRoleAsList(List<UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(UserRole::getRole).collect(Collectors.toList());
         return rolesList.stream().map(Role::authority).collect(Collectors.toList());
     }
+    
+    List<String> getRequestedRoleAsList(Set<UserRoleView> userRoles){
+        final List<Role> rolesList = userRoles.stream().map(UserRoleView::getRole).collect(Collectors.toList());
+        return rolesList.stream().map(Role::authority).collect(Collectors.toList());
+    }
 
-    String getRoleWithDomainIdAsString(Set<UserRole> userRoles){
+    String getRoleWithDomainIdAsString(Set<UserRoleView> userRoles){
         return String.join(", ", userRoles.stream().map(x -> x.getRole().authority() + "@domain" + x.getDomainId())
 				.collect(Collectors.toList()));
     }
 
-    String getMessageWhenUserUpdated(final net.geant.nmaas.portal.persistent.entity.User user, final UserRequest userRequest){
+    String getMessageWhenUserUpdated(final User user, final UserRequest userRequest){
         StringBuilder message = new StringBuilder();
         if(!isSame(userRequest.getUsername(), user.getUsername())){
         	message.append(" Username [" + user.getUsername() + "] -> [" + userRequest.getUsername() + "]");
@@ -571,14 +568,12 @@ public class UsersController {
 		return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
 	}
 
-	private void sendMail(User user, MailType mailType, String other){
+	private void sendMail(UserView user, MailType mailType, Map<String, String> other){
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.mailType(mailType)
-				.addressees(Collections.singletonList(modelMapper.map(user, User.class)))
+				.otherAttributes(other)
+				.addressees(Collections.singletonList(modelMapper.map(user, UserView.class)))
 				.build();
-		if(mailAttributes.getMailType() == MailType.PASSWORD_RESET){
-			mailAttributes.setOtherAttribute(other);
-		}
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 

@@ -6,13 +6,14 @@ import {UserService} from '../../../service/user.service';
 import {BaseComponent} from '../../common/basecomponent/base.component';
 import {Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/shareReplay';
-import 'rxjs/add/operator/take';
+import {Observable, of} from 'rxjs';
+
+
 import { isUndefined } from 'util';
 import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from "../../../service/userdata.service";
 import {AuthService} from "../../../auth/auth.service";
+import {map, shareReplay, take} from 'rxjs/operators';
 
 @Component({
   selector: 'nmaas-userslist',
@@ -46,18 +47,16 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('UsersList:onChanges ' + changes.toString());
     this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
   public getDomainName(domainId: number): Observable<string> {
-    //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
-      //console.debug('getDomainName(' + domainId + ') from cache');
-      return Observable.of(this.domainCache.getData(domainId).name);
+      return of(this.domainCache.getData(domainId).name);
     } else {
-      //console.debug('getDomainName(' + domainId + ') from network');
-      return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})
-              .shareReplay(1).take(1);
+      return this.domainService.getOne(domainId).pipe(
+          map((domain) => {this.domainCache.setData(domainId, domain); return domain.name}),
+          shareReplay(1),
+          take(1));
     }
   }
 
@@ -71,7 +70,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public getGlobalRole(user: User): string{
     let userRole: UserRole[] = user.roles.filter(role => role.domainId === this.domainService.getGlobalDomainId());
-    return userRole[0].role.toString() === Role[Role.ROLE_GUEST] ?'-' : userRole[0].role.toString().slice(5);
+    return userRole[0].role.toString();
   }
 
   public getUserDomainIds(user: User): number[] {
@@ -87,7 +86,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   public view(userId: number): void {
-    console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
 

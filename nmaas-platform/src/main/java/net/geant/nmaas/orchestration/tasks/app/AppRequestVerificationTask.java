@@ -1,9 +1,10 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -12,7 +13,6 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Log4j2
+@AllArgsConstructor
 public class AppRequestVerificationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
@@ -27,16 +28,6 @@ public class AppRequestVerificationTask {
     private AppDeploymentRepository repository;
 
     private ApplicationRepository appRepository;
-
-    @Autowired
-    public AppRequestVerificationTask(
-            NmServiceDeploymentProvider serviceDeployment,
-            AppDeploymentRepository repository,
-            ApplicationRepository appRepository) {
-        this.serviceDeployment = serviceDeployment;
-        this.repository = repository;
-        this.appRepository = appRepository;
-    }
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -51,7 +42,7 @@ public class AppRequestVerificationTask {
                     deploymentId,
                     appDeployment,
                     application.getAppDeploymentSpec());
-        }catch(Exception ex){
+        } catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }

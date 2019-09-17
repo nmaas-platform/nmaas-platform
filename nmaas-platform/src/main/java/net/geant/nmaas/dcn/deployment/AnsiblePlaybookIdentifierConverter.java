@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
+import java.nio.charset.StandardCharsets;
 import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.Charset;
 
 public class AnsiblePlaybookIdentifierConverter {
 
@@ -18,7 +18,7 @@ public class AnsiblePlaybookIdentifierConverter {
     }
 
     private static String encode(String plainString) {
-        return DatatypeConverter.printBase64Binary(plainString.getBytes(Charset.forName("UTF-8")));
+        return DatatypeConverter.printBase64Binary(plainString.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String decode(String encodedStringWithPrefix) {

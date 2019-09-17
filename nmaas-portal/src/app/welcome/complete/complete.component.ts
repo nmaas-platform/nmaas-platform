@@ -1,10 +1,9 @@
-import {Component, OnInit, ViewChild, Input} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ProfileService} from "../../service/profile.service";
 import {User} from "../../model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {Domain} from "../../model/domain";
-import {RegistrationService} from "../../auth/registration.service";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {Router} from "@angular/router";
 import {AuthService} from "../../auth/auth.service";
@@ -12,8 +11,8 @@ import {ModalComponent} from "../../shared/modal";
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 import {TranslateService} from "@ngx-translate/core";
-import {ContentDisplayService} from "../../service/content-display.service";
 import {UserService} from "../../service";
+import {InternationalizationService} from "../../service/internationalization.service";
 
 @Component({
     selector: 'app-complete',
@@ -49,7 +48,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                 private authService: AuthService,
                 private router: Router,
                 private translate: TranslateService,
-                private contentService: ContentDisplayService) {
+                private languageService: InternationalizationService) {
         super();
         this.registrationForm = fb.group(
             {
@@ -63,7 +62,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.contentService.getLanguages().subscribe(langs => this.languages = langs);
+        this.languageService.getEnabledLanguages().subscribe(langs => this.languages = langs);
         this.profileService.getOne().subscribe((user) => this.user = user);
         this.modal.setStatusOfIcons(false);
         this.modal.setModalType("success");
@@ -110,8 +109,23 @@ export class CompleteComponent extends BaseComponent implements OnInit {
         }
     }
 
-    public useLanguage(language: string) {
+    useLanguage(language: string) {
         this.translate.use(language);
+    }
+
+    getCurrent(){
+        return this.translate.currentLang;
+    }
+
+    getPathToCurrent(){
+        return "assets/images/country/" + this.getCurrent() + "_circle.png";
+    }
+
+    public getSupportedLanguages(){
+        this.languageService.getEnabledLanguages().subscribe(langs =>{
+            this.translate.addLangs(langs);
+            this.languages = langs;
+        });
     }
 
     public hide(): void{

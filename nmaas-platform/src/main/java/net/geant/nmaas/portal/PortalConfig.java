@@ -1,7 +1,11 @@
 package net.geant.nmaas.portal;
 
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import java.util.Arrays;
+import net.geant.nmaas.monitor.MonitorManager;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.scheduling.ScheduleManager;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -45,6 +49,9 @@ public class PortalConfig {
 			@Autowired
 			private DomainService domains;
 
+			@Autowired
+			private ConfigurationManager configurationManager;
+
 			@Value("${admin.password}")
 			String adminPassword;
 
@@ -67,10 +74,35 @@ public class PortalConfig {
 				if(globalDomain.isPresent()) {
 					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
 					user.setEmail(email);
+					user.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 					userRepository.save(user);
 				}
 			}
 						
+		};
+	}
+
+	@Bean
+	public InitializingBean insertDefaultMonitoringJobs(){
+		return new InitializingBean() {
+
+			@Autowired
+			private ScheduleManager scheduleManager;
+
+			@Autowired
+			private MonitorManager monitorManager;
+
+			@Override
+			@Transactional
+			public void afterPropertiesSet() {
+				Arrays.stream(ServiceType.values())
+						.filter(service -> !monitorManager.existsByServiceName(service))
+						.forEach(service ->{
+							MonitorEntryView monitorEntry = service.getDefaultMonitorEntry();
+							this.monitorManager.createMonitorEntry(monitorEntry);
+							this.scheduleManager.createJob(monitorEntry);
+						});
+			}
 		};
 	}
 
@@ -112,21 +144,6 @@ public class PortalConfig {
 			private void addContentToDatabase(String name, String title, String content){
 				Content newContent = new Content(name, title, content);
 				contentRepository.save(newContent);
-			}
-		};
-	}
-
-	@Bean
-	public InitializingBean addConfigurationProperties(){
-		return new InitializingBean() {
-			@Autowired
-			ConfigurationManager configurationManager;
-
-			@Override
-			@Transactional
-			public void afterPropertiesSet() throws Exception {
-                configurationManager.deleteAllConfigurations();
-                configurationManager.addConfiguration(new ConfigurationView(false, false, "en"));
 			}
 		};
 	}

@@ -1,25 +1,25 @@
 import {AuthService} from '../../auth/auth.service';
-import {Component, OnInit, Input, ViewChild} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-//import 'rxjs/add/operator/switchMap';
-
 import {SecurePipe} from '../../pipe/index';
 import {RateComponent} from '../../shared/rate/rate.component';
 import {CommentsComponent} from '../../shared/comments/comments.component';
-import {ScreenshotsComponent} from '../../shared/screenshots/screenshots.component';
-import {AppsService, AppImagesService, AppInstanceService, AppConfigService} from '../../service/index';
+import {AppConfigService, AppImagesService, AppInstanceService, AppsService} from '../../service/index';
 import {Application} from '../../model/application';
 import {Role} from '../../model/userrole';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstallmodal.component';
-import { Subject } from 'rxjs';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/isEmpty';
-import {empty} from 'rxjs/observable/empty';
-import {isUndefined} from 'util';
+import {Observable} from 'rxjs';
+import {isNullOrUndefined, isUndefined} from 'util';
 import {AppSubscription} from "../../model";
+import {isEmpty} from 'rxjs/operators';
+import {AppDescription} from "../../model/appdescription";
+import {TranslateService} from "@ngx-translate/core";
+import {ApplicationState} from "../../model/applicationstate";
+
+//import 'rxjs/add/operator/switchMap';
 
 @Component({
   selector: 'nmaas-appdetails',
@@ -52,6 +52,7 @@ export class AppDetailsComponent implements OnInit {
     private userDataService: UserDataService,
     private appConfig: AppConfigService,
     private authService: AuthService,
+    private translate:TranslateService,
     private router: Router, private route: ActivatedRoute, private location: Location) {
   }
 
@@ -77,9 +78,9 @@ export class AppDetailsComponent implements OnInit {
     }
 
     let result: Observable<any> = null;
-    if (isUndefined(domainId) || domainId === 0) {
+    if (isUndefined(domainId) || domainId === 0 || this.appConfig.getNmaasGlobalDomainId() === domainId) {
       result = this.appSubsService.getAllByApplication(this.appId);
-      result.isEmpty().subscribe(res => this.subscribed = !res, error => this.subscribed = false);
+      result.subscribe(() => this.subscribed=false);
     } else {
       result = this.appSubsService.getSubscription(this.appId, domainId);
       result.subscribe((appSub:AppSubscription)=>this.subscribed=appSub.active, error=>this.subscribed = false);
@@ -130,5 +131,42 @@ export class AppDetailsComponent implements OnInit {
   protected refresh(): void {
     this.state += Math.random() * 123456;
   }
-  
+
+  public getDescription(): AppDescription {
+    if(isNullOrUndefined(this.app)){
+      return;
+    }
+    return this.app.descriptions.find(val => val.language == this.translate.currentLang);
+  }
+
+  public getPathUrl(id: number): string{
+    if(!isNullOrUndefined(id) && !isNaN(id)){
+      return '/apps/' + id + '/rate/my';
+    }else{
+      return "";
+    }
+  }
+
+  public isActive(state: any): boolean {
+    return this.getStateAsString(state) === ApplicationState[ApplicationState.ACTIVE];
+  }
+
+  public isDisabled(state: any): boolean {
+    return this.getStateAsString(state) === ApplicationState[ApplicationState.DISABLED];
+  }
+
+  public getStateAsString(state: any): string {
+    return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
+  }
+
+  public getValidLink(url: string) : string {
+    if(isNullOrUndefined(url)){
+      return;
+    }
+    if(!url.startsWith("http://") && !url.startsWith("https://")){
+      return '//' + url;
+    }
+    return url;
+  }
+
 }

@@ -5,12 +5,32 @@
 	<meta http-equiv = "X-UA-Compatible" content = "IE = edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" sizes="16x16" type="image/x-icon" href="/favicon.ico">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+		  integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 	<style type="text/css">
 		body, html {
 			height: 100%;
+			position: relative;
 		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		*:before,
+		*:after {
+			box-sizing: border-box;
+		}
+
+		.main-container {
+			min-height: 100vh; /* will cover the 100% of viewport */
+			overflow: hidden;
+			display: block;
+			position: relative;
+		}
+
 		.app-loading {
+			margin-top: 40vh;
 			position: relative;
 			display: flex;
 			flex-direction: column;
@@ -62,8 +82,8 @@
 	
 </head>
 
-<body>
-	<nmaas-root>
+<body style="height: 100%;position: relative;">
+	<nmaas-root class="main-container">
 		<div class="app-loading">
 			<div class="logo"></div>
 			<svg class="spinner" viewBox="25 25 50 50">
@@ -74,5 +94,6 @@
 			</div>
 		</div>
 	</nmaas-root>
+
 </body>
 </html>

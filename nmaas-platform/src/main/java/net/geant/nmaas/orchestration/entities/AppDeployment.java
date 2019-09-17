@@ -1,7 +1,14 @@
 package net.geant.nmaas.orchestration.entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import net.geant.nmaas.orchestration.Identifier;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,20 +21,21 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import lombok.*;
-import org.hibernate.annotations.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Details of single application deployment in the system.
  */
 @Entity
-@Table(name="app_deployment")
+@Table(name = "app_deployment")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class AppDeployment {
 
     @Id
@@ -36,10 +44,12 @@ public class AppDeployment {
     private Long id;
 
     /** Unique identifier of this deployment. */
+    @ToString.Include
     @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
     /** Name of the client domain for this deployment. */
+    @ToString.Include
     @Column(nullable = false)
     private String domain;
 
@@ -48,6 +58,7 @@ public class AppDeployment {
     private Identifier applicationId;
 
     /** Name of the deployment provided by the user. */
+    @ToString.Include(name = "appInstanceName")
     @Column(nullable = false)
     private String deploymentName;
 
@@ -82,12 +93,8 @@ public class AppDeployment {
 
     private String appName;
 
-    @Override
-    public String toString() {
-        return "AppDeployment{" +
-                "deploymentId=" + deploymentId +
-                ", domain='" + domain + '\'' +
-                ", appInstanceName='" + deploymentName + '\'' +
-                '}';
+    public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState){
+        history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
     }
+
 }

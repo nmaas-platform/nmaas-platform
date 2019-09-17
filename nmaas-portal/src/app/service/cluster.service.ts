@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {GenericDataService} from './genericdata.service';
 
 import {HttpClient} from '@angular/common/http'
@@ -18,12 +18,8 @@ export class ClusterService extends GenericDataService {
         this.url = this.appConfig.getApiUrl() + '/management/kubernetes/';
     }
 
-    public getAll(): Observable<ClusterInfo[]> {
-        return this.get<ClusterInfo[]>(this.url);
-    }
-
-    public getOne(clusterId: number): Observable<Cluster> {
-        return this.get<Cluster>(this.url + clusterId);
+    public getCluster(): Observable<Cluster> {
+        return this.get<Cluster>(this.url);
     }
 
     public add(cluster: Cluster): Observable<any> {

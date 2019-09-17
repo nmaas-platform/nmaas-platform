@@ -1,9 +1,10 @@
 package net.geant.nmaas.orchestration.entities;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import lombok.Getter;
 import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -45,9 +46,14 @@ public class AppDeploymentSpec implements Serializable {
     @Column(nullable = false)
     private Integer defaultStorageSpace;
 
+    private boolean exposesWebUI;
+
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<ParameterType, String> deployParameters;
 
-    private boolean configFileRepositoryRequired;
+    public void validate(){
+        checkArgument(kubernetesTemplate != null, "Kubernetes template cannot be null");
+        checkArgument(defaultStorageSpace != null && defaultStorageSpace > 0, "Default storage space cannot be lower than 0GB");
+    }
 }

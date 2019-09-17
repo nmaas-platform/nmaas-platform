@@ -16,7 +16,7 @@ export class PrivacyPolicySubpageComponent implements OnInit, AfterViewChecked, 
 
   public content: Content;
 
-  constructor(private contentDisplayService: ContentDisplayService) {
+  constructor(private contentDisplayService: ContentDisplayService, private translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -38,10 +38,7 @@ export class PrivacyPolicySubpageComponent implements OnInit, AfterViewChecked, 
 
   onResize() {
     this.height = document.getElementById("global-footer").offsetHeight;
-    //console.log(`Footer h: ${this.height}`);
-    let navHeight = document.getElementById("navbar-welcome").offsetHeight;
     document.getElementById("welcome-container").style.marginBottom = `${this.height * 9/10 +5}px`;
-    document.getElementById("welcome-container").style.marginTop = `${navHeight + 2}px`;
   }
 
 }

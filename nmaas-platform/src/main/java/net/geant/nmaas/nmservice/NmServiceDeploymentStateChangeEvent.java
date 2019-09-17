@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice;
 
 import lombok.Getter;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.context.ApplicationEvent;
 
 @Getter

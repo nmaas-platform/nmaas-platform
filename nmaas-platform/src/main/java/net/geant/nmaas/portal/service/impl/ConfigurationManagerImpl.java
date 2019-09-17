@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -9,13 +10,13 @@ import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.Optional;
 
 @ApplicationScope
+@AllArgsConstructor
 @Component
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
@@ -24,13 +25,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private ModelMapper modelMapper;
 
     private InternationalizationRepository internationalizationRepository;
-
-    @Autowired
-    public ConfigurationManagerImpl(ConfigurationRepository repository, InternationalizationRepository internationalizationRepository, ModelMapper modelMapper){
-        this.repository = repository;
-        this.internationalizationRepository = internationalizationRepository;
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public ConfigurationView getConfiguration(){
@@ -62,15 +56,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     private Configuration loadSingleConfiguration(){
-        if(repository.count() != 1){
+        if(repository.count() == 0){
+            addConfiguration(new ConfigurationView(false, true, "en"));
+        }
+        else if(repository.count() > 1){
             throw new IllegalStateException("Found "+repository.count()+" configuration instead of one");
         }
         return repository.findAll().get(0);
-    }
-
-    @Override
-    public void deleteAllConfigurations(){
-        if(this.repository.count() > 0)
-            this.repository.deleteAll();
     }
 }

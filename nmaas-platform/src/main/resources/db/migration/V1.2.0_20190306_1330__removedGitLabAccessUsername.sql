@@ -1,0 +1,1 @@
+alter table gitlab drop column repository_access_username;

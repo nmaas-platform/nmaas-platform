@@ -1,16 +1,14 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
@@ -100,17 +98,11 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		return appSubRepo.findAll();
 	}
 
-	
-	@Override
-	public Page<ApplicationSubscription> getSubscriptions(Pageable pageable) {
-		return appSubRepo.findAll(pageable);
-	}
-
 	@Override
 	public List<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId) {
 		if(domainId != null && applicationId != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
-			return Arrays.asList(res.orElse(null));
+			return Collections.singletonList(res.orElse(null));
 		}
 		else if(domainId != null)
 			return appSubRepo.findAllByDomain(domainId);
@@ -121,24 +113,10 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public Page<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId, Pageable pageable) {
-		if(domainId != null && applicationId != null) {
-			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
-			return new PageImpl<>(Arrays.asList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
-		}
-		else if(domainId != null)
-			return appSubRepo.findAllByDomain(domainId, pageable);
-		else if(applicationId != null)
-			return appSubRepo.findAllByApplication(applicationId, pageable);
-		else
-			return appSubRepo.findAll(pageable);
-	}
-
-	@Override
 	public List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application) {
 		if(domain != null && application != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
-			return Arrays.asList(res.orElse(null));
+			return Collections.singletonList(res.orElse(null));
 		}
 		else if(domain != null)
 			return appSubRepo.findAllByDomain(domain);
@@ -146,20 +124,6 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 			return appSubRepo.findAllByApplication(application);
 		else
 			return appSubRepo.findAll();
-	}
-
-	@Override
-	public Page<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application, Pageable pageable) {
-		if(domain != null && application != null) {
-			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
-			return new PageImpl<>(Arrays.asList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
-		}
-		else if(domain != null)
-			return appSubRepo.findAllByDomain(domain, pageable);
-		else if(application != null)
-			return appSubRepo.findAllByApplication(application, pageable);
-		else
-			return appSubRepo.findAll(pageable);
 	}
 
 	@Override
@@ -172,6 +136,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 				appSub = appSubOptional.get();
 			}
 		}
+		checkParam(appSub.getApplication());
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);
 			
@@ -209,7 +174,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 		if(!appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication())){
 			if(!appSubRepo.existsById(appSub.getId()))
-				throw new ObjectNotFoundException("Application subscription not found.");
+				throw new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE);
 
 			appSub.setActive(false);
 			appSub.setDeleted(true);
@@ -285,6 +250,8 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		if(appSub == null)
 			throw new IllegalArgumentException("appSub is null");
 		checkParam(appSub.getId());
+		if(!appSub.getDomain().isActive())
+			throw new IllegalArgumentException("Domain cannot be inactive");
 	}
 	
 	protected void checkParam(Long id, String name) {
@@ -311,6 +278,13 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		if(domain == null)
 			throw new IllegalArgumentException("domain is null");
 		checkParam(application.getId(), domain.getId());
+	}
+
+	protected void checkParam(Application application){
+		if(application == null)
+			throw new IllegalArgumentException("application is null");
+		if(!application.getState().equals(ApplicationState.ACTIVE))
+			throw new IllegalStateException("Cannot subscribe application which is in state " + application.getState());
 	}
 	
 }

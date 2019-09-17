@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -18,10 +17,12 @@ import java.io.IOException;
 import java.security.Principal;
 
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/api/apps/instances")
 public class AppConfigurationController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
+
+    private static final String INSTANCE_NOT_FOUND_MESSAGE = "App instance not found";
 
     private ApplicationInstanceService instances;
 
@@ -41,19 +42,17 @@ public class AppConfigurationController {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.readTree(json);
             return true;
-        } catch (JsonProcessingException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }
     }
 
-    @PostMapping({"/apps/instances/{appInstanceId}/configure", "/domains/{domainId}/apps/instances/{appInstanceId}/configure"})
+    @PostMapping("/{appInstanceId}/configure")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                    @RequestBody AppConfigurationView configuration, @NotNull Principal principal) {
-        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
+        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         boolean valid = validJSON(configuration.getJsonInput());
         if (!valid)
@@ -70,16 +69,14 @@ public class AppConfigurationController {
         } catch (Throwable e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
-
-
     }
 
-    @PostMapping({"/apps/instances/{appInstanceId}/configure/update", "/domains/{domainId}/apps/instances/{appInstanceId}/configure/update"})
+    @PostMapping("/{appInstanceId}/configure/update")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                     @RequestBody AppConfigurationView configuration, @NotNull Principal principal) {
-        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
+        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         if (!validJSON(configuration.getJsonInput()))
             throw new ProcessingException("Configuration is not in valid JSON format");
@@ -89,9 +86,15 @@ public class AppConfigurationController {
 
         try {
             appLifecycleManager.updateConfiguration(appInstance.getInternalId(), configuration);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
 
+    @GetMapping("/{appInstanceId}/configuration")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @Transactional
+    public String getConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId){
+        return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE)).getConfiguration();
+    }
 }

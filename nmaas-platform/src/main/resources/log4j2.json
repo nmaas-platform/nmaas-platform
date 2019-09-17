@@ -7,13 +7,13 @@
       ]
     },
     "ThresholdFilter":{
-      "level": "info"
+      "level": "debug"
     },
     "appenders":{
         "Console": {
           "name": "nmaas-console",
           "PatternLayout": {
-            "pattern": "%d [%t] %-5p %c - %m%n"
+            "pattern": "%d [%-15.15t] %-5p %45.45c:%4.4L - %m%n"
           }
         },
         "RollingFile": {
@@ -22,7 +22,7 @@
           "filePattern": "${logsDir}/nmaas.%d{yyyy-MM-dd}.log",
           "immediateFlush":true,
           "patternLayout": {
-            "pattern": "%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %m%n"
+            "pattern": "%d{yyyy-MM-dd HH:mm:ss} [%-15.15t] %-5p %45.45c:%4.4L - %m%n"
           },
           "TimeBasedTriggeringPolicy": {
             "interval": "1",
@@ -159,7 +159,7 @@
           ]
         },
         {
-          "name": "net.schmizz.sshj",
+          "name": "net.schmizz",
           "level": "error",
           "additivity": "false",
           "AppenderRef": [
@@ -173,7 +173,7 @@
         }
       ],
       "root": {
-        "level": "info",
+        "level": "debug",
         "AppenderRef": [
           {
             "ref": "nmaas-file"

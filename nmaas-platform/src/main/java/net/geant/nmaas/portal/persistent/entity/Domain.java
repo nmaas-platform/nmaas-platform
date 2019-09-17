@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -7,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +17,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -28,7 +31,7 @@ import java.io.Serializable;
 public class Domain implements Serializable {
 
 	@Id
-	@GeneratedValue( strategy = GenerationType.IDENTITY )
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
 	@EqualsAndHashCode.Include
@@ -41,11 +44,11 @@ public class Domain implements Serializable {
 	@Column(nullable = false, unique=true)
 	String name;
 
-	@Column(unique = true)
-	private String externalServiceDomain;
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+	private DomainDcnDetails domainDcnDetails;
 
-	@Embedded
-	DomainTechDetails domainTechDetails;
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+	private DomainTechDetails domainTechDetails;
 	
 	boolean active;
 
@@ -70,32 +73,6 @@ public class Domain implements Serializable {
 		this(id, name, codename);
 		this.active = active;
 	}
-
-	public Domain(String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass){
-		this(name, codename);
-		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
-	}
-
-	public Domain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
-		this(name, codename, active);
-		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
-		this.externalServiceDomain = externalServiceDomain;
-	}
-
-	public Domain(Long id, String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
-		this(id, name, codename);
-		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
-	}
-
-	public boolean isDcnConfigured(){
-		return this.domainTechDetails.isDcnConfigured();
-	}
-
-	public String getKubernetesNamespace(){
-		return this.domainTechDetails.getKubernetesNamespace();
-	}
-
-	public String getKubernetesStorageClass(){return this.domainTechDetails.getKubernetesStorageClass();}
 
 }
 

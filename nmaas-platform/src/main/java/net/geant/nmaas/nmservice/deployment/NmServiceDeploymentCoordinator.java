@@ -13,8 +13,8 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,7 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFICATION_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFIED;
@@ -130,7 +131,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.DEBUG)
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
             return orchestrator.serviceAccessDetails(deploymentId);
@@ -143,6 +144,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) {
         try {
+            notifyStateChangeListeners(deploymentId, REMOVAL_INITIATED);
             orchestrator.removeNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (CouldNotRemoveNmServiceException

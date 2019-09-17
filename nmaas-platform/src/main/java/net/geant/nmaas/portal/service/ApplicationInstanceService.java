@@ -28,7 +28,7 @@ public interface ApplicationInstanceService {
 	List<AppInstance> findAllByOwner(Long userId);
 	List<AppInstance> findAllByOwner(User owner);
 	List<AppInstance> findAllByOwner(Long userId, Long domainId);
-	List<AppInstance> findAllByOwner(User owner, Domain domain);
+	List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain);
 
 	Page<AppInstance> findAllByOwner(Long userId, Pageable pageable);
 	Page<AppInstance> findAllByOwner(User owner, Pageable pageable);

@@ -4,10 +4,11 @@ import { AppConfigService } from '../../../service/appconfig.service';
 import {DomainService} from '../../../service/domain.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit, Input, OnDestroy} from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/interval';
+import { Subscription ,  Observable } from 'rxjs';
+
 import { isUndefined, isNullOrUndefined } from 'util';
+import {map} from 'rxjs/operators';
+import {interval} from 'rxjs/internal/observable/interval';
 
 @Component({
   selector: 'nmaas-domain-filter',
@@ -19,6 +20,8 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   //@Input()
   public domainId: number;
 
+  public domainName: string;
+
   public domains: Observable<Domain[]>;
 
   public refresh: Subscription;
@@ -27,7 +30,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
       if(this.authService.hasRole('ROLE_SYSTEM_ADMIN')){
-        this.refresh = Observable.interval(10000).subscribe(next => {
+        this.refresh = interval(10000).subscribe(next => {
             if(this.domainService.shouldUpdate()) {
                 this.updateDomains();
                 this.domainService.setUpdateRequiredFlag(false);
@@ -36,6 +39,9 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
       }
       this.updateDomains();
       this.domains.subscribe(domain => this.userData.selectDomainId(domain[0].id));
+      this.domains.subscribe(domain => {
+        this.domainName = domain[0].name;
+      });
       this.userData.selectedDomainId.subscribe(id => this.domainId = id);
   }
 
@@ -45,7 +51,8 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
     } else {
       this.domains = this.domainService.getMyDomains();
       if(!isUndefined(this.domains) && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(),'ROLE_TOOL_MANAGER') && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(), 'ROLE_OPERATOR')) {
-           this.domains = this.domains.map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
+           this.domains = this.domains.pipe(
+               map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId() && domain.active)));
       }
     }
   }
@@ -57,6 +64,17 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   public onChange($event) {
     console.log('onChange(',this.domainId,')');
     this.userData.selectDomainId(Number(this.domainId));
+  }
+
+  public changeDomain(domain: number, dName: string){
+    console.debug('domainChange(', domain,')');
+    this.domainId = domain;
+    this.domainName = dName;
+    this.userData.selectDomainId(Number(domain));
+  }
+
+  public getCurrent(){
+    return this.domainName;
   }
 
 }

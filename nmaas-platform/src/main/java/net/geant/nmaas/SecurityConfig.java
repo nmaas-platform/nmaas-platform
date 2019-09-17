@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "dcn_ansible".equals(p))) {
+		if (Arrays.asList(env.getActiveProfiles()).contains("dcn_ansible")) {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
@@ -83,9 +83,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/swagger-ui.html",
 			"/api/info/**",
 			"/actuator/health",
+			"/actuator/prometheus",
 			"/webjars/**",
 			"/api/content/**",
-			"/api/users/reset/**"
+			"/api/users/reset/**",
+			"/api/mail"
 	};
 	
 	@Override
@@ -117,9 +119,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/i18n/content/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/i18n/all/enabled").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/mail").permitAll()
 				.antMatchers("/api/users/reset/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -140,6 +146,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/configuration/ui"),
 										new AntPathRequestMatcher("/configuration/security"),
 										new AntPathRequestMatcher("/actuator/health"),
+										new AntPathRequestMatcher("/actuator/prometheus"),
 										new AntPathRequestMatcher("/swagger-ui.html"),
 										new AntPathRequestMatcher("/webjars/**"),
 										new AntPathRequestMatcher("/favicon.ico"),
@@ -147,7 +154,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/api/info/**"),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/content/**"),
-										new AntPathRequestMatcher("/api/users/reset/**")
+										new AntPathRequestMatcher("/api/users/reset/**"),
+										new AntPathRequestMatcher("/api/mail"),
+										new AntPathRequestMatcher("/api/monitor/all", "GET"),
+										new AntPathRequestMatcher("/api/mail"),
+										new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
+										new AntPathRequestMatcher("/api/i18n/all/enabled", "GET")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),

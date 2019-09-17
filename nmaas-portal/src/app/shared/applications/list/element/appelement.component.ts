@@ -10,6 +10,8 @@ import {Router} from "@angular/router";
 import {AppInstallModalComponent} from "../../../modal/appinstall";
 import {AppConfigService} from "../../../../service";
 import {AuthService} from "../../../../auth/auth.service";
+import {TranslateService} from "@ngx-translate/core";
+import {AppDescription} from "../../../../model/appdescription";
 
 @Component({
   selector: 'nmaas-applist-element',
@@ -32,7 +34,8 @@ export class AppElementComponent implements OnInit {
   @ViewChild(AppInstallModalComponent)
   public readonly modal:AppInstallModalComponent;
 
-  constructor(public appImagesService: AppImagesService, public AppConfigService: AppConfigService, public router:Router, public authService:AuthService) {
+  constructor(public appImagesService: AppImagesService, public AppConfigService: AppConfigService, public router:Router,
+              public authService:AuthService, public translate:TranslateService) {
   }
 
   ngOnInit() {
@@ -43,5 +46,9 @@ export class AppElementComponent implements OnInit {
 
   public showDeployButton():boolean {
     return this.domainId !== this.AppConfigService.getNmaasGlobalDomainId() && !this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
+  }
+
+  public getDescription(): AppDescription {
+    return this.app.descriptions.find(val => val.language == this.translate.currentLang);
   }
 }

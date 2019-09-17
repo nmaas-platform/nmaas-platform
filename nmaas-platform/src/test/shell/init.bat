@@ -79,44 +79,23 @@ echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/registrationMail.json
 echo.
-
 echo
-echo Register User First with username user1
-curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1.json
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/contactFormMail.json
 echo.
 echo
-echo Enable User First
-curl -X PUT %API_URL%/users/status/2?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appActiveMail.json
 echo.
 echo
-echo Set User First an ADMIN role on Domain One
-curl -X POST %API_URL%/domains/2/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
-echo.
-
-echo
-echo Register User Second with username user2
-curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2.json
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeletedMail.json
 echo.
 echo
-echo Enable User Second
-curl -X PUT %API_URL%/users/status/3?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appNewMail.json
 echo.
 echo
-echo Set User Second an USER role on Domain One
-curl -X POST %API_URL%/domains/2/users/3/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
-echo.
-
-echo
-echo Register Operator with username operator
-curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3.json
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appNotActiveMail.json
 echo.
 echo
-echo Enable Operator
-curl -X PUT %API_URL%/users/status/4?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
-echo.
-echo
-echo Set Operator an OPERATOR role on Global Domain
-curl -X POST %API_URL%/domains/1/users/4/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appRejectedMail.json
 echo.
 
 echo.
@@ -290,14 +269,14 @@ curl -X GET %API_URL%/subscriptions --header "Authorization: Bearer %token%" --h
 echo.
 echo ---------------------
 echo Create english language content
-curl -X POST %API_URL%/i18n/en --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/en.json
+curl -X POST %API_URL%/i18n/en?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/en.json
 echo
 echo Create french language content
-curl -X POST %API_URL%/i18n/fr --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/fr.json
+curl -X POST %API_URL%/i18n/fr?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/fr.json
 echo
 echo Create polish language content
-curl -X POST %API_URL%/i18n/pl --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json
+curl -X POST %API_URL%/i18n/pl?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json
 echo
 echo Create german language content
-curl -X POST %API_URL%/i18n/de --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
+curl -X POST %API_URL%/i18n/de?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
 echo

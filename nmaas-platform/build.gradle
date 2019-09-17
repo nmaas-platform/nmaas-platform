@@ -1,9 +1,22 @@
-apply from: '../reactor/build.gradle'
+repositories {
+	mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'org.sonarqube'
 apply plugin: 'com.google.protobuf'
+
+version = '1.2.0'
+group = 'net.geant.nmaas'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 
 buildscript {
 	repositories {
@@ -13,10 +26,10 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.1.5.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
 		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
-		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.7'
+		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
 	}
 }
 
@@ -85,23 +98,38 @@ dependencies {
 	compile('com.spotify:docker-client:8.8.0')
 	compile('org.freemarker:freemarker:2.3.28')
 	compile('com.hierynomus:sshj:0.21.1')
-	compile('org.gitlab4j:gitlab4j-api:4.8.30')
+	compile('org.gitlab4j:gitlab4j-api:4.9.18')
 	compile('com.google.guava:guava:23.0')
 
 	compile('io.springfox:springfox-swagger2:2.8.0')
 	compile('io.springfox:springfox-swagger-ui:2.8.0')
-	compile ('org.projectlombok:lombok:1.18.2')
-	compile ("org.flywaydb:flyway-core:5.2.0")
-	compile ('com.google.protobuf:protobuf-java:3.6.0')
-	compile ('io.grpc:grpc-netty-shaded:1.17.1')
-	compile ('io.grpc:grpc-protobuf:1.17.1')
-	compile ('io.grpc:grpc-stub:1.17.1')
+	compile('org.projectlombok:lombok:1.18.2')
+	compile('org.flywaydb:flyway-core:5.2.0')
+	compile('com.google.protobuf:protobuf-java:3.6.0')
+	compile('io.grpc:grpc-netty-shaded:1.17.1')
+	compile('io.grpc:grpc-protobuf:1.17.1')
+	compile('io.grpc:grpc-stub:1.17.1')
 
+	testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.0')
+	testCompile('org.junit.jupiter:junit-jupiter-params:5.4.0')
+	testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
+	testCompile('org.junit.platform:junit-platform-commons:1.4.0')
+	testCompile("org.mockito:mockito-core:2.24.5")
+	testCompile('org.mockito:mockito-junit-jupiter:2.24.5')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
+
+	integrationTestImplementation('org.junit.jupiter:junit-jupiter-api:5.4.0')
+	integrationTestCompile('org.junit.jupiter:junit-jupiter-params:5.4.0')
+	integrationTestRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
+	integrationTestCompile('org.junit.platform:junit-platform-commons:1.4.0')
+	integrationTestCompile("org.mockito:mockito-core:2.24.5")
+	integrationTestCompile('org.mockito:mockito-junit-jupiter:2.24.5')
+	integrationTestCompile('org.springframework.security:spring-security-test')
 }
 
 test {
+	useJUnitPlatform()
 	systemProperties 'property': 'value'
 	ignoreFailures = true
 	afterTest { desc, result ->
@@ -114,6 +142,7 @@ test {
 }
 
 task integrationTest(type: Test) {
+	useJUnitPlatform()
 	testClassesDirs = sourceSets.integrationTest.output.classesDirs
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
@@ -124,7 +153,7 @@ task integrationTest(type: Test) {
 }
 
 jacoco {
-	toolVersion = "0.8.1"
+	toolVersion = "0.8.4"
 	reportsDir = file("$buildDir/jacoco")
 }
 
@@ -135,7 +164,69 @@ jacocoTestReport {
 		html.destination file("${buildDir}/jacocoHtml")
 	}
 	executionData(test, integrationTest)
+
+	afterEvaluate {
+		classDirectories = files(classDirectories.files.collect {
+			fileTree(dir: it,
+					excludes: [
+							'**/inventory/janitor/**'
+					])
+		})
+	}
 }
+
+jacocoTestCoverageVerification {
+	afterEvaluate {
+		classDirectories = files(classDirectories.files.collect {
+			fileTree(dir: it,
+					excludes: [
+							'**/inventory/janitor/**',
+							'**/exception/**',
+							'**/exceptions/**'
+					])
+		})
+	}
+	executionData(test, integrationTest)
+	violationRules {
+		rule {
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.6
+			}
+		}
+		rule {
+			element = 'PACKAGE'
+			includes = [
+			        'net.geant.nmaas.portal.**'
+			]
+			excludes = [
+					'**.model*'
+			]
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.5
+			}
+		}
+		rule {
+			element = 'PACKAGE'
+			includes = [
+			        'net.geant.nmaas.orchestration.**'
+			]
+			excludes = [
+					'**.model*'
+			]
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.3
+			}
+		}
+	}
+}
+
+integrationTest.finalizedBy(jacocoTestCoverageVerification)
 
 sonarqube {
 	properties {

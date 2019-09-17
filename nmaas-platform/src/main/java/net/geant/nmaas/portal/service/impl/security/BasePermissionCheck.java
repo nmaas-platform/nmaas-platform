@@ -5,7 +5,7 @@ import java.util.Set;
 
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.AclService.Permissions;
-import net.geant.nmaas.portal.service.impl.security.AclService.PermissionCheck;
+import net.geant.nmaas.portal.service.impl.security.AclServiceImpl.PermissionCheck;
 
 public abstract class BasePermissionCheck implements PermissionCheck {
 

@@ -1,0 +1,13 @@
+{
+	"apiUrl": "${API_URL}",
+	"tokenName": "${TOKEN_NAME}",
+	"nmaas": {
+		"globalDomainId": 1
+	},
+	"http": {
+		"timeout": 10000
+	},
+	"captchaKey": "${CAPTCHA_KEY}",
+    "showGitInfo": true,
+    "showChangelog": true
+}

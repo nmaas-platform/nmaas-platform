@@ -1,7 +1,7 @@
 import {AuthService} from '../auth/auth.service';
 import {AppConfigService} from './appconfig.service';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable()
 export class UserDataService {

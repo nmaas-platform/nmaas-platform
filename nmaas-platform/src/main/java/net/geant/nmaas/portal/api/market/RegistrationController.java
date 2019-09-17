@@ -1,20 +1,23 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.google.common.collect.ImmutableMap;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
-import net.geant.nmaas.portal.api.domain.Domain;
+import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.utils.captcha.ValidateCaptcha;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/auth/basic/registration")
 @Log4j2
 public class RegistrationController {
@@ -42,39 +47,29 @@ public class RegistrationController {
 	private ModelMapper modelMapper;
 
 	private ApplicationEventPublisher eventPublisher;
-
-	@Autowired
-	public RegistrationController(UserService usersService,
-								  DomainService domains,
-								  ModelMapper modelMapper,
-								  ApplicationEventPublisher eventPublisher){
-		this.usersService = usersService;
-		this.domains = domains;
-		this.modelMapper = modelMapper;
-		this.eventPublisher = eventPublisher;
-	}
 	
 	@PostMapping
+	@ValidateCaptcha
     @ResponseStatus(HttpStatus.CREATED)
-	public void signup(@RequestBody final Registration registration) {
+	public void signup(@RequestBody final Registration registration, @RequestParam String token) {
 		if(registration == null
 				|| StringUtils.isEmpty(registration.getUsername())
 				|| StringUtils.isEmpty(registration.getPassword())
 				|| StringUtils.isEmpty(registration.getEmail())) {
-			throw new SignupException("REGISTRATION.INVALID_CREDENTIALS_MESSAGE");
+			throw new SignupException("Invalid credentials");
 		}
 
 		if(!registration.getTermsOfUseAccepted()){
-			throw new SignupException("REGISTRATION.TERMS_NOT_ACCEPTED_MESSAGE");
+			throw new SignupException("Terms of Use were not accepted");
 		}
 		if(!registration.getPrivacyPolicyAccepted()){
-			throw new SignupException("REGISTRATION.PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE");
+			throw new SignupException("Privacy policy was not accepted");
 		}
-		net.geant.nmaas.portal.persistent.entity.Domain domain = null;
+		Domain domain = null;
 		if(registration.getDomainId() != null){
-			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE"));
+			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("Domain not found"));
 		}
-		net.geant.nmaas.portal.persistent.entity.Domain globalDomain = domains.getGlobalDomain().orElseThrow(MissingElementException::new);
+		Domain globalDomain = domains.getGlobalDomain().orElseThrow(MissingElementException::new);
 		try {
 			User newUser = usersService.register(registration, globalDomain, domain);
 			log.info(String.format("A new user [%s] with first name [%s], last name [%s] and email [%s] have signed up with domain [%s].",
@@ -88,22 +83,20 @@ public class RegistrationController {
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 			}
 		} catch (ObjectAlreadyExistsException e){
-			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
+			throw new SignupException("User already exists");
 		} catch (MissingElementException e){
-			throw new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE");
+			throw new SignupException("Domain not found");
 		}
 	}
 	
 	@GetMapping("/domains")
 	@Transactional(readOnly=true)
-	public List<Domain> getDomains() {
-		Optional<Domain> globalDomain = domains.getGlobalDomain().map(domain -> modelMapper.map(domain, Domain.class));
-		final Long globalDomainId;
-
-		globalDomainId = globalDomain.map(Domain::getId).orElse(null);
+	public List<DomainView> getDomains() {
+		Optional<DomainView> globalDomain = domains.getGlobalDomain().map(domain -> modelMapper.map(domain, DomainView.class));
+		final Long globalDomainId = globalDomain.map(DomainView::getId).orElseThrow(MissingElementException::new);
 		
 		return domains.getDomains().stream()
-						.map(domain -> modelMapper.map(domain, Domain.class))
+						.map(domain -> modelMapper.map(domain, DomainView.class))
 						.filter(domain -> !domain.getId().equals(globalDomainId))
 						.collect(Collectors.toList());
 		
@@ -112,7 +105,7 @@ public class RegistrationController {
 	private void sendMail(User user){
 		MailAttributes mailAttributes = MailAttributes
 				.builder()
-				.otherAttribute(user.getUsername())
+				.otherAttributes(ImmutableMap.of("newUser", user.getUsername()))
 				.mailType(MailType.REGISTRATION)
 				.build();
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));

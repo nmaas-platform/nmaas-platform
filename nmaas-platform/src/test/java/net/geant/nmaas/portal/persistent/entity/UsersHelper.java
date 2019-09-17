@@ -25,14 +25,15 @@ public class UsersHelper {
 	public final static User DOMAIN2_GUEST = new User(10l, "domain2_guest", true, DOMAIN2, Role.ROLE_GUEST);
 	
 	public final static User GLOBAL_GUEST = new User(11l, "unassigned_guest", true, GLOBAL, Role.ROLE_GUEST);
+	public final static User OPERATOR = new User(12L, "operator", true, GLOBAL, Role.ROLE_OPERATOR);
 
-	public final static List<User> USERS = Arrays.asList(new User[] { ADMIN, TOOL_MANAGER, DOMAIN1_ADMIN, DOMAIN1_USER1, DOMAIN1_USER2, DOMAIN1_GUEST, DOMAIN2_ADMIN, DOMAIN2_USER1, DOMAIN2_USER2, DOMAIN2_GUEST, GLOBAL_GUEST});
-	public final static List<Domain> DOMAINS = Arrays.asList(new Domain[] { GLOBAL, DOMAIN1, DOMAIN2});
+	public final static List<User> USERS = Arrays.asList(ADMIN, TOOL_MANAGER, DOMAIN1_ADMIN, DOMAIN1_USER1, DOMAIN1_USER2, DOMAIN1_GUEST, DOMAIN2_ADMIN, DOMAIN2_USER1, DOMAIN2_USER2, DOMAIN2_GUEST, GLOBAL_GUEST);
+	public final static List<Domain> DOMAINS = Arrays.asList(GLOBAL, DOMAIN1, DOMAIN2);
 		
 	
-	public final static Application APP1 = new Application(1l, "App1");
-	public final static Application APP2 = new Application(2l, "App2");
-	public final static Application APP3 = new Application(3l, "App3");
+	public final static Application APP1 = new Application(1l, "App1","testversion", "owner");
+	public final static Application APP2 = new Application(2l, "App2","testversion", "owner");
+	public final static Application APP3 = new Application(3l, "App3","testversion", "owner");
 	
 	
 	public final static AppInstance DOMAIN1_APP1 = new AppInstance(1l, APP1, "domain1_app1", DOMAIN1, DOMAIN1_USER1);
@@ -40,13 +41,13 @@ public class UsersHelper {
 	public final static AppInstance DOMAIN2_APP1 = new AppInstance(3l, APP2, "domain2_app1", DOMAIN2, DOMAIN2_USER1);
 	public final static AppInstance DOMAIN2_APP2 = new AppInstance(4l, APP3, "domain2_app2", DOMAIN2, DOMAIN2_USER1);
 	
-	List<Application> applications = Arrays.asList(new Application[] { APP1, APP2, APP3} );
-	List<AppInstance> appInstances = Arrays.asList(new AppInstance[] { DOMAIN1_APP1, DOMAIN1_APP2, DOMAIN2_APP1, DOMAIN2_APP2});
+	List<Application> applications = Arrays.asList(APP1, APP2, APP3);
+	List<AppInstance> appInstances = Arrays.asList(DOMAIN1_APP1, DOMAIN1_APP2, DOMAIN2_APP1, DOMAIN2_APP2);
 	
 	
 	public final static Comment COMMENT1 = new Comment(1l, APP1, "app1_comment1", DOMAIN1_USER1);
 	public final static Comment COMMENT2 = new Comment(2l, APP2, "app2_comment1", DOMAIN1_USER1);
 	public final static Comment COMMENT3 = new Comment(3l, APP2, "app2_comment2", DOMAIN2_USER2);
 	
-	List<Comment> comments = Arrays.asList(new Comment[] {COMMENT1, COMMENT2, COMMENT3});
+	List<Comment> comments = Arrays.asList(COMMENT1, COMMENT2, COMMENT3);
 }

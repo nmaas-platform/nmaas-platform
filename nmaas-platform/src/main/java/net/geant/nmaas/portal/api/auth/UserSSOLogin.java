@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.auth;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -22,7 +22,7 @@ public class UserSSOLogin {
 
 	private String username;
 	private long time;
-	private String signature;
+	private String tokenSignature;
 
 	@JsonCreator
 	public UserSSOLogin(@JsonProperty("userid") String userid) {
@@ -33,20 +33,20 @@ public class UserSSOLogin {
 
 		this.username = TextCodec.BASE64.decodeToString(id[0]);
 		this.time = Long.parseLong(id[1]);
-		this.signature = id[2];
+		this.tokenSignature = id[2];
 	}
 
 	public void validate(String key, int timeout) {
-		String signed = TextCodec.BASE64.encode(this.username) + "|" + Long.toString(this.time);
+		String signed = TextCodec.BASE64.encode(this.username) + "|" + this.time;
 
-		byte[] keyBytes = key.getBytes(Charset.forName("US-ASCII"));
+		byte[] keyBytes = key.getBytes(StandardCharsets.US_ASCII);
 		Key keyspec = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
 
 
 		Signer signer = DefaultSignerFactory.INSTANCE.createSigner(SignatureAlgorithm.HS256, keyspec);
-		String signature = DatatypeConverter.printHexBinary(signer.sign(signed.getBytes(Charset.forName("US-ASCII"))));
+		String signature = DatatypeConverter.printHexBinary(signer.sign(signed.getBytes(StandardCharsets.US_ASCII)));
 
-		if(!this.signature.equalsIgnoreCase(signature))
+		if(!this.tokenSignature.equalsIgnoreCase(signature))
 			throw new AuthenticationException("Invalid userID signature");
 
 		long now = (new Date()).getTime() / 1000;

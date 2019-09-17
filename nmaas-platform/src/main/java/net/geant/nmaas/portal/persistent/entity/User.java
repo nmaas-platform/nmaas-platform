@@ -47,6 +47,7 @@ public class User implements Serializable {
 	
 	private String password;
 
+	/* Unique string identifying the user received from the IdP during first SAML login */
 	private String samlToken;
 
 	@Email
@@ -59,6 +60,8 @@ public class User implements Serializable {
 
 	private boolean termsOfUseAccepted;
 	private boolean privacyPolicyAccepted;
+
+	private String selectedLanguage;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
 	private List<UserRole> roles = new ArrayList<>();
@@ -81,9 +84,7 @@ public class User implements Serializable {
 	public User(String username, boolean enabled, String password, Domain domain, List<Role> roles) {
 		this(username, enabled);
 		this.password = password;
-		for (Role role : roles) {
-			this.roles.add(new UserRole(this, domain, role));
-		}	
+		roles.stream().map(r -> new UserRole(this, domain, r)).forEach(this.roles::add);
 	}
 
 	public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted) {
@@ -114,10 +115,6 @@ public class User implements Serializable {
 		this.enabled = enabled;
 		this.password = password;
 		this.roles = roles;
-	}
-
-	public void clearRoles() {
-		this.roles.clear();
 	}
 
 	public void setNewRoles(Set<UserRole> roles) {

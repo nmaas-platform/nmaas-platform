@@ -37,16 +37,14 @@ public class TokenAuthenticationService {
 
 		Set<SimpleGrantedAuthority> authorities = null;
 
-		if (scopes != null && scopes instanceof List<?>) {
+		if (scopes instanceof List<?>) {
 			authorities = new HashSet<>();
 			for (Map<String, String> authority : (List<Map<String, String>>) scopes)
 				for (String role : authority.values())
 					authorities.add(new SimpleGrantedAuthority(role.substring(role.indexOf(":") + 1)));
 		}
 
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
-
-		return authentication;
+		return new UsernamePasswordAuthenticationToken(username, null, authorities);
 	}
 
 }

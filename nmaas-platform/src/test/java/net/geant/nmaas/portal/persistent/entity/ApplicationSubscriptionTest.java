@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,10 +11,10 @@ public class ApplicationSubscriptionTest {
         assertEquals(
                 new ApplicationSubscription(
                         new Domain("name", "codename"),
-                        new Application("name")).getId(),
+                        new Application("name","testversion", "owner")).getId(),
                 new ApplicationSubscription(
                         new Domain("name", "codename"),
-                        new Application("name")).getId());
+                        new Application("name","testversion", "owner")).getId());
     }
 
 }

@@ -1,9 +1,11 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Domain } from '../model/domain';
 import { Registration } from '../model/registration';
 import { AppConfigService } from '../service/appconfig.service';
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import {catchError, debounceTime} from 'rxjs/operators';
 
 @Injectable()
 export class RegistrationService {
@@ -12,21 +14,18 @@ export class RegistrationService {
   
   constructor(private http: HttpClient, private appConfig: AppConfigService) {}
   
-  public register(registration: Registration): Observable<any> {
-    return this.http.post(this.getUrl(), registration, {headers: RegistrationService.headers})
-      .timeout(this.appConfig.getHttpTimeout())
-      .catch(this.handleError);
+  public register(registration: Registration, captchaToken: string): Observable<any> {
+    return this.http.post(this.getUrl()+'?token='+captchaToken, registration, {headers: RegistrationService.headers}).pipe(
+        debounceTime(this.appConfig.getHttpTimeout()), catchError(this.handleError));
   }
 
   public getDomains(): Observable<Domain[]> {
-    return this.http.get<Domain>(this.getUrl() + '/domains')
-      .timeout(this.appConfig.getHttpTimeout())
-      .catch(this.handleError);
+    return this.http.get<Domain[]>(this.getUrl() + '/domains').pipe(
+        debounceTime(this.appConfig.getHttpTimeout()), catchError(this.handleError));
   }
 
   protected handleError(error: Response | any) {
-    const errorMsg = error.error.message;
-    return Observable.throw(errorMsg);
+    return observableThrowError(error.error);
   }
 
   protected getUrl(): string {

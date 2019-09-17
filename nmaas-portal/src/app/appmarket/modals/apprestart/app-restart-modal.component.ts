@@ -31,6 +31,6 @@ export class AppRestartModalComponent implements OnInit {
     }
 
     public restart(){
-        this.appInstanceService.restartAppInstance(this.appInstanceId, this.domainId).subscribe(suc=>this.modal.hide());
+        this.appInstanceService.restartAppInstance(this.appInstanceId).subscribe(() =>this.modal.hide());
     }
 }

@@ -1,97 +1,72 @@
 package net.geant.nmaas.orchestration.tasks;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
-import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
+import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.tasks.app.AppDcnRequestOrVerificationTask;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
-
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class AppDcnRequestOrVerificationTaskTest {
 
-    @Autowired
-    private ApplicationRepository applications;
-    @Autowired
-    private AppDeploymentRepositoryManager deployments;
-    @Autowired
-    private DcnRepositoryManager dcnRepositoryManager;
-    @Autowired
-    private DcnInfoRepository dcnInfoRepository;
-    @Autowired
+    private DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
+    private DcnDeploymentProvidersManager deploy = mock(DcnDeploymentProvidersManager.class);
+    private DcnDeploymentProvider deploymentProvider = mock(DcnDeploymentProvider.class);
+
+
     private AppDcnRequestOrVerificationTask task;
 
     private static final String DOMAIN = "domain";
-    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
     private AppRequestNewOrVerifyExistingDcnEvent event = new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId);
 
-    @Before
+    @BeforeEach
     public void setup() {
-        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES));
-        appDeploymentSpec.setDefaultStorageSpace(20);
-        Application application = new Application("testOxidized");
-        application.setAppDeploymentSpec(appDeploymentSpec);
-        application = applications.save(application);
-        AppDeployment appDeployment = new AppDeployment();
-        appDeployment.setDeploymentId(deploymentId);
-        appDeployment.setApplicationId(Identifier.newInstance(String.valueOf(application.getId())));
-        appDeployment.setDomain(DOMAIN);
-        appDeployment.setDeploymentName(DEPLOYMENT_NAME);
-        deployments.store(appDeployment);
-    }
-
-    @After
-    public void cleanup() throws InvalidDomainException {
-        applications.deleteAll();
-        deployments.removeAll();
-        dcnInfoRepository.deleteAll();
+        when(deployments.loadDomain(deploymentId)).thenReturn("domain");
+        when(deploy.getDcnDeploymentProvider(any())).thenReturn(deploymentProvider);
+        task = new AppDcnRequestOrVerificationTask(deployments, deploy);
     }
 
     @Test
-    public void shouldGenerateNewDcnDeploymentAction() throws InvalidDeploymentIdException, InvalidDomainException {
+    public void shouldGenerateNewDcnDeploymentActionIfDcnNotExists() {
+        when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.NONE);
         ApplicationEvent resultEvent = task.trigger(event);
-        assertThat(resultEvent instanceof DcnVerifyRequestActionEvent, is(true));
-        dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", DOMAIN)));
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.REMOVED));
-        resultEvent = task.trigger(event);
-        assertThat(resultEvent instanceof DcnVerifyRequestActionEvent, is(true));
+        assertThat(resultEvent, is(instanceOf(DcnVerifyRequestActionEvent.class)));
     }
 
     @Test
-    public void shouldNotifyReadyForDeploymentState() throws InvalidDeploymentIdException, InvalidDomainException {
-        dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", DOMAIN)));
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.VERIFIED));
+    public void shouldGenerateNewDcnDeploymentActionIfDcnRemoved() {
+        when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.REMOVED);
         ApplicationEvent resultEvent = task.trigger(event);
-        assertThat(resultEvent instanceof NmServiceDeploymentStateChangeEvent, is(true));
+        assertThat(resultEvent, is(instanceOf(DcnVerifyRequestActionEvent.class)));
+    }
+
+    @Test
+    public void shouldNotifyReadyForDeploymentState() {
+        when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.DEPLOYED);
+        ApplicationEvent resultEvent = task.trigger(event);
+        assertThat(resultEvent, is(instanceOf(NmServiceDeploymentStateChangeEvent.class)));
+    }
+
+    @Test
+    public void shouldDoNothingWhenDcnCurrentlyProcessed() {
+        when(deploymentProvider.checkState("domain")).thenReturn(DcnState.PROCESSED);
+        ApplicationEvent resultEvent = task.trigger(event);
+        assertThat(resultEvent, is(nullValue()));
     }
 
 }

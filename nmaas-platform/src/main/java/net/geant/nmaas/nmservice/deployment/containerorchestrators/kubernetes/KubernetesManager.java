@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
@@ -26,8 +27,9 @@ import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificat
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -136,7 +138,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             if(configFileRepositoryRequired){
                 gitLabManager.validateGitLabInstance();
             }
-            if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
+            if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }
@@ -165,8 +167,8 @@ public class KubernetesManager implements ContainerOrchestrator {
                             service.getDomain(),
                             serviceExternalUrl);
             }
-        } catch (InvalidDeploymentIdException idie) {
-            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (InvalidDeploymentIdException | InvalidConfigurationException ex) {
+            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(ex.getMessage()));
         } catch (KServiceManipulationException e) {
             throw new CouldNotDeployNmServiceException(e.getMessage());
         }
@@ -178,6 +180,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             if (!serviceLifecycleManager.checkServiceDeployed(deploymentId))
                 throw new ContainerCheckFailedException("Service not deployed.");
+            if (!janitorService.checkIfReady(deploymentId, repositoryManager.loadService(deploymentId).getDomain())) {
+                throw new ContainerCheckFailedException("Service is not ready yet.");
+            }
         } catch (KServiceManipulationException e) {
             throw new ContainerCheckFailedException(e.getMessage());
         }
@@ -187,9 +192,11 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) {
         try {
-            serviceLifecycleManager.deleteService(deploymentId);
+            serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            janitorService.deleteConfigMap(deploymentId, service.getDomain());
+            janitorService.deleteConfigMapIfExists(deploymentId, service.getDomain());
+            janitorService.deleteBasicAuthIfExists(deploymentId, service.getDomain());
+            janitorService.deleteTlsIfExists(deploymentId, service.getDomain());
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
             }

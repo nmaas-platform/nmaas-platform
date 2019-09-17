@@ -1,32 +1,41 @@
-  import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
-import {Router, ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Domain} from '../../../model/domain';
 import {DomainService} from '../../../service/domain.service';
-import { BaseComponent } from '../../../shared/common/basecomponent/base.component';
+import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {isUndefined} from 'util';
-import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
+import {NG_VALIDATORS, PatternValidator} from '@angular/forms';
 import {User} from "../../../model";
-import {AppConfigService, UserService} from '../../../service';
-import {Observable} from "rxjs/Observable";
-import {Role, UserRole} from "../../../model/userrole";
+import {UserService} from '../../../service';
+import {Observable, of} from "rxjs";
+import {UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
 import {AuthService} from "../../../auth/auth.service";
 import {ModalComponent} from '../../../shared/modal';
+import {map, shareReplay, take} from 'rxjs/operators';
+import {DcnDeploymentType} from "../../../model/dcndeploymenttype";
+import {CustomerNetwork} from "../../../model/customernetwork";
+import {MinLengthDirective} from "../../../directive/min-length.directive";
+import {MaxLengthDirective} from "../../../directive/max-length.directive";
 
 
 @Component({
   selector: 'app-domain',
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css'],
-  providers: [{provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true}]
+  providers: [{provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true}, {provide: NG_VALIDATORS, useExisting: MinLengthDirective, multi: true}, {provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true}]
 })
 export class DomainComponent extends BaseComponent implements OnInit {
 
   private domainId: number;
   public domain: Domain;
+  public dcnUpdated: boolean = false;
   private users:User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
+  private keys: any = Object.keys(DcnDeploymentType).filter((type) => {
+    return isNaN(Number(type));
+  });
 
   @ViewChild(ModalComponent)
   public modal:ModalComponent;
@@ -58,19 +67,34 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
   protected submit(): void {
     if (!isUndefined(this.domainId)) {
-      this.authService.hasRole('ROLE_SYSTEM_ADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
+      this.updateExistingDomain();
     } else {
-      this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
+      this.domainService.add(this.domain).subscribe(() => this.router.navigate(['admin/domains/']));
     }
     this.domainService.setUpdateRequiredFlag(true);
   }
 
+  public updateExistingDomain(): void {
+    this.authService.hasRole('ROLE_SYSTEM_ADMIN')? this.domainService.update(this.domain).subscribe(() => this.handleDcnConfiguration()) : this.domainService.updateTechDetails(this.domain).subscribe(() => this.handleDcnConfiguration());
+  }
+
+  public handleDcnConfiguration(): void {
+    if(this.dcnUpdated && this.isManual()){
+      this.modal.show();
+    } else {
+      this.router.navigate(['admin/domains/']);
+    }
+  }
+
   public updateDcnConfigured(): void {
-      this.domain.dcnConfigured = !this.domain.dcnConfigured;
-      this.domainService.updateDcnConfigured(this.domain).subscribe((value) => {
+      this.domainService.updateDcnConfigured(this.domain).subscribe(() => {
         this.modal.hide();
-        this.router.navigate(['domains/edit/'+value.id])
+        this.router.navigate(['admin/domains/']);
       });
+  }
+
+  public changeDcnFieldUpdatedFlag() : void {
+      this.dcnUpdated = !this.dcnUpdated;
   }
 
   protected getDomainRoleNames(roles:UserRole[]):UserRole[]{
@@ -84,14 +108,28 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
     protected getDomainName(domainId: number): Observable<string> {
         if (this.domainCache.hasData(domainId)) {
-            return Observable.of(this.domainCache.getData(domainId).codename);
+            return of(this.domainCache.getData(domainId).codename);
         } else {
-            return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.codename})
-                .shareReplay(1).take(1);
+            return this.domainService.getOne(domainId).pipe(
+                map((domain) => {this.domainCache.setData(domainId, domain); return domain.codename}),
+                shareReplay(1),
+                take(1));
         }
     }
 
     protected filterDomainNames(user:User):UserRole[]{
       return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId() ||  role.role.toString() != "ROLE_GUEST");
+    }
+
+    public isManual() : boolean {
+      return this.domain.domainDcnDetails.dcnDeploymentType === 'MANUAL';
+    }
+
+    public removeNetwork(index: number){
+      this.domain.domainDcnDetails.customerNetworks.splice(index, 1);
+    }
+
+    public addNetwork(){
+        this.domain.domainDcnDetails.customerNetworks.push(new CustomerNetwork());
     }
 }

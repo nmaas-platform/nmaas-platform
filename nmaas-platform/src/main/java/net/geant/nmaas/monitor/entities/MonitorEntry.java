@@ -30,7 +30,7 @@ public class MonitorEntry {
     private ServiceType serviceName;
 
     @Enumerated
-    private MonitorStatus status;
+    private MonitorStatus status = MonitorStatus.NOT_CHECKED;
 
     private Date lastCheck;
 
@@ -41,4 +41,7 @@ public class MonitorEntry {
 
     @Enumerated
     private TimeFormat timeFormat;
+
+    @Column(nullable = false)
+    private boolean active;
 }

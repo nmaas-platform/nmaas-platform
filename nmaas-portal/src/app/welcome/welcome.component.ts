@@ -2,13 +2,11 @@ import { AppConfigService } from '../service/appconfig.service';
 import {
     AfterContentChecked,
     AfterViewChecked,
-    AfterViewInit,
     Component,
-    ElementRef,
-    HostListener,
     OnInit,
-    ViewChild
 } from '@angular/core';
+import {Router} from "@angular/router";
+import {ServiceUnavailableService} from "../service-unavailable/service-unavailable.service";
 
 @Component({
   selector: 'app-welcome',
@@ -19,10 +17,16 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   private height = 0;
 
-  constructor(private appConfig: AppConfigService){
+  constructor(private appConfig: AppConfigService, private router: Router,
+              private serviceHealth: ServiceUnavailableService){
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    document.getElementById("global-footer").style.display = "block";
+    await this.serviceHealth.validateServicesAvailability();
+    if(!this.serviceHealth.isServiceAvailable){
+      this.router.navigate(['/service-unavailable']);
+    }
     this.onResize();
   }
 
@@ -36,9 +40,8 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   onResize() {
       this.height = document.getElementById("global-footer").offsetHeight;
-      //console.log(`Footer h: ${this.height}`);
-      let navHeight = document.getElementById("navbar-welcome").offsetHeight;
-      document.getElementById("welcome-container").style.marginBottom = `${this.height + 5}px`;
+      let navHeight = document.getElementById("navbar").offsetHeight;
+      document.getElementById("welcome-container").style.marginBottom = `${this.height}px`;
       document.getElementById("welcome-container").style.marginTop = `${navHeight + 2}px`;
       document.getElementById("login-out").style.maxHeight = `calc(95vh - ${this.height +  navHeight + 10}px)`;
       document.getElementById("login-out").style.paddingTop = `${navHeight}`;

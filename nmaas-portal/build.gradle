@@ -5,7 +5,7 @@ plugins {
 	id "org.sonarqube" version "2.6.2"
 }
 
-apply from: '../reactor/build.gradle'
+version = '1.2.0'
 
 task buildGUI(type: Exec) {
 	println 'Building using Angular CLI'
@@ -33,20 +33,23 @@ task dist(type: Zip) {
 	from 'build/app'
 	baseName project.name
 	version project.version
+	destinationDir(file('build/distributions/'))
+}
 
+task build(type: Task) {
 	if(project.hasProperty('prod'))
-		dependsOn(buildGUIprod)
+		dist.dependsOn(buildGUIprod)
 	else
-		dependsOn(buildGUI)
+		dist.dependsOn(buildGUI)
 }
 
 task testCoverage(type: Exec) {
 	println 'Testing with code coverage analysis'
 
 	if ( OperatingSystem.current().isWindows() ) {
-		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', ' --sourcemaps=false', '/'
+		commandLine 'cmd', '/c', 'ng', 'test', '--browsers', 'ChromeHeadless', '--watch=false', '--code-coverage', '--source-map=false'
 	} else {
-		commandLine 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', ' --sourcemaps=false', '/'
+		commandLine 'ng', 'test', '--browsers', 'ChromeHeadless', '--watch=false', '--code-coverage', '--source-map=false'
 	}
 
 	dependsOn(npm_install)

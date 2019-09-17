@@ -9,35 +9,35 @@
   "templates": [
     {
       "language": "en",
-      "subject": "NMaaS: App instance ready",
+      "subject": "NMaaS: Application instance ready",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "fr",
-      "subject": "NMaaS: App instance ready",
+      "subject": "NMaaS: Application instance ready",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "de",
-      "subject": "NMaaS: App instance ready",
+      "subject": "NMaaS: Application instance ready",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
@@ -46,9 +46,9 @@
       "template": {
         "HEADER": "Drogi ${username},",
         "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest już gotowa. <a href=\"${accessURL}\">Kliknij tutaj aby przejść do instancji.</a>",
-        "SENDER": "Z pozdrowieniami,<br />NMaaS Team",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     }
   ]

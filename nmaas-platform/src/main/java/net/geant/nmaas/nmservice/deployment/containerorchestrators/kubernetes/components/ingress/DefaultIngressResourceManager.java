@@ -3,13 +3,13 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressResourceManager;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * TODO will use an external component (like nmaas-janitor) to create, update and delete ingress resource
@@ -31,8 +31,14 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain, boolean ingressPerDomain) {
-        checkArgument(externalServiceDomain != null && !externalServiceDomain.isEmpty(), "External service domain cannot be null or empty");
+        checkParam(externalServiceDomain);
         return externalUrl(deploymentName.toLowerCase(), domain, externalServiceDomain.toLowerCase(), ingressPerDomain);
+    }
+
+    private void checkParam(String externalServiceDomain){
+        if(StringUtils.isEmpty(externalServiceDomain)){
+            throw new InvalidConfigurationException("External service domain cannot be null or empty");
+        }
     }
 
     private String externalUrl(String deploymentName, String domain, String externalServiceDomain, boolean ingressPerDomain) {

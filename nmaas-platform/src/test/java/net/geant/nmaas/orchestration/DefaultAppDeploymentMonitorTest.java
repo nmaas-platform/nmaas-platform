@@ -1,149 +1,139 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.AppLifecycleState;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.orchestration.tasks.app.AppConfigurationTask;
-import net.geant.nmaas.orchestration.tasks.app.AppDcnRequestOrVerificationTask;
-import net.geant.nmaas.orchestration.tasks.app.AppEnvironmentPreparationTask;
-import net.geant.nmaas.orchestration.tasks.app.AppRemovalTask;
-import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;
-import net.geant.nmaas.orchestration.tasks.app.AppServiceDeploymentTask;
-import net.geant.nmaas.orchestration.tasks.app.AppServiceVerificationTask;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_IN_PROGRESS;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class DefaultAppDeploymentMonitorTest {
 
-    @MockBean
-    private AppRequestVerificationTask appRequestVerificationTask;
-    @MockBean
-    private AppEnvironmentPreparationTask appEnvironmentPreparationTask;
-    @MockBean
-    private AppDcnRequestOrVerificationTask appDcnRequestOrVerificationTask;
-    @MockBean
-    private AppConfigurationTask appConfigurationTask;
-    @MockBean
-    private AppServiceDeploymentTask appServiceDeploymentTask;
-    @MockBean
-    private AppServiceVerificationTask appServiceVerificationTask;
-    @MockBean
-    private AppRemovalTask appRemovalTask;
+    private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
-    @Autowired
-    private AppDeploymentRepositoryManager repository;
-    @Autowired
-    private AppDeploymentMonitor monitor;
-    @Autowired
-    private KubernetesRepositoryManager kubernetesRepositoryManager;
-    @Autowired
-    private ApplicationEventPublisher publisher;
-    @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
+    private DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
+    private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
 
-    private static final String DOMAIN = "domain1";
-    private static final String DEPLOYMENT_NAME = "this-is-example-deployment-name";
-    private static final int DELAY = 200;
-    private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
+    private DefaultAppDeploymentMonitor monitor;
 
-    @Before
-    public void setup() throws InvalidDeploymentIdException {
-        KubernetesNmServiceInfo nmServiceInfo = new KubernetesNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
-        kubernetesRepositoryManager.storeService(nmServiceInfo);
-        AppDeployment appDeployment = AppDeployment.builder()
-                .deploymentId(deploymentId)
-                .domain("domain")
-                .applicationId(Identifier.newInstance(""))
-                .deploymentName("deploymentName")
-                .configFileRepositoryRequired(true)
-                .storageSpace(20)
-                .build();
-        appDeploymentRepository.save(appDeployment);
-        repository.updateState(deploymentId, AppDeploymentState.REQUESTED);
-    }
-
-    @After
-    public void cleanRepository() throws InvalidDeploymentIdException {
-        appDeploymentRepository.deleteAll();
-        kubernetesRepositoryManager.removeService(deploymentId);
+    @BeforeEach
+    public void setup() {
+        monitor = new DefaultAppDeploymentMonitor(repositoryManager, deploy);
     }
 
     @Test
-    public void shouldTransitStatesAndReturnCorrectOverallState() throws InvalidDeploymentIdException, InterruptedException {
-        // request verification
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REQUEST_VERIFIED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.REQUEST_VALIDATED));
-        // environment preparation
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS));
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.ENVIRONMENT_PREPARED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARED));
-        // dcn already exists or was just deployed
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED));
-        // app configuration
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURATION_IN_PROGRESS));
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
-        // app deployment
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.DEPLOYMENT_INITIATED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_DEPLOYMENT_IN_PROGRESS));
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.DEPLOYED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_DEPLOYED));
-        // app deployment verification
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.VERIFIED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED));
-        // app removal
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
+    public void shouldReturnAllDeployments() {
+        when(repositoryManager.loadAll()).thenReturn(Arrays.asList(new AppDeployment(), new AppDeployment()));
+        List<AppDeployment> deployments = monitor.allDeployments();
+        assertThat(deployments.size(), is(2));
     }
 
     @Test
-    public void shouldTransitStatesFromInternalError() throws InvalidDeploymentIdException, InterruptedException {
-        // introduction of Internal Error
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED, ""));
-        Thread.sleep(DELAY);
-        // app removal
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED, ""));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
+    public void shouldReturnState() {
+        when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
+        AppLifecycleState state = monitor.state(deploymentId);
+        assertThat(state, is(APPLICATION_DEPLOYED.lifecycleState()));
     }
 
-    @Test(expected = InvalidAppStateException.class)
-    public void shouldThrowExceptionWhenReadingAccessDetailsInWrongAppState() throws InvalidAppStateException, InvalidDeploymentIdException {
-        repository.updateState(deploymentId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
-        monitor.userAccessDetails(deploymentId);
+    @Test
+    public void shouldReturnPreviousState() {
+        List<AppDeploymentHistory> stubHistory = Arrays.asList(
+                AppDeploymentHistory.builder()
+                        .currentState(APPLICATION_DEPLOYED)
+                        .previousState(APPLICATION_DEPLOYMENT_IN_PROGRESS)
+                        .timestamp(Date.from(Instant.now().minusSeconds(60)))
+                        .build(),
+                AppDeploymentHistory.builder()
+                        .currentState(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS)
+                        .previousState(APPLICATION_DEPLOYED)
+                        .timestamp(Date.from(Instant.now()))
+                        .build()
+                );
+        when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
+        AppLifecycleState state = monitor.previousState(deploymentId);
+        assertThat(state, is(AppLifecycleState.APPLICATION_DEPLOYED));
     }
 
+    @Test
+    public void shouldReturnPreviousStateUnknown() {
+        List<AppDeploymentHistory> stubHistory = Collections.singletonList(
+                AppDeploymentHistory.builder()
+                        .currentState(APPLICATION_DEPLOYED)
+                        .timestamp(Date.from(Instant.now().minusSeconds(60)))
+                        .build()
+        );
+        when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
+        AppLifecycleState state = monitor.previousState(deploymentId);
+        assertThat(state, is(AppLifecycleState.UNKNOWN));
+    }
+
+    @Test
+    public void shouldReturnUserAccessDetails() {
+        when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
+        when(deploy.serviceAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails());
+        AppUiAccessDetails accessDetails = monitor.userAccessDetails(deploymentId);
+        assertThat(accessDetails, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldNotReturnUserAccessDetailsIfNotExist() {
+        assertThrows(InvalidDeploymentIdException.class, () -> {
+            when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
+            when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveNmServiceAccessDetailsException(""));
+            AppUiAccessDetails accessDetails = monitor.userAccessDetails(deploymentId);
+            assertThat(accessDetails, is(notNullValue()));
+        });
+    }
+
+    @Test
+    public void shouldNotReturnUserAccessDetailsIfWrongState() {
+        assertThrows(InvalidAppStateException.class, () -> {
+            when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
+            monitor.userAccessDetails(deploymentId);
+        });
+    }
+
+    @Test
+    public void shouldReturnAppDeploymentHistory() {
+        List<AppDeploymentHistory> stubHistory = Arrays.asList(
+                AppDeploymentHistory.builder()
+                        .currentState(APPLICATION_DEPLOYED)
+                        .previousState(APPLICATION_DEPLOYMENT_IN_PROGRESS)
+                        .timestamp(Date.from(Instant.now().minusSeconds(60)))
+                        .build(),
+                AppDeploymentHistory.builder()
+                        .currentState(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS)
+                        .previousState(APPLICATION_DEPLOYED)
+                        .timestamp(Date.from(Instant.now()))
+                        .build()
+        );
+        when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
+        List<AppDeploymentHistoryView> history = monitor.appDeploymentHistory(deploymentId);
+        assertThat(history.size(), is(2));
+        assertThat(history.stream().map(AppDeploymentHistoryView::getCurrentState).collect(Collectors.toList()),
+                contains(APPLICATION_DEPLOYED.lifecycleState().getUserFriendlyState(),
+                        APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS.lifecycleState().getUserFriendlyState()));
+    }
 }

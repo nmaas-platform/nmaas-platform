@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
 import java.util.List;
@@ -32,5 +32,12 @@ public interface ConfigurationFileTransferProvider {
      * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      */
     void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired);
+
+    /**
+     * Method to delete configuration files
+     *
+     * @param deploymentId unique identifier of service deployment
+     */
+    void removeConfigFiles(Identifier deploymentId);
 
 }

@@ -8,7 +8,7 @@ import {Component, OnInit} from '@angular/core';
 import {ComponentMode} from '../../../shared/common/componentmode';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import {Location} from '@angular/common';
-import {Observable} from 'rxjs/Observable';
+import {Observable, of} from 'rxjs';
 import {isNullOrUndefined} from 'util';
 
 @Component({
@@ -52,7 +52,7 @@ export class UsersListComponent implements OnInit {
     } else if (!isNullOrUndefined(this.domainId) && this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
       users = this.userService.getAll(this.domainId);
     } else {
-      users = Observable.of<User[]>([]);
+      users = of<User[]>([]);
     }
     
     users.subscribe((all) => {
@@ -62,7 +62,7 @@ export class UsersListComponent implements OnInit {
   }
 
   public onUserView($event): void {
-    this.router.navigate(['/users/view/', $event]);
+    this.router.navigate(['/admin/users/view/', $event]);
   }
 
   public onUserDelete($event): void {

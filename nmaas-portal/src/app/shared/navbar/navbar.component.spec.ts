@@ -1,38 +1,132 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NavbarComponent } from './navbar.component';
-import {TranslateModule} from "@ngx-translate/core";
-import {TranslateFakeLoader} from "@ngx-translate/core";
-import {TranslateLoader} from "@ngx-translate/core";
+import {NavbarComponent} from './navbar.component';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
+import {RouterTestingModule} from "@angular/router/testing";
+import {AuthService} from "../../auth/auth.service";
+import {AppConfigService, DomainService} from "../../service";
+import {RolesDirective} from "../../directive/roles.directive";
+import {Component} from "@angular/core";
+import {Content} from "../../model/content";
+import {InternationalizationService} from "../../service/internationalization.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 class MockContentDisplayService{
 
-    public getLanguages(): Observable<string[]>{
-        return Observable.of([]);
-    }
+  public getLanguages(): Observable<string[]>{
+    return of([]);
+  }
+
+  private updateRequiredFlag: boolean = false;
+
+  public getContent(name: string): Observable<Content>{
+    return of();
+  }
+
+  protected getContentUrl(): string{
+    return "";
+  }
+
+  public setUpdateRequiredFlag(flag:boolean){
+    this.updateRequiredFlag = flag;
+  }
+
+  public shouldUpdate(): boolean{
+    return this.updateRequiredFlag;
+  }
+}
+
+export class MockAuthService{
+
+  public loginUsingSsoService: boolean;
+
+  constructor() {}
+
+  private storeToken(token: string): void {
+
+  }
+
+  private getToken(): string {
+    return String("");
+  }
+
+  private removeToken(): void {
+
+  }
+
+  public getUsername(): string {
+    return String("admin")
+  }
+
+  public hasRole(name: string): boolean {
+    return false;
+  }
+
+  public hasDomainRole(domainId: number, name: string): boolean {
+    return false;
+  }
+
+
+  public getRoles(): string[] {
+    return [];
+  }
+
+  public getDomains(): number[] {
+    return [];
+  }
+
+  public logout(): void {
+    this.removeToken();
+  }
+
+  public isLogged(): boolean {
+    const token = this.getToken();
+    return token != "";
+
+  }
+}
+
+@Component({
+  selector: 'nmaas-domain-filter',
+  template: '<p>Mock nmaas-domain-filter Component</p>'
+})
+class MockDomainFilter{}
+
+class MockDomainService{
+
 }
 
 describe('NavbarComponent_Shared', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  let contentService: ContentDisplayService;
+  let languageService: InternationalizationService;
   let spy: any;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NavbarComponent ],
+      declarations: [
+        NavbarComponent,
+        RolesDirective,
+        MockDomainFilter
+      ],
         imports: [
+            HttpClientTestingModule,
             TranslateModule.forRoot({
                 loader: {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader
                 }
-            })
+            }),
+            RouterTestingModule
         ],
         providers: [
-            {provide: ContentDisplayService, useClass: MockContentDisplayService}
+          {provide: ContentDisplayService, useClass: MockContentDisplayService},
+          {provide: AuthService, useClass: MockAuthService},
+          {provide: DomainService, useClass: MockDomainService},
+          InternationalizationService,
+          AppConfigService
         ]
     })
     .compileComponents();
@@ -41,8 +135,8 @@ describe('NavbarComponent_Shared', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
-    contentService = fixture.debugElement.injector.get(ContentDisplayService);
-    spy = spyOn(contentService, 'getLanguages').and.returnValue(Observable.of(['en', 'fr', 'pl']));
+    languageService = fixture.debugElement.injector.get(InternationalizationService);
+    spy = spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     component.useLanguage('en');
     fixture.detectChanges();
   });

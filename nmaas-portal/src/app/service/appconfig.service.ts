@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
+
+
 import {isNullOrUndefined} from "util";
 
 @Injectable()
@@ -22,9 +22,9 @@ export class AppConfigService {
 
     public getApiUrl(): string {
       if(isNullOrUndefined(this.config)){
-          return 'http://localhost/api';
+        return 'http://localhost/api';
       }
-      return this.config.apiUrl || 'http://localhost/api';
+      return this.config.apiUrl;
     }
 
     public getNmaasGlobalDomainId(): number {
@@ -53,5 +53,12 @@ export class AppConfigService {
           return false;
       }
       return this.config.showChangelog || false;
+    }
+
+    public getSiteKey(): string {
+        if(isNullOrUndefined(this.config)){
+            return '';
+        }
+        return this.config.captchaKey || '';
     }
 }

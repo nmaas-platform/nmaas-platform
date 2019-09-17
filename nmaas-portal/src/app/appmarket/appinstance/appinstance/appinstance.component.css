@@ -3,3 +3,39 @@
     margin: 0;
     -moz-appearance:textfield;
 }
+
+#app-progress-info{
+    padding: 10px 10px 10px 10px;
+}
+
+#app-progress-info-sub{
+    padding: 10px 10px 10px 10px;
+    font-style: italic;
+}
+
+.app-progress-info-hidden{
+    visibility: hidden;
+}
+
+.app-progress-info-visible{
+    visibility: visible;
+}
+
+.other-states{
+    padding:15px;
+    margin-bottom:20px;
+    border-bottom: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+    text-align: center;
+}
+
+.alert-danger{
+    padding:15px;
+    margin-bottom:20px;
+    text-align: center;
+    border-bottom: 1px solid #a94442;
+    border-top: 1px solid #a94442;
+    border-radius: 0;
+    background-color: #FFFFFF;
+    background-image: none;
+}

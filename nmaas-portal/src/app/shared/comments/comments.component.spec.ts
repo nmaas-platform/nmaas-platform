@@ -4,10 +4,18 @@ import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-transl
 import {AppConfigService, AppsService} from "../../service";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {Id} from "../../model";
 import {AuthService} from "../../auth/auth.service";
 import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
+import {Component} from "@angular/core";
+import {SingleCommentComponent} from "./single-comment/single-comment.component";
+
+@Component({
+  selector: 'app-single-comment',
+  template: '<p> Mock of single comment</p>'
+})
+class MockSingleCommentComponent {}
 
 describe('CommentComponent',()=>{
    let component:CommentsComponent;
@@ -18,7 +26,7 @@ describe('CommentComponent',()=>{
 
    beforeEach(async (()=>{
        TestBed.configureTestingModule({
-          declarations: [CommentsComponent],
+          declarations: [CommentsComponent, SingleCommentComponent],
           imports:[
               FormsModule,
               HttpClientModule,
@@ -41,7 +49,7 @@ describe('CommentComponent',()=>{
        appsService = fixture.debugElement.injector.get(AppsService);
        authService = fixture.debugElement.injector.get(AuthService);
        spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api/");
-       spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(Observable.of([]));
+       spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(of([]));
        fixture.detectChanges();
    });
 
@@ -62,7 +70,7 @@ describe('CommentComponent',()=>{
    });
 
    it('should add comment', ()=>{
-       spyOn(appsService, 'addAppCommentByUrl').and.returnValue(Observable.of(new Id(6)));
+       spyOn(appsService, 'addAppCommentByUrl').and.returnValue(of(new Id(6)));
        component.newComment.comment = "New";
        component.addComment();
        expect(appsService.addAppCommentByUrl).toHaveBeenCalled();
@@ -75,14 +83,14 @@ describe('CommentComponent',()=>{
    });
 
    it('should add reply', ()=>{
-       spyOn(appsService, 'addAppCommentByUrl').and.returnValue(Observable.of(new Id(7)));
+       spyOn(appsService, 'addAppCommentByUrl').and.returnValue(of(new Id(7)));
        component.newReply.comment = "test";
        component.addReply(7);
        expect(appsService.addAppCommentByUrl).toHaveBeenCalled();
    });
 
    it('should delete comment', ()=>{
-      spyOn(appsService, 'deleteAppCommentByUrl').and.returnValue(Observable.of());
+      spyOn(appsService, 'deleteAppCommentByUrl').and.returnValue(of());
       component.deleteComment(1);
       expect(appsService.deleteAppCommentByUrl).toHaveBeenCalled();
    });

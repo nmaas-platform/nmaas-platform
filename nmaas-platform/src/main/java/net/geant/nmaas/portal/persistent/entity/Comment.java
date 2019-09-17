@@ -54,7 +54,6 @@ public class Comment implements Serializable {
 	private Long createdAt;
 	
 	public Comment(Application application, String comment) {
-		//this.createdAt = new Date().getTime();
 		this.application = application;
 		this.comment = comment;
 	}

@@ -4,7 +4,7 @@ process.env.CHROME_BIN = puppeteer.executablePath();
 module.exports = function (config) {
     config.set({
         basePath: '',
-        frameworks: ['jasmine', '@angular/cli'],
+        frameworks: ['jasmine', '@angular-devkit/build-angular'],
         plugins: [
             require('karma-jasmine'),
             require('karma-babel-preprocessor'),
@@ -12,7 +12,7 @@ module.exports = function (config) {
             require('karma-webpack'),
             require('karma-jasmine-html-reporter'),
             require('karma-coverage-istanbul-reporter'),
-            require('@angular/cli/plugins/karma'),
+            require('@angular-devkit/build-angular/plugins/karma'),
         ],
         customLaunchers: {
             ChromeHeadless: {
@@ -29,26 +29,21 @@ module.exports = function (config) {
             clearContext: false
         },
         files: [
-            { pattern: './src/test.ts', watched: false }
+            
         ],
-        preprocessors: {
-            '**/*.spec.ts': ['@angular/cli'],
-            './src/test.ts': ['@angular/cli']
-        },
+        preprocessors: {},
         mime: {
             'text/x-typescript': ['ts','tsx']
         },
         coverageIstanbulReporter: {
-            reports: [ 'html', 'lcovonly' ],
-            fixWebpackSourcePaths: true
+            dir: require('path').join(__dirname, 'coverage'), reports: [ 'html', 'lcovonly' ],
+            fixWebpackSourcePaths: true,
+            thresholds: {
+                statements: 30
+            }
         },
-        angularCli: {
-            environment: 'dev'
-        },
-        reporters: ['progress', 'coverage-istanbul'],
-//        reporters: config.angularCli && config.angularCli.codeCoverage
-//            ? ['progress', 'coverage-istanbul']
-//            : ['progress', 'kjhtml'],
+        
+        reporters: ['progress'],
         port: 9876,
         colors: true,
         logLevel: config.LOG_WARN,

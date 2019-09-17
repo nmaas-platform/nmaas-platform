@@ -2,10 +2,11 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
@@ -13,34 +14,30 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
+import net.geant.nmaas.orchestration.events.app.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 /**
  * Default {@link AppLifecycleManager} implementation.
  */
 @Service
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Log4j2
+@AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private AppDeploymentRepositoryManager repositoryManager;
@@ -49,13 +46,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private NmServiceInfoRepository nmServiceInfoRepository;
 
-    @Autowired
-    public DefaultAppLifecycleManager(AppDeploymentRepositoryManager repositoryManager,
-                                      ApplicationEventPublisher eventPublisher, NmServiceInfoRepository nmServiceInfoRepository) {
-        this.repositoryManager = repositoryManager;
-        this.eventPublisher = eventPublisher;
-        this.nmServiceInfoRepository = nmServiceInfoRepository;
-    }
+    private JanitorService janitorService;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -81,7 +72,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
-        return repositoryManager.load(generatedId).isPresent();
+        try {
+            repositoryManager.load(generatedId);
+        } catch(InvalidDeploymentIdException e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -95,26 +91,21 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable {
-        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        AppDeployment appDeployment = repositoryManager.load(deploymentId);
         NmServiceInfo serviceInfo = (NmServiceInfo) nmServiceInfoRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No nm service info with provided identifier found."));
         appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
             appDeployment.setStorageSpace(configuration.getStorageSpace());
             serviceInfo.setStorageSpace(configuration.getStorageSpace());
         }
-        if(configuration.getAdditionalParameters() != null && !configuration.getAdditionalParameters().isEmpty()){
-            if(serviceInfo.getAdditionalParameters() == null){
-                serviceInfo.setAdditionalParameters(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getAdditionalParameters())));
-            } else {
-                serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getAdditionalParameters())));
-            }
+        if(isNotEmpty(configuration.getAdditionalParameters())){
+            serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getAdditionalParameters())));
         }
-        if(configuration.getMandatoryParameters() != null && !configuration.getMandatoryParameters().isEmpty()){
-            if(serviceInfo.getAdditionalParameters() == null){
-                serviceInfo.setAdditionalParameters(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
-            } else {
-                serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
-            }
+        if(isNotEmpty(configuration.getMandatoryParameters())){
+            serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
+        }
+        if(isNotEmpty(configuration.getAccessCredentials())){
+            changeBasicAuth(deploymentId, serviceInfo.getDomain(), configuration.getAccessCredentials());
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
@@ -123,7 +114,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private Map<String, String> getMapFromJson(String inputJson){
+    Map<String, String> getMapFromJson(String inputJson){
         try {
             return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {});
         } catch (IOException e) {
@@ -131,7 +122,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
+    Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
             if(entry.getValue() != null && !entry.getValue().isEmpty()){
@@ -141,10 +132,21 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         return newMap;
     }
 
+    private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
+        Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
+        janitorService.createOrReplaceBasicAuth(deploymentId, domain, accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword"));
+    }
+
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+    }
+
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public void removeFailedApplication(Identifier deploymentId){
+        eventPublisher.publishEvent(new AppRemoveFailedActionEvent(this, deploymentId));
     }
 
     @Override
@@ -157,15 +159,15 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
-        if(configuration.getJsonInput() != null && !configuration.getJsonInput().isEmpty()){
-            AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        AppDeployment appDeployment = repositoryManager.load(deploymentId);
+        if(isNotEmpty(configuration.getJsonInput())){
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
             repositoryManager.update(appDeployment);
             eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
-        } else {
-            log.warn("Configuration update failed -> configuration is null or empty");
         }
-
+        if(isNotEmpty(configuration.getAccessCredentials())){
+            changeBasicAuth(deploymentId, appDeployment.getDomain(), configuration.getAccessCredentials());
+        }
     }
 
     @Override

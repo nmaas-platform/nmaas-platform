@@ -9,8 +9,8 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceE
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
 
 /**
  * Defines a set of methods each container orchestrator has to implement in order to support NM service deployment.

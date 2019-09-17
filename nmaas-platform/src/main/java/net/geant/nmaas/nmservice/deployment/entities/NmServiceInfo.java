@@ -1,6 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
-import java.util.Map;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
+import net.geant.nmaas.orchestration.Identifier;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -12,15 +19,9 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract Network Management Service deployment information.
@@ -96,4 +97,12 @@ public abstract class NmServiceInfo {
         this.storageSpace = storageSpace;
         this.additionalParameters = additionalParameters;
     }
+
+    public void addAdditionalParameters(Map<String, String> newAdditionalParameters) {
+        if(additionalParameters == null) {
+            additionalParameters = new HashMap<>();
+        }
+        this.additionalParameters.putAll(newAdditionalParameters);
+    }
+
 }

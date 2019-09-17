@@ -1,0 +1,92 @@
+    <app-navbar></app-navbar>
+    <div class="col-md-offset-1 col-md-10 col-lg-offset-1 col-lg-10 row" style="padding-bottom: 80px; padding-top: 80px;">
+            <div class="col-md-6">
+                <div class="text-center" style="padding-bottom: 15px;">
+                    <h2>{{ 'ABOUT.CHANGELOG_TITLE' | translate }}</h2>
+                    <span>{{ 'ABOUT.CHANGELOG_DESC' | translate }}</span>
+                </div>
+                <div class="panel panel-default" *ngIf="gitInfo">
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group version-row-padding">
+                                <div class="row">
+                                    <label class="control-label col-sm-2">{{'GIT_INFO.VERSION' | translate}}:</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">{{gitInfo?.buildVersion}}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-2">{{'GIT_INFO.BUILD_TIME' | translate}}:</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">{{gitInfo?.buildTime}}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-2">{{'GIT_INFO.LAST_COMMIT' | translate}}:</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">{{gitInfo?.commitName}}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-sm-2">{{'GIT_INFO.BRANCH_NAME' | translate}}:</label>
+                                    <div class="col-sm-10">
+                                        <p class="form-control-static">{{gitInfo?.branchName}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <app-changelog></app-changelog>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center" style="padding-bottom: 15px;">
+                    <h2>{{ 'ABOUT.CONTACT_TITLE' | translate }}</h2>
+                    <span>{{ 'ABOUT.CONTACT_DESC' | translate}}</span>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <form (ngSubmit)="sendMail()" [formGroup]="mailForm">
+                            <div class="form-group form-group-sm col-md-11 col-lg-9" [ngClass]="{'has-error':  mailForm.controls.email.invalid && mailForm.controls.email.dirty,
+                                'has-success': mailForm.controls.email.valid && mailForm.controls.email.dirty}">
+                                <label for="email" class="control-label">{{'CONTACT_FORM.EMAIL' | translate}}:</label>
+                                <input id="email" class="form-control short-input" placeholder="{{'CONTACT_FORM.EMAIL' | translate}}" formControlName="email">
+                            </div>
+                            <div class="col-md-1 col-lg-3"></div>
+                            <div class="form-group form-group-sm col-md-11 col-lg-9" [ngClass]="{'has-error':  mailForm.controls.name.invalid && mailForm.controls.name.dirty,
+                                 'has-success': mailForm.controls.name.valid && mailForm.controls.name.dirty}">
+                                    <label for="name" class="control-label">{{'CONTACT_FORM.NAME' | translate}}:</label>
+                                    <input id="name" class="form-control  short-input" placeholder="{{'CONTACT_FORM.NAME' | translate}}" formControlName="name">
+                            </div>
+                            <div class="col-md-1 col-lg-3"></div>
+                            <div class="form-group form-group-sm col-md-11 col-lg-9" [ngClass]="{'has-error':  mailForm.controls.message.invalid && mailForm.controls.message.dirty,
+                                 'has-success': mailForm.controls.message.valid && mailForm.controls.message.dirty}">
+                                <label for="message" class="control-label">{{'CONTACT_FORM.MESSAGE' | translate}}:</label>
+                                <textarea id="message" class="form-control textarea-contact" placeholder="{{'CONTACT_FORM.MESSAGE_PLACEHOLDER' | translate}}" formControlName="message"></textarea>
+                            </div>
+                            <div class="row" style="padding-left: 15px; padding-right: 15px;">
+                                <div class="form-group form-group-sm col-md-11 col-lg-9">
+                                    <button class="btn btn-primary btn-block"
+                                            [tooltip]="'To send a message you have to provide all above information and confirm that you are not a robot!'"
+                                            [disabled]="!mailForm.valid" type="submit" validate>
+                                        {{'CONTACT_FORM.SUBMIT_BUTTON' | translate}}
+                                    </button>
+                                    <div *ngIf="errorMessage" class="alert alert-danger text-center">
+                                        {{errorMessage}}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <nmaas-modal (click)="modal.hide()">
+        <div class="nmaas-modal-header">{{'CONTACT_FORM.MODAL.TITLE' | translate}}</div>
+        <div class="nmaas-modal-body">
+            {{'CONTACT_FORM.MODAL.MESSAGE' | translate }}
+        </div>
+        <div class="nmaas-modal-footer">
+            <button type="button" class="btn btn-default" (click)="modal.hide()">{{'CONTACT_FORM.MODAL.CLOSE_BUTTON' | translate}}</button>
+        </div>
+    </nmaas-modal>

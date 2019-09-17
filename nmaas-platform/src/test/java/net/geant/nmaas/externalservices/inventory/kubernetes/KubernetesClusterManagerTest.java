@@ -11,10 +11,11 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceC
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.service.DomainService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,13 +36,13 @@ public class KubernetesClusterManagerTest {
     private static final String DOMAIN = "testDomain";
 
     private KubernetesClusterRepository repository = mock(KubernetesClusterRepository.class);
-    private DomainService domainService = mock(DomainService.class);
+    private DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
 
     private KubernetesClusterManager manager;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        manager = new KubernetesClusterManager(repository, null, null, domainService);
+        manager = new KubernetesClusterManager(repository, null, domainTechDetailsRepository);
     }
 
     @Test
@@ -54,29 +56,35 @@ public class KubernetesClusterManagerTest {
         assertThat(network10.getExternalIp().getHostAddress(), not(equalTo(network20.getExternalIp().getHostAddress())));
     }
 
-    @Test(expected = ExternalNetworkNotFoundException.class)
-    public void shouldFailToReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
-        when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
-        manager.reserveExternalNetwork("domain10");
-        manager.reserveExternalNetwork("domain20");
-        manager.reserveExternalNetwork("domain30");
+    @Test
+    public void shouldFailToReserveExternalNetworks() {
+        assertThrows(ExternalNetworkNotFoundException.class, () -> {
+            when(repository.count()).thenReturn(1L);
+            when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
+            manager.reserveExternalNetwork("domain10");
+            manager.reserveExternalNetwork("domain20");
+            manager.reserveExternalNetwork("domain30");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionDuringIngressControllerConfigValidation() throws UnknownHostException {
-        KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
-        ingress1.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
-        ingress1.setControllerChartArchive(null);
-        ingress1.getControllerConfigOption().validate(ingress1);
+    @Test
+    public void shouldThrowExceptionDuringIngressControllerConfigValidation() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
+            ingress1.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
+            ingress1.setControllerChartArchive(null);
+            ingress1.getControllerConfigOption().validate(ingress1);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionDuringIngressResourceConfigValidation() throws UnknownHostException {
-        KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
-        ingress1.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
-        ingress1.setExternalServiceDomain(null);
-        ingress1.getResourceConfigOption().validate(ingress1);
+    @Test
+    public void shouldThrowExceptionDuringIngressResourceConfigValidation() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
+            ingress1.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+            ingress1.setExternalServiceDomain(null);
+            ingress1.getResourceConfigOption().validate(ingress1);
+        });
     }
 
     @Test
@@ -88,29 +96,33 @@ public class KubernetesClusterManagerTest {
         deploymentWithoutStorageClass.setDefaultNamespace("testNamespace");
         deploymentWithoutStorageClass.setDefaultStorageClass(null);
         clusterWithoutStorageClass.setDeployment(deploymentWithoutStorageClass);
-        when(repository.findAll()).thenReturn(Arrays.asList(clusterWithoutStorageClass));
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
+        when(repository.findAll()).thenReturn(Collections.singletonList(clusterWithoutStorageClass));
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
         assertThat(manager.getStorageClass(DOMAIN).isPresent(), is(false));
     }
 
     @Test
     public void shouldReturnProperStorageClassName() throws UnknownHostException {
         when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
+        when(repository.findAll()).thenReturn(Collections.singletonList(simpleKubernetesCluster()));
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
         KCluster cluster = simpleKubernetesCluster();
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        Domain domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", null);
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
+        DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", null, null);
+        Domain domain = new Domain("Domain Name", DOMAIN, false);
+        domain.setDomainTechDetails(domainTechDetails);
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "");
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
+        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "", null);
+        domain.setDomainTechDetails(domainTechDetails);
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "domainStorageClass");
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
+        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "domainStorageClass", null);
+        domain.setDomainTechDetails(domainTechDetails);
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(domain.getDomainTechDetails().getKubernetesStorageClass()));
     }
 

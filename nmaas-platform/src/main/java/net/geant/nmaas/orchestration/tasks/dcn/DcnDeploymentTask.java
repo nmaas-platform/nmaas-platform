@@ -16,7 +16,7 @@ public class DcnDeploymentTask extends BaseDcnTask {
     public void trigger(DcnDeployActionEvent event) {
     	try{
 	        final String domain = event.getRelatedTo();
-	        dcnDeployment.deployDcn(domain);
+	        providersManager.getDcnDeploymentProvider(domain).deployDcn(domain);
     	} catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

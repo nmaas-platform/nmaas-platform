@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
 
+import static com.google.common.base.Preconditions.checkArgument;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
+import org.apache.commons.lang.StringUtils;
 
 @NoArgsConstructor
 @Getter
@@ -51,6 +53,12 @@ public class KubernetesTemplate implements Serializable {
         }
         template.setArchive(toCopy.getArchive());
         return template;
+    }
+
+    public void validate(){
+        checkArgument(chart != null, "Chart cannot not be null");
+        checkArgument(StringUtils.isNotEmpty(chart.getName()), "You must provide chart name");
+        checkArgument(StringUtils.isNotEmpty(chart.getVersion()), "You must provide chart version");
     }
 
 }

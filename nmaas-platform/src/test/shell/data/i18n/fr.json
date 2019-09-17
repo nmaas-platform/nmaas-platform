@@ -3,15 +3,19 @@
     "MARKET": "Applications",
     "SUBSCRIPTIONS": "Applications souscrites",
     "INSTANCES": "Instances",
+    "MANAGEMENT": "Management",
     "DOMAINS": "Domaines",
     "USERS": "Utilisateurs",
     "INVENTORY": "Inventaire",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Réglages",
     "PROFILE": "Profil",
     "LOGOUT": "Déconnexion",
     "LOGIN_REGISTER": "Connexion | S'inscrire",
-    "LANGUAGE": "Language"
+    "LANGUAGE": "Language",
+    "ABOUT": "A propos",
+    "BACK": "Retour à la page d'accueil",
+    "LANGUAGES": "Langages"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -60,10 +64,7 @@
     "FORM_SUBMISSION": "Formulaire d'inscription",
     "THANK_YOU_MESSAGE": "Merci d'avoir soumis le formulaire d'inscription. Votre compte doit être activé par l'administrateur système. Cette étapes peut prendre du temps.",
     "DONE_MESSAGE": "Terminé",
-    "INVALID_CREDENTIALS_MESSAGE": "Informations d'identification non valides.",
-    "UNABLE_TO_REGISTER_MESSAGE": "Impossible d'inscrire un nouvel utilisateur.",
-    "TERMS_NOT_ACCEPTED_MESSAGE": "Les conditions d'utilisation n'ont pas été acceptées.",
-    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "La politique de confidentialité n'a pas été acceptée.",
+    "INVALID_INPUT_MESSAGE": "Invalid input data",
     "USER_ALREADY_EXISTS_MESSAGE": "L'utilisateur existe déjà.",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable.",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Impossible de mettre à jour l'utilisateur récemment enregistré.",
@@ -78,9 +79,7 @@
     "LOGIN_WITH": "Connectez-vous avec ...",
     "LOGIN_FAILURE_MESSAGE": "Informations d'identification non valides",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Il est impossible de se connecter au composant système",
-    "MISSING_TOKEN_MESSAGE": "Jeton manquant.",
-    "UNABLE_TO_GENERATE_MESSAGE": "Impossible de générer de nouveaux jetons"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Il est impossible de se connecter au composant système"
   },
   "CLUSTERS": {
     "TITLE": "Configuration du cluster Kubernetes",
@@ -182,7 +181,8 @@
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
@@ -191,7 +191,7 @@
     "NAME": "Nom",
     "DOMAIN": "Organisation",
     "OWNER": "Propriétaire",
-    "DEPLOYED_AT": "Déployé à",
+    "DEPLOYED_AT": "Temps de déploiement",
     "APPLICATION": "Application",
     "STATE": "Etat",
     "DETAILS_BUTTON": "Détails",
@@ -211,7 +211,8 @@
     "VIEW_SETTINGS_BUTTON": "Afficher les paramètres",
     "CHECK_NOW_BUTTON": "Vérifier maintenant",
     "EDIT_SETTINGS_BUTTON": "Modifier les paramètres",
-    "REMOVE_BUTTON": "Supprimer"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Monitor service details",
@@ -234,15 +235,6 @@
     "LANGUAGE_ENABLED": "Enabled",
     "LANGUAGE_DISABLED": "Disabled"
   },
-  "AUTH": {
-    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "La méthode de connexion SSO n'est pas activée",
-    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Les données de connexion de l'utilisateur SSO reçues sont vides",
-    "MISSING_USERNAME_MESSAGE": "Nom d'utilisateur manquant",
-    "USER_ALREADY_EXITS_MESSAGE": "L'utilisateur existe déjà",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable",
-    "INTERNAL_SERVER_ERROR_MESSAGE": "Erreur interne du serveur",
-    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement."
-  },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
     "NAME": "nom",
@@ -251,6 +243,7 @@
     "ID_IN_DB": "ID dans la base de données",
     "KUBERNETES_NAMESPACE": "\"Namespace\" Kubernetes",
     "KUBERNETES_STORAGE_CLASS": "\"StorageClass\" Kubernetes",
+    "KUBERNETES_INGRESS_CLASS": "Kubernetes Ingress class",
     "DCN_STATUS": "Statut du réseau de supervision",
     "DCN_CONFIGURED": "DCN configuré",
     "DOMAIN_USERS": "Utilisateurs de l'organisation",
@@ -278,7 +271,13 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "L'identifiant doit comporter entre 2 et 8 caractères.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type",
+    "CUSTOMER_NETWORKS": "Réseaux de clients",
+    "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Aucun réseau client spécifié.",
+    "IP_ADDRESS": "IP Adresse",
+    "MASK_LENGTH": "Masque de réseau",
+    "ADD": "Ajouter"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",
@@ -327,7 +326,12 @@
     "NO_COMMENTS_MESSAGE": "Pas de commentaire encore ajouté",
     "COMMENTS_LIST": "Commentaires",
     "REPLY_BUTTON": "Répondre",
-    "PLACEHOLDER": "Ajouter un commentaire ici..."
+    "PLACEHOLDER": "Ajouter un commentaire ici...",
+    "COMMENTS_TODAY": "Aujourd'hui à ",
+    "COMMENTS_YESTERDAY": "Hier à ",
+    "REMOVE": "Supprimer le commentaire",
+    "RESPONSE_TO": "Réponse à",
+    "REMOVED": "Ce commentaire a été supprimé"
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",
@@ -370,8 +374,10 @@
     "GO_TO_APP_BUTTON": "Aller à l'application",
     "UNDEPLOY_BUTTON": "Supprimer",
     "RESTART_BUTTON": "Re-démarrer",
+    "REMOVE_BUTTON": "Supprimer échoué",
     "REDEPLOY_BUTTON": "Re-déployer",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
       "STATE": "Etat",
@@ -393,7 +399,66 @@
     },
     "REQUIRED_FIELDS": "Champs obligatoire",
     "APPLY_CONFIG_BUTTON": "Appliquer la configuration",
-    "DEFAULT_VALUE": "Valeur par défaut"
+    "DEFAULT_VALUE": "Valeur par défaut",
+    "PROGRESS": {
+      "SUBSCRIPTION_VALIDATION": "Validation de l'abonnement",
+      "ENVIRONMENT_CREATION": "Création d'environnement",
+      "SETTING_UP_CONNECTIVITY": "Mise en place de la connectivité",
+      "APPLYING_APP_CONFIGURATION": "Application de la configuration de l'application",
+      "APP_CONTAINER_DEPLOYMENT": "Déploiement de conteneur d'application",
+      "APP_RUNNING": "App en cours d'exécution",
+      "UNDEPLOYING": "Déployer",
+      "REMOVED": "Enlevé",
+      "DEPLOY_REQUESTED": "Déploiement d'instance d'application demandé",
+      "VALIDATION_REQUEST": "Demande de validation en cours",
+      "REQUEST_VALIDATE": "Demande validée",
+      "VALIDATE_FAILED": "La validation de la requête a échoué",
+      "DEPLOY_IN_PROGRESS": "Préparation de l'environnement de déploiement en cours",
+      "ENV_READY": "L'environnement de déploiement est prêt",
+      "ENV_FAILED": "La préparation de l'environnement de déploiement a échoué",
+      "DCN_PROGRESS": "Configuration DCN en cours",
+      "DCN_SUCCESS": "DCN configuré avec succès",
+      "DCN_FAILED": "La configuration DCN a échoué",
+      "APP_CONFIG_PROGRESS": "Configuration de l'application en cours",
+      "APP_CONFIG_SUCCESS": "Application configurée avec succès",
+      "APP_CONFIG_FAILED": "La configuration de l'application a échoué",
+      "APP_DEPLOY_PROGRESS": "Déploiement d'application en cours",
+      "APP_DEPLOY_SUCCESS": "Application déployée avec succès",
+      "APP_DEPLOY_FAILED": "Le déploiement de l'application a échoué",
+      "DEPLOY_VER_PROGRESS": "Vérification du déploiement en cours",
+      "DEPLOY_VER_SUCCESS": "Déploiement vérifié avec succès",
+      "DEPLOY_VER_FAILED": "La vérification du déploiement a échoué",
+      "APP_REMOVE_PROGRESS": "Suppression de l'application en cours",
+      "APP_REMOVE_SUCCESS": "Application supprimée avec succès",
+      "APP_REMOVE_FAILED": "La suppression de l'application a échoué",
+      "APP_RESTART_PROGRESS": "Redémarrage de l'application en cours",
+      "APP_RESTART_SUCCESS": "L'application a été redémarrée avec succès",
+      "APP_RESTART_FAILED": "Le redémarrage de l'application a échoué",
+      "APP_UPDATE_PROGRESS": "Mise à jour de la configuration de l'application en cours",
+      "APP_UPDATE_SUCCESS": "La configuration de l'application a été mise à jour avec succès",
+      "APP_UPDATE_FAILED": "La mise à jour de la configuration de l'application a échoué",
+      "UNKNOWN": "Etat inconnu",
+      "ERROR": "Erreur interne",
+      "FAILED_APPLICATION_REMOVED": "Échec de l'application supprimée",
+      "APP_CONF_REMOVE_PROGRESS": "Suppression de la configuration de l'application en cours",
+      "APP_CONF_REMOVE_SUCCESS": "Configuration de l'application supprimée avec succès",
+      "APP_CONF_REMOVE_ERROR": "La suppression de la configuration de l'application a échoué"
+    },
+    "USER_FRIENDLY": {
+      "REQUESTED": "NMaaS traite votre demande",
+      "VALIDATION": "NMaaS valide les ressources disponibles",
+      "PREPARATION": "NMaaS prépare l'environnement de déploiement de votre application",
+      "CONNECTING": "NMaaS met en place une connectivité sécurisée à votre équipement",
+      "CONFIGURATION_AWAITING": "NMaaS attend la configuration de votre application. Fournissez la configuration initiale à l'aide de l'assistant situé sous l'historique de déploiement",
+      "DEPLOYING": "L'application est en cours de déploiement par NMaaS. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois votre instance prête",
+      "RUNNING": "Votre application est prête. Vous pouvez maintenant accéder à votre application en cliquant sur le bouton ci-dessus",
+      "UNDEPLOYING": "L'application n'est pas déployée. Ce processus peut prendre plusieurs minutes",
+      "DONE": "Application non déployée avec succès",
+      "FAILURE": "",
+      "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
+      "REMOVED": "Application non déployée avec succès"
+    },
+    "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",
@@ -403,11 +468,11 @@
   },
   "SEARCH": "Rechercher",
   "COMPLETE_REGISTRATION": {
-    "HEADER": "Please provide the following information to finalize your registration",
+    "HEADER": "Veuillez fournir les informations suivantes pour finaliser votre inscription",
     "MODAL": {
-      "HEADER": "Registration completed",
-      "BODY": "Your data has been registered in the system. Please login again.",
-      "RETURN_BUTTON": "Return to login page"
+      "HEADER": "Inscription terminée",
+      "BODY": "Vos données ont été enregistrées dans le système. Veuillez vous reconnecter.",
+      "RETURN_BUTTON": "Retour à la page de connexion"
     }
   },
   "TERMS_ACCEPTANCE": {
@@ -427,14 +492,14 @@
     "GO_BACK": "Retourner à la page d'accueil",
     "MODAL": {
       "HEADER": "Veuillez vérifier votre email",
-      "BODY": "Si votre est email valide, vous dervriez recevoir un lien pour ré-initialiser votre mot de passe.",
+      "BODY": "Si votre est email valide, vous dervriez recevoir un lien pour ré-initialiser votre mot de passe. Veuillez noter que vous ne pouvez réinitialiser le mot de passe que pour un compte local.",
       "CLOSE_BUTTON": "Fermer"
     },
     "SITE": {
       "HEADER": "Nouveau mot de passe",
       "PASSWORD": "Mote de passe",
       "CONFIRM_PASSWORD": "Resaisir le mot de passe"
-    },
+    }},
     "UPDATE_CONFIG_MODAL": {
       "HEADER": "Update configuration",
       "SUBMIT_BUTTON": "Submit",
@@ -447,7 +512,233 @@
       "UNAVAILABLE_MESSAGE": "Le service est indisponible. Veuillez réessayer ultérieurement",
       "INVALID_INPUT_MESSAGE": "Données d'entrée non valides",
       "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
-      "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
+      "TERMS_OF_USER_MESSAGE": "Vous devez accepter politique de confidentialité!"
+    },
+  "APPS_MANAGEMENT": {
+    "TITLE": "Applications management",
+    "NAME": "Name",
+    "STATE": "State",
+    "ADD_BUTTON": "Add",
+    "VIEW_BUTTON": "View",
+    "EDIT_BUTTON": "Edit",
+    "CHANGE_STATE_BUTTON": "Change state",
+    "APPROVED_TAB": "Approved",
+    "REJECTED_TAB": "Rejected",
+    "NEW_TAB": "New",
+    "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
+  },
+  "APPS_PREVIEW": {
+    "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
+    "CONFIG_WIZARD_PREVIEW_HEADER": "Configuration wizard preview",
+    "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
+  },
+  "APPS_WIZARD": {
+    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the NMaaS portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in NMaaS.",
+    "ACCEPT_RULES_CHECKBOX": "I read the general instructions above",
+    "NEXT_BUTTON": "Next",
+    "SUBMIT_BUTTON": "Submit",
+    "PREVIOUS_BUTTON": "Previous",
+    "NAME_LABEL": "Name",
+    "VERSION_LABEL": "Version",
+    "LICENSE_LABEL": "License",
+    "LICENSE_URL_LABEL": "License URL",
+    "PROJECT_WEBSITE_LABEL": "Project website",
+    "SOURCE_CODE_LABEL": "Link to source code",
+    "PROJECT_ISSUES_LABEL": "Link to project issues",
+    "TAGS_LABEL": "Select tags for application",
+    "NEW_TAGS_LABEL": "Add new tags for your application",
+    "CHOOSE_LABEL": "Choose",
+    "CANCEL_LABEL": "Cancel",
+    "UPLOAD_LOGO_LABEL": "Upload application logo",
+    "UPLOAD_SCREENSHOTS_LABEL": "Upload application screenshots",
+    "BRIEF_DESCRIPTION_LABEL": "Brief description",
+    "FULL_DESCRIPTION_LABEL": "Full description",
+    "APP_DEPLOYMENT_HEADER": "Application deployment specification",
+    "CHART_NAME_LABEL": "Chart name",
+    "CHART_VERSION_LABEL": "Chart version",
+    "DEFAULT_STORAGE_SPACE_LABEL": "Default storage space (in GB)",
+    "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
+    "REPOSITORY_REQUIRED_LABEL": "Uses autogenerated configuration files",
+    "CONFIG_WIZARD_TEMPLATE_LABEL": "Application configuration wizard template",
+    "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Application update configuration wizard template",
+    "NEW_APP_MODAL": {
+      "HEADER": "New application submitted correctly",
+      "BODY": "Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
+    },
+    "EDIT_APP_MODAL": {
+      "HEADER": "Application edited correctly",
+      "BODY": "Thank you for editing existing application. Your changes should be applied soon",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
+    },
+    "GENERAL_INFO_STEP": "General information",
+    "BASIC_APP_INFO_STEP": "Basic application information",
+    "LOGO_AND_SCREENSHOTS_STEP": "Logo and screenshots",
+    "APP_DESCRIPTIONS_STEP": "Application descriptions",
+    "APP_DEPLOYMENT_SPEC_STEP": "Deployment specification",
+    "CONFIG_TEMPLATES_STEP": "Configuration templates",
+    "SHORT_REVIEW_STEP": "Content review",
+    "NEW_APP_WIZARD_HEADER": "Adding new application",
+    "EDIT_APP_WIZARD_HEADER": "Editing {{app_name}} application",
+    "ACCEPT_RULES_TOOLTIP": "You have to accept the rules!",
+    "NAME_TOOLTIP": "Official application name.",
+    "VERSION_TOOLTIP": "Current release number of application.",
+    "LICENSE_TOOLTIP": "Enter name of license under which application is distributed. Please make sure that application can be used in NMaaS.",
+    "LICENSE_URL_TOOLTIP": "To give user more information about license and permissions to use, provide link to license description.",
+    "PROJECT_WEBSITE_TOOLTIP": "To give user more information about whole project, provide link to project website.",
+    "SOURCE_CODE_TOOLTIP": "Url to project source code e.g. github.com/project.",
+    "PROJECT_ISSUES_TOOLTIP": "To be sure that users can always find way to report bug to team responsible for tool, provide link to issues, e.g. github.com/project/issues.",
+    "TAGS_TOOLTIP": "Please select tags which describes application. This will help users to find applications more effectively.",
+    "NEW_TAGS_TOOLTIP": "You can add tags for your application if existing tags doesn't describe your application well. Type tag name and press enter to add new tag.",
+    "BRIEF_DESCRIPTION_TOOLTIP": "Enter brief description of application. This text will be displayed on NMaaS market page.",
+    "FULL_DESCRIPTION_TOOLTIP": "Enter full description of application. This text will be displayed on application details page.",
+    "CHART_NAME_TOOLTIP": "Enter name of chart, which will be used in NMaaS.",
+    "CHART_VERSION_TOOLTIP": "Enter version of chart, which will be used in NMaaS.",
+    "DEFAULT_STORAGE_SPACE_TOOLTIP": "Enter default storage space (in gigabytes).",
+    "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global NMaaS settings. If you want to use one of them please specify how we should pass that variable.",
+    "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
+    "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
+    "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
+    "CONFIG_FILENAME_LABEL": "Configuration filename",
+    "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
+    "CONFIG_CONTENT_LABEL": "Configuration template",
+    "CONFIG_CONTENT_TOOLTIP":"Enter configuration template. Please be advised that it has to be compatible with FreeMarker Template Language.",
+    "ADD_CONFIG_BUTTON": "Add new template",
+    "APP_CONFIG_TEMPLATES_HEADER": "Application templates configuration",
+    "APP_REQUIRED_DESCRIPTIONS_HEADER": "Required application descriptions",
+    "APP_OPTIONAL_DESCRIPTIONS_HEADER": "Optional application descriptions",
+    "OPTIONAL_LANGS_LABEL": "Select optional languages",
+    "OPTIONAL_LANGS_TOOLTIP": "You can provide additional translations of descriptions into optional languages.",
+    "FIRST_PAGE_HEADER": "General information",
+    "BASIC_APP_INFO_STEP_INFO": "Basic set of information about the application. Application can be filtered by tag. Select an existing tag or create a new one if none is suitable.",
+    "LOGO_AND_SCREENSHOTS_STEP_INFO": "Application logo is displayed in various views in the application. A set of screenshots should give a nice overview of the application's UI.",
+    "APP_DESCRIPTIONS_STEP_INFO": "Brief and full descriptions of the application should provide a basic (limited length) and comprehensive information about the nature and purpose of the application. Descriptions should be provided in as many supported languages as possible.",
+    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Applications offered through NMaaS are deployed in Kubernetes as Helm charts. Basic information about the chart is required with additional set of optional parameters to be passed during the installation process.",
+    "CONFIG_TEMPLATES_STEP_INFO": "NMaaS applications are populated with basic configuration parameters provided by users using a wizard. The list of configuration files (with parameterized content) to be used and loaded by the application at startup should be provided. Those need to be complemented with the definition of the wizard component dedicated for particular application allowing user to provide all necessary parameters used to populate configuration files. ",
+    "BASIC_AUTH_LABEL": "Requires basic authorization",
+    "BASIC_AUTH_TOOLTIP": "You can add basic authorization for your application simply by checking this checkbox.",
+    "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates",
+    "EXPOSE_WEB_UI": "Expose web user interface",
+    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface"
+  },
+  "APP_CHANGE_STATE_MODAL": {
+    "HEADER": "Change state of {{app_name}} in {{app_version}} version",
+    "CURRENT_STATE": "Current state",
+    "NEW_STATE": "New state",
+    "REASON": "Reason",
+    "REASON_PLACEHOLDER": "Please explain your decision",
+    "CANCEL_BUTTON": "Cancel",
+    "CHANGE_STATE_BUTTON": "Change state"
+  },
+  "ABOUT": {
+    "CONTACT_TITLE": "Contactez-nous",
+    "CHANGELOG_TITLE": "Version actuelle et journal des modifications",
+    "CONTACT_DESC": "Vous avez une question? Un problème de fonction? Un problème technique? Envoyez-nous un message et nous nous en occuperons dans les meilleurs délais.",
+    "CHANGELOG_DESC": "Comme vous le savez peut-être, NMaaS continue d'évoluer et nous développons de nouvelles fonctionnalités. Vous trouverez ci-dessous des informations sur les principales modifications apportées aux versions spécifiées."
+  },
+  "CHANGELOG": {
+    "CHANGELOG_LAST": "Dernière version",
+    "NEW": "Nouveau",
+    "REMOVED": "Supprimé",
+    "IMPROVED": "Amélioré",
+    "FIXED": "Fixe"
+  },
+  "CONTACT_FORM": {
+    "TITLE": "Formulaire de contact",
+    "EMAIL": "Votre email",
+    "NAME": "Votre nom",
+    "MESSAGE": "Votre message",
+    "MESSAGE_PLACEHOLDER": "Veuillez saisir votre message ici",
+    "SUBMIT_BUTTON": "Soumettre",
+    "MODAL": {
+      "TITLE": "Le courrier a été envoyé",
+      "MESSAGE": "L'équipe NMaaS répondra bientôt.",
+      "CLOSE_BUTTON": "Fermer"
     }
+  },
+  "LANGUAGE": {
+    "EN_LABEL": "English",
+    "DE_LABEL": "German",
+    "PL_LABEL": "Polish",
+    "FR_LABEL": "French"
+  },
+  "FOOTER": {
+    "NOTICE": "Avis de confidentialité",
+    "CONTACT":  "Contact",
+    "WEBSITE": "Consultez le site web de GÉANT",
+    "TOP": "HAUT"
+  },
+  "FILTER": {
+    "TAGS": "Mots clés",
+    "DOMAIN": "Domaine"
+  },
+  "ENUM": {
+    "ALL": "Tout",
+    "MY": "Mon",
+    "REQUESTED": "Demandé",
+    "VALIDATION": "Validation",
+    "PREPARATION": "Préparation",
+    "CONNECTING": "De liaison",
+    "CONFIGURATION_AWAITING": "En attente de configuration",
+    "DEPLOYING": "L'installation",
+    "RUNNING": "Fonctionnement",
+    "UNDEPLOYING": "Désinstaller",
+    "DONE": "Terminé",
+    "FAILURE": "Échec",
+    "UNKNOWN": "Inconnu",
+    "REMOVED": "Enlevé",
+    "STATE": {
+      "ACTIVE": "Active",
+      "REJECTED": "Rejected",
+      "NEW": "New",
+      "DISABLED": "Disabled",
+      "DELETED": "Deleted"
+    },
+    "USER_ROLES": {
+      "ROLE_SYSTEM_ADMIN": "System admin",
+      "ROLE_OPERATOR": "Operator",
+      "ROLE_USER": "User",
+      "ROLE_TOOL_MANAGER": "Application manager",
+      "ROLE_DOMAIN_ADMIN": "Domain admin",
+      "ROLE_GUEST": "Guest"
+    }
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Précédent",
+    "NEXT": "Suivant",
+    "SCREEN_READER": {
+      "PAGINATION": "Pagination",
+      "PAGE": "page",
+      "CURRENT": "Vous êtes sur la page"
+    }
+  },
+  "LANGUAGE_MANAGEMENT": {
+    "TABLE_KEY": "Clé",
+    "TABLE_VALUE": "Valeur",
+    "ADD_NEW_ITEM_BUTTON": "Ajouter un nouvel élément",
+    "SUBJECT_LABEL": "Sujet",
+    "LABELS_TRANSLATION": "Traductions d'étiquettes",
+    "MAILS_TRANSLATION": "Traductions du courrier",
+    "SUBMIT_BUTTON": "Soumettre",
+    "NOT_SUPPORTED_MESSAGE": "Non pris en charge",
+    "EDIT_BUTTON": "Modifier",
+    "LANGUAGE_DISABLED": "Désactivé",
+    "LANGUAGE_ENABLED": "Activé",
+    "LANGUAGE_ERROR": "Une erreur s'est produite",
+    "MODAL": {
+      "CLOSE_BUTTON": "Fermer",
+      "HEADER": "Header"
+    },
+    "TITLE": "Language mangement",
+    "LANGUAGE": "Language",
+    "RAW_MODE_ENABLED": "Raw mode is enabled",
+    "RAW_MODE_DISABLED": "Raw mode is disabled"
+  },
+  "SERVICE_UNAVAILABLE": {
+    "HEADER": "503 - Service indisponible",
+    "TEXT_FIRST_PART": "Le serveur est actuellement incapable de traiter votre demande en raison d'une surcharge temporaire ou d'un ou plusieurs services de clé actuellement hors ligne.",
+    "TEXT_SECOND_PART": "Nous vous suggérons de faire une courte pause, par exemple pour le café - nous y sommes. Réessayez plus tard!"
   }
 }

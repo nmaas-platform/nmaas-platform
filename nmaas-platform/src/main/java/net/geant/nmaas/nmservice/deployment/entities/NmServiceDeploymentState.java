@@ -21,12 +21,20 @@ public enum NmServiceDeploymentState {
     VERIFICATION_INITIATED(true),
     VERIFIED(true),
     VERIFICATION_FAILED(false),
+    CONFIGURATION_UPDATE_INITIATED(true),
+    CONFIGURATION_UPDATED(true),
+    CONFIGURATION_UPDATE_FAILED(true),
+    CONFIGURATION_REMOVAL_INITIATED(true),
+    CONFIGURATION_REMOVED(true),
+    CONFIGURATION_REMOVAL_FAILED(false),
+    REMOVAL_INITIATED(false),
     REMOVED(false),
     REMOVAL_FAILED(false),
     RESTART_INITIATED(true),
     RESTARTED(true),
     RESTART_FAILED(false),
-    ERROR(false);
+    ERROR(false),
+    FAILED_APPLICATION_REMOVED(false);
 
     private boolean isRunning;
 

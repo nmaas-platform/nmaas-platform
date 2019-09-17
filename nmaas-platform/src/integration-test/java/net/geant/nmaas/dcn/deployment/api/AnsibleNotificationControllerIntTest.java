@@ -6,6 +6,7 @@ import net.geant.nmaas.dcn.deployment.AnsibleDcnDeploymentExecutor;
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookExecutionStateListener;
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
@@ -13,19 +14,19 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,9 +37,9 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ActiveProfiles({"env_kubernetes", "dcn_ansible", "db_memory"})
+@ActiveProfiles({"env_kubernetes", "db_memory"})
 public class AnsibleNotificationControllerIntTest {
 
     @Autowired
@@ -58,7 +59,7 @@ public class AnsibleNotificationControllerIntTest {
     private String statusUpdateJsonContent;
     private MockMvc mvc;
 
-    @Before
+    @BeforeEach
     public void setUp() throws JsonProcessingException {
         AppDeployment appDeployment = AppDeployment.builder()
                 .deploymentId(deploymentId)
@@ -69,7 +70,7 @@ public class AnsibleNotificationControllerIntTest {
                 .storageSpace(20)
                 .build();
         appDeploymentRepository.save(appDeployment);
-        DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
+        DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN, DcnDeploymentType.ANSIBLE);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
         AnsiblePlaybookExecutionStateListener coordinator = new AnsibleDcnDeploymentExecutor(dcnRepositoryManager, applicationEventPublisher, null, null, null);
@@ -77,7 +78,7 @@ public class AnsibleNotificationControllerIntTest {
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationController(coordinator)).build();
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws InvalidDomainException {
         appDeploymentRepository.deleteAll();
         dcnInfoRepository.deleteAll();

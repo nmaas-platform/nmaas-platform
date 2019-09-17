@@ -6,7 +6,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {AppConfigService, ConfigurationService} from '../../../../service';
 import {HttpClient, HttpHandler} from '@angular/common/http';
 import {AppComponent} from '../../../../app.component';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {Configuration} from '../../../../model/configuration';
 import {BaseComponent} from '../../../../shared/common/basecomponent/base.component';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
@@ -21,11 +21,11 @@ class MockConfigurationService {
     }
 
     public getConfiguration(): Observable<Configuration> {
-        return Observable.of<Configuration>();
+        return of<Configuration>();
     }
 
     public updateConfiguration(configuration: Configuration): Observable <any> {
-        return Observable.of<Configuration>();
+        return of<Configuration>();
     }
 }
 

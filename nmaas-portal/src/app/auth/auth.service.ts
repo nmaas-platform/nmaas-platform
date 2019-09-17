@@ -1,14 +1,17 @@
+
+import {throwError as observableThrowError, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/timeout';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
-import {isUndefined} from 'util';
+
+
+
+
+import {isNullOrUndefined, isUndefined} from 'util';
 import {Authority} from '../model/authority';
+import {catchError, debounceTime} from 'rxjs/operators';
 
 export class DomainRoles {
   constructor(private domainId: number, private roles: string[] = []) {
@@ -43,6 +46,13 @@ export class AuthService {
 
   private removeToken(): void {
     localStorage.removeItem(this.appConfig.config.tokenName);
+  }
+
+  public getSelectedLanguage(): string {
+    if(!isNullOrUndefined(localStorage.getItem('lang'))){
+      return localStorage.getItem('lang')
+    }
+    return !isNullOrUndefined(this.getToken()) ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
   }
 
   public getUsername(): string {
@@ -178,9 +188,9 @@ export class AuthService {
   public login(username: string, password: string): Observable<boolean> {
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/basic/login',
-      JSON.stringify({'username': username, 'password': password}), {headers: headers})
-      .timeout(10000)
-      .map((response: Response) => {
+      JSON.stringify({'username': username, 'password': password}), {headers: headers}).pipe(
+      debounceTime(10000),
+      map((response: Response) => {
         console.debug('Login response: ' + response.statusText);
         // login successful if there's a jwt token in the response
         const token = response && response['token'];
@@ -198,8 +208,8 @@ export class AuthService {
           // return false to indicate failed login
           return false;
         }
-      })
-      .catch((error) => {
+      }),
+      catchError((error) => {
         let message : string;
         if(error.error['message'])
           message = error.error['message'];
@@ -207,20 +217,20 @@ export class AuthService {
           message = 'Server error';
 
         console.debug(error['status']+' - '+message);
-        return Observable.throw(message);
-      });
+        return observableThrowError(error);
+      }));
   }
 
   public propagateSSOLogin(userid: string): Observable<boolean> {
-    console.log('propagateSSOLogin');
-    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl);
-    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
-    console.log('propagateSSOLogin ' + userid);
+    console.debug('propagateSSOLogin');
+    console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl);
+    console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
+    console.debug('propagateSSOLogin ' + userid);
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/sso/login',
-      JSON.stringify({'userid': userid}), {headers: headers})
-      .timeout(10000)
-      .map((response: Response) => {
+      JSON.stringify({'userid': userid}), {headers: headers}).pipe(
+      debounceTime(10000),
+      map((response: Response) => {
         console.debug('SSO login response: ' + response);
         // login successful if there's a jwt token in the response
         const token = response && response['token'];
@@ -237,17 +247,11 @@ export class AuthService {
           // return false to indicate failed login
           return false;
         }
-      })
-      .catch((error) => {
-        console.debug('SSO login error: ' + error.error['message']);
-          let message : string;
-          if(error.error['message'])
-              message = error.error['message'];
-          else
-              message = 'Server error';
-
-          return Observable.throw(message);
-      });
+      }),
+      catchError((error) => {
+          console.debug('SSO login error: ' + error.error['message']);
+          return observableThrowError(error);
+      }));
   }
 
   public logout(): void {
@@ -256,6 +260,9 @@ export class AuthService {
 
   public isLogged(): boolean {
     const token = this.getToken();
+    if(token == null){
+      return false;
+    }
     return (token ? !this.jwtHelper.isTokenExpired(token) : false);
   }
 }
