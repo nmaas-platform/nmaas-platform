@@ -82,8 +82,8 @@ captcha.secret=${CAPTCHA_SECRET}
 # ------------------------ #
 # SAML proxy configuration #
 # ------------------------ #
-sso.loginUrl=https://${SP_HOST}
-sso.logoutUrl=https://${SP_HOST}/Shibboleth.sso/Logout
+sso.loginUrl=${SSO_URL_LOGIN}
+sso.logoutUrl=${SSO_URL_LOGOUT}
 sso.timeout=${SSO_TIMEOUT}
 sso.key=${SSO_KEY}
 
