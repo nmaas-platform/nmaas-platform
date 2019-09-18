@@ -1,10 +1,5 @@
 package net.geant.nmaas.portal.api.domain.converters;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
@@ -22,8 +17,14 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class ApplicationToApplicationViewConverter extends AbstractConverter<Application, ApplicationView> {

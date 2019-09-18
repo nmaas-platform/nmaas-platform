@@ -7,8 +7,8 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -59,7 +59,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Override
     @Loggable(LogLevel.INFO)
     public synchronized void createOrUpdateIngressResource(Identifier deploymentId, String domain, String serviceExternalUrl) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("");
     }
 
     /**
@@ -71,7 +71,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Override
     @Loggable(LogLevel.INFO)
     public synchronized void deleteIngressRule(String externalServiceUrl, String domain) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("");
     }
 
     /**
@@ -82,7 +82,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void deleteIngressResource(String domain) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("");
     }
 
 }

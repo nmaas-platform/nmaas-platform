@@ -2,25 +2,24 @@ package net.geant.nmaas.portal.service.impl;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import org.apache.commons.lang.StringUtils;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import net.geant.nmaas.portal.service.ApplicationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import net.geant.nmaas.portal.service.ApplicationService;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service

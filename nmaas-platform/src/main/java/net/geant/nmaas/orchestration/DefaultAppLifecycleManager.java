@@ -14,11 +14,16 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.*;
+import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Default {@link AppLifecycleManager} implementation.
@@ -152,7 +157,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void updateApplication(Identifier deploymentId, Identifier applicationId) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Updating application is currently not supported.");
     }
 
     @Override

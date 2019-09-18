@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress;
 
-import java.util.Arrays;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
@@ -10,7 +9,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.In
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -105,7 +104,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     private void executeDeleteIngressController(String domain) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Deleting ingress controllers is currently not supported.");
     }
 
 }

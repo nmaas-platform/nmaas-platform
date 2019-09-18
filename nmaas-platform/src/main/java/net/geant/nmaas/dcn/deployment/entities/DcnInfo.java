@@ -42,15 +42,6 @@ public class DcnInfo {
     @Enumerated(EnumType.STRING)
     private DcnDeploymentType dcnDeploymentType;
 
-    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
-    private DcnCloudEndpointDetails cloudEndpointDetails;
-
-    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
-    private AnsiblePlaybookVpnConfig playbookForClientSideRouter;
-
-    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
-    private AnsiblePlaybookVpnConfig playbookForCloudSideRouter;
-
     public DcnInfo(DcnSpec spec) {
         this.name = spec.getName();
         this.domain = spec.getDomain();

@@ -1,17 +1,18 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,10 +20,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
 import java.io.Serializable;
-import org.apache.commons.lang.StringUtils;
+import java.time.LocalDateTime;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Entity
 @Table(uniqueConstraints = {
