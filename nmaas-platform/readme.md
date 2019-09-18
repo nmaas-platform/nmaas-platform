@@ -3,7 +3,6 @@
 ##### NMaaS Platform implements mechanisms for on-demand network management applications deployment in the cloud environment and connectivity setup between the managed equipment and the running application.
 
   NM applications are containerized and deployed using [Helm charts](https://helm.sh/).
-  In order to set up a secure connection between the deployed NM application and the monitored/managed customer equipment a set of [Ansible](https://www.ansible.com/) playbooks may be executed (if network configuration automation is desired).
   Platform exposes a REST API consumed by the NMaaS Portal GUI.
 
 ### Technologies
@@ -11,7 +10,6 @@
  * Java 8
  * Spring 5
  * Spring Boot (2.1.5)
- * spotify:docker-client (8.8.0)
  * freemarker (2.3.28)
  * Google Guava (23.0)
  * Swagger (2.8.0)
@@ -45,13 +43,6 @@
 #### Complete deployment environment setup for Kubernetes
 ---
   A dedicated Helm chart has been developed to ease the NMaaS installation within the Kubernetes cluster. This way both the supported network management applications and the NMaaS core components can be installed within a Kubernetes cluster. For more information please contact the [NMaaS Team](mailto:nmaas-team@lists.geant.org).
-
-#### Automated DCN setup with Ansible
----
-  Platform supports execution of Ansible playbooks to setup a dedicated DCN network. Current solution is tailored to configure L3 VPNs in Juniper-based networks.
-  In order to enable automatic DCN configuration:
-  + Deploy a dedicated machine running Docker for executing Ansible playbooks inside a dedicated container.
-  + Pull Docker images on that machine that allow for Ansible playbook execution.
 
 ### Building and uploading Platform Docker image
 ---

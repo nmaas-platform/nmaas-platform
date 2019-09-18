@@ -1,9 +1,5 @@
 package net.geant.nmaas.portal.api.domain.converters;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
@@ -15,8 +11,13 @@ import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ApplicationViewToApplicationConverter extends AbstractConverter<ApplicationView, Application> {
 
@@ -30,8 +31,6 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         app.setAppConfigurationSpec(getAppConfigurationSpec(source));
         return app;
     }
-
-
 
     private AppConfigurationSpec getAppConfigurationSpec(ApplicationView source){
         return new AppConfigurationSpec(null, source.getAppConfigurationSpec().isConfigFileRepositoryRequired(), getConfigFileTemplates(source));

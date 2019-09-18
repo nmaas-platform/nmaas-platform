@@ -2,13 +2,6 @@ export class ClusterInfo {
     public id: number;
 }
 
-export class ClusterAttachPoint {
-    public id: number;
-    public routerId: string="";
-    public routerInterfaceName: string="";
-    public routerName: string="";
-}
-
 class ClusterDeployment {
     public smtpServerHostname: string="";
     public smtpServerPort: string="";
@@ -46,13 +39,11 @@ class ClusterIngress {
 }
 
 export class Cluster {
-    public attachPoint: ClusterAttachPoint;
     public deployment: ClusterDeployment;
     public externalNetworks: ClusterExtNetwork[];
     public id: number;
     public ingress: ClusterIngress;
     constructor(){
-        this.attachPoint = new ClusterAttachPoint();
         this.deployment = new ClusterDeployment();
         this.externalNetworks = [];
         this.ingress = new ClusterIngress();

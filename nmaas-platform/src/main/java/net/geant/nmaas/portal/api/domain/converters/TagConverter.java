@@ -1,10 +1,9 @@
 package net.geant.nmaas.portal.api.domain.converters;
 
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.AbstractConverter;
-
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.AbstractConverter;
 
 public class TagConverter extends AbstractConverter<String, Tag>{
 
