@@ -15,6 +15,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     @Override
     @Loggable(LogLevel.INFO)
     public void restartService(Identifier deploymentId) {
-        throw new NotImplementedException("Service restart is current not supported.");
+        throw new NotImplementedException("Service restart is currently not supported.");
     }
+
 }
