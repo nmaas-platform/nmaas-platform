@@ -18,7 +18,7 @@ public class ShibbolethConfigManagerTest {
 
     private static final Integer TIMEOUT = 15;
 
-    private static final String KEY = "jovana_shared_secret_key";
+    private static final String KEY = "sso_shared_secret_key";
 
     @BeforeEach
     public void setup(){

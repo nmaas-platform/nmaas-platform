@@ -1,13 +1,14 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import java.util.Map;
 
 /**
  * Network Management Service deployment information for application deployed on Kubernetes cluster.
@@ -32,13 +33,13 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
         super();
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, KubernetesTemplate kubernetesTemplate) {
-        super(deploymentId, deploymentName, domain, storageSpace);
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, String descriptiveDeploymentId, KubernetesTemplate kubernetesTemplate) {
+        super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId);
         this.kubernetesTemplate = kubernetesTemplate;
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Map<String, String> additionalParameters, KubernetesTemplate kubernetesTemplate) {
-        super(deploymentId, deploymentName, domain, storageSpace, additionalParameters);
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, String descriptiveDeploymentId, Map<String, String> additionalParameters, KubernetesTemplate kubernetesTemplate) {
+        super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId, additionalParameters);
         this.kubernetesTemplate = kubernetesTemplate;
     }
 }
