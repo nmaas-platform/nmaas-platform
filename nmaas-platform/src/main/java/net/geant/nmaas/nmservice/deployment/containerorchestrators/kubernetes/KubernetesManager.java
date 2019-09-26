@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
@@ -24,11 +23,11 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -80,6 +79,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     appDeployment.getDeploymentName(),
                     appDeployment.getDomain(),
                     appDeployment.getStorageSpace(),
+                    createDescriptiveDeploymentId(appDeployment.getDomain(), appDeployment.getAppName(), appDeployment.getInstanceId()),
                     createAdditionalParametersMap(appDeploymentSpec.getDeployParameters()),
                     KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
             );
@@ -89,9 +89,14 @@ public class KubernetesManager implements ContainerOrchestrator {
                     appDeployment.getDeploymentName(),
                     appDeployment.getDomain(),
                     appDeployment.getStorageSpace(),
+                    createDescriptiveDeploymentId(appDeployment.getDomain(), appDeployment.getAppName(), appDeployment.getInstanceId()),
                     KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
             );
         }
+    }
+
+    private String createDescriptiveDeploymentId(String domain, String appName, Long id) {
+        return String.join("-", domain, appName, String.valueOf(id));
     }
 
     private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters){
