@@ -45,24 +45,24 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Loggable(LogLevel.DEBUG)
     public void deployService(Identifier deploymentId) {
         try {
-            installHelmChart(deploymentId, repositoryManager.loadService(deploymentId));
+            installHelmChart(repositoryManager.loadService(deploymentId));
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 
-    private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) {
+    private void installHelmChart(KubernetesNmServiceInfo serviceInfo) {
         helmCommandExecutor.executeHelmInstallCommand(
                 namespaceService.namespace(serviceInfo.getDomain()),
-                deploymentId,
+                serviceInfo.getDescriptiveDeploymentId(),
                 serviceInfo.getKubernetesTemplate(),
-                createArgumentsMap(deploymentId, serviceInfo)
+                createArgumentsMap(serviceInfo)
         );
     }
 
-    private Map<String, String> createArgumentsMap(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo){
+    private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo){
         Map<String, String> arguments = new HashMap<>();
-        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
+        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, serviceInfo.getDescriptiveDeploymentId());
         deploymentManager.getStorageClass(serviceInfo.getDomain()).ifPresent(s -> arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, s));
         if(deploymentManager.getForceDedicatedWorkers()){
             arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
@@ -105,7 +105,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Loggable(LogLevel.DEBUG)
     public boolean checkServiceDeployed(Identifier deploymentId) {
         try {
-            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(deploymentId);
+            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(repositoryManager.loadDescriptiveDeploymentId(deploymentId));
             return status.equals(HelmPackageStatus.DEPLOYED);
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
@@ -117,7 +117,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     public void deleteServiceIfExists(Identifier deploymentId) {
         try {
             if(checkIfServiceExists(deploymentId)){
-                helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+                helmCommandExecutor.executeHelmDeleteCommand(repositoryManager.loadDescriptiveDeploymentId(deploymentId));
             }
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
@@ -135,7 +135,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         try {
             helmCommandExecutor.executeHelmUpgradeCommand(
-                    deploymentId,
+                    serviceInfo.getDescriptiveDeploymentId(),
                     template.getArchive()
             );
         } catch (CommandExecutionException cee) {

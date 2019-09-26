@@ -140,7 +140,7 @@ public class AppInstanceController extends AppBaseController {
         AppDeploymentSpec appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class);
         AppDeployment appDeployment = AppDeployment.builder()
                 .domain(domain.getCodename())
-                .deploymentId(Identifier.newInstance(appInstance.getApplication().getId()))
+                .instanceId(appInstance.getId())
                 .applicationId(Identifier.newInstance(appInstance.getApplication().getId()))
                 .deploymentName(appInstance.getName())
                 .configFileRepositoryRequired(app.getAppConfigurationSpec().isConfigFileRepositoryRequired())

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AppInstanceRequest {
+
 	private Long applicationId;
 	
 	private String name;

@@ -49,4 +49,4 @@
     
 ### Building and uploading Portal docker image
 ---
-  In order to build a Portal Docker image first alter the *build_and_publish.sh* with custom REPOSITORY, PACKAGE and TAG values and execute *build_and_publish.sh* to automatically build and publish nmaas-portal image to selected Docker repository.
+  In order to build a Portal Docker image first alter the *build_and_publish.sh* with custom REPOSITORY, PACKAGE and TAG values and execute *build_and_publish.sh* to automatically build and publish *nmaas-portal* image to selected Docker repository.

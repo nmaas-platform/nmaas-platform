@@ -2,7 +2,7 @@
 
 ##### NMaaS Platform implements mechanisms for on-demand network management applications deployment in the cloud environment and connectivity setup between the managed equipment and the running application.
 
-  NM applications are containerized and can be deployed using [Helm charts](https://helm.sh/).
+  NM applications are containerized and deployed using [Helm charts](https://helm.sh/).
   In order to set up a secure connection between the deployed NM application and the monitored/managed customer equipment a set of [Ansible](https://www.ansible.com/) playbooks may be executed (if network configuration automation is desired).
   Platform exposes a REST API consumed by the NMaaS Portal GUI.
 
@@ -10,7 +10,7 @@
 ---
  * Java 8
  * Spring 5
- * Spring Boot (2.1.1)
+ * Spring Boot (2.1.5)
  * spotify:docker-client (8.8.0)
  * freemarker (2.3.28)
  * Google Guava (23.0)
@@ -18,6 +18,7 @@
  * Log4j2 (2.11.1)
  * Lombok (1.18.2)
  * Gitlab4j (4.9.18)
+ * Flyway (5.2.0)
 
 ### Prerequisites
 ---
@@ -52,6 +53,6 @@
   + Deploy a dedicated machine running Docker for executing Ansible playbooks inside a dedicated container.
   + Pull Docker images on that machine that allow for Ansible playbook execution.
 
-### Building and uploading Platform docker image
+### Building and uploading Platform Docker image
 ---
-  In order to build a Platform Docker image first alter the *build_and_publish.sh* with custom REPOSITORY, PACKAGE and TAG values and execute *build_and_publish.sh* to automatically build and publish nmaas-platform image to selected Docker repository.
+  In order to build a Platform Docker image first alter the *build_and_publish.sh* with custom REPOSITORY, PACKAGE and TAG values and execute *build_and_publish.sh* to automatically build and publish *nmaas-platform* image to selected Docker repository.

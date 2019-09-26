@@ -32,15 +32,15 @@ import net.geant.nmaas.orchestration.Identifier;
 public class AppInstance extends DomainAware implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 	
 	String name;
 	
-	@ManyToOne(fetch=FetchType.LAZY, optional=false)
+	@ManyToOne(fetch = FetchType.LAZY, optional=false)
 	Application application;
 	
-	@Basic(fetch=FetchType.LAZY)
+	@Basic(fetch = FetchType.LAZY)
 	@Lob
 	@Type(type = "text")
 	String configuration;
@@ -50,7 +50,7 @@ public class AppInstance extends DomainAware implements Serializable {
 	Long createdAt;
 	
 	@CreatedBy
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private User owner;
 	
 	@Basic
@@ -62,7 +62,7 @@ public class AppInstance extends DomainAware implements Serializable {
 		this.name = name;
 	}
 	
-	protected AppInstance(Long id, Application application, Domain domain, String name) {
+	public AppInstance(Long id, Application application, Domain domain, String name) {
 		this(application, domain, name);
 		this.id = id;
 	}
