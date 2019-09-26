@@ -93,6 +93,8 @@ public class AppDeployment {
 
     private String appName;
 
+    private Long instanceId;
+
     public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState){
         history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
     }

@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
@@ -33,13 +32,8 @@ public class HelmCommandExecutor {
     @Value("${helm.enableTls}")
     Boolean enableTls;
 
-
     public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         executeInstall(kubernetesNamespace, releaseName, template, arguments);
-    }
-
-    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, KubernetesTemplate template, Map<String, String> arguments) {
-        executeInstall(kubernetesNamespace, deploymentId.value(), template, arguments);
     }
 
     private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
@@ -85,9 +79,9 @@ public class HelmCommandExecutor {
         return helmRepositoryName + "/" + chartName;
     }
 
-    void executeHelmDeleteCommand(Identifier deploymentId) {
+    void executeHelmDeleteCommand(String releaseName) {
         try {
-            HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value(), enableTls);
+            HelmDeleteCommand command = HelmDeleteCommand.command(releaseName, enableTls);
             singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
@@ -95,11 +89,11 @@ public class HelmCommandExecutor {
         }
     }
 
-    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) {
-        return executeHelmStatusCommand(deploymentId.value());
+    HelmPackageStatus executeHelmStatusCommand(String releaseName) {
+        return executeStatus(releaseName);
     }
 
-    private HelmPackageStatus executeHelmStatusCommand(String releaseName) {
+    private HelmPackageStatus executeStatus(String releaseName) {
         try {
             HelmStatusCommand command = HelmStatusCommand.command(releaseName, enableTls);
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
@@ -128,12 +122,12 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName) {
+    void executeHelmUpgradeCommand(String releaseName, String chartArchiveName) {
         try {
             HelmUpgradeCommand command;
             if (useLocalCharts) {
                 command = HelmUpgradeCommand.commandWithArchive(
-                        deploymentId.value(),
+                        releaseName,
                         constructChartArchivePath(chartArchiveName),
                         enableTls
                 );
