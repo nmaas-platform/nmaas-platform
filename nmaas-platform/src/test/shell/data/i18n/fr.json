@@ -76,7 +76,7 @@
     "PASSWORD": "Mot de passe",
     "PASSWORD_REQUIRED_MESSAGE": "Le mot de passe est requis",
     "LOGIN": "S'identifier",
-    "LOGIN_WITH": "Connectez-vous avec ...",
+    "LOGIN_WITH": "Login Federation",
     "LOGIN_FAILURE_MESSAGE": "Informations d'identification non valides",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement.",
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Il est impossible de se connecter au composant système"
