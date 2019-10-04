@@ -257,6 +257,40 @@
                             ]
                         },
                         {
+                            "label": "Additional",
+                            "key": "additionalParametersTab",
+                            "components": [
+                                {
+                                    "label": "additionalParameters",
+                                    "hideLabel": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 2,
+                                    "key": "additionalParameters",
+                                    "components": [
+                                        {
+                                            "label": "Retention data size",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "defaultValue": "18GB",
+                                            "inputFormat": "plain",
+                                            "key": "server#extraArgs#storage#tsdb#retention#size",
+                                            "tab": 2
+                                        },
+                                        {
+                                            "label": "Retention period",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "defaultValue": "15d",
+                                            "inputFormat": "plain",
+                                            "key": "server#extraArgs#storage#tsdb#retention#time",
+                                            "tab": 2
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
                             "label": "Advanced",
                             "key": "advancedTab",
                             "components": [
