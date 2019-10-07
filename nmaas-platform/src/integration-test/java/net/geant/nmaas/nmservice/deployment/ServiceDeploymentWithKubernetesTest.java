@@ -60,7 +60,7 @@ class ServiceDeploymentWithKubernetesTest {
 		assertThat(info.getDeploymentName(), equalTo(appDeployment.getDeploymentName()));
 		assertThat(info.getDomain(), equalTo(appDeployment.getDomain()));
 		assertThat(info.getStorageSpace(), equalTo(appDeployment.getStorageSpace()));
-		assertThat(info.getDescriptiveDeploymentId(), equalTo("domain-appName-100"));
+		assertThat(info.getDescriptiveDeploymentId().getValue(), equalTo("domain-appName-100"));
 	}
 
 	@Test
