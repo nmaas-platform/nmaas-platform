@@ -95,8 +95,10 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private String createDescriptiveDeploymentId(String domain, String appName, Long id) {
-        return String.join("-", domain, appName, String.valueOf(id));
+    private Identifier createDescriptiveDeploymentId(String domain, String appName, Long id) {
+        return Identifier.newInstance(
+                String.join("-", domain, appName, String.valueOf(id))
+        );
     }
 
     private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters){
