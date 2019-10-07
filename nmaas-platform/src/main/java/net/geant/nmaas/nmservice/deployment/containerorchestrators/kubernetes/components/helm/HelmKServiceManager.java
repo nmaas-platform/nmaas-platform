@@ -54,7 +54,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     private void installHelmChart(KubernetesNmServiceInfo serviceInfo) {
         helmCommandExecutor.executeHelmInstallCommand(
                 namespaceService.namespace(serviceInfo.getDomain()),
-                serviceInfo.getDescriptiveDeploymentId(),
+                serviceInfo.getDescriptiveDeploymentId().getValue(),
                 serviceInfo.getKubernetesTemplate(),
                 createArgumentsMap(serviceInfo)
         );
@@ -62,7 +62,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo){
         Map<String, String> arguments = new HashMap<>();
-        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, serviceInfo.getDescriptiveDeploymentId());
+        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, serviceInfo.getDescriptiveDeploymentId().getValue());
         deploymentManager.getStorageClass(serviceInfo.getDomain()).ifPresent(s -> arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, s));
         if(deploymentManager.getForceDedicatedWorkers()){
             arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
@@ -135,7 +135,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         try {
             helmCommandExecutor.executeHelmUpgradeCommand(
-                    serviceInfo.getDescriptiveDeploymentId(),
+                    serviceInfo.getDescriptiveDeploymentId().getValue(),
                     template.getArchive()
             );
         } catch (CommandExecutionException cee) {
