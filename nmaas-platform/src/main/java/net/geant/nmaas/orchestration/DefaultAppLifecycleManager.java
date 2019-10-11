@@ -110,7 +110,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
         }
         if(isNotEmpty(configuration.getAccessCredentials())){
-            changeBasicAuth(deploymentId, serviceInfo.getDomain(), configuration.getAccessCredentials());
+            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), serviceInfo.getDomain(), configuration.getAccessCredentials());
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
