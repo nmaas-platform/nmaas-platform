@@ -60,30 +60,31 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
      * Information on how to access the repository is stored in {@link GitLabProject} object.
      *
      * @param deploymentId unique identifier of service deployment
+     * @param descriptiveDeploymentId human readable identifier of the deployment
      * @param configIds list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
      * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in database
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
-    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
+    public void transferConfigFiles(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         if(configFileRepositoryRequired){
             GitLabProject gitLabProject = loadGitlabProject(deploymentId);
             if(gitLabProject == null){
-                createProjectAndUploadFiles(deploymentId, configIds);
+                createProjectAndUploadFiles(deploymentId, descriptiveDeploymentId, configIds);
             } else{
                 updateConfigFiles(gitLabProject, configIds);
             }
         }
     }
 
-    private void createProjectAndUploadFiles(Identifier deploymentId, List<String> configIds){
+    private void createProjectAndUploadFiles(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> configIds){
         String domain = serviceRepositoryManager.loadDomain(deploymentId);
         String gitLabPassword = generateRandomPassword();
-        Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
+        Integer gitLabUserId = createUser(domain, descriptiveDeploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
-        GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
+        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, descriptiveDeploymentId);
+        GitLabProject project = project(descriptiveDeploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
         serviceRepositoryManager.updateGitLabProject(deploymentId, project);
         uploadConfigFilesToProject(gitLabProjectId, configIds);
     }
