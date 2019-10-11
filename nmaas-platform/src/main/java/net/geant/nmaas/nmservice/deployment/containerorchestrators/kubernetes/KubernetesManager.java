@@ -181,7 +181,8 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             if (!serviceLifecycleManager.checkServiceDeployed(deploymentId))
                 throw new ContainerCheckFailedException("Service not deployed.");
-            if (!janitorService.checkIfReady(deploymentId, repositoryManager.loadService(deploymentId).getDomain())) {
+            KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+            if (!janitorService.checkIfReady(service.getDescriptiveDeploymentId(), service.getDomain())) {
                 throw new ContainerCheckFailedException("Service is not ready yet.");
             }
         } catch (KServiceManipulationException e) {
@@ -195,9 +196,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            janitorService.deleteConfigMapIfExists(deploymentId, service.getDomain());
-            janitorService.deleteBasicAuthIfExists(deploymentId, service.getDomain());
-            janitorService.deleteTlsIfExists(deploymentId, service.getDomain());
+            janitorService.deleteConfigMapIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteBasicAuthIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteTlsIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
             }

@@ -26,16 +26,6 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     private JanitorService janitorService;
     private ApplicationEventPublisher eventPublisher;
 
-    /**
-     * Triggers configuration files preparation and transfer to destination directory.
-     *
-     * @param deploymentId unique identifier of service deployment
-     * @param descriptiveDeploymentId human readable identifier of the deployment
-     * @param applicationId identifier of the application / service
-     * @param appConfiguration application instance configuration data provided by the user
-     * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
-     * @throws NmServiceConfigurationFailedException if any error condition occurs
-     */
     @Override
     @Loggable(LogLevel.INFO)
     public void configureNmService(Identifier deploymentId, Identifier descriptiveDeploymentId, Identifier applicationId, AppConfiguration appConfiguration,
@@ -56,14 +46,14 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration,
+    public void updateNmService(Identifier deploymentId, Identifier descriptiveDeploymentId, Identifier applicationId, AppConfiguration appConfiguration,
                                 String domain, boolean configFileRepositoryRequired){
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileUploader.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired) {
-                janitorService.createOrReplaceConfigMap(deploymentId, domain);
+                janitorService.createOrReplaceConfigMap(descriptiveDeploymentId, domain);
             }
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_UPDATED);
         } catch(Exception e){
