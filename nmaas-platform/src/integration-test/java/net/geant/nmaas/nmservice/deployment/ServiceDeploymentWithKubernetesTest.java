@@ -78,6 +78,7 @@ class ServiceDeploymentWithKubernetesTest {
 		return AppDeployment.builder()
 				.instanceId(100L)
 				.deploymentId(deploymentId)
+				.descriptiveDeploymentId(new Identifier("domain-appname-100"))
 				.domain("domain")
 				.applicationId(Identifier.newInstance("appId"))
 				.deploymentName("deploy")
