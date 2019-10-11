@@ -147,6 +147,7 @@ public class AppInstanceController extends AppBaseController {
                 .storageSpace(appDeploymentSpec.getDefaultStorageSpace())
                 .owner(principal.getName())
                 .appName(app.getName())
+                .descriptiveDeploymentId(createDescriptiveDeploymentId(domain.getCodename(), app.getName(), appInstance.getId()))
                 .build();
 
         Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
@@ -155,6 +156,12 @@ public class AppInstanceController extends AppBaseController {
         instances.update(appInstance);
 
         return new Id(appInstance.getId());
+    }
+
+    private Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
+        return Identifier.newInstance(
+                String.join("-", domain, appName, String.valueOf(appInstanceNumber)).toLowerCase()
+        );
     }
 
     @PostMapping("/{appInstanceId}/redeploy")

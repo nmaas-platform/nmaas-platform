@@ -79,7 +79,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     appDeployment.getDeploymentName(),
                     appDeployment.getDomain(),
                     appDeployment.getStorageSpace(),
-                    createDescriptiveDeploymentId(appDeployment.getDomain(), appDeployment.getAppName(), appDeployment.getInstanceId()),
+                    appDeployment.getDescriptiveDeploymentId(),
                     createAdditionalParametersMap(appDeploymentSpec.getDeployParameters()),
                     KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
             );
@@ -89,16 +89,10 @@ public class KubernetesManager implements ContainerOrchestrator {
                     appDeployment.getDeploymentName(),
                     appDeployment.getDomain(),
                     appDeployment.getStorageSpace(),
-                    createDescriptiveDeploymentId(appDeployment.getDomain(), appDeployment.getAppName(), appDeployment.getInstanceId()),
+                    appDeployment.getDescriptiveDeploymentId(),
                     KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
             );
         }
-    }
-
-    private Identifier createDescriptiveDeploymentId(String domain, String appName, Long id) {
-        return Identifier.newInstance(
-                String.join("-", domain, appName, String.valueOf(id)).toLowerCase()
-        );
     }
 
     private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters){
