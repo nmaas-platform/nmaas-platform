@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -31,6 +31,7 @@ public class AppConfigurationTask {
             final AppDeployment appDeployment = repositoryManager.load(deploymentId);
             serviceConfiguration.configureNmService(
                     deploymentId,
+                    appDeployment.getDescriptiveDeploymentId(),
                     appDeployment.getApplicationId(),
                     appDeployment.getConfiguration(),
                     appDeployment.getDomain(),
