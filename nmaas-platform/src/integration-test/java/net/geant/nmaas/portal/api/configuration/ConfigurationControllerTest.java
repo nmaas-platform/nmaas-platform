@@ -6,7 +6,7 @@ import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
-import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     private ConfigurationManager configManager;
 
     @Autowired
-    private InternationalizationRepository intRepo;
+    private InternationalizationSimpleRepository intRepo;
 
     private User user;
 
@@ -47,7 +47,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
         mvc = createMVC();
         user = UsersHelper.ADMIN;
         if(intRepo.findAll().stream().noneMatch(lang -> lang.getLanguage().equalsIgnoreCase("en"))){
-            intRepo.save(Internationalization.builder().enabled(true).language("en").content("{\"content\":\"content\"}").build());
+            intRepo.save(new Internationalization(1L, "en", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
         }
     }
 
