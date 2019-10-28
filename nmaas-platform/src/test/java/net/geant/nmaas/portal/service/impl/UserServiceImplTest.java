@@ -255,7 +255,7 @@ public class UserServiceImplTest {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false));
         User user = userService.register(registration, domain, null);
         verify(userRepository, times(1)).save(any());
         assertEquals(1, user.getRoles().size());
@@ -266,7 +266,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain(){
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false));
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain globalDomain = new Domain("GLOBAL", "GLOBAL");
         Domain domain = new Domain("Non Global", "NONGLO");
@@ -301,7 +301,7 @@ public class UserServiceImplTest {
     public void shouldRegisterSSOUser(){
         UserSSOLogin ssoUser = new UserSSOLogin("test|1234|id");
         Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false));
         User user = userService.register(ssoUser, domain);
         verify(userRepository, times(1)).save(any());
         assertEquals(user.getSamlToken(), ssoUser.getUsername());
