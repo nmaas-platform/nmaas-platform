@@ -274,7 +274,7 @@
                                             "input": true,
                                             "defaultValue": "18GB",
                                             "inputFormat": "plain",
-                                            "key": "server#extraArgs#storage#tsdb#retention#size",
+                                            "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#size\"",
                                             "tab": 2
                                         },
                                         {
@@ -283,7 +283,7 @@
                                             "input": true,
                                             "defaultValue": "15d",
                                             "inputFormat": "plain",
-                                            "key": "server#extraArgs#storage#tsdb#retention#time",
+                                            "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#time\"",
                                             "tab": 2
                                         }
                                     ]
