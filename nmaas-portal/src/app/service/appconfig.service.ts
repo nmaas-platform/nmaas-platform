@@ -56,9 +56,13 @@ export class AppConfigService {
     }
 
     public getSiteKey(): string {
-        if(isNullOrUndefined(this.config)){
+        if (isNullOrUndefined(this.config)) {
             return '';
         }
         return this.config.captchaKey || '';
     }
+
+    public getTestInstanceModalKey(): string {
+        return 'test_instance_modal';
+}
 }
