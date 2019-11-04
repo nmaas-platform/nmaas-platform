@@ -277,7 +277,10 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Aucun réseau client spécifié.",
     "IP_ADDRESS": "IP Adresse",
     "MASK_LENGTH": "Masque de réseau",
-    "ADD": "Ajouter"
+    "ADD": "Ajouter",
+    "APP_STATUS": "Statut de l'application",
+    "APP_NAME": "Nom de l'application",
+    "APP_ENABLED": "Activé"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",

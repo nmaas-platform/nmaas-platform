@@ -279,7 +279,10 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Es sind keine Kundennetzwerke angegeben.",
     "IP_ADDRESS": "IP Adresse",
     "MASK_LENGTH": "Netzmaske",
-    "ADD": "Hinzufügen"
+    "ADD": "Hinzufügen",
+    "APP_STATUS": "Applikationsstatus",
+    "APP_NAME": "Anwendungsname",
+    "APP_ENABLED": "Aktiviert"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS Versionsinformation",

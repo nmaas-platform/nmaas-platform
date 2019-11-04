@@ -279,7 +279,10 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "There are no customer networks specified.",
     "IP_ADDRESS": "IP Address",
     "MASK_LENGTH": "Mask length",
-    "ADD": "Add"
+    "ADD": "Add",
+    "APP_STATUS": "Application status",
+    "APP_NAME": "Application name",
+    "APP_ENABLED": "Enabled"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",

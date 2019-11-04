@@ -1,22 +1,18 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 
@@ -52,6 +48,10 @@ public class Domain implements Serializable {
 	
 	boolean active;
 
+	/** List of applications with status per domain **/
+	@ElementCollection(fetch = FetchType.LAZY)
+	private List<ApplicationStatePerDomain> applicationStatePerDomain;
+
 	public Domain(String name, String codename) {
 		super();
 		this.name = name;
@@ -73,6 +73,17 @@ public class Domain implements Serializable {
 		this(id, name, codename);
 		this.active = active;
 	}
+
+	public void addApplicationState(ApplicationBase applicationBase){
+	    this.addApplicationState(applicationBase, true);
+    }
+
+	public void addApplicationState(ApplicationBase applicationBase, boolean enabled){
+	    if(!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
+                .map(ApplicationBase::getId).collect(Collectors.toList()).contains(applicationBase.getId())){
+	        this.applicationStatePerDomain.add(new ApplicationStatePerDomain(applicationBase, enabled));
+        }
+    }
 
 }
 

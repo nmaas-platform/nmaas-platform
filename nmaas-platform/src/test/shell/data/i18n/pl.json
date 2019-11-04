@@ -277,7 +277,10 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Nie wyszczególniono sieci klienta.",
     "IP_ADDRESS": "Adres IP",
     "MASK_LENGTH": "Długość maski",
-    "ADD": "Dodaj"
+    "ADD": "Dodaj",
+    "APP_STATUS": "Status aplikacji",
+    "APP_NAME": "Nazwa aplikacji",
+    "APP_ENABLED": "Dostępna"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
