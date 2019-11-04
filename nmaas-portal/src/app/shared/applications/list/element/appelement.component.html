@@ -19,7 +19,7 @@
 				<a [routerLink]="['/apps', app.id]" class="btn btn-primary"
 				   role="button">{{'APPLICATIONS.DETAILS_BUTTON' | translate}}</a>
 				<a href="#" class="btn btn-success disabled pull-right" *ngIf="selected">{{'APPLICATIONS.SUBSCRIBED_BUTTON' | translate}}</a>
-				<button class="btn btn-default pull-right" *ngIf="router.url == '/subscriptions' && showDeployButton()" (click)="modal.show()">{{'INSTALL_MODAL.DEPLOY_BUTTON' | translate}}</button>
+				<button class="btn btn-default pull-right" *ngIf="router.url == '/subscriptions' && showDeployButton()" [disabled]="!isApplicationEnabledInDomain()" (click)="modal.show()">{{'INSTALL_MODAL.DEPLOY_BUTTON' | translate}}</button>
 			</p>
 		</div>
 	</div>

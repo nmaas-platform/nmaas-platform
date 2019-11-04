@@ -2,65 +2,90 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Domain} from '../../../model/domain';
-import {DomainService} from '../../../service/domain.service';
+import {DomainService} from '../../../service';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {isUndefined} from 'util';
 import {NG_VALIDATORS, PatternValidator} from '@angular/forms';
-import {User} from "../../../model";
-import {UserService} from '../../../service';
-import {Observable, of} from "rxjs";
-import {UserRole} from "../../../model/userrole";
-import {CacheService} from "../../../service/cache.service";
-import {AuthService} from "../../../auth/auth.service";
+import {Application, User} from '../../../model';
+import {AppsService, UserService} from '../../../service';
+import {Observable, of} from 'rxjs';
+import {UserRole} from '../../../model/userrole';
+import {CacheService} from '../../../service';
+import {AuthService} from '../../../auth/auth.service';
 import {ModalComponent} from '../../../shared/modal';
 import {map, shareReplay, take} from 'rxjs/operators';
-import {DcnDeploymentType} from "../../../model/dcndeploymenttype";
-import {CustomerNetwork} from "../../../model/customernetwork";
-import {MinLengthDirective} from "../../../directive/min-length.directive";
-import {MaxLengthDirective} from "../../../directive/max-length.directive";
+import {DcnDeploymentType} from '../../../model/dcndeploymenttype';
+import {CustomerNetwork} from '../../../model/customernetwork';
+import {MinLengthDirective} from '../../../directive/min-length.directive';
+import {MaxLengthDirective} from '../../../directive/max-length.directive';
+import {DomainApplicationStatePerDomain} from '../../../model/domainapplicationstateperdomain';
+
+class ApplicationStatus {
+    public id: number;
+    public application: Application;
+    public enabled: boolean;
+}
 
 
 @Component({
   selector: 'app-domain',
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css'],
-  providers: [{provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true}, {provide: NG_VALIDATORS, useExisting: MinLengthDirective, multi: true}, {provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true}]
+  providers: [
+      {provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true},
+      {provide: NG_VALIDATORS, useExisting: MinLengthDirective, multi: true},
+      {provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true}
+      ]
 })
+
+
 export class DomainComponent extends BaseComponent implements OnInit {
 
   private domainId: number;
   public domain: Domain;
-  public dcnUpdated: boolean = false;
-  private users:User[];
+  public dcnUpdated = false;
+  private users: User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
   private keys: any = Object.keys(DcnDeploymentType).filter((type) => {
     return isNaN(Number(type));
   });
 
-  @ViewChild(ModalComponent)
-  public modal:ModalComponent;
+    public appStatusList: ApplicationStatus[] = [];
 
-    constructor(public domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService: AuthService) {
+
+    @ViewChild(ModalComponent)
+    public modal: ModalComponent;
+
+    constructor(public domainService: DomainService,
+                protected userService: UserService,
+                private router: Router,
+                private route: ActivatedRoute,
+                private location: Location,
+                private authService: AuthService,
+                protected appsService: AppsService) {
       super();
     }
 
   ngOnInit() {
-      this.modal.setModalType("warning");
+      this.modal.setModalType('warning');
       this.modal.setStatusOfIcons(true);
-    this.mode = this.getMode(this.route);
-    this.route.params.subscribe(params => {
+      this.mode = this.getMode(this.route);
+      this.route.params.subscribe(params => {
       if (!isUndefined(params['id'])) {
         this.domainId = +params['id'];
-        this.domainService.getOne(this.domainId).subscribe((domain: Domain) => this.domain = domain);
+        this.domainService.getOne(this.domainId).subscribe((domain: Domain) => {
+            this.domain = domain;
+            this.getListOfApplicationsWithStatus();
+        });
       } else {
         this.domain = new Domain();
         this.domain.active = true;
       }
-      if(!this.authService.hasRole("ROLE_OPERATOR")){
+      if (!this.authService.hasRole('ROLE_OPERATOR')) {
           let users: Observable<User[]>;
           users = this.userService.getAll(this.domainId);
 
-          users.subscribe((all)=>{this.users = all;});
+          users.subscribe((all) => {this.users = all; });
       }
     });
   }
@@ -75,11 +100,13 @@ export class DomainComponent extends BaseComponent implements OnInit {
   }
 
   public updateExistingDomain(): void {
-    this.authService.hasRole('ROLE_SYSTEM_ADMIN')? this.domainService.update(this.domain).subscribe(() => this.handleDcnConfiguration()) : this.domainService.updateTechDetails(this.domain).subscribe(() => this.handleDcnConfiguration());
+    this.authService.hasRole('ROLE_SYSTEM_ADMIN') ? this.domainService.update(this.domain).subscribe(
+        () => this.handleDcnConfiguration()) : this.domainService.updateTechDetails(this.domain).subscribe(
+            () => this.handleDcnConfiguration());
   }
 
   public handleDcnConfiguration(): void {
-    if(this.dcnUpdated && this.isManual()){
+    if (this.dcnUpdated && this.isManual()) {
       this.modal.show();
     } else {
       this.router.navigate(['admin/domains/']);
@@ -93,14 +120,14 @@ export class DomainComponent extends BaseComponent implements OnInit {
       });
   }
 
-  public changeDcnFieldUpdatedFlag() : void {
+  public changeDcnFieldUpdatedFlag(): void {
       this.dcnUpdated = !this.dcnUpdated;
   }
 
-  protected getDomainRoleNames(roles:UserRole[]):UserRole[]{
-    let domainRoles:UserRole[] = [];
+  protected getDomainRoleNames(roles: UserRole[]): UserRole[] {
+    const domainRoles: UserRole[] = [];
     roles.forEach((value => {
-      if(value.domainId == this.domainId){
+      if (value.domainId === this.domainId) {
         domainRoles.push(value);
       }}));
     return domainRoles;
@@ -117,19 +144,48 @@ export class DomainComponent extends BaseComponent implements OnInit {
         }
     }
 
-    protected filterDomainNames(user:User):UserRole[]{
-      return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId() ||  role.role.toString() != "ROLE_GUEST");
+    protected filterDomainNames(user: User): UserRole[] {
+      return user.roles.filter(role => role.domainId !== this.domainService.getGlobalDomainId() ||  role.role.toString() !== 'ROLE_GUEST');
     }
 
-    public isManual() : boolean {
+    public isManual(): boolean {
       return this.domain.domainDcnDetails.dcnDeploymentType === 'MANUAL';
     }
 
-    public removeNetwork(index: number){
+    public removeNetwork(index: number) {
       this.domain.domainDcnDetails.customerNetworks.splice(index, 1);
     }
 
-    public addNetwork(){
+    public addNetwork() {
         this.domain.domainDcnDetails.customerNetworks.push(new CustomerNetwork());
+    }
+
+    public getListOfApplicationsWithStatus() {
+        this.appsService.getAllApps().subscribe(
+            data => {
+                data.sort((a: Application, b: Application): number => {
+                    return a.id - b.id;
+                });
+                this.domain.applicationStatePerDomain.sort(
+                    (a: DomainApplicationStatePerDomain, b: DomainApplicationStatePerDomain): number => {
+                   return (a.applicationBaseId - b.applicationBaseId);
+                });
+                if (data.length === this.domain.applicationStatePerDomain.length) {
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].id === this.domain.applicationStatePerDomain[i].applicationBaseId) {
+                            this.appStatusList.push({
+                                id: data[i].id,
+                                application: data[i],
+                                enabled: this.domain.applicationStatePerDomain[i].enabled
+                            });
+                        } else {
+                            console.warn('Not matching applications')
+                        }
+                    }
+                }
+            }, error => {
+                console.error(error);
+            }
+        )
     }
 }

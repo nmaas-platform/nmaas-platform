@@ -32,7 +32,7 @@ export class DomainRoles {
 
 @Injectable()
 export class AuthService {
-  public loginUsingSsoService:boolean;
+  public loginUsingSsoService: boolean;
 
   constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService) {}
 
@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   public getSelectedLanguage(): string {
-    if(!isNullOrUndefined(localStorage.getItem('lang'))){
+    if (!isNullOrUndefined(localStorage.getItem('lang'))) {
       return localStorage.getItem('lang')
     }
     return !isNullOrUndefined(this.getToken()) ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
@@ -99,7 +99,7 @@ export class AuthService {
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
-      
+
       const domainRole: string[] = authorities[index].authority.split(':', 2);
       if (domainRole.length !== 2) {
         continue;
@@ -131,7 +131,7 @@ export class AuthService {
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
-      
+
       const domainRole: string[] = authorities[index].authority.split(':', 2);
       if (domainRole.length !== 2) {
         continue;
@@ -154,12 +154,12 @@ export class AuthService {
     }
 
     const authorities: Authority[] = this.jwtHelper.decodeToken(token).scopes;
-    
+
     for (let index = 0; index < authorities.length; index++) {
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
-      
+
       const domainIdStr: string[] = authorities[index].authority.split(':', 1);
       if (domainIdStr.length === 0) {
         continue;
@@ -210,13 +210,14 @@ export class AuthService {
         }
       }),
       catchError((error) => {
-        let message : string;
-        if(error.error['message'])
+        let message: string;
+        if (error.error['message']) {
           message = error.error['message'];
-        else
+        } else {
           message = 'Server error';
+        }
 
-        console.debug(error['status']+' - '+message);
+        console.debug(error['status'] + ' - ' + message);
         return observableThrowError(error);
       }));
   }
@@ -260,7 +261,7 @@ export class AuthService {
 
   public isLogged(): boolean {
     const token = this.getToken();
-    if(token == null){
+    if (token == null) {
       return false;
     }
     return (token ? !this.jwtHelper.isTokenExpired(token) : false);

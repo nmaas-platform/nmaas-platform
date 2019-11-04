@@ -45,7 +45,7 @@
 					<button class="btn btn-primary" [disabled]="!active" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
 				<div *ngIf="subscribed" class="btn-group pull-right">
-					<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
+					<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" [disabled]="!isApplicationEnabledInDomain()" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
 					<button *ngIf="isSubscriptionAllowed()" class="btn btn-danger" (click)="unsubscribe()">{{'APPLICATIONS.UNSUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
 
