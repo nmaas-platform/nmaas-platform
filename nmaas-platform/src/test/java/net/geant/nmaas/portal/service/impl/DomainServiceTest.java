@@ -2,7 +2,9 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import java.util.Collections;
+
+import java.util.*;
+
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -17,6 +19,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
@@ -28,10 +31,6 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -60,11 +59,17 @@ public class DomainServiceTest {
 
     DomainService domainService;
 
+    ApplicationBaseRepository applicationBaseRepository = mock(ApplicationBaseRepository.class);
+
     @BeforeEach
     public void setup(){
         validator = new DefaultCodenameValidator("[a-z-]{2,8}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, domainTechDetailsRepository, userService, userRoleRepo, dcnRepositoryManager, new ModelMapper());
+        domainService = new DomainServiceImpl(validator,
+                namespaceValidator, domainRepository,
+                domainTechDetailsRepository, userService,
+                userRoleRepo, dcnRepositoryManager,
+                new ModelMapper(), applicationBaseRepository);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -157,6 +162,7 @@ public class DomainServiceTest {
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(1L, name, codename, true);
+        domain.setApplicationStatePerDomain(new ArrayList<>());
         domain.setDomainTechDetails(new DomainTechDetails());
         this.domainService.updateDomain(domain);
         verify(domainRepository, times(1)).save(domain);

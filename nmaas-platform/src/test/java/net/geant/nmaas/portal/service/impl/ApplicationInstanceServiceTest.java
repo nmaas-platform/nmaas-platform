@@ -2,10 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
@@ -145,6 +142,7 @@ public class ApplicationInstanceServiceTest {
     public void createMethodShouldThrowApplicationSubscriptionNotActiveExceptionDueToMissingSubscriptionOrSubscriptionNotActive(){
         assertThrows(ApplicationSubscriptionNotActiveException.class, () -> {
             Domain domain = new Domain((long) 1, "test", "test");
+            domain.setApplicationStatePerDomain(new ArrayList<>());
             Application application = new Application((long) 1, "test", "testVersion", "admin");
             when(validator.valid(anyString())).thenReturn(true);
             List<AppInstance> appInstances = new ArrayList<>();
@@ -157,6 +155,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void createMethodShouldCorrectlyReturnAppInstanceObject(){
         Domain domain = new Domain((long) 1, "test", "test");
+        domain.setApplicationStatePerDomain(new ArrayList<>());
         Application application = new Application((long) 1,"test","testversion","owner");
         when(validator.valid(anyString())).thenReturn(true);
         List<AppInstance> appInstances = new ArrayList<>();
@@ -180,6 +179,9 @@ public class ApplicationInstanceServiceTest {
         when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test");
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
+        List<ApplicationStatePerDomain> stateList = new ArrayList<>();
+        domain.setApplicationStatePerDomain(stateList);
+        //when(domain.getApplicationStatePerDomain()).thenReturn(stateList);
         AppInstance appInstanceResult = applicationInstanceService.create((long)0, (long)0, "test");
         assertNotNull(appInstanceResult);
     }

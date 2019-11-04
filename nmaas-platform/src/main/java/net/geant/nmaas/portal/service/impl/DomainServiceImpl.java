@@ -209,9 +209,6 @@ public class DomainServiceImpl implements DomainService {
 		if(!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace())){
 			throw new ProcessingException("Kubernetes namespace is not valid.");
 		}
-		for (ApplicationStatePerDomain a: domain.getApplicationStatePerDomain()){
-			System.out.println(a.isEnabled());
-		}
 		domainRepo.save(domain);
 	}
 
