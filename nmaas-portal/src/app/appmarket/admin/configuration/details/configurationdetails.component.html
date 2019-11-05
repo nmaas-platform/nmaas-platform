@@ -25,7 +25,14 @@
                 </select>
             </div>
         </div>
-      <button class="btn btn-primary" type="submit">{{ 'PORTAL_CONFIGURATION.SUBMIT_BUTTON' | translate }}</button>
+        <div class="form-group">
+            <label for="testInstance" class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.TEST_INSTANCE' | translate }}</label>
+            <div class = "col-sm-10">
+                <input type="checkbox" id="testInstance" name="testInstance"
+                       [(ngModel)]="this.configuration.testInstance" [checked]="this.configuration.testInstance === true">
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">{{ 'PORTAL_CONFIGURATION.SUBMIT_BUTTON' | translate }}</button>
         <div class="alert alert-danger" style="margin-top: 5px" *ngIf="errorMsg">
             {{errorMsg}}
         </div>

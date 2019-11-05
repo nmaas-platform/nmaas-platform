@@ -79,7 +79,12 @@
     "LOGIN_WITH": "Zaloguj się u dostawcy tożsamości",
     "LOGIN_FAILURE_MESSAGE": "Nieprawidłowe dane logowania",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Logowanie komponentu systemu nie może być wykonane"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Błąd logowania do systemu"
+  },
+  "TEST_INSTANCE_MODAL": {
+    "HEADER": "Instancja testowa NMaaS",
+    "BODY": "Pamiętaj, że jest to testowa instancja NMaaS. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej.\nNie używaj tej intancji do monitorowania rzeczywistych urządzeń.",
+    "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",
@@ -232,7 +237,8 @@
     "DEFAULT_LANGUAGE": "Domyślny język",
     "LANGUAGE_SUPPORT": "Aktywowane języki",
     "LANGUAGE_ENABLED": "Aktywny",
-    "LANGUAGE_DISABLED": "Nieaktywny"
+    "LANGUAGE_DISABLED": "Nieaktywny",
+    "TEST_INSTANCE": "Oznacz jako instancję testową NMaaS"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",

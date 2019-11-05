@@ -8,19 +8,19 @@ import {Configuration} from '../model/configuration';
 @Injectable()
 export class ConfigurationService extends GenericDataService{
 
-  protected uri:string;
+  protected uri: string;
 
   constructor(http: HttpClient, appConfig: AppConfigService) {
     super(http, appConfig);
-    this.uri = this.appConfig.getApiUrl()+'/configuration/'
+    this.uri = this.appConfig.getApiUrl() + '/configuration/'
   }
 
-  public getConfiguration():Observable<Configuration>{
+  public getConfiguration(): Observable<Configuration> {
     return this.get<Configuration>(this.uri);
   }
 
-  public updateConfiguration(configuration:Configuration):Observable<any>{
-    return this.put(this.uri+configuration.id, configuration);
+  public updateConfiguration(configuration: Configuration): Observable<any>{
+    return this.put(this.uri + configuration.id, configuration);
   }
 
 }
