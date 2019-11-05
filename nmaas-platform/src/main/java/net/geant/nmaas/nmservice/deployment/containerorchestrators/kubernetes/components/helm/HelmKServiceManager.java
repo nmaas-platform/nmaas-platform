@@ -105,7 +105,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Loggable(LogLevel.DEBUG)
     public boolean checkServiceDeployed(Identifier deploymentId) {
         try {
-            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(repositoryManager.loadDescriptiveDeploymentId(deploymentId));
+            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(
+                    repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue()
+            );
             return status.equals(HelmPackageStatus.DEPLOYED);
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
@@ -115,9 +117,10 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.DEBUG)
     public void deleteServiceIfExists(Identifier deploymentId) {
+        Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         try {
-            if(checkIfServiceExists(deploymentId)){
-                helmCommandExecutor.executeHelmDeleteCommand(repositoryManager.loadDescriptiveDeploymentId(deploymentId));
+            if(checkIfServiceExists(descriptiveDeploymentId)){
+                helmCommandExecutor.executeHelmDeleteCommand(descriptiveDeploymentId.getValue());
             }
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
