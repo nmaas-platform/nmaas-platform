@@ -193,7 +193,7 @@
 											"type": "number",
 											"input": true,
 											"key": "storageSpace",
-											"placeholder": "Default value: 20GB",
+											"placeholder": "Default value: 1GB",
 											"tab": 1
 										}
 									]
