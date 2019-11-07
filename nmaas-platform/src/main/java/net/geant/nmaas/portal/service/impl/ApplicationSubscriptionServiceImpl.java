@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -140,6 +141,17 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 			appSub.setDeleted(false);
 			
 		appSub.setActive(true);
+
+		Domain domain = appSub.getDomain();
+
+		for(ApplicationStatePerDomain a: domain.getApplicationStatePerDomain()) {
+			if (a.getApplicationBase().getId().equals(appSub.getApplication().getId())) {
+				if(!a.isEnabled()){
+					throw new IllegalArgumentException("Cannot subscribe. Application is disabled in this domain");
+				}
+				break;
+			}
+		}
 			
 		try {
 			return appSubRepo.save(appSub);

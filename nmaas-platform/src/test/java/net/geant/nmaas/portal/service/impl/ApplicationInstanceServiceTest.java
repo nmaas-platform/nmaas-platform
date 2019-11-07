@@ -153,6 +153,24 @@ public class ApplicationInstanceServiceTest {
     }
 
     @Test
+    public void createMethodShouldThrowIllegalArgumentExceptionDueToApplicationDisabledInDomain() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationBase applicationBase = new ApplicationBase(1L, "test");
+            ApplicationStatePerDomain appState = new ApplicationStatePerDomain(applicationBase, false);
+            Domain domain = new Domain(1L, "test-domain", "test-domain");
+            List<ApplicationStatePerDomain> appStateList = new ArrayList<>();
+            appStateList.add(appState);
+            domain.setApplicationStatePerDomain(appStateList);
+            Application application = new Application((long) 1, "test", "testVersion", "admin");
+            when(validator.valid(anyString())).thenReturn(true);
+            List<AppInstance> appInstances = new ArrayList<>();
+            when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
+            applicationInstanceService.create(domain, application, "test");
+
+        });
+    }
+
+    @Test
     public void createMethodShouldCorrectlyReturnAppInstanceObject(){
         Domain domain = new Domain((long) 1, "test", "test");
         domain.setApplicationStatePerDomain(new ArrayList<>());
