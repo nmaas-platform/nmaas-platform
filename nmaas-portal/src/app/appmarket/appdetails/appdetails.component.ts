@@ -11,7 +11,7 @@ import {Role} from '../../model/userrole';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstallmodal.component';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {AppSubscription} from '../../model';
 import {AppDescription} from '../../model/appdescription';
@@ -28,6 +28,13 @@ import {Domain} from '../../model/domain';
   providers: [AppsService, RateComponent, CommentsComponent, AppImagesService, AppInstanceService, AppInstallModalComponent, SecurePipe]
 })
 export class AppDetailsComponent implements OnInit {
+
+    public defaultTooltipOptions = {
+        'display': true,
+        'placement': 'bottom',
+        'show-delay': '50',
+        'theme': 'dark'
+    };
 
   protected state = 0;
 
@@ -66,8 +73,9 @@ export class AppDetailsComponent implements OnInit {
       this.appsService.getBaseApp(this.appId).subscribe(application => {
         this.app = application;
         this.active = application.appVersions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
+        // required for the tooltip to appear correctly
+        this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
       });
-      this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
     });
   }
 
@@ -87,11 +95,17 @@ export class AppDetailsComponent implements OnInit {
     if (isUndefined(domainId) || domainId === 0 || this.appConfig.getNmaasGlobalDomainId() === domainId) {
       result = this.appSubsService.getAllByApplication(this.appId);
       result.subscribe(() => this.subscribed = false);
+
+      this.domain = undefined;
     } else {
       result = this.appSubsService.getSubscription(this.appId, domainId);
       result.subscribe((appSub: AppSubscription) => this.subscribed = appSub.active, error => this.subscribed = false);
+
+        this.domainService.getOne(this.domainId).subscribe(d => {
+            this.domain = d;
+            this.defaultTooltipOptions.display = !this.isApplicationEnabledInDomain();
+        } );
     }
-    this.domainService.getOne(this.domainId).subscribe(d => this.domain = d )
   }
 
   protected subscribe(): void {
@@ -128,7 +142,7 @@ export class AppDetailsComponent implements OnInit {
   }
 
   public isApplicationEnabledInDomain(): boolean {
-    if (!this.domain) {
+    if (!this.domain || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
       return false;
     }
     const appStatus = this.domain.applicationStatePerDomain.find(value => value.applicationBaseId === this.app.id);

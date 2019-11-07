@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation, Input, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, Input, ViewChild, OnChanges, SimpleChanges} from '@angular/core';
 import {Application} from '../../../../model';
 import {AppImagesService} from '../../../../service';
 import {RateComponent} from '../../../rate';
@@ -21,7 +21,14 @@ import {Domain} from '../../../../model/domain';
   styleUrls: ['./appelement.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class AppElementComponent implements OnInit {
+export class AppElementComponent implements OnInit, OnChanges {
+
+  public defaultTooltipOptions = {
+    'display': true,
+    'placement': 'bottom',
+    'show-delay': '50',
+    'theme': 'dark'
+  };
 
   @Input()
   public app: Application;
@@ -48,6 +55,12 @@ export class AppElementComponent implements OnInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.domain) {
+      this.defaultTooltipOptions.display = !this.isApplicationEnabledInDomain();
+    }
+  }
+
   public showDeployButton(): boolean {
     return this.domainId !== this.appConfigService.getNmaasGlobalDomainId() &&
         !this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
@@ -58,7 +71,6 @@ export class AppElementComponent implements OnInit {
   }
 
   public isApplicationEnabledInDomain(): boolean {
-    const appId = this.app.id;
-    return this.domain.applicationStatePerDomain.find(value => value.applicationBaseId === appId).enabled || false;
+    return this.domain.applicationStatePerDomain.find(value => value.applicationBaseId === this.app.id).enabled || false
   }
 }
