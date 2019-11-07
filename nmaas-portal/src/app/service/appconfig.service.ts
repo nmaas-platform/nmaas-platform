@@ -61,4 +61,8 @@ export class AppConfigService {
         }
         return this.config.captchaKey || '';
     }
+
+    public getTestInstanceModalKey(): string {
+        return 'test_instance_modal';
+}
 }

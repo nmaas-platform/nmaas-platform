@@ -81,6 +81,11 @@
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Die Anwendung wird gerade gewartet. Bitte versuchen Sie es später erneut.",
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Systemkomponenten-Login kann nicht durchgeführt werden"
   },
+  "TEST_INSTANCE_MODAL": {
+    "HEADER": "NMaaS Testinstanz",
+    "BODY": "Bitte beachten Sie, dass dies eine Test-NMaaS-Instanz ist. Die Benutzerisolations- und Datensicherheitsmaßnahmen sind nicht so streng wie in der Produktionsinstanz.\nVerwenden Sie diese Instanz nicht zur Überwachung realer Geräte.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Kubernetes Cluster Konfiguration",
     "HELM": "Helm",
@@ -234,7 +239,8 @@
     "DEFAULT_LANGUAGE": "Standard Sprache",
     "LANGUAGE_SUPPORT": "Sprachunterstützung",
     "LANGUAGE_ENABLED": "Aktiviert",
-    "LANGUAGE_DISABLED": "Deaktiviert"
+    "LANGUAGE_DISABLED": "Deaktiviert",
+    "TEST_INSTANCE": "Als Test-NMaaS-Instanz markieren"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain Details",

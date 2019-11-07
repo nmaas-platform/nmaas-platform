@@ -186,6 +186,9 @@ export class AuthService {
   }
 
   public login(username: string, password: string): Observable<boolean> {
+    // hack so test instance modal is shown onl after login
+    localStorage.setItem(this.appConfig.getTestInstanceModalKey(), 'True');
+
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/basic/login',
       JSON.stringify({'username': username, 'password': password}), {headers: headers}).pipe(
@@ -227,6 +230,9 @@ export class AuthService {
     console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl);
     console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
     console.debug('propagateSSOLogin ' + userid);
+    // hack so test instance modal is shown onl after login
+    localStorage.setItem(this.appConfig.getTestInstanceModalKey(), 'True');
+
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/sso/login',
       JSON.stringify({'userid': userid}), {headers: headers}).pipe(

@@ -3,4 +3,5 @@ export class Configuration {
     public maintenance:boolean;
     public ssoLoginAllowed:boolean;
     public defaultLanguage:string;
+    public testInstance:boolean;
 }

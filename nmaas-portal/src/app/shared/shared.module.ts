@@ -45,6 +45,7 @@ import {TranslateStateModule} from './translate-state/translate-state.module';
 import {MinLengthDirective} from '../directive/min-length.directive';
 import {MaxLengthDirective} from '../directive/max-length.directive';
 import {AppConfigService} from '../service';
+import { ModalTestInstanceComponent } from './modal/modal-test-instance/modal-test-instance.component';
 
 @NgModule({
   imports: [
@@ -92,7 +93,8 @@ import {AppConfigService} from '../service';
     RatingExtendedComponent,
     AboutComponent,
     ChangelogComponent,
-    SingleCommentComponent
+    SingleCommentComponent,
+    ModalTestInstanceComponent
   ],
   providers: [
     PasswordValidator,
@@ -107,35 +109,36 @@ import {AppConfigService} from '../service';
       deps: [AppConfigService]
     }
   ],
-  exports: [
-    RateComponent,
-    FooterComponent,
-    CommentsComponent,
-    ScreenshotsComponent,
-    ModalComponent,
-    UserDetailsComponent,
-    UsersListComponent,
-    PasswordComponent,
-    UserPrivilegesComponent,
-    NavbarComponent,
-    UserPrivilegesComponent,
-    AppInstallModalComponent,
-    RolesDirective,
-    MinLengthDirective,
-    MaxLengthDirective,
-    SearchComponent,
-    TagFilterComponent,
-    DomainFilterComponent,
-    ApplicationsViewComponent,
-    ClusterDetailsComponent,
-    GitlabDetailsComponent,
-    ModalInfoTermsComponent,
-    ModalInfoPolicyComponent,
-    SortableColumnComponent,
-    SortableTableDirective,
-    RatingExtendedComponent,
-    AboutComponent,
-    TranslateStateModule
-  ]
+    exports: [
+        RateComponent,
+        FooterComponent,
+        CommentsComponent,
+        ScreenshotsComponent,
+        ModalComponent,
+        UserDetailsComponent,
+        UsersListComponent,
+        PasswordComponent,
+        UserPrivilegesComponent,
+        NavbarComponent,
+        UserPrivilegesComponent,
+        AppInstallModalComponent,
+        RolesDirective,
+        MinLengthDirective,
+        MaxLengthDirective,
+        SearchComponent,
+        TagFilterComponent,
+        DomainFilterComponent,
+        ApplicationsViewComponent,
+        ClusterDetailsComponent,
+        GitlabDetailsComponent,
+        ModalInfoTermsComponent,
+        ModalInfoPolicyComponent,
+        SortableColumnComponent,
+        SortableTableDirective,
+        RatingExtendedComponent,
+        AboutComponent,
+        TranslateStateModule,
+        ModalTestInstanceComponent
+    ]
 })
 export class SharedModule {}

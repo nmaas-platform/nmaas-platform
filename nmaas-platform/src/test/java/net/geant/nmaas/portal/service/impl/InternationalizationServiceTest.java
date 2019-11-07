@@ -97,7 +97,7 @@ public class InternationalizationServiceTest {
 
     @Test
     public void shouldChangeLanguageState(){
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "fr"));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "fr", false));
         Internationalization internationalization = new Internationalization(1L, "pl", false, "{\"test\":\"content\"");
         when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization));
         internationalizationService.changeLanguageState(language);
@@ -117,7 +117,7 @@ public class InternationalizationServiceTest {
         assertThrows(IllegalStateException.class, () -> {
             Internationalization internationalization = new Internationalization(1L, "pl", false, "{\"test\":\"content\"");
             when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization));
-            when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "pl"));
+            when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "pl", false));
             internationalizationService.changeLanguageState(language);
         });
     }
