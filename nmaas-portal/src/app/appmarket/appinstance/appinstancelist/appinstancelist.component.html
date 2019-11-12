@@ -33,10 +33,10 @@
 						   <thead>
 							  <tr>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								  <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
 								 <th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								 <th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
 								 <th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
 							  </tr>
@@ -45,6 +45,7 @@
 						   <ng-template ngFor let-appInstance [ngForOf]="appDeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }">
 							  <tr>
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
+								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
 								  <td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
 								  <td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
 								  <td class="col-lg-2 col-md-2 text-center" >{{appInstance?.createdAt | localDate:'medium'}}</td>
@@ -73,10 +74,10 @@
 							<thead>
 							<tr>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
 								<th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								<th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
 								<th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
 							</tr>
@@ -85,6 +86,7 @@
 							<ng-template ngFor let-appInstance [ngForOf]="appUndeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPageSec, currentPage: secondPageNumber, id: p_second }">
 								<tr>
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
+									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
 									<td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
 									<td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
 									<td class="col-lg-2 col-md-2 text-center" >{{appInstance?.createdAt | localDate:'medium'}}</td>
