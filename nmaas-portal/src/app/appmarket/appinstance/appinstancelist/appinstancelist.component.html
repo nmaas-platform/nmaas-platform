@@ -46,7 +46,7 @@
 							  <tr>
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
-								  <td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+								  <td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{getDomainNameById(appInstance?.domainId)}}</td>
 								  <td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
 								  <td class="col-lg-2 col-md-2 text-center" >{{appInstance?.createdAt | localDate:'medium'}}</td>
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
@@ -87,7 +87,7 @@
 								<tr>
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
-									<td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+									<td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{getDomainNameById(appInstance?.domainId)}}</td>
 									<td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
 									<td class="col-lg-2 col-md-2 text-center" >{{appInstance?.createdAt | localDate:'medium'}}</td>
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>

@@ -15,6 +15,7 @@ import {map} from 'rxjs/operators';
 import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
 import {SessionService} from "../../../service/session.service";
 import {TooltipComponent} from "ng2-tooltip-directive";
+import {Domain} from "../../../model/domain";
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -53,6 +54,8 @@ export class AppInstanceListComponent implements OnInit {
   public selectedUsername: string;
   public domainId: number = 0;
 
+  public domains: Domain[] = [];
+
   constructor(private appInstanceService: AppInstanceService,
               private domainService: DomainService,
               private userDataService: UserDataService,
@@ -66,7 +69,17 @@ export class AppInstanceListComponent implements OnInit {
   ngOnInit() {
     this.sessionService.registerCulture(this.translateService.currentLang);
     this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
+    this.domainService.getAll().subscribe(result => {
+      this.domains.push(...result);
+    });
 
+  }
+
+  public getDomainNameById(id: number): string {
+    if(this.domains === undefined){
+      return 'none';
+    }
+    return this.domains.find(value => value.id === id).name;
   }
 
   public translateEnum(value: AppInstanceListSelection): string{
