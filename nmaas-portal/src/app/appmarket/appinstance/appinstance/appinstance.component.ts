@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
+import {AppImagesService, AppInstanceService, AppsService, DomainService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
 import {
   AppInstance,
@@ -102,6 +102,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     private location: Location,
     private translateService: TranslateService,
     private sessionService: SessionService,
+    private domainService: DomainService,
     @Inject(LOCAL_STORAGE) public storage: StorageService) {}
 
   ngOnInit() {
@@ -120,6 +121,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
           this.app = app;
           if (!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
               this.configurationUpdateTemplate = this.getTemplate(this.app.configUpdateWizardTemplate.template);
+              const validation = {
+                  min: 1,
+                  max: 100,
+              };
+              this.domainService.getOne(this.appInstance.domainId).subscribe(
+                  domain => {
+                      validation.max = domain.applicationStatePerDomain.find(x => x.applicationBaseName == this.app.name).pvStorageSizeLimit;
+                      console.log(validation);
+                      this.refreshForm.emit({
+                          property: 'form',
+                          value: this.addValidationToConfigurationTemplateSpecyficElement({key: "storageSpace"}, validation),
+                      });
+                      console.log(this.configurationTemplate)
+                  }
+              );
           }
         });
       });
@@ -140,6 +156,32 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   public getStateAsString(state: any): string {
     return typeof state === 'string' && isNaN(Number(state.toString())) ? state : ApplicationState[state];
+  }
+
+  private recursiveSearchObjectToAddElementWhenKeyMatches(target: any, key: any, element: any) {
+      if(!target){
+          return;
+      }
+      if(Array.isArray(target)) {
+          for (let t of target) {
+              this.recursiveSearchObjectToAddElementWhenKeyMatches(t, key, element);
+          }
+      } else if (typeof target === 'object') {
+          // TODO generalize
+          if(target.key === key.key) {
+              console.log(target);
+              target.validate = element;
+          } else {
+              for(const k of Object.keys(target)) {
+                  this.recursiveSearchObjectToAddElementWhenKeyMatches(target[k], key, element);
+              }
+          }
+      }
+  }
+
+  private addValidationToConfigurationTemplateSpecyficElement(contains: any, validation: any): any {
+      this.recursiveSearchObjectToAddElementWhenKeyMatches(this.configurationTemplate, contains, validation);
+      return this.configurationTemplate;
   }
 
   changeForm() {
@@ -262,10 +304,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     if (isNullOrUndefined(this.appConfiguration.jsonInput)) {
         this.appConfiguration.jsonInput = {};
     }
-    this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+    this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(
+        () => {
         console.log('Configuration applied');
         this.storage.set('appConfig_' + this.appInstanceId.toString(), this.appConfiguration);
-    });
+        },
+        (error) => {
+        console.error(error);
+        //TODO submission error message
+        throw "Invalid submission";
+        });
   }
 
   public updateConfiguration(): void {
