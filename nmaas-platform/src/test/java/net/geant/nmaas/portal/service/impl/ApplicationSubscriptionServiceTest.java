@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.DomainService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +44,8 @@ public class ApplicationSubscriptionServiceTest {
 
     private ApplicationBaseService applications = mock(ApplicationBaseService.class);
 
+    private ApplicationStatePerDomainService appStates = mock(ApplicationStatePerDomainService.class);
+
     private ApplicationSubscriptionService appSubSrv;
 
     private Long applicationId = 1L;
@@ -55,11 +58,12 @@ public class ApplicationSubscriptionServiceTest {
 
     @BeforeEach
     public void setup() {
-        appSubSrv = new ApplicationSubscriptionServiceImpl(appSubRepo, domains, applications);
+        appSubSrv = new ApplicationSubscriptionServiceImpl(appSubRepo, domains, applications, appStates);
         app1 = new ApplicationBase(applicationId, applicationName);
         app1.setVersions(ImmutableSet.of(new ApplicationVersion("1.1", ApplicationState.ACTIVE, applicationId)));
         domain1 = new Domain(domainId, domainName, domainName);
         domain1.setApplicationStatePerDomain(new ArrayList<>());
+        when(appStates.isApplicationEnabledInDomain(domain1, app1)).thenReturn(true);
     }
 
     @Test
@@ -273,10 +277,11 @@ public class ApplicationSubscriptionServiceTest {
     @Test
     public void shouldNotSubscribeAppWhenDisabledInDomain() {
         assertThrows(IllegalArgumentException.class, () -> {
-            domain1.addApplicationState(app1, false);
+//            domain1.addApplicationState(app1, false);
             when(appSubRepo.existsById(any())).thenReturn(false);
             when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
             when(applications.isAppActive(app1)).thenReturn(true);
+            when(appStates.isApplicationEnabledInDomain(domain1, app1)).thenReturn(false);
             ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
             this.appSubSrv.subscribe(appSub);
         });

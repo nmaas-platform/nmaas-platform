@@ -7,5 +7,7 @@ import lombok.Setter;
 @Setter
 public class ApplicationStatePerDomainView {
     Long applicationBaseId;
+    String applicationBaseName;
     boolean enabled;
+    long pvStorageSizeLimit;
 }
