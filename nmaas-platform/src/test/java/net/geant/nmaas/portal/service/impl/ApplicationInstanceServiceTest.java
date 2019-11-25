@@ -199,7 +199,6 @@ public class ApplicationInstanceServiceTest {
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
         List<ApplicationStatePerDomain> stateList = new ArrayList<>();
         domain.setApplicationStatePerDomain(stateList);
-        //when(domain.getApplicationStatePerDomain()).thenReturn(stateList);
         AppInstance appInstanceResult = applicationInstanceService.create((long)0, (long)0, "test");
         assertNotNull(appInstanceResult);
     }
