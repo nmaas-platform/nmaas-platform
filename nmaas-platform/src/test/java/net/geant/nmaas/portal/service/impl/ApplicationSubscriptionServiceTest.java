@@ -289,11 +289,11 @@ public class ApplicationSubscriptionServiceTest {
 
     @Test
     public void shouldNotSubscribeAppFirstTimeWhenDisabledInDomain() {
-        domain1.addApplicationState(app1, false);
         when(appSubRepo.existsById(any())).thenReturn(false);
         when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
         when(applications.isAppActive(app1)).thenReturn(true);
         ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        when(appStates.isApplicationEnabledInDomain(domain1, app1)).thenReturn(false);
 
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             this.appSubSrv.subscribe(appSub);
@@ -304,12 +304,12 @@ public class ApplicationSubscriptionServiceTest {
 
     @Test
     public void shouldNotSubscribeDeletedSubscriptionAppWhenDisabledInDomain() {
-        domain1.addApplicationState(app1, false);
         when(appSubRepo.existsById(any())).thenReturn(true);
         when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
         when(applications.isAppActive(app1)).thenReturn(true);
         ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
         appSub.setDeleted(true);
+        when(appStates.isApplicationEnabledInDomain(domain1, app1)).thenReturn(false);
 
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             this.appSubSrv.subscribe(appSub);
