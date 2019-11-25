@@ -28,8 +28,8 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
-  public p_first: string = "p_first";
-  public p_second: string = "p_second";
+  public p_first: string = 'p_first';
+  public p_second: string = 'p_second';
 
   public maxItemsOnPage: number = 5;
   public maxItemsOnPageSec: number = 5;
@@ -39,7 +39,7 @@ export class AppInstanceListComponent implements OnInit {
 
   public showFailed: boolean = true;
 
-  public itemsPerPage: number[]  = [5,10,15,20,25,30];
+  public itemsPerPage: number[]  = [5, 10, 15, 20, 25, 30];
 
   public AppInstanceState: typeof AppInstanceState = AppInstanceState;
   public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
@@ -70,14 +70,14 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public translateEnum(value: AppInstanceListSelection): string{
-    let outValue = "";
-    if(value.toString() == 'ALL'){
-      this.translateService.get("ENUM.ALL").subscribe((res: string) => {
+    let outValue = '';
+    if (value.toString() === 'ALL') {
+      this.translateService.get('ENUM.ALL').subscribe((res: string) => {
         outValue = res;
       })
     }
-    if(value.toString() == 'MY'){
-      this.translateService.get("ENUM.MY").subscribe((res: string) => {
+    if (value.toString() === 'MY') {
+      this.translateService.get('ENUM.MY').subscribe((res: string) => {
         outValue = res;
       })
     }
@@ -90,11 +90,13 @@ export class AppInstanceListComponent implements OnInit {
     } else {
       this.domainId = domainId;
     }
-    this.getInstances({sortColumn: 'createdAt', sortDirection:'asc'})
+    this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'})
   }
 
   public checkPrivileges(app) {
-    return app.owner.username === this.authService.getUsername() || this.authService.hasRole('ROLE_SYSTEM_ADMIN') || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN');
+    return app.owner.username === this.authService.getUsername()
+        || this.authService.hasRole('ROLE_SYSTEM_ADMIN')
+        || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN');
   }
 
   public onSelectionChange(event) {
@@ -106,13 +108,13 @@ export class AppInstanceListComponent implements OnInit {
     this.maxItemsOnPageSec = item;
   }
 
-  onSorted($event){
+  onSorted($event) {
     this.getInstances($event)
 
   }
 
   getInstances(criteria: CustomerSearchCriteria){
-    console.debug("Crit: ", criteria);
+    console.debug('Crit: ', criteria);
     switch (+this.listSelection) {
       case AppInstanceListSelection.ALL:
         this.appInstances = this.appInstanceService.getSortedAllAppInstances(criteria);
@@ -127,19 +129,19 @@ export class AppInstanceListComponent implements OnInit {
     this.appDeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
       app => (AppInstanceState[app.state] !== AppInstanceState.REMOVED.toString()
-      && AppInstanceState[app.state] != AppInstanceState.DONE.toString()
-      && AppInstanceState[app.state] != AppInstanceState.UNDEPLOYING.toString()
+      && AppInstanceState[app.state] !== AppInstanceState.DONE.toString()
+      && AppInstanceState[app.state] !== AppInstanceState.UNDEPLOYING.toString()
       ))));
     this.appUndeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-      app => (AppInstanceState[app.state] == AppInstanceState.REMOVED.toString()
-        || AppInstanceState[app.state] == AppInstanceState.DONE.toString()
-        || AppInstanceState[app.state] == AppInstanceState.UNDEPLOYING.toString()
+      app => (AppInstanceState[app.state] === AppInstanceState.REMOVED.toString()
+        || AppInstanceState[app.state] === AppInstanceState.DONE.toString()
+        || AppInstanceState[app.state] === AppInstanceState.UNDEPLOYING.toString()
         ))));
   }
 
 
-  public setShowFailedField(status: boolean){
+  public setShowFailedField(status: boolean) {
     this.showFailed = status;
   }
 }

@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableSet;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -57,6 +59,7 @@ public class ApplicationSubscriptionServiceTest {
         app1 = new ApplicationBase(applicationId, applicationName);
         app1.setVersions(ImmutableSet.of(new ApplicationVersion("1.1", ApplicationState.ACTIVE, applicationId)));
         domain1 = new Domain(domainId, domainName, domainName);
+        domain1.setApplicationStatePerDomain(new ArrayList<>());
     }
 
     @Test
@@ -252,6 +255,63 @@ public class ApplicationSubscriptionServiceTest {
         ApplicationSubscription result = this.appSubSrv.subscribe(appSub);
         assertTrue(result.isActive());
         assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldSubscribeAppFirstTimeWhenEnabledInDomain(){
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(applications.isAppActive(app1)).thenReturn(true);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        domain1.addApplicationState(app1);
+        ApplicationSubscription result = this.appSubSrv.subscribe(appSub);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldSubscribeDeletedSubscriptionAppWhenEnabledInDomain() {
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(true);
+        domain1.addApplicationState(app1);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.findById(any())).thenReturn(Optional.of(new ApplicationSubscription(domain1, app1)));
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(applications.isAppActive(app1)).thenReturn(true);
+        ApplicationSubscription result = this.appSubSrv.subscribe(appSub);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldNotSubscribeAppFirstTimeWhenDisabledInDomain() {
+        domain1.addApplicationState(app1, false);
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
+        when(applications.isAppActive(app1)).thenReturn(true);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            this.appSubSrv.subscribe(appSub);
+        });
+
+        assertEquals(thrown.getMessage(), "Cannot subscribe. Application is disabled in this domain");
+    }
+
+    @Test
+    public void shouldNotSubscribeDeletedSubscriptionAppWhenDisabledInDomain() {
+        domain1.addApplicationState(app1, false);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
+        when(applications.isAppActive(app1)).thenReturn(true);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(true);
+
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            this.appSubSrv.subscribe(appSub);
+        });
+
+        assertEquals(thrown.getMessage(), "Cannot subscribe. Application is disabled in this domain");
     }
 
     @Test

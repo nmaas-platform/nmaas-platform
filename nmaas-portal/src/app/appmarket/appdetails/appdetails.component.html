@@ -40,12 +40,15 @@
 					</a>
 				</div>
 			</div>
-			<div class="row">
-				<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right">
-					<button class="btn btn-primary" [disabled]="!active" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
+<!--			block the button until app and domain are downloaded to load proper tooltip state-->
+			<div class="row" *ngIf="app && domain">
+				<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right" tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_SUBSCRIBE' | translate}}" [options]="defaultTooltipOptions">
+					<button class="btn btn-primary" [disabled]="!active || !isApplicationEnabledInDomain()" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
-				<div *ngIf="subscribed" class="btn-group pull-right">
-					<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
+				<div *ngIf="subscribed" class="btn-group pull-right" >
+					<div class="btn no-padding" tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_DEPLOY' | translate}}" [options]="defaultTooltipOptions">
+						<button *ngIf="isDeploymentAllowed()" class="btn btn-primary first-button-substitute" [disabled]="!isApplicationEnabledInDomain()" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
+					</div>
 					<button *ngIf="isSubscriptionAllowed()" class="btn btn-danger" (click)="unsubscribe()">{{'APPLICATIONS.UNSUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
 

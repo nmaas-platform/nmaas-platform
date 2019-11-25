@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
+import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,11 +43,13 @@ public class ApplicationBaseServiceTest {
 
     private TagRepository tagRepo = mock(TagRepository.class);
 
+    private DomainRepository domainRepository = mock(DomainRepository.class);
+
     private List<ApplicationView> apps;
 
     @BeforeEach
     public void setup(){
-        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, modelMapper);
+        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, modelMapper, domainRepository);
         this.apps = Arrays.asList(getDefaultAppView(1L, "1.0"), getDefaultAppView(2L, "1.1"));
     }
 

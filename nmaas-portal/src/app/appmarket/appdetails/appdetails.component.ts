@@ -5,20 +5,21 @@ import {Location} from '@angular/common';
 import {SecurePipe} from '../../pipe/index';
 import {RateComponent} from '../../shared/rate/rate.component';
 import {CommentsComponent} from '../../shared/comments/comments.component';
-import {AppConfigService, AppImagesService, AppInstanceService, AppsService} from '../../service/index';
+import {AppConfigService, AppImagesService, AppInstanceService, AppsService, DomainService} from '../../service/index';
 import {Application} from '../../model/application';
 import {Role} from '../../model/userrole';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstallmodal.component';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
-import {AppSubscription} from "../../model";
-import {AppDescription} from "../../model/appdescription";
-import {TranslateService} from "@ngx-translate/core";
-import {ApplicationState} from "../../model/applicationstate";
+import {AppSubscription} from '../../model';
+import {AppDescription} from '../../model/appdescription';
+import {TranslateService} from '@ngx-translate/core';
+import {ApplicationState} from '../../model/applicationstate';
+import {Domain} from '../../model/domain';
 
-//import 'rxjs/add/operator/switchMap';
+// import 'rxjs/add/operator/switchMap';
 
 @Component({
   selector: 'nmaas-appdetails',
@@ -28,8 +29,15 @@ import {ApplicationState} from "../../model/applicationstate";
 })
 export class AppDetailsComponent implements OnInit {
 
-  protected state: number = 0;
-  
+    public defaultTooltipOptions = {
+        'display': true,
+        'placement': 'bottom',
+        'show-delay': '50',
+        'theme': 'dark'
+    };
+
+  protected state = 0;
+
   @ViewChild(AppInstallModalComponent)
   public readonly appInstallModal: AppInstallModalComponent;
 
@@ -43,8 +51,9 @@ export class AppDetailsComponent implements OnInit {
   public app: Application;
   public subscribed: boolean;
   public domainId: number;
-  public active: boolean = false;
-  public versionVisible: boolean = false;
+  public active = false;
+  public versionVisible = false;
+  public domain: Domain;
 
   constructor(private appsService: AppsService,
     private appSubsService: AppSubscriptionsService,
@@ -53,7 +62,8 @@ export class AppDetailsComponent implements OnInit {
     private userDataService: UserDataService,
     private appConfig: AppConfigService,
     private authService: AuthService,
-    private translate:TranslateService,
+    private translate: TranslateService,
+    private domainService: DomainService,
     private router: Router, private route: ActivatedRoute, private location: Location) {
   }
 
@@ -63,8 +73,9 @@ export class AppDetailsComponent implements OnInit {
       this.appsService.getBaseApp(this.appId).subscribe(application => {
         this.app = application;
         this.active = application.appVersions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
+        // required for the tooltip to appear correctly
+        this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
       });
-      this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
     });
   }
 
@@ -73,7 +84,7 @@ export class AppDetailsComponent implements OnInit {
   }
 
   protected updateDomainSelection(domainId: number): void {
-    console.log('selected domainId:' + domainId);    
+    console.log('selected domainId:' + domainId);
     this.domainId = domainId;
 
     if (isUndefined(this.appId)) {
@@ -83,10 +94,17 @@ export class AppDetailsComponent implements OnInit {
     let result: Observable<any> = null;
     if (isUndefined(domainId) || domainId === 0 || this.appConfig.getNmaasGlobalDomainId() === domainId) {
       result = this.appSubsService.getAllByApplication(this.appId);
-      result.subscribe(() => this.subscribed=false);
+      result.subscribe(() => this.subscribed = false);
+
+      this.domain = undefined;
     } else {
       result = this.appSubsService.getSubscription(this.appId, domainId);
-      result.subscribe((appSub:AppSubscription)=>this.subscribed=appSub.active, error=>this.subscribed = false);
+      result.subscribe((appSub: AppSubscription) => this.subscribed = appSub.active, error => this.subscribed = false);
+
+        this.domainService.getOne(this.domainId).subscribe(d => {
+            this.domain = d;
+            this.defaultTooltipOptions.display = !this.isApplicationEnabledInDomain();
+        } );
     }
   }
 
@@ -109,12 +127,8 @@ export class AppDetailsComponent implements OnInit {
       return false;
     }
 
-    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) 
-        || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
-      return true;
-    }
-
-    return false;
+    return this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])
+        || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN]);
   }
 
   protected isDeploymentAllowed(): boolean {
@@ -122,13 +136,20 @@ export class AppDetailsComponent implements OnInit {
       return false;
     }
 
-    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) 
+    return this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])
         || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])
-        || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_USER])) {
-      return true;
-    }
+        || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_USER]);
+  }
 
-    return false;
+  public isApplicationEnabledInDomain(): boolean {
+    if (!this.domain || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
+      return false;
+    }
+    const appStatus = this.domain.applicationStatePerDomain.find(value => value.applicationBaseId === this.app.id);
+    if (!appStatus) {
+      return false;
+    }
+    return appStatus.enabled;
   }
 
   protected refresh(): void {
@@ -136,35 +157,35 @@ export class AppDetailsComponent implements OnInit {
   }
 
   public getDescription(): AppDescription {
-    if(isNullOrUndefined(this.app)){
+    if (isNullOrUndefined(this.app)) {
       return;
     }
-    return this.app.descriptions.find(val => val.language == this.translate.currentLang);
+    return this.app.descriptions.find(val => val.language === this.translate.currentLang);
   }
 
-  public getPathUrl(id: number): string{
-    if(!isNullOrUndefined(id) && !isNaN(id)){
+  public getPathUrl(id: number): string {
+    if (!isNullOrUndefined(id) && !isNaN(id)) {
       return '/apps/' + id + '/rate/my';
-    }else{
-      return "";
+    } else {
+      return '';
     }
   }
 
   public getStateAsString(state: any): string {
-    return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
+    return typeof state === 'string' && isNaN(Number(state.toString())) ? state : ApplicationState[state];
   }
 
-  public getValidLink(url: string) : string {
-    if(isNullOrUndefined(url)){
+  public getValidLink(url: string): string {
+    if (isNullOrUndefined(url)) {
       return;
     }
-    if(!url.startsWith("http://") && !url.startsWith("https://")){
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
       return '//' + url;
     }
     return url;
   }
 
-  public showVersions(){
+  public showVersions() {
     this.versionVisible = !this.versionVisible;
   }
 

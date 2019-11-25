@@ -283,7 +283,10 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Aucun réseau client spécifié.",
     "IP_ADDRESS": "IP Adresse",
     "MASK_LENGTH": "Masque de réseau",
-    "ADD": "Ajouter"
+    "ADD": "Ajouter",
+    "APP_STATUS": "Statut de l'application",
+    "APP_NAME": "Nom de l'application",
+    "APP_ENABLED": "Activé"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",
@@ -351,7 +354,9 @@
     "RATING": "Évaluation",
     "RATING_AVERAGE": "Note moyenne des utilisateurs",
     "RATING_INFO": "Cliquez sur l'étoile pour évaluer une application",
-    "RATING_BREAKDOWN": "Répartition par note"
+    "RATING_BREAKDOWN": "Répartition par note",
+    "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information."
   },
   "RESTART_MODAL": {
     "HEADER": "Confirmation de redémarrage",

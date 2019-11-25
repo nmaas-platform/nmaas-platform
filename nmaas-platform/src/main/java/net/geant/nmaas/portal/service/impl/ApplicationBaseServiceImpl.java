@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
+import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,9 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     private ApplicationBaseRepository appBaseRepository;
 
     private ModelMapper modelMapper;
+
+    /** to update domain enabled applications **/
+    private DomainRepository domainRepository;
 
     @Override
     public ApplicationBase createApplicationOrAddNewVersion(ApplicationView application) {
@@ -53,7 +57,9 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         ApplicationBase appBase = modelMapper.map(application, ApplicationBase.class);
         appBase.validate();
         appBase.getVersions().add(createAppVersion(application));
-        return appBaseRepository.save(appBase);
+        ApplicationBase result = appBaseRepository.save(appBase);
+        domainRepository.saveAll(domainRepository.findAll().stream().peek(domain -> domain.addApplicationState(result)).collect(Collectors.toList()));
+        return result;
     }
 
     @Override
