@@ -58,7 +58,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private Configuration loadSingleConfiguration(){
         if(repository.count() == 0){
-            addConfiguration(new ConfigurationView(false, true, "en"));
+            addConfiguration(new ConfigurationView(false, true, "en", false));
         }
         else if(repository.count() > 1){
             throw new IllegalStateException("Found "+repository.count()+" configuration instead of one");

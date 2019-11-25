@@ -42,9 +42,9 @@ public class ConfigurationManagerTest {
     @BeforeEach
     public void setup(){
         this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository);
-        this.config = new Configuration(1L, false, false, "en");
+        this.config = new Configuration(1L, false, false, "en", false);
         this.internationalization = new Internationalization(1L, "pl", true, "{\"test\":\"test\"}");
-        this.configView = new ConfigurationView(1L, false, false, "pl");
+        this.configView = new ConfigurationView(1L, false, false, "pl", false);
     }
 
     @Test

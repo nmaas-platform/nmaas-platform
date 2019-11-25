@@ -81,6 +81,11 @@
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later.",
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed"
   },
+  "TEST_INSTANCE_MODAL": {
+    "HEADER": "NMaaS test instance",
+    "BODY": "Please be aware that this is a test NMaaS instance. The user isolation and data security measures are not so strict as on the production instance. \nDo not use this instance to monitor real equipment.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
     "HELM": "Helm",
@@ -232,9 +237,10 @@
     "SUBMIT_BUTTON": "Submit",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language",
-    "LANGUAGE_SUPPORT": "Language support",
+    "LANGUAGE_SUPPORT": "Supported languages",
     "LANGUAGE_ENABLED": "Enabled",
-    "LANGUAGE_DISABLED": "Disabled"
+    "LANGUAGE_DISABLED": "Disabled",
+    "TEST_INSTANCE": "Mark as test NMaaS instance"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",
