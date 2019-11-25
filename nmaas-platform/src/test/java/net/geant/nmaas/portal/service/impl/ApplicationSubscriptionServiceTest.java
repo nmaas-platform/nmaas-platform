@@ -262,8 +262,21 @@ public class ApplicationSubscriptionServiceTest {
     }
 
     @Test
-    public void shouldSubscribeAppWhenEnabledInDomain() {
+    public void shouldSubscribeAppFirstTimeWhenEnabledInDomain(){
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(applications.isAppActive(app1)).thenReturn(true);
         ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        domain1.addApplicationState(app1);
+        ApplicationSubscription result = this.appSubSrv.subscribe(appSub);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldSubscribeDeletedSubscriptionAppWhenEnabledInDomain() {
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(true);
         domain1.addApplicationState(app1);
         when(appSubRepo.existsById(any())).thenReturn(true);
         when(appSubRepo.findById(any())).thenReturn(Optional.of(new ApplicationSubscription(domain1, app1)));
@@ -275,16 +288,34 @@ public class ApplicationSubscriptionServiceTest {
     }
 
     @Test
-    public void shouldNotSubscribeAppWhenDisabledInDomain() {
-        assertThrows(IllegalArgumentException.class, () -> {
-//            domain1.addApplicationState(app1, false);
-            when(appSubRepo.existsById(any())).thenReturn(false);
-            when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
-            when(applications.isAppActive(app1)).thenReturn(true);
-            when(appStates.isApplicationEnabledInDomain(domain1, app1)).thenReturn(false);
-            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+    public void shouldNotSubscribeAppFirstTimeWhenDisabledInDomain() {
+        domain1.addApplicationState(app1, false);
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
+        when(applications.isAppActive(app1)).thenReturn(true);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             this.appSubSrv.subscribe(appSub);
         });
+
+        assertEquals(thrown.getMessage(), "Cannot subscribe. Application is disabled in this domain");
+    }
+
+    @Test
+    public void shouldNotSubscribeDeletedSubscriptionAppWhenDisabledInDomain() {
+        domain1.addApplicationState(app1, false);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
+        when(applications.isAppActive(app1)).thenReturn(true);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(true);
+
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
+            this.appSubSrv.subscribe(appSub);
+        });
+
+        assertEquals(thrown.getMessage(), "Cannot subscribe. Application is disabled in this domain");
     }
 
     @Test

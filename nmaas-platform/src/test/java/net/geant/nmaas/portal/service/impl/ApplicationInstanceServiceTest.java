@@ -199,9 +199,6 @@ public class ApplicationInstanceServiceTest {
         when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test");
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
-//        List<ApplicationStatePerDomain> stateList = new ArrayList<>();
-//        domain.setApplicationStatePerDomain(stateList);
-//        when(domain.getApplicationStatePerDomain()).thenReturn(stateList);
         when(applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)).thenReturn(true);
         AppInstance appInstanceResult = applicationInstanceService.create((long)0, (long)0, "test");
         assertNotNull(appInstanceResult);
