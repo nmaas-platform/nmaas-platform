@@ -13,7 +13,7 @@ public interface ApplicationStatePerDomainService {
 
     List<ApplicationStatePerDomain> generateListOfDefaultApplicationStatesPerDomain();
 
-    void updateAllDomainsWithNewApplicationBase(ApplicationBase applicationBase);
+    List<Domain> updateAllDomainsWithNewApplicationBase(ApplicationBase applicationBase);
 
     List<ApplicationStatePerDomain> updateDomain(DomainView changes);
 
