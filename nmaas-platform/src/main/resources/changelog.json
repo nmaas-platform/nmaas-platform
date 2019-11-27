@@ -1,5 +1,31 @@
 {"versions" : [
-
+  {
+    "verNo" : "1.2.2",
+    "date" : "(2019/12/xx)",
+    "topic" : [
+      {
+        "title" : "Updating application basic auth credentials",
+        "tags" : "[Bugfix]",
+        "description" : "The configuration update wizard form will allows to change basic auth credentials for given application instance."
+      }
+    ]
+  },
+  {
+    "verNo" : "1.2.1",
+    "date" : "(2019/11/08)",
+    "topic" : [
+      {
+        "title" : "Human readable Helm release names",
+        "tags" : "[Enhancement]",
+        "description" : "Application instances deployed with release names allowing for easy identification."
+      },
+      {
+        "title" : "Ability to mark NMaaS installation as a test instance",
+        "tags" : "[Enhancement]",
+        "description" : "When user logs in on a test NMaaS instance a popup window is deployed with appropriate information."
+      }
+    ]
+  },
   {
     "verNo" : "1.2.0",
     "date" : "(2019/05/17)",
