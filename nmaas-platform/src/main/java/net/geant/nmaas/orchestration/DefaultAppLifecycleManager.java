@@ -166,7 +166,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
         }
         if(isNotEmpty(configuration.getAccessCredentials())){
-            changeBasicAuth(deploymentId, appDeployment.getDomain(), configuration.getAccessCredentials());
+            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), appDeployment.getDomain(), configuration.getAccessCredentials());
         }
     }
 
