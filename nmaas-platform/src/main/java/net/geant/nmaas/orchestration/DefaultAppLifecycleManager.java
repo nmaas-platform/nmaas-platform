@@ -14,11 +14,17 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.*;
+import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -134,7 +140,11 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
         Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
-        janitorService.createOrReplaceBasicAuth(deploymentId, domain, accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword"));
+        String basicAuthUsername = accessCredentialsMap.get("accessUsername");
+        String basicAuthPassword = accessCredentialsMap.get("accessPassword");
+        if (StringUtils.isNotEmpty(basicAuthUsername) && StringUtils.isNotEmpty(basicAuthPassword)) {
+            janitorService.createOrReplaceBasicAuth(deploymentId, domain, basicAuthUsername, basicAuthPassword);
+        }
     }
 
     @Override

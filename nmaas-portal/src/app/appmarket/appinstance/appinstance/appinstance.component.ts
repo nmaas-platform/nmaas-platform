@@ -82,10 +82,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public configurationUpdateTemplate:any;
   public submission: any = { data:{} };
   public isSubmissionUpdated: boolean = false;
-  public isUpdateFormValid: boolean = true;
+  public isUpdateFormValid: boolean = false;
   public appConfiguration: AppConfiguration;
 
-  public intervalCheckerSubscribtion;
+  public intervalCheckerSubscription;
 
   public wasUpdated: boolean = false;
   public refreshForm: EventEmitter<any>;
@@ -125,7 +125,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       });
 
       this.updateAppInstanceState();
-      this.intervalCheckerSubscribtion = interval(5000).subscribe(() => this.updateAppInstanceState());
+      this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
       this.undeployModal.setModalType("warning");
       this.undeployModal.setStatusOfIcons(true);
     });
@@ -211,8 +211,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngOnDestroy() {
-    if (this.intervalCheckerSubscribtion) {
-      this.intervalCheckerSubscribtion.unsubscribe();
+    if (this.intervalCheckerSubscription) {
+      this.intervalCheckerSubscription.unsubscribe();
     }
   }
 
