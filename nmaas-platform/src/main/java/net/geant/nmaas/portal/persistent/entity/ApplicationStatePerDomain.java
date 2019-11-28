@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.persistent.entity;
 import lombok.*;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotNull;
 public class ApplicationStatePerDomain {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
+//    @NotNull
     @Setter(AccessLevel.PROTECTED)
     private ApplicationBase applicationBase;
 

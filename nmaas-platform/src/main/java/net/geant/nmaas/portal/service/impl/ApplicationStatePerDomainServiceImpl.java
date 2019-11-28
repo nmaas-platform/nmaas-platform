@@ -13,11 +13,13 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+//@Transactional
 public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePerDomainService {
 
     private DomainRepository domainRepository;
