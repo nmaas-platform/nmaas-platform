@@ -14,6 +14,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURED;
+
 /**
  * Default implementation of the {@link NmServiceConfigurationProvider} interface.
  */
@@ -31,15 +41,15 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     public void configureNmService(Identifier deploymentId, Identifier descriptiveDeploymentId, Identifier applicationId, AppConfiguration appConfiguration,
                                    String domain, boolean configFileRepositoryRequired) {
         try {
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileUploader.transferConfigFiles(deploymentId, descriptiveDeploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired) {
                 janitorService.createOrReplaceConfigMap(descriptiveDeploymentId, domain);
             }
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
+            notifyStateChangeListeners(deploymentId, CONFIGURED);
         } catch (Exception e) {
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED, e.getMessage());
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }
@@ -49,15 +59,15 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     public void updateNmService(Identifier deploymentId, Identifier descriptiveDeploymentId, Identifier applicationId, AppConfiguration appConfiguration,
                                 String domain, boolean configFileRepositoryRequired){
         try {
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileUploader.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired) {
                 janitorService.createOrReplaceConfigMap(descriptiveDeploymentId, domain);
             }
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_UPDATED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
         } catch(Exception e){
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_UPDATE_FAILED, e.getMessage());
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }
@@ -66,15 +76,14 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) {
         try{
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_INITIATED);
             this.fileUploader.removeConfigFiles(deploymentId);
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_REMOVED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVED);
         } catch (Exception e){
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_FAILED);
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }
-
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
