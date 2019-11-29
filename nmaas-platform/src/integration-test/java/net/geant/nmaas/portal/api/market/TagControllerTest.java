@@ -5,12 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Set;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
-import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -21,6 +16,7 @@ import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +24,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
@@ -62,8 +57,10 @@ public class TagControllerTest extends BaseControllerTestSetup {
     public void setup(){
         this.mvc = createMVC();
 
-        Domain domain = new Domain("Domain1", "d1");
-        domainRepository.save(domain);
+//        DomainRequest domain = new DomainRequest();
+//        domain.setName("domain1");
+//        domain.setCodename("dom");
+//        Domain d = this.domains.createDomain(domain);
 
         ApplicationView app1Request = getDefaultApp("disabledAPP", ApplicationState.DISABLED);
         ApplicationView app2Request = getDefaultApp("deletedAPP", ApplicationState.DELETED);
@@ -78,14 +75,13 @@ public class TagControllerTest extends BaseControllerTestSetup {
 
     @AfterEach
     public void teardown(){
-        this.domainRepository.deleteAll();
+//        this.domainRepository.deleteAll();
         this.appRepository.deleteAll();
         this.appBaseRepo.deleteAll();
         this.tagRepository.deleteAll();
     }
 
     @Test
-//    @Transactional
     public void shouldGetAllApps() throws Exception{
         MvcResult result = mvc.perform(get("/api/tags")
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
@@ -96,7 +92,6 @@ public class TagControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
-//    @Transactional
     public void shouldGetAppByTag() throws Exception {
         MvcResult result = mvc.perform(get("/api/tags/tag1")
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
@@ -107,7 +102,6 @@ public class TagControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
-//    @Transactional
     public void shouldGetEmptyCollection() throws Exception {
         MvcResult result = mvc.perform(get("/api/tags/deprecated")
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
