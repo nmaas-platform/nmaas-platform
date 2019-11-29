@@ -8,15 +8,12 @@ import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
-import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,13 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MvcResult;
 
-import javax.transaction.Transactional;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Transactional
 public class TagControllerTest extends BaseControllerTestSetup {
 
     @Autowired
@@ -50,17 +44,10 @@ public class TagControllerTest extends BaseControllerTestSetup {
     @Autowired
     private ApplicationBaseRepository appBaseRepo;
 
-    @Autowired
-    private DomainRepository domainRepository;
 
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-
-//        DomainRequest domain = new DomainRequest();
-//        domain.setName("domain1");
-//        domain.setCodename("dom");
-//        Domain d = this.domains.createDomain(domain);
 
         ApplicationView app1Request = getDefaultApp("disabledAPP", ApplicationState.DISABLED);
         ApplicationView app2Request = getDefaultApp("deletedAPP", ApplicationState.DELETED);
@@ -75,7 +62,6 @@ public class TagControllerTest extends BaseControllerTestSetup {
 
     @AfterEach
     public void teardown(){
-//        this.domainRepository.deleteAll();
         this.appRepository.deleteAll();
         this.appBaseRepo.deleteAll();
         this.tagRepository.deleteAll();

@@ -2,11 +2,10 @@ package net.geant.nmaas.portal.persistent.entity;
 
 import lombok.*;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class ApplicationStatePerDomain {
 
     @ManyToOne(fetch = FetchType.LAZY)
-//    @NotNull
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @Setter(AccessLevel.PROTECTED)
     private ApplicationBase applicationBase;
 
@@ -29,6 +28,7 @@ public class ApplicationStatePerDomain {
     @EqualsAndHashCode.Exclude
     private boolean enabled;
 
+    @EqualsAndHashCode.Exclude
     private long pvStorageSizeLimit;
 
 
