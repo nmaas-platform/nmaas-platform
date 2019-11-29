@@ -12,5 +12,6 @@ public enum MailType {
     APP_REJECTED,
     APP_NEW,
     APP_DELETED,
-    APP_NOT_ACTIVE
+    APP_NOT_ACTIVE,
+    NEW_SSO_LOGIN
 }

@@ -105,6 +105,20 @@
 		</div>
 	</div>
 
+			<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() == AppInstanceState.REMOVED.toString() || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
+				<div class="col-xs-12">
+					<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
+					<hr>
+					<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
+							[form]="configurationTemplate"
+							[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+							[refresh]="refreshForm"
+							(formLoad)="changeForm()"
+							(submit)="applyConfiguration($event.data)">
+					</formio>
+				</div>
+			</div>
+
 	<div class="row" *ngIf="this.appInstanceStateHistory">
 		<h3>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.HEADER' | translate}}</h3>
 		<hr>
@@ -132,20 +146,6 @@
 							 screenReaderPaginationLabel="{{ 'PAGINATION.SCREEN_READER.PAGINATION' | translate }}"
 							 screenReaderPageLabel="{{ 'PAGINATION.SCREEN_READER.PAGE' | translate }}"
 							 screenReaderCurrentLabel="{{ 'PAGINATION.SCREEN_READER.CURRENT' | translate }}"></pagination-controls>
-	</div>
-
-	<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() == AppInstanceState.REMOVED.toString() || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
-		<div class="col-xs-12">
-			<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
-			<hr>
-			<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
-					[form]="configurationTemplate"
-					[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-					[refresh]="refreshForm"
-					(formLoad)="changeForm()"
-					(submit)="applyConfiguration($event.data)">
-			</formio>
-		</div>
 	</div>
 	<hr>
 	<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
