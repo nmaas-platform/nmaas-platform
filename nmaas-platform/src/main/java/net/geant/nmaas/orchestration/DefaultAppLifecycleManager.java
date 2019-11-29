@@ -139,7 +139,11 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
         Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
-        janitorService.createOrReplaceBasicAuth(deploymentId, domain, accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword"));
+        String basicAuthUsername = accessCredentialsMap.get("accessUsername");
+        String basicAuthPassword = accessCredentialsMap.get("accessPassword");
+        if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
+            janitorService.createOrReplaceBasicAuth(deploymentId, domain, basicAuthUsername, basicAuthPassword);
+        }
     }
 
     @Override
@@ -171,7 +175,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
         }
         if(isNotEmpty(configuration.getAccessCredentials())){
-            changeBasicAuth(deploymentId, appDeployment.getDomain(), configuration.getAccessCredentials());
+            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), appDeployment.getDomain(), configuration.getAccessCredentials());
         }
     }
 
