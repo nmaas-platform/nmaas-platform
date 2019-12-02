@@ -29,6 +29,8 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
+  private readonly item_number_key: string = 'item_number_per_page';
+
   public p_first: string = "p_first";
   public p_second: string = "p_second";
 
@@ -72,7 +74,11 @@ export class AppInstanceListComponent implements OnInit {
     this.domainService.getAll().subscribe(result => {
       this.domains.push(...result);
     });
-
+    let i = sessionStorage.getItem(this.item_number_key);
+    if(i) {
+      this.maxItemsOnPage = +i;
+      this.maxItemsOnPageSec = +i;
+    }
   }
 
   public getDomainNameById(id: number): string {
@@ -115,6 +121,7 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public setItems(item){
+    sessionStorage.setItem(this.item_number_key, item);
     this.maxItemsOnPage = item;
     this.maxItemsOnPageSec = item;
   }
