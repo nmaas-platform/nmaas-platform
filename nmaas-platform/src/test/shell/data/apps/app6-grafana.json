@@ -10,23 +10,23 @@
     "descriptions": [
         {
             "language": "en",
-            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
-            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+            "briefDescription": "Open source analytics & monitoring solution for every database",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
         },
         {
             "language": "de",
-            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
-            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+            "briefDescription": "Open source analytics & monitoring solution for every database",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
         },
         {
             "language": "fr",
-            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
-            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+            "briefDescription": "Open source analytics & monitoring solution for every database",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
         },
         {
             "language": "pl",
-            "briefDescription": "Grafana to rozwiązanie open source do analizowania i wizualizacji danych.",
-            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+            "briefDescription": "Rozwiązanie open source do analizy i wizualizacji danych",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
         }
     ],
     "wwwUrl": "https://grafana.com/",
@@ -75,7 +75,7 @@
                                     "key": "mandatoryParameters",
                                     "components": [
                                         {
-                                            "label": "Default admin username",
+                                            "label": "Grafana admin username",
                                             "type": "textfield",
                                             "key": "adminUser",
                                             "input": true,
@@ -85,7 +85,7 @@
                                             }
                                         },
                                         {
-                                            "label": "Default admin password",
+                                            "label": "Grafana admin password",
                                             "type": "password",
                                             "key": "adminPassword",
                                             "input": true,
@@ -138,7 +138,7 @@
                                             }
                                         },
                                         {
-                                            "label": "Data Source name",
+                                            "label": "Data source name",
                                             "type": "textfield",
                                             "input": true,
                                             "key": "source_name",
@@ -188,11 +188,13 @@
                                     "key": "additionalParameters",
                                     "components": [
                                         {
-                                            "label": "SMTP host",
+                                            "label": "SMTP host (by default uses in-cluster Postfix)",
                                             "type": "textfield",
                                             "input": true,
                                             "key": "smtp#host",
-                                            "inputFormat": "plain"
+                                            "inputFormat": "plain",
+                                            "defaultValue": "nmaas-postfix.nmaas-system:587",
+                                            "tab": 1
                                         },
                                         {
                                             "label": "SMTP username",
