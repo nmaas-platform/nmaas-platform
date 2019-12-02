@@ -33,7 +33,7 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-        this.repository.save(new Internationalization(1L, "en", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
+        this.repository.save(new Internationalization(1L, "pl", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
     }
 
     @AfterEach
