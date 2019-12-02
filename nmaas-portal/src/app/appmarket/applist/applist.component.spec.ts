@@ -6,7 +6,7 @@ import {RouterTestingModule} from "@angular/router/testing";
 import {AppSubscriptionsService} from "../../service/appsubscriptions.service";
 import {UserDataService} from "../../service/userdata.service";
 import {ApplicationsViewComponent} from "../../shared/applications/applications.component";
-import {AppConfigService, AppsService, TagService} from "../../service";
+import {AppConfigService, AppsService, DomainService, TagService} from '../../service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {SearchComponent} from "../../shared/common/search/search.component";
 import {TagFilterComponent} from "../../shared/common/tagfilter/tagfilter.component";
@@ -18,6 +18,7 @@ import {PipesModule} from "../../pipe/pipes.module";
 import {AppInstallModalComponent} from "../../shared/modal/appinstall";
 import {ModalComponent} from "../../shared/modal";
 import {Observable, of} from "rxjs";
+import {TooltipModule} from 'ng2-tooltip-directive';
 
 describe('ApplistComponent', () => {
   let component: AppListComponent;
@@ -27,7 +28,7 @@ describe('ApplistComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ AppListComponent, ApplicationsViewComponent, SearchComponent, AppInstallModalComponent, ModalComponent,
           AppSharedListComponent, TagFilterComponent, AppElementComponent, RateComponent],
-        imports:[
+        imports: [
             RouterTestingModule,
             PipesModule,
             HttpClientTestingModule,
@@ -38,14 +39,16 @@ describe('ApplistComponent', () => {
                 }
             }),
             FormsModule,
-            ReactiveFormsModule
+            ReactiveFormsModule,
+            TooltipModule
         ],
         providers: [
             AppConfigService,
             AppSubscriptionsService,
             UserDataService,
             AppsService,
-            TagService
+            TagService,
+            DomainService
         ]
     })
     .compileComponents();

@@ -26,3 +26,13 @@ hr{
     margin-bottom: 8px;
     margin-top: 8px;
 }
+
+.no-padding{
+    padding: 0;
+    border: 0;
+}
+
+.first-button-substitute{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}

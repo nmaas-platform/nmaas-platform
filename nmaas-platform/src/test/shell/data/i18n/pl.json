@@ -83,7 +83,7 @@
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instancja testowa NMaaS",
-    "BODY": "Pamiętaj, że jest to testowa instancja NMaaS. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej.\nNie używaj tej intancji do monitorowania rzeczywistych urządzeń.",
+    "BODY": "Pamiętaj, że jest to testowa instancja NMaaS. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej.\nNie używaj tej instancji do monitorowania rzeczywistych urządzeń.",
     "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
@@ -146,7 +146,7 @@
     "IP_VALIDATION_MESSAGE": "Adres IP może zawierać tylko cyfry i kropki",
     "NETWORK_REQUIRED_MESSAGE": "Network jest wymagany",
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "Network address może zawierać tylko cyfry i kropki",
-    "MASK_VALIDATION_MESSAGE": "Mask musi zawierać się w przedziale od 0 do 32",
+    "MASK_VALIDATION_MESSAGE": "Maska musi zawierać się w przedziale od 0 do 32",
     "SMTP_SERVER_HOSTNAME": "Nazwa serwera SMTP",
     "SMTP_SERVER_PORT": "Port serwera SMTP",
     "SMTP_SERVER_USERNAME": "Nazwa użytkownika serwera SMTP",
@@ -217,8 +217,8 @@
     "VIEW_SETTINGS_BUTTON": "Pokaż ustawienia",
     "CHECK_NOW_BUTTON": "Sprawdź teraz",
     "EDIT_SETTINGS_BUTTON": "Edytuj ustawienia",
-    "ACTIVATE_BUTTON": "Activate",
-    "DEACTIVATE_BUTTON": "Deactivate"
+    "ACTIVATE_BUTTON": "Aktywuj",
+    "DEACTIVATE_BUTTON": "Wyłącz"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Szczegóły monitorowania",
@@ -285,7 +285,10 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Nie wyszczególniono sieci klienta.",
     "IP_ADDRESS": "Adres IP",
     "MASK_LENGTH": "Długość maski",
-    "ADD": "Dodaj"
+    "ADD": "Dodaj",
+    "APP_STATUS": "Status aplikacji",
+    "APP_NAME": "Nazwa aplikacji",
+    "APP_ENABLED": "Dostępna"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
@@ -353,7 +356,9 @@
     "RATING": "Oceny",
     "RATING_AVERAGE": "Średnia ocena użytkowników",
     "RATING_INFO": "Wybierz liczbę gwiazdek aby zagłosować",
-    "RATING_BREAKDOWN": "Rozkład ocen"
+    "RATING_BREAKDOWN": "Rozkład ocen",
+    "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information."
   },
   "RESTART_MODAL": {
     "HEADER": "Potwierdzenie restartu instancji",
@@ -414,7 +419,7 @@
       "SUBSCRIPTION_VALIDATION": "Sprawdzanie subskrypcji",
       "ENVIRONMENT_CREATION": "Tworzenie środowiska",
       "SETTING_UP_CONNECTIVITY": "Ustanawianie połączenia",
-      "APPLYING_APP_CONFIGURATION": "Dodawanie konfiugracji",
+      "APPLYING_APP_CONFIGURATION": "Dodawanie konfiguracji",
       "APP_CONTAINER_DEPLOYMENT": "Tworzenie kontenera",
       "APP_RUNNING": "Aplikacja uruchomiona",
       "UNDEPLOYING": "Usuwanie kontenera",
@@ -424,11 +429,11 @@
       "REQUEST_VALIDATE": "Żądanie zweryfikowane poprawnie",
       "VALIDATE_FAILED": "Weryfikacja żądania nieudana",
       "DEPLOY_IN_PROGRESS": "Tworzenie środowiska trwa",
-      "ENV_READY":"Srodowisko jest gotowe",
+      "ENV_READY":"Środowisko jest gotowe",
       "ENV_FAILED": "Przygotowanie srodowiska nie powiodło się",
-      "DCN_PROGRESS": "Konfiugracja DCN trwa",
+      "DCN_PROGRESS": "Konfiguracja DCN trwa",
       "DCN_SUCCESS": "DCN skonfiugurowano poprawnie",
-      "DCN_FAILED": "Konfiugracja DCN nie powiodła się",
+      "DCN_FAILED": "Konfiguracja DCN nie powiodła się",
       "APP_CONFIG_PROGRESS": "Konfiguracja aplikacji trwa",
       "APP_CONFIG_SUCCESS": "Aplikacja skonfigurowana poprawnie",
       "APP_CONFIG_FAILED": "Konfiguracja aplikacji nie powiodła się",
@@ -450,7 +455,7 @@
       "UNKNOWN": "Nieznany stan",
       "ERROR": "Błąd wewnętrzny",
       "FAILED_APPLICATION_REMOVED": "Aplikacja, której instalacja się nie powiodła została usunięta",
-      "APP_CONF_REMOVE_PROGRESS": "Trwa usuwanie konfiguration aplikacji",
+      "APP_CONF_REMOVE_PROGRESS": "Trwa usuwanie konfiguracji aplikacji",
       "APP_CONF_REMOVE_SUCCESS": "Konfiguracja aplikacji usunięta poprawnie",
       "APP_CONF_REMOVE_ERROR": "Usuwanie konfiguracji aplikacji nie powiodło się"
     },
@@ -460,7 +465,7 @@
       "PREPARATION": "NMaaS przygotowuje środowisko wdrażania dla Twojej aplikacji",
       "CONNECTING": "NMaaS nawiązuje bezpieczne połączenie",
       "CONFIGURATION_AWAITING":  "NMaaS oczekuje na konfigurację aplikacji. Zapewnij początkową konfigurację za pomocą kreatora poniżej historii wdrażania",
-      "DEPLOYING": "Aplikacja jest wdrażana przez NMaaS. Ten proces może potrwać do kilku minut. Po otrzymaniu instancji zostaniesz powiadomiony e-mailem",
+      "DEPLOYING": "Aplikacja jest uruchamiana przez NMaaS. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem gdy instancja będzie gotowa",
       "RUNNING": "Twoja aplikacja jest gotowa. Możesz teraz uzyskać dostęp do swojej aplikacji, klikając przycisk powyżej",
       "UNDEPLOYING": "Aplikacja jest usuwana. Ten proces może potrwać do kilku minut",
       "DONE":  "Aplikacja została pomyślnie usunięta",
@@ -524,7 +529,7 @@
     "UNAVAILABLE_MESSAGE": "Usługa jest niedostępna. Spróbuj ponownie później.",
     "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
-    "TERMS_OF_USER_MESSAGE": "Musisz potwierdzić zapozanie się z Politykę Prywatności"
+    "TERMS_OF_USER_MESSAGE": "Musisz potwierdzić zapoznanie się z Politykę Prywatności"
   },
   "APPS_MANAGEMENT": {
     "TITLE": "Zarządzanie aplikacjami",
@@ -559,9 +564,9 @@
     "LICENSE_URL_LABEL": "Link do licencji",
     "PROJECT_WEBSITE_LABEL": "Strona internetowa projektu",
     "SOURCE_CODE_LABEL": "Link do kodu źródłowego",
-    "PROJECT_ISSUES_LABEL": "Link to project issues",
+    "PROJECT_ISSUES_LABEL": "Link to problemów",
     "TAGS_LABEL": "Wybierz tagi odpowiednie dla aplikacji",
-    "NEW_TAGS_LABEL": "Dodaj nowe tagi opisujące Twoją aplikacje",
+    "NEW_TAGS_LABEL": "Dodaj nowe tagi opisujące Twoją aplikację",
     "CHOOSE_LABEL": "Wybierz",
     "CANCEL_LABEL": "Anuluj",
     "UPLOAD_LOGO_LABEL": "Załaduj logo aplikacji",
@@ -575,7 +580,7 @@
     "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
     "REPOSITORY_REQUIRED_LABEL": "Wymagane repozytorium",
     "CONFIG_WIZARD_TEMPLATE_LABEL": "Formularz konfiguracji aplikacji",
-    "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Formularz do akutalizacji konfiguracji aplikacji",
+    "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Formularz do aktualizacji konfiguracji aplikacji",
     "NEW_APP_MODAL": {
       "HEADER": "Nowa aplikacja została wysłana poprawnie",
       "BODY": "Dziękujemy za przesłanie nowej aplikacji. Twoje zgłoszenie musi zostać teraz sprawdzona przez zespół NMaaS. To może chwile zająć.",
@@ -604,7 +609,7 @@
     "SOURCE_CODE_TOOLTIP": "Link do kodu źródłowego na przykład github.com/project.",
     "PROJECT_ISSUES_TOOLTIP": "Podaj link do issues projektu, aby użytkownicy mogli łatwo znaleźć sposób na zgłoszenie problemu z tym narzędziem.",
     "TAGS_TOOLTIP": "Wybierz tagi, które najlepiej opisują aplikacje. Pomoże to użytkownikom w bardziej efektywnym wyszukiwaniu aplikacji, których potrzebują.",
-    "NEW_TAGS_TOOLTIP": "Dodaj tagi, jeśli uważasz że obecnie istniejące nie pasują do Twojej aplikacji. Wpisz nazwe tagu i wciśnij enter aby dodać nowy tag.",
+    "NEW_TAGS_TOOLTIP": "Dodaj tagi, jeśli uważasz że obecnie istniejące nie pasują do Twojej aplikacji. Wpisz nazwę tagu i wciśnij enter aby dodać nowy tag.",
     "BRIEF_DESCRIPTION_TOOLTIP": "Podaj krótki opis aplikacji. Tekst ten będzie widoczny na stronie marketu NMaaS.",
     "FULL_DESCRIPTION_TOOLTIP": "Podaj pełny opis aplikacji. Tekst ten będzie widoczny w widoku szczegółowym aplikacji.",
     "CHART_NAME_TOOLTIP": "Podaj nazwę chart, który będzie wykorzystywany w systemie NMaaS.",
@@ -615,7 +620,7 @@
     "DISABLED_NEXT_BUTTON_TOOLTIP": "Musisz wypełnić wszystkie wymagane pola!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne",
     "CONFIG_FILENAME_LABEL": "Nazwa pliku konfiguracyjnego",
-    "CONFIG_FILENAME_TOOLTIP": "Podaj nazwe pliku konfiguracyjnego",
+    "CONFIG_FILENAME_TOOLTIP": "Podaj nazwę pliku konfiguracyjnego",
     "CONFIG_CONTENT_LABEL": "Szablon konfiguracyjny",
     "CONFIG_CONTENT_TOOLTIP":"Podaj szablon konfiguracyjny. Pamiętaj że musi on być zgodny z FreeMarker Template Language.",
     "ADD_CONFIG_BUTTON": "Dodaj nowy szablon",
@@ -634,8 +639,8 @@
     "BASIC_AUTH_TOOLTIP": "Możesz dodać podstawowe uwierzytelnienie do Twojej aplikacji zaznaczając tą opcję.",
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania.",
-    "EXPOSE_WEB_UI": "Udostępnij graficzny interface użytkownika",
-    "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interface użytkownika",
+    "EXPOSE_WEB_UI": "Udostępnij graficzny interfejs użytkownika",
+    "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interfejs użytkownika",
     "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
     "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}"
   },
@@ -664,9 +669,9 @@
   "CONTACT_FORM": {
     "TITLE": "Formularz kontaktowy",
     "EMAIL": "Twój adres email",
-    "NAME": "Twoje imie",
-    "MESSAGE": "Treść maila",
-    "MESSAGE_PLACEHOLDER": "Tutaj wpisz treść maila",
+    "NAME": "Twoje imię",
+    "MESSAGE": "Treść wiadomości",
+    "MESSAGE_PLACEHOLDER": "Tutaj wpisz treść wiadomości",
     "SUBMIT_BUTTON": "Wyślij",
     "MODAL": {
       "TITLE": "Mail został wysłany",
@@ -709,7 +714,7 @@
       "ACTIVE": "Aktywne",
       "REJECTED": "Odrzucone",
       "NEW": "Nowe",
-      "DISABLED": "Zdeaktywowane",
+      "DISABLED": "Nieaktywne",
       "DELETED": "Usunięte"
     },
     "USER_ROLES": {

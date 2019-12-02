@@ -10,10 +10,8 @@ import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
@@ -65,6 +63,8 @@ public class DomainServiceImpl implements DomainService {
 
 	private ModelMapper modelMapper;
 
+	private ApplicationBaseRepository applicationBaseRepository;
+
 	@Autowired
 	public DomainServiceImpl(CodenameValidator validator,
 							 @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
@@ -73,7 +73,8 @@ public class DomainServiceImpl implements DomainService {
 							 UserService users,
 							 UserRoleRepository userRoleRepo,
 							 DcnRepositoryManager dcnRepositoryManager,
-							 ModelMapper modelMapper
+							 ModelMapper modelMapper,
+							 ApplicationBaseRepository applicationBaseRepository
 	){
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
@@ -83,6 +84,7 @@ public class DomainServiceImpl implements DomainService {
 		this.userRoleRepo = userRoleRepo;
 		this.dcnRepositoryManager = dcnRepositoryManager;
 		this.modelMapper = modelMapper;
+		this.applicationBaseRepository = applicationBaseRepository;
 	}
 
 	@Override
@@ -147,7 +149,11 @@ public class DomainServiceImpl implements DomainService {
 		}
 		this.setCodenames(request);
 		try {
-			return domainRepo.save(modelMapper.map(request, Domain.class));
+			// add all applicationBase as enabled by default
+			List<ApplicationStatePerDomain> applicationStatePerDomainList = this.applicationBaseRepository.findAll().stream().map(ApplicationStatePerDomain::new).collect(Collectors.toList());
+			Domain newDomain = modelMapper.map(request, Domain.class);
+			newDomain.setApplicationStatePerDomain(applicationStatePerDomainList);
+			return domainRepo.save(newDomain);
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
