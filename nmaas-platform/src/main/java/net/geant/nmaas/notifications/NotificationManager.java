@@ -76,7 +76,11 @@ public class NotificationManager {
         if(mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)){
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
-        if(mailAttributes.getMailType().equals(MailType.REGISTRATION) || mailAttributes.getMailType().equals(MailType.APP_NEW) || mailAttributes.getMailType().equals(MailType.CONTACT_FORM)){
+        if(mailAttributes.getMailType().equals(MailType.REGISTRATION)
+                || mailAttributes.getMailType().equals(MailType.APP_NEW)
+                || mailAttributes.getMailType().equals(MailType.CONTACT_FORM)
+                || mailAttributes.getMailType().equals(MailType.NEW_SSO_LOGIN)
+        ){
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
         if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)){
