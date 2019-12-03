@@ -45,10 +45,15 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Loggable(LogLevel.DEBUG)
     public void deployService(Identifier deploymentId) {
         try {
+            updateHelmRepo();
             installHelmChart(repositoryManager.loadService(deploymentId));
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
+    }
+
+    private void updateHelmRepo() {
+        helmCommandExecutor.executeHelmRepoUpdateCommand();
     }
 
     private void installHelmChart(KubernetesNmServiceInfo serviceInfo) {
@@ -137,6 +142,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         try {
+            updateHelmRepo();
             helmCommandExecutor.executeHelmUpgradeCommand(
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     template.getArchive()
