@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 
 import {isUndefined} from 'util';
 
-import {AppInstance, AppInstanceState} from '../../../model/index';
-import {DomainService} from '../../../service/domain.service';
-import {AppInstanceService, AppsService, CustomerSearchCriteria} from '../../../service/index';
+import {AppInstance, AppInstanceState} from '../../../model';
+import {DomainService} from '../../../service';
+import {AppInstanceService, AppsService, CustomerSearchCriteria} from '../../../service';
 import {AuthService} from '../../../auth/auth.service';
-import {AppConfigService} from '../../../service/appconfig.service';
+import {AppConfigService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable, of} from 'rxjs';
 import {NgxPaginationModule} from 'ngx-pagination';
@@ -14,7 +14,6 @@ import {TranslateService} from "@ngx-translate/core";
 import {map} from 'rxjs/operators';
 import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
 import {SessionService} from "../../../service/session.service";
-import {TooltipComponent} from "ng2-tooltip-directive";
 import {Domain} from "../../../model/domain";
 
 export enum AppInstanceListSelection {
@@ -28,6 +27,8 @@ export enum AppInstanceListSelection {
   providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
 })
 export class AppInstanceListComponent implements OnInit {
+
+  private readonly item_number_key: string = 'item_number_per_page';
 
   public p_first: string = 'p_first';
   public p_second: string = 'p_second';
@@ -72,7 +73,11 @@ export class AppInstanceListComponent implements OnInit {
     this.domainService.getAll().subscribe(result => {
       this.domains.push(...result);
     });
-
+    let i = sessionStorage.getItem(this.item_number_key);
+    if (i) {
+      this.maxItemsOnPage = +i;
+      this.maxItemsOnPageSec = +i;
+    }
   }
 
   public getDomainNameById(id: number): string {
@@ -117,6 +122,7 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public setItems(item){
+    sessionStorage.setItem(this.item_number_key, item);
     this.maxItemsOnPage = item;
     this.maxItemsOnPageSec = item;
   }
