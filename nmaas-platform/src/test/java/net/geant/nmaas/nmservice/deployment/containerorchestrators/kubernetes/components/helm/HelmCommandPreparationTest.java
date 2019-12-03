@@ -31,6 +31,7 @@ public class HelmCommandPreparationTest {
             "helm upgrade " + RELEASE_NAME + " " + CHART_ARCHIVE_NAME;
     private static final String CORRECT_HELM_VERSION_COMMAND = "helm version";
     private static final String TLS = " --tls";
+    private static final String CORRECT_HELM_REPO_UPDATE_COMMAND = "helm repo update";
 
     @Test
     public void shouldConstructInstallCommandUsingLocalChartArchiveWithNoArgumentsWithDisabledTls() {
@@ -140,13 +141,18 @@ public class HelmCommandPreparationTest {
     }
 
     @Test
-    public void shouldConstructVersionCommandWithDisabledTls(){
+    public void shouldConstructVersionCommandWithDisabledTls() {
         assertThat(HelmVersionCommand.command(false).asString(), equalTo(CORRECT_HELM_VERSION_COMMAND));
     }
 
     @Test
-    public void shouldConstructVersionCommandWithEnabledTls(){
+    public void shouldConstructVersionCommandWithEnabledTls() {
         assertThat(HelmVersionCommand.command(true).asString(), equalTo(CORRECT_HELM_VERSION_COMMAND + TLS));
+    }
+
+    @Test
+    public void shouldConstructRepoUpdateCommand() {
+        assertThat(HelmRepoUpdateCommand.command().asString(), equalTo(CORRECT_HELM_REPO_UPDATE_COMMAND));
     }
 
 }
