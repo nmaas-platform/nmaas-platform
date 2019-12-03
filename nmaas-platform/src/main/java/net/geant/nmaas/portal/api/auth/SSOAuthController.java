@@ -25,6 +25,8 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/api/auth/sso")
 public class SSOAuthController {
@@ -94,6 +96,7 @@ public class SSOAuthController {
 				.builder()
 				.otherAttributes(ImmutableMap.of("newUser", user.getUsername()))
 				.mailType(MailType.NEW_SSO_LOGIN)
+				.addressees(this.users.findAllUsersWithAdminRole())
 				.build();
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
