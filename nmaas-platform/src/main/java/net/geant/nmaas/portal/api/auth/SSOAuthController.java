@@ -1,9 +1,5 @@
 package net.geant.nmaas.portal.api.auth;
 
-import com.google.common.collect.ImmutableMap;
-import net.geant.nmaas.notifications.MailAttributes;
-import net.geant.nmaas.notifications.NotificationEvent;
-import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,8 +21,6 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
-import java.util.ArrayList;
-
 @RestController
 @RequestMapping("/api/auth/sso")
 public class SSOAuthController {
@@ -41,16 +35,13 @@ public class SSOAuthController {
 
 	private ShibbolethConfigManager shibbolethConfigManager;
 
-	private ApplicationEventPublisher eventPublisher;
-
 	@Autowired
-	public SSOAuthController(UserService users, DomainService domains, JWTTokenService jwtTokenService, ConfigurationManager configurationManager, ShibbolethConfigManager shibbolethConfigManager, ApplicationEventPublisher eventPublisher){
+	public SSOAuthController(UserService users, DomainService domains, JWTTokenService jwtTokenService, ConfigurationManager configurationManager, ShibbolethConfigManager shibbolethConfigManager){
 		this.users = users;
 		this.domains = domains;
 		this.jwtTokenService = jwtTokenService;
 		this.configurationManager = configurationManager;
 		this.shibbolethConfigManager = shibbolethConfigManager;
-		this.eventPublisher = eventPublisher;
 	}
 
 	@PostMapping(value="/login")
@@ -81,23 +72,11 @@ public class SSOAuthController {
 
 	private User registerNewUser(UserSSOLogin userSSOLoginData){
 		try{
-			User temp = users.register(userSSOLoginData, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-			this.sendMail(temp);
-			return temp;
+			return users.register(userSSOLoginData, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 		} catch (ObjectAlreadyExistsException e) {
 			throw new SignupException("User already exists");
 		} catch (MissingElementException e) {
 			throw new SignupException("Domain not found");
 		}
-	}
-
-	private void sendMail(User user){
-		MailAttributes mailAttributes = MailAttributes
-				.builder()
-				.otherAttributes(ImmutableMap.of("newUser", user.getUsername()))
-				.mailType(MailType.NEW_SSO_LOGIN)
-				.addressees(this.users.findAllUsersWithAdminRole())
-				.build();
-		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 }

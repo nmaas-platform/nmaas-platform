@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.api.auth;
 
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
-import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -44,7 +43,7 @@ public class SSOAuthControlleTest {
 
     @BeforeEach
     public void setup(){
-        ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, shibbolethConfigManager, eventPublisher);
+        ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, shibbolethConfigManager);
     }
 
     @Test
@@ -94,7 +93,7 @@ public class SSOAuthControlleTest {
     }
 
     @Test
-    public void shouldRegisterNewUserAndSendEmailIfUserIsNotFound() {
+    public void shouldRegisterNewUserIfUserIsNotFound() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
@@ -110,7 +109,6 @@ public class SSOAuthControlleTest {
 
         verify(users).findBySamlToken(isA(String.class));
         verify(users).register(isA(UserSSOLogin.class), isA(Domain.class));
-        verify(eventPublisher).publishEvent(isA(NotificationEvent.class));
     }
 
     @Test
