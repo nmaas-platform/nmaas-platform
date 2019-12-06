@@ -21,10 +21,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -73,6 +70,9 @@ public class UsersControllerTest {
 		when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
+		when(userService.findAllUsersWithAdminRole()).thenReturn(new ArrayList<UserView>() {{
+			add(new UserView(2L, "admin"));
+		}});
 	}
 
 	@Test
@@ -403,6 +403,15 @@ public class UsersControllerTest {
 		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
 		usersController.completeRegistration(principal, userRequest);
 		verify(userService, times(1)).update(userList.get(0));
+	}
+
+	@Test
+	public void shouldCompleteRegistrationAndSendEmail(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
+		usersController.completeRegistration(principal, userRequest);
+		verify(userService, times(1)).update(userList.get(0));
+		verify(eventPublisher, times(1)).publishEvent(any());
 	}
 
 	@Test
