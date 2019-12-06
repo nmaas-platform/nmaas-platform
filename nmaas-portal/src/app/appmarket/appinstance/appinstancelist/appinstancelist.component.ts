@@ -139,9 +139,8 @@ export class AppInstanceListComponent implements OnInit {
     }
     this.appDeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-        app => (AppInstanceState[app.state] !== AppInstanceState.REMOVED.toString()
+        app => (AppInstanceState[app.state] != AppInstanceState.REMOVED.toString()
           && AppInstanceState[app.state] != AppInstanceState.DONE.toString()
-          && AppInstanceState[app.state] != AppInstanceState.UNDEPLOYING.toString()
       ))));
     this.appDeployedInstances = this.appDeployedInstances.pipe(
         map( app => app.filter(
@@ -152,7 +151,6 @@ export class AppInstanceListComponent implements OnInit {
         map(AppInstances => AppInstances.filter(
         app => (AppInstanceState[app.state] == AppInstanceState.REMOVED.toString()
           || AppInstanceState[app.state] == AppInstanceState.DONE.toString()
-          || AppInstanceState[app.state] == AppInstanceState.UNDEPLOYING.toString()
         ))));
     this.appUndeployedInstances = this.appUndeployedInstances.pipe(
         map(app => app.filter(
