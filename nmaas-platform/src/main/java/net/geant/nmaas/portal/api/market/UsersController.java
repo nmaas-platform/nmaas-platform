@@ -260,6 +260,7 @@ public class UsersController {
 		domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
 		domainService.addGlobalGuestUserRoleIfMissing(user.getId());
 		userService.update(user);
+		this.sendMail(this.userService.findAllUsersWithAdminRole().get(0), MailType.NEW_SSO_LOGIN, ImmutableMap.of("newUser", user.getUsername()));
 	}
 
 	@PostMapping("/users/reset/notification")
