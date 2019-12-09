@@ -108,6 +108,7 @@
     "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Resource configuration",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "INGRESS_PER_DOMAIN": "Ingress per domain",
     "TLS_SUPPORTED": "TLS supported",
     "DEPLOYMENT": "Deployment",
     "NAMESPACE_CONFIG_OPTION": "Paramètres \"Namespace\"",
@@ -180,7 +181,7 @@
     "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation"
   },
   "DOMAINS": {
-    "TITRE": "Organisation",
+    "TITLE": "Organisation",
     "CODE_NAME": "Code idientifiant",
     "NAME": "Nom",
     "ACTIVATE": "Actif",
@@ -248,6 +249,7 @@
     "ACTIVE": "Actif",
     "ID_IN_DB": "ID dans la base de données",
     "KUBERNETES_NAMESPACE": "\"Namespace\" Kubernetes",
+    "KUBERNETES_NAMESPACE_PLACEHOLDER": "Default value: codename",
     "KUBERNETES_STORAGE_CLASS": "\"StorageClass\" Kubernetes",
     "KUBERNETES_INGRESS_CLASS": "Kubernetes Ingress class",
     "DCN_STATUS": "Statut du réseau de supervision",

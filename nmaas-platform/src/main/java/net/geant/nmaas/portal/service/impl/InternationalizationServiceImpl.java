@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
-import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
+import net.geant.nmaas.portal.persistent.entity.InternationalizationSimple;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.InternationalizationService;
 import org.apache.commons.lang3.StringUtils;
@@ -14,20 +15,20 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class InternationalizationServiceImpl implements InternationalizationService {
 
-    private InternationalizationRepository repository;
+    private InternationalizationSimpleRepository repository;
 
     private ConfigurationManager configurationManager;
 
     private ModelMapper modelMapper;
 
     @Autowired
-    public InternationalizationServiceImpl(InternationalizationRepository repository, ConfigurationManager configurationManager, ModelMapper modelMapper){
+    public InternationalizationServiceImpl(InternationalizationSimpleRepository repository, ConfigurationManager configurationManager, ModelMapper modelMapper){
         this.repository = repository;
         this.configurationManager = configurationManager;
         this.modelMapper = modelMapper;
@@ -36,7 +37,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     @Override
     public void addNewLanguage(InternationalizationView newLanguage){
         checkRequest(newLanguage);
-        repository.save(modelMapper.map(newLanguage, Internationalization.class));
+        repository.save(modelMapper.map(newLanguage, Internationalization.class).getAsInternationalizationSimple());
     }
 
     private void checkRequest(InternationalizationView newLanguage){
@@ -64,9 +65,9 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     @Transactional
     public void updateLanguage(String language, String content){
         checkRequest(language, content);
-        Internationalization internationalization = repository.findByLanguageOrderByIdDesc(language).orElseThrow(() -> new IllegalArgumentException("Language not found"));
+        Internationalization internationalization = repository.findByLanguageOrderByIdDesc(language).orElseThrow(() -> new IllegalArgumentException("Language not found")).getAsInternationalization();
         internationalization.setContent(content);
-        repository.save(internationalization);
+        repository.save(internationalization.getAsInternationalizationSimple());
     }
 
     private void checkRequest(String language, String content){
@@ -81,6 +82,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     @Override
     public List<InternationalizationBriefView> getAllSupportedLanguages(){
         return repository.findAll().stream()
+                .map(InternationalizationSimple::getAsInternationalization)
                 .map(lang -> modelMapper.map(lang, InternationalizationBriefView.class))
                 .collect(Collectors.toList());
     }
@@ -90,6 +92,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     public InternationalizationView getLanguage(String language){
         return repository
                 .findByLanguageOrderByIdDesc(language)
+                .map(InternationalizationSimple::getAsInternationalization)
                 .map(lang -> modelMapper.map(lang, InternationalizationView.class))
                 .orElseThrow(() -> new IllegalArgumentException("Language is not available"));
     }
@@ -97,18 +100,19 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     @Override
     public void changeLanguageState(InternationalizationBriefView language){
         Internationalization internationalization = repository.findByLanguageOrderByIdDesc(language.getLanguage())
-                .orElseThrow(()-> new IllegalArgumentException("Language not found"));
+                .orElseThrow(()-> new IllegalArgumentException("Language not found")).getAsInternationalization();
         if(internationalization.getLanguage().equals(configurationManager.getConfiguration().getDefaultLanguage())){
             throw new IllegalStateException("Cannot disable default language");
         }
         internationalization.setEnabled(language.isEnabled());
-        repository.save(internationalization);
+        repository.save(internationalization.getAsInternationalizationSimple());
     }
 
     @Override
     public String getLanguageContent(String language){
         return repository
                 .findByLanguageOrderByIdDesc(language)
+                .map(InternationalizationSimple::getAsInternationalization)
                 .map(Internationalization::getContent)
                 .orElseThrow(() -> new IllegalStateException("language content not available"));
     }
@@ -116,8 +120,8 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     @Override
     public List<String> getEnabledLanguages(){
         return repository.findAll().stream()
-                .filter(Internationalization::isEnabled)
-                .map(Internationalization::getLanguage)
+                .filter(InternationalizationSimple::isEnabled)
+                .map(InternationalizationSimple::getLanguage)
                 .collect(Collectors.toList());
     }
 }

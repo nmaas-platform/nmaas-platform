@@ -140,6 +140,8 @@
     "REST_API_HOST_ADDRESS_REQUIRED_MESSAGE": "REST API host address jest wymagany",
     "REST_API_HOST_ADDRESS_VALIDATION_MESSAGE": "REST API host address może zawierać tylko cyfry i kropki",
     "REST_API_PORT_REQUIRED_MESSAGE": "REST API host port jest wymagany",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru Kubernetes namespace to 64.",
     "IP_REQUIRED_MESSAGE": "Adres IP jest wymagany",
     "IP_VALIDATION_MESSAGE": "Adres IP może zawierać tylko cyfry i kropki",
     "NETWORK_REQUIRED_MESSAGE": "Network jest wymagany",
