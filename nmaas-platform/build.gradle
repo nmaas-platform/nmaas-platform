@@ -11,12 +11,11 @@ apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'org.sonarqube'
 apply plugin: 'com.google.protobuf'
 
-version = '1.2.2-SNAPSHOT'
+version = '1.2.2'
 group = 'net.geant.nmaas'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
 
 buildscript {
 	repositories {
