@@ -208,8 +208,7 @@
                                                             "key": "ipAddress",
                                                             "placeholder": "127.0.0.1:9001",
                                                             "validate": {
-                                                                "required": true,
-                                                                "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
+                                                                "required": true
                                                             },
                                                             "inputFormat": "plain",
                                                             "row": "0-0"
@@ -251,6 +250,40 @@
                                                     "row": "0-5"
                                                 }
                                             ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Additional",
+                            "key": "additionalParametersTab",
+                            "components": [
+                                {
+                                    "label": "additionalParameters",
+                                    "hideLabel": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 2,
+                                    "key": "additionalParameters",
+                                    "components": [
+                                        {
+                                            "label": "Retention data size",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "defaultValue": "18GB",
+                                            "inputFormat": "plain",
+                                            "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#size\"",
+                                            "tab": 2
+                                        },
+                                        {
+                                            "label": "Retention period",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "defaultValue": "15d",
+                                            "inputFormat": "plain",
+                                            "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#time\"",
+                                            "tab": 2
                                         }
                                     ]
                                 }
@@ -438,8 +471,7 @@
                                             "key": "ipAddress",
                                             "placeholder": "127.0.0.1:9001",
                                             "validate": {
-                                                "required": true,
-                                                "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
+                                                "required": true
                                             },
                                             "inputFormat": "plain",
                                             "row": "0-0"
