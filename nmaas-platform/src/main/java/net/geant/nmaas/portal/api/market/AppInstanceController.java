@@ -1,10 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.AppLifecycleState;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.*;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -60,6 +57,8 @@ public class AppInstanceController extends AppBaseController {
     private ApplicationInstanceService instances;
 
     private DomainService domains;
+
+    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     @GetMapping
     @Transactional
@@ -362,6 +361,8 @@ public class AppInstanceController extends AppBaseController {
                 | InvalidDeploymentIdException e) {
             ai.setUrl(null);
         }
+
+        ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
 
         ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
 
