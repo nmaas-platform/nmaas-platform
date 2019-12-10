@@ -152,4 +152,11 @@ public class HelmCommandExecutor {
         return SingleCommandExecutor.getExecutor(helmAddress, helmUsername);
     }
 
+    void executeHelmRepoUpdateCommand() {
+        try{
+            singleCommandExecutor().executeSingleCommand(HelmRepoUpdateCommand.command());
+        } catch(SshConnectionException e) {
+            throw new CommandExecutionException("Failed to execute helm repository update command -> " + e.getMessage());
+        }
+    }
 }

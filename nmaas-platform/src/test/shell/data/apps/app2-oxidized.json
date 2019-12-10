@@ -40,7 +40,7 @@
 			},
 			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
 		},
-		"defaultStorageSpace":20,
+		"defaultStorageSpace":1,
 		"exposesWebUI": true
 	},
 	"appConfigurationSpec": {
@@ -193,7 +193,7 @@
 											"type": "number",
 											"input": true,
 											"key": "storageSpace",
-											"placeholder": "Default value: 20GB",
+											"placeholder": "Default value: 1GB",
 											"tab": 1
 										}
 									]

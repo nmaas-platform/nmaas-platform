@@ -33,10 +33,10 @@
 						   <thead>
 							  <tr>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								  <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
 								 <th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								 <th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
 								 <th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
 							  </tr>
@@ -45,16 +45,26 @@
 						   <ng-template ngFor let-appInstance [ngForOf]="appDeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }">
 							  <tr>
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
-								  <td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
+								  <td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{getDomainNameById(appInstance?.domainId)}}</td>
 								  <td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
 								  <td class="col-lg-2 col-md-2 text-center" >{{appInstance?.createdAt | localDate:'medium'}}</td>
-								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
 								  <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
 								  <td class="col-lg-3 col-md-3 text-center">
-									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
-										{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
-									</a>
-									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">{{ 'APP_INSTANCES.GO_TO_APP_BUTTON' | translate }}</a>
+									  <a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" role = "button">
+										  <i class="far fa-eye icon-black icon-bigger"></i>
+									  </a>
+
+									  <span class="dropdown" *ngIf="checkPrivileges(appInstance)">
+										  <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+											 data-toggle="dropdown" href="#" role="button">
+											  <i class="fas fa-cog icon-black icon-bigger"></i>
+										  </a>
+										  <ul class="dropdown-menu pull-right-drop">
+											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>
+										  </ul>
+									  </span>
+
 								</td>
 							  </tr>
 							  </ng-template>
@@ -73,10 +83,10 @@
 							<thead>
 							<tr>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
 								<th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								<th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
 								<th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
 							</tr>
@@ -85,16 +95,25 @@
 							<ng-template ngFor let-appInstance [ngForOf]="appUndeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPageSec, currentPage: secondPageNumber, id: p_second }">
 								<tr>
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
-									<td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
+									<td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{getDomainNameById(appInstance?.domainId)}}</td>
 									<td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
 									<td class="col-lg-2 col-md-2 text-center" >{{appInstance?.createdAt | localDate:'medium'}}</td>
-									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
 									<td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
 									<td class="col-lg-3 col-md-3 text-center">
-										<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
-											{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
+										<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" role = "button">
+											<i class="far fa-eye icon-black icon-bigger"></i>
 										</a>
-										<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">{{ 'APP_INSTANCES.GO_TO_APP_BUTTON' | translate }}</a>
+
+										<span class="dropdown" *ngIf="checkPrivileges(appInstance)">
+										  <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+											 data-toggle="dropdown" href="#" role="button">
+											  <i class="fas fa-cog icon-black icon-bigger"></i>
+										  </a>
+										  <ul class="dropdown-menu pull-right-drop">
+											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>
+										  </ul>
+									  </span>
 									</td>
 								</tr>
 							</ng-template>

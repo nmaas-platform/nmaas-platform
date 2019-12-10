@@ -34,6 +34,7 @@ import {AppManagementModule} from "./appmanagement/appmanagement.module";
 import {SessionService} from "../service/session.service";
 import {LocalDatePipe} from "../pipe/local-date.pipe";
 import {LanguageManagementModule} from "./admin/languagemanagement/languagemanagement.module";
+import {TooltipModule} from 'ng2-tooltip-directive';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import {LanguageManagementModule} from "./admin/languagemanagement/languagemanag
     ConfigurationModule,
     BrowserModule,
     HttpClientModule,
+    TooltipModule,
     TranslateModule.forChild(),
   ],
   exports: [

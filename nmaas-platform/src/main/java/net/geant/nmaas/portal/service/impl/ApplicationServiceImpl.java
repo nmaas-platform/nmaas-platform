@@ -2,24 +2,24 @@ package net.geant.nmaas.portal.service.impl;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import org.apache.commons.lang.StringUtils;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import net.geant.nmaas.portal.service.ApplicationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import net.geant.nmaas.portal.service.ApplicationService;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -34,7 +34,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 		checkParam(request, owner);
 		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
 		this.setMissingProperties(request, app.getId());
-		modelMapper.map(request, app);
+		request.setAppVersionId(app.getId());
+		request.setOwner(owner);
+		app = modelMapper.map(request, Application.class);
 		checkParam(app);
 		return appRepo.save(app);
 	}
@@ -62,6 +64,16 @@ public class ApplicationServiceImpl implements ApplicationService {
 			return appRepo.findById(applicationId);
 		else
 			throw new IllegalArgumentException("applicationId is null");
+	}
+
+	@Override
+	public Application findApplicationLatestVersion(String name) {
+		if(StringUtils.isEmpty(name)){
+			throw new IllegalArgumentException("Application name cannot be null or empty");
+		}
+		return appRepo.findByName(name).stream()
+				.max(Comparator.comparing(Application::getCreationDate))
+				.orElseThrow(() -> new MissingElementException("Application " + name + " cannot be found"));
 	}
 
 	@Override
@@ -113,7 +125,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public void setMissingProperties(ApplicationView app, Long appId){
-		setMissingDescriptions(app);
 		setMissingTemplatesId(app, appId);
 	}
 
@@ -144,21 +155,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
 		app.validate();
-	}
-
-	private void setMissingDescriptions(ApplicationView app){
-		AppDescriptionView appDescription = app.getDescriptions().stream()
-				.filter(description -> description.getLanguage().equals("en"))
-				.findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));
-		app.getDescriptions()
-				.forEach(description ->{
-					if(StringUtils.isEmpty(description.getBriefDescription())){
-						description.setBriefDescription(appDescription.getBriefDescription());
-					}
-					if(StringUtils.isEmpty(description.getFullDescription())){
-						description.setFullDescription(appDescription.getFullDescription());
-					}
-				});
 	}
 
 	private void setMissingTemplatesId(ApplicationView app, Long appId){

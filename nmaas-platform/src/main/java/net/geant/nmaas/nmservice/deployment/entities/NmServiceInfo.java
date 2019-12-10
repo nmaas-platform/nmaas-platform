@@ -74,7 +74,7 @@ public abstract class NmServiceInfo {
 
     /** Globally unique descriptive application deployment identifier */
     @Column(nullable = false)
-    private String descriptiveDeploymentId;
+    private Identifier descriptiveDeploymentId;
 
     /** GitLab project information created to store configuration files for this service (deployment) */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -85,7 +85,7 @@ public abstract class NmServiceInfo {
     @Fetch(FetchMode.SELECT)
     private Map<String, String> additionalParameters;
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, String descriptiveDeploymentId) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
@@ -94,7 +94,7 @@ public abstract class NmServiceInfo {
         this.descriptiveDeploymentId = descriptiveDeploymentId;
     }
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, String descriptiveDeploymentId, Map <String, String> additionalParameters) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, Map <String, String> additionalParameters) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;

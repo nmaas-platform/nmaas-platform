@@ -2,10 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
@@ -63,7 +60,15 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		checkParam(application);
 		checkNameCharacters(name);
 		checkNameUniqueness(domain, name);
-		if(applicationSubscriptions.isActive(application, domain))
+
+		String app_name = application.getName();
+		for (ApplicationStatePerDomain a: domain.getApplicationStatePerDomain()) {
+			if(app_name.equals(a.getApplicationBase().getName()) && !a.isEnabled()){
+				throw new IllegalArgumentException("Application is disabled in domain settings");
+			}
+		}
+
+		if(applicationSubscriptions.isActive(application.getName(), domain))
 			return appInstanceRepo.save(new AppInstance(application, domain, name));
 		else
 			throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");

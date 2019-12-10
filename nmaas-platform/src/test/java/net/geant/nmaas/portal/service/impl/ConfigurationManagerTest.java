@@ -6,7 +6,7 @@ import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
-import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ public class ConfigurationManagerTest {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-    private InternationalizationRepository internationalizationRepository = mock(InternationalizationRepository.class);
+    private InternationalizationSimpleRepository internationalizationRepository = mock(InternationalizationSimpleRepository.class);
 
     private ConfigurationManager configurationManager;
 
@@ -42,9 +42,9 @@ public class ConfigurationManagerTest {
     @BeforeEach
     public void setup(){
         this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository);
-        this.config = new Configuration(1L, false, false, "en");
-        this.internationalization = new Internationalization(1L, "pl", true, "Content");
-        this.configView = new ConfigurationView(1L, false, false, "pl");
+        this.config = new Configuration(1L, false, false, "en", false);
+        this.internationalization = new Internationalization(1L, "pl", true, "{\"test\":\"test\"}");
+        this.configView = new ConfigurationView(1L, false, false, "pl", false);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ConfigurationManagerTest {
     public void shouldUpdateConfiguration(){
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
         when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
-                .thenReturn(Optional.of(internationalization));
+                .thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
         configurationManager.updateConfiguration(1L, configView);
         verify(repository, times(1)).save(any());
     }
@@ -106,7 +106,7 @@ public class ConfigurationManagerTest {
             this.internationalization.setEnabled(false);
             when(repository.findById(config.getId())).thenReturn(Optional.of(config));
             when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
-                    .thenReturn(Optional.of(internationalization));
+                    .thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
             configurationManager.updateConfiguration(1L, configView);
         });
     }

@@ -33,12 +33,12 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
         super();
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, String descriptiveDeploymentId, KubernetesTemplate kubernetesTemplate) {
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, KubernetesTemplate kubernetesTemplate) {
         super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId);
         this.kubernetesTemplate = kubernetesTemplate;
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, String descriptiveDeploymentId, Map<String, String> additionalParameters, KubernetesTemplate kubernetesTemplate) {
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, Map<String, String> additionalParameters, KubernetesTemplate kubernetesTemplate) {
         super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId, additionalParameters);
         this.kubernetesTemplate = kubernetesTemplate;
     }

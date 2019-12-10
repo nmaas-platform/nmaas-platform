@@ -5,9 +5,9 @@ import {GenericDataService} from './genericdata.service';
 import {HttpClient} from '@angular/common/http'
 import {AppConfigService} from './appconfig.service';
 
-import {Id} from '../model/id';
+import {Id} from '../model';
 import {Domain} from '../model/domain';
-import {User} from '../model/user';
+import {User} from '../model';
 
 @Injectable()
 export class DomainService extends GenericDataService {
@@ -70,11 +70,11 @@ export class DomainService extends GenericDataService {
     return this.get<User[]>(this.url + 'users');
   }
 
-  public setUpdateRequiredFlag(flag:boolean){
+  public setUpdateRequiredFlag(flag: boolean) {
     this.updateRequiredFlag = flag;
   }
 
-  public shouldUpdate(): boolean{
+  public shouldUpdate(): boolean {
     return this.updateRequiredFlag;
   }
 }

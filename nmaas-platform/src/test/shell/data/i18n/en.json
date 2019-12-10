@@ -81,6 +81,11 @@
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later.",
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed"
   },
+  "TEST_INSTANCE_MODAL": {
+    "HEADER": "NMaaS test instance",
+    "BODY": "Please be aware that this is a test NMaaS instance. The user isolation and data security measures are not so strict as on the production instance. \nDo not use this instance to monitor real equipment.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
     "HELM": "Helm",
@@ -232,9 +237,10 @@
     "SUBMIT_BUTTON": "Submit",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language",
-    "LANGUAGE_SUPPORT": "Language support",
+    "LANGUAGE_SUPPORT": "Supported languages",
     "LANGUAGE_ENABLED": "Enabled",
-    "LANGUAGE_DISABLED": "Disabled"
+    "LANGUAGE_DISABLED": "Disabled",
+    "TEST_INSTANCE": "Mark as test NMaaS instance"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",
@@ -279,7 +285,10 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "There are no customer networks specified.",
     "IP_ADDRESS": "IP Address",
     "MASK_LENGTH": "Mask length",
-    "ADD": "Add"
+    "ADD": "Add",
+    "APP_STATUS": "Application status",
+    "APP_NAME": "Application name",
+    "APP_ENABLED": "Enabled"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",
@@ -347,7 +356,9 @@
     "RATING": "Rating",
     "RATING_AVERAGE": "Average user rating",
     "RATING_INFO": "Click star to rate an application",
-    "RATING_BREAKDOWN": "Rating breakdown"
+    "RATING_BREAKDOWN": "Rating breakdown",
+    "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information."
   },
   "RESTART_MODAL": {
     "HEADER": "Restart confirmation",
@@ -363,7 +374,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required.",
     "DOMAIN": "Domain",
     "CLOSE_BUTTON": "Close",
-    "DEPLOY_BUTTON": "Deploy"
+    "DEPLOY_BUTTON": "Deploy",
+    "USE_DEFAULT_VERSION": "Use default version",
+    "SELECT_VERSION": "Select version"
   },
   "APP_INSTANCE": {
     "SOURCE": "Source",
@@ -460,6 +473,7 @@
       "UNKNOWN": "Unknown state of application - contact with NMaaS Team using contact form available on the \" About\" subpage",
       "REMOVED": "Undeployed successfully after failure"
     },
+    "SHOW_VERSIONS_LABEL": "Show available versions",
     "GO_TO_APP_TOOLTIP": "This application does not expose a web user interface"
   },
   "UNDEPLOY_MODAL": {
@@ -521,6 +535,7 @@
     "TITLE": "Applications management",
     "NAME": "Name",
     "STATE": "State",
+    "VERSION": "Version",
     "ADD_BUTTON": "Add",
     "VIEW_BUTTON": "View",
     "EDIT_BUTTON": "Edit",
@@ -529,7 +544,8 @@
     "REJECTED_TAB": "Rejected",
     "NEW_TAB": "New",
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
-    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
+    "ADD_NEW_VERSION_BUTTON": "Add new version"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -624,7 +640,9 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates",
     "EXPOSE_WEB_UI": "Expose web user interface",
-    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface"
+    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",

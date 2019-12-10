@@ -25,26 +25,27 @@ import { DomainFilterComponent } from './common/domainfilter/domainfilter.compon
 import { AppListComponent } from './applications/list/applist.component';
 import { ApplicationsViewComponent } from './applications/applications.component';
 import { AppElementComponent } from './applications/list/element/appelement.component';
-import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails.component";
-import { GitlabDetailsComponent } from "./admin/gitlab/details/gitlab-details.component";
+import { ClusterDetailsComponent } from './admin/clusters/details/clusterdetails.component';
+import { GitlabDetailsComponent } from './admin/gitlab/details/gitlab-details.component';
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { SortableColumnComponent } from './sortable-column/sortable-column.component';
 import { SortableTableDirective } from './sortable-column/sortable-table.directive';
-import { AppInstallModalComponent } from "./modal/appinstall";
+import { AppInstallModalComponent } from './modal/appinstall';
 import { RatingExtendedComponent } from './rating-extended/rating-extended.component';
-import { TooltipModule } from "ng2-tooltip-directive";
-import { PasswordStrengthMeterModule } from "angular-password-strength-meter";
+import { TooltipModule } from 'ng2-tooltip-directive';
+import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
 import { AboutComponent } from './about/about.component';
-import {ChangelogComponent} from "./changelog/changelog.component";
-import {NotificationService} from "../service/notification.service";
-import {RECAPTCHA_LANGUAGE, RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from "ng-recaptcha";
+import {ChangelogComponent} from './changelog/changelog.component';
+import {NotificationService} from '../service/notification.service';
+import {RECAPTCHA_LANGUAGE, RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import { SingleCommentComponent } from './comments/single-comment/single-comment.component';
-import {TranslateStateModule} from "./translate-state/translate-state.module";
-import {MinLengthDirective} from "../directive/min-length.directive";
-import {MaxLengthDirective} from "../directive/max-length.directive";
-import {AppConfigService} from "../service";
+import {TranslateStateModule} from './translate-state/translate-state.module';
+import {MinLengthDirective} from '../directive/min-length.directive';
+import {MaxLengthDirective} from '../directive/max-length.directive';
+import {AppConfigService} from '../service';
+import { ModalTestInstanceComponent } from './modal/modal-test-instance/modal-test-instance.component';
 
 @NgModule({
   imports: [
@@ -92,7 +93,8 @@ import {AppConfigService} from "../service";
     RatingExtendedComponent,
     AboutComponent,
     ChangelogComponent,
-    SingleCommentComponent
+    SingleCommentComponent,
+    ModalTestInstanceComponent
   ],
   providers: [
     PasswordValidator,
@@ -107,35 +109,36 @@ import {AppConfigService} from "../service";
       deps: [AppConfigService]
     }
   ],
-  exports: [
-    RateComponent,
-    FooterComponent,
-    CommentsComponent,
-    ScreenshotsComponent,
-    ModalComponent,
-    UserDetailsComponent,
-    UsersListComponent,
-    PasswordComponent,
-    UserPrivilegesComponent,
-    NavbarComponent,
-    UserPrivilegesComponent,
-    AppInstallModalComponent,
-    RolesDirective,
-    MinLengthDirective,
-    MaxLengthDirective,
-    SearchComponent,
-    TagFilterComponent,
-    DomainFilterComponent,
-    ApplicationsViewComponent,
-    ClusterDetailsComponent,
-    GitlabDetailsComponent,
-    ModalInfoTermsComponent,
-    ModalInfoPolicyComponent,
-    SortableColumnComponent,
-    SortableTableDirective,
-    RatingExtendedComponent,
-    AboutComponent,
-    TranslateStateModule
-  ]
+    exports: [
+        RateComponent,
+        FooterComponent,
+        CommentsComponent,
+        ScreenshotsComponent,
+        ModalComponent,
+        UserDetailsComponent,
+        UsersListComponent,
+        PasswordComponent,
+        UserPrivilegesComponent,
+        NavbarComponent,
+        UserPrivilegesComponent,
+        AppInstallModalComponent,
+        RolesDirective,
+        MinLengthDirective,
+        MaxLengthDirective,
+        SearchComponent,
+        TagFilterComponent,
+        DomainFilterComponent,
+        ApplicationsViewComponent,
+        ClusterDetailsComponent,
+        GitlabDetailsComponent,
+        ModalInfoTermsComponent,
+        ModalInfoPolicyComponent,
+        SortableColumnComponent,
+        SortableTableDirective,
+        RatingExtendedComponent,
+        AboutComponent,
+        TranslateStateModule,
+        ModalTestInstanceComponent
+    ]
 })
 export class SharedModule {}

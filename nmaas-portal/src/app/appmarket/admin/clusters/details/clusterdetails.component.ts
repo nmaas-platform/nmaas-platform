@@ -1,7 +1,7 @@
 import {Component, Output} from "@angular/core";
 import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
 import {OnInit} from "@angular/core/public_api";
-import {Cluster, ClusterAttachPoint} from "../../../../model/cluster";
+import {Cluster} from "../../../../model/cluster";
 import {ClusterService} from "../../../../service/cluster.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ComponentMode} from "../../../../shared";
@@ -24,9 +24,6 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
 
     ngOnInit() {
         this.clusterService.getCluster().subscribe(cluster => {
-            if(isNullOrUndefined(cluster.attachPoint)){
-                cluster.attachPoint = new ClusterAttachPoint();
-            }
             this.cluster = cluster;
             this.router.navigate(['/admin/clusters/view']);
         }, () => {

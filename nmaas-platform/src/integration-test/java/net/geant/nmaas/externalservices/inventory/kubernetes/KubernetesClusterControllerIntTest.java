@@ -6,7 +6,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCer
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
@@ -68,11 +67,6 @@ public class KubernetesClusterControllerIntTest {
                         "\"forceDedicatedWorkers\":\"false\"," +
                         "\"smtpServerHostname\": \"test-postfix\"," +
                         "\"smtpServerPort\": 587" +
-                    "}," +
-                    "\"attachPoint\":{" +
-                        "\"routerName\":\"R1\"," +
-                        "\"routerId\":\"172.0.0.1\"," +
-                        "\"routerInterfaceName\":\"ge-0/0/1\"" +
                     "}," +
                     "\"externalNetworks\":" +
                         "[{" +
@@ -244,11 +238,6 @@ public class KubernetesClusterControllerIntTest {
         deployment.setSmtpServerHostname("test-postfix");
         deployment.setSmtpServerPort(543);
         cluster.setDeployment(deployment);
-        KClusterAttachPoint attachPoint = new KClusterAttachPoint();
-        attachPoint.setRouterId("172.0.0.1");
-        attachPoint.setRouterInterfaceName("ge-0/0/1");
-        attachPoint.setRouterName("R1");
-        cluster.setAttachPoint(attachPoint);
         KClusterExtNetwork externalNetwork1 = new KClusterExtNetwork();
         externalNetwork1.setExternalIp(InetAddress.getByName("10.0.0.1"));
         externalNetwork1.setExternalNetwork(InetAddress.getByName("10.0.0.0"));

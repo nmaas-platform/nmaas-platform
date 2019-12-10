@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.api.domain.converters;
 
-import org.modelmapper.AbstractConverter;
-
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.AbstractConverter;
 
 public class TagConverter extends AbstractConverter<String, Tag>{
 
-    TagRepository tagRepo;
+    private TagRepository tagRepo;
 
     public TagConverter(TagRepository tagRepo) {
             super();
@@ -18,9 +18,10 @@ public class TagConverter extends AbstractConverter<String, Tag>{
 
     @Override
     protected Tag convert(String source) {
-            if(source == null) return null;
-            Tag tag = tagRepo.findByName(source);
-            return (tag != null ? tag : new Tag(source));
+            if(StringUtils.isEmpty(source)) {
+                return null;
+            }
+            return tagRepo.findByName(source).orElse(new Tag(source));
     }
 
 }

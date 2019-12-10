@@ -23,6 +23,8 @@ export class AppPreviewComponent implements OnInit {
   @Input()
   public screenshots:any[];
 
+  public versionVisible: boolean = false;
+
   constructor(public route:ActivatedRoute, public appService: AppsService, public translate:TranslateService,
               public appImagesService:AppImagesService, public dom:DomSanitizer) { }
 
@@ -74,6 +76,14 @@ export class AppPreviewComponent implements OnInit {
       return '//' + url;
     }
     return url;
+  }
+
+  public isVersionView() : boolean {
+    return !isNullOrUndefined(this.app.version) && this.app.version !== "";
+  }
+
+  public showVersions(){
+    this.versionVisible = !this.versionVisible;
   }
 
 }

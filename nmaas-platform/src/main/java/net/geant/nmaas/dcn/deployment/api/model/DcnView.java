@@ -12,14 +12,10 @@ public class DcnView {
 
     private String domain;
     private String state;
-    private int vlanNumber;
-    private String subnet;
 
     public DcnView(DcnInfo dcnInfo) {
         this.domain = dcnInfo.getDomain();
         this.state = dcnInfo.getState().name();
-        this.vlanNumber = dcnInfo.getCloudEndpointDetails().getVlanNumber();
-        this.subnet = dcnInfo.getCloudEndpointDetails().getSubnet();
     }
 
 }

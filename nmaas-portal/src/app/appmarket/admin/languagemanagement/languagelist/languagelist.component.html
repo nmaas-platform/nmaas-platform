@@ -16,9 +16,29 @@
           <td><img alt="language" src="assets/images/country/{{lang.language}}_circle.png" style="height: 22px;"></td>
           <td>{{'LANGUAGE.' + lang.language.toUpperCase() + '_LABEL' | translate}}</td>
           <td class="text-right">
-            <button [routerLink]="['/admin/languages/' + lang.language]" class="btn btn-sm btn-primary">{{'LANGUAGE_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-            <button *ngIf="lang.enabled" class="btn btn-sm btn-success" (click)="changeLanguageState(lang)">{{'LANGUAGE_MANAGEMENT.LANGUAGE_DISABLED' | translate }}</button>
-            <button *ngIf="!lang.enabled" class="btn btn-sm btn-danger" (click)="changeLanguageState(lang)">{{'LANGUAGE_MANAGEMENT.LANGUAGE_ENABLED' | translate }}</button>
+            <span class="dropdown">
+              <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+                    data-toggle="dropdown" href="#" role="button">
+                <i class="fas fa-cog icon-black icon-bigger"></i>
+              </a>
+              <ul class="dropdown-menu pull-right-drop">
+                <li>
+                  <a [routerLink]="['/admin/languages/' + lang.language]">
+					{{ 'LANGUAGE_MANAGEMENT.EDIT_BUTTON' | translate }}
+                  </a>
+                </li>
+                <li>
+                  <a *ngIf="lang.enabled" (click)="changeLanguageState(lang)">
+					{{ 'LANGUAGE_MANAGEMENT.LANGUAGE_DISABLED' | translate }}
+                  </a>
+                </li>
+                <li>
+                  <a *ngIf="!lang.enabled" (click)="changeLanguageState(lang)">
+					{{ 'LANGUAGE_MANAGEMENT.LANGUAGE_ENABLED' | translate }}
+                  </a>
+                </li>
+              </ul>
+            </span>
           </td>
         </tr>
       </ng-template>

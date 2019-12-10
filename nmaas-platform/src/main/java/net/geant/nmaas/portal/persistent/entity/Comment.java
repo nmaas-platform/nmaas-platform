@@ -36,7 +36,7 @@ public class Comment implements Serializable {
 	private boolean deleted;
 	
 	@ManyToOne(optional=false, fetch=FetchType.LAZY)
-	private Application application;
+	private ApplicationBase application;
 		
 	@OneToOne(optional=true, orphanRemoval=false, fetch=FetchType.LAZY)
 	private User owner;
@@ -53,27 +53,27 @@ public class Comment implements Serializable {
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private Long createdAt;
 	
-	public Comment(Application application, String comment) {
+	public Comment(ApplicationBase application, String comment) {
 		this.application = application;
 		this.comment = comment;
 	}
 	
-	public Comment(Application application, String comment, User owner) {
+	public Comment(ApplicationBase application, String comment, User owner) {
 		this(application, comment);
 		this.owner = owner;
 	}
 	
-	protected Comment(Long id, Application application, String comment) {
+	protected Comment(Long id, ApplicationBase application, String comment) {
 		this(application, comment);
 		this.id = id;
 	}
 	
-	protected Comment(Long id, Application application, String comment, User owner) {
+	protected Comment(Long id, ApplicationBase application, String comment, User owner) {
 		this(application, comment, owner);
 		this.id = id;
 	}	
 	
-	public Comment(Application application, Comment parent, String comment) {
+	public Comment(ApplicationBase application, Comment parent, String comment) {
 		this(application, comment);
 		this.parent = parent;
 	}

@@ -23,7 +23,7 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.captcha.ValidateCaptcha;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +50,8 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -260,6 +260,7 @@ public class UsersController {
 		domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
 		domainService.addGlobalGuestUserRoleIfMissing(user.getId());
 		userService.update(user);
+		this.sendMail(this.userService.findAllUsersWithAdminRole().get(0), MailType.NEW_SSO_LOGIN, ImmutableMap.of("newUser", user.getUsername()));
 	}
 
 	@PostMapping("/users/reset/notification")

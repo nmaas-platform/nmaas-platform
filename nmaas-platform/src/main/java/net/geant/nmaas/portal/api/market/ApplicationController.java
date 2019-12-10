@@ -12,7 +12,9 @@ import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +38,12 @@ public class ApplicationController extends AppBaseController {
 
 	private ApplicationEventPublisher eventPublisher;
 
+	private ApplicationBaseService appBaseService;
+
 	@GetMapping
 	@Transactional
 	public List<ApplicationBriefView> getApplications() {
-		return applications.findAll().stream()
-				.filter(app -> app.getState().equals(ApplicationState.ACTIVE) || app.getState().equals(ApplicationState.DISABLED))
+		return appBaseService.findAllActiveOrDisabledApps().stream()
 				.map(app -> modelMapper.map(app, ApplicationBriefView.class))
 				.collect(Collectors.toList());
 	}
@@ -49,7 +52,7 @@ public class ApplicationController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public List<ApplicationBriefView> getAllApplications(){
-		return applications.findAll().stream()
+		return appBaseService.findAll().stream()
 				.map(app -> modelMapper.map(app, ApplicationBriefView.class))
 				.collect(Collectors.toList());
 	}
@@ -59,8 +62,10 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public Id addApplication(@RequestBody ApplicationView appRequest, Principal principal) {
 		Application app = applications.create(appRequest, principal.getName());
+		appRequest.setId(app.getId());
+		ApplicationBase appBase = appBaseService.createApplicationOrAddNewVersion(appRequest);
 		this.sendMail(app, new ApplicationStateChangeRequest(app.getState(), ""));
-		return new Id(app.getId());
+		return new Id(appBase.getId());
 	}
 
 	@PatchMapping
@@ -71,12 +76,36 @@ public class ApplicationController extends AppBaseController {
 		applications.update(modelMapper.map(appRequest, Application.class));
 	}
 
+	@PatchMapping(value = "/base")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void updateApplicationBase(@RequestBody ApplicationView appRequest){
+		appBaseService.updateApplicationBase(appRequest);
+	}
+
 	@DeleteMapping(value="/{appId}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
     public void deleteApplication(@PathVariable(value = "appId") long appId){
-	    applications.delete(appId);
+	    Application app = getApp(appId);
+		applications.delete(appId);
+		appBaseService.updateApplicationVersionState(app.getName(), app.getOwner(), ApplicationState.DELETED);
     }
+
+    @GetMapping(value = "/base/{appId}")
+	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
+	@Transactional
+	public ApplicationBriefView getBaseApplication(@PathVariable(value = "appId") Long id) {
+		ApplicationBase app = appBaseService.getBaseApp(id);
+		return modelMapper.map(app, ApplicationBriefView.class);
+	}
+
+	@GetMapping(value = "/{appName}/latest")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public ApplicationView getLatestAppVersion(@PathVariable String appName){
+		return modelMapper.map(applications.findApplicationLatestVersion(appName), ApplicationView.class);
+	}
 
 	@GetMapping(value="/{appId}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
@@ -92,6 +121,7 @@ public class ApplicationController extends AppBaseController {
 	public void changeApplicationState(@PathVariable(value = "appId") long appId, @RequestBody ApplicationStateChangeRequest stateChangeRequest){
 		Application app = getApp(appId);
 		applications.changeApplicationState(app, stateChangeRequest.getState());
+		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
 		this.sendMail(app, stateChangeRequest);
 	}
 

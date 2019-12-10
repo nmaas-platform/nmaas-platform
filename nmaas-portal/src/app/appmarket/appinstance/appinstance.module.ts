@@ -38,8 +38,8 @@ import {TooltipModule} from "ng2-tooltip-directive";
         PipesModule,
         NgxPaginationModule,
         TranslateModule.forChild(),
-        TooltipModule
-    ],
+    TooltipModule
+  ],
   exports: [
     AppInstanceComponent,
     AppInstanceListComponent

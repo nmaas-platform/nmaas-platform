@@ -79,7 +79,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     appDeployment.getDeploymentName(),
                     appDeployment.getDomain(),
                     appDeployment.getStorageSpace(),
-                    createDescriptiveDeploymentId(appDeployment.getDomain(), appDeployment.getAppName(), appDeployment.getInstanceId()),
+                    appDeployment.getDescriptiveDeploymentId(),
                     createAdditionalParametersMap(appDeploymentSpec.getDeployParameters()),
                     KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
             );
@@ -89,14 +89,10 @@ public class KubernetesManager implements ContainerOrchestrator {
                     appDeployment.getDeploymentName(),
                     appDeployment.getDomain(),
                     appDeployment.getStorageSpace(),
-                    createDescriptiveDeploymentId(appDeployment.getDomain(), appDeployment.getAppName(), appDeployment.getInstanceId()),
+                    appDeployment.getDescriptiveDeploymentId(),
                     KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
             );
         }
-    }
-
-    private String createDescriptiveDeploymentId(String domain, String appName, Long id) {
-        return String.join("-", domain, appName, String.valueOf(id));
     }
 
     private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters){
@@ -185,7 +181,8 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             if (!serviceLifecycleManager.checkServiceDeployed(deploymentId))
                 throw new ContainerCheckFailedException("Service not deployed.");
-            if (!janitorService.checkIfReady(deploymentId, repositoryManager.loadService(deploymentId).getDomain())) {
+            KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+            if (!janitorService.checkIfReady(service.getDescriptiveDeploymentId(), service.getDomain())) {
                 throw new ContainerCheckFailedException("Service is not ready yet.");
             }
         } catch (KServiceManipulationException e) {
@@ -199,9 +196,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            janitorService.deleteConfigMapIfExists(deploymentId, service.getDomain());
-            janitorService.deleteBasicAuthIfExists(deploymentId, service.getDomain());
-            janitorService.deleteTlsIfExists(deploymentId, service.getDomain());
+            janitorService.deleteConfigMapIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteBasicAuthIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteTlsIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
             }
