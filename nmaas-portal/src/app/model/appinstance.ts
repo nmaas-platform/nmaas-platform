@@ -29,4 +29,5 @@ export class AppInstance {
   public userFriendlyState = undefined;
   public url: string = undefined;
   public configWizardTemplate: ConfigWizardTemplate = undefined;
+  public descriptiveDeploymentId: string = undefined;
 }
