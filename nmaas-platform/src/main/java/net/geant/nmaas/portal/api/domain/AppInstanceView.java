@@ -26,4 +26,6 @@ public class AppInstanceView extends AppInstanceBase {
 	private String url;
 
 	private ConfigWizardTemplateView configWizardTemplate;
+
+	private String descriptiveDeploymentId;
 }

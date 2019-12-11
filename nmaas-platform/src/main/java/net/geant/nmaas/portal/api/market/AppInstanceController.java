@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
@@ -11,7 +12,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.AppInstanceBase;
 import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
@@ -61,6 +61,8 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
+    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+
     @GetMapping
     @Transactional
     public List<AppInstanceView> getAllInstances(Pageable pageable) {
@@ -84,6 +86,21 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstanceView> getAllInstances(@PathVariable Long domainId, Pageable pageable) {
         Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         return instances.findAllByDomain(domain, pageable).getContent().stream()
+                .map(this::mapAppInstance)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/running/domain/{domainId}")
+    @Transactional
+    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
+        Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
+        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        return getAllRunningInstancesByOwnerAndDomain(owner, domain);
+    }
+
+    private List<AppInstanceView> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
+        return this.instances.findAllByOwnerAndDomain(owner, domain).stream()
+                .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
     }
@@ -235,14 +252,6 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @GetMapping("/running/domain/{domainId}")
-    @Transactional
-    public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
-        Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-        return this.getAllRunningInstancesByOwnerAndDomain(owner, domain);
-    }
-
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {
         if (appInstance == null)
             throw new MissingElementException("App instance is null");
@@ -363,15 +372,11 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
+        ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
+
         ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
 
         return ai;
     }
 
-    private List<AppInstanceBase> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
-        return this.instances.findAllByOwnerAndDomain(owner, domain).stream()
-                .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
-                .map(app -> modelMapper.map(app, AppInstanceBase.class))
-                .collect(Collectors.toList());
-    }
 }

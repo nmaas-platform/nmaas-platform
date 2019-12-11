@@ -17,7 +17,6 @@ group = 'net.geant.nmaas'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-
 buildscript {
 	repositories {
 		mavenCentral()
