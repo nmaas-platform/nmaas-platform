@@ -87,6 +87,21 @@ public class AppInstanceController extends AppBaseController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/running/domain/{domainId}")
+    @Transactional
+    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
+        Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
+        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        return getAllRunningInstancesByOwnerAndDomain(owner, domain);
+    }
+
+    private List<AppInstanceView> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
+        return this.instances.findAllByOwnerAndDomain(owner, domain).stream()
+                .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
+                .map(this::mapAppInstance)
+                .collect(Collectors.toList());
+    }
+
     @GetMapping(value = "/domain/{domainId}/my")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
@@ -234,14 +249,6 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @GetMapping("/running/domain/{domainId}")
-    @Transactional
-    public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
-        Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-        return this.getAllRunningInstancesByOwnerAndDomain(owner, domain);
-    }
-
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {
         if (appInstance == null)
             throw new MissingElementException("App instance is null");
@@ -369,10 +376,4 @@ public class AppInstanceController extends AppBaseController {
         return ai;
     }
 
-    private List<AppInstanceBase> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
-        return this.instances.findAllByOwnerAndDomain(owner, domain).stream()
-                .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
-                .map(app -> modelMapper.map(app, AppInstanceBase.class))
-                .collect(Collectors.toList());
-    }
 }
