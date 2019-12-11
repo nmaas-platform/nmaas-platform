@@ -1,12 +1,17 @@
 {"versions" : [
   {
     "verNo" : "1.2.2",
-    "date" : "(2019/12/xx)",
+    "date" : "(2019/12/10)",
     "topic" : [
       {
         "title" : "Updating application basic auth credentials",
         "tags" : "[Bugfix]",
-        "description" : "The configuration update wizard form will allows to change basic auth credentials for given application instance."
+        "description" : "The configuration update wizard form will allow to change basic auth credentials for given application instance."
+      },
+      {
+        "title" : "Admin area user interface enhancements",
+        "tags" : "[Enhancement]",
+        "description" : "Set of UI improvements mainly on the administrator views."
       }
     ]
   },
