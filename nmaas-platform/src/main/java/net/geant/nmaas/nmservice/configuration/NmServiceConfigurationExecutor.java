@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
@@ -29,6 +30,7 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
  */
 @Component
 @AllArgsConstructor
+@Log4j2
 public class NmServiceConfigurationExecutor implements NmServiceConfigurationProvider {
 
     private NmServiceConfigurationFilePreparer filePreparer;
@@ -60,9 +62,12 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                                 String domain, boolean configFileRepositoryRequired){
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
+            log.debug("Generating updated configuration files ...");
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
+            log.debug("Uploading updated configuration files ...");
             fileUploader.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired) {
+                log.debug("Requesting configMap reload ...");
                 janitorService.createOrReplaceConfigMap(descriptiveDeploymentId, domain);
             }
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
