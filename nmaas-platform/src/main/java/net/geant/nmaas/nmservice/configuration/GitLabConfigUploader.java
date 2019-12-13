@@ -259,6 +259,8 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         configIds.forEach(configId -> {
             log.debug("Loading configuration file information for id " + configId + " ...");
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
+            log.debug("-> configuration.fileName: " + configuration.getConfigFileName());
+            log.debug("-> configuration.fileContent: " + configuration.getConfigFileContent());
             RepositoryFile file = committedFile(configuration);
             try {
                 log.debug("Updating file on GitLab repository ...");
