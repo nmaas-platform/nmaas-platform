@@ -1,6 +1,8 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import java.util.Optional;
+
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -31,6 +33,7 @@ import java.util.List;
  */
 @Component
 @Profile("env_kubernetes")
+@Log4j2
 public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private static final String GROUPS_PATH_PREFIX = "groups";
@@ -105,7 +108,11 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     @Override
     public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired){
         if(configFileRepositoryRequired){
+            log.debug("Loading GitLab project for service " + deploymentId.value() + " ...");
             GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
+            if (project == null) {
+                throw new IllegalArgumentException("GitLab project can't be null while updating configuration");
+            }
             uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
         }
     }
@@ -250,9 +257,11 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private void uploadUpdateConfigFilesToProject(Integer gitLabProjectId, List<String> configIds){
         configIds.forEach(configId -> {
+            log.debug("Loading configuration file information for id " + configId + " ...");
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
             try {
+                log.debug("Updating file on GitLab repository ...");
                 gitlab.getRepositoryFileApi().updateFile(gitLabProjectId, file, commitBranch(), updateCommitMessage(configuration.getConfigFileName()));
             } catch (GitLabApiException e) {
                 throw new FileTransferException("Could not commit file " + configuration.getConfigFileName() + " due to exception: " + e.getMessage());
