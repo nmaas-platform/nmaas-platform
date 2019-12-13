@@ -65,7 +65,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             log.debug("Generating updated configuration files ...");
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             log.debug("Uploading updated configuration files ...");
-            fileUploader.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
+            fileUploader.transferConfigFiles(deploymentId, descriptiveDeploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired) {
                 log.debug("Requesting configMap reload ...");
                 janitorService.createOrReplaceConfigMap(descriptiveDeploymentId, domain);

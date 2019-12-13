@@ -1,7 +1,5 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import java.util.Optional;
-
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
@@ -25,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Interacts with a remote GitLab repository instance through a REST API in order to upload a set of application
@@ -103,18 +102,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private GitLabProject loadGitlabProject(Identifier deploymentId){
         this.createGitLabApi();
         return serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
-    }
-
-    @Override
-    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired){
-        if(configFileRepositoryRequired){
-            log.debug("Loading GitLab project for service " + deploymentId.value() + " ...");
-            GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
-            if (project == null) {
-                throw new IllegalArgumentException("GitLab project can't be null while updating configuration");
-            }
-            uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
-        }
     }
 
     @Override
@@ -259,8 +246,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         configIds.forEach(configId -> {
             log.debug("Loading configuration file information for id " + configId + " ...");
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
-            log.debug("-> configuration.fileName: " + configuration.getConfigFileName());
-            log.debug("-> configuration.fileContent: " + configuration.getConfigFileContent());
             RepositoryFile file = committedFile(configuration);
             try {
                 log.debug("Updating file on GitLab repository ...");
