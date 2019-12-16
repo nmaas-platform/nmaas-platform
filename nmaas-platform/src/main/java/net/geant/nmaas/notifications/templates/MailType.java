@@ -13,5 +13,6 @@ public enum MailType {
     APP_NEW,
     APP_DELETED,
     APP_NOT_ACTIVE,
-    NEW_SSO_LOGIN
+    NEW_SSO_LOGIN,
+    BROADCAST,
 }

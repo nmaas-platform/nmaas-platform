@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+/**
+ * This class handles notifications/emails sending logic
+ */
 @Service
 @Log4j2
 public class NotificationManager {
@@ -54,12 +57,19 @@ public class NotificationManager {
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Main function of `NotificationManager`
+     * @param mailAttributes provided mail type and attributes
+     * @throws IOException
+     * @throws TemplateException
+     */
     void prepareAndSendMail(MailAttributes mailAttributes) throws IOException, TemplateException {
         MailTemplateView mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
         Template template = templateService.getHTMLTemplate();
         this.getAllAddressees(mailAttributes);
         for(UserView user : mailAttributes.getAddressees()){
             LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
+            this.customizeMessage(mailContent, mailAttributes, user);
             this.notificationService.sendMail(user.getEmail(), mailContent.getSubject(), getFilledTemplate(template, mailContent, user, mailAttributes, mailTemplate));
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
@@ -72,6 +82,12 @@ public class NotificationManager {
                 .orElseThrow(() -> new IllegalArgumentException("Mail template in language " + selectedLanguage + " cannot be found"));
     }
 
+    /**
+     * This function sets email addresses server-side
+     * When adding new MailType, kae sure you edit this function so that your mail is send to proper users
+     * mailAttributes will be updated with new email addresses
+     * @param mailAttributes
+     */
     private void getAllAddressees(MailAttributes mailAttributes){
         if(mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)){
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
@@ -89,6 +105,23 @@ public class NotificationManager {
                 userService.findByUsername(mailAttributes.getOtherAttributes().get("owner"))
                         .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));
             }
+        }
+        if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
+            mailAttributes.setAddressees(userService.findAll().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
+        }
+    }
+
+    /**
+     * This function handles message type specific logic eg. custom title/subject for broadcast message
+     * @param mailContent mail content to be customize
+     * @param mailAttributes mail information and data provider
+     * @param user user information
+     */
+    private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes, UserView user) {
+        if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
+            mailContent.setSubject(mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
+            mailAttributes.getOtherAttributes().remove(MailTemplateElements.TITLE); // remove subject from other params
+            mailAttributes.getOtherAttributes().put("username", user.getUsername()); // customize template head
         }
     }
 
