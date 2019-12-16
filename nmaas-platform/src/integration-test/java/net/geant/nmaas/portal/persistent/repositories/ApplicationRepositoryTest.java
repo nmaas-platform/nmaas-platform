@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.persistent.repositories;
 import java.util.Optional;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Comment;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +52,7 @@ public class ApplicationRepositoryTest {
 
 	@Test
 	@WithMockUser(username="admin", roles={"SYSTEM_ADMIN"})
+	@Transactional
 	public void testAddApplication() {
 		ApplicationBase app1 = new ApplicationBase("zabbix");
 		app1.setTags(new HashSet<>());
@@ -72,6 +74,7 @@ public class ApplicationRepositoryTest {
 	}
 
 	@Test
+	@Transactional
 	public void testTags() {
 		Tag monitoringTag = new Tag("monitoring");
 		monitoringTag.setApplications(new HashSet<>());

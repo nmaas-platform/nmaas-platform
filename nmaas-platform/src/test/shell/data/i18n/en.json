@@ -286,9 +286,10 @@
     "IP_ADDRESS": "IP Address",
     "MASK_LENGTH": "Mask length",
     "ADD": "Add",
-    "APP_STATUS": "Application status",
+    "APP_STATUS": "Application properties",
     "APP_NAME": "Application name",
-    "APP_ENABLED": "Enabled"
+    "APP_ENABLED": "Enabled",
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",

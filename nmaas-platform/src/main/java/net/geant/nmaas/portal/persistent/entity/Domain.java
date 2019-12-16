@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,9 +49,9 @@ public class Domain implements Serializable {
 	
 	boolean active;
 
-	/** List of applications with status per domain **/
+	/** List of applications with state per domain **/
 	@ElementCollection(fetch = FetchType.LAZY)
-	private List<ApplicationStatePerDomain> applicationStatePerDomain;
+	private List<ApplicationStatePerDomain> applicationStatePerDomain = new ArrayList<>();
 
 	public Domain(String name, String codename) {
 		super();
@@ -79,11 +80,19 @@ public class Domain implements Serializable {
     }
 
 	public void addApplicationState(ApplicationBase applicationBase, boolean enabled){
-	    if(!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
-                .map(ApplicationBase::getId).collect(Collectors.toList()).contains(applicationBase.getId())){
-	        this.applicationStatePerDomain.add(new ApplicationStatePerDomain(applicationBase, enabled));
-        }
+		this.addApplicationState(new ApplicationStatePerDomain(applicationBase, enabled));
+//	    if(!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
+//                .map(ApplicationBase::getId).collect(Collectors.toList()).contains(applicationBase.getId())){
+//	        this.applicationStatePerDomain.add(new ApplicationStatePerDomain(applicationBase, enabled));
+//        }
     }
+
+    public void addApplicationState(ApplicationStatePerDomain appState) {
+		if(!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
+				.map(ApplicationBase::getId).collect(Collectors.toList()).contains(appState.getApplicationBase().getId())){
+			this.applicationStatePerDomain.add(appState);
+		}
+	}
 
 }
 

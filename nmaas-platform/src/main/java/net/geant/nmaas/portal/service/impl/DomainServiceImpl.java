@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +66,8 @@ public class DomainServiceImpl implements DomainService {
 
 	private ApplicationBaseRepository applicationBaseRepository;
 
+	private ApplicationStatePerDomainService applicationStatePerDomainService;
+
 	@Autowired
 	public DomainServiceImpl(CodenameValidator validator,
 							 @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
@@ -74,7 +77,8 @@ public class DomainServiceImpl implements DomainService {
 							 UserRoleRepository userRoleRepo,
 							 DcnRepositoryManager dcnRepositoryManager,
 							 ModelMapper modelMapper,
-							 ApplicationBaseRepository applicationBaseRepository
+							 ApplicationBaseRepository applicationBaseRepository,
+							 ApplicationStatePerDomainService applicationStatePerDomainService
 	){
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
@@ -85,6 +89,7 @@ public class DomainServiceImpl implements DomainService {
 		this.dcnRepositoryManager = dcnRepositoryManager;
 		this.modelMapper = modelMapper;
 		this.applicationBaseRepository = applicationBaseRepository;
+		this.applicationStatePerDomainService = applicationStatePerDomainService;
 	}
 
 	@Override
@@ -149,8 +154,7 @@ public class DomainServiceImpl implements DomainService {
 		}
 		this.setCodenames(request);
 		try {
-			// add all applicationBase as enabled by default
-			List<ApplicationStatePerDomain> applicationStatePerDomainList = this.applicationBaseRepository.findAll().stream().map(ApplicationStatePerDomain::new).collect(Collectors.toList());
+			List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomain();
 			Domain newDomain = modelMapper.map(request, Domain.class);
 			newDomain.setApplicationStatePerDomain(applicationStatePerDomainList);
 			return domainRepo.save(newDomain);

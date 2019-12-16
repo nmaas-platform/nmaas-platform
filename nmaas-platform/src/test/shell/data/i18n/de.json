@@ -286,9 +286,10 @@
     "IP_ADDRESS": "IP Adresse",
     "MASK_LENGTH": "Netzmaske",
     "ADD": "Hinzufügen",
-    "APP_STATUS": "Applikationsstatus",
+    "APP_STATUS": "Application properties",
     "APP_NAME": "Anwendungsname",
-    "APP_ENABLED": "Aktiviert"
+    "APP_ENABLED": "Aktiviert",
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS Versionsinformation",
