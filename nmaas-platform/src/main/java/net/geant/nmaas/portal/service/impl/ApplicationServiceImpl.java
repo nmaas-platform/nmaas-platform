@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +31,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private ModelMapper modelMapper;
 
 	@Override
+	@Transactional
 	public Application create(ApplicationView request, String owner) {
 		checkParam(request, owner);
 		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));

@@ -10,10 +10,12 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,10 +28,10 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     private ModelMapper modelMapper;
 
-    /** to update domain enabled applications **/
-    private DomainRepository domainRepository;
+    private ApplicationStatePerDomainService applicationStatePerDomainService;
 
     @Override
+    @Transactional
     public ApplicationBase createApplicationOrAddNewVersion(ApplicationView application) {
         if(appBaseRepository.existsByName(application.getName())){
             return addNewAppVersion(application);
@@ -57,9 +59,9 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         ApplicationBase appBase = modelMapper.map(application, ApplicationBase.class);
         appBase.validate();
         appBase.getVersions().add(createAppVersion(application));
-        ApplicationBase result = appBaseRepository.save(appBase);
-        domainRepository.saveAll(domainRepository.findAll().stream().peek(domain -> domain.addApplicationState(result)).collect(Collectors.toList()));
-        return result;
+        ApplicationBase newApplicationBase = appBaseRepository.save(appBase);
+        applicationStatePerDomainService.updateAllDomainsWithNewApplicationBase(newApplicationBase);
+        return newApplicationBase;
     }
 
     @Override

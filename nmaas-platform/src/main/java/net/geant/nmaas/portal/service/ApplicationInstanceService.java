@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service;
 import java.util.List;
 import java.util.Optional;
 
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -39,6 +40,8 @@ public interface ApplicationInstanceService {
 	List<AppInstance> findAllByDomain(Domain domain);
 	Page<AppInstance> findAllByDomain(Long domainId, Pageable pageable);
 	Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
+
+	boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView);
 	
 	
 }

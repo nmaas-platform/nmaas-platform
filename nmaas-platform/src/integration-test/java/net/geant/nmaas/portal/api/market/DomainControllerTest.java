@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -124,6 +125,7 @@ public class DomainControllerTest extends BaseControllerTestSetup {
     public void shouldUpdateDomain() throws Exception {
         Domain request = domainRepo.findByName(DEF_DOM_NAME).get();
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
+        request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(put("/api/domains/" + request.getId())
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -137,6 +139,7 @@ public class DomainControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldAddCustomerNetworks() throws Exception {
         Domain request = domainRepo.findByName(DEF_DOM_NAME).get();
+        request.setApplicationStatePerDomain(new ArrayList<>());
         request.getDomainDcnDetails().setCustomerNetworks(Collections.singletonList(new CustomerNetwork(null, InetAddress.getByName("1.1.1.1"), 24)));
         mvc.perform(put("/api/domains/" + request.getId())
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -165,6 +168,7 @@ public class DomainControllerTest extends BaseControllerTestSetup {
     public void shouldUpdateWithExternalServiceDomainSpecified() throws Exception {
         Domain request = domainRepo.findByName(DEF_DOM_NAME).get();
         request.getDomainTechDetails().setExternalServiceDomain("external-domain");
+        request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(put("/api/domains/" + request.getId())
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -179,6 +183,7 @@ public class DomainControllerTest extends BaseControllerTestSetup {
     public void shouldUpdateDomainTechDetails() throws Exception {
         Domain request = domainRepo.findByName(DEF_DOM_NAME).get();
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
+        request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(patch("/api/domains/" + request.getId())
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -191,7 +196,9 @@ public class DomainControllerTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldNotUpdateTechDetailsWithCorruptedId() throws Exception {
-        DomainView request = modelMapper.map(domainRepo.findByName(DEF_DOM_NAME).get(), DomainView.class);
+        Domain domain = domainRepo.findByName(DEF_DOM_NAME).get();
+        domain.setApplicationStatePerDomain(new ArrayList<>());
+        DomainView request = modelMapper.map(domain, DomainView.class);
         long id = request.getId();
         request.setId(123L);
         mvc.perform(patch("/api/domains/" + id)

@@ -17,6 +17,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -53,14 +54,17 @@ public class DomainController extends AppBaseController {
 
 	private ApplicationEventPublisher eventPublisher;
 
+	private ApplicationStatePerDomainService applicationStatePerDomainService;
+
 	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
 	private static final String DOMAIN_NOT_FOUND = "Domain not found.";
 
 	@Autowired
-	public DomainController(UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher){
+	public DomainController(UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher, ApplicationStatePerDomainService applicationStatePerDomainService){
 		this.userService = userService;
 		this.domainService = domainService;
 		this.eventPublisher = eventPublisher;
+		this.applicationStatePerDomainService = applicationStatePerDomainService;
 	}
 
 	@GetMapping
@@ -128,21 +132,7 @@ public class DomainController extends AppBaseController {
 			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		}
 
-		// update state of elements in applicationStatePerDomain
-		// notice that number of elements may vary
-		// merge changes in fact
-		List<ApplicationStatePerDomain> applicationStatePerDomainList = domain.getApplicationStatePerDomain();
-		for(int i=0; i<applicationStatePerDomainList.size(); i++){
-			for(ApplicationStatePerDomainView av: domainUpdate.getApplicationStatePerDomain()){
-				//if id matches
-				if(applicationStatePerDomainList.get(i).getApplicationBase().getId().equals(av.getApplicationBaseId())){
-					//update state
-					ApplicationStatePerDomain temp = applicationStatePerDomainList.get(i);
-					temp.setEnabled(av.isEnabled());
-					applicationStatePerDomainList.set(i, temp);
-				}
-			}
-		}
+		List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.updateDomain(domainUpdate);
 		domain.setApplicationStatePerDomain(applicationStatePerDomainList);
 
 		domainService.updateDomain(domain);

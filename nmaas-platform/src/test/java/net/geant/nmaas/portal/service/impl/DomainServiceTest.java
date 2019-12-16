@@ -22,6 +22,7 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
@@ -61,6 +62,8 @@ public class DomainServiceTest {
 
     ApplicationBaseRepository applicationBaseRepository = mock(ApplicationBaseRepository.class);
 
+    ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+
     @BeforeEach
     public void setup(){
         validator = new DefaultCodenameValidator("[a-z-]{2,8}");
@@ -69,7 +72,7 @@ public class DomainServiceTest {
                 namespaceValidator, domainRepository,
                 domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
-                new ModelMapper(), applicationBaseRepository);
+                new ModelMapper(), applicationBaseRepository, applicationStatePerDomainService);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
