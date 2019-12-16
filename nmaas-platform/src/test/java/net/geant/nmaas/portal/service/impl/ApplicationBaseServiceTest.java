@@ -21,6 +21,8 @@ import net.geant.nmaas.portal.service.ApplicationBaseService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,13 +45,13 @@ public class ApplicationBaseServiceTest {
 
     private TagRepository tagRepo = mock(TagRepository.class);
 
-    private DomainRepository domainRepository = mock(DomainRepository.class);
+    private ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
 
     private List<ApplicationView> apps;
 
     @BeforeEach
     public void setup(){
-        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, modelMapper, domainRepository);
+        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, modelMapper, applicationStatePerDomainService);
         this.apps = Arrays.asList(getDefaultAppView(1L, "1.0"), getDefaultAppView(2L, "1.1"));
     }
 

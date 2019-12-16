@@ -286,9 +286,10 @@
     "IP_ADDRESS": "Adres IP",
     "MASK_LENGTH": "Długość maski",
     "ADD": "Dodaj",
-    "APP_STATUS": "Status aplikacji",
+    "APP_STATUS": "Właściwości aplikacji",
     "APP_NAME": "Nazwa aplikacji",
-    "APP_ENABLED": "Dostępna"
+    "APP_ENABLED": "Dostępna",
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
