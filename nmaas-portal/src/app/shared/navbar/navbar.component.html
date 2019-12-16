@@ -32,6 +32,7 @@
                                 </li>
                             <li *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/languages']">{{'NAVBAR.LANGUAGES' | translate }}</a>
                                 </li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN']">Send notification</li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a>
                                 </li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/users']">{{ 'NAVBAR.USERS' | translate }}</a>
@@ -99,3 +100,4 @@
         </div>
     </div>
 </nav>
+<nmaas-modal-notification-send></nmaas-modal-notification-send>

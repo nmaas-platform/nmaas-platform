@@ -46,6 +46,7 @@ import {MinLengthDirective} from '../directive/min-length.directive';
 import {MaxLengthDirective} from '../directive/max-length.directive';
 import {AppConfigService} from '../service';
 import { ModalTestInstanceComponent } from './modal/modal-test-instance/modal-test-instance.component';
+import { ModalNotificationSendComponent } from './modal/modal-notification-send/modal-notification-send.component';
 
 @NgModule({
   imports: [
@@ -94,7 +95,8 @@ import { ModalTestInstanceComponent } from './modal/modal-test-instance/modal-te
     AboutComponent,
     ChangelogComponent,
     SingleCommentComponent,
-    ModalTestInstanceComponent
+    ModalTestInstanceComponent,
+    ModalNotificationSendComponent
   ],
   providers: [
     PasswordValidator,
