@@ -72,4 +72,8 @@ export class NavbarComponent implements OnInit, OnChanges {
             .length > 0;
     }
 
+    public showNotificationModal(): void {
+        this.notificationModal.show();
+    }
+
 }

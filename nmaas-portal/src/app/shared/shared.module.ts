@@ -140,7 +140,8 @@ import { ModalNotificationSendComponent } from './modal/modal-notification-send/
         RatingExtendedComponent,
         AboutComponent,
         TranslateStateModule,
-        ModalTestInstanceComponent
+        ModalTestInstanceComponent,
+        ModalNotificationSendComponent
     ]
 })
 export class SharedModule {}

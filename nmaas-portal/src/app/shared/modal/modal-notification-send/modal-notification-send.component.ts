@@ -18,6 +18,8 @@ export class ModalNotificationSendComponent implements OnInit {
     'text': new FormControl('', [Validators.required]),
   });
 
+  private form: FormGroup = this.f;
+
   constructor(private notificationService: NotificationService) { }
 
   ngOnInit() {
@@ -29,8 +31,24 @@ export class ModalNotificationSendComponent implements OnInit {
     this.modal.hide();
     this.notificationService.sendMailAdmin({
       mailType: "BROADCAST",
-      otherAttributes: this.f.value
-    });
+      otherAttributes: this.form.value
+    }).subscribe(
+        done => {
+          console.debug("Notification sent successfully");
+        }, error => {
+          console.debug(error)
+        });
+    this.form.reset(this.f);
+  }
+
+  public show(): void {
+    this.modal.show();
+  }
+
+  public dismiss(): void {
+    this.modal.hide();
+    this.form.reset(this.f);
+    console.debug('Notification modal dismissed');
   }
 
 }
