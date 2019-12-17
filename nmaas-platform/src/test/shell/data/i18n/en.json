@@ -15,7 +15,9 @@
     "LANGUAGE": "Language",
     "ABOUT": "About",
     "BACK": "Back to Home Page",
-    "LANGUAGES": "Languages"
+    "LANGUAGES": "Languages",
+    "NOTIFICATION": "Send notification",
+    "ALL_USERS": "To all users"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -762,5 +764,10 @@
     "HEADER": "503 - Service unavailable",
     "TEXT_FIRST_PART": "The server is currently unable to handle your request due to temporary overload or one or more key services are currently offline.",
     "TEXT_SECOND_PART": "We suggest to take a short break, e.g. for coffee - we're on it. Try again later!"
+  },
+  "MESSAGE_MODAL": {
+    "HEADER": "Send message",
+    "CONFIRM": "Send",
+    "DISMISS": "Dismiss"
   }
 }
