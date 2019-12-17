@@ -13,12 +13,12 @@ export class ModalNotificationSendComponent implements OnInit {
   @ViewChild(ModalComponent)
   public readonly modal: ModalComponent;
 
-  private f: FormGroup = new FormGroup({
+  public f: FormGroup = new FormGroup({
     'TITLE': new FormControl('', [Validators.required]),
     'text': new FormControl('', [Validators.required]),
   });
 
-  private form: FormGroup = this.f;
+  public form: FormGroup = this.f;
 
   constructor(private notificationService: NotificationService) { }
 
