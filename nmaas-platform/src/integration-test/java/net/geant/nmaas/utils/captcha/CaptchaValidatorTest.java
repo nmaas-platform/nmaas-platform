@@ -22,5 +22,4 @@ class CaptchaValidatorTest {
     void shouldNotValidateInvalidToken(){
         assertFalse(captchaValidator.verifyToken("invalidToken"));
     }
-
 }

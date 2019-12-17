@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,13 +41,31 @@ public class NotificationManagerTest {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+    private NotificationTask notificationTask;
+
     @BeforeEach
     public void setup() throws IOException {
         this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, modelMapper);
 
-        when(userService.findAllUsersWithAdminRole()).thenReturn(this.getAdminUserList().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
-        when(userService.findUsersWithRoleSystemAdminAndOperator()).thenReturn(this.getAdminUserList().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
+        when(userService.findAllUsersWithAdminRole()).thenReturn(
+                this.getAdminUserList().stream()
+                        .map(user -> modelMapper.map(user, UserView.class))
+                        .collect(Collectors.toList())
+        );
+        when(userService.findUsersWithRoleSystemAdminAndOperator()).thenReturn(
+                this.getAdminUserList().stream()
+                        .map(user -> modelMapper.map(user, UserView.class))
+                        .collect(Collectors.toList())
+        );
         when(userService.findAll()).thenReturn(this.getDefaultUserList());
+
+        when(domainService.findUsersWithDomainAdminRole("domainName")).thenReturn(
+                this.getAdminUserList().stream()
+                        .map(u->this.modelMapper.map(u, UserView.class))
+                        .collect(Collectors.toList())
+        );
+
+        when(userService.findByUsername("ordinary")).thenReturn(Optional.of(this.getDefaultUserList().get(1)));
 
         MailTemplateView mt = this.getDefaultMailTemplateView();
         when(templateService.getMailTemplate(any())).thenReturn(mt);
@@ -63,6 +82,32 @@ public class NotificationManagerTest {
         this.notificationService.sendMail("mail", "subject", "content");
 
         verify(jms, times(1)).send(any(MimeMessagePreparator.class));
+    }
+
+    @Test
+    public void notificationTaskShouldSendEmail() throws IOException, TemplateException {
+        notificationManager = mock(NotificationManager.class);
+        notificationTask = new NotificationTask(notificationManager);
+        MailAttributes ma = new MailAttributes();
+
+        NotificationEvent event = new NotificationEvent(this, ma);
+        notificationTask.trigger(event);
+
+        verify(notificationManager, times(1)).prepareAndSendMail(ma);
+    }
+
+    @Test
+    public void notificationTaskShouldNotSendMail() throws IOException, TemplateException {
+        notificationManager = mock(NotificationManager.class);
+        notificationTask = new NotificationTask(notificationManager);
+
+        NotificationEvent event = new NotificationEvent(this, null);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            notificationTask.trigger(event);
+        });
+
+        assertEquals(ex.getMessage(), "Mail attributes cannot be null");
+
     }
 
     @Test
@@ -107,6 +152,51 @@ public class NotificationManagerTest {
 
         verify(notificationService, times(1)).sendMail(any(String.class), eq("Default"), any(String.class));
     }
+
+    @Test
+    public void shouldSendAppDeployedEmailToAdminWhenOwnerIsAdmin() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.APP_DEPLOYED);
+        ma.setOtherAttributes(new HashMap<String, String>() {{
+            put("text", "text");
+            put("username", "MyUser");
+            put("owner", "admin");
+            put("domainName","domainName");
+        }});
+
+        try {
+            notificationManager.prepareAndSendMail(ma);
+        } catch (IOException ioe) {
+            fail("IO exception caught " + ioe.getMessage());
+        } catch (TemplateException te) {
+            fail("Template exception caught " + te.getMessage());
+        }
+
+        verify(notificationService, times(1)).sendMail(any(String.class), eq("Default"), any(String.class));
+    }
+
+    @Test
+    public void shouldSendAppDeployedEmailToAdminAndOrdinaryWhenOwnerIsOrdinary() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.APP_DEPLOYED);
+        ma.setOtherAttributes(new HashMap<String, String>() {{
+            put("text", "text");
+            put("username", "MyUser");
+            put("owner", "ordinary");
+            put("domainName","domainName");
+        }});
+
+        try {
+            notificationManager.prepareAndSendMail(ma);
+        } catch (IOException ioe) {
+            fail("IO exception caught " + ioe.getMessage());
+        } catch (TemplateException te) {
+            fail("Template exception caught " + te.getMessage());
+        }
+
+        verify(notificationService, times(2)).sendMail(any(String.class), eq("Default"), any(String.class));
+    }
+
 
     @Test
     public void shouldThrowExceptionWhenCannotFindTemplateWithMatchingLanguage() {
