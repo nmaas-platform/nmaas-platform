@@ -1,5 +1,5 @@
 <nmaas-modal styleModal="info">
-  <div class="nmaas-modal-header">Send notification</div>
+  <div class="nmaas-modal-header">{{'MESSAGE_MODAL.HEADER' | translate}}</div>
   <div class="nmaas-modal-body" style="height: 30%; max-height: 45vh;overflow-y: auto;">
       <form [formGroup]="form" (ngSubmit)="complete()" id="notification-form">
       <div class="form-group">
@@ -13,7 +13,7 @@
       </form>
   </div>
     <div class="nmaas-modal-footer">
-      <button type="submit" class="btn btn-primary text-center" [disabled]="!f.valid" form="notification-form">Send</button>
-      <button type="button" (click)="modal.hide()" class="btn ntn-secondary text-center">Dismiss</button>
+      <button type="submit" class="btn btn-primary text-center" [disabled]="!f.valid" form="notification-form">{{'MESSAGE_MODAL.CONFIRM' | translate}}</button>
+      <button type="button" (click)="modal.hide()" class="btn ntn-secondary text-center">{{'MESSAGE_MODAL.DISMISS' | translate}}</button>
     </div>
 </nmaas-modal>
