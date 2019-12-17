@@ -24,7 +24,7 @@ public class NotificationsControllerIntegrationTest extends BaseControllerTestSe
 
     @Test
     public void sendValidContactMail() throws Exception {
-        mvc.perform(post("/api/mail?token=invalid")
+        mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"mailType\": \"CONTACT_FORM\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -33,7 +33,7 @@ public class NotificationsControllerIntegrationTest extends BaseControllerTestSe
 
     @Test
     public void sendInvalidContactMail() throws Exception {
-        mvc.perform(post("/api/mail?token=invalid")
+        mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
                 .accept(MediaType.APPLICATION_JSON))

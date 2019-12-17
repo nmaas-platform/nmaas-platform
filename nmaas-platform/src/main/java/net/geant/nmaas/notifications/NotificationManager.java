@@ -84,7 +84,7 @@ public class NotificationManager {
 
     /**
      * This function sets email addresses server-side
-     * When adding new MailType, kae sure you edit this function so that your mail is send to proper users
+     * When adding new MailType, make sure you edit this function so that your mail is sent to proper users
      * mailAttributes will be updated with new email addresses
      * @param mailAttributes
      */
