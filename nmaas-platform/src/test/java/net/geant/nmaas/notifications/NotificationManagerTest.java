@@ -8,6 +8,7 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class NotificationManagerTest {
@@ -40,8 +41,18 @@ public class NotificationManagerTest {
     private ModelMapper modelMapper = new ModelMapper();
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException {
         this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, modelMapper);
+
+        when(userService.findAllUsersWithAdminRole()).thenReturn(this.getAdminUserList().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
+        when(userService.findUsersWithRoleSystemAdminAndOperator()).thenReturn(this.getAdminUserList().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
+        when(userService.findAll()).thenReturn(this.getDefaultUserList());
+
+        MailTemplateView mt = this.getDefaultMailTemplateView();
+        when(templateService.getMailTemplate(any())).thenReturn(mt);
+
+        Template template = mock(Template.class);
+        when(templateService.getHTMLTemplate()).thenReturn(template);
     }
 
     @Test
@@ -57,24 +68,13 @@ public class NotificationManagerTest {
     @Test
     public void shouldSendBroadcastEmail() throws IOException {
 
-        when(userService.findAllUsersWithAdminRole()).thenReturn(this.getDefaultUserList().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
-        when(userService.findUsersWithRoleSystemAdminAndOperator()).thenReturn(this.getDefaultUserList().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
-        when(userService.findAll()).thenReturn(this.getDefaultUserList());
-
-        MailTemplateView mt = this.getDefaultMailTemplateView();
-        when(templateService.getMailTemplate(any())).thenReturn(mt);
-
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.BROADCAST);
         ma.setOtherAttributes(new HashMap<String, String>() {{
             put("text", "some text");
-
             put(MailTemplateElements.TITLE, "Some Title");
             put("username", "MyUser");
         }});
-
-        Template template = mock(Template.class);
-        when(templateService.getHTMLTemplate()).thenReturn(template);
 
         try {
             notificationManager.prepareAndSendMail(ma);
@@ -84,14 +84,54 @@ public class NotificationManagerTest {
             fail("Template exception caught " + te.getMessage());
         }
 
-        verify(notificationService, times(1)).sendMail(any(String.class), eq("Some Title"), any(String.class));
+        verify(notificationService, times(2)).sendMail(any(String.class), eq("Some Title"), any(String.class));
 
+    }
+
+    @Test
+    public void shouldSendHealthCheckEmail() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK);
+        ma.setOtherAttributes(new HashMap<String, String>() {{
+            put("text", "text");
+            put("username", "MyUser");
+        }});
+
+        try {
+            notificationManager.prepareAndSendMail(ma);
+        } catch (IOException ioe) {
+            fail("IO exception caught " + ioe.getMessage());
+        } catch (TemplateException te) {
+            fail("Template exception caught " + te.getMessage());
+        }
+
+        verify(notificationService, times(1)).sendMail(any(String.class), eq("Default"), any(String.class));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenCannotFindTemplateWithMatchingLanguage() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.REGISTRATION);
+        ma.setOtherAttributes(new HashMap<String, String>() {{
+            put("text", "text");
+            put("username", "MyUser");
+        }});
+
+        List<User> adminUsers = this.getAdminUserList();
+        adminUsers.get(0).setSelectedLanguage("fr");
+
+        when(userService.findAllUsersWithAdminRole()).thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).collect(Collectors.toList()));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            notificationManager.prepareAndSendMail(ma);
+        });
+        assertEquals(ex.getMessage(), "Mail template in language fr cannot be found");
     }
 
     private MailTemplateView getDefaultMailTemplateView() {
         LanguageMailContentView lmcv = new LanguageMailContentView();
         lmcv.setLanguage("en");
-        lmcv.setSubject("default");
+        lmcv.setSubject("Default");
         lmcv.setTemplate(new HashMap<String, String>() {{
             put(MailTemplateElements.TITLE, "Default");
             put(MailTemplateElements.CONTENT, "${text}");
@@ -130,5 +170,15 @@ public class NotificationManagerTest {
         }};
     }
 
-    // TODO unit tests
+    private List<User> getAdminUserList() {
+        User user0 = new User("admin", true);
+        user0.setEmail("admin@admin.eu");
+        user0.setFirstname("");
+        user0.setLastname("");
+        user0.setSelectedLanguage("en");
+
+        return new ArrayList<User>() {{
+            add(user0);
+        }};
+    }
 }

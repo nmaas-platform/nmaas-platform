@@ -69,7 +69,7 @@ public class NotificationManager {
         this.getAllAddressees(mailAttributes);
         for(UserView user : mailAttributes.getAddressees()){
             LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
-            this.customizeMessage(mailContent, mailAttributes, user);
+            this.customizeMessage(mailContent, mailAttributes);
             this.notificationService.sendMail(user.getEmail(), mailContent.getSubject(), getFilledTemplate(template, mailContent, user, mailAttributes, mailTemplate));
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
@@ -115,13 +115,10 @@ public class NotificationManager {
      * This function handles message type specific logic eg. custom title/subject for broadcast message
      * @param mailContent mail content to be customize
      * @param mailAttributes mail information and data provider
-     * @param user user information
      */
-    private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes, UserView user) {
+    private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes) {
         if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
             mailContent.setSubject(mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
-            mailAttributes.getOtherAttributes().remove(MailTemplateElements.TITLE); // remove subject from other params
-            mailAttributes.getOtherAttributes().put("username", user.getUsername()); // customize template head
         }
     }
 
