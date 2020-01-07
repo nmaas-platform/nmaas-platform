@@ -12,9 +12,7 @@ import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
@@ -35,8 +33,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implements service deployment mechanism on Kubernetes cluster.
@@ -160,7 +157,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                     service.getDeploymentName(),
                     clusterIngressManager.getExternalServiceDomain(service.getDomain()),
                     clusterIngressManager.getIngressPerDomain());
-            repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
+            repositoryManager.updateKServiceAccessMethods(deploymentId, new HashSet<ServiceAccessMethod>() {{
+                add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", serviceExternalUrl));
+            }});
             serviceLifecycleManager.deployService(deploymentId);
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                     ingressResourceManager.createOrUpdateIngressResource(
@@ -199,8 +198,13 @@ public class KubernetesManager implements ContainerOrchestrator {
             janitorService.deleteConfigMapIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
             janitorService.deleteBasicAuthIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
             janitorService.deleteTlsIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            /*
+            NOTE:
+            Currently (January 2020) option DEPLOY_USING_API is not used and shall be removed in future releases
+             */
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
-                ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
+                Optional<ServiceAccessMethod> serviceAccessMethod = Optional.of((new ArrayList<>(service.getAccessMethods())).get(0));
+                ingressResourceManager.deleteIngressRule(serviceAccessMethod.orElseThrow(() -> new ContainerOrchestratorInternalErrorException("External access  url not found")).getUrl(), service.getDomain());
             }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
@@ -229,8 +233,8 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
-            String serviceExternalUrl = repositoryManager.loadService(deploymentId).getServiceExternalUrl();
-            return new AppUiAccessDetails("http://" + serviceExternalUrl);
+            Set<ServiceAccessMethod> serviceAccessMethodSet = repositoryManager.loadService(deploymentId).getAccessMethods();
+            return new AppUiAccessDetails(serviceAccessMethodSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         }
