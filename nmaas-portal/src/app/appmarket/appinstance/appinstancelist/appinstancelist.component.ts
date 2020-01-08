@@ -136,7 +136,10 @@ export class AppInstanceListComponent implements OnInit {
     console.debug("Crit: ", criteria);
     switch (+this.listSelection) {
       case AppInstanceListSelection.ALL:
-        this.appInstances = this.appInstanceService.getSortedAllAppInstances(criteria);
+        this.appInstances = of<AppInstance[]>([]);
+        if (this.domainId) {
+          this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
+        }
         break;
       case AppInstanceListSelection.MY:
         this.appInstances = this.appInstanceService.getSortedMyAppInstances(criteria);

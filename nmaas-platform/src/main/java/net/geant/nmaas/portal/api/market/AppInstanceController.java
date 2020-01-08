@@ -64,8 +64,14 @@ public class AppInstanceController extends AppBaseController {
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public List<AppInstanceView> getAllInstances(Pageable pageable) {
+        if (pageable == null) {
+            return instances.findAll().stream()
+                    .map(this::mapAppInstance)
+                    .collect(Collectors.toList());
+        }
         return instances.findAll(pageable).getContent().stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
@@ -75,6 +81,11 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
         User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
+        if(pageable == null) {
+            return instances.findAllByOwner(user).stream()
+                    .map(this::mapAppInstance)
+                    .collect(Collectors.toList());
+        }
         return instances.findAllByOwner(user, pageable).getContent().stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
@@ -85,12 +96,18 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceView> getAllInstances(@PathVariable Long domainId, Pageable pageable) {
         Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+        if (pageable == null) {
+            return instances.findAllByDomain(domain).stream()
+                    .map(this::mapAppInstance)
+                    .collect(Collectors.toList());
+        }
         return instances.findAllByDomain(domain, pageable).getContent().stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/running/domain/{domainId}")
+    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
         Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
@@ -109,6 +126,9 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
+        if(pageable == null) {
+            return getUserDomainAppInstances(domainId, principal.getName());
+        }
         return getUserDomainAppInstances(domainId, principal.getName(), pageable);
     }
 
@@ -116,6 +136,9 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
     public List<AppInstanceView> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable){
+        if(pageable == null) {
+            return getUserDomainAppInstances(domainId, username);
+        }
         return getUserDomainAppInstances(domainId, username, pageable);
     }
 
@@ -125,6 +148,16 @@ public class AppInstanceController extends AppBaseController {
         User user = users.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, domain, pageable).getContent().stream()
+                .map(this::mapAppInstance)
+                .collect(Collectors.toList());
+    }
+
+    private List<AppInstanceView> getUserDomainAppInstances(Long domainId, String username) {
+        Domain domain = domains.findDomain(domainId)
+                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+        User user = users.findByUsername(username)
+                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
+        return instances.findAllByOwnerAndDomain(user, domain).stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
     }
