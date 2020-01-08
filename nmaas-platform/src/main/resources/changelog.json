@@ -1,5 +1,16 @@
 {"versions" : [
   {
+    "verNo" : "1.2.3",
+    "date" : "(2020/01/xx)",
+    "topic" : [
+      {
+        "title" : "Displaying and filtering application instances",
+        "tags" : "[Bugfix]",
+        "description" : "Applied fix in how application instances are displayed and filtered by domain and given user."
+      }
+    ]
+  },
+  {
     "verNo" : "1.2.2",
     "date" : "(2019/12/10)",
     "topic" : [
