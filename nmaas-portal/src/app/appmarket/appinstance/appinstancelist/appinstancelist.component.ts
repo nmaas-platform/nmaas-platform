@@ -104,7 +104,6 @@ export class AppInstanceListComponent implements OnInit {
 
   public update(domainId: number): void {
     if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
-      // this.domainId = undefined;
       this.domainId = this.appConfig.getNmaasGlobalDomainId();
     } else {
       this.domainId = domainId;
