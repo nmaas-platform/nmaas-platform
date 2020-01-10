@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -31,6 +32,7 @@ import java.util.Optional;
  */
 @Component
 @Profile("env_kubernetes")
+@Log4j2
 public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private static final String GROUPS_PATH_PREFIX = "groups";
@@ -250,9 +252,11 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private void uploadUpdateConfigFilesToProject(Integer gitLabProjectId, List<String> configIds){
         configIds.forEach(configId -> {
+            log.debug("Loading configuration file information for id " + configId + " ...");
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
             try {
+                log.debug("Updating file on GitLab repository ...");
                 gitlab.getRepositoryFileApi().updateFile(gitLabProjectId, file, commitBranch(), updateCommitMessage(configuration.getConfigFileName()));
             } catch (GitLabApiException e) {
                 throw new FileTransferException("Could not commit file " + configuration.getConfigFileName() + " due to exception: " + e.getMessage());
