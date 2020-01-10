@@ -10,7 +10,7 @@ alter table kubernetes_nm_service_info_access_methods
         foreign key (kubernetes_nm_service_info_id)
             references kubernetes_nm_service_info;
 
-insert into kubernetes_nm_service_info_access_methods
-select id, 'Default', 'DEFAULT', service_external_url from nmaas.public.kubernetes_nm_service_info;
+insert into kubernetes_nm_service_info_access_methods(kubernetes_nm_service_info_id, name, type, url)
+select id, 'Default', 'DEFAULT', service_external_url from kubernetes_nm_service_info;
 
 alter table kubernetes_nm_service_info drop column service_external_url;
