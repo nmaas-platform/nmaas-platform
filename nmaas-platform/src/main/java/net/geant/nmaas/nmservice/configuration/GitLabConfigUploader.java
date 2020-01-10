@@ -105,14 +105,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     @Override
-    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired){
-        if(configFileRepositoryRequired){
-            GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
-            uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
-        }
-    }
-
-    @Override
     public void removeConfigFiles(Identifier deploymentId){
         GitLabProject gitLabProject = loadGitlabProject(deploymentId);
         if(gitLabProject != null){
