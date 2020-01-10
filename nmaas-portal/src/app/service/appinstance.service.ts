@@ -39,8 +39,8 @@ export class AppInstanceService extends GenericDataService {
     )
   }
 
-  public getSortedMyAppInstances(criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl() + 'my').pipe(
+  public getSortedMyAppInstances(domainId: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
+    return this.get<AppInstance[]>(this.getUrl() + 'domain/' + domainId + '/my').pipe(
         map(
       (data) => {
         data.sort((a, b) => {
