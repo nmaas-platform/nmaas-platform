@@ -10,9 +10,12 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KS
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -84,7 +87,10 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     private Map<String, String> getIngressConfigOptionVariables(KubernetesNmServiceInfo serviceInfo){
-        Map<String, String> ingressVariablesMap = HelmChartVariables.ingressVariablesMap(serviceInfo.getServiceExternalUrl(), getIngressClass(serviceInfo.getDomain()), ingressManager.getTlsSupported());
+        Map<String, String> ingressVariablesMap = HelmChartVariables.ingressVariablesMap(serviceInfo.getAccessMethods().stream()
+                        .filter((ServiceAccessMethod sam) -> sam.getType().equals(ServiceAccessMethodType.DEFAULT))
+                        .findFirst().orElseThrow(() -> new ProcessingException("No default access method provided")).getUrl()
+                , getIngressClass(serviceInfo.getDomain()), ingressManager.getTlsSupported());
         if(ingressManager.getTlsSupported()){
             ingressVariablesMap.putAll(getIngressAddTlsVariables());
         }

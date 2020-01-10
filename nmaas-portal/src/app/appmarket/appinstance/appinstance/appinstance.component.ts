@@ -1,23 +1,9 @@
-import {
-  AfterViewChecked,
-  Component,
-  EventEmitter,
-  Inject,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {AfterViewChecked, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService, DomainService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
-import {
-  AppInstance,
-  AppInstanceProgressStage,
-  AppInstanceState,
-  AppInstanceStatus,
-  Application
-} from '../../../model';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../../modals/apprestart';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
@@ -33,6 +19,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
 import {ApplicationState} from '../../../model/applicationstate';
+import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -235,7 +222,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
           if (this.storage.has('appConfig_' + this.appInstanceId.toString())) {
             this.storage.remove('appConfig_' + this.appInstanceId.toString());
           }
-          if (!this.appInstance.url) {
+          if (!this.appInstance.serviceAccessMethods) {
             this.updateAppInstance();
           }
         }
@@ -249,7 +236,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   private updateAppInstance() {
     console.log('update app instance');
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
-      console.log('updated app instance url: ' + appInstance.url);
+      console.log('updated app instance url: ' + appInstance.serviceAccessMethods.find((sam : ServiceAccessMethod) => sam.type === ServiceAccessMethodType.DEFAULT).url);
       this.appInstance = appInstance;
     });
   }
