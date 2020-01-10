@@ -2,6 +2,8 @@ package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -25,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,7 +87,9 @@ public class OrchestratorMonitorControllerIntTest {
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
 
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
-        accessDetails = new AppUiAccessDetails("http://testurl:8080");
+        accessDetails = new AppUiAccessDetails(new HashSet<ServiceAccessMethod>() {{
+            new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", "http://testurl:8080");
+        }});
         mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
     }
 
@@ -129,7 +134,7 @@ public class OrchestratorMonitorControllerIntTest {
                 .andExpect(status().isOk())
                 .andReturn();
         AppUiAccessDetails resultAccessDetails = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AppUiAccessDetails.class);
-        assertThat(resultAccessDetails.getUrl(), equalTo(accessDetails.getUrl()));
+        assertThat(resultAccessDetails.getServiceAccessMethods(), equalTo(accessDetails.getServiceAccessMethods()));
     }
 
     @Test
