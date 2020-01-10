@@ -26,15 +26,6 @@ public interface ConfigurationFileTransferProvider {
     void transferConfigFiles(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> configIds, boolean configFileRepositoryRequired);
 
     /**
-     * Method to transfer a list of updated configuration files
-     *
-     * @param deploymentId unique identifier of service deployment
-     * @param configIds list of identifiers of configuration files that should be loaded from database and transferred to destination
-     * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
-     */
-    void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired);
-
-    /**
      * Method to delete configuration files
      *
      * @param deploymentId unique identifier of service deployment
