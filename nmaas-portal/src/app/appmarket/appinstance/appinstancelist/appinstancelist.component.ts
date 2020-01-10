@@ -104,7 +104,7 @@ export class AppInstanceListComponent implements OnInit {
 
   public update(domainId: number): void {
     if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
-      this.domainId = undefined;
+      this.domainId = this.appConfig.getNmaasGlobalDomainId();
     } else {
       this.domainId = domainId;
     }
@@ -142,7 +142,7 @@ export class AppInstanceListComponent implements OnInit {
         }
         break;
       case AppInstanceListSelection.MY:
-        this.appInstances = this.appInstanceService.getSortedMyAppInstances(criteria);
+        this.appInstances = this.appInstanceService.getSortedMyAppInstances(this.domainId, criteria);
         break;
       default:
         this.appInstances = of<AppInstance[]>([]);
@@ -155,7 +155,7 @@ export class AppInstanceListComponent implements OnInit {
       ))));
     this.appDeployedInstances = this.appDeployedInstances.pipe(
         map( app => app.filter(
-            (appInst) => (this.domainId == undefined || this.domainId == appInst.domainId)
+            (appInst) => (this.domainId == this.appConfig.getNmaasGlobalDomainId() || this.domainId == appInst.domainId)
         ))
     );
     this.appUndeployedInstances = this.appInstances.pipe(
@@ -165,7 +165,7 @@ export class AppInstanceListComponent implements OnInit {
         ))));
     this.appUndeployedInstances = this.appUndeployedInstances.pipe(
         map(app => app.filter(
-            (appInst) => (this.domainId == undefined || this.domainId == appInst.domainId)
+            (appInst) => (this.domainId == this.appConfig.getNmaasGlobalDomainId() || this.domainId == appInst.domainId)
         ))
     );
   }
