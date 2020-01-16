@@ -70,10 +70,10 @@ public class UserLoginRegisterRepositoryTest {
             domainRepository.findAll().stream()
                     .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
                     .forEach(domain -> domainRepository.delete(domain));
-            this.userLoginRegisterRepository.deleteAll();
         } catch(Exception ex){
             log.error(ex.getMessage());
         }
+        this.userLoginRegisterRepository.deleteAll();
     }
 
     @Test
@@ -84,7 +84,7 @@ public class UserLoginRegisterRepositoryTest {
     @Test
     public void shouldContainNoLoginRecords() {
         for(UserLoginRegister u: userLoginRegisterRepository.findAll()) {
-            log.info(u.getUser().getUsername() + u.getDate());
+            log.info(u.getUser().getUsername() + "\t" + u.getDate());
         }
         assertEquals(0, userLoginRegisterRepository.count());
     }

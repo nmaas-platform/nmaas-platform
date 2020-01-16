@@ -17,8 +17,12 @@ public class UserLoginRegister {
     @Id
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime date;
+
+    /**
+     * single column, two values attached
+     * reference: https://stackoverflow.com/questions/39185977/failed-to-convert-request-element-in-entity-with-idclass
+     */
     @Id
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Column(name = "user_id")
     private Long userId;
 
