@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/apps/instances")
 @AllArgsConstructor
+@Log4j2
 public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
@@ -60,80 +62,51 @@ public class AppInstanceController extends AppBaseController {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
+    /*
+    NOTICE:
+    NMAAS-756
+    temporary fix on pagination size issue involves changing default pagination size in application.properties
+    to mitigate this issue in future, it is advised to implement server-side pagination,
+    currently both api and user interface does not support this feature
+     */
+
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public List<AppInstanceView> getAllInstances(Pageable pageable) {
-        if (pageable == null) {
-            return instances.findAll().stream()
-                    .map(this::mapAppInstance)
-                    .collect(Collectors.toList());
-        } else {
-            return instances.findAll(pageable).getContent().stream()
-                    .map(this::mapAppInstance)
-                    .collect(Collectors.toList());
-        }
+        this.logPageable(pageable);
+        return instances.findAll(pageable).getContent().stream()
+                .map(this::mapAppInstance)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/my")
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
+        this.logPageable(pageable);
         User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        if(pageable == null) {
-            return instances.findAllByOwner(user).stream()
-                    .map(this::mapAppInstance)
-                    .collect(Collectors.toList());
-        } else {
-            return instances.findAllByOwner(user, pageable).getContent().stream()
-                    .map(this::mapAppInstance)
-                    .collect(Collectors.toList());
-        }
+        return instances.findAllByOwner(user, pageable).getContent().stream()
+                .map(this::mapAppInstance)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceView> getAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
+        this.logPageable(pageable);
         Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
-
         User user = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
-        boolean isSystemAdmin = false;
-        boolean isDomainGlobal = false;
-        boolean isPageable = false;
-
-        if(user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
-            isSystemAdmin = true;
-        }
-
-        if(domainId.equals(domains.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
-            isDomainGlobal =true;
-        }
-
-        if(pageable != null){
-            isPageable = true;
-        }
-
-        if(isSystemAdmin && isDomainGlobal) {
-            if (!isPageable) {
-                return instances.findAll().stream()
-                        .map(this::mapAppInstance)
-                        .collect(Collectors.toList());
-            } else {
-                return instances.findAll(pageable).getContent().stream()
-                        .map(this::mapAppInstance)
-                        .collect(Collectors.toList());
-            }
+        // system admin on global view has an overall view over all instances
+        if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
+            return instances.findAll(pageable).getContent().stream()
+                    .map(this::mapAppInstance)
+                    .collect(Collectors.toList());
         } else {
-            if (!isPageable) {
-                return instances.findAllByDomain(domain).stream()
-                        .map(this::mapAppInstance)
-                        .collect(Collectors.toList());
-            } else {
-                return instances.findAllByDomain(domain, pageable).getContent().stream()
-                        .map(this::mapAppInstance)
-                        .collect(Collectors.toList());
-            }
+            return instances.findAllByDomain(domain, pageable).getContent().stream()
+                    .map(this::mapAppInstance)
+                    .collect(Collectors.toList());
         }
     }
 
@@ -157,40 +130,16 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
+        this.logPageable(pageable);
         User user = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
-        boolean isSystemAdmin = false;
-        boolean isDomainGlobal = false;
-        boolean isPageable = false;
+        if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
+            return instances.findAllByOwner(user, pageable).getContent().stream()
+                    .map(this::mapAppInstance)
+                    .collect(Collectors.toList());
 
-        if(user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
-            isSystemAdmin = true;
-        }
-
-        if(domainId.equals(domains.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
-            isDomainGlobal =true;
-        }
-
-        if(pageable != null){
-            isPageable = true;
-        }
-
-        if(isSystemAdmin && isDomainGlobal) {
-            if(isPageable) {
-                return instances.findAllByOwner(user, pageable).getContent().stream()
-                        .map(this::mapAppInstance)
-                        .collect(Collectors.toList());
-            } else {
-                return instances.findAllByOwner(user).stream()
-                        .map(this::mapAppInstance)
-                        .collect(Collectors.toList());
-            }
         } else {
-            if(isPageable) {
-                return getUserDomainAppInstances(domainId, principal.getName(), pageable);
-            } else {
-                return getUserDomainAppInstances(domainId, principal.getName());
-            }
+            return getUserDomainAppInstances(domainId, principal.getName(), pageable);
         }
 
     }
@@ -199,11 +148,8 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
     public List<AppInstanceView> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable){
-        if(pageable == null) {
-            return getUserDomainAppInstances(domainId, username);
-        } else {
-            return getUserDomainAppInstances(domainId, username, pageable);
-        }
+        this.logPageable(pageable);
+        return getUserDomainAppInstances(domainId, username, pageable);
     }
 
     private List<AppInstanceView> getUserDomainAppInstances(Long domainId, String username, Pageable pageable) {
@@ -212,16 +158,6 @@ public class AppInstanceController extends AppBaseController {
         User user = users.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, domain, pageable).getContent().stream()
-                .map(this::mapAppInstance)
-                .collect(Collectors.toList());
-    }
-
-    private List<AppInstanceView> getUserDomainAppInstances(Long domainId, String username) {
-        Domain domain = domains.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
-        User user = users.findByUsername(username)
-                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instances.findAllByOwnerAndDomain(user, domain).stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
     }
@@ -474,6 +410,26 @@ public class AppInstanceController extends AppBaseController {
         ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
 
         return ai;
+    }
+
+    private void logPageable(Pageable p) {
+        log.info("Page number: " + p.getPageNumber() + "\tPage size:" +p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
+    }
+
+    private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
+
+        boolean isSystemAdmin = false;
+        boolean isDomainGlobal = false;
+
+        if(user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
+            isSystemAdmin = true;
+        }
+
+        if(domainId.equals(domains.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
+            isDomainGlobal =true;
+        }
+
+        return isSystemAdmin && isDomainGlobal;
     }
 
 }
