@@ -86,6 +86,7 @@ public class AppDeploymentStateChangeManagerTest {
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethod>() {{
             add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", "url"));
         }}));
+        when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
 
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
         ApplicationEvent newEvent = manager.notifyStateChange(event);
