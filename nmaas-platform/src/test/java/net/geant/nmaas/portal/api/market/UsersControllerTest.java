@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,9 +57,11 @@ public class UsersControllerTest {
 
 	private JWTTokenService jwtTokenService = mock(JWTTokenService.class);
 
+	private UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
+
 	@BeforeEach
 	public void setup(){
-		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher);
+		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
 		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
@@ -84,6 +87,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldRetrieveUser(){
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
+		when(userLoginService.getUserFirstAndLastSuccessfulLoginDate(userList.get(0))).thenReturn(Optional.empty());
 		UserRoleView userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRoleView.class);
 		UserView user = usersController.retrieveUser(userList.get(0).getId());
 		assertThat("Wrong username", user.getUsername().equals(userList.get(0).getUsername()));

@@ -55,7 +55,12 @@ public class BasicAuthController {
 	@PostMapping(value="/login")
 	public UserToken login(@RequestBody final UserLogin userLogin, HttpServletRequest request) {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found"));
-        validate(userLogin.getUsername(), userLogin.getPassword(), user.getPassword(), user.isEnabled());
+        try {
+            validate(userLogin.getUsername(), userLogin.getPassword(), user.getPassword(), user.isEnabled());
+        } catch (AuthenticationException ae) {
+            this.loginRegisterService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
+            throw new AuthenticationException(ae.getMessage());
+        }
         checkUserApprovals(user);
 
         if(configurationManager.getConfiguration().isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {

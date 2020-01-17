@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserLoginRegister;
 import net.geant.nmaas.portal.persistent.entity.UserLoginRegisterType;
 import net.geant.nmaas.portal.persistent.repositories.UserLoginRegisterRepository;
+import net.geant.nmaas.portal.persistent.results.UserLoginDate;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,7 @@ public class UserLoginRegisterServiceImpl implements UserLoginRegisterService {
     @Override
     public UserLoginRegister registerNewSuccessfulLogin(User user, String host, String userAgent, String remoteAddress) {
         UserLoginRegister ulr = new UserLoginRegister(OffsetDateTime.now(), user, UserLoginRegisterType.SUCCESS, remoteAddress, host, userAgent);
-        log.info("Store");
-        UserLoginRegister temp = repository.save(ulr);
-        log.info(temp.getDate().toString());
-        log.info("Login Successful");
-        return temp;
+        return repository.save(ulr);
     }
 
     @Override
@@ -58,6 +55,11 @@ public class UserLoginRegisterServiceImpl implements UserLoginRegisterService {
     }
 
     @Override
+    public Optional<UserLoginRegister> getFirsLogin(User user) {
+        return repository.findFirstByUserOrderByDateAsc(user);
+    }
+
+    @Override
     public List<UserLoginRegister> getAllLoginDetails() {
         return repository.findAll();
     }
@@ -65,5 +67,15 @@ public class UserLoginRegisterServiceImpl implements UserLoginRegisterService {
     @Override
     public List<UserLoginRegister> getAllLoginDetails(User user) {
         return repository.findAllByUserOrderByDateDesc(user);
+    }
+
+    @Override
+    public Optional<UserLoginDate> getUserFirstAndLastSuccessfulLoginDate(User user) {
+        return repository.findFirstAndLastLoginByUserAndType(user.getId(), UserLoginRegisterType.SUCCESS);
+    }
+
+    @Override
+    public List<UserLoginDate> getAllFirstAndLastSuccessfulLoginDate() {
+        return repository.findAllFirstAndLastLoginByType(UserLoginRegisterType.SUCCESS);
     }
 }

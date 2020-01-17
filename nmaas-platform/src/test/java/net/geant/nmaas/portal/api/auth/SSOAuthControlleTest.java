@@ -13,11 +13,14 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -41,9 +44,14 @@ public class SSOAuthControlleTest {
 
     private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
+    private UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
+
+    private HttpServletRequest request = mock(HttpServletRequest.class);
+
     @BeforeEach
     public void setup(){
-        ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, shibbolethConfigManager);
+        ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, shibbolethConfigManager, userLoginService);
+        when(request.getHeader(any())).thenReturn("empty");
     }
 
     @Test
@@ -52,7 +60,7 @@ public class SSOAuthControlleTest {
         configuration.setSsoLoginAllowed(false);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
         assertThrows(SignupException.class, () -> {
-            ssoAuthController.login(null);
+            ssoAuthController.login(null, request);
         });
     }
 
@@ -62,7 +70,7 @@ public class SSOAuthControlleTest {
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
         assertThrows(AuthenticationException.class, () -> {
-            ssoAuthController.login(null);
+            ssoAuthController.login(null, request);
         });
     }
 
@@ -74,7 +82,7 @@ public class SSOAuthControlleTest {
         UserSSOLogin userSSOLogin = mock(UserSSOLogin.class);
         when(userSSOLogin.getUsername()).thenReturn("");
         assertThrows(AuthenticationException.class, () -> {
-            ssoAuthController.login(userSSOLogin);
+            ssoAuthController.login(userSSOLogin, request);
         });
     }
 
@@ -88,7 +96,7 @@ public class SSOAuthControlleTest {
         User user = new User("johny", false);
         when(users.findBySamlToken(any())).thenReturn(Optional.of(user));
         assertThrows(AuthenticationException.class, () -> {
-            ssoAuthController.login(userSSOLogin);
+            ssoAuthController.login(userSSOLogin, request);
         });
     }
 
@@ -105,7 +113,7 @@ public class SSOAuthControlleTest {
         Domain global = mock(Domain.class);
         when(domains.getGlobalDomain()).thenReturn(Optional.of(global));
 
-        ssoAuthController.login(userSSOLoginData);
+        ssoAuthController.login(userSSOLoginData, request);
 
         verify(users).findBySamlToken(isA(String.class));
         verify(users).register(isA(UserSSOLogin.class), isA(Domain.class));
@@ -128,7 +136,7 @@ public class SSOAuthControlleTest {
         when(jwtTokenService.getToken(any())).thenReturn("sometoken");
         when(jwtTokenService.getRefreshToken(any())).thenReturn("somerefreshtoken");
 
-        UserToken userToken = ssoAuthController.login(userSSOLoginData);
+        UserToken userToken = ssoAuthController.login(userSSOLoginData, request);
 
         assertEquals("sometoken", userToken.getToken());
         assertEquals("somerefreshtoken", userToken.getRefreshToken());
@@ -148,7 +156,7 @@ public class SSOAuthControlleTest {
         when(domains.getGlobalDomain()).thenReturn(Optional.of(global));
 
         assertThrows(SignupException.class, () -> {
-            ssoAuthController.login(userSSOLoginData);
+            ssoAuthController.login(userSSOLoginData, request);
         });
 
     }
@@ -167,7 +175,7 @@ public class SSOAuthControlleTest {
         when(domains.getGlobalDomain()).thenReturn(Optional.empty());
 
         assertThrows(SignupException.class, () -> {
-            ssoAuthController.login(userSSOLoginData);
+            ssoAuthController.login(userSSOLoginData, request);
         });
     }
 
@@ -192,7 +200,7 @@ public class SSOAuthControlleTest {
         when(jwtTokenService.getRefreshToken(any())).thenReturn("somerefreshtoken");
 
         assertThrows(UndergoingMaintenanceException.class, () -> {
-            ssoAuthController.login(userSSOLoginData);
+            ssoAuthController.login(userSSOLoginData, request);
         });
     }
 
@@ -218,7 +226,7 @@ public class SSOAuthControlleTest {
         when(jwtTokenService.getToken(any())).thenReturn("sometoken");
         when(jwtTokenService.getRefreshToken(any())).thenReturn("somerefreshtoken");
 
-        UserToken userToken = ssoAuthController.login(userSSOLoginData);
+        UserToken userToken = ssoAuthController.login(userSSOLoginData, request);
 
         assertEquals("sometoken", userToken.getToken());
         assertEquals("somerefreshtoken", userToken.getRefreshToken());
