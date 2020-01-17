@@ -24,11 +24,34 @@
 				<td>{{user.firstLoginDate.toUTCString()}}</td>
 				<td>{{user.lastSuccessfulLoginDate.toUTCString()}}</td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span><span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span></td>
-				<td class="text-right">
-					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">{{ 'USERS.DETAILS_BUTTON' | translate }}</a>
-					<a (click)="changeUserStatus(user, false)" *ngIf="user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="btn btn-sm btn-warning" role="button">{{ 'USERS.DISABLE_BUTTON' | translate }}</a>
-					<a (click)="changeUserStatus(user, true)" *ngIf="!user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="btn btn-sm btn-warning" role="button">{{ 'USERS.ENABLE_BUTTON' | translate }}</a>
-					<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()" (click)="remove(user)" class="btn btn-sm btn-danger" role="button">{{ 'USERS.REMOVE_FROM_DOMAIN_BUTTON' | translate }}</a>
+				<td>
+					<a (click)="view(user.id)">
+						<!-- {{ 'USERS.DETAILS_BUTTON' | translate }} -->
+						<i class="far fa-eye icon-black icon-bigger"></i>
+					</a>
+
+					<span class="dropdown">
+						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+						   data-toggle="dropdown" href="#" role="button">
+							<i class="fas fa-cog icon-black icon-bigger"></i>
+						</a>
+						<ul class="dropdown-menu pull-right-drop">
+							<li>
+								<a (click)="changeUserStatus(user, false)"
+								   *ngIf="user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
+									{{ 'USERS.DISABLE_BUTTON' | translate }}</a>
+							</li>
+							<li>
+								<a (click)="changeUserStatus(user, true)"
+								   *ngIf="!user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
+									{{ 'USERS.ENABLE_BUTTON' | translate }}</a>
+							</li>
+							<li>
+								<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()"
+								   (click)="remove(user)">{{ 'USERS.REMOVE_FROM_DOMAIN_BUTTON' | translate }}</a>
+							</li>
+						</ul>
+					</span>
 				</td>
 			</tr>
 		</tbody>

@@ -6,17 +6,18 @@ import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
-import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
-import org.apache.commons.lang.StringUtils;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,12 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class InternationalizationControllerTest extends BaseControllerTestSetup {
 
     @Autowired
-    private InternationalizationRepository repository;
+    private InternationalizationSimpleRepository repository;
 
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-        this.repository.save(Internationalization.builder().language("pl").content("{\"test\":\"test\"}").enabled(true).build());
+        this.repository.save(new Internationalization(1L, "pl", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
     }
 
     @AfterEach

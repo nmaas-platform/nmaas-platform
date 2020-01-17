@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -21,6 +23,9 @@ public class AppBaseController {
 	protected ApplicationService applications;
 
 	@Autowired
+	protected ApplicationBaseService appBaseService;
+
+	@Autowired
 	protected UserService users;
 
     protected Application getApp(Long appId) {
@@ -28,6 +33,12 @@ public class AppBaseController {
 			throw new MissingElementException("Missing application id.");
 		
 		return applications.findApplication(appId).orElseThrow(() -> new MissingElementException("Application id=" + appId + " not found."));
+	}
+
+	protected ApplicationBase getBaseApp(Long appBaseId){
+		if(appBaseId == null)
+			throw new MissingElementException("Missing application id.");
+    	return appBaseService.getBaseApp(appBaseId);
 	}
 
 	protected User getUser(String username) {

@@ -40,14 +40,14 @@ public class ApplicationSubscription {
 		
 		@OneToOne(fetch = FetchType.LAZY)
 		@NotNull
-		private Application application;
+		private ApplicationBase application;
 
 	}
 	
 	@EmbeddedId
 	Id id = new Id();
 	
-	public ApplicationSubscription(Domain domain, Application application) {
+	public ApplicationSubscription(Domain domain, ApplicationBase application) {
 		if(domain == null)
 			throw new IllegalStateException("domain is null");
 		if(application == null)
@@ -56,7 +56,7 @@ public class ApplicationSubscription {
 		this.id = new ApplicationSubscription.Id(domain, application);
 	}
 
-	public ApplicationSubscription(Domain domain, Application application, boolean active) {
+	public ApplicationSubscription(Domain domain, ApplicationBase application, boolean active) {
 		this(domain, application);
 		this.active = active;
 	}	
@@ -91,7 +91,7 @@ public class ApplicationSubscription {
 	}
 	
 	@Transient
-	public Application getApplication() {
+	public ApplicationBase getApplication() {
 		return this.id.getApplication();
 	}
 }

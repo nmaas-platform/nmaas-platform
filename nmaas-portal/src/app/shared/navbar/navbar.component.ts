@@ -1,4 +1,4 @@
-import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {interval, Subscription} from "rxjs";
@@ -9,6 +9,7 @@ import {MonitorService} from "../../service/monitor.service";
 import {forEach} from "@angular/router/src/utils/collection";
 import {MonitorEntry} from "../../model/monitorentry";
 import {ContentDisplayService} from "../../service/content-display.service";
+import {ModalNotificationSendComponent} from "../modal/modal-notification-send/modal-notification-send.component";
 
 @Component({
   selector: 'app-navbar',
@@ -16,6 +17,9 @@ import {ContentDisplayService} from "../../service/content-display.service";
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnChanges {
+
+    @ViewChild(ModalNotificationSendComponent)
+    public notificationModal;
 
     public languages: string[];
     public refresh: Subscription;
@@ -66,6 +70,10 @@ export class NavbarComponent implements OnInit, OnChanges {
           || this.authService.getRoles().filter(value => value != 'ROLE_INCOMPLETE')
             .filter(value => value != 'ROLE_GUEST')
             .length > 0;
+    }
+
+    public showNotificationModal(): void {
+        this.notificationModal.show();
     }
 
 }

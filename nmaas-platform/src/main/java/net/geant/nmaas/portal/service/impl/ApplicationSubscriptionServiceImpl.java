@@ -4,19 +4,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription.Id;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
 @Service
@@ -28,14 +29,18 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	
 	private DomainService domains;
 	
-	private ApplicationService applications;
+	private ApplicationBaseService applications;
+
+	private ApplicationStatePerDomainService applicationStatePerDomainService;
 
 	@Autowired
 	public ApplicationSubscriptionServiceImpl(ApplicationSubscriptionRepository appSubRepo,
-											  DomainService domains, ApplicationService applications) {
+											  DomainService domains, ApplicationBaseService applications,
+											  ApplicationStatePerDomainService applicationStatePerDomainService) {
 		this.appSubRepo = appSubRepo;
 		this.domains = domains;
 		this.applications = applications;
+		this.applicationStatePerDomainService = applicationStatePerDomainService;
 	}
 	
 	
@@ -52,8 +57,8 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public boolean isActive(Application application, Domain domain) {
-		return appSubRepo.findByDomainAndApplication(domain, application).map(appInstance ->
+	public boolean isActive(String appName, Domain domain) {
+		return appSubRepo.findByDomainAndApplication(domain, applications.findByName(appName)).map(appInstance ->
 				(!appInstance.isDeleted() && appInstance.isActive())).orElse(false);
 	}
 
@@ -70,7 +75,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public boolean existsSubscription(Application application, Domain domain) {
+	public boolean existsSubscription(ApplicationBase application, Domain domain) {
 		checkParam(application, domain);
 		return appSubRepo.existsByDomainAndApplication(domain, application);
 	}
@@ -88,7 +93,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public Optional<ApplicationSubscription> getSubscription(Application application, Domain domain) {
+	public Optional<ApplicationSubscription> getSubscription(ApplicationBase application, Domain domain) {
 		checkParam(application, domain);
 		return appSubRepo.findByDomainAndApplication(domain, application);
 	}
@@ -113,7 +118,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application) {
+	public List<ApplicationSubscription> getSubscriptionsBy(Domain domain, ApplicationBase application) {
 		if(domain != null && application != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
 			return Collections.singletonList(res.orElse(null));
@@ -141,6 +146,10 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 			appSub.setDeleted(false);
 			
 		appSub.setActive(true);
+
+		if (!applicationStatePerDomainService.isApplicationEnabledInDomain(appSub.getDomain(), appSub.getApplication())) {
+			throw new IllegalArgumentException("Cannot subscribe. Application is disabled in this domain");
+		}
 			
 		try {
 			return appSubRepo.save(appSub);
@@ -152,7 +161,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	@Override
 	public ApplicationSubscription subscribe(Long applicationId, Long domainId, boolean active) {
 		Domain domain = getDomain(domainId);
-		Application application = getApplication(applicationId);
+		ApplicationBase application = getApplication(applicationId);
 
 		ApplicationSubscription appSub = appSubRepo.findByDomainAndApplicationId(domainId, applicationId).orElse(new ApplicationSubscription(domain, application));
 
@@ -160,7 +169,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public ApplicationSubscription subscribe(Application application, Domain domain, boolean active) {
+	public ApplicationSubscription subscribe(ApplicationBase application, Domain domain, boolean active) {
 		checkParam(application, domain);
 		
 		ApplicationSubscription appSub = appSubRepo.findByDomainAndApplication(domain, application).orElse(new ApplicationSubscription(domain, application));
@@ -197,7 +206,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public void unsubscribe(Application application, Domain domain) {
+	public void unsubscribe(ApplicationBase application, Domain domain) {
 		checkParam(application, domain);
 		
 		ApplicationSubscription appSub = findApplicationSubscription(application, domain);		
@@ -206,18 +215,13 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 
 	@Override
-	public List<Application> getSubscribedApplications() {		
+	public List<ApplicationBase> getSubscribedApplications() {
 		return getSubscribedApplications(null);
 	}
 
 	@Override
-	public List<Application> getSubscribedApplications(Long domainId) {		
+	public List<ApplicationBase> getSubscribedApplications(Long domainId) {
 		return (domainId != null ? appSubRepo.findApplicationBriefAllByDomain(domainId) : appSubRepo.findApplicationBriefAllBy());
-	}
-
-	protected ApplicationSubscription findApplicationSubscription(Id id) {
-		return appSubRepo.findById(id).orElseThrow(() ->
-                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
 	}
 	
 	private ApplicationSubscription findApplicationSubscription(Long applicationId, Long domainId) {
@@ -227,7 +231,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 
 	@SuppressWarnings("unused")
-	private ApplicationSubscription findApplicationSubscription(Application application, Domain domain) {
+	private ApplicationSubscription findApplicationSubscription(ApplicationBase application, Domain domain) {
 		return appSubRepo.findByDomainAndApplication(domain, application).orElseThrow(() ->
                 new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
 	}
@@ -238,10 +242,9 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
                 new ObjectNotFoundException("Domain " + domainId + " not found."));
 	}
 
-	protected Application getApplication(Long applicationId) {
+	protected ApplicationBase getApplication(Long applicationId) {
 		checkParam(applicationId, "applicationId");
-		return applications.findApplication(applicationId).orElseThrow(() ->
-                new ObjectNotFoundException("Application " + applicationId + " not found."));
+		return applications.getBaseApp(applicationId);
 	}
 
 	
@@ -272,7 +275,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 			throw new IllegalArgumentException("domainId is null");
 	}
 	
-	protected void checkParam(Application application, Domain domain) {
+	protected void checkParam(ApplicationBase application, Domain domain) {
 		if(application == null)
 			throw new IllegalArgumentException("application is null");
 		if(domain == null)
@@ -280,11 +283,11 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		checkParam(application.getId(), domain.getId());
 	}
 
-	protected void checkParam(Application application){
+	protected void checkParam(ApplicationBase application){
 		if(application == null)
 			throw new IllegalArgumentException("application is null");
-		if(!application.getState().equals(ApplicationState.ACTIVE))
-			throw new IllegalStateException("Cannot subscribe application which is in state " + application.getState());
+		if(!applications.isAppActive(application))
+			throw new IllegalStateException("Cannot subscribe application which is not active.");
 	}
 	
 }

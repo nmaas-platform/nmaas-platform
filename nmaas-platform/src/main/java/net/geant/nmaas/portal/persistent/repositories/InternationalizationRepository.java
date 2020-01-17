@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/*
+old internationalization repository to be removed
+ */
 @Repository
 public interface InternationalizationRepository extends JpaRepository<Internationalization, String> {
     Optional<Internationalization> findByLanguageOrderByIdDesc(String language);

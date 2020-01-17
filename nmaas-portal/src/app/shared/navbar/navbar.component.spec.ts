@@ -94,6 +94,12 @@ export class MockAuthService{
 })
 class MockDomainFilter{}
 
+@Component({
+  selector: 'app-modal-notification-send',
+  template: '<p>Mock modal</p>'
+})
+class MockNotificationSendModalComponent {}
+
 class MockDomainService{
 
 }
@@ -109,7 +115,8 @@ describe('NavbarComponent_Shared', () => {
       declarations: [
         NavbarComponent,
         RolesDirective,
-        MockDomainFilter
+        MockDomainFilter,
+        MockNotificationSendModalComponent
       ],
         imports: [
             HttpClientTestingModule,

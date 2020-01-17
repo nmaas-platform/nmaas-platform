@@ -20,8 +20,6 @@ public class KClusterViewComplete {
 
     private KClusterDeploymentView deployment;
 
-    private KClusterAttachPointView attachPoint;
-
     private List<KClusterExtNetworkView> externalNetworks = new ArrayList<>();
 
 }

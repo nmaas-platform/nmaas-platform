@@ -19,11 +19,6 @@
     "smtpServerHostname": "nmaas-postfix",
     "smtpServerPort": "587"
   },
-  "attachPoint": {
-    "routerName":"R3",
-    "routerId":"172.16.3.3",
-    "routerInterfaceName":"ge-0/0/5"
-  },
   "externalNetworks": [{
       "externalIp":"169.10.10.10",
       "externalNetwork":"169.10.10.0",

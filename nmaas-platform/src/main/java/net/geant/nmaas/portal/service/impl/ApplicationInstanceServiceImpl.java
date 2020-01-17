@@ -1,17 +1,11 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
-import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.portal.service.ApplicationService;
-import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.portal.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -38,14 +32,23 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
 	private final DomainServiceImpl.CodenameValidator validator;
 
+	private final ApplicationStatePerDomainService applicationStatePerDomainService;
+
 	@Autowired
-	public ApplicationInstanceServiceImpl(AppInstanceRepository appInstanceRepo, ApplicationService applications, DomainService domains, UserService users, ApplicationSubscriptionService applicationSubscriptions, @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator) {
+	public ApplicationInstanceServiceImpl(AppInstanceRepository appInstanceRepo,
+                                          ApplicationService applications,
+                                          DomainService domains,
+                                          UserService users,
+                                          ApplicationSubscriptionService applicationSubscriptions,
+                                          @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator,
+                                          ApplicationStatePerDomainService applicationStatePerDomainService) {
 		this.appInstanceRepo = appInstanceRepo;
 		this.applications = applications;
 		this.domains = domains;
 		this.users = users;
 		this.applicationSubscriptions = applicationSubscriptions;
 		this.validator = validator;
+		this.applicationStatePerDomainService = applicationStatePerDomainService;
 	}
 
 	@Override
@@ -63,13 +66,32 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		checkParam(application);
 		checkNameCharacters(name);
 		checkNameUniqueness(domain, name);
-		if(applicationSubscriptions.isActive(application, domain))
+
+		if (!this.applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)) {
+            throw new IllegalArgumentException("Application is disabled in domain settings");
+        }
+
+		// TODO validate
+
+		if(applicationSubscriptions.isActive(application.getName(), domain))
 			return appInstanceRepo.save(new AppInstance(application, domain, name));
 		else
 			throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
 	}
 
-	@Override
+    @Override
+    public boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView) {
+        Domain domain = appInstance.getDomain();
+        Application app = appInstance.getApplication();
+
+        ApplicationStatePerDomain appStatePerDomain = domain.getApplicationStatePerDomain().stream().filter(appState ->
+            appState.getApplicationBase().getName().equals(app.getName())
+        ).findAny().orElseThrow(() -> new IllegalArgumentException("Application state not found"));
+
+        return this.applicationStatePerDomainService.validateAppConfigurationAgainstState(appConfigurationView, appStatePerDomain);
+    }
+
+    @Override
 	public void delete(Long appInstanceId) {
 		checkParam(appInstanceId);
 		find(appInstanceId).ifPresent(appInstanceRepo::delete);

@@ -6,9 +6,11 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Network Management Service deployment information for application deployed on Kubernetes cluster.
@@ -25,9 +27,10 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     private KubernetesTemplate kubernetesTemplate;
 
     /**
-     * External URL to be used to access service from outside of the cluster
+     * Collection of access methods to the service
      */
-    private String serviceExternalUrl;
+    @ElementCollection
+    private Set<ServiceAccessMethod> accessMethods;
 
     public KubernetesNmServiceInfo () {
         super();
@@ -41,5 +44,9 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, Map<String, String> additionalParameters, KubernetesTemplate kubernetesTemplate) {
         super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId, additionalParameters);
         this.kubernetesTemplate = kubernetesTemplate;
+    }
+
+    public void addServiceAccessMethod(ServiceAccessMethod serviceAccessMethod) {
+        accessMethods.add(serviceAccessMethod);
     }
 }

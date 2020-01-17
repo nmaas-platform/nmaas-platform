@@ -15,7 +15,10 @@
     "LANGUAGE": "Language",
     "ABOUT": "A propos",
     "BACK": "Retour à la page d'accueil",
-    "LANGUAGES": "Langages"
+    "LANGUAGES": "Langages",
+    "NOTIFICATION": "Send notification",
+    "ALL_USERS": "To all users"
+
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -108,6 +111,7 @@
     "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Resource configuration",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "INGRESS_PER_DOMAIN": "Ingress per domain",
     "TLS_SUPPORTED": "TLS supported",
     "DEPLOYMENT": "Deployment",
     "NAMESPACE_CONFIG_OPTION": "Paramètres \"Namespace\"",
@@ -182,7 +186,7 @@
     "LAST_SUCCESSFUL_LOGIN": "Last successful login"
   },
   "DOMAINS": {
-    "TITRE": "Organisation",
+    "TITLE": "Organisation",
     "CODE_NAME": "Code idientifiant",
     "NAME": "Nom",
     "ACTIVATE": "Actif",
@@ -250,6 +254,7 @@
     "ACTIVE": "Actif",
     "ID_IN_DB": "ID dans la base de données",
     "KUBERNETES_NAMESPACE": "\"Namespace\" Kubernetes",
+    "KUBERNETES_NAMESPACE_PLACEHOLDER": "Default value: codename",
     "KUBERNETES_STORAGE_CLASS": "\"StorageClass\" Kubernetes",
     "KUBERNETES_INGRESS_CLASS": "Kubernetes Ingress class",
     "DCN_STATUS": "Statut du réseau de supervision",
@@ -285,7 +290,11 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Aucun réseau client spécifié.",
     "IP_ADDRESS": "IP Adresse",
     "MASK_LENGTH": "Masque de réseau",
-    "ADD": "Ajouter"
+    "ADD": "Ajouter",
+    "APP_STATUS": "Application properties",
+    "APP_NAME": "Nom de l'application",
+    "APP_ENABLED": "Activé",
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",
@@ -353,7 +362,9 @@
     "RATING": "Évaluation",
     "RATING_AVERAGE": "Note moyenne des utilisateurs",
     "RATING_INFO": "Cliquez sur l'étoile pour évaluer une application",
-    "RATING_BREAKDOWN": "Répartition par note"
+    "RATING_BREAKDOWN": "Répartition par note",
+    "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information."
   },
   "RESTART_MODAL": {
     "HEADER": "Confirmation de redémarrage",
@@ -369,7 +380,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Le nom de l'instance name est requis.",
     "DOMAIN": "Organisation",
     "CLOSE_BUTTON": "Fermer",
-    "DEPLOY_BUTTON": "Déployer"
+    "DEPLOY_BUTTON": "Déployer",
+    "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
+    "SELECT_VERSION": "Sélectionnez la version"
   },
   "APP_INSTANCE": {
     "SOURCE": "Source",
@@ -466,6 +479,7 @@
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
     },
+    "SHOW_VERSIONS_LABEL": "Show available versions",
     "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web"
   },
   "UNDEPLOY_MODAL": {
@@ -526,6 +540,7 @@
     "TITLE": "Applications management",
     "NAME": "Name",
     "STATE": "State",
+    "VERSION": "Version",
     "ADD_BUTTON": "Add",
     "VIEW_BUTTON": "View",
     "EDIT_BUTTON": "Edit",
@@ -534,7 +549,8 @@
     "REJECTED_TAB": "Rejected",
     "NEW_TAB": "New",
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
-    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
+    "ADD_NEW_VERSION_BUTTON": "Add new version"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -629,7 +645,9 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates",
     "EXPOSE_WEB_UI": "Expose web user interface",
-    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface"
+    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",
@@ -748,5 +766,10 @@
     "HEADER": "503 - Service indisponible",
     "TEXT_FIRST_PART": "Le serveur est actuellement incapable de traiter votre demande en raison d'une surcharge temporaire ou d'un ou plusieurs services de clé actuellement hors ligne.",
     "TEXT_SECOND_PART": "Nous vous suggérons de faire une courte pause, par exemple pour le café - nous y sommes. Réessayez plus tard!"
+  },
+  "MESSAGE_MODAL": {
+    "HEADER": "Send message",
+    "CONFIRM": "Send",
+    "DISMISS": "Dismiss"
   }
 }

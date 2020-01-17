@@ -23,8 +23,7 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Default {@link AppLifecycleManager} implementation.
@@ -142,7 +141,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
         String basicAuthUsername = accessCredentialsMap.get("accessUsername");
         String basicAuthPassword = accessCredentialsMap.get("accessPassword");
-        if (StringUtils.isNotEmpty(basicAuthUsername) && StringUtils.isNotEmpty(basicAuthPassword)) {
+        if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
             janitorService.createOrReplaceBasicAuth(deploymentId, domain, basicAuthUsername, basicAuthPassword);
         }
     }
@@ -162,7 +161,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void updateApplication(Identifier deploymentId, Identifier applicationId) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Updating application is currently not supported.");
     }
 
     @Override

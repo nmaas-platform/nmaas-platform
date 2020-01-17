@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal;
 
-import java.util.Arrays;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -26,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Configuration

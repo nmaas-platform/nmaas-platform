@@ -1,17 +1,18 @@
-import {Component, OnInit, ViewEncapsulation, Input, ViewChild} from '@angular/core';
-import {Application} from '../../../../model/application';
-import {AppImagesService} from '../../../../service/appimages.service';
-import {RateComponent} from '../../../rate/rate.component';
+import {Component, OnInit, ViewEncapsulation, Input, ViewChild, OnChanges, SimpleChanges} from '@angular/core';
+import {Application} from '../../../../model';
+import {AppImagesService} from '../../../../service';
+import {RateComponent} from '../../../rate';
 import {DefaultLogo} from '../../../../directive/defaultlogo.directive';
 
 import {isUndefined} from 'util';
-import {SecurePipe} from '../../../../pipe/index';
-import {Router} from "@angular/router";
-import {AppInstallModalComponent} from "../../../modal/appinstall";
-import {AppConfigService} from "../../../../service";
-import {AuthService} from "../../../../auth/auth.service";
-import {TranslateService} from "@ngx-translate/core";
-import {AppDescription} from "../../../../model/appdescription";
+import {SecurePipe} from '../../../../pipe';
+import {Router} from '@angular/router';
+import {AppInstallModalComponent} from '../../../modal/appinstall';
+import {AppConfigService} from '../../../../service';
+import {AuthService} from '../../../../auth/auth.service';
+import {TranslateService} from '@ngx-translate/core';
+import {AppDescription} from '../../../../model/appdescription';
+import {Domain} from '../../../../model/domain';
 
 @Component({
   selector: 'nmaas-applist-element',
@@ -20,7 +21,14 @@ import {AppDescription} from "../../../../model/appdescription";
   styleUrls: ['./appelement.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class AppElementComponent implements OnInit {
+export class AppElementComponent implements OnInit, OnChanges {
+
+  public defaultTooltipOptions = {
+    'display': true,
+    'placement': 'bottom',
+    'show-delay': '50',
+    'theme': 'dark'
+  };
 
   @Input()
   public app: Application;
@@ -31,11 +39,14 @@ export class AppElementComponent implements OnInit {
   @Input()
   public domainId: number;
 
-  @ViewChild(AppInstallModalComponent)
-  public readonly modal:AppInstallModalComponent;
+  @Input()
+  public domain: Domain;
 
-  constructor(public appImagesService: AppImagesService, public AppConfigService: AppConfigService, public router:Router,
-              public authService:AuthService, public translate:TranslateService) {
+  @ViewChild(AppInstallModalComponent)
+  public readonly modal: AppInstallModalComponent;
+
+  constructor(public appImagesService: AppImagesService, public appConfigService: AppConfigService, public router: Router,
+              public authService: AuthService, public translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -44,11 +55,22 @@ export class AppElementComponent implements OnInit {
     }
   }
 
-  public showDeployButton():boolean {
-    return this.domainId !== this.AppConfigService.getNmaasGlobalDomainId() && !this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.domain) {
+      this.defaultTooltipOptions.display = !this.isApplicationEnabledInDomain();
+    }
+  }
+
+  public showDeployButton(): boolean {
+    return this.domainId !== this.appConfigService.getNmaasGlobalDomainId() &&
+        !this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
   }
 
   public getDescription(): AppDescription {
-    return this.app.descriptions.find(val => val.language == this.translate.currentLang);
+    return this.app.descriptions.find(val => val.language === this.translate.currentLang);
+  }
+
+  public isApplicationEnabledInDomain(): boolean {
+    return this.domain.applicationStatePerDomain.find(value => value.applicationBaseId === this.app.id).enabled || false
   }
 }

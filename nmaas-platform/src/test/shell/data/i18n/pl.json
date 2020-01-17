@@ -15,7 +15,9 @@
     "LANGUAGE": "Język",
     "ABOUT": "O nas",
     "BACK": "Wróć do strony głównej",
-    "LANGUAGES": "Języki"
+    "LANGUAGES": "Języki",
+    "NOTIFICATION": "Wyślij wiadomość",
+    "ALL_USERS": "Do wszystkich"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -140,6 +142,8 @@
     "REST_API_HOST_ADDRESS_REQUIRED_MESSAGE": "REST API host address jest wymagany",
     "REST_API_HOST_ADDRESS_VALIDATION_MESSAGE": "REST API host address może zawierać tylko cyfry i kropki",
     "REST_API_PORT_REQUIRED_MESSAGE": "REST API host port jest wymagany",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru Kubernetes namespace to 64.",
     "IP_REQUIRED_MESSAGE": "Adres IP jest wymagany",
     "IP_VALIDATION_MESSAGE": "Adres IP może zawierać tylko cyfry i kropki",
     "NETWORK_REQUIRED_MESSAGE": "Network jest wymagany",
@@ -285,7 +289,11 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Nie wyszczególniono sieci klienta.",
     "IP_ADDRESS": "Adres IP",
     "MASK_LENGTH": "Długość maski",
-    "ADD": "Dodaj"
+    "ADD": "Dodaj",
+    "APP_STATUS": "Właściwości aplikacji",
+    "APP_NAME": "Nazwa aplikacji",
+    "APP_ENABLED": "Dostępna",
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
@@ -353,7 +361,9 @@
     "RATING": "Oceny",
     "RATING_AVERAGE": "Średnia ocena użytkowników",
     "RATING_INFO": "Wybierz liczbę gwiazdek aby zagłosować",
-    "RATING_BREAKDOWN": "Rozkład ocen"
+    "RATING_BREAKDOWN": "Rozkład ocen",
+    "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information."
   },
   "RESTART_MODAL": {
     "HEADER": "Potwierdzenie restartu instancji",
@@ -369,7 +379,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana.",
     "DOMAIN": "Domena",
     "CLOSE_BUTTON": "Zamknij",
-    "DEPLOY_BUTTON": "Uruchom"
+    "DEPLOY_BUTTON": "Uruchom",
+    "USE_DEFAULT_VERSION": "Użyj domyślnej wersji",
+    "SELECT_VERSION": "Wybierz wersje"
   },
   "APP_INSTANCE": {
     "SOURCE": "Źródło",
@@ -466,6 +478,7 @@
       "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem NMaaS za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
       "REMOVED": "Aplikacja została pomyślnie usunięta"
     },
+    "SHOW_VERSIONS_LABEL": "Pokaż dostępne wersje",
     "GO_TO_APP_TOOLTIP": "Ta aplikacja nie udostępnia interfejsu użytkownika"
   },
   "UNDEPLOY_MODAL": {
@@ -527,6 +540,7 @@
     "TITLE": "Zarządzanie aplikacjami",
     "NAME": "Nazwa",
     "STATE": "Stan",
+    "VERSION": "Wersja",
     "ADD_BUTTON": "Dodaj",
     "VIEW_BUTTON": "Pokaż",
     "EDIT_BUTTON": "Edytuj",
@@ -535,7 +549,8 @@
     "REJECTED_TAB": "Odrzucone",
     "NEW_TAB": "Nowe",
     "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
-    "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji"
+    "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
+    "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -630,7 +645,9 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania.",
     "EXPOSE_WEB_UI": "Udostępnij graficzny interfejs użytkownika",
-    "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interfejs użytkownika"
+    "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interfejs użytkownika",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
@@ -749,5 +766,10 @@
     "HEADER": "503 - Usługa niedostępna",
     "TEXT_FIRST_PART": "Serwer nie jest w stanie obsłużyć Twojego żądania z powodu tymczasowego przeciążenia lub jedna lub więcej kluczowych usług jest obecnie niedostępna.",
     "TEXT_SECOND_PART": "Sugerujemy zrobić krótką przerwę, np. na kawę - pracujemy nad tym. Spróbuj ponownie później!"
+  },
+  "MESSAGE_MODAL": {
+    "HEADER": "Send message",
+    "CONFIRM": "Send",
+    "DISMISS": "Dismiss"
   }
 }

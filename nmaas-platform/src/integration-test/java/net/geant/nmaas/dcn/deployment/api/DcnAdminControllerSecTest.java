@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.api.model.DcnView;
-import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -57,9 +56,6 @@ public class DcnAdminControllerSecTest extends BaseControllerTestSetup {
         DcnInfo dcnInfo = new DcnInfo();
         dcnInfo.setName("");
         dcnInfo.setDomain("domain");
-        DcnCloudEndpointDetails dcnCloudEndpointDetails =
-                new DcnCloudEndpointDetails(550, "10.10.10.0/24", "10.10.10.1");
-        dcnInfo.setCloudEndpointDetails(dcnCloudEndpointDetails);
         return dcnInfo;
     }
 

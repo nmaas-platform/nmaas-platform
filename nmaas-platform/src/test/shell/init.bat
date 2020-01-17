@@ -100,6 +100,9 @@ echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/newSsoLoginMail.json
 echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/broadcast.json
+echo.
 
 echo.
 echo App1

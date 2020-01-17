@@ -61,6 +61,10 @@ public class AppConfigurationController {
         if(configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0)
             throw new ProcessingException("Storage space cannot be less or equal 0");
 
+        if(!instances.validateAgainstAppConfiguration(appInstance, configuration)) {
+            throw new ProcessingException("Application configuration violates application state per domain rules");
+        }
+
         appInstance.setConfiguration(configuration.getJsonInput());
         instances.update(appInstance);
 
@@ -80,6 +84,10 @@ public class AppConfigurationController {
 
         if (!validJSON(configuration.getJsonInput()))
             throw new ProcessingException("Configuration is not in valid JSON format");
+
+        if(!instances.validateAgainstAppConfiguration(appInstance, configuration)) {
+            throw new ProcessingException("Application configuration violates application state per domain rules");
+        }
 
         appInstance.setConfiguration(configuration.getJsonInput());
         instances.update(appInstance);

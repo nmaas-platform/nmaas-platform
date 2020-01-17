@@ -1,6 +1,8 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -10,12 +12,15 @@ import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_UPDATED;
@@ -31,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -78,7 +83,10 @@ public class AppDeploymentStateChangeManagerTest {
     public void shouldTriggerNotificationEvent() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
-        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails("url"));
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethod>() {{
+            add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", "url"));
+        }}));
+
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
         ApplicationEvent newEvent = manager.notifyStateChange(event);
         assertThat(newEvent, is(nullValue()));
