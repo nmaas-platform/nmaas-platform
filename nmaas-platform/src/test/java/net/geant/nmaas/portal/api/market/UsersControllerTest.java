@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
@@ -25,6 +26,7 @@ import java.security.Principal;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -200,9 +202,22 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldNotRemoveUserRoleWithNullRequest(){
-		assertThrows(MissingElementException.class, () -> {
+		MissingElementException me = assertThrows(MissingElementException.class, () -> {
 			usersController.removeUserRole(userList.get(0).getId(), null, principal);
 		});
+
+		assertEquals("userRole is null", me.getMessage());
+	}
+
+	@Test
+	public void shouldNotRemoveUserRoleWithNullUserRole(){
+		UserRoleView ur = new UserRoleView();
+		ur.setRole(null);
+		MissingElementException me = assertThrows(MissingElementException.class, () -> {
+			usersController.removeUserRole(userList.get(0).getId(), ur, principal);
+		});
+
+		assertEquals("Missing role", me.getMessage());
 	}
 
 	@Test
