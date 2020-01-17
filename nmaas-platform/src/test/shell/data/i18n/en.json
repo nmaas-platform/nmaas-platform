@@ -178,7 +178,9 @@
     "ENABLE_BUTTON": "Enable",
     "DETAILS_BUTTON": "Details",
     "DISABLE_BUTTON": "Disable",
-    "REMOVE_FROM_DOMAIN_BUTTON": "Remove from domain"
+    "REMOVE_FROM_DOMAIN_BUTTON": "Remove from domain",
+    "FIRST_LOGIN": "First login",
+    "LAST_SUCCESSFUL_LOGIN": "Last successful login"
   },
   "DOMAINS": {
     "TITLE": "Domains",
