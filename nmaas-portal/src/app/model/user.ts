@@ -12,6 +12,9 @@ export class User {
   public privacyPolicyAccepted: boolean = undefined;
   public ssoUser: boolean = undefined;
   public selectedLanguage = undefined;
+
+  public lastSuccessfulLoginDate: Date = undefined;
+  public firstLoginDate: Date = undefined;
   
   public getDomainIds(): number[] {
     return Array.from(new Set(this.roles.map(ur => ur.domainId)));
