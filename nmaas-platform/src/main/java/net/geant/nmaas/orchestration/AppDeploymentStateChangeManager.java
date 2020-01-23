@@ -105,7 +105,7 @@ public class AppDeploymentStateChangeManager {
                                 .getServiceAccessMethods().stream()
                                 .filter((ServiceAccessMethod sam) -> sam.getType().equals(ServiceAccessMethodType.DEFAULT))
                                 .findFirst().orElseThrow(() -> new ProcessingException("No default access method provided")).getUrl(),
-                        "domainName", appDeployment.getDomain(),
+                        "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                         "owner", appDeployment.getOwner(),
                         "appInstanceName",appDeployment.getDeploymentName(),
                         "appName",appDeployment.getAppName()
