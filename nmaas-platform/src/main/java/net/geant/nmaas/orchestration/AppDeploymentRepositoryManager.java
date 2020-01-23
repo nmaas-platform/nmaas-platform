@@ -29,6 +29,8 @@ public interface AppDeploymentRepositoryManager {
 
     String loadDomain(Identifier deploymentId);
 
+    String loadDomainName(Identifier deploymentId);
+
     void updateErrorMessage(Identifier deploymentId, String errorMessage);
 
     String loadErrorMessage(Identifier deploymentId);

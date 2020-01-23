@@ -94,6 +94,12 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
+    public String loadDomainName(Identifier deploymentId) {
+        return repository.getDomainNameByDeploymentId(deploymentId)
+                .orElseThrow(() -> new InvalidDeploymentIdException(deploymentNotFoundMessage(deploymentId)));
+    }
+
+    @Override
     public List<AppDeploymentHistory> loadStateHistory(Identifier deploymentId){
         return load(deploymentId).getHistory();
     }
