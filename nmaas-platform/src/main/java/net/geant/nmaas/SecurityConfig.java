@@ -48,11 +48,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final  String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
-    private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
-    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
-
-	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
-
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 	
@@ -61,17 +56,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		if (Arrays.asList(env.getActiveProfiles()).contains("dcn_ansible")) {
-			auth.inMemoryAuthentication()
-					.passwordEncoder(passwordEncoder)
-					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(passwordEncoder.encode(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME)))
-					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
-		}
-	}
 
 	private static final String[] AUTH_WHITELIST = {
 			"/favicon.ico",
@@ -102,10 +86,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-				.authorizeRequests()
-	            .antMatchers("/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
-	            .and().httpBasic()
 			.and()
 				.authorizeRequests()
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
