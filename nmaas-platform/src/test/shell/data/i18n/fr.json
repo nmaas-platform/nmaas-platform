@@ -181,7 +181,9 @@
     "ENABLE_BUTTON": "Activer",
     "DETAILS_BUTTON": "Détails",
     "DISABLE_BUTTON": "Désactiver",
-    "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation"
+    "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation",
+    "FIRST_LOGIN": "First login",
+    "LAST_SUCCESSFUL_LOGIN": "Last successful login"
   },
   "DOMAINS": {
     "TITLE": "Organisation",

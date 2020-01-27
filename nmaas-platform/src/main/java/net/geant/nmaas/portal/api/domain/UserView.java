@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.domain;
 
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Builder;
@@ -16,6 +17,9 @@ public class UserView extends UserBase implements Serializable {
 	protected String email;
 	protected boolean ssoUser;
 	protected String selectedLanguage;
+
+	protected OffsetDateTime lastSuccessfulLoginDate;
+	protected OffsetDateTime firstLoginDate;
 	
 	protected Set<UserRoleView> roles = new HashSet<>();
 	

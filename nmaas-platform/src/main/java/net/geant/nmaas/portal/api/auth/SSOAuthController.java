@@ -1,8 +1,10 @@
 package net.geant.nmaas.portal.api.auth;
 
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +23,8 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api/auth/sso")
 public class SSOAuthController {
@@ -35,17 +39,23 @@ public class SSOAuthController {
 
 	private ShibbolethConfigManager shibbolethConfigManager;
 
+	private UserLoginRegisterService userLoginService;
+
 	@Autowired
-	public SSOAuthController(UserService users, DomainService domains, JWTTokenService jwtTokenService, ConfigurationManager configurationManager, ShibbolethConfigManager shibbolethConfigManager){
+	public SSOAuthController(UserService users, DomainService domains,
+							 JWTTokenService jwtTokenService, ConfigurationManager configurationManager,
+							 ShibbolethConfigManager shibbolethConfigManager,
+							 UserLoginRegisterService userLoginService){
 		this.users = users;
 		this.domains = domains;
 		this.jwtTokenService = jwtTokenService;
 		this.configurationManager = configurationManager;
 		this.shibbolethConfigManager = shibbolethConfigManager;
+		this.userLoginService = userLoginService;
 	}
 
 	@PostMapping(value="/login")
-	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) {
+	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData, HttpServletRequest request) {
 		ConfigurationView configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
 			throw new SignupException("SSO login method is not enabled");
@@ -61,11 +71,17 @@ public class SSOAuthController {
 
 		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElseGet(() -> registerNewUser(userSSOLoginData));
 
-		if(!user.isEnabled())
+		if(!user.isEnabled()) {
+			userLoginService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 			throw new AuthenticationException("User is not active.");
+		}
 
-		if(configuration.isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN")))
+		if(configuration.isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN"))) {
+			userLoginService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 			throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
+		}
+
+		userLoginService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
