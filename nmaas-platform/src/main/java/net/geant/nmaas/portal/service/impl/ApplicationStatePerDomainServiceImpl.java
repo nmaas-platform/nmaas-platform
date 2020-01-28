@@ -96,8 +96,9 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
         return false;
     }
 
+    // in some cases the storage space may be set at the later stage (if not set by the user)
     @Override
     public boolean validateAppConfigurationAgainstState(AppConfigurationView appConfig, ApplicationStatePerDomain appState) {
-        return appConfig.getStorageSpace() <= appState.getPvStorageSizeLimit();
+        return appConfig.getStorageSpace() == null || appConfig.getStorageSpace() <= appState.getPvStorageSizeLimit();
     }
 }
