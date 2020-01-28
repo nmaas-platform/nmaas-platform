@@ -81,6 +81,14 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
+  public getLastSuccessfulLoginDateString(user: User): string {
+    return user.lastSuccessfulLoginDate != null ? user.lastSuccessfulLoginDate.toUTCString() : '';
+  }
+
+  public getFirstLoginDateString(user: User): string {
+    return user.firstLoginDate != null ? user.firstLoginDate.toUTCString() : '';
+  }
+
   public remove(user: User) {
     this.onDelete.emit(user);
   }
@@ -89,9 +97,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     this.onView.emit(userId);
   }
 
-    public changeUserStatus(user: User, enabled: boolean): void {
-      this.userService.changeUserStatus(user.id, enabled).subscribe();
-      user.enabled = enabled;
-    }
+  public changeUserStatus(user: User, enabled: boolean): void {
+    this.userService.changeUserStatus(user.id, enabled).subscribe();
+    user.enabled = enabled;
+  }
 
 }

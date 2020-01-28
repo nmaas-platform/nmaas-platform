@@ -4,7 +4,12 @@ package net.geant.nmaas.portal.persistent;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserLoginRegister;
+import net.geant.nmaas.portal.persistent.entity.UserLoginRegisterType;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserLoginRegisterRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -61,6 +66,7 @@ public class UserLoginRegisterRepositoryTest {
         admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
         userRepository.save(tester);
         userRepository.save(admin);
+        this.userLoginRegisterRepository.deleteAll();
     }
 
     @AfterEach
@@ -80,7 +86,7 @@ public class UserLoginRegisterRepositoryTest {
 
     @Test
     public void shouldContainThreeUsers() {
-        assertEquals(3, userRepository.count());
+        assertEquals(2, userRepository.count());
     }
 
     @Test

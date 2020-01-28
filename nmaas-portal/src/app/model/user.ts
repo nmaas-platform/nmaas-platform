@@ -15,7 +15,7 @@ export class User {
 
   public lastSuccessfulLoginDate: Date = undefined;
   public firstLoginDate: Date = undefined;
-  
+
   public getDomainIds(): number[] {
     return Array.from(new Set(this.roles.map(ur => ur.domainId)));
   }

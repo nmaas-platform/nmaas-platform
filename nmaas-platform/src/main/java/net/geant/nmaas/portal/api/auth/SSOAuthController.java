@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.auth;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,12 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 @RestController
+@Log4j2
 @RequestMapping("/api/auth/sso")
 public class SSOAuthController {
 
@@ -82,6 +87,15 @@ public class SSOAuthController {
 		}
 
 		userLoginService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
+
+		log.info(format("User [%s] logged in with role [%s] \t Host: [%s] \t user-agent: [%s] \t ip: [%s]",
+				userSSOLoginData.getUsername(),
+				user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList()),
+				request.getHeader(HttpHeaders.HOST),
+				request.getHeader(HttpHeaders.USER_AGENT),
+				BasicAuthController.getClientIpAddr(request)));
+
+		userLoginService.registerNewSuccessfulLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
