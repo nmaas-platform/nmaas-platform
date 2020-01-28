@@ -86,5 +86,10 @@ public class UserRole implements Serializable {
 	public String getAuthority() {
 		return id.getDomain().getId() + ":" + id.getRole().authority();
 	}
+
+	@Transient
+	public String getRoleAsString() {
+		return id.getRole() + " in " + id.getDomain().getCodename();
+	}
 	
 }
