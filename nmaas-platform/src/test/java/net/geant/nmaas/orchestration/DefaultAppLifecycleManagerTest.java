@@ -172,9 +172,18 @@ public class DefaultAppLifecycleManagerTest {
         input.put("keywith#inthemiddle", "value");
         input.put("keywith#andnullvalue", null);
         input.put("keywith#andemptyvalue", "");
-        Map<String, String> output = appLifecycleManager.replaceHashToDotsInMapKeys(input);
+        Map<String, String> output = DefaultAppLifecycleManager.replaceHashToDotsInMapKeys(input);
         assertThat(output.keySet().size(), is(2));
         assertThat(output.keySet().containsAll(Arrays.asList("keywith.", "keywith.inthemiddle")), is(true));
+    }
+
+    @Test
+    public void shouldAddQuotesInMapValuesWhereRequired() {
+        Map<String, String> input = new HashMap<>();
+        input.put("keywith#", "value");
+        input.put("keywith#inthemiddle", "value and another value");
+        Map<String, String> output = DefaultAppLifecycleManager.replaceHashToDotsInMapKeys(input);
+        assertThat(output.values().containsAll(Arrays.asList("value", "\"value and another value\"")), is(true));
     }
 
     @Test
