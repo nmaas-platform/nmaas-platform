@@ -8,22 +8,22 @@
 		{
 			"language": "en",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "A Ubuntu based bastion server allows users that are part of a given NMaaS domain to login to this host via SSH while connected to the customer access VPN."
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
 		},
 		{
 			"language": "de",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "A Ubuntu based bastion server allows users that are part of a given NMaaS domain to login to this host via SSH while connected to the customer access VPN."
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
 		},
 		{
 			"language": "fr",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "A Ubuntu based bastion server allows users that are part of a given NMaaS domain to login to this host via SSH while connected to the customer access VPN."
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
 		},
 		{
 			"language": "pl",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "A Ubuntu based bastion server allows users that are part of a given NMaaS domain to login to this host via SSH while connected to the customer access VPN."
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
 		}
 	],
 	"wwwUrl": "https://ubuntu.com",
