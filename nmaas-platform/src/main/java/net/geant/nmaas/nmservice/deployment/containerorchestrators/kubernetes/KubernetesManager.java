@@ -77,7 +77,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     appDeployment.getDomain(),
                     appDeployment.getStorageSpace(),
                     appDeployment.getDescriptiveDeploymentId(),
-                    createAdditionalParametersMap(appDeploymentSpec.getDeployParameters()),
+                    createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment),
                     KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
             );
         } else{
@@ -92,7 +92,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters){
+    private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters, AppDeployment appDeployment){
         Map<String, String> additionalParameters = new HashMap<>();
         deployParameters.forEach((k,v) ->{
             switch (k){
@@ -113,6 +113,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                         if(!value.isEmpty())
                             additionalParameters.put(v, value);
                     });
+                    break;
+                case DOMAIN_CODENAME:
+                    additionalParameters.put(v, appDeployment.getDomain());
                     break;
             }
         });
