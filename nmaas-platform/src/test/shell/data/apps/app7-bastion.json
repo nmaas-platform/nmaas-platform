@@ -8,22 +8,22 @@
 		{
 			"language": "en",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
 		},
 		{
 			"language": "de",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
 		},
 		{
 			"language": "fr",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
 		},
 		{
 			"language": "pl",
 			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3"
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
 		}
 	],
 	"wwwUrl": "https://ubuntu.com",
@@ -71,7 +71,7 @@
 											"label": "SSH keys (comma separated)",
 											"type": "textfield",
 											"input": true,
-											"key": "smtp#user",
+											"key": "env#ssh_keys",
 											"inputFormat": "plain",
 											"validate": {
 												"required": true

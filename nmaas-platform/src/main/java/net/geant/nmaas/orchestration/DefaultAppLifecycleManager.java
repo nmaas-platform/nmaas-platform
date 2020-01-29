@@ -127,14 +127,18 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
+    static Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
             if(entry.getValue() != null && !entry.getValue().isEmpty()){
-                newMap.put(entry.getKey().replace("#","."), entry.getValue());
+                newMap.put(entry.getKey().replace("#","."), addQuotationMarkIfRequired(entry.getValue()));
             }
         }
         return newMap;
+    }
+
+    static String addQuotationMarkIfRequired(String value) {
+        return value.contains(" ") ? "\"" + value + "\"" : value;
     }
 
     private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
