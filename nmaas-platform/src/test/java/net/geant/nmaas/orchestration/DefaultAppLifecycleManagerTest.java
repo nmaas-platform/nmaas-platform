@@ -181,9 +181,9 @@ public class DefaultAppLifecycleManagerTest {
     public void shouldAddQuotesInMapValuesWhereRequired() {
         Map<String, String> input = new HashMap<>();
         input.put("keywith#", "value");
-        input.put("keywith#inthemiddle", "value and another value");
+        input.put("keywith#inthemiddle", "value, this value and another value");
         Map<String, String> output = DefaultAppLifecycleManager.replaceHashToDotsInMapKeys(input);
-        assertThat(output.values().containsAll(Arrays.asList("value", "\"value and another value\"")), is(true));
+        assertThat(output.values().containsAll(Arrays.asList("value", "\"value\\, this value and another value\"")), is(true));
     }
 
     @Test

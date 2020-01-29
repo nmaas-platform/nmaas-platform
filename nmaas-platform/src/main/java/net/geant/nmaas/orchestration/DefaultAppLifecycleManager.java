@@ -131,7 +131,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
             if(entry.getValue() != null && !entry.getValue().isEmpty()){
-                newMap.put(entry.getKey().replace("#","."), addQuotationMarkIfRequired(entry.getValue()));
+                newMap.put(
+                        entry.getKey().replace("#","."),
+                        escapeCommasIfRequired(addQuotationMarkIfRequired(entry.getValue()))
+                );
             }
         }
         return newMap;
@@ -139,6 +142,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     static String addQuotationMarkIfRequired(String value) {
         return value.contains(" ") ? "\"" + value + "\"" : value;
+    }
+
+    static String escapeCommasIfRequired(String value) {
+        return value.replace(",", "\\,");
     }
 
     private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
