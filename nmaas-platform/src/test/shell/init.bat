@@ -204,6 +204,25 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 
 echo.
+echo App8
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app8-perfsonar-pwa.json
+echo.
+echo App8 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\perfsonar.png;type=image/png" %API_URL%/apps/8/logo
+echo.
+echo App8 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-pwa\perfsonar-pwa1.png;type=image/png" %API_URL%/apps/8/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-pwa\perfsonar-pwa2.png;type=image/png" %API_URL%/apps/8/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-pwa\perfsonar-pwa3.png;type=image/png" %API_URL%/apps/8/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-pwa\perfsonar-pwa4.png;type=image/png" %API_URL%/apps/8/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-pwa\perfsonar-pwa5.png;type=image/png" %API_URL%/apps/8/screenshots
+echo.
+
+echo.
 echo ---------------------
 echo Get all apps
 curl -X GET %API_URL%/apps --header "Authorization: Bearer %token%"
