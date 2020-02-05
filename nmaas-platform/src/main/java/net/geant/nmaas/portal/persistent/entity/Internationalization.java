@@ -72,9 +72,9 @@ public class Internationalization extends InternationalizationAbstract {
             for (Iterator<Map.Entry<String, JsonNode>> it = node.fields(); it.hasNext(); ) {
                 Map.Entry<String, JsonNode> e = it.next();
 
-                String out_key = key.equals("") ? e.getKey(): key+"."+e.getKey();
+                String outKey = key.equals("") ? e.getKey(): key+"."+e.getKey();
 
-                decompose(result, e.getValue(), out_key);
+                decompose(result, e.getValue(), outKey);
             }
         }
 

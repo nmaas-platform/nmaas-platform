@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.api.auth;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,7 +90,7 @@ public class SSOAuthController {
 
 		log.info(format("User [%s] logged in with roles [%s] \t Host: [%s] \t user-agent: [%s] \t ip: [%s]",
 				user.getUsername(),
-				user.getRoles().stream().map(role -> role.getRoleAsString()).collect(Collectors.toList()),
+				user.getRoles().stream().map(UserRole::getRoleAsString).collect(Collectors.toList()),
 				request.getHeader(HttpHeaders.HOST),
 				request.getHeader(HttpHeaders.USER_AGENT),
 				BasicAuthController.getClientIpAddr(request)));

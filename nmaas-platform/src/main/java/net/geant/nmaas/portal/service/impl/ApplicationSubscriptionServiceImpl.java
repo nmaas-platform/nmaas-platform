@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.springframework.beans.factory.annotation.Autowired;

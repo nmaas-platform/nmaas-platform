@@ -26,10 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -69,7 +67,7 @@ public class BasicAuthController {
 
         log.info(format("User [%s] logged in with roles [%s] \t Host: [%s] \t user-agent: [%s] \t ip: [%s]",
                 userLogin.getUsername(),
-                user.getRoles().stream().map(role -> role.getRoleAsString()).collect(Collectors.toList()),
+                user.getRoles().stream().map(UserRole::getRoleAsString).collect(Collectors.toList()),
                 request.getHeader(HttpHeaders.HOST),
                 request.getHeader(HttpHeaders.USER_AGENT),
                 BasicAuthController.getClientIpAddr(request)));

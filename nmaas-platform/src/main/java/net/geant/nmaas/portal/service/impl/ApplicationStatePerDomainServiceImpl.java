@@ -41,7 +41,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
          * NOTE: in this case it's impossible to set `right` value for storage size limit, since we cannot assure that
          * Application object with default properties is available for this Application Base
          */
-        list = list.stream().peek((a) -> a.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT)).collect(Collectors.toList());
+        list = list.stream().peek(a -> a.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT)).collect(Collectors.toList());
         return list;
     }
 
