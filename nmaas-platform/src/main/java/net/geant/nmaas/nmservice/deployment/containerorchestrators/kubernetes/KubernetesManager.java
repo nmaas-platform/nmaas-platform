@@ -160,9 +160,11 @@ public class KubernetesManager implements ContainerOrchestrator {
                     service.getDeploymentName(),
                     clusterIngressManager.getExternalServiceDomain(service.getDomain()),
                     clusterIngressManager.getIngressPerDomain());
-            repositoryManager.updateKServiceAccessMethods(deploymentId, new HashSet<ServiceAccessMethod>() {{
-                add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", serviceExternalUrl));
-            }});
+
+            Set<ServiceAccessMethod> accessMethods = new HashSet<>();
+            accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", serviceExternalUrl));
+            repositoryManager.updateKServiceAccessMethods(deploymentId, accessMethods);
+
             serviceLifecycleManager.deployService(deploymentId);
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                     ingressResourceManager.createOrUpdateIngressResource(
