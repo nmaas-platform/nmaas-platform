@@ -37,7 +37,13 @@
 				<div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 						<div *ngIf="appInstance?.serviceAccessMethods" class="dropdown">
-							<button class="btn btn-success dropdown-toggle" role="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true" tooltip="{{'APP_INSTANCE.GO_TO_APP_TOOLTIP' | translate }}" [display]="!app.appDeploymentSpec.exposesWebUI" [options]="defaultTooltipOptions">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</button>
+							<button class="btn btn-success dropdown-toggle" role="button" id="dropdownMenuButton"
+									data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+									[attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true"
+									tooltip="{{'APP_INSTANCE.GO_TO_APP_TOOLTIP' | translate }}"
+									[display]="!app.appDeploymentSpec.exposesWebUI" [options]="defaultTooltipOptions">
+								{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
+							</button>
 							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 								<a *ngFor="let sam of appInstance?.serviceAccessMethods" class="dropdown-item" href="{{sam.url}}">{{sam.name}}</a>
 							</div>
