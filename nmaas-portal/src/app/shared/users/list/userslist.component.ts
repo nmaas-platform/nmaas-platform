@@ -21,7 +21,7 @@ import {CustomerSearchCriteria} from "../../../service";
 })
 export class UsersListComponent extends BaseComponent implements OnInit, OnChanges {
 
-  readonly users_item_number_key = "NUMBER_OF_USERS_ITEM_KEY";
+  public users_item_number_key = "NUMBER_OF_USERS_ITEM_KEY";
 
   @Input()
   public users: User[] = [];
@@ -38,8 +38,8 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   private lastSearchCriteria: CustomerSearchCriteria = undefined;
 
-  private pageNumber = 1;
-  private paginatorName = 'paginator-identifier';
+  public pageNumber = 1;
+  public paginatorName = 'paginator-identifier';
   public itemsPerPage: number[]  = [5, 10, 15, 20, 25, 30];
   public maxItemsOnPage: number = 5;
 
