@@ -39,10 +39,10 @@ public class ApplicationStatePerDomainServiceImplTest {
 
         List<ApplicationStatePerDomain> result = appState.generateListOfDefaultApplicationStatesPerDomain();
 
-        assertEquals(result.size(),1);
+        assertEquals(1, result.size());
         for(ApplicationStatePerDomain a: result){
             assertTrue(a.isEnabled());
-            assertEquals(a.getPvStorageSizeLimit(), ApplicationStatePerDomainServiceImpl.defaultPVStorageSizeLimit);
+            assertEquals(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT, a.getPvStorageSizeLimit());
         }
     }
 
@@ -107,7 +107,7 @@ public class ApplicationStatePerDomainServiceImplTest {
             appState.isApplicationEnabledInDomain(domain1, app);
         });
 
-        assertEquals(thrown.getMessage(), "Application name not found");
+        assertEquals("Application name not found", thrown.getMessage());
     }
 
 

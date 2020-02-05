@@ -81,10 +81,6 @@ public class Domain implements Serializable {
 
 	public void addApplicationState(ApplicationBase applicationBase, boolean enabled){
 		this.addApplicationState(new ApplicationStatePerDomain(applicationBase, enabled));
-//	    if(!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
-//                .map(ApplicationBase::getId).collect(Collectors.toList()).contains(applicationBase.getId())){
-//	        this.applicationStatePerDomain.add(new ApplicationStatePerDomain(applicationBase, enabled));
-//        }
     }
 
     public void addApplicationState(ApplicationStatePerDomain appState) {

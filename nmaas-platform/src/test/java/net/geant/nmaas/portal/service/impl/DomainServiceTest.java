@@ -72,7 +72,7 @@ public class DomainServiceTest {
                 namespaceValidator, domainRepository,
                 domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
-                new ModelMapper(), applicationBaseRepository, applicationStatePerDomainService);
+                new ModelMapper(), applicationStatePerDomainService);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
