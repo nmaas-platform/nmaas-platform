@@ -13,7 +13,6 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,7 +24,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
     private DomainRepository domainRepository;
     private ApplicationBaseRepository applicationBaseRepository;
 
-    public static final long defaultPVStorageSizeLimit = 20;
+    public static final long DEFAULT_PV_STORAGE_SIZE_LIMIT = 20;
 
     @Autowired
     ApplicationStatePerDomainServiceImpl(DomainRepository domainRepository, ApplicationBaseRepository applicationBaseRepository){
@@ -42,7 +41,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
          * NOTE: in this case it's impossible to set `right` value for storage size limit, since we cannot assure that
          * Application object with default properties is available for this Application Base
          */
-        list = list.stream().peek((a) -> a.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.defaultPVStorageSizeLimit)).collect(Collectors.toList());
+        list = list.stream().peek(a -> a.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT)).collect(Collectors.toList());
         return list;
     }
 
@@ -55,7 +54,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
          * same situation with storage size limit occurs, but fortunately we have defaults
          * defaults values better not be higher than default limits
          */
-        appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.defaultPVStorageSizeLimit);
+        appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);
         return domainRepository.saveAll(domainRepository.findAll().stream().peek(domain -> domain.addApplicationState(appState)).collect(Collectors.toList()));
     }
 

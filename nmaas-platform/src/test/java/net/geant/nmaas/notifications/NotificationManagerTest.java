@@ -106,7 +106,7 @@ public class NotificationManagerTest {
             notificationTask.trigger(event);
         });
 
-        assertEquals(ex.getMessage(), "Mail attributes cannot be null");
+        assertEquals("Mail attributes cannot be null", ex.getMessage());
 
     }
 
@@ -215,7 +215,7 @@ public class NotificationManagerTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
             notificationManager.prepareAndSendMail(ma);
         });
-        assertEquals(ex.getMessage(), "Mail template in language fr cannot be found");
+        assertEquals("Mail template in language fr cannot be found", ex.getMessage());
     }
 
     private MailTemplateView getDefaultMailTemplateView() {
