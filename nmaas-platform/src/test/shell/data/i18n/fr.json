@@ -15,7 +15,10 @@
     "LANGUAGE": "Language",
     "ABOUT": "A propos",
     "BACK": "Retour à la page d'accueil",
-    "LANGUAGES": "Langages"
+    "LANGUAGES": "Langages",
+    "NOTIFICATION": "Send notification",
+    "ALL_USERS": "To all users"
+
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -178,7 +181,9 @@
     "ENABLE_BUTTON": "Activer",
     "DETAILS_BUTTON": "Détails",
     "DISABLE_BUTTON": "Désactiver",
-    "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation"
+    "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation",
+    "FIRST_LOGIN": "First login",
+    "LAST_SUCCESSFUL_LOGIN": "Last successful login"
   },
   "DOMAINS": {
     "TITLE": "Organisation",
@@ -761,5 +766,10 @@
     "HEADER": "503 - Service indisponible",
     "TEXT_FIRST_PART": "Le serveur est actuellement incapable de traiter votre demande en raison d'une surcharge temporaire ou d'un ou plusieurs services de clé actuellement hors ligne.",
     "TEXT_SECOND_PART": "Nous vous suggérons de faire une courte pause, par exemple pour le café - nous y sommes. Réessayez plus tard!"
+  },
+  "MESSAGE_MODAL": {
+    "HEADER": "Send message",
+    "CONFIRM": "Send",
+    "DISMISS": "Dismiss"
   }
 }

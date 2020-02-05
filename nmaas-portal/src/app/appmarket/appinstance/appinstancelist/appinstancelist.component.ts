@@ -35,8 +35,8 @@ export class AppInstanceListComponent implements OnInit {
 
   public maxItemsOnPage: number = 5;
   public maxItemsOnPageSec: number = 5;
-  public pageNumber: number = 1;
 
+  public pageNumber: number = 1;
   public secondPageNumber: number = 1;
 
   public showFailed: boolean = true;
@@ -104,7 +104,7 @@ export class AppInstanceListComponent implements OnInit {
 
   public update(domainId: number): void {
     if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
-      this.domainId = undefined;
+      this.domainId = this.appConfig.getNmaasGlobalDomainId();
     } else {
       this.domainId = domainId;
     }
@@ -129,42 +129,42 @@ export class AppInstanceListComponent implements OnInit {
 
   onSorted($event) {
     this.getInstances($event)
-
   }
 
   getInstances(criteria: CustomerSearchCriteria){
     console.debug('Crit: ', criteria);
+    this.appInstances = of<AppInstance[]>([]);
     switch (+this.listSelection) {
       case AppInstanceListSelection.ALL:
-        this.appInstances = this.appInstanceService.getSortedAllAppInstances(criteria);
+        if (this.domainId) {
+          this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
+        }
         break;
       case AppInstanceListSelection.MY:
-        this.appInstances = this.appInstanceService.getSortedMyAppInstances(criteria);
+        if (this.domainId) {
+          this.appInstances = this.appInstanceService.getSortedMyAppInstances(this.domainId, criteria);
+        }
         break;
       default:
-        this.appInstances = of<AppInstance[]>([]);
         break;
     }
+    this.appInstances = this.appInstances.pipe(
+        map( app => app.filter(
+            (appInst) => (this.domainId == this.appConfig.getNmaasGlobalDomainId() || this.domainId == appInst.domainId)
+        ))
+    );
+    // sort and filter deployed instances
     this.appDeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
         app => (AppInstanceState[app.state] != AppInstanceState.REMOVED.toString()
           && AppInstanceState[app.state] != AppInstanceState.DONE.toString()
       ))));
-    this.appDeployedInstances = this.appDeployedInstances.pipe(
-        map( app => app.filter(
-            (appInst) => (this.domainId == undefined || this.domainId == appInst.domainId)
-        ))
-    );
+    // sort and filter undeployed instances
     this.appUndeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
         app => (AppInstanceState[app.state] == AppInstanceState.REMOVED.toString()
           || AppInstanceState[app.state] == AppInstanceState.DONE.toString()
         ))));
-    this.appUndeployedInstances = this.appUndeployedInstances.pipe(
-        map(app => app.filter(
-            (appInst) => (this.domainId == undefined || this.domainId == appInst.domainId)
-        ))
-    );
   }
 
 

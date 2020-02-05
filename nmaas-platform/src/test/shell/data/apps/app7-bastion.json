@@ -1,0 +1,126 @@
+{
+	"name":"Bastion",
+	"version":"0.3",
+	"license":"Ubuntu",
+	"licenseUrl": "https://ubuntu.com",
+	"tags": [ "management" ],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Bastion server based on Ubuntu OS",
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Bastion server based on Ubuntu OS",
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Bastion server based on Ubuntu OS",
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Bastion server based on Ubuntu OS",
+			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+		}
+	],
+	"wwwUrl": "https://ubuntu.com",
+	"sourceUrl": "https://ubuntu.com",
+	"issuesUrl": "https://ubuntu.com",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-bastion",
+				"version": "0.1.0"
+			}
+		},
+		"defaultStorageSpace": 5,
+		"deployParameters": {
+			"DOMAIN_CODENAME": "metallb.subnet_name"
+		},
+		"exposesWebUI": false
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired": false
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "SSH keys (comma separated)",
+											"type": "textfield",
+											"input": true,
+											"key": "env#ssh_keys",
+											"inputFormat": "plain",
+											"validate": {
+												"required": true
+											},
+											"tab": 0
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 5GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}

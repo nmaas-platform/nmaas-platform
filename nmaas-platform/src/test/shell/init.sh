@@ -55,6 +55,8 @@ curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --h
 echo
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/newSsoLoginMail.json
 echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/broadcast.json
+echo
 
 echo
 echo App1
@@ -122,11 +124,11 @@ echo App5 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/prometheus.svg;type=image/svg+xml" $API_URL/apps/5/logo
 echo
 echo App5 screenshots
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus_1.png;type=image/png" $API_URL/apps/5/screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus1.png;type=image/png" $API_URL/apps/5/screenshots
 echo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus_2.png;type=image/png" $API_URL/apps/5/screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus2.png;type=image/png" $API_URL/apps/5/screenshots
 echo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus_3.png;type=image/png" $API_URL/apps/5/screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus3.png;type=image/png" $API_URL/apps/5/screenshots
 echo
 
 echo
@@ -137,11 +139,45 @@ echo App6 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/grafana.svg;type=image/svg+xml" $API_URL/apps/6/logo
 echo
 echo App6 screenshots
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana_1.png;type=image/png" $API_URL/apps/6/screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana1.png;type=image/png" $API_URL/apps/6/screenshots
 echo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana_2.png;type=image/png" $API_URL/apps/6/screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana2.png;type=image/png" $API_URL/apps/6/screenshots
 echo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana_3.png;type=image/png" $API_URL/apps/6/screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana3.png;type=image/png" $API_URL/apps/6/screenshots
+echo
+
+echo
+echo App7
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app7-bastion.json
+echo
+echo App7 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/bastion.svg;type=image/svg+xml" $API_URL/apps/7/logo
+echo
+echo App7 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/bastion/bastion1.png;type=image/png" $API_URL/apps/7/screenshots
+echo
+
+echo
+echo App8
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app8-perfsonar-pwa.json
+echo
+echo App8 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/perfsonar.png;type=image/png" $API_URL/apps/8/logo
+echo
+echo App8 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-pwa/perfsonar-pwa1.png;type=image/png" $API_URL/apps/8/screenshots
+echo
+echo App8 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-pwa/perfsonar-pwa2.png;type=image/png" $API_URL/apps/8/screenshots
+echo
+echo App8 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-pwa/perfsonar-pwa3.png;type=image/png" $API_URL/apps/8/screenshots
+echo
+echo App8 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-pwa/perfsonar-pwa4.png;type=image/png" $API_URL/apps/8/screenshots
+echo
+echo App8 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-pwa/perfsonar-pwa5.png;type=image/png" $API_URL/apps/8/screenshots
 echo
 
 echo 

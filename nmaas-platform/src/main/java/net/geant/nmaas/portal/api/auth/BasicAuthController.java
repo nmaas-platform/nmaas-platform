@@ -14,7 +14,9 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +25,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -45,18 +50,32 @@ public class BasicAuthController {
 
     private ConfigurationManager configurationManager;
 
+    private UserLoginRegisterService loginRegisterService;
+
 	@PostMapping(value="/login")
-	public UserToken login(@RequestBody final UserLogin userLogin) {
+	public UserToken login(@RequestBody final UserLogin userLogin, HttpServletRequest request) {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found"));
-        validate(userLogin.getUsername(), userLogin.getPassword(), user.getPassword(), user.isEnabled());
+        try {
+            validate(userLogin.getUsername(), userLogin.getPassword(), user.getPassword(), user.isEnabled());
+        } catch (AuthenticationException ae) {
+            this.loginRegisterService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
+            throw new AuthenticationException(ae.getMessage());
+        }
         checkUserApprovals(user);
 
         if(configurationManager.getConfiguration().isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
 
-        log.info(format("User [%s] logged in with role [%s]", userLogin.getUsername(),
-                user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));
+        log.info(format("User [%s] logged in with roles [%s] \t Host: [%s] \t user-agent: [%s] \t ip: [%s]",
+                userLogin.getUsername(),
+                user.getRoles().stream().map(role -> role.getRoleAsString()).collect(Collectors.toList()),
+                request.getHeader(HttpHeaders.HOST),
+                request.getHeader(HttpHeaders.USER_AGENT),
+                BasicAuthController.getClientIpAddr(request)));
+
+        this.loginRegisterService.registerNewSuccessfulLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
+
         return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
 	
@@ -100,5 +119,30 @@ public class BasicAuthController {
             throw new AuthenticationException("Invalid Credentials");
         }
     }
-	
+
+    /**
+     * Reference 'https://stackoverflow.com/questions/4678797/how-do-i-get-the-remote-address-of-a-client-in-servlet'
+     * @param request incoming http request
+     * @return ip address if available
+     */
+    public static String getClientIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+    }
+
 }

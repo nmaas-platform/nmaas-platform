@@ -19,4 +19,8 @@ export class NotificationService extends GenericDataService{
     return this.post(this.url + "?token=" + token, mail);
   }
 
+  public sendMailAdmin(mail: Mail): Observable<any> {
+    return this.post(this.url + '/admin', mail);
+  }
+
 }

@@ -28,4 +28,7 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
 
     @Query("SELECT a.errorMessage FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
     Optional<String> getErrorMessageByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
+    @Query("select d.name FROM AppDeployment a join Domain d on a.domain = d.codename where a.deploymentId = :deploymentId")
+    Optional<String> getDomainNameByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 }

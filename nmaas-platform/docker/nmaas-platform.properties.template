@@ -3,7 +3,7 @@
 # --------------- #
 #   profiles are used to customise platform operations in following areas
 #   - container orchestrator (options: env_kubernetes)
-#   - dcn setup (options: dcn_ansible, dcn_manual, dcn_none)
+#   - dcn setup (options: dcn_manual, dcn_none)
 #   - database (options: db_memory, db_standalone)
 spring.profiles.active=env_kubernetes, dcn_manual, db_standalone
 
@@ -78,6 +78,7 @@ jwt.resetSigningKey=testResetKey
 jwt.resetTokenValidFor=1800000
 management.info.git.mode=full
 captcha.secret=${CAPTCHA_SECRET}
+spring.data.web.pageable.default-page-size=100
 
 # ------------------------ #
 # SAML proxy configuration #
