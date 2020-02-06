@@ -23,9 +23,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Stream;
 
 
 public class AppInstanceControllerTest {
@@ -87,7 +89,11 @@ public class AppInstanceControllerTest {
         when(pageable.getOffset()).thenReturn(0L);
         when(pageable.getPageNumber()).thenReturn(0);
         when(pageable.getPageSize()).thenReturn(20);
-        when(pageable.getSort()).thenReturn(null);
+        Sort sort = mock(Sort.class);
+        Sort.Order order = mock(Sort.Order.class);
+        when(sort.get()).thenReturn(Stream.of(order));
+        when(order.getProperty()).thenReturn("createdAt");
+        when(pageable.getSort()).thenReturn(sort);
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
     }
 

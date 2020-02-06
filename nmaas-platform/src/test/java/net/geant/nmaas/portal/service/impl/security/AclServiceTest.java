@@ -88,4 +88,15 @@ public class AclServiceTest {
         assertTrue(service.isAuthorized(1L, "targetID", targetType, perms));
     }
 
+    @Test
+    public void shouldAuthorizeWhenNoPermissionChecksAndMatchingSinglePermission() {
+        String targetType = "template";
+        when(domain.supports(targetType)).thenReturn(false);
+        when(comment.supports(targetType)).thenReturn(false);
+        when(instance.supports(targetType)).thenReturn(false);
+        when(template.supports(targetType)).thenReturn(false);
+
+        assertTrue(service.isAuthorized(1L, "targetID", targetType, AclService.Permissions.READ));
+    }
+
 }
