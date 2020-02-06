@@ -6,13 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.*;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -51,6 +49,7 @@ public class AppInstanceControllerTest {
     private User admin;
 
     private Pageable pageable = mock(Pageable.class);
+    private Pageable pageableInvalid = mock(Pageable.class);
 
     @BeforeEach
     public void setup() {
@@ -94,7 +93,22 @@ public class AppInstanceControllerTest {
         when(sort.get()).thenReturn(Stream.of(order));
         when(order.getProperty()).thenReturn("createdAt");
         when(pageable.getSort()).thenReturn(sort);
+
+        when(pageableInvalid.getOffset()).thenReturn(0L);
+        when(pageableInvalid.getPageNumber()).thenReturn(0);
+        when(pageableInvalid.getPageSize()).thenReturn(20);
+        Sort sortI = mock(Sort.class);
+        Sort.Order orderI = mock(Sort.Order.class);
+        when(sortI.get()).thenReturn(Stream.of(orderI));
+        when(orderI.getProperty()).thenReturn("randomNotExistingProperty");
+        when(pageableInvalid.getSort()).thenReturn(sortI);
+
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
+
+        when(appDeploymentMonitor.userAccessDetails(any())).thenThrow(new InvalidDeploymentIdException());
+        AppDeployment appDeployment = mock(AppDeployment.class);
+        when(appDeployment.getDescriptiveDeploymentId()).thenReturn(new Identifier(identifierValue));
+        when(appDeploymentRepositoryManager.load(any())).thenReturn(appDeployment);
     }
 
     @Test
@@ -105,11 +119,6 @@ public class AppInstanceControllerTest {
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
         when(applicationInstanceService.findAll(pageable)).thenReturn(appInstancePage);
-        when(appDeploymentMonitor.userAccessDetails(any())).thenThrow(new InvalidDeploymentIdException());
-        AppDeployment appDeployment = mock(AppDeployment.class);
-        when(appDeployment.getDescriptiveDeploymentId()).thenReturn(new Identifier(identifierValue));
-        when(appDeploymentRepositoryManager.load(any())).thenReturn(appDeployment);
-
 
         List<AppInstanceView> result = appInstanceController.getAllInstances(pageable);
 
@@ -128,10 +137,6 @@ public class AppInstanceControllerTest {
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
         when(applicationInstanceService.findAll(pageable)).thenReturn(appInstancePage);
-        when(appDeploymentMonitor.userAccessDetails(any())).thenThrow(new InvalidDeploymentIdException());
-        AppDeployment appDeployment = mock(AppDeployment.class);
-        when(appDeployment.getDescriptiveDeploymentId()).thenReturn(new Identifier(identifierValue));
-        when(appDeploymentRepositoryManager.load(any())).thenReturn(appDeployment);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
@@ -146,6 +151,48 @@ public class AppInstanceControllerTest {
     }
 
     @Test
+    public void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobalAndPageableInvalid() {
+        AppInstance appInstance = new AppInstance(application, name, domain, admin);
+        List<AppInstance> appInstanceList = new ArrayList<>();
+        appInstanceList.add(appInstance);
+        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
+
+        when(applicationInstanceService.findAll(null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        List<AppInstanceView> result = appInstanceController.getAllInstances(global.getId(), principal, pageableInvalid);
+
+        assertEquals(1, result.size());
+        AppInstanceView appInstanceView = result.get(0);
+        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
+        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+    }
+
+    @Test
+    public void shouldGetAllInstancesWithParamsWhenIsUserAndPageableInvalid() {
+        AppInstance appInstance = new AppInstance(application, name, domain, owner);
+        List<AppInstance> appInstanceList = new ArrayList<>();
+        appInstanceList.add(appInstance);
+        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
+
+        when(applicationInstanceService.findAllByDomain(domain,null)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(admin.getUsername());
+
+        List<AppInstanceView> result = appInstanceController.getAllInstances(domain.getId(), principal, pageableInvalid);
+
+        assertEquals(1, result.size());
+        AppInstanceView appInstanceView = result.get(0);
+        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
+        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+    }
+
+    @Test
     public void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
         AppInstance appInstance = new AppInstance(application, name, domain, admin);
         List<AppInstance> appInstanceList = new ArrayList<>();
@@ -153,10 +200,6 @@ public class AppInstanceControllerTest {
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
         when(applicationInstanceService.findAllByOwner(admin, pageable)).thenReturn(appInstancePage);
-        when(appDeploymentMonitor.userAccessDetails(any())).thenThrow(new InvalidDeploymentIdException());
-        AppDeployment appDeployment = mock(AppDeployment.class);
-        when(appDeployment.getDescriptiveDeploymentId()).thenReturn(new Identifier(identifierValue));
-        when(appDeploymentRepositoryManager.load(any())).thenReturn(appDeployment);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
@@ -168,5 +211,89 @@ public class AppInstanceControllerTest {
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
         assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+    }
+
+
+    @Test
+    public void shouldGetAllUserInstancesInDomain() {
+        AppInstance appInstance = new AppInstance(application, name, domain, admin);
+        List<AppInstance> appInstanceList = new ArrayList<>();
+        appInstanceList.add(appInstance);
+        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
+
+        when(applicationInstanceService.findAllByOwner(admin, domain, pageable)).thenReturn(appInstancePage);
+
+        List<AppInstanceView> result = appInstanceController.getUserAllInstances(domain.getId(), admin.getUsername(), pageable);
+
+        assertEquals(1, result.size());
+        AppInstanceView appInstanceView = result.get(0);
+        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
+        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+    }
+
+    @Test
+    public void shouldGetAllMyInstancesInDomain() {
+        AppInstance appInstance = new AppInstance(application, name, domain, owner);
+        List<AppInstance> appInstanceList = new ArrayList<>();
+        appInstanceList.add(appInstance);
+        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
+
+        when(applicationInstanceService.findAllByOwner(owner, pageable)).thenReturn(appInstancePage);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        List<AppInstanceView> result = appInstanceController.getMyAllInstances(principal, pageable);
+
+        assertEquals(1, result.size());
+        AppInstanceView appInstanceView = result.get(0);
+        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
+        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+    }
+
+    @Test
+    public void shouldGetAllRunningInstancesOfUserInDomain() {
+        AppInstance appInstance = new AppInstance(application, name, domain, owner);
+        List<AppInstance> appInstanceList = new ArrayList<>();
+        appInstanceList.add(appInstance);
+
+        when(applicationInstanceService.findAllByOwnerAndDomain(owner, domain)).thenReturn(appInstanceList);
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
+
+        List<AppInstanceView> result = appInstanceController.getRunningAppInstances(domain.getId(), principal);
+
+        assertEquals(1, result.size());
+        AppInstanceView appInstanceView = result.get(0);
+        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
+        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+    }
+
+    @Test
+    public void shouldGetAppInstance() {
+        AppInstance appInstance = new AppInstance(application, name, domain, owner);
+
+        when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        AppInstanceView appInstanceView = appInstanceController.getAppInstance(1L, principal);
+        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
+        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+
+        MissingElementException me = assertThrows(MissingElementException.class,
+                () -> appInstanceController.getAppInstance(-1L, principal)
+        );
+
+        assertEquals("App instance not found.", me.getMessage());
     }
 }
