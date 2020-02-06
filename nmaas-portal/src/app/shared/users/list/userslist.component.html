@@ -4,14 +4,14 @@
 	<table class="table table-hover table-condensed">
 		<thead>
 			<tr>
-				<th>{{ 'USERS.USER_NAME' | translate }}</th>
-				<th *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.DOMAINS' | translate }}</th>
-				<th *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.GLOBAL_ROLE' | translate }}</th>
-				<th *ngIf="domainId !== domainService.getGlobalDomainId()">{{ 'USERS.ROLES' | translate }}</th>
-				<th>{{ 'USERS.FIRST_LOGIN' | translate }}</th>
-				<th>{{ 'USERS.LAST_SUCCESSFUL_LOGIN' | translate }}</th>
-				<th>{{ 'USERS.ENABLED' | translate }}</th>
-				<th>&nbsp;</th>
+				<th scope="col">{{ 'USERS.USER_NAME' | translate }}</th>
+				<th scope="col" *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.DOMAINS' | translate }}</th>
+				<th scope="col" *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.GLOBAL_ROLE' | translate }}</th>
+				<th scope="col" *ngIf="domainId !== domainService.getGlobalDomainId()">{{ 'USERS.ROLES' | translate }}</th>
+				<th scope="col">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
+				<th scope="col">{{ 'USERS.LAST_SUCCESSFUL_LOGIN' | translate }}</th>
+				<th scope="col">{{ 'USERS.ENABLED' | translate }}</th>
+				<th scope="col">&nbsp;</th>
 			</tr>
 		</thead>
 
@@ -27,13 +27,13 @@
 				<td>
 					<a (click)="view(user.id)">
 						<!-- {{ 'USERS.DETAILS_BUTTON' | translate }} -->
-						<i class="far fa-eye icon-black icon-bigger"></i>
+						<em class="far fa-eye icon-black icon-bigger"></em>
 					</a>
 
 					<span class="dropdown">
 						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
 						   data-toggle="dropdown" href="#" role="button">
-							<i class="fas fa-cog icon-black icon-bigger"></i>
+							<em class="fas fa-cog icon-black icon-bigger"></em>
 						</a>
 						<ul class="dropdown-menu pull-right-drop">
 							<li>
