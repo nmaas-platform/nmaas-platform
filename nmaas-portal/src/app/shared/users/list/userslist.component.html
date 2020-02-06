@@ -1,59 +1,105 @@
+<div style="display: inline;" class="col-xs-12 col-sm-6 col-md-6 col-lg-6 pull-right text-right">
+    {{ 'APP_INSTANCES.ITEMS_PER_PAGE' | translate }}:
+    <span id="selectionItems" class="dropdown" style="vertical-align: middle; display: inline-block;">
+        <button class="dropdown-toggle btn" data-toggle="dropdown" data-close-others="true">
+            {{maxItemsOnPage}}
+        </button>
+        <ul class="dropdown-menu">
+            <li *ngFor="let item of itemsPerPage"
+                [ngClass]="{'active': maxItemsOnPage == item}">
+                <a (click)="setItems(item)">
+                    <span>{{item.toString()}}</span>
+                </a>
+            </li>
+        </ul>
+    </span>
+</div>
 <div class="row">
-	<h3>{{ 'USERS.TITLE' | translate }}</h3>
-	<br>
-	<table class="table table-hover table-condensed">
-		<thead>
-			<tr>
-				<th scope="col">{{ 'USERS.USER_NAME' | translate }}</th>
-				<th scope="col" *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.DOMAINS' | translate }}</th>
-				<th scope="col" *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.GLOBAL_ROLE' | translate }}</th>
-				<th scope="col" *ngIf="domainId !== domainService.getGlobalDomainId()">{{ 'USERS.ROLES' | translate }}</th>
-				<th scope="col">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
-				<th scope="col">{{ 'USERS.LAST_SUCCESSFUL_LOGIN' | translate }}</th>
-				<th scope="col">{{ 'USERS.ENABLED' | translate }}</th>
-				<th scope="col">&nbsp;</th>
-			</tr>
-		</thead>
+    <h3>{{ 'USERS.TITLE' | translate }}</h3>
+    <br>
+    <table class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
+        <thead>
+        <tr>
+            <th scope="col" class="column-sortable" sortable-column="username">{{ 'USERS.USER_NAME' | translate }}</th>
+            <th scope="col" class="column-sortable" sortable-column="domains"
+                *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.DOMAINS' | translate }}</th>
+            <th scope="col" class="column-sortable" sortable-column="globalRole"
+                *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.GLOBAL_ROLE' | translate }}</th>
+            <th scope="col" class="column-sortable" sortable-column="roles"
+                *ngIf="domainId !== domainService.getGlobalDomainId()">{{ 'USERS.ROLES' | translate }}</th>
+            <th scope="col" class="column-sortable" sortable-column="firstLoginDate">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
+            <th scope="col" class="column-sortable"
+                sortable-column="lastSuccessfulLoginDate">{{ 'USERS.LAST_SUCCESSFUL_LOGIN' | translate }}</th>
+            <th scope="col" class="column-sortable" sortable-column="enabled">{{ 'USERS.ENABLED' | translate }}</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
+        </thead>
 
-		<tbody>
-			<tr *ngFor="let user of users">
-				<td>{{user.username}}</td>
-				<td *ngIf="domainId === domainService.getGlobalDomainId()"> <div *ngFor="let role of filterDomainNames(user); last as isLast"> <span *ngIf="!isLast" style="float:left;padding-right: 3px">{{getDomainName(role.domainId) | async}},</span> <span *ngIf="isLast" style="float:left;padding-right: 3px">{{getDomainName(role.domainId) | async}}</span></div><br></td>
-				<td *ngIf="domainId === domainService.getGlobalDomainId()"><span>{{"ENUM.USER_ROLES." + getGlobalRole(user).toUpperCase() | translate}}</span></td>
-				<td *ngIf="domainId !== domainService.getGlobalDomainId()"><span *ngFor="let role of getOnlyDomainRoles(user)">{{"ENUM.USER_ROLES." + role.role.toUpperCase() | translate}}</span></td>
-				<td>{{getFirstLoginDateString(user)}}</td>
-				<td>{{getLastSuccessfulLoginDateString(user)}}</td>
-				<td><span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span><span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span></td>
-				<td>
-					<a (click)="view(user.id)">
-						<!-- {{ 'USERS.DETAILS_BUTTON' | translate }} -->
-						<em class="far fa-eye icon-black icon-bigger"></em>
-					</a>
+        <tbody>
+        <tr *ngFor="let user of users | paginate: {itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: paginatorName}">
+            <td>{{user.username}}</td>
+            <td *ngIf="domainId === domainService.getGlobalDomainId()">
+                <div *ngFor="let role of filterDomainNames(user); last as isLast">
+					<span *ngIf="!isLast" style="float:left;padding-right: 3px">
+						{{getDomainName(role.domainId) | async}},
+					</span>
+                    <span *ngIf="isLast" style="float:left;padding-right: 3px">
+						{{getDomainName(role.domainId) | async}}
+					</span>
+                </div>
+                <br>
+            </td>
+            <td *ngIf="domainId === domainService.getGlobalDomainId()">
+                <span>{{"ENUM.USER_ROLES." + getGlobalRole(user).toUpperCase() | translate}}</span>
+            </td>
+            <td *ngIf="domainId !== domainService.getGlobalDomainId()">
+				<span *ngFor="let role of getOnlyDomainRoles(user)">
+					{{"ENUM.USER_ROLES." + role.role.toUpperCase() | translate}}
+				</span>
+            </td>
+            <td>{{getFirstLoginDateString(user)}}</td>
+            <td>{{getLastSuccessfulLoginDateString(user)}}</td>
+            <td>
+                <span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span>
+                <span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span>
+            </td>
+            <td>
+                <a (click)="view(user.id)">
+                    <!-- {{ 'USERS.DETAILS_BUTTON' | translate }} -->
+                    <em class="far fa-eye icon-black icon-bigger"></em>
+                </a>
 
-					<span class="dropdown">
-						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
-						   data-toggle="dropdown" href="#" role="button">
+                <span class="dropdown">
+						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false"
+                           aria-haspopup="true"
+                           data-toggle="dropdown" href="#" role="button">
 							<em class="fas fa-cog icon-black icon-bigger"></em>
 						</a>
 						<ul class="dropdown-menu pull-right-drop">
 							<li>
 								<a (click)="changeUserStatus(user, false)"
-								   *ngIf="user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
+                                   *ngIf="user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
 									{{ 'USERS.DISABLE_BUTTON' | translate }}</a>
 							</li>
 							<li>
 								<a (click)="changeUserStatus(user, true)"
-								   *ngIf="!user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
+                                   *ngIf="!user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
 									{{ 'USERS.ENABLE_BUTTON' | translate }}</a>
 							</li>
 							<li>
 								<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()"
-								   (click)="remove(user)">{{ 'USERS.REMOVE_FROM_DOMAIN_BUTTON' | translate }}</a>
+                                   (click)="remove(user)">{{ 'USERS.REMOVE_FROM_DOMAIN_BUTTON' | translate }}</a>
 							</li>
 						</ul>
 					</span>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="{{ paginatorName }}"
+                         previousLabel="{{ 'PAGINATION.PREVIOUS' | translate }}"
+                         nextLabel="{{ 'PAGINATION.NEXT' | translate }}"
+                         screenReaderPaginationLabel="{{ 'PAGINATION.SCREEN_READER.PAGINATION' | translate }}"
+                         screenReaderPageLabel="{{ 'PAGINATION.SCREEN_READER.PAGE' | translate }}"
+                         screenReaderCurrentLabel="{{ 'PAGINATION.SCREEN_READER.CURRENT' | translate }}"></pagination-controls>
 </div>

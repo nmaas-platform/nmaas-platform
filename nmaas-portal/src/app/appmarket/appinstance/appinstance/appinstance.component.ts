@@ -222,7 +222,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
           if (this.storage.has('appConfig_' + this.appInstanceId.toString())) {
             this.storage.remove('appConfig_' + this.appInstanceId.toString());
           }
-          if (!this.appInstance.serviceAccessMethods) {
+          if (!this.appInstance || !this.appInstance.serviceAccessMethods) {
             this.updateAppInstance();
           }
         }

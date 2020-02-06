@@ -26,6 +26,7 @@ import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +39,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
+import java.lang.reflect.Field;
 import java.security.Principal;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -95,6 +97,10 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceView> getAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
         this.logPageable(pageable);
+        boolean isPageableValid = this.isPageableValidForAppInstance(pageable);
+        if(!isPageableValid) {
+            pageable = null;
+        }
         Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         User user = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
@@ -131,6 +137,10 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
         this.logPageable(pageable);
+        boolean isPageableValid = this.isPageableValidForAppInstance(pageable);
+        if(!isPageableValid) {
+            pageable = null;
+        }
         User user = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
@@ -149,6 +159,10 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceView> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable){
         this.logPageable(pageable);
+        boolean isPageableValid = this.isPageableValidForAppInstance(pageable);
+        if(!isPageableValid) {
+            pageable = null;
+        }
         return getUserDomainAppInstances(domainId, username, pageable);
     }
 
@@ -413,6 +427,18 @@ public class AppInstanceController extends AppBaseController {
 
     private void logPageable(Pageable p) {
         log.debug("Page number: " + p.getPageNumber() + "\tPage size:" +p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
+    }
+
+    private boolean isPageableValidForAppInstance(Pageable p) {
+        List<String> sortProperties = p.getSort().get().map(Sort.Order::getProperty).collect(Collectors.toList());
+        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
+
+        Set<String> sortSet = new HashSet<>(sortProperties);
+        Set<String> classSet = new HashSet<>(classProperties);
+
+        sortSet.removeAll(classSet);
+
+        return sortSet.isEmpty();
     }
 
     private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
