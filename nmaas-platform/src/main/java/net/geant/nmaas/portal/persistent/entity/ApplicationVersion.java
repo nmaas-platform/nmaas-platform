@@ -14,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +23,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ApplicationVersion {
+public class ApplicationVersion implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

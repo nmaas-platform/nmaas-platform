@@ -15,7 +15,6 @@ export class AppInstanceProgressComponent implements OnInit {
     @Input()
     stages: AppInstanceProgressStage[]  = new Array<AppInstanceProgressStage>();
 
-
     @Input()
     activeState: AppInstanceState = AppInstanceState.UNKNOWN;
 

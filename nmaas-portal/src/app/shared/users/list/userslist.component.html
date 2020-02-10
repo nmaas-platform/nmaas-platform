@@ -20,18 +20,18 @@
     <table class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
         <thead>
         <tr>
-            <th class="column-sortable" sortable-column="username">{{ 'USERS.USER_NAME' | translate }}</th>
-            <th class="column-sortable" sortable-column="domains"
+            <th scope="col" class="column-sortable" sortable-column="username">{{ 'USERS.USER_NAME' | translate }}</th>
+            <th scope="col" class="column-sortable" sortable-column="domains"
                 *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.DOMAINS' | translate }}</th>
-            <th class="column-sortable" sortable-column="globalRole"
+            <th scope="col" class="column-sortable" sortable-column="globalRole"
                 *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.GLOBAL_ROLE' | translate }}</th>
-            <th class="column-sortable" sortable-column="roles"
+            <th scope="col" class="column-sortable" sortable-column="roles"
                 *ngIf="domainId !== domainService.getGlobalDomainId()">{{ 'USERS.ROLES' | translate }}</th>
-            <th class="column-sortable" sortable-column="firstLoginDate">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
-            <th class="column-sortable"
+            <th scope="col" class="column-sortable" sortable-column="firstLoginDate">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
+            <th scope="col" class="column-sortable"
                 sortable-column="lastSuccessfulLoginDate">{{ 'USERS.LAST_SUCCESSFUL_LOGIN' | translate }}</th>
-            <th class="column-sortable" sortable-column="enabled">{{ 'USERS.ENABLED' | translate }}</th>
-            <th>&nbsp;</th>
+            <th scope="col" class="column-sortable" sortable-column="enabled">{{ 'USERS.ENABLED' | translate }}</th>
+            <th scope="col">&nbsp;</th>
         </tr>
         </thead>
 
@@ -66,14 +66,14 @@
             <td>
                 <a (click)="view(user.id)">
                     <!-- {{ 'USERS.DETAILS_BUTTON' | translate }} -->
-                    <i class="far fa-eye icon-black icon-bigger"></i>
+                    <em class="far fa-eye icon-black icon-bigger"></em>
                 </a>
 
                 <span class="dropdown">
 						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false"
                            aria-haspopup="true"
                            data-toggle="dropdown" href="#" role="button">
-							<i class="fas fa-cog icon-black icon-bigger"></i>
+							<em class="fas fa-cog icon-black icon-bigger"></em>
 						</a>
 						<ul class="dropdown-menu pull-right-drop">
 							<li>

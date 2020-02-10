@@ -32,13 +32,13 @@
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 						   <thead>
 							  <tr>
-								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
-								  <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
-								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
-								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-								 <th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								 <th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
-								 <th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
+								 <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								  <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
+								 <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+								 <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
+								 <th scope="col" class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								 <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
+								 <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
 							  </tr>
 						   </thead>
 						   <tbody>
@@ -52,13 +52,13 @@
 								  <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
 								  <td class="col-lg-3 col-md-3 text-center">
 									  <a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" role = "button">
-										  <i class="far fa-eye icon-black icon-bigger"></i>
+										  <em class="far fa-eye icon-black icon-bigger"></em>
 									  </a>
 
 									  <span class="dropdown" *ngIf="checkPrivileges(appInstance)">
 										  <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
 											 data-toggle="dropdown" href="#" role="button">
-											  <i class="fas fa-cog icon-black icon-bigger"></i>
+											  <em class="fas fa-cog icon-black icon-bigger"></em>
 										  </a>
 										  <ul class="dropdown-menu pull-right-drop">
 											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>
@@ -82,13 +82,13 @@
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 							<thead>
 							<tr>
-								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
-								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
-								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
-								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-								<th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								<th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
-								<th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
+								<th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								<th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
+								<th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+								<th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
+								<th scope="col" class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								<th scope="col" class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
+								<th scope="col" class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
 							</tr>
 							</thead>
 							<tbody>
@@ -102,13 +102,13 @@
 									<td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
 									<td class="col-lg-3 col-md-3 text-center">
 										<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" role = "button">
-											<i class="far fa-eye icon-black icon-bigger"></i>
+											<em class="far fa-eye icon-black icon-bigger"></em>
 										</a>
 
 										<span class="dropdown" *ngIf="checkPrivileges(appInstance)">
 										  <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
 											 data-toggle="dropdown" href="#" role="button">
-											  <i class="fas fa-cog icon-black icon-bigger"></i>
+											  <em class="fas fa-cog icon-black icon-bigger"></em>
 										  </a>
 										  <ul class="dropdown-menu pull-right-drop">
 											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>

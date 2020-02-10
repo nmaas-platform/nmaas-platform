@@ -38,7 +38,7 @@ public class ApplicationController extends AppBaseController {
 
 	private ApplicationEventPublisher eventPublisher;
 
-	private ApplicationBaseService appBaseService;
+//	private ApplicationBaseService appBaseService;
 
 	@GetMapping
 	@Transactional
