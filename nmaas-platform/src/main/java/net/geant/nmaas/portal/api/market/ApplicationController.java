@@ -38,8 +38,6 @@ public class ApplicationController extends AppBaseController {
 
 	private ApplicationEventPublisher eventPublisher;
 
-//	private ApplicationBaseService appBaseService;
-
 	@GetMapping
 	@Transactional
 	public List<ApplicationBriefView> getApplications() {

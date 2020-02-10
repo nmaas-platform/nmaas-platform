@@ -91,14 +91,14 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                         .filter((ServiceAccessMethod sam) -> sam.getType().equals(ServiceAccessMethodType.DEFAULT))
                         .findFirst().orElseThrow(() -> new ProcessingException("No default access method provided")).getUrl()
                 , getIngressClass(serviceInfo.getDomain()), ingressManager.getTlsSupported());
-        if(ingressManager.getTlsSupported()){
+        if(Boolean.TRUE.equals(ingressManager.getTlsSupported())){
             ingressVariablesMap.putAll(getIngressAddTlsVariables());
         }
         return ingressVariablesMap;
     }
 
     private String getIngressClass(String domain){
-        if(ingressManager.getIngressPerDomain()){
+        if(Boolean.TRUE.equals(ingressManager.getIngressPerDomain())){
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
         }
         return ingressManager.getSupportedIngressClass();

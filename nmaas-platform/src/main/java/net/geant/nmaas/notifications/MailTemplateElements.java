@@ -9,4 +9,7 @@ public class MailTemplateElements {
     public static final String SENDER_POLICY = "SENDER_POLICY";
     public static final String TITLE = "TITLE";
     public static final String HTML_TYPE = "text/html";
+
+    // add default private constructor, to prevent this class from instancing objects
+    private MailTemplateElements(){}
 }
