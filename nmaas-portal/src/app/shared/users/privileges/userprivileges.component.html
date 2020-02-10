@@ -29,12 +29,12 @@
 		
 		<div *ngIf="isModeAllowed(ComponentMode.VIEW)|| isInMode(ComponentMode.PROFILVIEW)">
 			
-			<table class="table table-hover table-condensed">
+			<table class="table table-hover table-condensed" aria-describedby="User privilages in domain table">
 				<thead>
 					<tr>
-						<th>{{'USER_PRIVILEGES.DOMAIN' | translate}}</th>
-						<th>{{'USER_PRIVILEGES.ROLE' | translate}}</th>
-						<th>&nbsp;</th>
+						<th scope="col">{{'USER_PRIVILEGES.DOMAIN' | translate}}</th>
+						<th scope="col">{{'USER_PRIVILEGES.ROLE' | translate}}</th>
+						<th scope="col">&nbsp;</th>
 					</tr>
 				</thead>
 

@@ -29,7 +29,7 @@
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12">
 						<h4 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">{{ 'APP_INSTANCES.DEPLOYED' | translate }}</h4>
-						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
+						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)" aria-describedby="Deployed instances">
 						   <thead>
 							  <tr>
 								 <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
@@ -79,7 +79,7 @@
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
 						<h4>{{ 'APP_INSTANCES.UNDEPLOYED' | translate }}</h4>
-						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
+						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)" aria-describedby="Undeployed instances">
 							<thead>
 							<tr>
 								<th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>

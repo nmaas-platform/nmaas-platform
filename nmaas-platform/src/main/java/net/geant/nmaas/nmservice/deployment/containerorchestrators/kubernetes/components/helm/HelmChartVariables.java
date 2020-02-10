@@ -7,6 +7,10 @@ import java.util.Map;
 
 class HelmChartVariables {
 
+    // defined private constructor, to shadow default public constructor,
+    // to prevent instancing objects from this class, since members are static
+    private HelmChartVariables(){}
+
     private static final String INGRESS_HOSTS_KEY = "ingress.hosts";
     private static final String INGRESS_TLS_KEY = "ingress.tls.enabled";
 

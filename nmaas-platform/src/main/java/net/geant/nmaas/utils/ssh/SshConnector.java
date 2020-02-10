@@ -1,6 +1,7 @@
 package net.geant.nmaas.utils.ssh;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor
+@Log4j2
 public class SshConnector {
 
 	private SSHClient ssh;
@@ -60,7 +62,9 @@ public class SshConnector {
 		if (ssh != null) {
 			try {
 				ssh.disconnect();
-			} catch (IOException e) { }
+			} catch (IOException e) {
+				log.warn(e.getMessage());
+			}
 			ssh = null;
 		}
 	}

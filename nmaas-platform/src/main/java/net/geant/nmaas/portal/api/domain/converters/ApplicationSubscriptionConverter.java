@@ -10,10 +10,14 @@ public class ApplicationSubscriptionConverter
 
 	@Override
 	protected ApplicationSubscriptionBase convert(ApplicationSubscription source) {
-		return (source != null
-				? new ApplicationSubscriptionBase(source.getDomain() != null ? source.getDomain().getId() : null,
-						source.getApplication() != null ? source.getApplication().getId() : null)
-				: null);
+		if(source == null) return null;
+
+		Long domainId = null;
+		if(source.getDomain() != null) domainId = source.getDomain().getId();
+		Long applicationId = null;
+		if(source.getApplication() != null) applicationId = source.getApplication().getId();
+
+		return new ApplicationSubscriptionBase(domainId, applicationId);
 	}
 
 }

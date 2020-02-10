@@ -1,14 +1,14 @@
 <div class="col-sm-12 col-sm-12 col-md-12">
     <h3>{{ 'MONITOR.TITLE' | translate }}</h3>
     <br>
-    <table class="table table-hover table-condensed">
+    <table class="table table-hover table-condensed" aria-describedby="Service status table">
         <thead>
             <tr>
-                <th>{{ 'MONITOR.SERVICE_NAME' | translate }}</th>
-                <th>{{ 'MONITOR.LAST_CHECK' | translate }}</th>
-                <th>{{ 'MONITOR.LAST_SUCCESS' | translate }}</th>
-                <th>{{ 'MONITOR.CHECK_INTERVAL' | translate }}</th>
-                <th>&nbsp;</th>
+                <th scope="col">{{ 'MONITOR.SERVICE_NAME' | translate }}</th>
+                <th scope="col">{{ 'MONITOR.LAST_CHECK' | translate }}</th>
+                <th scope="col">{{ 'MONITOR.LAST_SUCCESS' | translate }}</th>
+                <th scope="col">{{ 'MONITOR.CHECK_INTERVAL' | translate }}</th>
+                <th scope="col">&nbsp;</th>
             </tr>
         </thead>
 
