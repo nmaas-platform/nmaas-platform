@@ -25,6 +25,12 @@
             <tr *ngIf="isObject(languageContent[key][innerKey])">
               <td>{{innerKey}}</td>
               <table class="table" style="width: 100% !important;" aria-describedby="Language values sub table">
+                <thead style="visibility: collapse">
+                  <tr>
+                    <th scope="col">{{'LANGUAGE_MANAGEMENT.TABLE_KEY' | translate}}</th>
+                    <th scope="col">{{'LANGUAGE_MANAGEMENT.TABLE_VALUE' | translate}}</th>
+                  </tr>
+                </thead>
                 <tbody>
                 <ng-template ngFor let-nestedKey [ngForOf]="getKeys(languageContent[key][innerKey])">
                   <tr>

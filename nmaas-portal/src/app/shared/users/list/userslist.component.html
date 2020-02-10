@@ -17,7 +17,7 @@
 <div class="row">
     <h3>{{ 'USERS.TITLE' | translate }}</h3>
     <br>
-    <table class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
+    <table class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)" aria-describedby="Users list">
         <thead>
         <tr>
             <th scope="col" class="column-sortable" sortable-column="username">{{ 'USERS.USER_NAME' | translate }}</th>
