@@ -2,14 +2,14 @@
   <h3>{{'APPS_MANAGEMENT.TITLE'| translate}}</h3>
   <button [routerLink]="['/admin/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
   <hr>
-  <table class="table table-hover table-condensed">
+  <table class="table table-hover table-condensed" aria-describedby="Apps management table">
     <thead>
     <tr>
-      <th></th>
-      <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-      <th *ngIf="isAnySubtableVisible()">{{'APPS_MANAGEMENT.VERSION' | translate}}</th>
-      <th *ngIf="isAnySubtableVisible()">{{'APPS_MANAGEMENT.STATE' | translate}}</th>
-      <th></th>
+      <th scope="col"></th>
+      <th scope="col">{{'APPS_MANAGEMENT.NAME' | translate}}</th>
+      <th scope="col" *ngIf="isAnySubtableVisible()">{{'APPS_MANAGEMENT.VERSION' | translate}}</th>
+      <th scope="col" *ngIf="isAnySubtableVisible()">{{'APPS_MANAGEMENT.STATE' | translate}}</th>
+      <th scope="col"></th>
     </tr>
     </thead>
 
@@ -24,7 +24,7 @@
         <td class="text-right">
           <span class="dropdown">
             <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" href="#" role="button">
-              <i class="fas fa-cog icon-black icon-bigger"></i>
+              <em class="fas fa-cog icon-black icon-bigger"></em>
             </a>
             <ul class="dropdown-menu pull-right-drop">
               <li>
@@ -43,11 +43,11 @@
           <td>{{"ENUM.STATE." + getStateAsString(version.state).toUpperCase() | translate }}</td>
           <td class="text-right">
             <a [routerLink]="['/admin/apps/view', version?.appVersionId]">
-              <i class="far fa-eye icon-black icon-bigger"></i>
+              <em class="far fa-eye icon-black icon-bigger"></em>
             </a>
             <span class="dropdown">
             <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" href="#" role="button">
-              <i class="fas fa-cog icon-black icon-bigger"></i>
+              <em class="fas fa-cog icon-black icon-bigger"></em>
             </a>
             <ul class="dropdown-menu pull-right-drop">
               <li>

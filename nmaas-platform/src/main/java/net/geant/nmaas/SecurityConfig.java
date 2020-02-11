@@ -14,7 +14,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,7 +29,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.Filter;
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -106,11 +104,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/api/mail").permitAll()
 				.antMatchers("/api/users/reset/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
-				.antMatchers("/api/**").authenticated()
-				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/access").authenticated()
+				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/management/**").authenticated()
+				.antMatchers("/api/**").authenticated()
 				.and()
 					.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(

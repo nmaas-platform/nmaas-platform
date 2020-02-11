@@ -59,10 +59,13 @@ public class RegistrationController {
 			throw new SignupException("Invalid credentials");
 		}
 
-		if(!registration.getTermsOfUseAccepted()){
+		// explicit null values handling
+		Boolean termsOfUseAccepted = registration.getTermsOfUseAccepted();
+		if(Boolean.FALSE.equals(termsOfUseAccepted)){
 			throw new SignupException("Terms of Use were not accepted");
 		}
-		if(!registration.getPrivacyPolicyAccepted()){
+		Boolean privacyPolicyAccepted = registration.getPrivacyPolicyAccepted();
+		if(Boolean.FALSE.equals(privacyPolicyAccepted)){
 			throw new SignupException("Privacy policy was not accepted");
 		}
 		Domain domain = null;

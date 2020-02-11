@@ -14,19 +14,20 @@ import java.util.Set;
 @Service
 public class AclServiceImpl implements AclService {
 
-	@Autowired
 	private UserService users;
 
 	@Autowired
 	public AclServiceImpl(DomainObjectPermissionCheck domainObjectPermissionCheck,
 						  CommentPermissionCheck commentPermissionCheck,
 						  AppInstancePermissionCheck appInstancePermissionCheck,
-						  AppTemplatePermissionCheck appTemplatePermissionCheck) {
+						  AppTemplatePermissionCheck appTemplatePermissionCheck,
+						  UserService userService) {
 
 		add(domainObjectPermissionCheck);
 		add(commentPermissionCheck);
 		add(appInstancePermissionCheck);
 		add(appTemplatePermissionCheck);
+		this.users = userService;
 
 		setDefaultPermissionCheck(new GenericPermissionCheck());
 	}
@@ -47,33 +48,24 @@ public class AclServiceImpl implements AclService {
 	
 	@Override
 	public boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions perm) {
-		Optional<User> userOptional = users.findById(userId);
-		if(userOptional.isPresent()) {
-			for (PermissionCheck permCheck : permissionChecks) {
-				if (permCheck.supports(targetType) && permCheck.check(userOptional.get(), targetId, targetType, perm))
-					return true;
-			}
-
-			return (defaultPermissionCheck != null && defaultPermissionCheck.check(userOptional.get(), targetId, targetType, perm));
-		} else {
-			return false;
-		}
+		Permissions[] perms = new Permissions[1];
+		perms[0] = perm;
+		return this.isAuthorized(userId, targetId, targetType, perms);
 	}
 
 	@Override
 	public boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions[] perms) {
 		Optional<User> userOptional = users.findById(userId);
-		if(userOptional.isPresent()) {
-			for (PermissionCheck permCheck : permissionChecks) {
-				if (permCheck.supports(targetType))
-					if (permCheck.check(userOptional.get(), targetId, targetType, perms))
-						return true;
-			}
-
-			return (defaultPermissionCheck != null && defaultPermissionCheck.check(userOptional.get(), targetId, targetType, perms));
-		} else {
+		// if user is not present then do not authorize
+		if(!userOptional.isPresent())
 			return false;
+		// check all available permission checks if user is authorized
+		for (PermissionCheck permCheck : permissionChecks) {
+			if (permCheck.supports(targetType) && permCheck.check(userOptional.get(), targetId, targetType, perms))
+				return true;
 		}
+		// finally check default permission checker if available
+		return (defaultPermissionCheck != null && defaultPermissionCheck.check(userOptional.get(), targetId, targetType, perms));
 	}
 
 	private void setDefaultPermissionCheck(PermissionCheck defaultPermissionCheck) {

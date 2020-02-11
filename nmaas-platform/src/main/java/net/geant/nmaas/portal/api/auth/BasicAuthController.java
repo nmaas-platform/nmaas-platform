@@ -26,10 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -69,7 +67,7 @@ public class BasicAuthController {
 
         log.info(format("User [%s] logged in with roles [%s] \t Host: [%s] \t user-agent: [%s] \t ip: [%s]",
                 userLogin.getUsername(),
-                user.getRoles().stream().map(role -> role.getRoleAsString()).collect(Collectors.toList()),
+                user.getRoles().stream().map(UserRole::getRoleAsString).collect(Collectors.toList()),
                 request.getHeader(HttpHeaders.HOST),
                 request.getHeader(HttpHeaders.USER_AGENT),
                 BasicAuthController.getClientIpAddr(request)));
@@ -126,20 +124,21 @@ public class BasicAuthController {
      * @return ip address if available
      */
     public static String getClientIpAddr(HttpServletRequest request) {
+        String unknown = "unknown";
         String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_CLIENT_IP");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_X_FORWARDED_FOR");
         }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
         return ip;

@@ -17,7 +17,7 @@ public class DefaultCodenameValidator implements CodenameValidator {
 	@Override
 	public boolean valid(String codename) {
 		return Optional.of(pattern)
-						.map(pattern -> (pattern.trim().length() <= 0 || Pattern.matches(pattern, codename)))
+						.map(p -> (p.trim().length() <= 0 || Pattern.matches(p, codename)))
 						.orElse(true);
 	}
 

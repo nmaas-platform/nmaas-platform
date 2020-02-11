@@ -2,13 +2,13 @@
 	<h3>{{ 'DOMAINS.TITLE' | translate }}</h3>
 	<a *roles="['ROLE_SYSTEM_ADMIN']" [routerLink]="['add']" class="btn btn-primary" role="button">{{'DOMAINS.ADD_BUTTON' | translate}}</a>
 	<br>
-	<table class="table table-hover table-condensed">
+	<table class="table table-hover table-condensed" aria-describedby="Domains list">
 		<thead>
 			<tr>
-				<th>{{ 'DOMAINS.CODE_NAME' | translate }}</th>
-				<th>{{ 'DOMAINS.NAME' | translate }}</th>
-				<th>{{ 'DOMAINS.ACTIVATE' | translate }}</th>
-				<th>&nbsp;</th>
+				<th scope="col">{{ 'DOMAINS.CODE_NAME' | translate }}</th>
+				<th scope="col">{{ 'DOMAINS.NAME' | translate }}</th>
+				<th scope="col">{{ 'DOMAINS.ACTIVATE' | translate }}</th>
+				<th scope="col">&nbsp;</th>
 			</tr>
 		</thead>
 
@@ -22,7 +22,7 @@
 					<span class="dropdown">
 						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
 						   data-toggle="dropdown" href="#" role="button">
-							<i class="fas fa-cog icon-black icon-bigger"></i>
+							<em class="fas fa-cog icon-black icon-bigger"></em>
 						</a>
 						<ul class="dropdown-menu pull-right-drop">
 							<li><a [routerLink]="['view/', domain.id]" class="">

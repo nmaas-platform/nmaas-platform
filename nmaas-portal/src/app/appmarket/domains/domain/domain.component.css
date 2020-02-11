@@ -32,7 +32,7 @@ input.ng-dirty.ng-invalid {
 }
 
 .custom-collapse[aria-expanded="false"]:after {
-    font-family: "Glyphicons Halflings";
+    font-family: "Glyphicons Halflings", sans-serif;
     content:"\e114";
     /*margin-left: .2px;*/
 }
@@ -43,7 +43,7 @@ input.ng-dirty.ng-invalid {
 }
 
 .custom-collapse[aria-expanded="true"]:after {
-    font-family: "Glyphicons Halflings";
+    font-family: "Glyphicons Halflings", sans-serif;
     content:"\e113";
     /*margin-left: .2px;*/
 }

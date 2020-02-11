@@ -71,7 +71,7 @@ public class KubernetesClusterManager implements KClusterIngressManager, KCluste
     @Override
     public String getExternalServiceDomain(String codename) {
         KClusterIngress cluster = loadSingleCluster().getIngress();
-        if(cluster.getIngressPerDomain()){
+        if(Boolean.TRUE.equals(cluster.getIngressPerDomain())){
             return domainTechDetailsRepository.findByDomainCodename(codename)
                 .orElseThrow(()-> new IllegalArgumentException("Domain not found")).getExternalServiceDomain();
         }

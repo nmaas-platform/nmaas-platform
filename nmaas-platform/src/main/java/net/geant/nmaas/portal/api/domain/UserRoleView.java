@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.portal.persistent.entity.Role;
 
+import java.io.Serializable;
+
 @Setter
 @Getter
 @NoArgsConstructor
-public class UserRoleView extends DomainAware {
+public class UserRoleView extends DomainAware implements Serializable {
 
     @NotNull
 	Role role;

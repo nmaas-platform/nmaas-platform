@@ -38,13 +38,12 @@ public class InternationalizationSimple extends InternationalizationAbstract{
             String[] keys = in.getKey().split("\\.");
 
             for(int i=0; i<keys.length; i++){
-                if(i == keys.length-1){
+                boolean isLastKey = i == keys.length-1;
+                if(isLastKey && !currentNode.containsKey(keys[i])){
                     // last key - put value under proper key
-                    if(!currentNode.containsKey(keys[i])){
-                        currentNode.put(keys[i], in.getContent());
-                    } else {
-                        throw new IllegalArgumentException("Duplicated key");
-                    }
+                    currentNode.put(keys[i], in.getContent());
+                } else if (isLastKey) {
+                    throw new IllegalArgumentException("Duplicated key");
                 } else {
                     // else - change current node to sub-map, if not exists than create one
                     if(!currentNode.containsKey(keys[i])){

@@ -22,7 +22,7 @@ export class RateComponent implements OnInit, OnChanges {
     rate: Rate;
     
     @Output()
-    onChange = new EventEmitter<boolean>()
+    onChange = new EventEmitter<boolean>();
 
     @Input()
     short: boolean = false;

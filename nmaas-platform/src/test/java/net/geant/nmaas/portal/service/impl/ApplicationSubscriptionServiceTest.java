@@ -299,7 +299,7 @@ public class ApplicationSubscriptionServiceTest {
             this.appSubSrv.subscribe(appSub);
         });
 
-        assertEquals(thrown.getMessage(), "Cannot subscribe. Application is disabled in this domain");
+        assertEquals("Cannot subscribe. Application is disabled in this domain", thrown.getMessage());
     }
 
     @Test
@@ -315,7 +315,7 @@ public class ApplicationSubscriptionServiceTest {
             this.appSubSrv.subscribe(appSub);
         });
 
-        assertEquals(thrown.getMessage(), "Cannot subscribe. Application is disabled in this domain");
+        assertEquals("Cannot subscribe. Application is disabled in this domain", thrown.getMessage());
     }
 
     @Test

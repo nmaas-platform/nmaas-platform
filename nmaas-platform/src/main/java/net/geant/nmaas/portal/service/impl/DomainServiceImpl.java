@@ -11,7 +11,6 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.*;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
@@ -64,8 +63,6 @@ public class DomainServiceImpl implements DomainService {
 
 	private ModelMapper modelMapper;
 
-	private ApplicationBaseRepository applicationBaseRepository;
-
 	private ApplicationStatePerDomainService applicationStatePerDomainService;
 
 	@Autowired
@@ -77,7 +74,6 @@ public class DomainServiceImpl implements DomainService {
 							 UserRoleRepository userRoleRepo,
 							 DcnRepositoryManager dcnRepositoryManager,
 							 ModelMapper modelMapper,
-							 ApplicationBaseRepository applicationBaseRepository,
 							 ApplicationStatePerDomainService applicationStatePerDomainService
 	){
 		this.validator = validator;
@@ -88,7 +84,6 @@ public class DomainServiceImpl implements DomainService {
 		this.userRoleRepo = userRoleRepo;
 		this.dcnRepositoryManager = dcnRepositoryManager;
 		this.modelMapper = modelMapper;
-		this.applicationBaseRepository = applicationBaseRepository;
 		this.applicationStatePerDomainService = applicationStatePerDomainService;
 	}
 

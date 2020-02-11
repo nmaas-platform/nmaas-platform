@@ -39,7 +39,7 @@ public class HelmCommandExecutor {
     private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         try {
             HelmInstallCommand command;
-            if (useLocalCharts) {
+            if (Boolean.TRUE.equals(useLocalCharts)) {
                 command = HelmInstallCommand.commandWithArchive(
                         namespace,
                         releaseName,
@@ -125,7 +125,7 @@ public class HelmCommandExecutor {
     void executeHelmUpgradeCommand(String releaseName, String chartArchiveName) {
         try {
             HelmUpgradeCommand command;
-            if (useLocalCharts) {
+            if (Boolean.TRUE.equals(useLocalCharts)) {
                 command = HelmUpgradeCommand.commandWithArchive(
                         releaseName,
                         constructChartArchivePath(chartArchiveName),

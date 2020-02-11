@@ -488,6 +488,7 @@ public enum AppDeploymentState {
                     return APPLICATION_REMOVAL_IN_PROGRESS;
                 case FAILED_APPLICATION_REMOVED:
                     return FAILED_APPLICATION_REMOVED;
+                default:
             }
         }
         if(currentAppDeploymentState.isInRunningState()) {
@@ -498,6 +499,7 @@ public enum AppDeploymentState {
                     return APPLICATION_REMOVAL_IN_PROGRESS;
                 case CONFIGURATION_UPDATE_INITIATED:
                     return APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
+                default:
             }
         }
         throw new InvalidAppStateException(message(this, newNmServiceState));

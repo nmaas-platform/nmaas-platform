@@ -32,7 +32,8 @@ export class AppInstallModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.selectedAppVersion = this.app.appVersions.sort((a,b) => a.appVersionId - b.appVersionId)[0].appVersionId;
+    this.app.appVersions.sort((a,b) => a.appVersionId - b.appVersionId);
+    this.selectedAppVersion = this.app.appVersions[0].appVersionId;
     this.userDataService.selectedDomainId.subscribe(domainId => 
       { 
         if(!(isUndefined(domainId) || domainId === 0)) {

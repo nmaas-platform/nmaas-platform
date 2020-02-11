@@ -104,10 +104,10 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">{{ 'DOMAIN_DETAILS.APP_STATUS' | translate }}</div>
 			<div class="panel-body">
-				<table class="table table-hover table-condensed">
+				<table class="table table-hover table-condensed" aria-describedby="Domain details table">
 					<thead>
 					<tr>
-						<th>
+						<th scope="col">
 							{{ 'DOMAIN_DETAILS.APP_NAME' | translate }}
 						</th>
 					</tr>
@@ -188,15 +188,15 @@
 		<div class="panel panel-default" *ngIf="isInMode(ComponentMode.VIEW) && !authService.hasRole('ROLE_OPERATOR')">
 			<div class="panel-heading">{{ 'DOMAIN_DETAILS.DOMAIN_USERS' | translate }}</div>
 				<div class="panel-body">
-        			<table class="table table-hover table-condensed">
+        			<table class="table table-hover table-condensed" aria-describedby="Domains details table">
             			<thead>
             				<tr>
-                				<th *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')">{{ 'DOMAIN_DETAILS.ID' | translate }}</th>
-                				<th>{{ 'DOMAIN_DETAILS.USER_NAME' | translate }}</th>
-								<th>{{ 'DOMAIN_DETAILS.FIRST_NAME' | translate }}</th>
-								<th>{{ 'DOMAIN_DETAILS.LAST_NAME' | translate }}</th>
-                				<th>{{ 'DOMAIN_DETAILS.ROLES' | translate }}</th>
-                				<th>&nbsp;</th>
+                				<th scope="col" *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')">{{ 'DOMAIN_DETAILS.ID' | translate }}</th>
+                				<th scope="col">{{ 'DOMAIN_DETAILS.USER_NAME' | translate }}</th>
+								<th scope="col">{{ 'DOMAIN_DETAILS.FIRST_NAME' | translate }}</th>
+								<th scope="col">{{ 'DOMAIN_DETAILS.LAST_NAME' | translate }}</th>
+                				<th scope="col">{{ 'DOMAIN_DETAILS.ROLES' | translate }}</th>
+                				<th scope="col">&nbsp;</th>
             				</tr>
             			</thead>
 
