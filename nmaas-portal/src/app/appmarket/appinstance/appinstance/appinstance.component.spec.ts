@@ -58,7 +58,7 @@ describe('Component: AppInstance', () => {
   let appInstance: AppInstance = {
     applicationId: 2,
     applicationName: "Oxidized",
-    configWizardTemplate: null,
+    configWizardTemplate: {template: '{"template":"xD"}'},
     configuration: '{"oxidizedUsername":"oxidized","oxidizedPassword":"oxi@PLLAB","targets":[{"ipAddress":"10.0.0.1"},{"ipAddress":"10.0.0.2"},{"ipAddress":"10.0.0.3"},{"ipAddress":"10.0.0.4"},{"ipAddress":"10.0.0.5"},{"ipAddress":"10.0.0.6"},{"ipAddress":"10.0.0.7"},{"ipAddress":"10.0.0.8"},{"ipAddress":"10.0.0.9"},{"ipAddress":"10.0.0.10"},{"ipAddress":"10.0.0.11"},{"ipAddress":"10.0.0.12"},{"ipAddress":"10.0.0.13"},{"ipAddress":"10.0.0.14"},{"ipAddress":"10.0.0.15"},{"ipAddress":"10.0.0.16"}]}',
     createdAt: new Date(),
     descriptiveDeploymentId: "test-oxidized-48",

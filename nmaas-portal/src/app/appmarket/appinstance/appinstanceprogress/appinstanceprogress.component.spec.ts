@@ -44,9 +44,9 @@ describe('AppInstanceProgressComponent', () => {
   });
 
   // disable test until the issue is resolved
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
   it('default stage list should be length 0', () => {
     expect(component.stages.length).toEqual(0);
