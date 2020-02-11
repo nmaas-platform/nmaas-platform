@@ -14,7 +14,7 @@
 			</div>
 		</div>
 		<hr>
-		<div>
+		<div *ngIf="domain">
 			<p>
 				<a [routerLink]="['/apps', app.id]" class="btn btn-primary"
 				   role="button">{{'APPLICATIONS.DETAILS_BUTTON' | translate}}</a>
