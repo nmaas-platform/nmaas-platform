@@ -412,7 +412,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private void logPageable(Pageable p) {
-        log.info("Page number: " + p.getPageNumber() + "\tPage size:" +p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
+        log.debug("Page number: " + p.getPageNumber() + "\tPage size:" +p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
     }
 
     private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
