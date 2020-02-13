@@ -15,7 +15,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppDeploymentSpec {
+public class AppDeploymentSpecView {
 
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
@@ -24,6 +24,8 @@ public class AppDeploymentSpec {
     private Integer defaultStorageSpace;
 
     private boolean exposesWebUI;
+
+    private List<AppAccessMethodView> accessMethods;
 
     private Map<ParameterType, String> deployParameters;
 
