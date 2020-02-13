@@ -6,7 +6,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ap
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
@@ -65,12 +65,13 @@ public class ApplicationToApplicationViewConverter extends AbstractConverter<App
                 .collect(Collectors.toList());
     }
 
-    private AppDeploymentSpec getAppDeploymentSpec(Application source){
-        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+    private AppDeploymentSpecView getAppDeploymentSpec(Application source){
+        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setDefaultStorageSpace(source.getAppDeploymentSpec().getDefaultStorageSpace());
         appDeploymentSpec.setKubernetesTemplate(getKubernetesTemplateView(source.getAppDeploymentSpec().getKubernetesTemplate()));
         appDeploymentSpec.setDeployParameters(source.getAppDeploymentSpec().getDeployParameters());
         appDeploymentSpec.setSupportedDeploymentEnvironments(source.getAppDeploymentSpec().getSupportedDeploymentEnvironments());
+        appDeploymentSpec.setExposesWebUI(source.getAppDeploymentSpec().isExposesWebUI());
         return appDeploymentSpec;
     }
 

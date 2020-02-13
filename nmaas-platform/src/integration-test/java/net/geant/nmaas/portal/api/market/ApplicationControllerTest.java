@@ -5,6 +5,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ap
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
 import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
@@ -223,7 +224,7 @@ class ApplicationControllerTest extends BaseControllerTestSetup {
         applicationView.setOwner("admin");
         applicationView.setState(ApplicationState.ACTIVE);
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
-        net.geant.nmaas.portal.api.domain.AppDeploymentSpec appDeploymentSpec = new net.geant.nmaas.portal.api.domain.AppDeploymentSpec();
+        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(10);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);

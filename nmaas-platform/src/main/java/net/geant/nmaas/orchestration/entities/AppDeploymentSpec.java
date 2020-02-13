@@ -1,6 +1,8 @@
 package net.geant.nmaas.orchestration.entities;
 
 import static com.google.common.base.Preconditions.checkArgument;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +33,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 public class AppDeploymentSpec implements Serializable {
 
@@ -48,6 +51,7 @@ public class AppDeploymentSpec implements Serializable {
     @Column(nullable = false)
     private Integer defaultStorageSpace;
 
+    @Column(nullable = false)
     private boolean exposesWebUI;
 
     @ElementCollection

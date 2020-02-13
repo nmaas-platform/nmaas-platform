@@ -104,7 +104,7 @@ public class TagControllerTest extends BaseControllerTestSetup {
         app.setVersion("1.1.0");
         app.setTags(ImmutableSet.of("tag1", "tag2"));
         app.setAppConfigurationSpec(new AppConfigurationSpecView());
-        app.setAppDeploymentSpec(new AppDeploymentSpec());
+        app.setAppDeploymentSpec(new AppDeploymentSpecView());
         app.getAppDeploymentSpec().setDefaultStorageSpace(20);
         app.setConfigWizardTemplate(new ConfigWizardTemplateView("config"));
         app.setState(state);

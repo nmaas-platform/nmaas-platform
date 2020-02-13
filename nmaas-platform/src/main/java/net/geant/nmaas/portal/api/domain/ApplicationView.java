@@ -15,7 +15,7 @@ public class ApplicationView extends ApplicationBriefView {
 	String version;
 	ConfigWizardTemplateView configWizardTemplate;
 	ConfigWizardTemplateView configUpdateWizardTemplate;
-	AppDeploymentSpec appDeploymentSpec;
+	AppDeploymentSpecView appDeploymentSpec;
 	AppConfigurationSpecView appConfigurationSpec;
 	
 }

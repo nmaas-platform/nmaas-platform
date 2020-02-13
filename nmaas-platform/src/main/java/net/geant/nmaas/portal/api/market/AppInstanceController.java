@@ -12,7 +12,7 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
@@ -194,7 +194,7 @@ public class AppInstanceController extends AppBaseController {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
 
-        AppDeploymentSpec appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class);
+        AppDeploymentSpecView appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpecView.class);
         AppDeployment appDeployment = AppDeployment.builder()
                 .domain(domain.getCodename())
                 .instanceId(appInstance.getId())

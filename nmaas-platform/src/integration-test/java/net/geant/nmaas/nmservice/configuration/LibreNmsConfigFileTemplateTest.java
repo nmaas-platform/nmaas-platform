@@ -8,6 +8,7 @@ import net.geant.nmaas.nmservice.configuration.repositories.ConfigFileTemplatesR
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
@@ -106,7 +107,7 @@ public class LibreNmsConfigFileTemplateTest {
         applicationView.setVersion("testversion");
         applicationView.setOwner("owner");
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
-        net.geant.nmaas.portal.api.domain.AppDeploymentSpec appDeploymentSpec = new net.geant.nmaas.portal.api.domain.AppDeploymentSpec();
+        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(1);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
