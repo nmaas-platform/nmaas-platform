@@ -93,6 +93,7 @@ public class ConvertersTest {
         Application app = modelMapper.map(appView, Application.class);
         assertEquals(appView.getState(), app.getState());
         assertNotNull(app.getConfigWizardTemplate());
+        assertNull(app.getConfigUpdateWizardTemplate());
         assertNotNull(app.getAppDeploymentSpec());
         assertEquals(appView.getAppDeploymentSpec().getDefaultStorageSpace(), app.getAppDeploymentSpec().getDefaultStorageSpace());
         assertEquals(appView.getAppDeploymentSpec().isExposesWebUI(), app.getAppDeploymentSpec().isExposesWebUI());
