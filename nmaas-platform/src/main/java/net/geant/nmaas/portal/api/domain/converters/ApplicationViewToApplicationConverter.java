@@ -26,7 +26,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         Application app = new Application(source.getAppVersionId(), source.getName(), source.getVersion(), source.getOwner());
         app.setState(source.getState());
         app.setConfigWizardTemplate(getConfigWizardTemplate(source.getConfigWizardTemplate()));
-        app.setConfigUpdateWizardTemplate(getConfigWizardTemplate(source.getConfigWizardTemplate()));
+        app.setConfigUpdateWizardTemplate(getConfigWizardTemplate(source.getConfigUpdateWizardTemplate()));
         app.setAppDeploymentSpec(getAppDeploymentSpec(source));
         app.setAppConfigurationSpec(getAppConfigurationSpec(source));
         return app;
