@@ -118,7 +118,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                       console.log(validation);
                       this.refreshForm.emit({
                           property: 'form',
-                          value: this.addValidationToConfigurationTemplateSpecyficElement({key: "storageSpace"}, validation),
+                          value: this.addValidationToConfigurationTemplateSpecificElement({key: "storageSpace"}, validation),
                       });
                       console.log(this.configurationTemplate)
                   }
@@ -154,7 +154,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
               this.recursiveSearchObjectToAddElementWhenKeyMatches(t, key, element);
           }
       } else if (typeof target === 'object') {
-          // TODO generalize
           if(target.key === key.key) {
               console.log(target);
               target.validate = element;
@@ -166,7 +165,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       }
   }
 
-  private addValidationToConfigurationTemplateSpecyficElement(contains: any, validation: any): any {
+  private addValidationToConfigurationTemplateSpecificElement(contains: any, validation: any): any {
       this.recursiveSearchObjectToAddElementWhenKeyMatches(this.configurationTemplate, contains, validation);
       return this.configurationTemplate;
   }
