@@ -39,7 +39,7 @@
                 </div>
                 <!-- Deployment buttons -->
                 <div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState.RUNNING">
+                    <div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
                         <a *ngIf="appInstance?.serviceAccessMethods.length == 1"
                            href="{{appInstance?.serviceAccessMethods[0].url}}"
                            class = "btn btn-success" role = "button"
@@ -72,7 +72,7 @@
 
                     </div>
 
-                    <div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState.FAILURE">
+                    <div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
                         <button class="btn btn-primary"
                                 (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
                         <button class="btn btn-primary btn-danger"
