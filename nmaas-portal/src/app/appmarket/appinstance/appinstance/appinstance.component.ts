@@ -106,6 +106,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                     this.refreshForm = new EventEmitter();
                     this.refreshUpdateForm = new EventEmitter();
                     this.submission.data.configuration = JSON.parse(appInstance.configuration);
+                    this.updateAppInstanceState();
+                    this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
                     this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
                         this.app = app;
                         if (!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
@@ -131,13 +133,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                 err => {
                     console.error(err);
                     if(err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
-                        // TODO redirect
+                        this.router.navigateByUrl('/notfound');
                     }
                 }
             );
 
-            this.updateAppInstanceState();
-            this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
             this.undeployModal.setModalType('warning');
             this.undeployModal.setStatusOfIcons(true);
         });

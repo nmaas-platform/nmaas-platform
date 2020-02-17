@@ -48,6 +48,7 @@ import {AppConfigService} from '../service';
 import { ModalTestInstanceComponent } from './modal/modal-test-instance/modal-test-instance.component';
 import { ModalNotificationSendComponent } from './modal/modal-notification-send/modal-notification-send.component';
 import {NgxPaginationModule} from "ngx-pagination";
+import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
 
 @NgModule({
     imports: [
@@ -98,7 +99,8 @@ import {NgxPaginationModule} from "ngx-pagination";
     ChangelogComponent,
     SingleCommentComponent,
     ModalTestInstanceComponent,
-    ModalNotificationSendComponent
+    ModalNotificationSendComponent,
+      PageNotFoundComponent
   ],
   providers: [
     PasswordValidator,
