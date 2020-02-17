@@ -6,7 +6,7 @@ import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {JwtModule} from "@auth0/angular-jwt";
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {AppConfigService, AppInstanceService, AppsService} from "../../../service";
+import {AppConfigService, AppImagesService, AppInstanceService, AppsService} from "../../../service";
 import {AuthService} from "../../../auth/auth.service";
 import {of} from "rxjs";
 import {SharedModule} from "../../../shared";
@@ -18,9 +18,25 @@ import {NgxPaginationModule} from "ngx-pagination";
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {RouterTestingModule} from "@angular/router/testing";
 import {StorageServiceModule} from "ngx-webstorage-service";
-import {AppInstance, AppInstanceState, User} from "../../../model";
+import {AppInstance, AppInstanceState, Application, User} from "../../../model";
 import {Role} from "../../../model/userrole";
 import {ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
+import {AppDeploymentSpec} from "../../../model/appdeploymentspec";
+import {AppConfigurationSpec} from "../../../model/appconfigurationspec";
+import {ApplicationState} from "../../../model/applicationstate";
+import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
+import {Pipe, PipeTransform} from "@angular/core";
+
+@Pipe({
+  name: "secure"
+})
+class SecurePipeMock implements PipeTransform {
+  public name: string = "secure";
+
+  public transform(query: string, ...args: any[]): any {
+    return query;
+  }
+}
 
 describe('Component: AppInstance', () => {
   let component: AppInstanceComponent;
@@ -29,10 +45,11 @@ describe('Component: AppInstance', () => {
   let appsService: AppsService;
   let authService: AuthService;
   let appInstanceService: AppInstanceService;
+  let appImageService: AppImagesService;
 
   beforeEach(async (()=>{
     TestBed.configureTestingModule({
-      declarations: [AppInstanceComponent, AppInstanceProgressComponent, AppRestartModalComponent],
+      declarations: [AppInstanceComponent, AppInstanceProgressComponent, AppRestartModalComponent, SecurePipeMock],
       imports:[
         FormsModule,
         HttpClientModule,
@@ -75,11 +92,47 @@ describe('Component: AppInstance', () => {
     } as User,
     state: AppInstanceState.RUNNING,
     serviceAccessMethods: [
-      {type: ServiceAccessMethodType.DEFAULT, name: "Default", url: "http://oxi-virt-1.test.nmaas.geant.org"},
-      {type: ServiceAccessMethodType.EXTERNAL, name: "Second", url: "httpL//second.org"}
+      {type: ServiceAccessMethodType.DEFAULT, name: "Default link", url: "http://oxi-virt-1.test.nmaas.geant.org"},
+      {type: ServiceAccessMethodType.EXTERNAL, name: "Second link", url: "http://second.org"}
     ],
     userFriendlyState: "Application instance is running"
   };
+
+  let application: Application = {
+    id: 2,
+    appVersionId: 1,
+    name: "Oxidized",
+    version: "1.0.0",
+    license: null,
+    licenseUrl: null,
+    wwwUrl: null,
+    sourceUrl: null,
+    issuesUrl: null,
+    owner: "admin",
+    descriptions: [],
+    tags: ['tag1', 'tag2'],
+    appVersions: [],
+    configWizardTemplate: null,
+    configUpdateWizardTemplate: null,
+    appDeploymentSpec: new AppDeploymentSpec(),
+    appConfigurationSpec: new AppConfigurationSpec(),
+    state: ApplicationState.ACTIVE,
+    rowWithVersionVisible: false
+  };
+  application.appDeploymentSpec.exposesWebUI = true;
+
+  let appInstanceHistory: AppInstanceStateHistory[] = [
+    {
+      timestamp: new Date(2020,1,1),
+      previousState: 'preparation',
+      currentState: 'running'
+    },
+    {
+      timestamp: new Date(2019,10,23),
+      previousState: 'waiting',
+      currentState: 'preparation'
+    },
+  ];
 
   beforeEach(()=>{
     fixture = TestBed.createComponent(AppInstanceComponent);
@@ -88,9 +141,23 @@ describe('Component: AppInstance', () => {
     appsService = fixture.debugElement.injector.get(AppsService);
     authService = fixture.debugElement.injector.get(AuthService);
     appInstanceService = fixture.debugElement.injector.get(AppInstanceService);
-    spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api/");
+    appImageService = fixture.debugElement.injector.get(AppImagesService);
+    spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api");
     spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(of([]));
     spyOn(appInstanceService, 'getAppInstance').and.returnValue(of(appInstance));
+    spyOn(appInstanceService, 'getAppInstanceHistory').and.returnValue(of(appInstanceHistory));
+    spyOn(appInstanceService, 'getAppInstanceState').and.returnValue(of(
+        {
+          appInstanceId: 48,
+          state: AppInstanceState.RUNNING,
+          previousState: AppInstanceState.DEPLOYING,
+          details: 'Important details',
+          userFriendlyDetails: 'User friendly details',
+          userFriendlyState: 'User friendly state'
+        }
+    ));
+    spyOn(appsService, 'getApp').and.returnValue(of(application));
+    spyOn(appImageService, 'getAppLogoUrl').and.returnValue('');
     fixture.detectChanges();
   });
 
@@ -102,6 +169,18 @@ describe('Component: AppInstance', () => {
     let app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   });
+
+  // TODO issue regarding app logo occurs, so these tests cannot be executed
+  // it('app instance state should be RUNNING', () => {
+  //   expect(component.appInstanceStatus).toBeDefined();
+  //   expect(component.appInstanceStatus.state).toEqual(AppInstanceState.RUNNING);
+  // });
+  //
+  // it('should get at least one dropdown item', () => {
+  //   let element = fixture.debugElement.nativeElement.querySelector('a.dropdown-item');
+  //   console.log(element);
+  //   expect(element).toBeDefined();
+  // });
 
 
 });
