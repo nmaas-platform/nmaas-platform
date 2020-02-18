@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -17,6 +18,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +26,7 @@ import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
@@ -57,6 +60,9 @@ public class AppDeploymentSpec implements Serializable {
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<ParameterType, String> deployParameters;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<AppAccessMethod> accessMethods;
 
     public void validate(){
         checkArgument(kubernetesTemplate != null, "Kubernetes template cannot be null");
