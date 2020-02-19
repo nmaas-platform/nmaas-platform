@@ -26,6 +26,7 @@ import {AppConfigurationSpec} from "../../../model/appconfigurationspec";
 import {ApplicationState} from "../../../model/applicationstate";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {Pipe, PipeTransform} from "@angular/core";
+import {By} from "@angular/platform-browser";
 
 @Pipe({
   name: "secure"
@@ -46,31 +47,6 @@ describe('Component: AppInstance', () => {
   let authService: AuthService;
   let appInstanceService: AppInstanceService;
   let appImageService: AppImagesService;
-
-  beforeEach(async (()=>{
-    TestBed.configureTestingModule({
-      declarations: [AppInstanceComponent, AppInstanceProgressComponent, AppRestartModalComponent, SecurePipeMock],
-      imports:[
-        FormsModule,
-        HttpClientModule,
-        TooltipModule,
-        NgxPaginationModule,
-        PipesModule,
-        SharedModule,
-        FormioModule,
-        RouterTestingModule,
-        StorageServiceModule,
-        JwtModule.forRoot({}),
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader
-          }
-        })
-      ],
-      providers: [AppsService, AuthService, AppConfigService, AppInstanceService]
-    }).compileComponents();
-  }));
 
   let appInstance: AppInstance = {
     applicationId: 2,
@@ -134,6 +110,33 @@ describe('Component: AppInstance', () => {
     },
   ];
 
+  beforeEach(async (()=>{
+    TestBed.configureTestingModule({
+      declarations: [AppInstanceComponent, AppInstanceProgressComponent, AppRestartModalComponent, SecurePipeMock],
+      imports:[
+        FormsModule,
+        HttpClientModule,
+        TooltipModule,
+        NgxPaginationModule,
+        PipesModule,
+        SharedModule,
+        FormioModule,
+        RouterTestingModule,
+        StorageServiceModule,
+        JwtModule.forRoot({}),
+        TranslateModule.forRoot({
+          loader: {
+            provide: TranslateLoader,
+            useClass: TranslateFakeLoader
+          }
+        })
+      ],
+      providers: [AppsService, AuthService, AppConfigService, AppInstanceService]
+    }).compileComponents().then((result) => {
+      console.log(result);
+    });
+  }));
+
   beforeEach(()=>{
     fixture = TestBed.createComponent(AppInstanceComponent);
     component = fixture.componentInstance;
@@ -170,12 +173,26 @@ describe('Component: AppInstance', () => {
     expect(app).toBeTruthy();
   });
 
-  // TODO issue regarding app logo occurs, so these tests cannot be executed
+  // TODO find a way to execute these tests
+  // currently when trying to execute, uncaught server error is thrown
+
+  // it('title should contain app instance name and app name', () => {
+  //   const header: HTMLElement = fixture.debugElement.query(By.css('h2')).nativeElement;
+  //   const value: string = header.innerText;
+  //   expect(value).toContain(application.name);
+  //   expect(value).toContain(appInstance.name);
+  // });
+
+  // it('should transform string to AppInstanceState', () => {
+  //   expect(component.getStateAsEnum(AppInstanceState.DONE)).toEqual(AppInstanceState.DONE);
+  //   expect(component.getStateAsEnum('DONE')).toEqual(AppInstanceState.DONE);
+  // });
+
   // it('app instance state should be RUNNING', () => {
   //   expect(component.appInstanceStatus).toBeDefined();
   //   expect(component.appInstanceStatus.state).toEqual(AppInstanceState.RUNNING);
   // });
-  //
+
   // it('should get at least one dropdown item', () => {
   //   let element = fixture.debugElement.nativeElement.querySelector('a.dropdown-item');
   //   console.log(element);
