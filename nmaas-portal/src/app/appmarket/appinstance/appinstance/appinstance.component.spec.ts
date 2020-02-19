@@ -5,8 +5,8 @@ import {AppInstanceComponent} from './appinstance.component';
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {JwtModule} from "@auth0/angular-jwt";
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {AppConfigService, AppImagesService, AppInstanceService, AppsService} from "../../../service";
+import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
+import {AppConfigService, AppImagesService, AppInstanceService, AppsService, DomainService} from "../../../service";
 import {AuthService} from "../../../auth/auth.service";
 import {of} from "rxjs";
 import {SharedModule} from "../../../shared";
@@ -18,15 +18,16 @@ import {NgxPaginationModule} from "ngx-pagination";
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {RouterTestingModule} from "@angular/router/testing";
 import {StorageServiceModule} from "ngx-webstorage-service";
-import {AppInstance, AppInstanceState, Application, User} from "../../../model";
+import {AppInstance, AppInstanceState, Application, Rate, User} from "../../../model";
 import {Role} from "../../../model/userrole";
 import {ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
 import {AppDeploymentSpec} from "../../../model/appdeploymentspec";
 import {AppConfigurationSpec} from "../../../model/appconfigurationspec";
 import {ApplicationState} from "../../../model/applicationstate";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
-import {Pipe, PipeTransform} from "@angular/core";
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from "@angular/core";
 import {By} from "@angular/platform-browser";
+import {Domain} from "../../../model/domain";
 
 @Pipe({
   name: "secure"
@@ -39,6 +40,49 @@ class SecurePipeMock implements PipeTransform {
   }
 }
 
+@Component({
+  selector: 'rate',
+  template: '<p>Rate Mock</p>'
+})
+class RateComponentMock {
+  @Input()
+  private pathUrl:string;
+  @Input()
+  editable: boolean = false;
+  @Input()
+  short: boolean = false;
+  @Input()
+  showVotes: boolean = false;
+}
+
+@Component({
+  selector: 'nmaas-appinstanceprogress',
+  template: '<p>App Instance progress Mock</p>'
+})
+class AppInstanceProgressMock {
+  @Input()
+  stages: any;
+  @Input()
+  activeState: any;
+  previousState: any;
+  public AppInstanceState: any;
+  constructor(translate: TranslateService) {
+  }
+
+  public ngOnInit(){}
+  public getTranslateTag(stateProgress): string{return ''}
+}
+
+@Component({
+  selector: 'nmaas-modal',
+  template: '<p>Nmaas Modal Mock</p>'
+})
+class NmaasModalMock{
+  @Input()
+  styleModal: string;
+}
+
+
 describe('Component: AppInstance', () => {
   let component: AppInstanceComponent;
   let fixture: ComponentFixture<AppInstanceComponent>;
@@ -47,6 +91,7 @@ describe('Component: AppInstance', () => {
   let authService: AuthService;
   let appInstanceService: AppInstanceService;
   let appImageService: AppImagesService;
+  let domainService: DomainService;
 
   let appInstance: AppInstance = {
     applicationId: 2,
@@ -110,16 +155,47 @@ describe('Component: AppInstance', () => {
     },
   ];
 
+  let domain: Domain = {
+    id: 4,
+    name: 'domain 1',
+    codename: 'dom1',
+    active: true,
+    domainDcnDetails: null,
+    domainTechDetails: null,
+    applicationStatePerDomain: [
+      {
+        applicationBaseId: 2,
+        applicationBaseName: "Oxidized",
+        enabled: true,
+        pvStorageSizeLimit: 20
+      }
+    ]
+  };
+
+  // https://angular.io/guide/testing#component-with-a-dependency
+  let appsServiceStub: Partial<AppsService>;
+  let authServiceStub: Partial<AuthService>;
+  let appConfigServiceStub: Partial<AppConfigService>;
+  let appInstanceServiceStub: Partial<AppInstanceService>;
+  let domainServiceStub: Partial<DomainService>;
+  let appImagesServiceStub: Partial<AppImagesService>;
+
   beforeEach(async (()=>{
     TestBed.configureTestingModule({
-      declarations: [AppInstanceComponent, AppInstanceProgressComponent, AppRestartModalComponent, SecurePipeMock],
+      declarations: [
+          AppInstanceComponent,
+        AppRestartModalComponent,
+        SecurePipeMock,
+        RateComponentMock,
+        AppInstanceProgressMock,
+        NmaasModalMock
+      ],
       imports:[
         FormsModule,
         HttpClientModule,
         TooltipModule,
         NgxPaginationModule,
         PipesModule,
-        SharedModule,
         FormioModule,
         RouterTestingModule,
         StorageServiceModule,
@@ -131,7 +207,14 @@ describe('Component: AppInstance', () => {
           }
         })
       ],
-      providers: [AppsService, AuthService, AppConfigService, AppInstanceService]
+      providers: [
+        { provide: AppsService, useValue: appsServiceStub },
+        { provide: AuthService, useValue: authServiceStub },
+        { provide: AppConfigService, useValue: appConfigServiceStub },
+        { provide: AppInstanceService, useValue: appInstanceServiceStub },
+        { provide: DomainService, useValue: domainServiceStub },
+        { provide: AppImagesService, useValue: appImagesServiceStub }
+      ]
     }).compileComponents().then((result) => {
       console.log(result);
     });
@@ -140,12 +223,16 @@ describe('Component: AppInstance', () => {
   beforeEach(()=>{
     fixture = TestBed.createComponent(AppInstanceComponent);
     component = fixture.componentInstance;
+    component.appInstanceProgress = TestBed.createComponent(AppInstanceProgressMock).componentInstance as AppInstanceProgressComponent;
     appConfigService = fixture.debugElement.injector.get(AppConfigService);
     appsService = fixture.debugElement.injector.get(AppsService);
     authService = fixture.debugElement.injector.get(AuthService);
     appInstanceService = fixture.debugElement.injector.get(AppInstanceService);
     appImageService = fixture.debugElement.injector.get(AppImagesService);
-    spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api");
+    domainService = fixture.debugElement.injector.get(DomainService);
+    // optional in future
+    // spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api");
+    spyOn(appsService, 'getApp').and.returnValue(of(application));
     spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(of([]));
     spyOn(appInstanceService, 'getAppInstance').and.returnValue(of(appInstance));
     spyOn(appInstanceService, 'getAppInstanceHistory').and.returnValue(of(appInstanceHistory));
@@ -159,8 +246,10 @@ describe('Component: AppInstance', () => {
           userFriendlyState: 'User friendly state'
         }
     ));
-    spyOn(appsService, 'getApp').and.returnValue(of(application));
+
     spyOn(appImageService, 'getAppLogoUrl').and.returnValue('');
+    // optional in future
+    // spyOn(domainService, 'getOne').and.returnValue(of(domain));
     fixture.detectChanges();
   });
 
@@ -173,31 +262,28 @@ describe('Component: AppInstance', () => {
     expect(app).toBeTruthy();
   });
 
-  // TODO find a way to execute these tests
-  // currently when trying to execute, uncaught server error is thrown
+  it('title should contain app instance name and app name', () => {
+    const element: HTMLElement = fixture.nativeElement;
+    const h2 = element.querySelector('h2');
+    expect(h2.textContent).toContain(application.name);
+    expect(h2.textContent).toContain(appInstance.name);
+  });
 
-  // it('title should contain app instance name and app name', () => {
-  //   const header: HTMLElement = fixture.debugElement.query(By.css('h2')).nativeElement;
-  //   const value: string = header.innerText;
-  //   expect(value).toContain(application.name);
-  //   expect(value).toContain(appInstance.name);
-  // });
+  it('should transform string to AppInstanceState', () => {
+    expect(component.getStateAsEnum(AppInstanceState.DONE)).toEqual(AppInstanceState.DONE);
+    expect(component.getStateAsEnum('DONE')).toEqual(AppInstanceState.DONE);
+  });
 
-  // it('should transform string to AppInstanceState', () => {
-  //   expect(component.getStateAsEnum(AppInstanceState.DONE)).toEqual(AppInstanceState.DONE);
-  //   expect(component.getStateAsEnum('DONE')).toEqual(AppInstanceState.DONE);
-  // });
+  it('app instance state should be RUNNING', () => {
+    expect(component.appInstanceStatus).toBeDefined();
+    expect(component.appInstanceStatus.state).toEqual(AppInstanceState.RUNNING);
+  });
 
-  // it('app instance state should be RUNNING', () => {
-  //   expect(component.appInstanceStatus).toBeDefined();
-  //   expect(component.appInstanceStatus.state).toEqual(AppInstanceState.RUNNING);
-  // });
-
-  // it('should get at least one dropdown item', () => {
-  //   let element = fixture.debugElement.nativeElement.querySelector('a.dropdown-item');
-  //   console.log(element);
-  //   expect(element).toBeDefined();
-  // });
+  it('should get at least one dropdown item', () => {
+    let element: HTMLElement = fixture.debugElement.nativeElement.querySelector('a.dropdown-item');
+    expect(element).toBeDefined();
+    expect(element.textContent).toBeDefined();
+  });
 
 
 });
