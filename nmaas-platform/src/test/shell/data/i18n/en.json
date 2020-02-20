@@ -209,7 +209,9 @@
     "ITEMS_PER_PAGE": "Instances per page",
     "ACTIONS": "Actions",
     "DEPLOYED": "Deployed instances",
-    "UNDEPLOYED": "Undeployed instances"
+    "UNDEPLOYED": "Undeployed instances",
+    "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "HIDE_UNDEPLOYED": "Hide undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Monitor service",

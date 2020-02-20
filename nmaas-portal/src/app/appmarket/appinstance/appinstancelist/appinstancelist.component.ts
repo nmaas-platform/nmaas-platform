@@ -28,6 +28,8 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
+  public undeployedVisible = false;
+
   private readonly item_number_key: string = 'item_number_per_page';
 
   public p_first: string = 'p_first';

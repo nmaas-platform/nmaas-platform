@@ -209,7 +209,9 @@
     "ITEMS_PER_PAGE": "Instanzen pro Seite",
     "ACTIONS": "Aktionen",
     "DEPLOYED": "Bereitgestellte Instanzen",
-    "UNDEPLOYED": "Entfernte Instanzen"
+    "UNDEPLOYED": "Entfernte Instanzen",
+    "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "HIDE_UNDEPLOYED": "Hide undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Überwachungsservice",
