@@ -18,6 +18,7 @@ import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
 import {ApplicationState} from '../../../model/applicationstate';
 import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
+import {AccessMethodsModalComponent} from "../../modals/access-methods-modal/access-methods-modal.component";
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -39,13 +40,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     public appInstanceProgress: AppInstanceProgressComponent;
 
     @ViewChild(AppRestartModalComponent)
-    public modal: AppRestartModalComponent;
+    public appRestartModal: AppRestartModalComponent;
 
     @ViewChild(ModalComponent)
     public undeployModal: ModalComponent;
 
     @ViewChild('updateConfig')
     public updateConfigModal: ModalComponent;
+
+    @ViewChild(AccessMethodsModalComponent)
+    public accessMethodsModal: AccessMethodsModalComponent;
 
     @ViewChild(RateComponent)
     public readonly appRate: RateComponent;

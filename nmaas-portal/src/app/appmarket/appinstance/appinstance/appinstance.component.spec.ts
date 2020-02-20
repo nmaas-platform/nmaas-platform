@@ -9,7 +9,6 @@ import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService}
 import {AppConfigService, AppImagesService, AppInstanceService, AppsService, DomainService} from "../../../service";
 import {AuthService} from "../../../auth/auth.service";
 import {of} from "rxjs";
-import {SharedModule} from "../../../shared";
 import {FormioModule} from "angular-formio";
 import {AppInstanceProgressComponent} from "../appinstanceprogress";
 import {PipesModule} from "../../../pipe/pipes.module";
@@ -18,16 +17,16 @@ import {NgxPaginationModule} from "ngx-pagination";
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {RouterTestingModule} from "@angular/router/testing";
 import {StorageServiceModule} from "ngx-webstorage-service";
-import {AppInstance, AppInstanceState, Application, Rate, User} from "../../../model";
+import {AppInstance, AppInstanceState, Application, User} from "../../../model";
 import {Role} from "../../../model/userrole";
 import {ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
 import {AppDeploymentSpec} from "../../../model/appdeploymentspec";
 import {AppConfigurationSpec} from "../../../model/appconfigurationspec";
 import {ApplicationState} from "../../../model/applicationstate";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
-import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from "@angular/core";
-import {By} from "@angular/platform-browser";
+import {Component, Input, Pipe, PipeTransform} from "@angular/core";
 import {Domain} from "../../../model/domain";
+import {AccessMethodsModalComponent} from "../../modals/access-methods-modal/access-methods-modal.component";
 
 @Pipe({
   name: "secure"
@@ -114,7 +113,8 @@ describe('Component: AppInstance', () => {
     state: AppInstanceState.RUNNING,
     serviceAccessMethods: [
       {type: ServiceAccessMethodType.DEFAULT, name: "Default link", url: "http://oxi-virt-1.test.nmaas.geant.org"},
-      {type: ServiceAccessMethodType.EXTERNAL, name: "Second link", url: "http://second.org"}
+      {type: ServiceAccessMethodType.EXTERNAL, name: "Second link", url: "http://second.org"},
+      {type: ServiceAccessMethodType.INTERNAL, name: "Internal", url: "internal"}
     ],
     userFriendlyState: "Application instance is running"
   };
@@ -181,6 +181,9 @@ describe('Component: AppInstance', () => {
   let appImagesServiceStub: Partial<AppImagesService>;
 
   beforeEach(async (()=>{
+    let mockAppConfigService = jasmine.createSpyObj(['getApiUrl', 'getHttpTimeout']);
+    mockAppConfigService.getApiUrl.and.returnValue('http://localhost/api');
+    mockAppConfigService.getHttpTimeout.and.returnValue(10000);
     TestBed.configureTestingModule({
       declarations: [
           AppInstanceComponent,
@@ -188,7 +191,8 @@ describe('Component: AppInstance', () => {
         SecurePipeMock,
         RateComponentMock,
         AppInstanceProgressMock,
-        NmaasModalMock
+        NmaasModalMock,
+          AccessMethodsModalComponent,
       ],
       imports:[
         FormsModule,
@@ -210,7 +214,7 @@ describe('Component: AppInstance', () => {
       providers: [
         { provide: AppsService, useValue: appsServiceStub },
         { provide: AuthService, useValue: authServiceStub },
-        { provide: AppConfigService, useValue: appConfigServiceStub },
+        { provide: AppConfigService, useValue: mockAppConfigService },
         { provide: AppInstanceService, useValue: appInstanceServiceStub },
         { provide: DomainService, useValue: domainServiceStub },
         { provide: AppImagesService, useValue: appImagesServiceStub }
@@ -246,7 +250,6 @@ describe('Component: AppInstance', () => {
           userFriendlyState: 'User friendly state'
         }
     ));
-
     spyOn(appImageService, 'getAppLogoUrl').and.returnValue('');
     // optional in future
     // spyOn(domainService, 'getOne').and.returnValue(of(domain));
@@ -277,12 +280,6 @@ describe('Component: AppInstance', () => {
   it('app instance state should be RUNNING', () => {
     expect(component.appInstanceStatus).toBeDefined();
     expect(component.appInstanceStatus.state).toEqual(AppInstanceState.RUNNING);
-  });
-
-  it('should get at least one dropdown item', () => {
-    let element: HTMLElement = fixture.debugElement.nativeElement.querySelector('a.dropdown-item');
-    expect(element).toBeDefined();
-    expect(element.textContent).toBeDefined();
   });
 
 

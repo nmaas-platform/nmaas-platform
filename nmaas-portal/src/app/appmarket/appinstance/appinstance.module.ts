@@ -19,12 +19,15 @@ import {NgxPaginationModule} from "ngx-pagination";
 import {FormioAppConfig, FormioModule} from "angular-formio";
 import {AppConfig} from "../../../formio-config";
 import {TooltipModule} from "ng2-tooltip-directive";
+import {AppMarketModule} from "../appmarket.module";
+import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
 
 @NgModule({
   declarations: [
     AppInstanceComponent,
     AppInstanceListComponent,
-      AppRestartModalComponent
+      AppRestartModalComponent,
+      AccessMethodsModalComponent
   ],
     imports: [
         FormioModule,
@@ -38,8 +41,9 @@ import {TooltipModule} from "ng2-tooltip-directive";
         PipesModule,
         NgxPaginationModule,
         TranslateModule.forChild(),
-    TooltipModule
-  ],
+        TooltipModule,
+        AppMarketModule
+    ],
   exports: [
     AppInstanceComponent,
     AppInstanceListComponent

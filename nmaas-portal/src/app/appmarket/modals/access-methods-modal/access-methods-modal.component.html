@@ -1,0 +1,45 @@
+<nmaas-modal [styleModal]="'info'">
+  <div class="nmaas-modal-header">{{'APP_ACCESS_METHODS_MODAL.HEADER' | translate}}</div>
+  <div class="nmaas-modal-body">
+    <div *ngIf="defaultAccessMethod" class="row">
+      <a type="button" class="btn btn-success" href="{{validateURL(defaultAccessMethod.url)}}">Go to app</a>
+    </div>
+    <div *ngIf="externalAccessMethods" class="row">
+      <h4>{{'APP_ACCESS_METHODS_MODAL.EXTERNAL_HEADER' | translate}}</h4>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">{{'APP_ACCESS_METHODS_MODAL.SERVICE_NAME' | translate}}</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let am of externalAccessMethods">
+          <td>{{am.name}}</td>
+          <td> <a type="button" class="btn btn-success" href="{{validateURL(am.url)}}">Access the app</a> </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="internalAccessMethods" class="row">
+      <h4>{{'APP_ACCESS_METHODS_MODAL.INTERNAL_HEADER' | translate}}</h4>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">{{'APP_ACCESS_METHODS_MODAL.SERVICE_NAME' | translate}}</th>
+          <th scope="col">{{'APP_ACCESS_METHODS_MODAL.ACCESS_METHOD' | translate}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let am of internalAccessMethods">
+          <td>{{am.name}}</td>
+          <td>{{am.url}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="nmaas-modal-footer">
+    <button type="button" class="btn btn-primary" (click)="modal.hide()">{{'APP_ACCESS_METHODS_MODAL.HIDE_BUTTON' | translate}}</button>
+  </div>
+</nmaas-modal>
