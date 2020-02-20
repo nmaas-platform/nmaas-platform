@@ -154,7 +154,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return typeof state === 'string' && isNaN(Number(state.toString())) ? state : ApplicationState[state];
     }
 
-    private recursiveSearchObjectToAddElementWhenKeyMatches(target: any, key: any, element: any) {
+    public getStateAsEnum(state: string | AppInstanceState): AppInstanceState {
+      return typeof state === 'string' ? AppInstanceState[state] : state;
+  }
+
+  // Apply Domain constraints to configuration formprivate recursiveSearchObjectToAddElementWhenKeyMatches(target: any, key: any, element: any) {
         if (!target) {
             return;
         }
@@ -370,5 +374,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.isSubmissionUpdated = false;
         this.updateConfigModal.hide();
     }
+
+  public validateURL(url: string) : string {
+      if(url.startsWith('http://')) {
+          return url.replace('http://', 'https://');
+      }
+      if(url.startsWith('https://')) {
+          return url
+      }
+      return 'https://' + url;
+  }
 
 }
