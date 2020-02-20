@@ -10,7 +10,7 @@ import {AppChangeStateModalComponent} from "../appchangestatemodal/appchangestat
 import {ModalComponent} from "../../../shared/modal";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
-import {MockAuthService} from "../../../shared/navbar/navbar.component.spec";
+import {MockAuthService} from "../../appmarket.component.spec";
 
 describe('AppManagementListComponent', () => {
   let component: AppManagementListComponent;
@@ -18,8 +18,16 @@ describe('AppManagementListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppManagementListComponent, AppChangeStateModalComponent, ModalComponent ],
-      providers:[AppsService, AppConfigService, {provide: AuthService, useClass: MockAuthService}],
+      declarations: [
+          AppManagementListComponent,
+          AppChangeStateModalComponent,
+          ModalComponent
+      ],
+      providers:[
+          AppsService,
+          AppConfigService,
+          {provide: AuthService, useClass: MockAuthService}
+        ],
       imports:[
         BrowserModule,
         FormsModule,

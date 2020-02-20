@@ -19,7 +19,56 @@ import {AuthService} from "../auth/auth.service";
 import {Observable, of} from "rxjs";
 import {Configuration} from "../model/configuration";
 import {Language} from "../model/language";
-import {MockAuthService} from "../shared/navbar/navbar.component.spec";
+
+export class MockAuthService {
+
+  public loginUsingSsoService: boolean;
+
+  constructor() {
+  }
+
+  private storeToken(token: string): void {
+
+  }
+
+  private getToken(): string {
+    return String("");
+  }
+
+  private removeToken(): void {
+
+  }
+
+  public getUsername(): string {
+    return String("admin")
+  }
+
+  public hasRole(name: string): boolean {
+    return false;
+  }
+
+  public hasDomainRole(domainId: number, name: string): boolean {
+    return false;
+  }
+
+  public getRoles(): string[] {
+    return [];
+  }
+
+  public getDomains(): number[] {
+    return [];
+  }
+
+  public logout(): void {
+    this.removeToken();
+  }
+
+  public isLogged(): boolean {
+    const token = this.getToken();
+    return token != "";
+
+  }
+}
 
 class MockServiceUnavailableService {
   public isServiceAvailable: boolean;

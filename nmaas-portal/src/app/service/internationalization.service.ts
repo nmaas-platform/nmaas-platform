@@ -5,7 +5,9 @@ import {AppConfigService} from "./appconfig.service";
 import {Observable, of} from "rxjs";
 import {Language} from "../model/language";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class InternationalizationService extends GenericDataService{
 
   private basicLangs: string[];
