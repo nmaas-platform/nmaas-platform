@@ -211,7 +211,8 @@
     "DEPLOYED": "Uruchomione instancje",
     "UNDEPLOYED": "Zatrzymane instancje",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
-    "HIDE_UNDEPLOYED": "Hide undeployed instances"
+    "HIDE_UNDEPLOYED": "Hide undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",

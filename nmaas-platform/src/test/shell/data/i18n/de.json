@@ -211,7 +211,8 @@
     "DEPLOYED": "Bereitgestellte Instanzen",
     "UNDEPLOYED": "Entfernte Instanzen",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
-    "HIDE_UNDEPLOYED": "Hide undeployed instances"
+    "HIDE_UNDEPLOYED": "Hide undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Überwachungsservice",

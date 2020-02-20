@@ -4,13 +4,20 @@
     <div class="col-sm-12 col-sm-12 col-md-12">
         <div style="margin-left: -10px;" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
             <form class="form-inline" role="form">
-                <label for="selectionType">{{ 'APP_INSTANCES.SHOW' | translate }}: </label>
-                <select id="selectionType" class="form-control" [(ngModel)]="listSelection"
-                        (change)="onSelectionChange($event)" [selectedIndex]="listSelection"
-                        [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let sl of AppInstanceListSelection | keys"
-                            [value]="sl.key">{{ translateEnum(sl.value) | titlecase }}</option>
-                </select>
+                <div class="form-group">
+                    <label for="selectionType">{{ 'APP_INSTANCES.SHOW' | translate }}: </label>
+                    <select id="selectionType" class="form-control" [(ngModel)]="listSelection"
+                            (change)="onSelectionChange($event)" [selectedIndex]="listSelection"
+                            [ngModelOptions]="{standalone: true}">
+                        <option *ngFor="let sl of AppInstanceListSelection | keys"
+                                [value]="sl.key">{{ translateEnum(sl.value) | titlecase }}</option>
+                    </select>
+                </div>
+                <strong class="checkbox-label">{{'APP_INSTANCES.UNDEPLOYED_VISIBLE' | translate}}:</strong>
+                <div class="form-group" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
+                    <label for="show_visible"></label>
+                    <input id="show_visible" type="checkbox" class="big-checkbox" [(ngModel)]="undeployedVisible" [ngModelOptions]="{standalone: true}">
+                </div>
             </form>
         </div>
         <div style="display: inline;" class="col-xs-12 col-sm-6 col-md-6 col-lg-6 pull-right text-right">
@@ -26,12 +33,6 @@
 						</a>
 					</li>
 				</ul>
-				<button *ngIf="!undeployedVisible" class="btn btn-primary" type="button" (click)="undeployedVisible = !undeployedVisible">
-					{{'APP_INSTANCE.SHOW_UNDEPLOYED' | translate}}
-				</button>
-				<button *ngIf="undeployedVisible"  class="btn btn-default" type="button" (click)="undeployedVisible = !undeployedVisible">
-					{{'APP_INSTANCE.HIDE_UNDEPLOYED' | translate}}
-				</button>
 			</span>
         </div>
     </div>
