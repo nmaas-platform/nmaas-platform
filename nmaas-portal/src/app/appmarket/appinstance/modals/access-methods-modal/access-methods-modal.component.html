@@ -6,7 +6,7 @@
     </div>
     <div *ngIf="externalAccessMethods" class="row">
       <h4>{{'APP_ACCESS_METHODS_MODAL.EXTERNAL_HEADER' | translate}}</h4>
-      <table class="table">
+      <table class="table table-hover table-condensed">
         <thead>
         <tr>
           <th scope="col">{{'APP_ACCESS_METHODS_MODAL.SERVICE_NAME' | translate}}</th>
@@ -15,7 +15,7 @@
         </thead>
         <tbody>
         <tr *ngFor="let am of externalAccessMethods">
-          <td>{{am.name}}</td>
+          <td><strong>{{am.name}}</strong></td>
           <td> <a type="button" class="btn btn-success" href="{{validateURL(am.url)}}">{{'APP_ACCESS_METHODS_MODAL.EXTERNAL_ACCESS' | translate}}</a> </td>
         </tr>
         </tbody>
@@ -23,7 +23,7 @@
     </div>
     <div *ngIf="internalAccessMethods" class="row">
       <h4>{{'APP_ACCESS_METHODS_MODAL.INTERNAL_HEADER' | translate}}</h4>
-      <table class="table">
+      <table class="table table-hover table-condensed">
         <thead>
         <tr>
           <th scope="col">{{'APP_ACCESS_METHODS_MODAL.SERVICE_NAME' | translate}}</th>
@@ -32,8 +32,8 @@
         </thead>
         <tbody>
         <tr *ngFor="let am of internalAccessMethods">
-          <td>{{am.name}}</td>
-          <td>{{am.url}}</td>
+          <td><strong>{{am.name}}</strong></td>
+          <td><div class="well well-sm">{{am.url}}</div></td>
         </tr>
         </tbody>
       </table>
