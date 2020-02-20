@@ -394,6 +394,7 @@
     "MY_RATING": "Mon évaluation",
     "GO_TO_APP_BUTTON": "Aller à l'application",
     "UNDEPLOY_BUTTON": "Supprimer",
+    "APP_ACCESS_METHODS": "Access methods to application",
     "RESTART_BUTTON": "Re-démarrer",
     "REMOVE_BUTTON": "Supprimer échoué",
     "REDEPLOY_BUTTON": "Re-déployer",
@@ -771,5 +772,15 @@
     "HEADER": "Send message",
     "CONFIRM": "Send",
     "DISMISS": "Dismiss"
+  },
+  "APP_ACCESS_METHODS_MODAL": {
+    "HEADER": "Access methods to the application",
+    "EXTERNAL_HEADER": "External access options",
+    "SERVICE_NAME": "Service name",
+    "ACCESS_METHOD": "Access method",
+    "INTERNAL_HEADER": "Internal access options",
+    "HIDE_BUTTON": "Cancel",
+    "MAIN_ACCESS": "Main Interface",
+    "EXTERNAL_ACCESS": "Access the application"
   }
 }

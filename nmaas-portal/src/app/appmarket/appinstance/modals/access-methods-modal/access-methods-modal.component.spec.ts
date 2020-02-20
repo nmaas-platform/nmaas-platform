@@ -2,8 +2,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {AccessMethodsModalComponent} from './access-methods-modal.component';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {SharedModule} from "../../../shared";
-import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
+import {SharedModule} from "../../../../shared";
+import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../../model/serviceaccessmethod";
 
 describe('AccessMethodsModalComponent', () => {
   let component: AccessMethodsModalComponent;
@@ -45,6 +45,9 @@ describe('AccessMethodsModalComponent', () => {
   });
 
   it('should have inner list', () => {
-    expect(component.accessMethods.length).toEqual(am.length)
+    expect(component.accessMethods.length).toEqual(am.length);
+    expect(component.defaultAccessMethod).toBeDefined();
+    expect(component.externalAccessMethods.length).toEqual(2);
+    expect(component.internalAccessMethods.length).toEqual(1);
   });
 });

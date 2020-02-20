@@ -2,7 +2,7 @@
   <div class="nmaas-modal-header">{{'APP_ACCESS_METHODS_MODAL.HEADER' | translate}}</div>
   <div class="nmaas-modal-body">
     <div *ngIf="defaultAccessMethod" class="row">
-      <a type="button" class="btn btn-success" href="{{validateURL(defaultAccessMethod.url)}}">Go to app</a>
+      <a type="button" class="btn btn-success" href="{{validateURL(defaultAccessMethod.url)}}">{{'APP_ACCESS_METHODS_MODAL.MAIN_ACCESS' | translate}}</a>
     </div>
     <div *ngIf="externalAccessMethods" class="row">
       <h4>{{'APP_ACCESS_METHODS_MODAL.EXTERNAL_HEADER' | translate}}</h4>
@@ -16,7 +16,7 @@
         <tbody>
         <tr *ngFor="let am of externalAccessMethods">
           <td>{{am.name}}</td>
-          <td> <a type="button" class="btn btn-success" href="{{validateURL(am.url)}}">Access the app</a> </td>
+          <td> <a type="button" class="btn btn-success" href="{{validateURL(am.url)}}">{{'APP_ACCESS_METHODS_MODAL.EXTERNAL_ACCESS' | translate}}</a> </td>
         </tr>
         </tbody>
       </table>

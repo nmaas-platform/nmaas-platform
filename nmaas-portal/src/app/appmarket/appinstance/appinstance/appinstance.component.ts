@@ -5,7 +5,7 @@ import {AppImagesService, AppInstanceService, AppsService, DomainService} from '
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
 import {SecurePipe} from '../../../pipe';
-import {AppRestartModalComponent} from '../../modals/apprestart';
+import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {RateComponent} from '../../../shared/rate';
 import {AppConfiguration} from '../../../model/appconfiguration';
@@ -18,7 +18,7 @@ import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
 import {ApplicationState} from '../../../model/applicationstate';
 import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
-import {AccessMethodsModalComponent} from "../../modals/access-methods-modal/access-methods-modal.component";
+import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
 
 @Component({
     selector: 'nmaas-appinstance',

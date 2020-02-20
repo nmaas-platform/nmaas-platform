@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {ModalComponent} from "../../../shared/modal";
-import {AppInstanceService} from "../../../service";
+import {ModalComponent} from "../../../../shared/modal";
+import {AppInstanceService} from "../../../../service";
 
 @Component({
   selector: 'nmaas-modal-app-restart',

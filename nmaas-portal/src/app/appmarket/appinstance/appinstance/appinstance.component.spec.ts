@@ -14,7 +14,7 @@ import {AppInstanceProgressComponent} from "../appinstanceprogress";
 import {PipesModule} from "../../../pipe/pipes.module";
 import {TooltipModule} from "ng2-tooltip-directive";
 import {NgxPaginationModule} from "ngx-pagination";
-import {AppRestartModalComponent} from "../../modals/apprestart";
+import {AppRestartModalComponent} from "../modals/apprestart";
 import {RouterTestingModule} from "@angular/router/testing";
 import {StorageServiceModule} from "ngx-webstorage-service";
 import {AppInstance, AppInstanceState, Application, User} from "../../../model";
@@ -26,7 +26,7 @@ import {ApplicationState} from "../../../model/applicationstate";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {Component, Input, Pipe, PipeTransform} from "@angular/core";
 import {Domain} from "../../../model/domain";
-import {AccessMethodsModalComponent} from "../../modals/access-methods-modal/access-methods-modal.component";
+import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
 
 @Pipe({
   name: "secure"
@@ -181,7 +181,7 @@ describe('Component: AppInstance', () => {
   let appImagesServiceStub: Partial<AppImagesService>;
 
   beforeEach(async (()=>{
-    let mockAppConfigService = jasmine.createSpyObj(['getApiUrl', 'getHttpTimeout']);
+    let mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getApiUrl', 'getHttpTimeout']);
     mockAppConfigService.getApiUrl.and.returnValue('http://localhost/api');
     mockAppConfigService.getHttpTimeout.and.returnValue(10000);
     TestBed.configureTestingModule({

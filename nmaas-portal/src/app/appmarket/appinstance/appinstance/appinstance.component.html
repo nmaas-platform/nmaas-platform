@@ -50,17 +50,6 @@
                             {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
                         </a>
                         <div class="btn-group" *ngIf="appInstance?.serviceAccessMethods.length > 1">
-<!--                            <button class="btn btn-success dropdown-toggle" role="button" id="dropdownMenuButton"-->
-<!--                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"-->
-<!--                                    [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true"-->
-<!--                                    tooltip="{{'APP_INSTANCE.GO_TO_APP_TOOLTIP' | translate }}"-->
-<!--                                    [display]="!app.appDeploymentSpec.exposesWebUI" [options]="defaultTooltipOptions">-->
-<!--                                {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}} <span class="caret"></span>-->
-<!--                            </button>-->
-<!--                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
-<!--                                <li><a *ngFor="let sam of appInstance?.serviceAccessMethods" class="dropdown-item"-->
-<!--                                   href="{{validateURL(sam.url)}}">{{sam.name}}</a></li>-->
-<!--                            </ul>-->
                             <button class="btn btn-success" role="button" (click)="this.accessMethodsModal.show()">
                                 {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
                             </button>
