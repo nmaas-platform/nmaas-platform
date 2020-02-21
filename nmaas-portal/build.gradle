@@ -67,4 +67,4 @@ sonarqube {
 }
 
 build.dependsOn(dist)
-build.dependsOn(testCoverage)
+//build.dependsOn(testCoverage)
