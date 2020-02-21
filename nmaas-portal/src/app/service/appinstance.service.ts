@@ -15,7 +15,9 @@ import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
 import {AppConfiguration} from "../model/appconfiguration";
 import {map} from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppInstanceService extends GenericDataService {
 
   constructor(http: HttpClient, appConfig: AppConfigService) {
