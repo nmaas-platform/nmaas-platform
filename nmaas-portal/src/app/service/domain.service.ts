@@ -9,7 +9,9 @@ import {Id} from '../model';
 import {Domain} from '../model/domain';
 import {User} from '../model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class DomainService extends GenericDataService {
 
   protected url: string;

@@ -39,30 +39,32 @@
                 </div>
                 <!-- Deployment buttons -->
                 <div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <div class="btn-group pull-right"
-                         *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
-                        <div *ngIf="appInstance?.serviceAccessMethods" class="dropdown">
-                            <button class="btn btn-success dropdown-toggle" role="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                    [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true"
-                                    tooltip="{{'APP_INSTANCE.GO_TO_APP_TOOLTIP' | translate }}"
-                                    [display]="!app.appDeploymentSpec.exposesWebUI" [options]="defaultTooltipOptions">
-                                {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
+                    <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
+                        <a *ngIf="appInstance?.serviceAccessMethods.length == 1"
+                           href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}"
+                           class = "btn btn-success" role = "button"
+                           [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true"
+                           tooltip="{{'APP_INSTANCE.GO_TO_APP_TOOLTIP' | translate }}"
+                           [display]="!app.appDeploymentSpec.exposesWebUI"
+                           [options]="defaultTooltipOptions">
+                            {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
+                        </a>
+                        <div class="btn-group" *ngIf="appInstance?.serviceAccessMethods.length > 1">
+                            <button class="btn btn-success" role="button" (click)="this.accessMethodsModal.show()">
+                                {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a *ngFor="let sam of appInstance?.serviceAccessMethods" class="dropdown-item"
-                                   href="{{sam.url}}">{{sam.name}}</a>
-                            </div>
                         </div>
                         <button class="btn btn-default" *ngIf="configurationUpdateTemplate"
                                 (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
-                        <button class="btn btn-primary" style="display: none" (click)="this.modal.show()"
+                        <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
                                 disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
                         <button class="btn btn-danger"
                                 (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
+
+
                     </div>
-                    <div class="btn-group pull-right"
-                         *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+
+                    <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
                         <button class="btn btn-primary"
                                 (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
                         <button class="btn btn-primary btn-danger"
@@ -74,6 +76,7 @@
     </div>
 
     <!-- Undeploy modal-->
+    <!-- TODO should be moved to separate component-->
     <nmaas-modal styleModal="warning">
         <div class="nmaas-modal-header">
             <h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
@@ -92,6 +95,7 @@
     </nmaas-modal>
 
     <!-- Update config modal -->
+    <!-- TODO should be moved to separate component-->
     <nmaas-modal #updateConfig>
         <div class="nmaas-modal-header">
             <h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
@@ -195,4 +199,6 @@
     <!-- App restart modal -->
     <nmaas-modal-app-restart [appInstanceId]="appInstanceId"
                              [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
+    <!-- App access methods modal -->
+    <app-access-methods-modal *ngIf="appInstance" [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
 </div>

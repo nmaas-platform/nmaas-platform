@@ -209,7 +209,10 @@
     "ITEMS_PER_PAGE": "Instances per page",
     "ACTIONS": "Actions",
     "DEPLOYED": "Deployed instances",
-    "UNDEPLOYED": "Undeployed instances"
+    "UNDEPLOYED": "Undeployed instances",
+    "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "HIDE_UNDEPLOYED": "Hide undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
@@ -393,6 +396,7 @@
     "MY_RATING": "My rating",
     "GO_TO_APP_BUTTON": "Go to app",
     "UNDEPLOY_BUTTON": "Undeploy",
+    "APP_ACCESS_METHODS": "Access methods to application",
     "RESTART_BUTTON": "Restart",
     "REMOVE_BUTTON": "Remove failed",
     "REDEPLOY_BUTTON": "Redeploy",
@@ -771,5 +775,15 @@
     "HEADER": "Send message",
     "CONFIRM": "Send",
     "DISMISS": "Dismiss"
+  },
+  "APP_ACCESS_METHODS_MODAL": {
+    "HEADER": "Access methods to the application",
+    "EXTERNAL_HEADER": "External access options",
+    "SERVICE_NAME": "Service name",
+    "ACCESS_METHOD": "Access method",
+    "INTERNAL_HEADER": "Internal access options",
+    "HIDE_BUTTON": "Cancel",
+    "MAIN_ACCESS": "Main Interface",
+    "EXTERNAL_ACCESS": "Access the application"
   }
 }

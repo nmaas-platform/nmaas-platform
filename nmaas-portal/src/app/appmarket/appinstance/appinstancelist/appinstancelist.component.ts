@@ -28,20 +28,22 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
+  public undeployedVisible = false;
+
   private readonly item_number_key: string = 'item_number_per_page';
 
   public p_first: string = 'p_first';
   public p_second: string = 'p_second';
 
-  public maxItemsOnPage: number = 5;
-  public maxItemsOnPageSec: number = 5;
+  public maxItemsOnPage: number = 10;
+  public maxItemsOnPageSec: number = 10;
 
   public pageNumber: number = 1;
   public secondPageNumber: number = 1;
 
   public showFailed: boolean = true;
 
-  public itemsPerPage: number[]  = [5, 10, 15, 20, 25, 30];
+  public itemsPerPage: number[]  = [10, 15, 20, 25, 30, 50];
 
   public AppInstanceState: typeof AppInstanceState = AppInstanceState;
   public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;

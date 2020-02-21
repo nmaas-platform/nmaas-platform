@@ -12,10 +12,7 @@ import {AppInstanceModule} from './appinstance/appinstance.module';
 
 import {SharedModule} from '../shared/shared.module';
 
-import {AppsService} from '../service/apps.service';
-import {DomainService} from '../service/domain.service';
-import {TagService} from '../service/tag.service';
-import {UserService} from '../service/user.service';
+import {AppsService, DomainService, TagService, UserService} from '../service';
 
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
