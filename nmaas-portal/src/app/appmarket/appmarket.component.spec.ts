@@ -202,13 +202,13 @@ describe('Component: AppMarket', () => {
             useClass: TranslateFakeLoader
           }
         }),
-        JwtModule.forRoot({
-          config: {
-            tokenGetter: () => {
-              return '';
-            }
-          }
-        }),
+        // JwtModule.forRoot({
+        //   config: {
+        //     tokenGetter: () => {
+        //       return '';
+        //     }
+        //   }
+        // }),
       ],
       providers: [
         {provide: ServiceUnavailableService, useClass: MockServiceUnavailableService},
