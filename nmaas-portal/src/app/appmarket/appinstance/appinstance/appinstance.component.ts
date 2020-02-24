@@ -132,7 +132,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                 },
                 err => {
                     console.error(err);
-                    if(err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
+                    if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
                         this.router.navigateByUrl('/notfound');
                     }
                 }
@@ -155,10 +155,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     public getStateAsEnum(state: string | AppInstanceState): AppInstanceState {
-      return typeof state === 'string' ? AppInstanceState[state] : state;
-  }
+        return typeof state === 'string' ? AppInstanceState[state] : state;
+    }
 
-  // Apply Domain constraints to configuration formprivate recursiveSearchObjectToAddElementWhenKeyMatches(target: any, key: any, element: any) {
+    // Apply Domain constraints to configuration form
+    private recursiveSearchObjectToAddElementWhenKeyMatches(target: any, key: any, element: any) {
         if (!target) {
             return;
         }
@@ -375,14 +376,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.updateConfigModal.hide();
     }
 
-  public validateURL(url: string) : string {
-      if(url.startsWith('http://')) {
-          return url.replace('http://', 'https://');
-      }
-      if(url.startsWith('https://')) {
-          return url
-      }
-      return 'https://' + url;
-  }
+    public validateURL(url: string): string {
+        if (url.startsWith('http://')) {
+            return url.replace('http://', 'https://');
+        }
+        if (url.startsWith('https://')) {
+            return url;
+        }
+        return 'https://' + url;
+    }
 
 }
