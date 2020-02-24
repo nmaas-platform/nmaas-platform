@@ -10,12 +10,8 @@ import {
   TranslateService
 } from "@ngx-translate/core";
 import {CustomMissingTranslationService} from "../i18n/custommissingtranslation.service";
-import {SharedModule} from "../shared";
 import {InternationalizationService} from "../service/internationalization.service";
-import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 import {AppConfigService, ConfigurationService} from "../service";
-import {HttpClient, HttpHandler} from "@angular/common/http";
-import {AuthService} from "../auth/auth.service";
 import {Observable, of} from "rxjs";
 import {Configuration} from "../model/configuration";
 import {Language} from "../model/language";
@@ -202,19 +198,11 @@ describe('Component: AppMarket', () => {
             useClass: TranslateFakeLoader
           }
         }),
-        JwtModule.forRoot({
-          config: {
-            tokenGetter: () => {
-              return '';
-            }
-          }
-        }),
       ],
       providers: [
         {provide: ServiceUnavailableService, useClass: MockServiceUnavailableService},
         {provide: AppConfigService, useClass: MockAppConfigService},
         {provide: ConfigurationService, useClass: MockConfigurationService},
-        // {provide: AuthService, useClass: MockAuthService},
         {provide: InternationalizationService, useClass: MockInternationalizationService}
       ]
     })
