@@ -5,16 +5,12 @@ import {interval, Subscription} from "rxjs";
 import {AuthService} from "../../auth/auth.service";
 import {DomainService} from "../../service";
 import {InternationalizationService} from "../../service/internationalization.service";
-import {MonitorService} from "../../service/monitor.service";
-import {forEach} from "@angular/router/src/utils/collection";
-import {MonitorEntry} from "../../model/monitorentry";
-import {ContentDisplayService} from "../../service/content-display.service";
 import {ModalNotificationSendComponent} from "../modal/modal-notification-send/modal-notification-send.component";
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnChanges {
 
@@ -25,8 +21,11 @@ export class NavbarComponent implements OnInit, OnChanges {
     public refresh: Subscription;
     public isServiceAvailable: boolean;
 
-    constructor(private router: Router, public authService: AuthService, private translate: TranslateService,
-                private languageService:InternationalizationService, private domainService: DomainService) {
+    constructor(private router: Router,
+                public authService: AuthService,
+                private translate: TranslateService,
+                private languageService: InternationalizationService,
+                private domainService: DomainService) {
     }
 
     useLanguage(language: string) {

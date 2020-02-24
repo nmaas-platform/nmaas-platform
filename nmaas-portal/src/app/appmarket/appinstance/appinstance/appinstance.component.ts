@@ -5,7 +5,7 @@ import {AppImagesService, AppInstanceService, AppsService, DomainService} from '
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
 import {SecurePipe} from '../../../pipe';
-import {AppRestartModalComponent} from '../../modals/apprestart';
+import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {RateComponent} from '../../../shared/rate';
 import {AppConfiguration} from '../../../model/appconfiguration';
@@ -13,13 +13,12 @@ import {isNullOrUndefined} from 'util';
 import {LOCAL_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ModalComponent} from '../../../shared/modal';
 import {interval} from 'rxjs/internal/observable/interval';
-import {UserDataService} from '../../../service/userdata.service';
-import {TranslateStateModule} from '../../../shared/translate-state/translate-state.module';
 import {TranslateService} from '@ngx-translate/core';
 import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
 import {ApplicationState} from '../../../model/applicationstate';
 import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
+import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -41,13 +40,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     public appInstanceProgress: AppInstanceProgressComponent;
 
     @ViewChild(AppRestartModalComponent)
-    public modal: AppRestartModalComponent;
+    public appRestartModal: AppRestartModalComponent;
 
     @ViewChild(ModalComponent)
     public undeployModal: ModalComponent;
 
     @ViewChild('updateConfig')
     public updateConfigModal: ModalComponent;
+
+    @ViewChild(AccessMethodsModalComponent)
+    public accessMethodsModal: AccessMethodsModalComponent;
 
     @ViewChild(RateComponent)
     public readonly appRate: RateComponent;
@@ -81,11 +83,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
     constructor(private appsService: AppsService,
                 public appImagesService: AppImagesService,
-                public userData: UserDataService,
+
                 private appInstanceService: AppInstanceService,
                 private router: Router,
                 private route: ActivatedRoute,
-                public translateState: TranslateStateModule,
+
                 private location: Location,
                 private translateService: TranslateService,
                 private sessionService: SessionService,
@@ -98,8 +100,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.appConfiguration = new AppConfiguration();
         this.route.params.subscribe(params => {
             this.appInstanceId = +params['id'];
-
             this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
+            // FUTURE IMPROVEMENT: maybe prepare api endpoint where it is possible to get domain, app instance and application with single requestthis.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
                 appInstance => {
                     this.appInstance = appInstance;
                     this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
@@ -138,7 +140,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                 }
             );
 
-            this.undeployModal.setModalType('warning');
+                  this.undeployModal.setModalType('warning');
             this.undeployModal.setStatusOfIcons(true);
         });
     }
@@ -222,14 +224,20 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
             appInstanceStatus => {
                 console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
                 this.appInstanceStatus = appInstanceStatus;
+        // TODO refactor scroll
+                const appPropElement: HTMLElement = document.getElementById('app-prop');
+                const stepWizardBtnSuccessListLength: number = document.getElementsByClassName('stepwizard-btn-success').length;
+                const stepWizardBtnDangerListLength: number = document.getElementsByClassName('stepwizard-btn-danger').length;
+
                 if (this.appInstanceStatus.state === this.AppInstanceState.FAILURE) {
+                    if (appPropElement)
                     document.getElementById('app-prop').scrollLeft =
                         (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
-                            document.getElementsByClassName('stepwizard-btn-danger').length * 180);
-                }
+                            document.getElementsByClassName('stepwizard-btn-danger').length * 180);}
+
                 this.appInstanceProgress.activeState = this.appInstanceStatus.state;
                 this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
-                document.getElementById('app-prop').scrollLeft =
+        if (appPropElement)        document.getElementById('app-prop').scrollLeft =
                     (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
                         document.getElementsByClassName('stepwizard-btn-danger').length * 180);
                 if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
