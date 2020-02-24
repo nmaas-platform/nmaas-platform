@@ -6,7 +6,7 @@
     </div>
     <div *ngIf="externalAccessMethods" class="row">
       <h4>{{'APP_ACCESS_METHODS_MODAL.EXTERNAL_HEADER' | translate}}</h4>
-      <table class="table table-hover table-condensed">
+      <table class="table table-hover table-condensed" aria-describedby="Table with external access details">
         <thead>
         <tr>
           <th scope="col">{{'APP_ACCESS_METHODS_MODAL.SERVICE_NAME' | translate}}</th>
@@ -23,7 +23,7 @@
     </div>
     <div *ngIf="internalAccessMethods" class="row">
       <h4>{{'APP_ACCESS_METHODS_MODAL.INTERNAL_HEADER' | translate}}</h4>
-      <table class="table table-hover table-condensed">
+      <table class="table table-hover table-condensed" aria-describedby="Table with internal access details">
         <thead>
         <tr>
           <th scope="col">{{'APP_ACCESS_METHODS_MODAL.SERVICE_NAME' | translate}}</th>
