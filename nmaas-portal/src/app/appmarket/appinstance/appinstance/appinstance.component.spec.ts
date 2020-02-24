@@ -27,6 +27,7 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {Component, Input, Pipe, PipeTransform} from "@angular/core";
 import {Domain} from "../../../model/domain";
 import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
+import {ModalComponent} from "../../../shared/modal";
 
 @Pipe({
   name: "secure"
@@ -76,9 +77,7 @@ class AppInstanceProgressMock {
   selector: 'nmaas-modal',
   template: '<p>Nmaas Modal Mock</p>'
 })
-class NmaasModalMock{
-  @Input()
-  styleModal: string;
+class NmaasModalMock extends ModalComponent{
 }
 
 
@@ -228,6 +227,7 @@ describe('Component: AppInstance', () => {
     fixture = TestBed.createComponent(AppInstanceComponent);
     component = fixture.componentInstance;
     component.appInstanceProgress = TestBed.createComponent(AppInstanceProgressMock).componentInstance as AppInstanceProgressComponent;
+    component.undeployModal = TestBed.createComponent(NmaasModalMock).componentInstance as ModalComponent;
     appConfigService = fixture.debugElement.injector.get(AppConfigService);
     appsService = fixture.debugElement.injector.get(AppsService);
     authService = fixture.debugElement.injector.get(AuthService);
