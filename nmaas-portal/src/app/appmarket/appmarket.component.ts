@@ -17,7 +17,10 @@ export class AppMarketComponent implements OnInit, AfterViewChecked, AfterConten
   @ViewChild(ModalTestInstanceComponent)
   private testInstanceModal: ModalTestInstanceComponent;
 
-  constructor(private router: Router, private serviceHealth: ServiceUnavailableService, private configService: ConfigurationService, private appConfig: AppConfigService) { }
+  constructor(private router: Router,
+              private serviceHealth: ServiceUnavailableService,
+              private configService: ConfigurationService,
+              private appConfig: AppConfigService) { }
 
   async ngOnInit() {
       await this.serviceHealth.validateServicesAvailability();

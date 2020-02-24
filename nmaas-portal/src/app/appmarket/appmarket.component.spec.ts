@@ -19,6 +19,7 @@ import {AuthService} from "../auth/auth.service";
 import {Observable, of} from "rxjs";
 import {Configuration} from "../model/configuration";
 import {Language} from "../model/language";
+import {Component} from "@angular/core";
 
 export class MockAuthService {
 
@@ -166,6 +167,18 @@ class MockAppConfigService{
   }
 }
 
+@Component({
+  selector: 'app-navbar',
+  template: '<p>Mock app-navbar Component</p>'
+})
+class MockAppNavbar{}
+
+@Component({
+  selector: 'modal-test-instance',
+  template: '<p>Mock test instance modal</p>'
+})
+class MockTestInstanceModal{}
+
 describe('Component: AppMarket', () => {
   let component: AppMarketComponent;
   let fixture: any;
@@ -173,7 +186,9 @@ describe('Component: AppMarket', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppMarketComponent
+        AppMarketComponent,
+          MockAppNavbar,
+          MockTestInstanceModal,
       ],
       imports: [
         RouterTestingModule,
@@ -191,7 +206,6 @@ describe('Component: AppMarket', () => {
             }
           }
         }),
-        SharedModule
       ],
       providers: [
         {provide: ServiceUnavailableService, useClass: MockServiceUnavailableService},
