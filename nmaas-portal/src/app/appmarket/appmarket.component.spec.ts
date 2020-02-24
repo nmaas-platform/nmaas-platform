@@ -193,7 +193,10 @@ describe('Component: AppMarket', () => {
       imports: [
         RouterTestingModule,
         TranslateModule.forRoot({
-          missingTranslationHandler: {provide: MissingTranslationHandler, useClass: CustomMissingTranslationService},
+          missingTranslationHandler: {
+            provide: MissingTranslationHandler,
+            useClass: CustomMissingTranslationService
+          },
           loader: {
             provide: TranslateLoader,
             useClass: TranslateFakeLoader
@@ -210,12 +213,8 @@ describe('Component: AppMarket', () => {
       providers: [
         {provide: ServiceUnavailableService, useClass: MockServiceUnavailableService},
         {provide: AppConfigService, useClass: MockAppConfigService},
-        HttpClient,
-        HttpHandler,
         {provide: ConfigurationService, useClass: MockConfigurationService},
-        TranslateService,
-        {provide: AuthService, useClass: MockAuthService},
-        JwtHelperService,
+        // {provide: AuthService, useClass: MockAuthService},
         {provide: InternationalizationService, useClass: MockInternationalizationService}
       ]
     })
@@ -231,4 +230,9 @@ describe('Component: AppMarket', () => {
   it('should create an instance', () => {
     expect(component).toBeTruthy();
   });
+
+  it('nav bar should be mocked', () => {
+    const nav: HTMLElement = fixture.nativeElement.querySelector('p');
+    expect(nav.textContent).toContain('Mock');
+  })
 });
