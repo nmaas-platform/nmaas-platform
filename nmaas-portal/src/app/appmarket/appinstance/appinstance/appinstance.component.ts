@@ -83,11 +83,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
     constructor(private appsService: AppsService,
                 public appImagesService: AppImagesService,
-
                 private appInstanceService: AppInstanceService,
                 private router: Router,
                 private route: ActivatedRoute,
-
                 private location: Location,
                 private translateService: TranslateService,
                 private sessionService: SessionService,
@@ -100,17 +98,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.appConfiguration = new AppConfiguration();
         this.route.params.subscribe(params => {
             this.appInstanceId = +params['id'];
-            this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
-            // FUTURE IMPROVEMENT: maybe prepare api endpoint where it is possible to get domain, app instance and application with single requestthis.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
-                appInstance => {
-                    this.appInstance = appInstance;
-                    this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
-                    this.refreshForm = new EventEmitter();
-                    this.refreshUpdateForm = new EventEmitter();
-                    this.submission.data.configuration = JSON.parse(appInstance.configuration);
-                    this.updateAppInstanceState();
-                    this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
-                    this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
+
+            // FUTURE IMPROVEMENT: maybe prepare api endpoint where it is possible to get domain, app instance and application with single request
+            this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
+                this.appInstance = appInstance;
+                this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
+                this.refreshForm = new EventEmitter();
+                this.refreshUpdateForm = new EventEmitter();
+                this.submission.data.configuration = JSON.parse(appInstance.configuration);
+                this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
                         this.app = app;
                         if (!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
                             this.configurationUpdateTemplate = this.getTemplate(this.app.configUpdateWizardTemplate.template);
@@ -130,17 +126,19 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                                 }
                             );
                         }
-                    });
-                },
-                err => {
-                    console.error(err);
-                    if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
-                        this.router.navigateByUrl('/notfound');
+                    },
+                    err => {
+                        console.error(err);
+                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
+                            this.router.navigateByUrl('/notfound');
+                        }
                     }
-                }
-            );
+                );
+            });
 
-                  this.undeployModal.setModalType('warning');
+            this.updateAppInstanceState();
+            this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
+            this.undeployModal.setModalType('warning');
             this.undeployModal.setStatusOfIcons(true);
         });
     }
@@ -170,7 +168,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                 this.recursiveSearchObjectToAddElementWhenKeyMatches(t, key, element);
             }
         } else if (typeof target === 'object') {
-
             if (target.key === key.key) {
                 console.log(target);
                 target.validate = element;
@@ -224,22 +221,27 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
             appInstanceStatus => {
                 console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
                 this.appInstanceStatus = appInstanceStatus;
-        // TODO refactor scroll
+
+                // TODO refactor scroll
                 const appPropElement: HTMLElement = document.getElementById('app-prop');
                 const stepWizardBtnSuccessListLength: number = document.getElementsByClassName('stepwizard-btn-success').length;
                 const stepWizardBtnDangerListLength: number = document.getElementsByClassName('stepwizard-btn-danger').length;
 
                 if (this.appInstanceStatus.state === this.AppInstanceState.FAILURE) {
                     if (appPropElement)
-                    document.getElementById('app-prop').scrollLeft =
-                        (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
-                            document.getElementsByClassName('stepwizard-btn-danger').length * 180);}
+                        document.getElementById('app-prop').scrollLeft =
+                            (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
+                                document.getElementsByClassName('stepwizard-btn-danger').length * 180);
+                }
 
                 this.appInstanceProgress.activeState = this.appInstanceStatus.state;
                 this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
-        if (appPropElement)        document.getElementById('app-prop').scrollLeft =
-                    (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
-                        document.getElementsByClassName('stepwizard-btn-danger').length * 180);
+
+                if (appPropElement)
+                    document.getElementById('app-prop').scrollLeft =
+                        (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
+                            document.getElementsByClassName('stepwizard-btn-danger').length * 180);
+
                 if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
                     if (this.storage.has('appConfig_' + this.appInstanceId.toString())) {
                         this.storage.remove('appConfig_' + this.appInstanceId.toString());
