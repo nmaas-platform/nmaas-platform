@@ -28,27 +28,27 @@ class ApplicationStatus {
 
 
 @Component({
-  selector: 'app-domain',
-  templateUrl: './domain.component.html',
-  styleUrls: ['./domain.component.css'],
-  providers: [
-      {provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true},
-      {provide: NG_VALIDATORS, useExisting: MinLengthDirective, multi: true},
-      {provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true}
-      ]
+    selector: 'app-domain',
+    templateUrl: './domain.component.html',
+    styleUrls: ['./domain.component.css'],
+    providers: [
+        {provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true},
+        {provide: NG_VALIDATORS, useExisting: MinLengthDirective, multi: true},
+        {provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true}
+    ]
 })
 
 
 export class DomainComponent extends BaseComponent implements OnInit {
 
-  private domainId: number;
-  public domain: Domain;
-  public dcnUpdated = false;
-  private users: User[];
-  protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
-  private keys: any = Object.keys(DcnDeploymentType).filter((type) => {
-    return isNaN(Number(type));
-  });
+    private domainId: number;
+    public domain: Domain;
+    public dcnUpdated = false;
+    private users: User[];
+    protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
+    private keys: any = Object.keys(DcnDeploymentType).filter((type) => {
+        return isNaN(Number(type));
+    });
 
     public appStatusList: ApplicationStatus[] = [];
 
@@ -63,97 +63,110 @@ export class DomainComponent extends BaseComponent implements OnInit {
                 private location: Location,
                 private authService: AuthService,
                 protected appsService: AppsService) {
-      super();
+        super();
     }
 
-  ngOnInit() {
-      this.modal.setModalType('warning');
-      this.modal.setStatusOfIcons(true);
-      this.mode = this.getMode(this.route);
-      this.route.params.subscribe(params => {
-      if (!isUndefined(params['id'])) {
-        this.domainId = +params['id'];
-        this.domainService.getOne(this.domainId).subscribe((domain: Domain) => {
-            this.domain = domain;
-            this.getListOfApplicationsWithStatus();
+    ngOnInit() {
+        this.modal.setModalType('warning');
+        this.modal.setStatusOfIcons(true);
+        this.mode = this.getMode(this.route);
+        this.route.params.subscribe(params => {
+            if (!isUndefined(params['id'])) {
+                this.domainId = +params['id'];
+                this.domainService.getOne(this.domainId).subscribe(
+                    (domain: Domain) => {
+                        this.domain = domain;
+                        this.getListOfApplicationsWithStatus();
+                    },
+                    err => {
+                        console.error(err);
+                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
+                            this.router.navigateByUrl('/notfound');
+                        }
+                    });
+            } else {
+                this.domain = new Domain();
+                this.domain.active = true;
+            }
+            if (!this.authService.hasRole('ROLE_OPERATOR')) {
+                let users: Observable<User[]>;
+                users = this.userService.getAll(this.domainId);
+
+                users.subscribe((all) => {
+                    this.users = all;
+                });
+            }
         });
-      } else {
-        this.domain = new Domain();
-        this.domain.active = true;
-      }
-      if (!this.authService.hasRole('ROLE_OPERATOR')) {
-          let users: Observable<User[]>;
-          users = this.userService.getAll(this.domainId);
-
-          users.subscribe((all) => {this.users = all; });
-      }
-    });
-  }
-
-  protected submit(): void {
-    if (!isUndefined(this.domainId)) {
-      this.updateExistingDomain();
-    } else {
-      this.domainService.add(this.domain).subscribe(() => this.router.navigate(['admin/domains/']));
     }
-    this.domainService.setUpdateRequiredFlag(true);
-  }
 
-  public updateExistingDomain(): void {
-    this.authService.hasRole('ROLE_SYSTEM_ADMIN') ? this.domainService.update(this.domain).subscribe(
-        () => this.handleDcnConfiguration()) : this.domainService.updateTechDetails(this.domain).subscribe(
+    protected submit(): void {
+        if (!isUndefined(this.domainId)) {
+            this.updateExistingDomain();
+        } else {
+            this.domainService.add(this.domain).subscribe(() => this.router.navigate(['admin/domains/']));
+        }
+        this.domainService.setUpdateRequiredFlag(true);
+    }
+
+    public updateExistingDomain(): void {
+        this.authService.hasRole('ROLE_SYSTEM_ADMIN') ? this.domainService.update(this.domain).subscribe(
+            () => this.handleDcnConfiguration()) : this.domainService.updateTechDetails(this.domain).subscribe(
             () => this.handleDcnConfiguration());
-  }
-
-  public handleDcnConfiguration(): void {
-    if (this.dcnUpdated && this.isManual()) {
-      this.modal.show();
-    } else {
-      this.router.navigate(['admin/domains/']);
     }
-  }
 
-  public updateDcnConfigured(): void {
-      this.domainService.updateDcnConfigured(this.domain).subscribe(() => {
-        this.modal.hide();
-        this.router.navigate(['admin/domains/']);
-      });
-  }
+    public handleDcnConfiguration(): void {
+        if (this.dcnUpdated && this.isManual()) {
+            this.modal.show();
+        } else {
+            this.router.navigate(['admin/domains/']);
+        }
+    }
 
-  public changeDcnFieldUpdatedFlag(): void {
-      this.dcnUpdated = !this.dcnUpdated;
-  }
+    public updateDcnConfigured(): void {
+        this.domainService.updateDcnConfigured(this.domain).subscribe(() => {
+            this.modal.hide();
+            this.router.navigate(['admin/domains/']);
+        });
+    }
 
-  protected getDomainRoleNames(roles: UserRole[]): UserRole[] {
-    const domainRoles: UserRole[] = [];
-    roles.forEach((value => {
-      if (value.domainId === this.domainId) {
-        domainRoles.push(value);
-      }}));
-    return domainRoles;
-  }
+    public changeDcnFieldUpdatedFlag(): void {
+        this.dcnUpdated = !this.dcnUpdated;
+    }
+
+    protected getDomainRoleNames(roles: UserRole[]): UserRole[] {
+        const domainRoles: UserRole[] = [];
+        roles.forEach((value => {
+            if (value.domainId === this.domainId) {
+                domainRoles.push(value);
+            }
+        }));
+        return domainRoles;
+    }
 
     protected getDomainName(domainId: number): Observable<string> {
         if (this.domainCache.hasData(domainId)) {
             return of(this.domainCache.getData(domainId).codename);
         } else {
             return this.domainService.getOne(domainId).pipe(
-                map((domain) => {this.domainCache.setData(domainId, domain); return domain.codename}),
+                map((domain) => {
+                    this.domainCache.setData(domainId, domain);
+                    return domain.codename
+                }),
                 shareReplay(1),
                 take(1));
         }
     }
 
     protected filterDomainNames(user: User): UserRole[] {
-      return user.roles.filter(role => role.domainId !== this.domainService.getGlobalDomainId() ||  role.role.toString() !== 'ROLE_GUEST');
+        return user.roles.filter(role => role.domainId !== this.domainService.getGlobalDomainId() || role.role.toString() !== 'ROLE_GUEST');
     }
 
     public isManual(): boolean {
-      return this.domain.domainDcnDetails.dcnDeploymentType === 'MANUAL';
+        return this.domain.domainDcnDetails.dcnDeploymentType === 'MANUAL';
     }
 
     public removeNetwork(index: number) {
-      this.domain.domainDcnDetails.customerNetworks.splice(index, 1);
+        this.domain.domainDcnDetails.customerNetworks.splice(index, 1);
     }
 
     public addNetwork() {
@@ -168,8 +181,8 @@ export class DomainComponent extends BaseComponent implements OnInit {
                 });
                 this.domain.applicationStatePerDomain.sort(
                     (a: DomainApplicationStatePerDomain, b: DomainApplicationStatePerDomain): number => {
-                   return (a.applicationBaseId - b.applicationBaseId);
-                });
+                        return (a.applicationBaseId - b.applicationBaseId);
+                    });
                 if (data.length === this.domain.applicationStatePerDomain.length) {
                     for (let i = 0; i < data.length; i++) {
                         if (data[i].id === this.domain.applicationStatePerDomain[i].applicationBaseId) {
