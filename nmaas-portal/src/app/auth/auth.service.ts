@@ -30,7 +30,9 @@ export class DomainRoles {
 export class AuthService {
   public loginUsingSsoService: boolean;
 
-  constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService) {}
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService,
+              private jwtHelper: JwtHelperService) {}
 
   private storeToken(token: string): void {
     localStorage.setItem(this.appConfig.config.tokenName, token);

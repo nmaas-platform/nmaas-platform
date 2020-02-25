@@ -1,20 +1,133 @@
 /* tslint:disable:no-unused-variable */
-
-import { TestBed, async, inject } from '@angular/core/testing';
-import { AuthService } from './auth.service';
-import {HttpClient, HttpHandler} from "@angular/common/http";
+import {TestBed, async} from '@angular/core/testing';
+import {AuthService} from './auth.service';
 import {AppConfigService} from "../service";
-import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
-import {InjectionToken} from "@angular/core";
+import {JwtHelperService} from "@auth0/angular-jwt";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {Role} from "../model/userrole";
 
 describe('Service: Auth', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [AuthService, HttpClient, HttpHandler, AppConfigService, JwtHelperService, InjectionToken, JWT_OPTIONS]
-    });
-  });
+    let authService: AuthService;
+    let appConfigServiceSpy: jasmine.SpyObj<AppConfigService>;
+    let jwtHelperServiceSpy: jasmine.SpyObj<JwtHelperService>;
 
- // it('should ...', inject([""], (service: AuthService) => {
- //   expect(service).toBeTruthy();
-  //}));
+    let store: any = {};
+
+    beforeEach(async(() => {
+        let appConfigServiceStub: Partial<AppConfigService> = {
+            config: {
+                apiUrl: 'http://api.url',
+                tokenName: 'token',
+            }
+        };
+
+        let jwtSpy = jasmine.createSpyObj('JwtHelperService', ['decodeToken', 'isTokenExpired']);
+        jwtSpy.decodeToken.and.returnValue({
+            language: 'pl',
+            sub: 'test-user',
+            scopes: [{authority: '1:'+Role[Role.ROLE_SYSTEM_ADMIN]}, {authority: '2:'+Role[Role.ROLE_USER]}]
+        });
+        jwtSpy.isTokenExpired.and.callFake((arg: string): boolean => {
+            return arg === 'valid';
+        });
+
+        TestBed.configureTestingModule({
+            imports: [
+                HttpClientTestingModule
+            ],
+            providers: [
+                AuthService,
+                {provide: AppConfigService, useValue: appConfigServiceStub},
+                {provide: JwtHelperService, useValue: jwtSpy},
+            ],
+        });
+
+        authService = TestBed.get(AuthService);
+        appConfigServiceSpy = TestBed.get(AppConfigService);
+        jwtHelperServiceSpy = TestBed.get(JwtHelperService);
+        // spyOn(appConfigServiceSpy, 'getTestInstanceModalKey').and.returnValue("test-instance-modal-key");
+
+        // local store mock
+        store = {token: 'token'};
+        spyOn(localStorage, 'getItem').and.callFake(function (key) {
+            return store[key];
+        });
+        spyOn(localStorage, 'setItem').and.callFake(function (key, value) {
+            return store[key] = value + '';
+        });
+        spyOn(localStorage, 'removeItem').and.callFake(function (key) {
+            delete store[key];
+        });
+
+    }));
+
+    it('should create service', () => {
+        expect(authService).toBeTruthy();
+    });
+
+    it('should get language from local store', () => {
+        store = {lang: 'en'};
+        const result = authService.getSelectedLanguage();
+        expect(result).toEqual('en');
+    });
+
+    it('should get language from token', () => {
+        const result = authService.getSelectedLanguage();
+        expect(result).toEqual('pl');
+    });
+
+    it('should get username from token', () => {
+        const result = authService.getUsername();
+        expect(result).toEqual('test-user');
+        store = {};
+        expect(authService.getUsername()).toEqual(null)
+    });
+
+    it('should have ROLE_SYSTEM_ADMIN and no ROLE_DOMAIN_ADMIN', () => {
+        const result = authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]);
+        expect(result).toEqual(true);
+        const result2 = authService.hasRole(Role[Role.ROLE_DOMAIN_ADMIN]);
+        expect(result2).toEqual(false);
+    });
+
+    it('should have ROLE_USER in domain 2 and no ROLE_DOMAIN_ADMIN', () => {
+        const result = authService.hasDomainRole(2,Role[Role.ROLE_USER]);
+        expect(result).toEqual(true);
+        const result2 = authService.hasDomainRole(2,Role[Role.ROLE_DOMAIN_ADMIN]);
+        expect(result2).toEqual(false);
+    });
+
+    it('should return domains from roles', () => {
+        const result  = authService.getDomains();
+        expect(result).toContain(1);
+        expect(result).toContain(2);
+    });
+
+    it('should get roles', () => {
+        const result = authService.getRoles();
+        expect(result).toContain(Role[Role.ROLE_SYSTEM_ADMIN]);
+        expect(result).toContain(Role[Role.ROLE_USER]);
+    });
+
+    it('should return roles in domain mao', () => {
+        const result = authService.getDomainRoles();
+        expect(result.size).toEqual(2);
+        expect(result.has(1)).toEqual(true);
+        expect(result.has(2)).toEqual(true);
+    });
+
+    it('should remove token on logout', () => {
+        authService.logout();
+        expect(store['token']).not.toBeDefined();
+    });
+
+    xit('should be logged in when token is present and valid', () => {
+        store = {token: 'valid'};
+        expect(authService.isLogged()).toEqual(true);
+        store = {token: 'expired'};
+        expect(authService.isLogged()).toEqual(false);
+        store = {token: null};
+        expect(authService.isLogged()).toEqual(false);
+    });
+
 });
