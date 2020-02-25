@@ -49,6 +49,7 @@ import { ModalTestInstanceComponent } from './modal/modal-test-instance/modal-te
 import { ModalNotificationSendComponent } from './modal/modal-notification-send/modal-notification-send.component';
 import {NgxPaginationModule} from "ngx-pagination";
 import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
+import {DomainRolesDirective} from "../directive/domain-roles.directive";
 
 @NgModule({
     imports: [
@@ -100,7 +101,8 @@ import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
     SingleCommentComponent,
     ModalTestInstanceComponent,
     ModalNotificationSendComponent,
-      PageNotFoundComponent
+      DomainRolesDirective,
+      PageNotFoundComponent,
   ],
   providers: [
     PasswordValidator,
@@ -145,7 +147,8 @@ import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
         AboutComponent,
         TranslateStateModule,
         ModalTestInstanceComponent,
-        ModalNotificationSendComponent
+        ModalNotificationSendComponent,
+        DomainRolesDirective,
     ]
 })
 export class SharedModule {}
