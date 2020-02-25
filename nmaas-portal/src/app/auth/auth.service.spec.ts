@@ -28,7 +28,7 @@ describe('Service: Auth', () => {
             scopes: [{authority: '1:'+Role[Role.ROLE_SYSTEM_ADMIN]}, {authority: '2:'+Role[Role.ROLE_USER]}]
         });
         jwtSpy.isTokenExpired.and.callFake((arg: string): boolean => {
-            return arg === 'valid';
+            return arg !== 'valid';
         });
 
         TestBed.configureTestingModule({
@@ -48,7 +48,8 @@ describe('Service: Auth', () => {
         // spyOn(appConfigServiceSpy, 'getTestInstanceModalKey').and.returnValue("test-instance-modal-key");
 
         // local store mock
-        store = {token: 'token'};
+        store = {token: 'valid'};
+
         spyOn(localStorage, 'getItem').and.callFake(function (key) {
             return store[key];
         });
@@ -83,14 +84,14 @@ describe('Service: Auth', () => {
         expect(authService.getUsername()).toEqual(null)
     });
 
-    it('should have ROLE_SYSTEM_ADMIN and no ROLE_DOMAIN_ADMIN', () => {
+    it('should return true when role is present or false when role is absent', () => {
         const result = authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]);
         expect(result).toEqual(true);
         const result2 = authService.hasRole(Role[Role.ROLE_DOMAIN_ADMIN]);
         expect(result2).toEqual(false);
     });
 
-    it('should have ROLE_USER in domain 2 and no ROLE_DOMAIN_ADMIN', () => {
+    it('should return true when role is present in domain and false otherwise', () => {
         const result = authService.hasDomainRole(2,Role[Role.ROLE_USER]);
         expect(result).toEqual(true);
         const result2 = authService.hasDomainRole(2,Role[Role.ROLE_DOMAIN_ADMIN]);
@@ -101,19 +102,38 @@ describe('Service: Auth', () => {
         const result  = authService.getDomains();
         expect(result).toContain(1);
         expect(result).toContain(2);
+        store = {token: null};
+        expect(authService.getDomains().length).toEqual(0)
     });
 
     it('should get roles', () => {
         const result = authService.getRoles();
         expect(result).toContain(Role[Role.ROLE_SYSTEM_ADMIN]);
         expect(result).toContain(Role[Role.ROLE_USER]);
+        store = {token: null};
+        expect(authService.getRoles().length).toEqual(0)
     });
 
-    it('should return roles in domain mao', () => {
+    it('should return roles in domain map', () => {
         const result = authService.getDomainRoles();
         expect(result.size).toEqual(2);
         expect(result.has(1)).toEqual(true);
         expect(result.has(2)).toEqual(true);
+        expect(result.get(1).getRoles()).toContain(Role[Role.ROLE_SYSTEM_ADMIN]);
+        expect(result.get(2).hasRole(Role[Role.ROLE_USER])).toEqual(true);
+        store = {token: null};
+        expect(authService.getDomainRoles().size).toEqual(0);
+    });
+
+    it('should get domain where role present', () => {
+        const r1 = authService.getDomainsWithRole(Role[Role.ROLE_SYSTEM_ADMIN]);
+        expect(r1.length).toEqual(1);
+        expect(r1).toContain(1);
+        const r2 = authService.getDomainsWithRole(Role[Role.ROLE_USER]);
+        expect(r2.length).toEqual(1);
+        expect(r2).toContain(2);
+        const r3 = authService.getDomainsWithRole(Role[Role.ROLE_DOMAIN_ADMIN]);
+        expect(r3.length).toEqual(0);
     });
 
     it('should remove token on logout', () => {
@@ -121,13 +141,17 @@ describe('Service: Auth', () => {
         expect(store['token']).not.toBeDefined();
     });
 
-    xit('should be logged in when token is present and valid', () => {
+    it('should be logged in when token is present and valid', () => {
         store = {token: 'valid'};
-        expect(authService.isLogged()).toEqual(true);
+        let r: boolean;
+        r = authService.isLogged();
+        expect(r).toEqual(true);
         store = {token: 'expired'};
-        expect(authService.isLogged()).toEqual(false);
+        r = authService.isLogged();
+        expect(r).toEqual(false);
         store = {token: null};
-        expect(authService.isLogged()).toEqual(false);
+        r = authService.isLogged();
+        expect(r).toEqual(false);
     });
 
 });
