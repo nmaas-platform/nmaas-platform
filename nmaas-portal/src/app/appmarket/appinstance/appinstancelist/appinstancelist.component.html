@@ -13,10 +13,10 @@
                                 [value]="sl.key">{{ translateEnum(sl.value) | titlecase }}</option>
                     </select>
                 </div>
-                <strong class="checkbox-label" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
+                <strong class="checkbox-label" *domainRoles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR'];domainId:domainId">
                     {{'APP_INSTANCES.UNDEPLOYED_VISIBLE' | translate}}:
                 </strong>
-                <div class="form-group" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
+                <div class="form-group" *domainRoles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR'];domainId:domainId">
                     <label for="show_visible"></label>
                     <input id="show_visible" type="checkbox" class="big-checkbox" [(ngModel)]="undeployedVisible" [ngModelOptions]="{standalone: true}">
                 </div>

@@ -105,12 +105,15 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public update(domainId: number): void {
+    if (domainId !== this.domainId) {
+      this.undeployedVisible = false; // hide undeployed instances when domain is changed
+    }
     if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
       this.domainId = this.appConfig.getNmaasGlobalDomainId();
     } else {
       this.domainId = domainId;
     }
-    this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'})
+    this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
   }
 
   public checkPrivileges(app) {
