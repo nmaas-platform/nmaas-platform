@@ -41,7 +41,7 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
                     },
                     err => {
                         console.error(err);
-                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
+                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403 || err.statusCode === 500)) {
                             this.router.navigateByUrl('/notfound');
                         }
                     });
