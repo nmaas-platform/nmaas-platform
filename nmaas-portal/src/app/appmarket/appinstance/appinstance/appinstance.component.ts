@@ -100,13 +100,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
             this.appInstanceId = +params['id'];
 
             // FUTURE IMPROVEMENT: maybe prepare api endpoint where it is possible to get domain, app instance and application with single request
-            this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
-                this.appInstance = appInstance;
-                this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
-                this.refreshForm = new EventEmitter();
-                this.refreshUpdateForm = new EventEmitter();
-                this.submission.data.configuration = JSON.parse(appInstance.configuration);
-                this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
+            this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
+                appInstance => {
+                    this.appInstance = appInstance;
+                    this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
+                    this.refreshForm = new EventEmitter();
+                    this.refreshUpdateForm = new EventEmitter();
+                    this.submission.data.configuration = JSON.parse(appInstance.configuration);
+                    this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
                         this.app = app;
                         if (!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
                             this.configurationUpdateTemplate = this.getTemplate(this.app.configUpdateWizardTemplate.template);
@@ -126,15 +127,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                                 }
                             );
                         }
-                    },
-                    err => {
-                        console.error(err);
-                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
-                            this.router.navigateByUrl('/notfound');
-                        }
+                    });
+                },
+                err => {
+                    console.error(err);
+                    if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
+                        this.router.navigateByUrl('/notfound');
                     }
-                );
-            });
+                });
 
             this.updateAppInstanceState();
             this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
