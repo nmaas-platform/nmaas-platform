@@ -1,36 +1,40 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppListComponent } from './applist.component';
-import { AppListComponent as AppSharedListComponent} from "../../shared/applications/list/applist.component";
 import {RouterTestingModule} from "@angular/router/testing";
-import {AppSubscriptionsService} from "../../service/appsubscriptions.service";
 import {UserDataService} from "../../service/userdata.service";
-import {ApplicationsViewComponent} from "../../shared/applications/applications.component";
-import {AppConfigService, AppsService, DomainService, TagService} from '../../service';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {SearchComponent} from "../../shared/common/search/search.component";
-import {TagFilterComponent} from "../../shared/common/tagfilter/tagfilter.component";
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {AppElementComponent} from "../../shared/applications/list/element/appelement.component";
-import {RateComponent} from "../../shared/rate";
-import {PipesModule} from "../../pipe/pipes.module";
-import {AppInstallModalComponent} from "../../shared/modal/appinstall";
-import {ModalComponent} from "../../shared/modal";
 import {Observable, of} from "rxjs";
-import {TooltipModule} from 'ng2-tooltip-directive';
+import {Component, Input} from "@angular/core";
+import {AuthService} from "../../auth/auth.service";
+
+@Component({
+    selector: 'nmaas-applications-view',
+    template: '<p>Mock application view</p>'
+})
+class AppViewMock{
+    @Input()
+    domainId: number;
+    @Input()
+    appView: any;
+}
 
 describe('ApplistComponent', () => {
   let component: AppListComponent;
   let fixture: ComponentFixture<AppListComponent>;
+  let userDataService: UserDataService;
 
   beforeEach(async(() => {
+      let mockAuthService = jasmine.createSpyObj('AuthService', ['getDomains']);
+      mockAuthService.getDomains.and.returnValue(of([1]));
     TestBed.configureTestingModule({
-      declarations: [ AppListComponent, ApplicationsViewComponent, SearchComponent, AppInstallModalComponent, ModalComponent,
-          AppSharedListComponent, TagFilterComponent, AppElementComponent, RateComponent],
+      declarations: [
+          AppListComponent,
+          AppViewMock
+      ],
         imports: [
             RouterTestingModule,
-            PipesModule,
             HttpClientTestingModule,
             TranslateModule.forRoot({
                 loader: {
@@ -38,17 +42,10 @@ describe('ApplistComponent', () => {
                     useClass: TranslateFakeLoader
                 }
             }),
-            FormsModule,
-            ReactiveFormsModule,
-            TooltipModule
         ],
         providers: [
-            AppConfigService,
-            AppSubscriptionsService,
             UserDataService,
-            AppsService,
-            TagService,
-            DomainService
+            {provide: AuthService, useValue: mockAuthService}
         ]
     })
     .compileComponents();
@@ -57,11 +54,13 @@ describe('ApplistComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AppListComponent);
     component = fixture.componentInstance;
-    spyOn(fixture.debugElement.injector.get(TagService), 'getTags').and.returnValue(of([]));
+    userDataService = fixture.debugElement.injector.get(UserDataService);
+    spyOn(userDataService, 'selectDomainId').and.returnValue(0);
     fixture.detectChanges();
   });
 
   it('should create component', () => {
+      expect(component).toBeDefined();
       let app = fixture.debugElement.componentInstance;
       expect(app).toBeTruthy();
   });
