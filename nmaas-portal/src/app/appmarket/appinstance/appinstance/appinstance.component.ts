@@ -253,7 +253,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     private updateAppInstance() {
         console.log('update app instance');
         this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
-            console.log('updated app instance url: ' + appInstance.serviceAccessMethods.find((sam: ServiceAccessMethod) => sam.type === ServiceAccessMethodType.DEFAULT).url);
             this.appInstance = appInstance;
         });
     }
