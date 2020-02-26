@@ -421,9 +421,17 @@ public class AppInstanceController extends AppBaseController {
             ai.setServiceAccessMethods(null);
         }
 
-        ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
+        try {
+            ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
+        } catch (InvalidDeploymentIdException e) {
+            ai.setDescriptiveDeploymentId(null);
+        }
 
-        ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
+        try {
+            ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
+        } catch (Exception e) {
+            ai.setConfigWizardTemplate(null);
+        }
 
         return ai;
     }
