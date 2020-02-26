@@ -6,10 +6,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.*;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
@@ -60,6 +64,7 @@ public class AppInstanceControllerTest {
         domain = new Domain(2L, "domain one", "dom-1");
         global = new Domain(1L, "GLOBAL", "GLOBAL");
         application = new Application(name,"1.0","admin");
+        application.setId(1L);
         Set<UserRole> roleSet = new HashSet<>();
         roleSet.add(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN));
         admin.setNewRoles(roleSet);
@@ -213,7 +218,6 @@ public class AppInstanceControllerTest {
         assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
-
     @Test
     public void shouldGetAllUserInstancesInDomain() {
         AppInstance appInstance = new AppInstance(application, name, domain, admin);
@@ -285,15 +289,42 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        AppInstanceView appInstanceView = appInstanceController.getAppInstance(1L, principal);
+        AppInstanceViewExtended appInstanceView = appInstanceController.getAppInstance(1L, principal);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
         assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+        assertEquals(application.getId(), appInstanceView.getApplication().getId());
+        assertEquals(domain.getId(), appInstanceView.getDomain().getId());
 
         MissingElementException me = assertThrows(MissingElementException.class,
                 () -> appInstanceController.getAppInstance(-1L, principal)
         );
 
         assertEquals("App instance not found.", me.getMessage());
+    }
+
+    @Test
+    public void shouldConvertAppInstanceToAppInstanceViewWithApplicationIdAndDomainId() {
+        ModelMapper modelMapper = new ModelMapper();
+        AppInstance appInstance = new AppInstance(application, name, domain, owner);
+        AppInstanceView appInstanceView = modelMapper.map(appInstance, AppInstanceView.class);
+        assertEquals(application.getId(), appInstanceView.getApplicationId());
+        assertEquals(domain.getId(), appInstanceView.getDomainId());
+    }
+
+    @Test
+    public void shouldConvertAppInstanceToAppInstanceViewExtendedWithApplicationViewAndDomainView() {
+        ModelMapper modelMapper = new ModelMapper();
+        AppInstance appInstance = new AppInstance(application, name, domain, owner);
+        AppInstanceViewExtended appInstanceView = modelMapper.map(appInstance, AppInstanceViewExtended.class);
+        assertEquals(application.getId(), appInstanceView.getApplicationId());
+        assertEquals(domain.getId(), appInstanceView.getDomainId());
+        DomainView dv = appInstanceView.getDomain();
+        ApplicationView av = appInstanceView.getApplication();
+        assertEquals(application.getId(), av.getId());
+        assertEquals(application.getName(), av.getName());
+        assertEquals(domain.getId(), dv.getId());
+        assertEquals(domain.getName(), dv.getName());
+        assertEquals(domain.getCodename(), dv.getCodename());
     }
 }

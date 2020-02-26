@@ -7,12 +7,8 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -35,6 +31,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -55,6 +52,9 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
     @MockBean
     private AppLifecycleManager appLifecycleManager;
+
+    @MockBean
+    private ApplicationBaseRepository applicationBaseRepository;
 
     @BeforeEach
     void setup(){
@@ -109,5 +109,26 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart",0L)
                 .header("Authorization","Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
                 .andExpect(status().is(404));
+    }
+
+    @Test
+    void shouldGetRequestedAppInstance() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.ADMIN;
+        ApplicationBase applicationBase = new ApplicationBase(1L, "name");
+        Application application = new Application("name", "version", "owner");
+        application.setId(1L);
+        AppInstance appInstance = new AppInstance(10L, application, domain, "test");
+        application.setAppDeploymentSpec(new AppDeploymentSpec());
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
+
+        when(applicationBaseRepository.findByName("name")).thenReturn(Optional.of(applicationBase));
+        when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
+        when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
+        when(applicationInstanceService.find(10L)).thenReturn(Optional.of(appInstance));
+        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
     }
 }
