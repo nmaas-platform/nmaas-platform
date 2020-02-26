@@ -14,6 +14,7 @@ import {Observable} from 'rxjs';
 import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
 import {AppConfiguration} from "../model/appconfiguration";
 import {map} from 'rxjs/operators';
+import {AppInstanceExtended} from "../model/appinstanceextended";
 
 @Injectable({
   providedIn: 'root',
@@ -74,8 +75,8 @@ export class AppInstanceService extends GenericDataService {
     return this.delete<any>(this.getUrl() + appInstanceId);
   }
 
-  public getAppInstance(appInstanceId: number): Observable<AppInstance> {
-    return this.get<AppInstance>(this.getUrl() + appInstanceId);
+  public getAppInstance(appInstanceId: number): Observable<AppInstanceExtended> {
+    return this.get<AppInstanceExtended>(this.getUrl() + appInstanceId);
   }
 
   public applyConfiguration(appInstanceId: number, configuration: AppConfiguration): Observable<void> {

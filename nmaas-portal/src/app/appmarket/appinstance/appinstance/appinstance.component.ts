@@ -89,7 +89,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                 private location: Location,
                 private translateService: TranslateService,
                 private sessionService: SessionService,
-                private domainService: DomainService,
                 @Inject(LOCAL_STORAGE) public storage: StorageService) {
     }
 
@@ -99,35 +98,29 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.route.params.subscribe(params => {
             this.appInstanceId = +params['id'];
 
-            // FUTURE IMPROVEMENT: maybe prepare api endpoint where it is possible to get domain, app instance and application with single request
             this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
                 appInstance => {
-                    this.appInstance = appInstance;
-                    this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
                     this.refreshForm = new EventEmitter();
                     this.refreshUpdateForm = new EventEmitter();
+
+                    this.appInstance = appInstance;
+                    this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
+                    this.app = appInstance.application;
+
                     this.submission.data.configuration = JSON.parse(appInstance.configuration);
-                    this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
-                        this.app = app;
-                        if (!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
-                            this.configurationUpdateTemplate = this.getTemplate(this.app.configUpdateWizardTemplate.template);
-                            const validation = {
-                                min: 1,
-                                max: 100,
-                            };
-                            this.domainService.getOne(this.appInstance.domainId).subscribe(
-                                domain => {
-                                    validation.max = domain.applicationStatePerDomain.find(x => x.applicationBaseName == this.app.name).pvStorageSizeLimit;
-                                    console.log(validation);
-                                    this.refreshForm.emit({
-                                        property: 'form',
-                                        value: this.addValidationToConfigurationTemplateSpecificElement({key: "storageSpace"}, validation),
-                                    });
-                                    console.log(this.configurationTemplate)
-                                }
-                            );
-                        }
-                    });
+
+                    if(!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
+                        this.configurationUpdateTemplate = this.getTemplate(this.app.configUpdateWizardTemplate.template);
+                        const validation = {
+                            min: 1,
+                            max: 100,
+                        };
+                        validation.max = appInstance.domain.applicationStatePerDomain.find(x => x.applicationBaseName == this.app.name).pvStorageSizeLimit;
+                        this.refreshForm.emit({
+                            property: 'form',
+                            value: this.addValidationToConfigurationTemplateSpecificElement({key: "storageSpace"}, validation),
+                        });
+                    }
                 },
                 err => {
                     console.error(err);
