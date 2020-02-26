@@ -53,6 +53,7 @@ class ServiceDeploymentWithKubernetesTest {
 		AppDeployment appDeployment = appDeployment();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
+		appDeploymentSpec.setAccessMethods(Collections.emptySet());
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance(1L), appDeployment, appDeploymentSpec);
 		KubernetesNmServiceInfo info = repositoryManager.loadService(deploymentId);
 		assertThat(info, is(notNullValue()));

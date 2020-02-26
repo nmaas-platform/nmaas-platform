@@ -10,7 +10,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,17 +36,8 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
         super();
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, KubernetesTemplate kubernetesTemplate) {
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId) {
         super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId);
-        this.kubernetesTemplate = kubernetesTemplate;
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, Map<String, String> additionalParameters, KubernetesTemplate kubernetesTemplate) {
-        super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId, additionalParameters);
-        this.kubernetesTemplate = kubernetesTemplate;
-    }
-
-    public void addServiceAccessMethod(ServiceAccessMethod serviceAccessMethod) {
-        accessMethods.add(serviceAccessMethod);
-    }
 }

@@ -1,9 +1,14 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.extern.log4j.Log4j2;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.ApiError;
-import net.geant.nmaas.portal.api.exception.*;
+import net.geant.nmaas.portal.api.exception.AuthenticationException;
+import net.geant.nmaas.portal.api.exception.MarketException;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.api.exception.StorageException;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
 import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
 import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
