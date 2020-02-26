@@ -1,8 +1,7 @@
 package net.geant.nmaas.orchestration.entities;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +16,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +24,9 @@ import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
@@ -32,6 +35,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -57,6 +61,9 @@ public class AppDeploymentSpec implements Serializable {
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<ParameterType, String> deployParameters;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<AppAccessMethod> accessMethods;
 
     public void validate(){
         checkArgument(kubernetesTemplate != null, "Kubernetes template cannot be null");

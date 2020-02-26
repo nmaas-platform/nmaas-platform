@@ -117,4 +117,17 @@ public class JanitorService {
                 throw new JanitorResponseException(response.getMessage());
         }
     }
+
+    public String retrieveServiceIp(Identifier deploymentId, String domain) {
+        InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
+
+        JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(deploymentId, domain));
+        switch (response.getStatus()) {
+            case OK:
+                return response.getInfo();
+            case FAILED:
+            default:
+                throw new JanitorResponseException(response.getMessage());
+        }
+    }
 }
