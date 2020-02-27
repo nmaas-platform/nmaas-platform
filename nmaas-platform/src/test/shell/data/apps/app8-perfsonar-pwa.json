@@ -40,7 +40,14 @@
 			}
 		},
 		"defaultStorageSpace": 5,
-		"exposesWebUI": true
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "EXTERNAL",
+				"name": "PWA",
+				"tag": "pwa"
+			}
+		]
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired": false

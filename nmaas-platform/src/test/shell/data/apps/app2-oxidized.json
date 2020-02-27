@@ -41,7 +41,14 @@
 			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
 		},
 		"defaultStorageSpace":1,
-		"exposesWebUI": true
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "EXTERNAL",
+				"name": "Oxidized",
+				"tag": "oxidized"
+			}
+		]
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired":true,

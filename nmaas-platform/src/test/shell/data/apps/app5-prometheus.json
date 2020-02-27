@@ -44,7 +44,14 @@
             }
         },
         "defaultStorageSpace": 20,
-        "exposesWebUI": true
+        "exposesWebUI": true,
+        "accessMethods":  [
+            {
+                "type": "EXTERNAL",
+                "name": "Prometheus",
+                "tag": "prometheus"
+            }
+        ]
     },
     "appConfigurationSpec": {
         "configFileRepositoryRequired":true,

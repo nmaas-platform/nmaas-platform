@@ -43,7 +43,14 @@
             }
         },
         "defaultStorageSpace": 1,
-        "exposesWebUI": true
+        "exposesWebUI": true,
+        "accessMethods":  [
+            {
+                "type": "EXTERNAL",
+                "name": "Grafana",
+                "tag": "grafana"
+            }
+        ]
     },
     "appConfigurationSpec": {
         "configFileRepositoryRequired":true,

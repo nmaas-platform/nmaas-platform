@@ -40,7 +40,14 @@
 			}
 		},
 		"defaultStorageSpace":20,
-		"exposesWebUI": true
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "EXTERNAL",
+				"name": "LibreNMS",
+				"tag": "librenms"
+			}
+		]
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired":true,
