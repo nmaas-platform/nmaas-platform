@@ -88,9 +88,9 @@ public class KubernetesManagerTest {
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "Web", null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "SSH", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "Web", null, null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "SSH", null, null));
         service.setAccessMethods(accessMethods);
         when(repositoryManager.loadService(any())).thenReturn(service);
     }
@@ -147,7 +147,7 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag")))
+                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag", null)))
                 .build();
         ArgumentCaptor<KubernetesNmServiceInfo> serviceInfo = ArgumentCaptor.forClass(KubernetesNmServiceInfo.class);
 
@@ -170,7 +170,7 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag")))
+                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag", null)))
                 .deployParameters(getParameterTypeStringMap())
                 .build();
         ArgumentCaptor<KubernetesNmServiceInfo> serviceInfo = ArgumentCaptor.forClass(KubernetesNmServiceInfo.class);

@@ -15,7 +15,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -24,6 +23,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -76,9 +77,14 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
         }
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, getStorageSpaceString(serviceInfo.getStorageSpace()));
-        arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
-        if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
-            arguments.putAll(getIngressConfigOptionVariables(serviceInfo));
+        Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
+        if(!externalAccessMethods.isEmpty()) {
+            arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
+            if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
+                arguments.putAll(getIngressConfigOptionVariables(externalAccessMethods, serviceInfo.getDomain()));
+            }
+        } else {
+            arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(false));
         }
         if(serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()){
             serviceInfo.getAdditionalParameters().forEach(arguments::put);
@@ -86,15 +92,20 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         return arguments;
     }
 
-    private Map<String, String> getIngressConfigOptionVariables(KubernetesNmServiceInfo serviceInfo){
-        Map<String, String> ingressVariablesMap = HelmChartVariables.ingressVariablesMap(serviceInfo.getAccessMethods().stream()
-                        .filter((ServiceAccessMethod sam) -> sam.getType().equals(ServiceAccessMethodType.DEFAULT))
-                        .findFirst().orElseThrow(() -> new ProcessingException("No default access method provided")).getUrl()
-                , getIngressClass(serviceInfo.getDomain()), ingressManager.getTlsSupported());
-        if(Boolean.TRUE.equals(ingressManager.getTlsSupported())){
-            ingressVariablesMap.putAll(getIngressAddTlsVariables());
-        }
-        return ingressVariablesMap;
+    private Set<ServiceAccessMethod> serviceExternalAccessMethods(Set<ServiceAccessMethod> accessMethods) {
+        return accessMethods.stream()
+                .filter(m -> m.isOfType(ServiceAccessMethodType.DEFAULT) || m.isOfType(ServiceAccessMethodType.EXTERNAL))
+                .collect(Collectors.toSet());
+    }
+
+    private Map<String, String> getIngressConfigOptionVariables(Set<ServiceAccessMethod> externalAccessMethods, String domain){
+        return HelmChartVariables.ingressVariablesMap(
+                externalAccessMethods,
+                getIngressClass(domain),
+                ingressManager.getTlsSupported(),
+                ingressManager.getIssuerOrWildcardName(),
+                ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT)
+        );
     }
 
     private String getIngressClass(String domain){
@@ -102,10 +113,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
         }
         return ingressManager.getSupportedIngressClass();
-    }
-
-    private Map<String, String> getIngressAddTlsVariables(){
-        return HelmChartVariables.ingressVariablesAddTls(ingressManager.getIssuerOrWildcardName(), ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT));
     }
 
     private String getStorageSpaceString(Integer storageSpace){

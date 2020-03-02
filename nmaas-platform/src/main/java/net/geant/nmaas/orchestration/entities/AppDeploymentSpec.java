@@ -20,6 +20,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.List;
@@ -62,7 +63,7 @@ public class AppDeploymentSpec implements Serializable {
     @Fetch(FetchMode.SELECT)
     private Map<ParameterType, String> deployParameters;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<AppAccessMethod> accessMethods;
 
     public void validate(){
