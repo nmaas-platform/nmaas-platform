@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -138,18 +139,18 @@ public class UserLoginRegisterRepositoryTest {
         List<UserLoginDate> lst = userLoginRegisterRepository.findAllFirstAndLastLogin();
 
         assertEquals(2, lst.size());
-        assertEquals(firstLoginDate, lst.get(0).getMinLoginDate());
-        assertEquals(firstLoginDate, lst.get(1).getMinLoginDate());
-        assertEquals(lastLoginDate, lst.get(0).getMaxLoginDate());
-        assertEquals(lastLoginDate, lst.get(1).getMaxLoginDate());
+        assertEquals(firstLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(0).getMinLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
+        assertEquals(firstLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(1).getMinLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
+        assertEquals(lastLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(0).getMaxLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
+        assertEquals(lastLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(1).getMaxLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
 
         lst = userLoginRegisterRepository.findAllFirstAndLastLoginByType(UserLoginRegisterType.SUCCESS);
 
         assertEquals(2, lst.size());
-        assertEquals(firstLoginDate, lst.get(0).getMinLoginDate());
-        assertEquals(firstLoginDate, lst.get(1).getMinLoginDate());
-        assertEquals(lastLoginDate, lst.get(0).getMaxLoginDate());
-        assertEquals(lastLoginDate, lst.get(1).getMaxLoginDate());
+        assertEquals(firstLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(0).getMinLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
+        assertEquals(firstLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(1).getMinLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
+        assertEquals(lastLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(0).getMaxLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
+        assertEquals(lastLoginDate.atZoneSameInstant(ZoneId.systemDefault()), lst.get(1).getMaxLoginDate().atZoneSameInstant(ZoneId.systemDefault()));
     }
 
     @Test

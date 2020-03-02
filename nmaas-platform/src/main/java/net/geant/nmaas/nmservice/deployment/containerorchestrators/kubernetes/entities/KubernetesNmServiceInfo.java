@@ -6,9 +6,9 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.util.Set;
 
@@ -29,7 +29,7 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     /**
      * Collection of access methods to the service
      */
-    @ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ServiceAccessMethod> accessMethods;
 
     public KubernetesNmServiceInfo () {

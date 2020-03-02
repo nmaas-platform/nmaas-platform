@@ -16,6 +16,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
@@ -105,11 +106,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     private Set<ServiceAccessMethod> generateTemplateAccessMethods(Set<AppAccessMethod> accessMethods) {
-        Set<ServiceAccessMethod> templateAccessMethods = new HashSet<>();
-        accessMethods.forEach(m -> {
-            templateAccessMethods.add(new ServiceAccessMethod(m.getType(), m.getTag(), null));
-        });
-        return templateAccessMethods;
+        return accessMethods.stream()
+                .map(ServiceAccessMethod::fromAppAccessMethod)
+                .collect(Collectors.toSet());
     }
 
     private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters, AppDeployment appDeployment){
@@ -284,8 +283,11 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
-            Set<ServiceAccessMethod> serviceAccessMethodSet = repositoryManager.loadService(deploymentId).getAccessMethods();
-            return new AppUiAccessDetails(serviceAccessMethodSet);
+            Set<ServiceAccessMethodView> serviceAccessMethodViewSet = new HashSet<>();
+            repositoryManager.loadService(deploymentId).getAccessMethods().forEach(
+                    m -> serviceAccessMethodViewSet.add(ServiceAccessMethodView.fromServiceAccessMethod(m))
+            );
+            return new AppUiAccessDetails(serviceAccessMethodViewSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         }

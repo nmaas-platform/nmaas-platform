@@ -46,7 +46,14 @@
 			{
 				"type": "EXTERNAL",
 				"name": "Oxidized",
-				"tag": "oxidized"
+				"tag": "oxidized",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
 			}
 		]
 	},

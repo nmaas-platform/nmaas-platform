@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 
 import java.util.Set;
 
@@ -26,7 +26,7 @@ public class AppInstanceView extends AppInstanceBase {
 
 	private String userFriendlyState;
 
-	private Set<ServiceAccessMethod> serviceAccessMethods;
+	private Set<ServiceAccessMethodView> serviceAccessMethods;
 
 	private ConfigWizardTemplateView configWizardTemplate;
 
