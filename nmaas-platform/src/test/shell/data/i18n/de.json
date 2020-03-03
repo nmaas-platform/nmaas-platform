@@ -784,5 +784,10 @@
     "HIDE_BUTTON": "Cancel",
     "MAIN_ACCESS": "Main Interface",
     "EXTERNAL_ACCESS": "Access the application"
+  },
+  "GUEST_USER_MODAL": {
+    "HEADER": "Guest User account",
+    "CONTENT": "You are currently logged as guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
+    "CONFIRM_BUTTON": "OK"
   }
 }
