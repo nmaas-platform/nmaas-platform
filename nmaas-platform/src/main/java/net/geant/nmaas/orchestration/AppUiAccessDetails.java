@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 
 import java.util.Set;
 
@@ -19,6 +19,6 @@ public class AppUiAccessDetails {
     /**
      * set of access methods to deployed application UI
      */
-    private Set<ServiceAccessMethod> serviceAccessMethods;
+    private Set<ServiceAccessMethodView> serviceAccessMethods;
 
 }

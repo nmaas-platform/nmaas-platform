@@ -195,6 +195,5 @@ public class DomainController extends AppBaseController {
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		return modelMapper.map(domain, DomainView.class);
 	}
-	
-	
+
 }

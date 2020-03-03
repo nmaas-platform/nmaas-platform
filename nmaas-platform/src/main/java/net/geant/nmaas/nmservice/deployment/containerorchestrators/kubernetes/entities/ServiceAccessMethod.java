@@ -1,22 +1,72 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.Embeddable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents single access method to NMAAS service
  */
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Embeddable
+@Setter
+@NoArgsConstructor
+@Entity
 @EqualsAndHashCode
 public class ServiceAccessMethod {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Enumerated(EnumType.STRING)
     private ServiceAccessMethodType type;
+
     private String name;
+
     private String url;
+
+    @ElementCollection
+    @Fetch(FetchMode.SELECT)
+    private Map<HelmChartIngressVariable, String> deployParameters;
+
+    public ServiceAccessMethod(ServiceAccessMethodType type, String name, String url, Map<HelmChartIngressVariable, String> deployParameters) {
+        this.type = type;
+        this.name = name;
+        this.url = url;
+        this.deployParameters = deployParameters;
+    }
+
+    public boolean isOfType(ServiceAccessMethodType type) {
+        return this.getType().equals(type);
+    }
+
+    public static ServiceAccessMethod fromAppAccessMethod(AppAccessMethod appAccessMethod) {
+        ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
+        serviceAccessMethod.setType(appAccessMethod.getType());
+        serviceAccessMethod.setName(appAccessMethod.getTag());
+        serviceAccessMethod.setUrl(null);
+        serviceAccessMethod.deployParameters = new HashMap<>();
+        if (appAccessMethod.getDeployParameters() != null) {
+            appAccessMethod.getDeployParameters().forEach((key, value) -> {
+                serviceAccessMethod.getDeployParameters().put(HelmChartIngressVariable.valueOf(key), value);
+            });
+        }
+        return serviceAccessMethod;
+    }
+
 }

@@ -43,7 +43,14 @@
 		"deployParameters": {
 			"DOMAIN_CODENAME": "metallb.subnet_name"
 		},
-		"exposesWebUI": false
+		"exposesWebUI": false,
+		"accessMethods":  [
+			{
+				"type": "INTERNAL",
+				"name": "SSH",
+				"tag": "bastion"
+			}
+		]
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired": false

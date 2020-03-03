@@ -2,15 +2,15 @@ package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,8 +87,8 @@ public class OrchestratorMonitorControllerIntTest {
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
 
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
-        accessDetails = new AppUiAccessDetails(new HashSet<ServiceAccessMethod>() {{
-            new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", "http://testurl:8080");
+        accessDetails = new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
+            new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "http://testurl:8080");
         }});
         mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
     }

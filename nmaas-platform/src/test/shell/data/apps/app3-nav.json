@@ -46,7 +46,21 @@
 			"SMTP_USERNAME":"nav.config.EMAIL_HOST_USER",
 			"SMTP_PASSWORD":"nav.config.EMAIL_HOST_PASSWORD"
 		},
-		"exposesWebUI": true
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "EXTERNAL",
+				"name": "NAV",
+				"tag": "nav",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
+			}
+		]
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired":false
