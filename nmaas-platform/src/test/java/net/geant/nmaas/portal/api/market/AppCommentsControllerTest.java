@@ -172,9 +172,9 @@ public class AppCommentsControllerTest {
 
         Page<Comment> commentPage = new PageImpl<>(mainComments);
 
-        when(commentRepository.findByApplication(app, any(Pageable.class))).thenReturn(commentPage);
+        when(commentRepository.findByApplication(app, null)).thenReturn(commentPage);
 
         List<CommentView> result = this.appCommentsController.getComments(app.getId(), null);
-        assertEquals(3, result.size());
+        assertEquals(3L, result.size());
     }
 }
