@@ -101,6 +101,9 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public fillWizardWithData(appToEdit: Application): void {
+
+        console.log(appToEdit);
+
         let temp: Map<ParameterType, string> = new Map();
         Object.keys(appToEdit.appDeploymentSpec.deployParameters).forEach(key => {
             temp.set(ParameterType[key], appToEdit.appDeploymentSpec.deployParameters[key]);
