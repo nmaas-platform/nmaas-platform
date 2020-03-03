@@ -32,11 +32,13 @@ import {SessionService} from "../service/session.service";
 import {LocalDatePipe} from "../pipe/local-date.pipe";
 import {LanguageManagementModule} from "./admin/languagemanagement/languagemanagement.module";
 import {TooltipModule} from 'ng2-tooltip-directive';
+import { ModalGuestUserComponent } from './modals/modal-guest-user/modal-guest-user.component';
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
+    ModalGuestUserComponent,
   ],
   imports: [
     FormsModule,
