@@ -22,7 +22,8 @@ public class KubernetesRepositoryManager extends NmServiceRepositoryManager<Kube
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateKServiceAccessMethods(Identifier deploymentId, Set<ServiceAccessMethod> serviceAccessMethods) {
         KubernetesNmServiceInfo serviceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        serviceInfo.setAccessMethods(serviceAccessMethods);
+        serviceInfo.getAccessMethods().clear();
+        serviceInfo.getAccessMethods().addAll(serviceAccessMethods);
         repository.save(serviceInfo);
     }
 
