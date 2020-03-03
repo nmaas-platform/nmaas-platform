@@ -6,7 +6,9 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ap
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -14,9 +16,7 @@ import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ApplicationViewToApplicationConverter extends AbstractConverter<ApplicationView, Application> {
@@ -49,7 +49,19 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         appDeploymentSpec.setDeployParameters(source.getAppDeploymentSpec().getDeployParameters());
         appDeploymentSpec.setKubernetesTemplate(getKubernetesTemplate(source.getAppDeploymentSpec().getKubernetesTemplate()));
         appDeploymentSpec.setExposesWebUI(source.getAppDeploymentSpec().isExposesWebUI());
+        appDeploymentSpec.setAccessMethods(getAppAccessMethods(source.getAppDeploymentSpec().getAccessMethods()));
         return appDeploymentSpec;
+    }
+
+    private Set<AppAccessMethod> getAppAccessMethods(List<AppAccessMethodView> views) {
+        Set<AppAccessMethod> result = new HashSet<>();
+        if(views == null) {
+            return result;
+        }
+        for(AppAccessMethodView av: views) {
+            result.add(new AppAccessMethod(av.getType(), av.getName(), av.getTag(), av.getDeployParameters()));
+        }
+        return result;
     }
 
     private KubernetesTemplate getKubernetesTemplate(KubernetesTemplateView template){
