@@ -16,6 +16,7 @@ import {Observable, of} from "rxjs";
 import {Configuration} from "../model/configuration";
 import {Language} from "../model/language";
 import {Component} from "@angular/core";
+import {AuthService, DomainRoles} from "../auth/auth.service";
 
 export class MockAuthService {
 
@@ -175,16 +176,26 @@ class MockAppNavbar{}
 })
 class MockTestInstanceModal{}
 
+@Component({
+  selector: 'modal-guest-user',
+  template: '<p>Mock guest user modal</p>'
+})
+class MockGuestUserModal{}
+
 describe('Component: AppMarket', () => {
   let component: AppMarketComponent;
   let fixture: any;
 
   beforeEach(async(() => {
+    let authUserSpy = jasmine.createSpyObj('AuthService', ['getDomainRoles']);
+    authUserSpy.getDomainRoles.and.returnValue(new Map<number, DomainRoles>());
+
     TestBed.configureTestingModule({
       declarations: [
         AppMarketComponent,
           MockAppNavbar,
           MockTestInstanceModal,
+          MockGuestUserModal,
       ],
       imports: [
         RouterTestingModule,
@@ -202,6 +213,7 @@ describe('Component: AppMarket', () => {
       providers: [
         {provide: ServiceUnavailableService, useClass: MockServiceUnavailableService},
         {provide: AppConfigService, useClass: MockAppConfigService},
+        {provide: AuthService, useValue: authUserSpy},
         {provide: ConfigurationService, useClass: MockConfigurationService},
         {provide: InternationalizationService, useClass: MockInternationalizationService}
       ]

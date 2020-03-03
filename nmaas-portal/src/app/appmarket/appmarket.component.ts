@@ -3,6 +3,9 @@ import {ServiceUnavailableService} from '../service-unavailable/service-unavaila
 import {Router} from '@angular/router';
 import {AppConfigService, ConfigurationService} from '../service';
 import {ModalTestInstanceComponent} from '../shared/modal/modal-test-instance/modal-test-instance.component';
+import {ModalGuestUserComponent} from "./modals/modal-guest-user/modal-guest-user.component";
+import {AuthService} from "../auth/auth.service";
+import {Role} from "../model/userrole";
 
 @Component({
   selector: 'app-appmarket',
@@ -17,10 +20,14 @@ export class AppMarketComponent implements OnInit, AfterViewChecked, AfterConten
   @ViewChild(ModalTestInstanceComponent)
   private testInstanceModal: ModalTestInstanceComponent;
 
+  @ViewChild(ModalGuestUserComponent)
+  private guestUserModal: ModalGuestUserComponent;
+
   constructor(private router: Router,
               private serviceHealth: ServiceUnavailableService,
               private configService: ConfigurationService,
-              private appConfig: AppConfigService) { }
+              private appConfig: AppConfigService,
+              private authService: AuthService) { }
 
   async ngOnInit() {
       await this.serviceHealth.validateServicesAvailability();
@@ -34,7 +41,12 @@ export class AppMarketComponent implements OnInit, AfterViewChecked, AfterConten
             }
             localStorage.setItem(this.appConfig.getTestInstanceModalKey(), 'False');
           }
-      )
+      );
+      const domainRoles = this.authService.getDomainRoles();
+      const globalRoles = domainRoles.get(this.appConfig.getNmaasGlobalDomainId());
+      if(domainRoles.size === 1 && globalRoles && globalRoles.getRoles().length === 1 && globalRoles.hasRole(Role[Role.ROLE_GUEST])) {
+          this.guestUserModal.modal.show();
+      }
   }
 
   ngAfterViewChecked() {
