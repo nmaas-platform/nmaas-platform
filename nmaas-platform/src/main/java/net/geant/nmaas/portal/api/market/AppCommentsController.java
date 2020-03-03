@@ -26,100 +26,102 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 @RequestMapping("/api/apps/{appId}/comments")
 public class AppCommentsController extends AppBaseController {
 
-	private CommentRepository commentRepo;
-	
-	private UserRepository userRepo;
+    private CommentRepository commentRepo;
 
-	@Autowired
-	public AppCommentsController(CommentRepository commentRepo, UserRepository userRepo){
-		this.commentRepo = commentRepo;
-		this.userRepo = userRepo;
-	}
-			
-	@GetMapping
-	@PreAuthorize("hasPermission(null, 'comment', 'READ')")
-	public List<CommentView> getComments(@PathVariable(value="appId") Long appId, Pageable pageable) {
-		ApplicationBase app = getBaseApp(appId);
-		Page<Comment> page = commentRepo.findByApplication(app, pageable);
-		return page.getContent().stream().map(comment -> { 
-												CommentView c = modelMapper.map(comment, CommentView.class);
-												if(comment.getParent() != null)
-													c.setParentId(comment.getParent().getId());
-												if(comment.isDeleted()) 
-													c.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
-												for(CommentView sub : c.getSubComments()) {
-													if(sub.isDeleted())
-														sub.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
-												}
-													
-												return c;}
-											).collect(Collectors.toList());
-	}
-	
-	
-	@PostMapping
-	@PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
-	@Transactional
-	public Id addComment(@PathVariable(value="appId") Long appId, @RequestBody CommentRequest comment, Principal principal) {
-		ApplicationBase app = getBaseApp(appId);
+    private UserRepository userRepo;
 
-		if(comment.getComment() == null || comment.getComment().isEmpty())
-			throw new IllegalArgumentException("Comment cannot be empty");
-		
-		Long parentId = comment.getParentId();
-		
-		//Workaround problem of mapping parentId -> id
-		//This should be fixed in modelmapper configuration
-		comment.setParentId(null);
-		Comment persistentComment = modelMapper.map(comment, Comment.class);
-		if(persistentComment.getId() != null)
-			throw new IllegalStateException("New comment cannot have id.");
-		
-		User user = userRepo.findByUsername(principal.getName()).orElseThrow(() ->
-				new MissingElementException("User not found."));
+    @Autowired
+    public AppCommentsController(CommentRepository commentRepo, UserRepository userRepo) {
+        this.commentRepo = commentRepo;
+        this.userRepo = userRepo;
+    }
 
-		persistentComment.setApplication(app);
-		persistentComment.setOwner(user);
+    @GetMapping
+    @PreAuthorize("hasPermission(null, 'comment', 'READ')")
+    public List<CommentView> getComments(@PathVariable(value = "appId") Long appId, Pageable pageable) {
+        ApplicationBase app = getBaseApp(appId);
+        Page<Comment> page = commentRepo.findByApplication(app, pageable);
+        return page.getContent().stream().map(comment -> {
+                    CommentView c = modelMapper.map(comment, CommentView.class);
+                    if (comment.getParent() != null)
+                        c.setParentId(comment.getParent().getId());
+                    if (comment.isDeleted())
+                        c.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
+                    for (CommentView sub : c.getSubComments()) {
+                        if (sub.isDeleted())
+                            sub.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
+                    }
 
-		Comment persistentParentComment;
-		
-		if(parentId != null) {
-			persistentParentComment = getComment(parentId);
-			if(persistentParentComment == null)
-				throw new MissingElementException("Unable to add comment to non-existing one");
-			if(!persistentParentComment.getApplication().getId().equals(appId))
-				throw new ProcessingException("Unable to add comment to different application");
-			persistentComment.setParent(persistentParentComment);
-		}
-		commentRepo.save(persistentComment);
+                    return c;
+                }
+        ).collect(Collectors.toList());
+    }
 
 
-		
-		
-		return new Id(persistentComment.getId());
-	}
+    @PostMapping
+    @PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
+    @Transactional
+    public Id addComment(@PathVariable(value = "appId") Long appId, @RequestBody CommentRequest comment, Principal principal) {
+        ApplicationBase app = getBaseApp(appId);
 
-	@PostMapping(value="/{commentId}")
-	@PreAuthorize("hasPermission(null, 'comment', 'WRITE')")
-	@Transactional
-	public void editComment(@PathVariable(value="appId", required=true) Long appId, @PathVariable(value="commentId", required=true) Long commentId, @RequestBody(required=true) CommentRequest comment, Principal principal) {
-		throw new ProcessingException("Comment editing not supported.");
-	}
+        if (comment.getComment() == null || comment.getComment().isEmpty())
+            throw new IllegalArgumentException("Comment cannot be empty");
 
-	@DeleteMapping(value="/{commentId}")
-	@PreAuthorize("hasPermission(#commentId, 'comment', 'DELETE')")
-	@Transactional
-	public void deleteComment(@PathVariable(value="commentId") Long commentId) {
-		Comment comment = getComment(commentId);
-		comment.setDeleted(true);
-		commentRepo.save(comment);
-	}
-	
-	private Comment getComment(Long commentId) {
-		if (commentId == null)
-			throw new MissingElementException("Missing comment id." );
-		return commentRepo.findById(commentId).orElseThrow(() -> new MissingElementException("Comment id=" + commentId + " not found."));
-	}
-	
-	
+        Long parentId = comment.getParentId();
+
+        //Workaround problem of mapping parentId -> id
+        //This should be fixed in modelmapper configuration
+        comment.setParentId(null);
+        Comment persistentComment = modelMapper.map(comment, Comment.class);
+        if (persistentComment.getId() != null)
+            throw new IllegalStateException("New comment cannot have id.");
+
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow(() ->
+                new MissingElementException("User not found."));
+
+        persistentComment.setApplication(app);
+        persistentComment.setOwner(user);
+
+        Comment persistentParentComment;
+
+        if (parentId != null) {
+            // double check if parentId is null (above and inside `getComment` method)
+            persistentParentComment = getComment(parentId);
+            // below condition is redundant, because `getComment` method throws exception
+            // when parent comment does not exist
+            if (persistentParentComment == null)
+                throw new MissingElementException("Unable to add comment to non-existing one");
+            if (!persistentParentComment.getApplication().getId().equals(appId))
+                throw new ProcessingException("Unable to add comment to different application");
+            persistentComment.setParent(persistentParentComment);
+        }
+        commentRepo.save(persistentComment);
+
+
+        return new Id(persistentComment.getId());
+    }
+
+    @PostMapping(value = "/{commentId}")
+    @PreAuthorize("hasPermission(null, 'comment', 'WRITE')")
+    @Transactional
+    public void editComment(@PathVariable(value = "appId", required = true) Long appId, @PathVariable(value = "commentId", required = true) Long commentId, @RequestBody(required = true) CommentRequest comment, Principal principal) {
+        throw new ProcessingException("Comment editing not supported.");
+    }
+
+    @DeleteMapping(value = "/{commentId}")
+    @PreAuthorize("hasPermission(#commentId, 'comment', 'DELETE')")
+    @Transactional
+    public void deleteComment(@PathVariable(value = "commentId") Long commentId) {
+        Comment comment = getComment(commentId);
+        comment.setDeleted(true);
+        commentRepo.save(comment);
+    }
+
+    private Comment getComment(Long commentId) {
+        if (commentId == null)
+            throw new MissingElementException("Missing comment id.");
+        return commentRepo.findById(commentId).orElseThrow(() -> new MissingElementException("Comment id=" + commentId + " not found."));
+    }
+
+
 }

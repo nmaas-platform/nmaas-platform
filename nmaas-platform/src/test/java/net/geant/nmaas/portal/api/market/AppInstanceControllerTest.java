@@ -10,10 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.*;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.DomainView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
@@ -326,5 +323,25 @@ public class AppInstanceControllerTest {
         assertEquals(domain.getId(), dv.getId());
         assertEquals(domain.getName(), dv.getName());
         assertEquals(domain.getCodename(), dv.getCodename());
+    }
+
+    @Test
+    public void ShouldGetAppInstanceState() {
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(owner.getUsername());
+
+        AppInstance appInstance = new AppInstance(application, name, domain, owner);
+        appInstance.setId(1L);
+        appInstance.setInternalId(new Identifier(identifierValue));
+
+        when(appDeploymentMonitor.state(any(Identifier.class))).thenReturn(AppLifecycleState.APPLICATION_DEPLOYED);
+        when(appDeploymentMonitor.previousState(any(Identifier.class))).thenReturn(AppLifecycleState.APPLICATION_CONFIGURATION_IN_PROGRESS);
+
+        when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
+
+        AppInstanceStatus ais = this.appInstanceController.getState(1L, principal);
+
+        assertEquals(appInstance.getId(), ais.getAppInstanceId());
     }
 }
