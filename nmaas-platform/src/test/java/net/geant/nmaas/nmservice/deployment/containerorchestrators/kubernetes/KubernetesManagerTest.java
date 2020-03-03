@@ -20,6 +20,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -53,7 +54,6 @@ import static org.mockito.Mockito.when;
 
 public class KubernetesManagerTest {
 
-    private KubernetesManager manager;
     private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
     private DefaultKClusterValidator clusterValidator = mock(DefaultKClusterValidator.class);
     private KServiceLifecycleManager serviceLifecycleManager = mock(HelmKServiceManager.class);
@@ -67,19 +67,21 @@ public class KubernetesManagerTest {
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
+    private KubernetesManager manager = new KubernetesManager(
+            repositoryManager,
+            clusterValidator,
+            serviceLifecycleManager,
+            serviceOperationsManager,
+            clusterIngressManager,
+            ingressControllerManager,
+            ingressResourceManager,
+            deploymentManager,
+            gitLabManager,
+            janitorService
+    );
+
     @BeforeEach
     public void setup() {
-        manager = new KubernetesManager(repositoryManager,
-                clusterValidator,
-                serviceLifecycleManager,
-                serviceOperationsManager,
-                clusterIngressManager,
-                ingressControllerManager,
-                ingressResourceManager,
-                deploymentManager,
-                gitLabManager,
-                janitorService);
-
         when(deploymentManager.getSMTPServerHostname()).thenReturn("hostname");
         when(deploymentManager.getSMTPServerPort()).thenReturn(5);
         when(deploymentManager.getSMTPServerUsername()).thenReturn(Optional.of("username"));
@@ -288,6 +290,25 @@ public class KubernetesManagerTest {
         verify(janitorService, times(1)).deleteBasicAuthIfExists(null, "domain");
         verify(janitorService, times(1)).deleteTlsIfExists(null, "domain");
         verifyNoMoreInteractions(ingressResourceManager);
+    }
+
+    @Test
+    public void shouldRetrieveServiceAccessDetails() {
+        KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
+        Set<ServiceAccessMethod> accessMethods = new HashSet<>();
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "Web", "app1.nmaas.eu", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "SSH", "192.168.1.1", null));
+        service.setAccessMethods(accessMethods);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+
+        AppUiAccessDetails appUiAccessDetails = manager.serviceAccessDetails(deploymentId);
+        assertEquals(2, appUiAccessDetails.getServiceAccessMethods().size());
+        assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
+            m.getType().equals(ServiceAccessMethodType.EXTERNAL) && m.getName().equals("Web") && m.getUrl().equals("app1.nmaas.eu")
+        ));
+        assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
+                m.getType().equals(ServiceAccessMethodType.INTERNAL) && m.getName().equals("SSH") && m.getUrl().equals("192.168.1.1")
+        ));
     }
 
 }
