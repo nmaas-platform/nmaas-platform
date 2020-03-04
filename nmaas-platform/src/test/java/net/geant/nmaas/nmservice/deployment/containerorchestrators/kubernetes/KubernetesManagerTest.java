@@ -232,9 +232,8 @@ public class KubernetesManagerTest {
     public void shouldTriggerServiceDeployment() {
         when(ingressResourceManager.generateServiceExternalURL("domain", null, null, false)).thenReturn("service.url");
         manager.deployNmService(deploymentId);
-        ArgumentCaptor<Identifier> deploymentIdArg = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
-        verify(repositoryManager, times(1)).updateKServiceAccessMethods(deploymentIdArg.capture(), accessMethodsArg.capture());
+        verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
         assertEquals(3, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
@@ -262,9 +261,8 @@ public class KubernetesManagerTest {
 
             manager.checkService(Identifier.newInstance("deploymentId"));
 
-            ArgumentCaptor<Identifier> deploymentIdArg = ArgumentCaptor.forClass(Identifier.class);
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
-            verify(repositoryManager, times(1)).updateKServiceAccessMethods(deploymentIdArg.capture(), accessMethodsArg.capture());
+            verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
             assertEquals(3, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)

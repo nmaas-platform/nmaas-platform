@@ -44,7 +44,7 @@
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
-				"type": "EXTERNAL",
+				"type": "DEFAULT",
 				"name": "Oxidized",
 				"tag": "oxidized",
 				"deployParameters": {

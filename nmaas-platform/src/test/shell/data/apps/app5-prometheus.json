@@ -47,7 +47,7 @@
         "exposesWebUI": true,
         "accessMethods":  [
             {
-                "type": "EXTERNAL",
+                "type": "DEFAULT",
                 "name": "Prometheus",
                 "tag": "prometheus",
                 "deployParameters": {
