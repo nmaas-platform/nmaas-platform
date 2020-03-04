@@ -11,6 +11,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressRes
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorResponseException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -181,7 +182,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     clusterIngressManager.getIngressPerDomain());
 
             Set<ServiceAccessMethod> accessMethods = populateAccessMethodsWithUrl(service, serviceExternalUrl);
-            repositoryManager.updateKServiceAccessMethods(deploymentId, accessMethods);
+            repositoryManager.updateKServiceAccessMethods(accessMethods);
 
             serviceLifecycleManager.deployService(deploymentId);
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
@@ -233,8 +234,8 @@ public class KubernetesManager implements ContainerOrchestrator {
                         }
                     })
                     .collect(Collectors.toSet());
-            repositoryManager.updateKServiceAccessMethods(deploymentId, accessMethods);
-        } catch (KServiceManipulationException e) {
+            repositoryManager.updateKServiceAccessMethods(accessMethods);
+        } catch (KServiceManipulationException | JanitorResponseException e) {
             throw new ContainerCheckFailedException(e.getMessage());
         }
     }

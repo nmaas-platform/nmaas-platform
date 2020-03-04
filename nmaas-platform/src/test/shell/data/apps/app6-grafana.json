@@ -46,7 +46,7 @@
         "exposesWebUI": true,
         "accessMethods":  [
             {
-                "type": "EXTERNAL",
+                "type": "DEFAULT",
                 "name": "Grafana",
                 "tag": "grafana",
                 "deployParameters": {

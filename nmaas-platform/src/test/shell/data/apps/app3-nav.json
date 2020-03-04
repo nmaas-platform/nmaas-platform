@@ -49,7 +49,7 @@
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
-				"type": "EXTERNAL",
+				"type": "DEFAULT",
 				"name": "NAV",
 				"tag": "nav",
 				"deployParameters": {

@@ -43,7 +43,7 @@
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
-				"type": "EXTERNAL",
+				"type": "DEFAULT",
 				"name": "LibreNMS",
 				"tag": "librenms",
 				"deployParameters": {
