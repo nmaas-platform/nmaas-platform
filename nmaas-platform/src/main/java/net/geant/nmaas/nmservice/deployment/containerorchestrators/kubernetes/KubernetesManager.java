@@ -223,20 +223,21 @@ public class KubernetesManager implements ContainerOrchestrator {
             if (!janitorService.checkIfReady(service.getDescriptiveDeploymentId(), service.getDomain())) {
                 throw new ContainerCheckFailedException("Service is not ready yet.");
             }
-            /*
-            NOTE:
-            Current assumption is that there will be at max one INTERNAL access methods identifiable by deployment
-             */
-            Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
-                    .peek(m -> {
-                        if(m.isOfType(INTERNAL)) {
-                            m.setUrl(janitorService.retrieveServiceIp(service.getDescriptiveDeploymentId(), service.getDomain()));
-                        }
-                    })
-                    .collect(Collectors.toSet());
-            repositoryManager.updateKServiceAccessMethods(accessMethods);
-        } catch (KServiceManipulationException | JanitorResponseException e) {
-            throw new ContainerCheckFailedException(e.getMessage());
+            // NOTE: Current assumption is that there will be at max one INTERNAL access method identifiable by deployment name
+            try {
+                Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
+                        .peek(m -> {
+                            if (m.isOfType(INTERNAL)) {
+                                m.setUrl(janitorService.retrieveServiceIp(service.getDescriptiveDeploymentId(), service.getDomain()));
+                            }
+                        })
+                        .collect(Collectors.toSet());
+                repositoryManager.updateKServiceAccessMethods(accessMethods);
+            } catch (JanitorResponseException je) {
+                log.error("Could not retrieve IP for " + service.getDescriptiveDeploymentId());
+            }
+        } catch (KServiceManipulationException me) {
+            throw new ContainerCheckFailedException(me.getMessage());
         }
     }
 
