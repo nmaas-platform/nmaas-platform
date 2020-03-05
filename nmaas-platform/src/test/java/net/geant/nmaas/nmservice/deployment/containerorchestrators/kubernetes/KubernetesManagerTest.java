@@ -11,6 +11,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorResponseException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -253,7 +254,7 @@ public class KubernetesManagerTest {
     }
 
     @Test
-    public void shouldVerifyThatServiceIsDeployed() {
+    public void shouldVerifyThatServiceIsDeployedAndUpdateServiceIp() {
         assertDoesNotThrow(() -> {
             when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
             when(janitorService.checkIfReady(any(), any())).thenReturn(true);
@@ -268,6 +269,19 @@ public class KubernetesManagerTest {
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("SSH")
                             && m.getUrl().equals("192.168.100.1")));
+        });
+    }
+
+    @Test
+    public void shouldVerifyThatServiceIsDeployedWithoutServiceIp() {
+        assertDoesNotThrow(() -> {
+            when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
+            when(janitorService.checkIfReady(any(), any())).thenReturn(true);
+            when(janitorService.retrieveServiceIp(any(), any())).thenThrow(new JanitorResponseException(""));
+
+            manager.checkService(Identifier.newInstance("deploymentId"));
+
+            verify(repositoryManager, times(0)).updateKServiceAccessMethods(any());
         });
     }
 
