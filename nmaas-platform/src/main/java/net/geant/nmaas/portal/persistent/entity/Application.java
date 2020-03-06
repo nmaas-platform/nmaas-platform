@@ -81,7 +81,7 @@ public class Application implements Serializable {
 
 	public void validate(){
 		checkArgument(StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(version), "App must have name and version");
-		checkArgument(name.matches("^[a-zA-Z0-9-]+$"), "Name contains illegal characters");
+		checkArgument(name.matches("^[a-zA-Z0-9- ]+$"), "Name contains illegal characters");
 		checkArgument(StringUtils.isNotEmpty(owner), "Owner must be specified");
 		checkArgument(appDeploymentSpec != null, "Application deployment specification cannot be null");
 		checkArgument(appConfigurationSpec != null, "Application configuration specification cannot be null");

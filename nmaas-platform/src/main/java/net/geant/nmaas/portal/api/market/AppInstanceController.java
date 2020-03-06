@@ -211,7 +211,7 @@ public class AppInstanceController extends AppBaseController {
 
     private Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
         return Identifier.newInstance(
-                String.join("-", domain, appName, String.valueOf(appInstanceNumber)).toLowerCase()
+                String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
         );
     }
 
