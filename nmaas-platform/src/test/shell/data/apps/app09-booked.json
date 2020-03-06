@@ -44,8 +44,8 @@
 		"accessMethods":  [
 			{
 				"type": "DEFAULT",
-				"name": "PWA",
-				"tag": "pwa",
+				"name": "Booked",
+				"tag": "booked",
 				"deployParameters": {
 					"INGRESS_HOSTS": "ingress.hosts",
 					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
