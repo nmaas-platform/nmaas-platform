@@ -96,9 +96,6 @@
 											"input": true,
 											"key": "booked#config#BOOKED_ENABLE_EMAIL",
 											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											},
 											"tab": 0
 										},
 										{
@@ -108,9 +105,6 @@
 											"input": true,
 											"key": "booked#config#BOOKED_REGISTRATION",
 											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											},
 											"tab": 0
 										}
 									]
