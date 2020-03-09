@@ -40,6 +40,9 @@
 			}
 		},
 		"defaultStorageSpace": 1,
+		"deployParameters": {
+			"BASE_URL": "baseDomain"
+		},
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
