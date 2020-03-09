@@ -40,12 +40,15 @@
 			}
 		},
 		"defaultStorageSpace": 1,
+		"deployParameters": {
+			"BASE_URL": "baseDomain"
+		},
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
 				"type": "DEFAULT",
-				"name": "PWA",
-				"tag": "pwa",
+				"name": "Booked",
+				"tag": "booked",
 				"deployParameters": {
 					"INGRESS_HOSTS": "ingress.hosts",
 					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
@@ -96,9 +99,6 @@
 											"input": true,
 											"key": "booked#config#BOOKED_ENABLE_EMAIL",
 											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											},
 											"tab": 0
 										},
 										{
@@ -108,9 +108,6 @@
 											"input": true,
 											"key": "booked#config#BOOKED_REGISTRATION",
 											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											},
 											"tab": 0
 										}
 									]
