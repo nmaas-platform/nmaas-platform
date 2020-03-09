@@ -1,5 +1,16 @@
 {"versions" : [
   {
+    "verNo" : "1.2.5",
+    "date" : "(2020/03/10)",
+    "topic" : [
+      {
+        "title" : "Adding support for new application",
+        "tags" : "[Enhancement]",
+        "description" : "Applied some changes in order to support new application."
+      }
+    ]
+  },
+  {
     "verNo" : "1.2.4",
     "date" : "(2020/02/19)",
     "topic" : [

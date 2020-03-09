@@ -64,9 +64,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterValidator clusterValidator;
     private KServiceLifecycleManager serviceLifecycleManager;
     private KServiceOperationsManager serviceOperationsManager;
-    private KClusterIngressManager clusterIngressManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
+    private KClusterIngressManager ingressManager;
     private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
     private JanitorService janitorService;
@@ -137,6 +137,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                 case DOMAIN_CODENAME:
                     additionalParameters.put(v, appDeployment.getDomain());
                     break;
+                case BASE_URL:
+                    additionalParameters.put(v, ingressManager.getExternalServiceDomain());
+                    break;
             }
         });
         return additionalParameters;
@@ -159,7 +162,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             if(configFileRepositoryRequired){
                 gitLabManager.validateGitLabInstance();
             }
-            if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
+            if(!ingressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }
