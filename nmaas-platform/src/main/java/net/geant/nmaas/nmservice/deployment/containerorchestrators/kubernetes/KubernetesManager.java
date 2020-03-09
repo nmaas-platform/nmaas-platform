@@ -181,14 +181,14 @@ public class KubernetesManager implements ContainerOrchestrator {
             String serviceExternalUrl = ingressResourceManager.generateServiceExternalURL(
                     service.getDomain(),
                     service.getDeploymentName(),
-                    clusterIngressManager.getExternalServiceDomain(service.getDomain()),
-                    clusterIngressManager.getIngressPerDomain());
+                    ingressManager.getExternalServiceDomain(service.getDomain()),
+                    ingressManager.getIngressPerDomain());
 
             Set<ServiceAccessMethod> accessMethods = populateAccessMethodsWithUrl(service, serviceExternalUrl);
             repositoryManager.updateKServiceAccessMethods(accessMethods);
 
             serviceLifecycleManager.deployService(deploymentId);
-            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
+            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(ingressManager.getResourceConfigOption())) {
                     ingressResourceManager.createOrUpdateIngressResource(
                             deploymentId,
                             service.getDomain(),
@@ -257,7 +257,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             NOTE:
             Currently (January 2020) option DEPLOY_USING_API is not used and shall be removed in future releases
              */
-            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
+            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(ingressManager.getResourceConfigOption())) {
                 Optional<ServiceAccessMethod> serviceAccessMethod = Optional.of((new ArrayList<>(service.getAccessMethods())).get(0));
                 ingressResourceManager.deleteIngressRule(serviceAccessMethod.orElseThrow(() -> new ContainerOrchestratorInternalErrorException("External access  url not found")).getUrl(), service.getDomain());
             }

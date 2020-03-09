@@ -59,9 +59,9 @@ public class KubernetesManagerTest {
     private DefaultKClusterValidator clusterValidator = mock(DefaultKClusterValidator.class);
     private KServiceLifecycleManager serviceLifecycleManager = mock(HelmKServiceManager.class);
     private KServiceOperationsManager serviceOperationsManager = mock(DefaultKServiceOperationsManager.class);
-    private KClusterIngressManager clusterIngressManager = mock(KClusterIngressManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
+    private KClusterIngressManager ingressManager = mock(KClusterIngressManager.class);
     private KClusterDeploymentManager deploymentManager = mock(KClusterDeploymentManager.class);
     private GitLabManager gitLabManager = mock(GitLabManager.class);
     private JanitorService janitorService = mock(JanitorService.class);
@@ -73,9 +73,9 @@ public class KubernetesManagerTest {
             clusterValidator,
             serviceLifecycleManager,
             serviceOperationsManager,
-            clusterIngressManager,
             ingressControllerManager,
             ingressResourceManager,
+            ingressManager,
             deploymentManager,
             gitLabManager,
             janitorService
@@ -87,6 +87,7 @@ public class KubernetesManagerTest {
         when(deploymentManager.getSMTPServerPort()).thenReturn(5);
         when(deploymentManager.getSMTPServerUsername()).thenReturn(Optional.of("username"));
         when(deploymentManager.getSMTPServerPassword()).thenReturn(Optional.of("password"));
+        when(ingressManager.getExternalServiceDomain()).thenReturn("extBaseUrl");
 
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");
@@ -182,12 +183,13 @@ public class KubernetesManagerTest {
         verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
         assertEquals(deploymentId, serviceInfo.getValue().getDeploymentId());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(5, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(6, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("hostname", serviceInfo.getValue().getAdditionalParameters().get("smtpHostname"));
         assertEquals("5", serviceInfo.getValue().getAdditionalParameters().get("smtpPort"));
         assertEquals("username", serviceInfo.getValue().getAdditionalParameters().get("smtpUsername"));
         assertEquals("password", serviceInfo.getValue().getAdditionalParameters().get("smtpPassword"));
         assertEquals("domain", serviceInfo.getValue().getAdditionalParameters().get("domainCodeName"));
+        assertEquals("extBaseUrl", serviceInfo.getValue().getAdditionalParameters().get("baseUrl"));
     }
 
     private Map<ParameterType, String> getParameterTypeStringMap() {
@@ -197,6 +199,7 @@ public class KubernetesManagerTest {
         deployParameters.put(ParameterType.SMTP_USERNAME, "smtpUsername");
         deployParameters.put(ParameterType.SMTP_PASSWORD, "smtpPassword");
         deployParameters.put(ParameterType.DOMAIN_CODENAME, "domainCodeName");
+        deployParameters.put(ParameterType.BASE_URL, "baseUrl");
         return deployParameters;
     }
 
@@ -217,14 +220,14 @@ public class KubernetesManagerTest {
 
     @Test
     public void shouldPrepareDeploymentEnvironmentWithNoRepo() {
-        when(clusterIngressManager.getControllerConfigOption()).thenReturn(IngressControllerConfigOption.USE_EXISTING);
+        when(ingressManager.getControllerConfigOption()).thenReturn(IngressControllerConfigOption.USE_EXISTING);
         manager.prepareDeploymentEnvironment(deploymentId, false);
         verifyNoMoreInteractions(gitLabManager);
     }
 
     @Test
     public void shouldPrepareDeploymentEnvironmentWithRepo() {
-        when(clusterIngressManager.getControllerConfigOption()).thenReturn(IngressControllerConfigOption.USE_EXISTING);
+        when(ingressManager.getControllerConfigOption()).thenReturn(IngressControllerConfigOption.USE_EXISTING);
         manager.prepareDeploymentEnvironment(deploymentId, true);
         verify(gitLabManager, times(1)).validateGitLabInstance();
     }
