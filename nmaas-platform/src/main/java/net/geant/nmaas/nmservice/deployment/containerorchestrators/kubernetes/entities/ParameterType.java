@@ -5,5 +5,6 @@ public enum ParameterType {
     SMTP_PORT,
     SMTP_USERNAME,
     SMTP_PASSWORD,
-    DOMAIN_CODENAME
+    DOMAIN_CODENAME,
+    BASE_URL
 }

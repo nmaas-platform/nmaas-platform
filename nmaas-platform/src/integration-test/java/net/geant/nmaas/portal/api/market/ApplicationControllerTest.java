@@ -101,7 +101,7 @@ class ApplicationControllerTest extends BaseControllerTestSetup {
         MvcResult result = mvc.perform(post("/api/apps")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getDefaultAppView("newApp")))
+                .content(objectMapper.writeValueAsString(getDefaultAppView("new App")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();

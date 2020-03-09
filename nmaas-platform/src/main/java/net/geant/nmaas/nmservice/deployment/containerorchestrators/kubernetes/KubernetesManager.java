@@ -64,9 +64,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterValidator clusterValidator;
     private KServiceLifecycleManager serviceLifecycleManager;
     private KServiceOperationsManager serviceOperationsManager;
-    private KClusterIngressManager clusterIngressManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
+    private KClusterIngressManager ingressManager;
     private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
     private JanitorService janitorService;
@@ -137,6 +137,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                 case DOMAIN_CODENAME:
                     additionalParameters.put(v, appDeployment.getDomain());
                     break;
+                case BASE_URL:
+                    additionalParameters.put(v, ingressManager.getExternalServiceDomain());
+                    break;
             }
         });
         return additionalParameters;
@@ -159,7 +162,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             if(configFileRepositoryRequired){
                 gitLabManager.validateGitLabInstance();
             }
-            if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
+            if(!ingressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }
@@ -178,14 +181,14 @@ public class KubernetesManager implements ContainerOrchestrator {
             String serviceExternalUrl = ingressResourceManager.generateServiceExternalURL(
                     service.getDomain(),
                     service.getDeploymentName(),
-                    clusterIngressManager.getExternalServiceDomain(service.getDomain()),
-                    clusterIngressManager.getIngressPerDomain());
+                    ingressManager.getExternalServiceDomain(service.getDomain()),
+                    ingressManager.getIngressPerDomain());
 
             Set<ServiceAccessMethod> accessMethods = populateAccessMethodsWithUrl(service, serviceExternalUrl);
             repositoryManager.updateKServiceAccessMethods(accessMethods);
 
             serviceLifecycleManager.deployService(deploymentId);
-            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
+            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(ingressManager.getResourceConfigOption())) {
                     ingressResourceManager.createOrUpdateIngressResource(
                             deploymentId,
                             service.getDomain(),
@@ -254,7 +257,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             NOTE:
             Currently (January 2020) option DEPLOY_USING_API is not used and shall be removed in future releases
              */
-            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
+            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(ingressManager.getResourceConfigOption())) {
                 Optional<ServiceAccessMethod> serviceAccessMethod = Optional.of((new ArrayList<>(service.getAccessMethods())).get(0));
                 ingressResourceManager.deleteIngressRule(serviceAccessMethod.orElseThrow(() -> new ContainerOrchestratorInternalErrorException("External access  url not found")).getUrl(), service.getDomain());
             }

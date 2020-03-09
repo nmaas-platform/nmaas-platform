@@ -27,7 +27,7 @@
  			    		 	'has-success': appName.valid && (appName.dirty || appName.touched)}">
                         <label for="appName" class="control-label">{{'APPS_WIZARD.NAME_LABEL' | translate}} *</label>
                         <br>
-                        <input type="text" id="appName" class="form-control" required [(ngModel)]="app.name" [maxLength]="30" pattern="^[a-zA-Z0-9-]+$" name="appName" #appName="ngModel" tooltip="{{'APPS_WIZARD.NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                        <input type="text" id="appName" class="form-control" required [(ngModel)]="app.name" [maxLength]="30" pattern="^[a-zA-Z0-9- ]+$" name="appName" #appName="ngModel" tooltip="{{'APPS_WIZARD.NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                     </div>
                     <div class="form-group form-group-sm" *ngIf="isInMode(ComponentMode.CREATE)"
                          [ngClass]="{'has-error':  version.invalid && (version.dirty || version.touched),

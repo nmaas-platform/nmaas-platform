@@ -65,7 +65,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldDeployApplicationInstance() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        Application application = new Application("name", "version", "owner");
+        Application application = new Application("name with spaces", "version", "owner");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         AppInstanceRequest appInstanceRequest = appInstanceRequest();
@@ -82,6 +82,8 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         ArgumentCaptor<AppDeployment> appDeployment = ArgumentCaptor.forClass(AppDeployment.class);
         verify(appLifecycleManager, times(1)).deployApplication(appDeployment.capture());
         assertThat(appDeployment.getValue().getInstanceId(), equalTo(10L));
+        assertThat(appDeployment.getValue().getDescriptiveDeploymentId().getValue(),
+                equalTo(UsersHelper.DOMAIN1.getCodename().toLowerCase() + "-namewithspaces-" + 10));
     }
 
     private AppInstanceRequest appInstanceRequest() {

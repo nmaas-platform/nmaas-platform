@@ -81,7 +81,7 @@ public class ApplicationBase implements Serializable {
 
     public void validate(){
         checkArgument(StringUtils.isNotEmpty(name), "App must have name");
-        checkArgument(name.matches("^[a-zA-Z0-9-]+$"), "Name contains illegal characters");
+        checkArgument(name.matches("^[a-zA-Z0-9- ]+$"), "Name contains illegal characters");
         checkArgument(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
     }
 }
