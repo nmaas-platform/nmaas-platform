@@ -76,6 +76,12 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
     }
 
     @Override
+    public String getExternalServiceDomain() {
+        KClusterIngress cluster = loadSingleCluster().getIngress();
+        return cluster.getExternalServiceDomain();
+    }
+
+    @Override
     public String getExternalServiceDomain(String codename) {
         KClusterIngress cluster = loadSingleCluster().getIngress();
         if(cluster.getIngressPerDomain()){
