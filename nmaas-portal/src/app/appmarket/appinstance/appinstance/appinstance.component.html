@@ -40,7 +40,7 @@
                 <!-- Deployment buttons -->
                 <div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
-                        <a *ngIf="appInstance?.serviceAccessMethods.length == 1"
+                        <a *ngIf="shouldDisplayButton()"
                            href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}"
                            class = "btn btn-success" role = "button"
                            [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true"
@@ -49,7 +49,7 @@
                            [options]="defaultTooltipOptions">
                             {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
                         </a>
-                        <div class="btn-group" *ngIf="appInstance?.serviceAccessMethods.length > 1">
+                        <div class="btn-group" *ngIf="shouldDisplayModal()">
                             <button class="btn btn-success" role="button" (click)="this.accessMethodsModal.show()">
                                 {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
                             </button>
