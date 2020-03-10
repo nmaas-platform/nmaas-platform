@@ -33,7 +33,7 @@
         <tbody>
         <tr *ngFor="let am of internalAccessMethods">
           <td><strong>{{am.name}}</strong></td>
-          <td><div class="well well-sm">{{am.url}}</div></td>
+          <td><div class="well well-sm">{{!!am.url ? am.url: "Not available"}}</div></td>
         </tr>
         </tbody>
       </table>
