@@ -1,22 +1,72 @@
-<div class="form-group form-group-sm">
-  <label class="control-label" for="{{id}}-name-{{accessMethod.type}}">Name: </label>
-  <input class="form-control" type="text" id="{{id}}-name-{{accessMethod.type}}" [value]="accessMethod.name">
-  <br>
-  <label class="control-label" for="{{id}}-tag-{{accessMethod.type}}">Tag: </label>
-  <input class="form-control" type="text" id="{{id}}-tag-{{accessMethod.type}}" [value]="accessMethod.tag">
-  <ul class="sub-deploy-params">
-    <li *ngFor="let k of deployParamsMap.keys(); let i=index" class="deploy-param-row">
-      <div class="deploy-param-container">
-        <label class="control-label" for="{{id}}-{{i}}-param">Deploy parameter: {{k}}</label>
-        <input class="form-control" type="text" id="{{id}}-{{i}}-param" [value]="deployParamsMap.get(k)">
+<div class="panel panel-default">
+  <div class="panel-body panel-container">
+
+    <div class="col-sm-4">
+      <div class="basic-info-header">
+        <b>Basic information</b>
       </div>
-      <button class="btn btn-danger" role="button" (click)="removeDeployParam(k)">Remove</button>
-    </li>
-    <li class="deploy-param-row">
-      <b>Key</b>TODO<b>Value</b>TODO
-      <button class="btn success" role="button" (click)="addNewDeployParam()">TODO add new deploy parameter</button>
-    </li>
-  </ul>
+      <div class="form-group">
+        <label class="control-label" for="{{id}}-type-{{accessMethod.type}}">Type: </label>
+        <select class="form-control" id="{{id}}-type-{{accessMethod.type}}" [(ngModel)]="accessMethod.type">
+          <option *ngIf="isDefault()" value="{{ServiceAccessMethodType.DEFAULT}}">DEFAULT</option>
+          <option *ngFor="let s of accessMethodTypes" value="{{ServiceAccessMethodType[s]}}">{{s}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="{{id}}-name-{{accessMethod.type}}">Name: </label>
+        <input class="form-control" type="text" id="{{id}}-name-{{accessMethod.type}}" [(ngModel)]="accessMethod.name">
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="{{id}}-tag-{{accessMethod.type}}">Tag: </label>
+        <input class="form-control" type="text" id="{{id}}-tag-{{accessMethod.type}}" [(ngModel)]="accessMethod.tag">
+      </div>
+    </div>
+
+    <ul class="col-sm-7">
+      <li class="deploy-param-row" *ngIf="deployParamsMap.size != 0">
+        <b>Deploy parameters</b>
+      </li>
+      <li *ngFor="let k of getDeploymentParamsKeys(); let i=index" class="deploy-param-row">
+        <div class="form-group col-sm-11">
+          <label class="control-label" for="{{id}}-{{i}}-param">Deploy parameter: {{k}}</label>
+          <input class="form-control" type="text" id="{{id}}-{{i}}-param" [value]="deployParamsMap.get(k)">
+        </div>
+        <div class="col-sm-1">
+          <button class="btn btn-danger" role="button" (click)="removeDeployParam(k)">Remove</button>
+        </div>
+      </li>
+      <li class="deploy-param-row">
+        <b>New deploy parameter</b>
+      </li>
+      <li class="deploy-param-row">
+        <div class="form-group col-sm-11">
+          <div class="double-form col-sm-6">
+            <label class="control-label" for="new-key">Deploy parameter key</label>
+            <input type="text" id="new-key" class="form-control" [(ngModel)]="newKey">
+          </div>
+          <div class="double-form col-sm-6">
+            <label class="control-label" for="new-value">Deploy parameter value</label>
+            <input type="text" id="new-value" class="form-control" [(ngModel)]="newValue">
+          </div>
+        </div>
+        <div class="col-sm-1">
+          <button class="btn btn-success" role="button" (click)="addNewDeployParam()" [disabled]="!isNewDeployParamValid()">Add</button>
+        </div>
+      </li>
+      <li class="button-container" tooltip="Accept or reject changes in deployment parameters" [display]="true" [options]="defaultTooltipOptions">
+        <div class="btn-group">
+          <button class="btn btn-success" role="button" (click)="updateDeployParams()">Save</button>
+          <button class="btn btn-danger" role="button" (click)="reject()">Reject</button>
+        </div>
+        <b class="margin-right">Apply changes to deploy parameters</b>
+      </li>
+    </ul>
+
+    <div class="col-sm-1 button-container" tooltip="Remove access method" [display]="true" [options]="defaultTooltipOptions">
+      <em class="fas fa-remove icon-black icon-bigger" (click)="remove()"></em>
+    </div>
+
+  </div>
 
 </div>
 

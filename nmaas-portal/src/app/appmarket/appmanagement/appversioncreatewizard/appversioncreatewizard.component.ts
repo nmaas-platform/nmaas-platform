@@ -15,7 +15,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 import {ApplicationState} from "../../../model/applicationstate";
 import {KubernetesChart} from "../../../model/kuberneteschart";
 import {AppAccessMethod} from "../../../model/app-access-method";
-import {ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
+import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
 
 @Component({
     selector: 'app-appversioncreatewizard',
@@ -363,28 +363,19 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
         return result;
     }
 
-    private getServiceAccessMethodTypeAsEnum(arg: string | ServiceAccessMethodType): ServiceAccessMethodType {
-        if(typeof arg === 'string') {
-            return ServiceAccessMethodType[arg];
+    public addNewAccessMethod(): void {
+        this.app.appDeploymentSpec.accessMethods.push(new AppAccessMethod())
+    }
+
+    public accessMethodTypeOptions(): string[] {
+        const keys: Set<string> = new Set(Object.keys(ServiceAccessMethodType));
+        if(this.app.appDeploymentSpec.accessMethods.find(p => ServiceAccessMethod.getServiceAccessMethodTypeAsEnum(p.type) == ServiceAccessMethodType.DEFAULT)) {
+            keys.delete(ServiceAccessMethodType[ServiceAccessMethodType.DEFAULT]);
         }
-        return arg;
+        return Array.from(keys);
     }
 
-    private getDefaultAccessMethod(): AppAccessMethod {
-        let result: AppAccessMethod = undefined;
-        result = this.app.appDeploymentSpec.accessMethods.find(a => this.getServiceAccessMethodTypeAsEnum(a.type) === ServiceAccessMethodType.DEFAULT);
-        return result;
-    }
-
-    private getInternalAccessMethods(): AppAccessMethod[] {
-        return this.app.appDeploymentSpec.accessMethods.filter(a => this.getServiceAccessMethodTypeAsEnum(a.type) === ServiceAccessMethodType.INTERNAL);
-    }
-
-    private getExternalAccessMethods(): AppAccessMethod[] {
-        return this.app.appDeploymentSpec.accessMethods.filter(a => this.getServiceAccessMethodTypeAsEnum(a.type) === ServiceAccessMethodType.EXTERNAL);
-    }
-
-    private getObjectKeys(arg: object): string[] {
-        return Object.keys(arg);
+    public removeAccessMethod(event): void {
+        this.app.appDeploymentSpec.accessMethods.splice(event, 1);
     }
 }

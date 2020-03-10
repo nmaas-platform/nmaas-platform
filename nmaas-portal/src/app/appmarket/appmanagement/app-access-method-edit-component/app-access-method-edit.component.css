@@ -1,18 +1,46 @@
-.sub-deploy-params {
-    margin-top: 10px;
-    margin-left: 30px;
-}
-
 .deploy-param-row {
     display: flex;
     width: 100%;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: center;
     list-style:none;
 }
 
-.deploy-param-container {
-    width: 100%;
-    height: 100%;
-    padding-right: 20px;
+.margin-right {
+    margin-right: 20px;
+}
+
+.panel-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.double-form:last-of-type {
+    padding-right: 0;
+}
+
+.double-form:first-of-type {
+    padding-left: 0;
+}
+
+.basic-info-header {
+    margin-left: -15px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
+.icon-black{
+    color: black;
+    cursor: pointer;
+}
+
+.icon-bigger{
+    font-size: x-large;
+    margin-left: 5px;
+    margin-right: 5px;
 }
