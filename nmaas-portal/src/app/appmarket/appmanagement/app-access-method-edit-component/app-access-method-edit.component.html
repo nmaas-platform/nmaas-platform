@@ -1,0 +1,22 @@
+<div class="form-group form-group-sm">
+  <label class="control-label" for="{{id}}-name-{{accessMethod.type}}">Name: </label>
+  <input class="form-control" type="text" id="{{id}}-name-{{accessMethod.type}}" [value]="accessMethod.name">
+  <br>
+  <label class="control-label" for="{{id}}-tag-{{accessMethod.type}}">Tag: </label>
+  <input class="form-control" type="text" id="{{id}}-tag-{{accessMethod.type}}" [value]="accessMethod.tag">
+  <ul class="sub-deploy-params">
+    <li *ngFor="let k of deployParamsMap.keys(); let i=index" class="deploy-param-row">
+      <div class="deploy-param-container">
+        <label class="control-label" for="{{id}}-{{i}}-param">Deploy parameter: {{k}}</label>
+        <input class="form-control" type="text" id="{{id}}-{{i}}-param" [value]="deployParamsMap.get(k)">
+      </div>
+      <button class="btn btn-danger" role="button" (click)="removeDeployParam(k)">Remove</button>
+    </li>
+    <li class="deploy-param-row">
+      <b>Key</b>TODO<b>Value</b>TODO
+      <button class="btn success" role="button" (click)="addNewDeployParam()">TODO add new deploy parameter</button>
+    </li>
+  </ul>
+
+</div>
+
