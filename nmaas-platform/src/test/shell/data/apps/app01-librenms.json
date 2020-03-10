@@ -36,11 +36,25 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-librenms",
-				"version": "1.0.0"
+				"version": "1.1.0"
 			}
 		},
 		"defaultStorageSpace":20,
-		"exposesWebUI": true
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "DEFAULT",
+				"name": "LibreNMS",
+				"tag": "librenms",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
+			}
+		]
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired":true,

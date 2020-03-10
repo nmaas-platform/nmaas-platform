@@ -12,7 +12,7 @@
       "subject": "NMaaS: Application instance ready",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. <#if accessURL?has_content>You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a></#if>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -23,7 +23,7 @@
       "subject": "NMaaS: Application instance ready",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. <#if accessURL?has_content>You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a></#if>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -34,7 +34,7 @@
       "subject": "NMaaS: Application instance ready",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. <#if accessURL?has_content>You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a></#if>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -45,7 +45,7 @@
       "subject": "NMaaS: Instancja aplikacji jest już gotowa",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest już gotowa. <a href=\"${accessURL}\">Kliknij tutaj aby przejść do instancji.</a>",
+        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest już gotowa. <#if accessURL?has_content><a href=\"${accessURL}\">Kliknij tutaj aby przejść do instancji.</a></#if>",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""

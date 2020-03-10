@@ -5,10 +5,6 @@ import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-
-
-
-
 import {isNullOrUndefined, isUndefined} from 'util';
 import {Authority} from '../model/authority';
 import {catchError, debounceTime} from 'rxjs/operators';
@@ -34,7 +30,9 @@ export class DomainRoles {
 export class AuthService {
   public loginUsingSsoService: boolean;
 
-  constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService) {}
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService,
+              private jwtHelper: JwtHelperService) {}
 
   private storeToken(token: string): void {
     localStorage.setItem(this.appConfig.config.tokenName, token);

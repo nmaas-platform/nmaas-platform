@@ -12,13 +12,7 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.api.domain.AppInstanceState;
-import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
@@ -172,11 +166,11 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
-    public AppInstanceView getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                          @NotNull Principal principal) {
+    public AppInstanceViewExtended getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                                  @NotNull Principal principal) {
         AppInstance appInstance = instances.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
-        return mapAppInstance(appInstance);
+        return mapAppInstanceExtended(appInstance);
     }
 
     @PostMapping("/domain/{domainId}")
@@ -194,7 +188,7 @@ public class AppInstanceController extends AppBaseController {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
 
-        AppDeploymentSpec appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class);
+        AppDeploymentSpecView appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpecView.class);
         AppDeployment appDeployment = AppDeployment.builder()
                 .domain(domain.getCodename())
                 .instanceId(appInstance.getId())
@@ -217,7 +211,7 @@ public class AppInstanceController extends AppBaseController {
 
     private Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
         return Identifier.newInstance(
-                String.join("-", domain, appName, String.valueOf(appInstanceNumber)).toLowerCase()
+                String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
         );
     }
 
@@ -396,13 +390,29 @@ public class AppInstanceController extends AppBaseController {
             return null;
         AppInstanceView ai = modelMapper.map(appInstance, AppInstanceView.class);
 
+        return this.addAppInstanceProperties(ai, appInstance);
+    }
+
+    private AppInstanceViewExtended mapAppInstanceExtended(AppInstance appInstance) {
+        if (appInstance == null)
+            return null;
+        AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
+
+        return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
+    }
+
+    private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
+
         try {
             ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
-            ai.setDomainId(appInstance.getDomain().getId());
         } catch (Exception e) {
             ai.setState(AppInstanceState.UNKNOWN);
-            ai.setServiceAccessMethods(null);
+            ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
+        }
+
+        if (!ai.getDomainId().equals(appInstance.getDomain().getId())) {
+            ai.setDomainId(appInstance.getDomain().getId());
         }
 
         try {
@@ -411,9 +421,17 @@ public class AppInstanceController extends AppBaseController {
             ai.setServiceAccessMethods(null);
         }
 
-        ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
+        try {
+            ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
+        } catch (InvalidDeploymentIdException e) {
+            ai.setDescriptiveDeploymentId(null);
+        }
 
-        ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
+        try {
+            ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
+        } catch (Exception e) {
+            ai.setConfigWizardTemplate(null);
+        }
 
         return ai;
     }

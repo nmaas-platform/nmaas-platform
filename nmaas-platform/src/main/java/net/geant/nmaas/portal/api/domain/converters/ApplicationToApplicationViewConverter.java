@@ -5,12 +5,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ap
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -20,10 +16,7 @@ import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -65,13 +58,26 @@ public class ApplicationToApplicationViewConverter extends AbstractConverter<App
                 .collect(Collectors.toList());
     }
 
-    private AppDeploymentSpec getAppDeploymentSpec(Application source){
-        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+    private AppDeploymentSpecView getAppDeploymentSpec(Application source){
+        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setDefaultStorageSpace(source.getAppDeploymentSpec().getDefaultStorageSpace());
         appDeploymentSpec.setKubernetesTemplate(getKubernetesTemplateView(source.getAppDeploymentSpec().getKubernetesTemplate()));
         appDeploymentSpec.setDeployParameters(source.getAppDeploymentSpec().getDeployParameters());
         appDeploymentSpec.setSupportedDeploymentEnvironments(source.getAppDeploymentSpec().getSupportedDeploymentEnvironments());
+        appDeploymentSpec.setExposesWebUI(source.getAppDeploymentSpec().isExposesWebUI());
+        appDeploymentSpec.setAccessMethods(getAppAccessMethods(source.getAppDeploymentSpec().getAccessMethods()));
         return appDeploymentSpec;
+    }
+
+    private List<AppAccessMethodView> getAppAccessMethods(Set<AppAccessMethod> appAccessMethods) {
+        List<AppAccessMethodView> result = new ArrayList<>();
+        if(appAccessMethods == null) {
+            return result;
+        }
+        for(AppAccessMethod a: appAccessMethods) {
+            result.add(new AppAccessMethodView(a.getType(), a.getName(), a.getTag(), a.getDeployParameters()));
+        }
+        return result;
     }
 
     private KubernetesTemplateView getKubernetesTemplateView(KubernetesTemplate template){

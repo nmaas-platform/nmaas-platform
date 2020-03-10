@@ -60,7 +60,7 @@ echo
 
 echo
 echo App1
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app1-librenms.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app01-librenms.json
 echo
 echo App1 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/librenms.svg;type=image/svg+xml" $API_URL/apps/1/logo
@@ -72,7 +72,7 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 
 echo
 echo App2
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app2-oxidized.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app02-oxidized.json
 echo
 echo App2 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/oxidized.svg;type=image/svg+xml" $API_URL/apps/2/logo
@@ -86,7 +86,7 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 
 echo 
 echo App3
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app3-nav.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app03-nav.json
 echo
 echo App3 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/nav.svg;type=image/svg+xml" $API_URL/apps/3/logo
@@ -104,7 +104,7 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 
 echo
 echo App4
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app4-opennti.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app04-opennti.json
 echo
 echo App4 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/open-nti.svg;type=image/svg+xml" $API_URL/apps/4/logo
@@ -118,7 +118,7 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 
 echo
 echo App5
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app5-prometheus.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app05-prometheus.json
 echo
 echo App5 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/prometheus.svg;type=image/svg+xml" $API_URL/apps/5/logo
@@ -133,7 +133,7 @@ echo
 
 echo
 echo App6
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app6-grafana.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app06-grafana.json
 echo
 echo App6 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/grafana.svg;type=image/svg+xml" $API_URL/apps/6/logo
@@ -148,7 +148,7 @@ echo
 
 echo
 echo App7
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app7-bastion.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app07-bastion.json
 echo
 echo App7 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/bastion.svg;type=image/svg+xml" $API_URL/apps/7/logo
@@ -159,7 +159,7 @@ echo
 
 echo
 echo App8
-curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app8-perfsonar-pwa.json
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app08-perfsonar-pwa.json
 echo
 echo App8 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/perfsonar.png;type=image/png" $API_URL/apps/8/logo
@@ -178,6 +178,23 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 echo
 echo App8 screenshots
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-pwa/perfsonar-pwa5.png;type=image/png" $API_URL/apps/8/screenshots
+echo
+
+echo
+echo App9
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app09-booked.json
+echo
+echo App9 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/booked.png;type=image/png" $API_URL/apps/9/logo
+echo
+echo App9 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/booked/booked1.png;type=image/png" $API_URL/apps/9/screenshots
+echo
+echo App9 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/booked/booked2.png;type=image/png" $API_URL/apps/9/screenshots
+echo
+echo App9 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/booked/booked3.png;type=image/png" $API_URL/apps/9/screenshots
 echo
 
 echo 

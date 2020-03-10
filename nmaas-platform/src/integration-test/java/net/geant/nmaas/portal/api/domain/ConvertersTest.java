@@ -38,7 +38,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ContextConfiguration(classes = {ConvertersConfig.class, PersistentConfig.class})
@@ -64,6 +63,8 @@ public class ConvertersTest {
         assertNotNull(appView.getConfigWizardTemplate());
         assertNull(appView.getConfigUpdateWizardTemplate());
         assertEquals(defaultAppBase.getIssuesUrl(), appView.getIssuesUrl());
+        assertEquals(getDefaultApp().getAppDeploymentSpec().getDefaultStorageSpace(), appView.getAppDeploymentSpec().getDefaultStorageSpace());
+        assertEquals(getDefaultApp().getAppDeploymentSpec().isExposesWebUI(), appView.getAppDeploymentSpec().isExposesWebUI());
     }
 
     @Test
@@ -92,14 +93,17 @@ public class ConvertersTest {
         Application app = modelMapper.map(appView, Application.class);
         assertEquals(appView.getState(), app.getState());
         assertNotNull(app.getConfigWizardTemplate());
+        assertNull(app.getConfigUpdateWizardTemplate());
         assertNotNull(app.getAppDeploymentSpec());
+        assertEquals(appView.getAppDeploymentSpec().getDefaultStorageSpace(), app.getAppDeploymentSpec().getDefaultStorageSpace());
+        assertEquals(appView.getAppDeploymentSpec().isExposesWebUI(), app.getAppDeploymentSpec().isExposesWebUI());
     }
 
 	@Test
 	public void testConvertAppBriefViewToAppBase() {
         tagRepo.save(new Tag("network"));
 		
-		ApplicationBriefView appDto = new ApplicationBriefView() ;
+		ApplicationBriefView appDto = new ApplicationBriefView();
         appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setLicense("GNL");
@@ -125,8 +129,6 @@ public class ConvertersTest {
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
         assertTrue(appDto.getTags().contains("network"));
         assertTrue(appDto.getTags().contains("monitoring"));
-  
-	    
 	}
 
 	@Test
@@ -178,8 +180,9 @@ public class ConvertersTest {
         appView.setVersion("0.0.1");
         appView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         appView.setAppConfigurationSpec(new AppConfigurationSpecView());
-        appView.setAppDeploymentSpec(new net.geant.nmaas.portal.api.domain.AppDeploymentSpec());
+        appView.setAppDeploymentSpec(new AppDeploymentSpecView());
         appView.getAppDeploymentSpec().setDefaultStorageSpace(15);
+        appView.getAppDeploymentSpec().setExposesWebUI(true);
         appView.setState(ApplicationState.ACTIVE);
         appView.setOwner("admin");
         return appView;
@@ -207,6 +210,7 @@ public class ConvertersTest {
         app.setAppConfigurationSpec(new AppConfigurationSpec());
         app.setAppDeploymentSpec(new AppDeploymentSpec());
         app.getAppDeploymentSpec().setDefaultStorageSpace(15);
+        app.getAppDeploymentSpec().setExposesWebUI(true);
         app.setState(ApplicationState.ACTIVE);
         app.setOwner("admin");
         return app;

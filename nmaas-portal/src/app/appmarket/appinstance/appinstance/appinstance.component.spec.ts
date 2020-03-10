@@ -27,6 +27,9 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {Component, Input, Pipe, PipeTransform} from "@angular/core";
 import {Domain} from "../../../model/domain";
 import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
+import {ModalComponent} from "../../../shared/modal";
+import {AppInstanceExtended} from "../../../model/appinstanceextended";
+import {ActivatedRoute} from "@angular/router";
 
 @Pipe({
   name: "secure"
@@ -76,9 +79,7 @@ class AppInstanceProgressMock {
   selector: 'nmaas-modal',
   template: '<p>Nmaas Modal Mock</p>'
 })
-class NmaasModalMock{
-  @Input()
-  styleModal: string;
+class NmaasModalMock extends ModalComponent{
 }
 
 
@@ -91,33 +92,6 @@ describe('Component: AppInstance', () => {
   let appInstanceService: AppInstanceService;
   let appImageService: AppImagesService;
   let domainService: DomainService;
-
-  let appInstance: AppInstance = {
-    applicationId: 2,
-    applicationName: "Oxidized",
-    configWizardTemplate: {template: '{"template":"xD"}'},
-    configuration: '{"oxidizedUsername":"oxidized","oxidizedPassword":"oxi@PLLAB","targets":[{"ipAddress":"10.0.0.1"},{"ipAddress":"10.0.0.2"},{"ipAddress":"10.0.0.3"},{"ipAddress":"10.0.0.4"},{"ipAddress":"10.0.0.5"},{"ipAddress":"10.0.0.6"},{"ipAddress":"10.0.0.7"},{"ipAddress":"10.0.0.8"},{"ipAddress":"10.0.0.9"},{"ipAddress":"10.0.0.10"},{"ipAddress":"10.0.0.11"},{"ipAddress":"10.0.0.12"},{"ipAddress":"10.0.0.13"},{"ipAddress":"10.0.0.14"},{"ipAddress":"10.0.0.15"},{"ipAddress":"10.0.0.16"}]}',
-    createdAt: new Date(),
-    descriptiveDeploymentId: "test-oxidized-48",
-    domainId: 4,
-    id: 48,
-    internalId: "eccbaf70-7fdd-401a-bb3e-b8659bcfbdff",
-    name: "oxi-virt-1",
-    owner: {
-      id: 1, username: "admin", enabled: true,
-      firstname: null, lastname: null,
-      email: 'admin@admi.eu', selectedLanguage: "en",
-      privacyPolicyAccepted: true, ssoUser: false,
-      termsOfUseAccepted: false, roles: [{domainId: 1, role: Role.ROLE_SYSTEM_ADMIN}]
-    } as User,
-    state: AppInstanceState.RUNNING,
-    serviceAccessMethods: [
-      {type: ServiceAccessMethodType.DEFAULT, name: "Default link", url: "http://oxi-virt-1.test.nmaas.geant.org"},
-      {type: ServiceAccessMethodType.EXTERNAL, name: "Second link", url: "http://second.org"},
-      {type: ServiceAccessMethodType.INTERNAL, name: "Internal", url: "internal"}
-    ],
-    userFriendlyState: "Application instance is running"
-  };
 
   let application: Application = {
     id: 2,
@@ -142,19 +116,6 @@ describe('Component: AppInstance', () => {
   };
   application.appDeploymentSpec.exposesWebUI = true;
 
-  let appInstanceHistory: AppInstanceStateHistory[] = [
-    {
-      timestamp: new Date(2020,1,1),
-      previousState: 'preparation',
-      currentState: 'running'
-    },
-    {
-      timestamp: new Date(2019,10,23),
-      previousState: 'waiting',
-      currentState: 'preparation'
-    },
-  ];
-
   let domain: Domain = {
     id: 4,
     name: 'domain 1',
@@ -172,6 +133,48 @@ describe('Component: AppInstance', () => {
     ]
   };
 
+  let appInstance: AppInstanceExtended = {
+    applicationId: 2,
+    applicationName: "Oxidized",
+    configWizardTemplate: {template: '{"template":"xD"}'},
+    configuration: '{"oxidizedUsername":"oxidized","oxidizedPassword":"oxi@PLLAB","targets":[{"ipAddress":"10.0.0.1"},{"ipAddress":"10.0.0.2"},{"ipAddress":"10.0.0.3"},{"ipAddress":"10.0.0.4"},{"ipAddress":"10.0.0.5"},{"ipAddress":"10.0.0.6"},{"ipAddress":"10.0.0.7"},{"ipAddress":"10.0.0.8"},{"ipAddress":"10.0.0.9"},{"ipAddress":"10.0.0.10"},{"ipAddress":"10.0.0.11"},{"ipAddress":"10.0.0.12"},{"ipAddress":"10.0.0.13"},{"ipAddress":"10.0.0.14"},{"ipAddress":"10.0.0.15"},{"ipAddress":"10.0.0.16"}]}',
+    createdAt: new Date(),
+    descriptiveDeploymentId: "test-oxidized-48",
+    domainId: 4,
+    id: 1,
+    internalId: "eccbaf70-7fdd-401a-bb3e-b8659bcfbdff",
+    name: "oxi-virt-1",
+    owner: {
+      id: 1, username: "admin", enabled: true,
+      firstname: null, lastname: null,
+      email: 'admin@admi.eu', selectedLanguage: "en",
+      privacyPolicyAccepted: true, ssoUser: false,
+      termsOfUseAccepted: false, roles: [{domainId: 1, role: Role.ROLE_SYSTEM_ADMIN}]
+    } as User,
+    state: AppInstanceState.RUNNING,
+    serviceAccessMethods: [
+      {type: ServiceAccessMethodType.DEFAULT, name: "Default link", url: "http://oxi-virt-1.test.nmaas.geant.org"},
+      {type: ServiceAccessMethodType.EXTERNAL, name: "Second link", url: "http://second.org"},
+      {type: ServiceAccessMethodType.INTERNAL, name: "Internal", url: "internal"}
+    ],
+    userFriendlyState: "Application instance is running",
+    application: application,
+    domain: domain,
+  };
+
+  let appInstanceHistory: AppInstanceStateHistory[] = [
+    {
+      timestamp: new Date(2020,1,1),
+      previousState: 'preparation',
+      currentState: 'running'
+    },
+    {
+      timestamp: new Date(2019,10,23),
+      previousState: 'waiting',
+      currentState: 'preparation'
+    },
+  ];
+
   // https://angular.io/guide/testing#component-with-a-dependency
   let appsServiceStub: Partial<AppsService>;
   let authServiceStub: Partial<AuthService>;
@@ -184,6 +187,9 @@ describe('Component: AppInstance', () => {
     let mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getApiUrl', 'getHttpTimeout']);
     mockAppConfigService.getApiUrl.and.returnValue('http://localhost/api');
     mockAppConfigService.getHttpTimeout.and.returnValue(10000);
+
+    // let authServiceSpy = jasmine.createSpyObj('AuthService', []);
+
     TestBed.configureTestingModule({
       declarations: [
           AppInstanceComponent,
@@ -212,12 +218,13 @@ describe('Component: AppInstance', () => {
         })
       ],
       providers: [
-        { provide: AppsService, useValue: appsServiceStub },
-        { provide: AuthService, useValue: authServiceStub },
         { provide: AppConfigService, useValue: mockAppConfigService },
+        { provide: AppsService, useValue: appsServiceStub },
+        // { provide: AuthService, useValue: authServiceStub },
         { provide: AppInstanceService, useValue: appInstanceServiceStub },
         { provide: DomainService, useValue: domainServiceStub },
-        { provide: AppImagesService, useValue: appImagesServiceStub }
+        { provide: AppImagesService, useValue: appImagesServiceStub },
+        { provide: ActivatedRoute, useValue: {params: of({id: 1})}}
       ]
     }).compileComponents().then((result) => {
       console.log(result);
@@ -228,14 +235,15 @@ describe('Component: AppInstance', () => {
     fixture = TestBed.createComponent(AppInstanceComponent);
     component = fixture.componentInstance;
     component.appInstanceProgress = TestBed.createComponent(AppInstanceProgressMock).componentInstance as AppInstanceProgressComponent;
+    component.undeployModal = TestBed.createComponent(NmaasModalMock).componentInstance as ModalComponent;
+
     appConfigService = fixture.debugElement.injector.get(AppConfigService);
     appsService = fixture.debugElement.injector.get(AppsService);
-    authService = fixture.debugElement.injector.get(AuthService);
+    // authService = fixture.debugElement.injector.get(AuthService);
     appInstanceService = fixture.debugElement.injector.get(AppInstanceService);
     appImageService = fixture.debugElement.injector.get(AppImagesService);
     domainService = fixture.debugElement.injector.get(DomainService);
-    // optional in future
-    // spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api");
+
     spyOn(appsService, 'getApp').and.returnValue(of(application));
     spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(of([]));
     spyOn(appInstanceService, 'getAppInstance').and.returnValue(of(appInstance));
@@ -251,8 +259,6 @@ describe('Component: AppInstance', () => {
         }
     ));
     spyOn(appImageService, 'getAppLogoUrl').and.returnValue('');
-    // optional in future
-    // spyOn(domainService, 'getOne').and.returnValue(of(domain));
     fixture.detectChanges();
   });
 

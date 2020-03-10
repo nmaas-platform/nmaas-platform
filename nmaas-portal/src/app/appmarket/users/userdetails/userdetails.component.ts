@@ -8,42 +8,49 @@ import {AuthService} from "../../../auth/auth.service";
 import {ComponentMode} from "../../../shared";
 
 @Component({
-  selector: 'app-userdetails',
-  templateUrl: './userdetails.component.html',
-  styleUrls: ['./userdetails.component.css']
+    selector: 'app-userdetails',
+    templateUrl: './userdetails.component.html',
+    styleUrls: ['./userdetails.component.css']
 })
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
-  private userId: number;
-  public user: User;
-  public errorMessage: string;
-  public userDetailsMode: ComponentMode = ComponentMode.VIEW;
+    private userId: number;
+    public user: User;
+    public errorMessage: string;
+    public userDetailsMode: ComponentMode = ComponentMode.VIEW;
 
 
-  constructor(private userService: UserService, private router: Router,
-    private route: ActivatedRoute, public authService:AuthService) {
-    super();
-  }
+    constructor(private userService: UserService, private router: Router,
+                private route: ActivatedRoute, public authService: AuthService) {
+        super();
+    }
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      if (!isUndefined(params['id'])) {
-        this.userId = +params['id'];  
-        this.userService.getOne(this.userId).subscribe((user) => this.user = user);
-      }
-    });
-    this.mode = this.getMode(this.route);
-  }
+    ngOnInit() {
+        this.route.params.subscribe(params => {
+            if (!isUndefined(params['id'])) {
+                this.userId = +params['id'];
+                this.userService.getOne(this.userId).subscribe(
+                    (user) => this.user = user,
+                    err => {
+                        console.error(err);
+                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
+                            this.router.navigateByUrl('/notfound');
+                        }
+                    });
+            }
+        });
+        this.mode = this.getMode(this.route);
+    }
 
-    public onRefresh(){
-        this.userService.getOne(this.userId).subscribe((user)=>{
+    public onRefresh() {
+        this.userService.getOne(this.userId).subscribe((user) => {
             this.user = user;
             this.onModeChange();
             this.errorMessage = undefined;
         });
     }
 
-    public onModeChange(){
+    public onModeChange() {
         this.userDetailsMode = (this.userDetailsMode === ComponentMode.VIEW ? ComponentMode.EDIT : ComponentMode.VIEW);
     }
 
@@ -61,7 +68,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     async updateUser(userId: number, user: User) {
         return await Promise.resolve(this.userService.updateUser(userId, user).toPromise()
-            .then(()=> {
+            .then(() => {
                 this.userDetailsMode = ComponentMode.VIEW;
                 this.errorMessage = undefined;
             })
@@ -71,7 +78,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
             }));
     }
 
-  public remove(userId:number){
-    this.userService.deleteOne(userId).subscribe(() => this.router.navigate(['/users/']));
-  }
+    public remove(userId: number) {
+        this.userService.deleteOne(userId).subscribe(() => this.router.navigate(['/users/']));
+    }
 }

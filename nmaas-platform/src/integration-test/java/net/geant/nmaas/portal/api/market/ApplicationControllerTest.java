@@ -3,14 +3,9 @@ package net.geant.nmaas.portal.api.market;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
-import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
-import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
@@ -29,7 +24,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -103,7 +101,7 @@ class ApplicationControllerTest extends BaseControllerTestSetup {
         MvcResult result = mvc.perform(post("/api/apps")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getDefaultAppView("newApp")))
+                .content(objectMapper.writeValueAsString(getDefaultAppView("new App")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -194,6 +192,13 @@ class ApplicationControllerTest extends BaseControllerTestSetup {
         ApplicationView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationView.class);
         assertEquals(DEFAULT_APP_NAME, app.getName());
         assertEquals("1.1.0", app.getVersion());
+
+        assertTrue(result.getResponse().getContentAsString().contains("name1"));
+        assertTrue(result.getResponse().getContentAsString().contains("name2"));
+        assertTrue(result.getResponse().getContentAsString().contains("name3"));
+        assertTrue(result.getResponse().getContentAsString().contains("tag1"));
+        assertTrue(result.getResponse().getContentAsString().contains("tag2"));
+        assertTrue(result.getResponse().getContentAsString().contains("tag3"));
     }
 
     @Test
@@ -217,15 +222,20 @@ class ApplicationControllerTest extends BaseControllerTestSetup {
     }
 
     private ApplicationView getDefaultAppView(String name){
+        List<AppAccessMethodView> lst = new ArrayList<>();
+        lst.add(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
+        lst.add(new AppAccessMethodView(ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
+        lst.add(new AppAccessMethodView(ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
         ApplicationView applicationView = new ApplicationView();
         applicationView.setName(name);
         applicationView.setVersion("1.1.0");
         applicationView.setOwner("admin");
         applicationView.setState(ApplicationState.ACTIVE);
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
-        net.geant.nmaas.portal.api.domain.AppDeploymentSpec appDeploymentSpec = new net.geant.nmaas.portal.api.domain.AppDeploymentSpec();
+        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(10);
+        appDeploymentSpec.setAccessMethods(lst);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("{}"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());

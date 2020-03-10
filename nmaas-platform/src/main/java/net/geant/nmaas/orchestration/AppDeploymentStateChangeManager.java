@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -20,7 +20,6 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEven
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.ApplicationEvent;
@@ -103,8 +102,10 @@ public class AppDeploymentStateChangeManager {
                 .otherAttributes(ImmutableMap.of(
                         "accessURL" ,deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
                                 .getServiceAccessMethods().stream()
-                                .filter((ServiceAccessMethod sam) -> sam.getType().equals(ServiceAccessMethodType.DEFAULT))
-                                .findFirst().orElseThrow(() -> new ProcessingException("No default access method provided")).getUrl(),
+                                .filter(m -> m.getType().equals(ServiceAccessMethodType.DEFAULT))
+                                .map(ServiceAccessMethodView::getUrl)
+                                .findFirst()
+                                .orElse(""),
                         "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                         "owner", appDeployment.getOwner(),
                         "appInstanceName",appDeployment.getDeploymentName(),

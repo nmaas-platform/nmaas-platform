@@ -32,6 +32,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -138,18 +139,18 @@ public class UserLoginRegisterRepositoryTest {
         List<UserLoginDate> lst = userLoginRegisterRepository.findAllFirstAndLastLogin();
 
         assertEquals(2, lst.size());
-        assertEquals(firstLoginDate, lst.get(0).getMinLoginDate());
-        assertEquals(firstLoginDate, lst.get(1).getMinLoginDate());
-        assertEquals(lastLoginDate, lst.get(0).getMaxLoginDate());
-        assertEquals(lastLoginDate, lst.get(1).getMaxLoginDate());
+        assertTrue(lst.get(0).getMinLoginDate().isEqual(firstLoginDate));
+        assertTrue(lst.get(1).getMinLoginDate().isEqual(firstLoginDate));
+        assertTrue(lst.get(0).getMaxLoginDate().isEqual(lastLoginDate));
+        assertTrue(lst.get(1).getMaxLoginDate().isEqual(lastLoginDate));
 
         lst = userLoginRegisterRepository.findAllFirstAndLastLoginByType(UserLoginRegisterType.SUCCESS);
 
         assertEquals(2, lst.size());
-        assertEquals(firstLoginDate, lst.get(0).getMinLoginDate());
-        assertEquals(firstLoginDate, lst.get(1).getMinLoginDate());
-        assertEquals(lastLoginDate, lst.get(0).getMaxLoginDate());
-        assertEquals(lastLoginDate, lst.get(1).getMaxLoginDate());
+        assertTrue(lst.get(0).getMinLoginDate().isEqual(firstLoginDate));
+        assertTrue(lst.get(1).getMinLoginDate().isEqual(firstLoginDate));
+        assertTrue(lst.get(0).getMaxLoginDate().isEqual(lastLoginDate));
+        assertTrue(lst.get(1).getMaxLoginDate().isEqual(lastLoginDate));
     }
 
     @Test
@@ -179,8 +180,8 @@ public class UserLoginRegisterRepositoryTest {
         List<UserLoginDate> lst = userLoginRegisterRepository.findAllFirstAndLastLoginByType(UserLoginRegisterType.FAILURE);
 
         assertEquals(2, lst.size());
-        assertEquals(midLoginDate, lst.get(0).getMaxLoginDate());
-        assertEquals(midLoginDate, lst.get(1).getMaxLoginDate());
+        assertTrue(lst.get(0).getMaxLoginDate().isEqual(midLoginDate));
+        assertTrue(lst.get(1).getMaxLoginDate().isEqual(midLoginDate));
     }
 
 }

@@ -209,7 +209,10 @@
     "ITEMS_PER_PAGE": "Instanzen pro Seite",
     "ACTIONS": "Aktionen",
     "DEPLOYED": "Bereitgestellte Instanzen",
-    "UNDEPLOYED": "Entfernte Instanzen"
+    "UNDEPLOYED": "Entfernte Instanzen",
+    "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "HIDE_UNDEPLOYED": "Hide undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Überwachungsservice",
@@ -781,5 +784,10 @@
     "HIDE_BUTTON": "Cancel",
     "MAIN_ACCESS": "Main Interface",
     "EXTERNAL_ACCESS": "Access the application"
+  },
+  "GUEST_USER_MODAL": {
+    "HEADER": "Guest User account",
+    "CONTENT": "You are currently logged as guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
+    "CONFIRM_BUTTON": "OK"
   }
 }

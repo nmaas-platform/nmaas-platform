@@ -10,15 +10,13 @@ import {
   TranslateService
 } from "@ngx-translate/core";
 import {CustomMissingTranslationService} from "../i18n/custommissingtranslation.service";
-import {SharedModule} from "../shared";
 import {InternationalizationService} from "../service/internationalization.service";
-import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 import {AppConfigService, ConfigurationService} from "../service";
-import {HttpClient, HttpHandler} from "@angular/common/http";
-import {AuthService} from "../auth/auth.service";
 import {Observable, of} from "rxjs";
 import {Configuration} from "../model/configuration";
 import {Language} from "../model/language";
+import {Component} from "@angular/core";
+import {AuthService, DomainRoles} from "../auth/auth.service";
 
 export class MockAuthService {
 
@@ -166,42 +164,57 @@ class MockAppConfigService{
   }
 }
 
+@Component({
+  selector: 'app-navbar',
+  template: '<p>Mock app-navbar Component</p>'
+})
+class MockAppNavbar{}
+
+@Component({
+  selector: 'modal-test-instance',
+  template: '<p>Mock test instance modal</p>'
+})
+class MockTestInstanceModal{}
+
+@Component({
+  selector: 'modal-guest-user',
+  template: '<p>Mock guest user modal</p>'
+})
+class MockGuestUserModal{}
+
 describe('Component: AppMarket', () => {
   let component: AppMarketComponent;
   let fixture: any;
 
   beforeEach(async(() => {
+    let authUserSpy = jasmine.createSpyObj('AuthService', ['getDomainRoles']);
+    authUserSpy.getDomainRoles.and.returnValue(new Map<number, DomainRoles>());
+
     TestBed.configureTestingModule({
       declarations: [
-        AppMarketComponent
+        AppMarketComponent,
+          MockAppNavbar,
+          MockTestInstanceModal,
+          MockGuestUserModal,
       ],
       imports: [
         RouterTestingModule,
         TranslateModule.forRoot({
-          missingTranslationHandler: {provide: MissingTranslationHandler, useClass: CustomMissingTranslationService},
+          missingTranslationHandler: {
+            provide: MissingTranslationHandler,
+            useClass: CustomMissingTranslationService
+          },
           loader: {
             provide: TranslateLoader,
             useClass: TranslateFakeLoader
           }
         }),
-        JwtModule.forRoot({
-          config: {
-            tokenGetter: () => {
-              return '';
-            }
-          }
-        }),
-        SharedModule
       ],
       providers: [
         {provide: ServiceUnavailableService, useClass: MockServiceUnavailableService},
         {provide: AppConfigService, useClass: MockAppConfigService},
-        HttpClient,
-        HttpHandler,
+        {provide: AuthService, useValue: authUserSpy},
         {provide: ConfigurationService, useClass: MockConfigurationService},
-        TranslateService,
-        {provide: AuthService, useClass: MockAuthService},
-        JwtHelperService,
         {provide: InternationalizationService, useClass: MockInternationalizationService}
       ]
     })
@@ -217,4 +230,9 @@ describe('Component: AppMarket', () => {
   it('should create an instance', () => {
     expect(component).toBeTruthy();
   });
+
+  it('nav bar should be mocked', () => {
+    const nav: HTMLElement = fixture.nativeElement.querySelector('p');
+    expect(nav.textContent).toContain('Mock');
+  })
 });

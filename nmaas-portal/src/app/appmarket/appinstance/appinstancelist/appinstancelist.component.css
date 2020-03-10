@@ -12,3 +12,15 @@
     margin-left: 5px;
     margin-right: 5px;
 }
+
+.checkbox-label {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 9px;
+}
+
+.big-checkbox {
+    width: 20px;
+    height: 20px;
+}
