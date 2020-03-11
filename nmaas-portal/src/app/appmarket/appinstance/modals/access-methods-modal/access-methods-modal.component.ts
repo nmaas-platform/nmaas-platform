@@ -37,6 +37,9 @@ export class AccessMethodsModalComponent implements OnInit {
   }
 
   public validateURL(url: string): string {
+    if (isNullOrUndefined(url)) {
+      return "";
+    }
     if (url.startsWith('http://')) {
       return url.replace('http://', 'https://');
     }
