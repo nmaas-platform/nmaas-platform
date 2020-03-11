@@ -14,6 +14,8 @@ import {TranslateService} from "@ngx-translate/core";
 import {DomSanitizer} from "@angular/platform-browser";
 import {ApplicationState} from "../../../model/applicationstate";
 import {KubernetesChart} from "../../../model/kuberneteschart";
+import {AppAccessMethod} from "../../../model/app-access-method";
+import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
 
 @Component({
     selector: 'app-appversioncreatewizard',
@@ -110,6 +112,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
             this.selectedDeployParameters.push(key);
         });
         this.app.appDeploymentSpec.deployParameters = temp;
+
         if (isNullOrUndefined(this.app.configWizardTemplate)) {
             this.app.configWizardTemplate = new ConfigWizardTemplate();
             this.app.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
@@ -358,5 +361,21 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
         let result: any = new File([file], 'uploaded file', {type: file.type});
         result.objectURL = this.dom.bypassSecurityTrustUrl(URL.createObjectURL(result));
         return result;
+    }
+
+    public addNewAccessMethod(): void {
+        this.app.appDeploymentSpec.accessMethods.push(new AppAccessMethod())
+    }
+
+    public accessMethodTypeOptions(): string[] {
+        const keys: Set<string> = new Set(Object.keys(ServiceAccessMethodType));
+        if(this.app.appDeploymentSpec.accessMethods.find(p => ServiceAccessMethod.getServiceAccessMethodTypeAsEnum(p.type) == ServiceAccessMethodType.DEFAULT)) {
+            keys.delete(ServiceAccessMethodType[ServiceAccessMethodType.DEFAULT]);
+        }
+        return Array.from(keys);
+    }
+
+    public removeAccessMethod(event): void {
+        this.app.appDeploymentSpec.accessMethods.splice(event, 1);
     }
 }

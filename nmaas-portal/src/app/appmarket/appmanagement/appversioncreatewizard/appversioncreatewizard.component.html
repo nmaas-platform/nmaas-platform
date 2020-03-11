@@ -86,6 +86,17 @@
           <br>
           <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
         </div>
+
+        <div class="form-group form-group-sm" *ngIf="app.appDeploymentSpec.accessMethods">
+          <h4>Access methods</h4>
+          <ul>
+            <li *ngFor="let a of app.appDeploymentSpec.accessMethods; let i=index" class="no-bullet-list">
+              <app-access-method-edit [accessMethod]="a" [id]="i" [accessMethodTypes]="accessMethodTypeOptions()" (output)="removeAccessMethod($event)"></app-access-method-edit>
+            </li>
+          </ul>
+          <button class="btn btn-success" role="button" (click)="addNewAccessMethod()">Add new access method</button>
+        </div>
+
       </div>
     </form>
   </div>
