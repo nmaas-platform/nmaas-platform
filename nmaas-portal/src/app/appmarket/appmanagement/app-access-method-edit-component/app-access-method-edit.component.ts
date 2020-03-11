@@ -23,7 +23,7 @@ export class AppAccessMethodEditComponent implements OnInit {
   @Output()
   public output: EventEmitter<number> = new EventEmitter<number>();
 
-  private deployParamsMap: Map<string, string> = new Map<string, string>();
+  public deployParamsMap: Map<string, string> = new Map<string, string>();
 
   public newKey = '';
   public newValue = '';
