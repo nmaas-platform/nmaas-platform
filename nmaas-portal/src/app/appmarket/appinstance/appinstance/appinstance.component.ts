@@ -1,7 +1,7 @@
 import {AfterViewChecked, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-import {AppImagesService, AppInstanceService, AppsService, DomainService} from '../../../service';
+import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
 import {SecurePipe} from '../../../pipe';
@@ -17,7 +17,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
 import {ApplicationState} from '../../../model/applicationstate';
-import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
+import {ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
 import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
 
 @Component({
@@ -386,6 +386,39 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
             return url;
         }
         return 'https://' + url;
+    }
+
+    public accessMethodTypeAsEnum(a : ServiceAccessMethodType | string): ServiceAccessMethodType {
+        if(typeof  a === 'string') {
+            return ServiceAccessMethodType[a];
+        }
+        return a;
+    }
+
+    public shouldDisplayButton(): boolean {
+        if(!this.appInstance) {
+            return false;
+        }
+        if(this.appInstance.serviceAccessMethods.length != 1) {
+            return false;
+        }
+        if(this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) != ServiceAccessMethodType.DEFAULT) {
+            return false;
+        }
+        return true;
+    }
+
+    public shouldDisplayModal(): boolean {
+        if(!this.appInstance) {
+            return false;
+        }
+        if(this.appInstance.serviceAccessMethods.length > 1) {
+            return true;
+        }
+        if(this.appInstance.serviceAccessMethods.length == 1 && this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) != ServiceAccessMethodType.DEFAULT) {
+            return true;
+        }
+        return false;
     }
 
 }
