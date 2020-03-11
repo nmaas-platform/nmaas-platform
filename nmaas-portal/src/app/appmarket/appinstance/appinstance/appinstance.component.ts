@@ -379,6 +379,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     public validateURL(url: string): string {
+        if (isNullOrUndefined(url)) {
+            return "";
+        }
         if (url.startsWith('http://')) {
             return url.replace('http://', 'https://');
         }
