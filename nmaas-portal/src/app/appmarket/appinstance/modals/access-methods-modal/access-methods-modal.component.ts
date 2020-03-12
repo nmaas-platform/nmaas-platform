@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../../model/serviceaccessmethod";
 import {ModalComponent} from "../../../../shared/modal";
+import {isNullOrUndefined} from 'util';
 
 @Component({
   selector: 'app-access-methods-modal',
