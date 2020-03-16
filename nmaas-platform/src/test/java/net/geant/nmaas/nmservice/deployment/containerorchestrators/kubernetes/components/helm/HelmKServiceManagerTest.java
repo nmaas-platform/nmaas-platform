@@ -54,9 +54,9 @@ public class HelmKServiceManagerTest {
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "Web", null, null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "SSH", null, null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
         service.setAccessMethods(accessMethods);
         service.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
         service.setStorageSpace(2);

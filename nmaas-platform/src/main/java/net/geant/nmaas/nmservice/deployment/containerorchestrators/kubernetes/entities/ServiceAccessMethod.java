@@ -40,14 +40,17 @@ public class ServiceAccessMethod {
 
     private String url;
 
+    private String protocol;
+
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<HelmChartIngressVariable, String> deployParameters;
 
-    public ServiceAccessMethod(ServiceAccessMethodType type, String name, String url, Map<HelmChartIngressVariable, String> deployParameters) {
+    public ServiceAccessMethod(ServiceAccessMethodType type, String name, String url, String protocol, Map<HelmChartIngressVariable, String> deployParameters) {
         this.type = type;
         this.name = name;
         this.url = url;
+        this.protocol = protocol;
         this.deployParameters = deployParameters;
     }
 
@@ -59,6 +62,7 @@ public class ServiceAccessMethod {
         ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
         serviceAccessMethod.setType(appAccessMethod.getType());
         serviceAccessMethod.setName(appAccessMethod.getTag());
+        serviceAccessMethod.setProtocol(appAccessMethod.getName());
         serviceAccessMethod.setUrl(null);
         serviceAccessMethod.deployParameters = new HashMap<>();
         if (appAccessMethod.getDeployParameters() != null) {

@@ -3,6 +3,7 @@ create table service_access_method (
         name varchar(255),
         type varchar(255),
         url varchar(255),
+        protocol varchar(255),
         primary key (id)
 );
 
