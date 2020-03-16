@@ -153,9 +153,9 @@ describe('Component: AppInstance', () => {
     } as User,
     state: AppInstanceState.RUNNING,
     serviceAccessMethods: [
-      {type: ServiceAccessMethodType.DEFAULT, name: "Default link", url: "http://oxi-virt-1.test.nmaas.geant.org"},
-      {type: ServiceAccessMethodType.EXTERNAL, name: "Second link", url: "http://second.org"},
-      {type: ServiceAccessMethodType.INTERNAL, name: "Internal", url: "internal"}
+      {type: ServiceAccessMethodType.DEFAULT, name: "Default link", protocol: "Web", url: "http://oxi-virt-1.test.nmaas.geant.org"},
+      {type: ServiceAccessMethodType.EXTERNAL, name: "Second link", protocol: "Web", url: "http://second.org"},
+      {type: ServiceAccessMethodType.INTERNAL, name: "Internal", protocol: "SSH", url: "internal"}
     ],
     userFriendlyState: "Application instance is running",
     application: application,

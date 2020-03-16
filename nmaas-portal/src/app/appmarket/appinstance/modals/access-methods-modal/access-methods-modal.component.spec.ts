@@ -10,10 +10,10 @@ describe('AccessMethodsModalComponent', () => {
   let fixture: ComponentFixture<AccessMethodsModalComponent>;
 
   let am: ServiceAccessMethod[] = [
-    {type: ServiceAccessMethodType.DEFAULT, name: 'Default', url: 'https://some.default.url'},
-    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-1', url: 'external.org'},
-    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-2', url: 'http://external.stack.org'},
-    {type: ServiceAccessMethodType.INTERNAL, name: 'SSH access', url: 'ssh user@remote'},
+    {type: ServiceAccessMethodType.DEFAULT, name: 'Default', protocol: "Web", url: 'https://some.default.url'},
+    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-1', protocol: "Web", url: 'external.org'},
+    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-2', protocol: "Web", url: 'http://external.stack.org'},
+    {type: ServiceAccessMethodType.INTERNAL, name: 'SSH access', protocol: "SSH", url: 'ssh user@remote'},
   ];
 
   beforeEach(async(() => {
