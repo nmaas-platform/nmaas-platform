@@ -227,14 +227,31 @@ echo App9
 curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app09-booked.json
 echo.
 echo App9 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\booked.png;type=image/png" %API_URL%/apps/8/logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\booked.png;type=image/png" %API_URL%/apps/9/logo
 echo.
 echo App9 screenshots
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked1.png;type=image/png" %API_URL%/apps/8/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked1.png;type=image/png" %API_URL%/apps/9/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked2.png;type=image/png" %API_URL%/apps/8/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked2.png;type=image/png" %API_URL%/apps/9/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked3.png;type=image/png" %API_URL%/apps/8/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked3.png;type=image/png" %API_URL%/apps/9/screenshots
+echo.
+
+echo.
+echo App10
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app10-spa-inventory.json
+echo.
+echo App10 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\geant.png;type=image/png" %API_URL%/apps/10/logo
+echo.
+echo App10 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\spa-inventory\spa-inventory1.png;type=image/png" %API_URL%/apps/10/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\spa-inventory\spa-inventory2.png;type=image/png" %API_URL%/apps/10/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\spa-inventory\spa-inventory3.png;type=image/png" %API_URL%/apps/10/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\spa-inventory\spa-inventory4.png;type=image/png" %API_URL%/apps/10/screenshots
 echo.
 
 echo.
