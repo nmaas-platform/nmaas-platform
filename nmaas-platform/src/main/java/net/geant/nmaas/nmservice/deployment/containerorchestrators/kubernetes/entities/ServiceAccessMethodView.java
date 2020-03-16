@@ -15,10 +15,12 @@ public class ServiceAccessMethodView {
 
     private String name;
 
+    private String protocol;
+
     private String url;
 
     public static ServiceAccessMethodView fromServiceAccessMethod(ServiceAccessMethod accessMethod) {
-        return new ServiceAccessMethodView(accessMethod.getType(), accessMethod.getName(), accessMethod.getUrl());
+        return new ServiceAccessMethodView(accessMethod.getType(), accessMethod.getName(), accessMethod.getProtocol(), accessMethod.getUrl());
     }
 
 }

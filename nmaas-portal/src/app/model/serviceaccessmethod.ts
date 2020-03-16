@@ -7,5 +7,6 @@ export enum ServiceAccessMethodType {
 export class ServiceAccessMethod {
     public type: ServiceAccessMethodType = undefined;
     public name : string = undefined;
+    public protocol : string = undefined;
     public url : string = undefined;
 }

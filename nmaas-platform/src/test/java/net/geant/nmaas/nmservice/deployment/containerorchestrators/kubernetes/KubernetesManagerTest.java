@@ -91,9 +91,9 @@ public class KubernetesManagerTest {
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "Web", null, null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "SSH", null, null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
         service.setAccessMethods(accessMethods);
         when(repositoryManager.loadService(any())).thenReturn(service);
     }
@@ -231,7 +231,7 @@ public class KubernetesManagerTest {
 
     @Test
     public void shouldTriggerServiceDeployment() {
-        when(ingressResourceManager.generateServiceExternalURL("domain", null, null, false)).thenReturn("service.url");
+        when(ingressResourceManager.generateServiceExternalURL("domain", null, null, false)).thenReturn("base.url");
         manager.deployNmService(deploymentId);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
@@ -239,11 +239,13 @@ public class KubernetesManagerTest {
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
-                        && m.getUrl().equals("service.url")));
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("base.url")));
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                 m.isOfType(ServiceAccessMethodType.EXTERNAL)
-                        && m.getName().equals("Web")
-                        && m.getUrl().equals("web-service.url")));
+                        && m.getName().equals("web-service")
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("web-service-base.url")));
         verify(serviceLifecycleManager, times(1)).deployService(deploymentId);
     }
 
@@ -267,7 +269,8 @@ public class KubernetesManagerTest {
             assertEquals(3, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
-                            && m.getName().equals("SSH")
+                            && m.getName().equals("ssh-service")
+                            && m.getProtocol().equals("SSH")
                             && m.getUrl().equals("192.168.100.1")));
         });
     }
@@ -308,18 +311,24 @@ public class KubernetesManagerTest {
     public void shouldRetrieveServiceAccessDetails() {
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "Web", "app1.nmaas.eu", null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "SSH", "192.168.1.1", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", "app1.nmaas.eu", "Web", null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", "192.168.1.1", "SSH", null));
         service.setAccessMethods(accessMethods);
         when(repositoryManager.loadService(deploymentId)).thenReturn(service);
 
         AppUiAccessDetails appUiAccessDetails = manager.serviceAccessDetails(deploymentId);
         assertEquals(2, appUiAccessDetails.getServiceAccessMethods().size());
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
-            m.getType().equals(ServiceAccessMethodType.EXTERNAL) && m.getName().equals("Web") && m.getUrl().equals("app1.nmaas.eu")
+            m.getType().equals(ServiceAccessMethodType.EXTERNAL)
+                    && m.getName().equals("web-service")
+                    && m.getProtocol().equals("Web")
+                    && m.getUrl().equals("app1.nmaas.eu")
         ));
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
-                m.getType().equals(ServiceAccessMethodType.INTERNAL) && m.getName().equals("SSH") && m.getUrl().equals("192.168.1.1")
+                m.getType().equals(ServiceAccessMethodType.INTERNAL)
+                        && m.getName().equals("ssh-service")
+                        && m.getProtocol().equals("SSH")
+                        && m.getUrl().equals("192.168.1.1")
         ));
     }
 

@@ -82,7 +82,7 @@ public class AppDeploymentStateChangeManagerTest {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "url"));
+            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
         }}));
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
 
