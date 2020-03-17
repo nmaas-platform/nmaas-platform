@@ -17,7 +17,8 @@
                     <h2 style="margin-bottom: 4px;">{{appInstance?.name}} ({{app?.name}})</h2>
                     <rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.id)"></rate>
                     <div class="text-muted" style="font-size: small;">
-                        v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
+                        v.{{app?.appVersions.length > 0 ? app?.appVersions[0].version : 'None'}}
+                        | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
                         | <a href="{{app?.wwwUrl}}">WWW</a>
                         | <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
                         | <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
@@ -38,15 +39,11 @@
                     </a>
                 </div>
                 <!-- Deployment buttons -->
-                <div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <div *ngIf="appInstance" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
                         <a *ngIf="shouldDisplayButton()"
                            href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}"
-                           class = "btn btn-success" role = "button"
-                           [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true"
-                           tooltip="{{'APP_INSTANCE.GO_TO_APP_TOOLTIP' | translate }}"
-                           [display]="!app.appDeploymentSpec.exposesWebUI"
-                           [options]="defaultTooltipOptions">
+                           class = "btn btn-success" role = "button">
                             {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
                         </a>
                         <div class="btn-group" *ngIf="shouldDisplayModal()">

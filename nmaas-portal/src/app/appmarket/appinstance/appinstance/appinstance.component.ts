@@ -17,8 +17,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
 import {ApplicationState} from '../../../model/applicationstate';
-import {ServiceAccessMethodType} from "../../../model/serviceaccessmethod";
-import {AccessMethodsModalComponent} from "../modals/access-methods-modal/access-methods-modal.component";
+import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -109,18 +109,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
                     this.submission.data.configuration = JSON.parse(appInstance.configuration);
 
-                    if(!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
-                        this.configurationUpdateTemplate = this.getTemplate(this.app.configUpdateWizardTemplate.template);
-                        const validation = {
-                            min: 1,
-                            max: 100,
-                        };
-                        validation.max = appInstance.domain.applicationStatePerDomain.find(x => x.applicationBaseName == this.app.name).pvStorageSizeLimit;
-                        this.refreshForm.emit({
-                            property: 'form',
-                            value: this.addValidationToConfigurationTemplateSpecificElement({key: "storageSpace"}, validation),
-                        });
+                    if (!isNullOrUndefined(this.appInstance.configUpdateWizardTemplate)) {
+                        this.configurationUpdateTemplate = this.getTemplate(this.appInstance.configUpdateWizardTemplate.template);
                     }
+
+                    // apply validation from application state per domain
+                    const validation = {
+                        min: 1,
+                        max: 100,
+                    };
+                    validation.max = appInstance.domain.applicationStatePerDomain
+                        .find(x => x.applicationBaseName === this.appInstance.applicationName).pvStorageSizeLimit;
+                    this.refreshForm.emit({
+                        property: 'form',
+                        value: this.addValidationToConfigurationTemplateSpecificElement({key: 'storageSpace'}, validation),
+                    });
                 },
                 err => {
                     console.error(err);
@@ -157,7 +160,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
             return;
         }
         if (Array.isArray(target)) {
-            for (let t of target) {
+            for (const t of target) {
                 this.recursiveSearchObjectToAddElementWhenKeyMatches(t, key, element);
             }
         } else if (typeof target === 'object') {
@@ -201,7 +204,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     private filterRunningApps(apps: AppInstance[]): AppInstance[] {
-        switch (this.app.name) {
+        switch (this.appInstance.applicationName) {
             case 'Grafana':
                 return apps.filter(app => app.applicationName === 'Prometheus');
             default:
@@ -221,19 +224,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                 const stepWizardBtnDangerListLength: number = document.getElementsByClassName('stepwizard-btn-danger').length;
 
                 if (this.appInstanceStatus.state === this.AppInstanceState.FAILURE) {
-                    if (appPropElement)
+                    if (appPropElement) {
                         document.getElementById('app-prop').scrollLeft =
                             (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
                                 document.getElementsByClassName('stepwizard-btn-danger').length * 180);
+                    }
                 }
 
                 this.appInstanceProgress.activeState = this.appInstanceStatus.state;
                 this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
 
-                if (appPropElement)
+                if (appPropElement) {
                     document.getElementById('app-prop').scrollLeft =
                         (document.getElementsByClassName('stepwizard-btn-success').length * 180 +
                             document.getElementsByClassName('stepwizard-btn-danger').length * 180);
+                }
 
                 if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
                     if (this.storage.has('appConfig_' + this.appInstanceId.toString())) {
@@ -314,8 +319,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
             },
             (error) => {
                 console.error(error);
-                //TODO submission error message
-                throw "Invalid submission";
+                // TODO submission error message
+                throw new Error('Invalid submission');
             });
     }
 
@@ -380,7 +385,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
     public validateURL(url: string): string {
         if (isNullOrUndefined(url)) {
-            return "";
+            return '';
         }
         if (url.startsWith('http://')) {
             return url.replace('http://', 'https://');
@@ -391,34 +396,35 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return 'https://' + url;
     }
 
-    public accessMethodTypeAsEnum(a : ServiceAccessMethodType | string): ServiceAccessMethodType {
-        if(typeof  a === 'string') {
+    public accessMethodTypeAsEnum(a: ServiceAccessMethodType | string): ServiceAccessMethodType {
+        if (typeof  a === 'string') {
             return ServiceAccessMethodType[a];
         }
         return a;
     }
 
     public shouldDisplayButton(): boolean {
-        if(!this.appInstance) {
+        if (!this.appInstance) {
             return false;
         }
-        if(this.appInstance.serviceAccessMethods.length != 1) {
+        if (this.appInstance.serviceAccessMethods.length !== 1) {
             return false;
         }
-        if(this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) != ServiceAccessMethodType.DEFAULT) {
+        if (this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) !== ServiceAccessMethodType.DEFAULT) {
             return false;
         }
         return true;
     }
 
     public shouldDisplayModal(): boolean {
-        if(!this.appInstance) {
+        if (!this.appInstance) {
             return false;
         }
-        if(this.appInstance.serviceAccessMethods.length > 1) {
+        if (this.appInstance.serviceAccessMethods.length > 1) {
             return true;
         }
-        if(this.appInstance.serviceAccessMethods.length == 1 && this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) != ServiceAccessMethodType.DEFAULT) {
+        if (this.appInstance.serviceAccessMethods.length === 1 &&
+            this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) !== ServiceAccessMethodType.DEFAULT) {
             return true;
         }
         return false;
