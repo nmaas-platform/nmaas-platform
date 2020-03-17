@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../../model/serviceaccessmethod";
-import {ModalComponent} from "../../../../shared/modal";
+import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../../model/serviceaccessmethod';
+import {ModalComponent} from '../../../../shared/modal';
 import {isNullOrUndefined} from 'util';
 
 @Component({
@@ -23,15 +23,15 @@ export class AccessMethodsModalComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    if(this.accessMethods) {
+    if (this.accessMethods) {
       this.defaultAccessMethod = this.accessMethods.find(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.DEFAULT);
       this.externalAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.EXTERNAL);
       this.internalAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.INTERNAL);
     }
   }
 
-  public accessMethodTypeAsEnum(a : ServiceAccessMethodType | string): ServiceAccessMethodType {
-    if(typeof  a === 'string') {
+  public accessMethodTypeAsEnum(a: ServiceAccessMethodType | string): ServiceAccessMethodType {
+    if (typeof  a === 'string') {
       return ServiceAccessMethodType[a];
     }
     return a;
@@ -39,7 +39,7 @@ export class AccessMethodsModalComponent implements OnInit {
 
   public validateURL(url: string): string {
     if (isNullOrUndefined(url)) {
-      return "";
+      return '';
     }
     if (url.startsWith('http://')) {
       return url.replace('http://', 'https://');
@@ -50,11 +50,11 @@ export class AccessMethodsModalComponent implements OnInit {
     return 'https://' + url;
   }
 
-  public show(){
+  public show() {
     this.modal.show();
   }
 
-  public hide(){
+  public hide() {
     this.modal.hide();
   }
 
