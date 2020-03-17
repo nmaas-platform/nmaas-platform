@@ -651,7 +651,27 @@
     "EXPOSE_WEB_UI": "Udostępnij graficzny interfejs użytkownika",
     "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interfejs użytkownika",
     "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
-    "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}"
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}",
+    "ACCESS_METHODS": "Metody dostepu",
+    "NEW_ACCESS_METHOD": "Dodaj metodę dostępu"
+  },
+  "APP_ACCESS_METHOD_EDIT": {
+    "BASIC_INFO": "Basic information",
+    "TYPE": "Type",
+    "NAME": "Name",
+    "TAG": "Tag",
+    "DEPLOY_PARAMETERS": "Deploy parameters",
+    "PARAM": "Deploy parameter",
+    "REMOVE_PARAM": "Remove",
+    "ADD_PARAM": "Add",
+    "NEW_DEPLOY_PARAMETER": "New deploy parameter",
+    "NEW_KEY": "Deploy parameter key",
+    "NEW_VALUE": "Deploy parameter value",
+    "SAVE_CHANGES": "Save",
+    "REJECT_CHANGES": "Reject",
+    "APPLY_CHANGES": "Apply changes to deploy parameters",
+    "CHANGES_TOOLTIP": "Accept or reject changes in deployment parameters",
+    "REMOVE_TOOLTIP": "Remove access method"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
