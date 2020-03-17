@@ -18,7 +18,7 @@ public class AppInstanceView extends AppInstanceBase {
 	
 	private Long createdAt;
 	
-	private UserView owner;
+	private UserBase owner;
 	
 	private String configuration;
 	
@@ -29,6 +29,8 @@ public class AppInstanceView extends AppInstanceBase {
 	private Set<ServiceAccessMethodView> serviceAccessMethods;
 
 	private ConfigWizardTemplateView configWizardTemplate;
+
+	private ConfigWizardTemplateView configUpdateWizardTemplate;
 
 	private String descriptiveDeploymentId;
 }

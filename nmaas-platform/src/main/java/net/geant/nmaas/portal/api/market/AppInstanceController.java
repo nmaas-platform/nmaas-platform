@@ -433,6 +433,12 @@ public class AppInstanceController extends AppBaseController {
             ai.setConfigWizardTemplate(null);
         }
 
+        try {
+            ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigUpdateWizardTemplate().getTemplate()));
+        } catch (Exception e) {
+            ai.setConfigUpdateWizardTemplate(null);
+        }
+
         return ai;
     }
 
