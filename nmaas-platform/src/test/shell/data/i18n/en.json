@@ -366,7 +366,8 @@
     "RATING_INFO": "Click star to rate an application",
     "RATING_BREAKDOWN": "Rating breakdown",
     "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
-    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information."
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_NOT_AVAILABLE": "This information is not available"
   },
   "RESTART_MODAL": {
     "HEADER": "Restart confirmation",
