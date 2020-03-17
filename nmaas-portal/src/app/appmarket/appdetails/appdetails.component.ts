@@ -38,6 +38,12 @@ export class AppDetailsComponent implements OnInit {
         'theme': 'dark'
     };
 
+    public linksTooltipOptions = {
+        'placement': 'bottom',
+        'show-delay': '50',
+        'theme': 'dark'
+    };
+
     protected state = 0;
 
     @ViewChild(AppInstallModalComponent)

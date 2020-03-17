@@ -1,19 +1,19 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {AccessMethodsModalComponent} from './access-methods-modal.component';
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {SharedModule} from "../../../../shared";
-import {ServiceAccessMethod, ServiceAccessMethodType} from "../../../../model/serviceaccessmethod";
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {SharedModule} from '../../../../shared';
+import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../../model/serviceaccessmethod';
 
 describe('AccessMethodsModalComponent', () => {
   let component: AccessMethodsModalComponent;
   let fixture: ComponentFixture<AccessMethodsModalComponent>;
 
-  let am: ServiceAccessMethod[] = [
-    {type: ServiceAccessMethodType.DEFAULT, name: 'Default', protocol: "Web", url: 'https://some.default.url'},
-    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-1', protocol: "Web", url: 'external.org'},
-    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-2', protocol: "Web", url: 'http://external.stack.org'},
-    {type: ServiceAccessMethodType.INTERNAL, name: 'SSH access', protocol: "SSH", url: 'ssh user@remote'},
+  const am: ServiceAccessMethod[] = [
+    {type: ServiceAccessMethodType.DEFAULT, name: 'Default', protocol: 'Web', url: 'https://some.default.url'},
+    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-1', protocol: 'Web', url: 'external.org'},
+    {type: ServiceAccessMethodType.EXTERNAL, name: 'External-2', protocol: 'Web', url: 'http://external.stack.org'},
+    {type: ServiceAccessMethodType.INTERNAL, name: 'SSH access', protocol: 'SSH', url: 'ssh user@remote'},
   ];
 
   beforeEach(async(() => {

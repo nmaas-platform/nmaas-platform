@@ -366,7 +366,8 @@
     "RATING_INFO": "Klicken Sie auf den Stern, um eine Anwendung zu bewerten",
     "RATING_BREAKDOWN": "Rating-Aufschlüsselung",
     "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
-    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information."
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_NOT_AVAILABLE": "This information is not available"
   },
   "RESTART_MODAL": {
     "HEADER": "Bestätigung für Neustart",
@@ -650,7 +651,27 @@
     "EXPOSE_WEB_UI": "Legen Sie die Webbenutzeroberfläche offen",
     "EXPOSE_WEB_UI_TOOLTIP": "Überprüfen Sie, ob die Anwendung die Webbenutzeroberfläche verfügbar macht",
     "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
-    "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}"
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}",
+    "ACCESS_METHODS": "Access methods",
+    "NEW_ACCESS_METHOD": "Add new access method"
+  },
+  "APP_ACCESS_METHOD_EDIT": {
+    "BASIC_INFO": "Basic information",
+    "TYPE": "Type",
+    "NAME": "Name",
+    "TAG": "Tag",
+    "DEPLOY_PARAMETERS": "Deploy parameters",
+    "PARAM": "Deploy parameter",
+    "REMOVE_PARAM": "Remove",
+    "ADD_PARAM": "Add",
+    "NEW_DEPLOY_PARAMETER": "New deploy parameter",
+    "NEW_KEY": "Deploy parameter key",
+    "NEW_VALUE": "Deploy parameter value",
+    "SAVE_CHANGES": "Save",
+    "REJECT_CHANGES": "Reject",
+    "APPLY_CHANGES": "Apply changes to deploy parameters",
+    "CHANGES_TOOLTIP": "Accept or reject changes in deployment parameters",
+    "REMOVE_TOOLTIP": "Remove access method"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",

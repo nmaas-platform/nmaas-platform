@@ -281,19 +281,16 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public addToDeployParametersMap(key: string, event) {
-        this.app.appDeploymentSpec.deployParameters.set(ParameterType[key], event.target.value);
+        this.app.appDeploymentSpec.deployParameters[key] = event.target.value;
     }
 
     public getDeployParameterValue(key: string) {
-        if (this.app.appDeploymentSpec.deployParameters instanceof Map) {
-            return this.app.appDeploymentSpec.deployParameters.get(ParameterType[key]) || '';
-        }
-        return '';
+        return this.app.appDeploymentSpec.deployParameters[key] || '';
     }
 
     public removeDeployParameterFromMap(event) {
         if (!event.value.some(val => val === event.itemValue)) {
-            this.app.appDeploymentSpec.deployParameters.delete(ParameterType[event.itemValue as string]);
+            delete this.app.appDeploymentSpec.deployParameters[event.itemValue as string];
         }
     }
 
