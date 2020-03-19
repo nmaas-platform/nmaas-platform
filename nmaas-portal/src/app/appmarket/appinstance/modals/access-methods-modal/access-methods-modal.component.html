@@ -1,10 +1,10 @@
 <nmaas-modal [styleModal]="'info'">
   <div class="nmaas-modal-header">{{'APP_ACCESS_METHODS_MODAL.HEADER' | translate}}</div>
   <div class="nmaas-modal-body">
-    <div *ngIf="defaultAccessMethod" class="row">
+    <div *ngIf="defaultAccessMethod" class="">
       <a type="button" class="btn btn-success" href="{{validateURL(defaultAccessMethod.url)}}">{{'APP_ACCESS_METHODS_MODAL.MAIN_ACCESS' | translate}}</a>
     </div>
-    <div *ngIf="externalAccessMethods" class="row">
+    <div *ngIf="externalAccessMethods.length > 0" class="">
       <h4>{{'APP_ACCESS_METHODS_MODAL.EXTERNAL_HEADER' | translate}}</h4>
       <table class="table table-hover table-condensed" aria-describedby="Table with external access details">
         <thead>
@@ -21,7 +21,7 @@
         </tbody>
       </table>
     </div>
-    <div *ngIf="internalAccessMethods" class="row">
+    <div *ngIf="internalAccessMethods.length > 0" class="">
       <h4>{{'APP_ACCESS_METHODS_MODAL.INTERNAL_HEADER' | translate}}</h4>
       <table class="table table-hover table-condensed" aria-describedby="Table with internal access details">
         <thead>
@@ -33,7 +33,7 @@
         <tbody>
         <tr *ngFor="let am of internalAccessMethods">
           <td><strong>{{am.name}}</strong></td>
-          <td><div class="well well-sm">{{!!am.url ? am.url: "Not available"}}</div></td>
+          <td><div class="well well-sm">{{am.protocol}}: {{!!am.url ? am.url: "Not available"}}</div></td>
         </tr>
         </tbody>
       </table>

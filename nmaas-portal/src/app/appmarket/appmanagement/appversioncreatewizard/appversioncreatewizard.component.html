@@ -79,7 +79,11 @@
         <div class="form-group form-group-sm">
           <label for="deployParameters" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETERS_DROPDOWN' | translate}}</label>
           <br>
-          <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+          <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}"
+                         [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters"
+                         tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}"
+                         placement="left" show-delay="50" theme="dark" [display]="true"
+                         [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
         </div>
         <div class="form-group form-group-sm" *ngFor="let val of selectedDeployParameters">
           <label for="val" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETER_LABEL' | translate}}: {{val}}</label>
@@ -88,13 +92,13 @@
         </div>
 
         <div class="form-group form-group-sm" *ngIf="app.appDeploymentSpec.accessMethods">
-          <h4>Access methods</h4>
+          <h4>{{'APPS_WIZARD.ACCESS_METHODS' | translate}}</h4>
           <ul>
             <li *ngFor="let a of app.appDeploymentSpec.accessMethods; let i=index" class="no-bullet-list">
               <app-access-method-edit [accessMethod]="a" [id]="i" [accessMethodTypes]="accessMethodTypeOptions()" (output)="removeAccessMethod($event)"></app-access-method-edit>
             </li>
           </ul>
-          <button class="btn btn-success" role="button" (click)="addNewAccessMethod()">Add new access method</button>
+          <button class="btn btn-success" role="button" (click)="addNewAccessMethod()">{{'APPS_WIZARD.NEW_ACCESS_METHOD' | translate}}</button>
         </div>
 
       </div>

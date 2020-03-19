@@ -407,7 +407,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         if (!this.appInstance) {
             return false;
         }
-        if (this.appInstance.serviceAccessMethods.length !== 1) {
+        if(!this.appInstance.serviceAccessMethods) {
+            return false;
+        }
+        if(this.appInstance.serviceAccessMethods.length !== 1) {
             return false;
         }
         if (this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) !== ServiceAccessMethodType.DEFAULT) {
@@ -418,6 +421,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
     public shouldDisplayModal(): boolean {
         if (!this.appInstance) {
+            return false;
+        }
+        if (!this.appInstance.serviceAccessMethods) {
             return false;
         }
         if (this.appInstance.serviceAccessMethods.length > 1) {

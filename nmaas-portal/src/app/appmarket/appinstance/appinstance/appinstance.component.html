@@ -197,5 +197,5 @@
     <nmaas-modal-app-restart [appInstanceId]="appInstanceId"
                              [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
     <!-- App access methods modal -->
-    <app-access-methods-modal *ngIf="appInstance" [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
+    <app-access-methods-modal *ngIf="appInstance?.serviceAccessMethods" [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
 </div>
