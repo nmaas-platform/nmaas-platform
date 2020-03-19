@@ -1,7 +1,7 @@
 import {User} from './user';
 import {AppInstanceState} from './appinstancestatus';
-import {ConfigWizardTemplate} from "./configwizardtemplate";
-import {ServiceAccessMethod} from "./serviceaccessmethod";
+import {ConfigWizardTemplate} from './configwizardtemplate';
+import {ServiceAccessMethod} from './serviceaccessmethod';
 
 export class AppInstanceRequest {
 
@@ -30,5 +30,6 @@ export class AppInstance {
   public userFriendlyState = undefined;
   public serviceAccessMethods: ServiceAccessMethod[] = undefined;
   public configWizardTemplate: ConfigWizardTemplate = undefined;
+  public configUpdateWizardTemplate: ConfigWizardTemplate = undefined;
   public descriptiveDeploymentId: string = undefined;
 }

@@ -316,8 +316,8 @@ public class AppInstanceControllerTest {
         AppInstanceViewExtended appInstanceView = modelMapper.map(appInstance, AppInstanceViewExtended.class);
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain.getId(), appInstanceView.getDomainId());
-        DomainView dv = appInstanceView.getDomain();
-        ApplicationView av = appInstanceView.getApplication();
+        DomainBase dv = appInstanceView.getDomain();
+        ApplicationBriefView av = appInstanceView.getApplication();
         assertEquals(application.getId(), av.getId());
         assertEquals(application.getName(), av.getName());
         assertEquals(domain.getId(), dv.getId());
