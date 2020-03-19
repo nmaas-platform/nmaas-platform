@@ -1,6 +1,6 @@
 {
 	"name":"SPA Inventory",
-	"version":"0.1",
+	"version":"1.2",
 	"license":"",
 	"licenseUrl": "",
 	"tags": [ "management" ],
@@ -36,7 +36,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-spa-inventory",
-				"version": "1.0.0"
+				"version": "0.1.0"
 			}
 		},
 		"defaultStorageSpace": 3,
