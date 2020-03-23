@@ -255,6 +255,21 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 
 echo.
+echo App11
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app11-statping.json
+echo.
+echo App11 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\statping.png;type=image/png" %API_URL%/apps/11/logo
+echo.
+echo App11 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\statping\statping1.png;type=image/png" %API_URL%/apps/11/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\statping\statping2.png;type=image/png" %API_URL%/apps/11/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\statping\statping3.png;type=image/png" %API_URL%/apps/11/screenshots
+echo.
+
+echo.
 echo ---------------------
 echo Get all apps
 curl -X GET %API_URL%/apps --header "Authorization: Bearer %token%"
