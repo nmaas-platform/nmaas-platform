@@ -1,0 +1,115 @@
+{
+	"name":"SPA Inventory",
+	"version":"1.2",
+	"license":"",
+	"licenseUrl": "",
+	"tags": [ "management" ],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Topology database with TMF-compliant API",
+			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Topology database with TMF-compliant API",
+			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Topology database with TMF-compliant API",
+			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Topology database with TMF-compliant API",
+			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+		}
+	],
+	"wwwUrl": "",
+	"sourceUrl": "",
+	"issuesUrl": "",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-spa-inventory",
+				"version": "0.1.0"
+			}
+		},
+		"defaultStorageSpace": 3,
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "DEFAULT",
+				"name": "SPA Inventory",
+				"tag": "spa",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired": false
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [ ]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 3GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}
