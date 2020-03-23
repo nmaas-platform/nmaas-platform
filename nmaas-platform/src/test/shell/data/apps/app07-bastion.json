@@ -2,7 +2,7 @@
 	"name":"Bastion",
 	"version":"0.3",
 	"license":"Ubuntu",
-	"licenseUrl": "https://ubuntu.com",
+	"licenseUrl": "",
 	"tags": [ "management" ],
 	"descriptions": [
 		{
