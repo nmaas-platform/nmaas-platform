@@ -7,22 +7,22 @@
 	"descriptions": [
 		{
 			"language": "en",
-			"briefDescription": "LibreNMS is an autodiscovering SNMP based network monitoring tool.",
+			"briefDescription": "Autodiscovering SNMP based network monitoring tool",
 			"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users,</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>"
 		},
 		{
 			"language": "de",
-			"briefDescription": "LibreNMS is an autodiscovering SNMP based network monitoring tool.",
+			"briefDescription": "Autodiscovering SNMP based network monitoring tool",
 			"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users,</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>"
 		},
 		{
 			"language": "fr",
-			"briefDescription": "LibreNMS is an autodiscovering SNMP based network monitoring tool.",
+			"briefDescription": "Autodiscovering SNMP based network monitoring tool",
 			"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users,</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>"
 		},
 		{
 			"language": "pl",
-			"briefDescription": "LibreNMS to narzędzie do monitorowania sieci oparte o SNMP.",
+			"briefDescription": "Autodiscovering SNMP based network monitoring tool",
 			"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users,</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>"
 		}
 	],
