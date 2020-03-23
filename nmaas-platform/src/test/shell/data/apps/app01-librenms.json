@@ -1,8 +1,8 @@
 {
 	"name":"LibreNMS",
 	"version":"1.47",
-	"license":"GPLv3",
-	"licenseUrl": "https://opensource.org/licenses/GPL-3.0",
+	"license":"GPL 3.0",
+	"licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
 	"tags": [ "management", "monitoring"],
 	"descriptions": [
 		{
@@ -26,7 +26,7 @@
 			"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users,</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>"
 		}
 	],
-	"wwwUrl": "http://www.librenms.org/",
+	"wwwUrl": "http://www.librenms.org",
 	"sourceUrl": "https://github.com/librenms/librenms",
 	"issuesUrl": "https://github.com/librenms/librenms/issues",
 	"appDeploymentSpec": {

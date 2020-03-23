@@ -2,7 +2,7 @@
 	"name":"Statping",
 	"version":"0.90.15",
 	"license":"GPL 3.0",
-	"licenseUrl": "https://github.com/statping/statping/blob/master/LICENSE",
+	"licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
 	"tags": [
 		"monitoring",
 		"visualization"
