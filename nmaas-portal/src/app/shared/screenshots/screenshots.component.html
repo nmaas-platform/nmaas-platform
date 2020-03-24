@@ -19,12 +19,11 @@
 		<a data-slide="next" href="#media" class="right carousel-control">&gt;</a>
 	</div>
 </div>
-<nmaas-modal (click)="modal.hide()">
-<div class="nmaas-modal-header">{{'SCREENSHOTS.HEADER' | translate}}</div>
-<div class="nmaas-modal-body">
-	<img style="max-height: 60vh" alt="Screenshot" [src]="selectedImg | secure">
+
+<!--custom modal-->
+<div class="modal fade screenshot-modal" (click)="hideModal()"
+	 [ngClass]="{'in': customModalVisibleAnimate}"
+	 [ngStyle]="{'display': customModalVisible ? 'flex' : 'none',
+	 'background-color': customModalVisible ? 'rgba(0, 0, 0, 0.8)': 'rgba(0, 0, 0, 0)'}">
+	<img class="screenshot-modal-image" alt="Screenshot" [src]="selectedImg | secure">
 </div>
-<div class="nmaas-modal-footer">
-	<button type="button" class="btn btn-default" (click)="modal.hide()">{{'SCREENSHOTS.CLOSE_BUTTON' | translate}}</button>
-</div>
-</nmaas-modal>

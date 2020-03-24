@@ -1,6 +1,6 @@
 <div class="modal fade" tabindex="-1"
 	[ngClass]="{'in': visibleAnimate}"
-	[ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
+	[ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? '1' : '0'}">
 	<div class="modal-dialog modal-lg" style="max-height: 90%; overflow: auto; padding-top: calc(5vh + 75px); z-index: 1200;">
 		<div class="modal-content">
             <div class="modal-header text-center" [ngClass]="{'alert-info': this.isInfo, 'alert-danger': this.isError,

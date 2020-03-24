@@ -49,6 +49,7 @@ hr {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	/*this ia a dirty hack to force ellipsis*/
+	/*https://css-tricks.com/line-clampin/#article-header-id-0*/
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	/* autoprefixer: ignore next */

@@ -16,15 +16,15 @@ import { GroupPipe, SecurePipe } from '../../pipe/index';
 })
 export class ScreenshotsComponent implements OnInit {
 
-    @ViewChild(ModalComponent)
-    public readonly modal: ModalComponent;
-
     @Input()
     public pathUrl: string;
 
     public imagesFileInfo: FileInfo[];
 
     public selectedImg: string;
+
+    public customModalVisible = false;
+    public customModalVisibleAnimate = false;
 
     constructor(private appsService: AppsService) {
     }
@@ -35,7 +35,17 @@ export class ScreenshotsComponent implements OnInit {
 
     public showImage(url: string): void {
         this.selectedImg = url;
-        this.modal.show();
+        this.showModal();
+    }
+
+    public showModal(): void {
+        setTimeout( () => this.customModalVisible = true, 50);
+        setTimeout(() => this.customModalVisibleAnimate = true, 100);
+    }
+
+    public hideModal(): void {
+        this.customModalVisibleAnimate = false;
+        setTimeout(() => this.customModalVisible = false, 100);
     }
 
 }
