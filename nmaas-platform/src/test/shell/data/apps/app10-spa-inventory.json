@@ -69,7 +69,14 @@
 						{
 							"label": "Base",
 							"key": "configTab",
-							"components": [ ]
+							"components": [
+								{
+									"type": "htmlelement",
+									"input": false,
+									"content": "<p>No mandatory parameters to be set</p>",
+									"tab": 0
+								}
+							]
 						},
 						{
 							"label": "Advanced",
