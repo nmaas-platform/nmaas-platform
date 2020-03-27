@@ -37,6 +37,7 @@ db.standalone.username=${POSTGRESQL_USERNAME}
 db.standalone.password=${POSTGRESQL_PASSWORD}
 #FlywayDB settings
 spring.flyway.locations=classpath:/db/migration
+spring.flyway.out-of-order=true
 
 # Common
 spring.h2.console.enabled=true
