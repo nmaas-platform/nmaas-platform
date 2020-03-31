@@ -91,9 +91,9 @@
           <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
         </div>
 
-        <div class="form-group form-group-sm" *ngIf="app.appDeploymentSpec.accessMethods">
+        <div class="form-group form-group-sm">
           <h4>{{'APPS_WIZARD.ACCESS_METHODS' | translate}}</h4>
-          <ul>
+          <ul *ngIf="app.appDeploymentSpec.accessMethods">
             <li *ngFor="let a of app.appDeploymentSpec.accessMethods; let i=index" class="no-bullet-list">
               <app-access-method-edit [accessMethod]="a" [id]="i" [accessMethodTypes]="accessMethodTypeOptions()" (output)="removeAccessMethod($event)"></app-access-method-edit>
             </li>

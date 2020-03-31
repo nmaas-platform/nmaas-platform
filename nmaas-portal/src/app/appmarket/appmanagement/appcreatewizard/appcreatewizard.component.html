@@ -39,37 +39,37 @@
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  license.invalid && (license.dirty || license.touched),
  			    		 	'has-success': license.valid && (license.dirty || license.touched)}">
-                        <label for="appLicense" class="control-label">{{'APPS_WIZARD.LICENSE_LABEL' | translate}} *</label>
+                        <label for="appLicense" class="control-label">{{'APPS_WIZARD.LICENSE_LABEL' | translate}}</label>
                         <br>
-                        <input type="text" id="appLicense" class="form-control" required [(ngModel)]="app.license" name="license" #license="ngModel" tooltip="{{'APPS_WIZARD.LICENSE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                        <input type="text" id="appLicense" class="form-control"  [(ngModel)]="app.license" name="license" #license="ngModel" tooltip="{{'APPS_WIZARD.LICENSE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                     </div>
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  licenseUrl.invalid && (licenseUrl.dirty || licenseUrl.touched),
  				    	 	'has-success': licenseUrl.valid && (licenseUrl.dirty || licenseUrl.touched)}">
-                        <label for="appLicenseUrl" class="control-label">{{'APPS_WIZARD.LICENSE_URL_LABEL' | translate}} *</label>
+                        <label for="appLicenseUrl" class="control-label">{{'APPS_WIZARD.LICENSE_URL_LABEL' | translate}}</label>
                         <br>
-                        <input type="url" id="appLicenseUrl" class="form-control" [pattern]="urlPattern" required [(ngModel)]="app.licenseUrl" name="licenseUrl" #licenseUrl="ngModel" tooltip="{{'APPS_WIZARD.LICENSE_URL_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" placeholder="e.g. https://opensource.org/licenses/MIT">
+                        <input type="url" id="appLicenseUrl" class="form-control" [pattern]="urlPattern"  [(ngModel)]="app.licenseUrl" name="licenseUrl" #licenseUrl="ngModel" tooltip="{{'APPS_WIZARD.LICENSE_URL_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" placeholder="e.g. https://opensource.org/licenses/MIT">
                     </div>
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  wwwUrl.invalid && (wwwUrl.dirty || wwwUrl.touched),
  				    	 	'has-success': wwwUrl.valid && (wwwUrl.dirty || wwwUrl.touched)}">
-                        <label for="wwwUrl" class="control-label">{{'APPS_WIZARD.PROJECT_WEBSITE_LABEL' | translate}} *</label>
+                        <label for="wwwUrl" class="control-label">{{'APPS_WIZARD.PROJECT_WEBSITE_LABEL' | translate}}</label>
                         <br>
-                        <input type="url" id="wwwUrl" class="form-control" [pattern]="urlPattern" required name="wwwUrl" #wwwUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_WEBSITE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.wwwUrl">
+                        <input type="url" id="wwwUrl" class="form-control" [pattern]="urlPattern"  name="wwwUrl" #wwwUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_WEBSITE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.wwwUrl">
                     </div>
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  sourceUrl.invalid && (sourceUrl.dirty || sourceUrl.touched),
  				    	 	'has-success': sourceUrl.valid && (sourceUrl.dirty || sourceUrl.touched)}">
-                        <label for="sourceUrl" class="control-label">{{'APPS_WIZARD.SOURCE_CODE_LABEL' | translate}} *</label>
+                        <label for="sourceUrl" class="control-label">{{'APPS_WIZARD.SOURCE_CODE_LABEL' | translate}}</label>
                         <br>
-                        <input type="url" id="sourceUrl" class="form-control" [pattern]="urlPattern" required name="sourceUrl" #sourceUrl="ngModel" tooltip="{{'APPS_WIZARD.SOURCE_CODE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.sourceUrl">
+                        <input type="url" id="sourceUrl" class="form-control" [pattern]="urlPattern"  name="sourceUrl" #sourceUrl="ngModel" tooltip="{{'APPS_WIZARD.SOURCE_CODE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.sourceUrl">
                     </div>
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  issuesUrl.invalid && (issuesUrl.dirty || issuesUrl.touched),
  				    	 	'has-success': issuesUrl.valid && (issuesUrl.dirty || issuesUrl.touched)}">
-                        <label for="issuesUrl" class="control-label">{{'APPS_WIZARD.PROJECT_ISSUES_LABEL' | translate}} *</label>
+                        <label for="issuesUrl" class="control-label">{{'APPS_WIZARD.PROJECT_ISSUES_LABEL' | translate}}</label>
                         <br>
-                        <input type="url" id="issuesUrl" class="form-control" [pattern]="urlPattern" required name="issuesUrl" #issuesUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_ISSUES_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.issuesUrl">
+                        <input type="url" id="issuesUrl" class="form-control" [pattern]="urlPattern"  name="issuesUrl" #issuesUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_ISSUES_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.issuesUrl">
                     </div>
                     <div class="form-group form-group-sm">
                         <label for="tags" class="control-label">{{'APPS_WIZARD.TAGS_LABEL' | translate}} * </label>
@@ -222,6 +222,17 @@
                         <br>
                         <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
                     </div>
+
+                    <div class="form-group form-group-sm">
+                        <h4>{{'APPS_WIZARD.ACCESS_METHODS' | translate}}</h4>
+                        <ul *ngIf="app.appDeploymentSpec.accessMethods">
+                            <li *ngFor="let a of app.appDeploymentSpec.accessMethods; let i=index" class="no-bullet-list">
+                                <app-access-method-edit [accessMethod]="a" [id]="i" [accessMethodTypes]="accessMethodTypeOptions()" (output)="removeAccessMethod($event)"></app-access-method-edit>
+                            </li>
+                        </ul>
+                        <button class="btn btn-success" role="button" (click)="addNewAccessMethod()">{{'APPS_WIZARD.NEW_ACCESS_METHOD' | translate}}</button>
+                    </div>
+
                 </div>
             </form>
         </div>
