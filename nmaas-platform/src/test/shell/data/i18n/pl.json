@@ -85,7 +85,7 @@
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instancja testowa NMaaS",
-    "BODY": "Pamiętaj, że jest to testowa instancja NMaaS. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej.\nNie używaj tej instancji do monitorowania rzeczywistych urządzeń.",
+    "BODY": "Pamiętaj, że jest to testowa instancja NMaaS. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej. Nie używaj tej instancji do monitorowania rzeczywistych urządzeń.",
     "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
@@ -182,7 +182,8 @@
     "DISABLE_BUTTON": "Dezaktywuj",
     "REMOVE_FROM_DOMAIN_BUTTON": "Usuń z domeny",
     "FIRST_LOGIN": "First login",
-    "LAST_SUCCESSFUL_LOGIN": "Last successful login"
+    "LAST_SUCCESSFUL_LOGIN": "Last successful login",
+    "ITEMS_PER_PAGE": "Users per page"
   },
   "DOMAINS": {
     "TITLE": "Domeny",

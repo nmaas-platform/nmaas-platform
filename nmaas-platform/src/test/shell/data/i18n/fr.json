@@ -86,7 +86,7 @@
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instance de test NMaaS",
-    "BODY": "Veuillez noter qu'il s'agit d'une instance de test NMaaS. Les mesures d'isolation de l'utilisateur et de sécurité des données ne sont pas aussi strictes que sur l'instance de production.\nN'utilisez pas cette instance pour surveiller un équipement réel.",
+    "BODY": "Veuillez noter qu'il s'agit d'une instance de test NMaaS. Les mesures d'isolation de l'utilisateur et de sécurité des données ne sont pas aussi strictes que sur l'instance de production. N'utilisez pas cette instance pour surveiller un équipement réel.",
     "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
@@ -183,7 +183,8 @@
     "DISABLE_BUTTON": "Désactiver",
     "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation",
     "FIRST_LOGIN": "First login",
-    "LAST_SUCCESSFUL_LOGIN": "Last successful login"
+    "LAST_SUCCESSFUL_LOGIN": "Last successful login",
+    "ITEMS_PER_PAGE": "Users per page"
   },
   "DOMAINS": {
     "TITLE": "Organisation",
