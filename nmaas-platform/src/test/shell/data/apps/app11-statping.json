@@ -1,6 +1,6 @@
 {
 	"name":"Statping",
-	"version":"0.90.15",
+	"version":"0.90.17",
 	"license":"GPL 3.0",
 	"licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
 	"tags": [
@@ -69,7 +69,40 @@
 						{
 							"label": "Base",
 							"key": "configTab",
-							"components": [ ]
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "Statping admin username",
+											"type": "textfield",
+											"input": true,
+											"key": "properties#statping#user",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Statping admin password",
+											"type": "password",
+											"input": true,
+											"key": "properties#statping#password",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										}
+									]
+								}
+							]
 						},
 						{
 							"label": "Advanced",

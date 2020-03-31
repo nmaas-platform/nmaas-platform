@@ -39,7 +39,7 @@
 				"version": "0.1.0"
 			}
 		},
-		"defaultStorageSpace": 3,
+		"defaultStorageSpace": 1,
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
@@ -71,10 +71,36 @@
 							"key": "configTab",
 							"components": [
 								{
-									"type": "htmlelement",
-									"input": false,
-									"content": "<p>No mandatory parameters to be set</p>",
-									"tab": 0
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "Inventory access username",
+											"type": "textfield",
+											"input": true,
+											"key": "properties#inventory#user",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Inventory access password",
+											"type": "password",
+											"input": true,
+											"key": "properties#inventory#password",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										}
+									]
 								}
 							]
 						},
@@ -96,7 +122,7 @@
 											"type": "number",
 											"input": true,
 											"key": "storageSpace",
-											"placeholder": "Default value: 3GB",
+											"placeholder": "Default value: 1GB",
 											"tab": 1
 										}
 									]
