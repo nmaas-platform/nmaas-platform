@@ -16,6 +16,8 @@ import {ComponentMode} from "../../../shared";
 import {MultiSelect} from "primeng/primeng";
 import {KubernetesTemplate} from "../../../model/kubernetestemplate";
 import {ConfigFileTemplate} from "../../../model/configfiletemplate";
+import {AppAccessMethod} from '../../../model/app-access-method';
+import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -434,4 +436,21 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         return pathArr.reduce((obj, key) =>
             (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
     };
+
+    public addNewAccessMethod(): void {
+        this.app.appDeploymentSpec.accessMethods.push(new AppAccessMethod())
+    }
+
+    public accessMethodTypeOptions(): string[] {
+        const keys: Set<string> = new Set(Object.keys(ServiceAccessMethodType));
+        if (this.app.appDeploymentSpec.accessMethods.
+        find(p => ServiceAccessMethod.getServiceAccessMethodTypeAsEnum(p.type) === ServiceAccessMethodType.DEFAULT)) {
+            keys.delete(ServiceAccessMethodType[ServiceAccessMethodType.DEFAULT]);
+        }
+        return Array.from(keys);
+    }
+
+    public removeAccessMethod(event): void {
+        this.app.appDeploymentSpec.accessMethods.splice(event, 1);
+    }
 }
