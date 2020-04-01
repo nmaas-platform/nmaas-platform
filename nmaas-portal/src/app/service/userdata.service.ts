@@ -13,7 +13,7 @@ export class UserDataService {
   }
 
   public selectDomainId(domainId: number): void {
-    this.domainIdSelectionSource.next(domainId);    
+    this.domainIdSelectionSource.next(domainId);
   }
 
 }

@@ -1,11 +1,13 @@
-import {AppDeploymentEnv} from "./appdeploymentenv";
-import {ParameterType} from "./parametertype";
-import {KubernetesTemplate} from "./kubernetestemplate";
+import {AppDeploymentEnv} from './appdeploymentenv';
+import {ParameterType} from './parametertype';
+import {KubernetesTemplate} from './kubernetestemplate';
+import {AppAccessMethod} from './app-access-method';
 
 export class AppDeploymentSpec {
     public supportedDeploymentEnvironments: AppDeploymentEnv[] = [AppDeploymentEnv.KUBERNETES];
     public kubernetesTemplate: KubernetesTemplate = new KubernetesTemplate();
-    public defaultStorageSpace: number = 1;
-    public exposesWebUI: boolean = false;
-    public deployParameters: Map<ParameterType, string> = new Map();
+    public defaultStorageSpace = 1;
+    public exposesWebUI = true;
+    public deployParameters: object = {}; // this should be Map<ParameterType, string> = new Map(); but JS cannot stringify this
+    public accessMethods: AppAccessMethod[] = [];
 }

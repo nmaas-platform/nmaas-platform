@@ -3,18 +3,18 @@ package net.geant.nmaas.nmservice.configuration;
 import freemarker.template.Template;
 import java.util.Arrays;
 import java.util.Collections;
-import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repositories.ConfigFileTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 import org.hamcrest.Matchers;
@@ -127,13 +127,14 @@ public class OxidizedConfigFileTemplatesTest {
         applicationView.setVersion("testversion");
         applicationView.setOwner("owner");
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
-        net.geant.nmaas.portal.api.domain.AppDeploymentSpec appDeploymentSpec = new net.geant.nmaas.portal.api.domain.AppDeploymentSpec();
+        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(1);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
         applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
+        applicationView.setState(ApplicationState.ACTIVE);
         return applicationView;
     }
 

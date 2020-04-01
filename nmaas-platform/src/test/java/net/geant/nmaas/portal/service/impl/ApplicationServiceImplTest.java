@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.Arrays;
 import java.util.Collections;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
@@ -9,15 +8,14 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.persistent.entity.AppDescription;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -142,18 +139,6 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenEnglishDescriptionIsMissing(){
-        assertThrows(IllegalStateException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
-            applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("pl", "test", "test")));
-            Application app = modelMapper.map(applicationView, Application.class);
-            app.setId(1L);
-            when(applicationRepository.save(any())).thenReturn(app);
-            applicationService.create(applicationView, "admin");
-        });
-    }
-
-    @Test
     public void createMethodShouldReturnApplicationObject(){
         Application application = new Application("test","testversion","owner");
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
@@ -161,20 +146,6 @@ public class ApplicationServiceImplTest {
         Application result = applicationService.create(applicationView,"owner");
         assertNotNull(result);
         assertEquals("test", result.getName());
-    }
-
-    @Test
-    public void shouldAddMissingDescriptions(){
-        Application application = new Application("test","testversion","owner");
-        when(applicationRepository.save(isA(Application.class))).thenReturn(application);
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setDescriptions(Arrays.asList(new AppDescriptionView("pl", "", ""), new AppDescriptionView("en", "test", "testfull")));
-        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
-        Application result = applicationService.create(applicationView,"owner");
-        assertTrue(StringUtils.isNotEmpty(result.getDescriptions().get(1).getBriefDescription()));
-        assertTrue(StringUtils.isNotEmpty(result.getDescriptions().get(1).getFullDescription()));
-        assertEquals(result.getDescriptions().get(1).getBriefDescription(), result.getDescriptions().get(0).getBriefDescription());
-        assertEquals(result.getDescriptions().get(1).getFullDescription(), result.getDescriptions().get(0).getFullDescription());
     }
 
     @Test
@@ -239,24 +210,6 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToNullDescriptions(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = modelMapper.map(getDefaultAppView(), Application.class);
-            app.setDescriptions(null);
-            applicationService.update(app);
-        });
-    }
-
-    @Test
-    public void updateMethodShouldThrowExceptionDueToEmptyDescriptions(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = modelMapper.map(getDefaultAppView(), Application.class);
-            app.setDescriptions(Collections.emptyList());
-            applicationService.update(app);
-        });
-    }
-
-    @Test
     public void updateMethodShouldThrowExceptionDueToNullKubernetesTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = modelMapper.map(getDefaultAppView(), Application.class);
@@ -305,19 +258,15 @@ public class ApplicationServiceImplTest {
     public void updateMethodShouldReturnApplicationObject(){
         Application application = new Application("test", "testversion","owner");
         application.setId(1L);
-        application.setLicense("MIT");
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
-        application.setLicense("Apache-2.0");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.getAppDeploymentSpec().setDefaultStorageSpace(1);
         application.getAppDeploymentSpec().setKubernetesTemplate(new KubernetesTemplate());
         application.getAppDeploymentSpec().getKubernetesTemplate().setChart(new KubernetesChart("chart", "version"));
         application.setConfigWizardTemplate(new ConfigWizardTemplate("test-template"));
         application.setAppConfigurationSpec(new AppConfigurationSpec());
-        application.setDescriptions(Collections.singletonList(new AppDescription()));
         Application result = applicationService.update(application);
         assertNotNull(result);
-        assertNotEquals("MIT", result.getLicense());
     }
 
     @Test
@@ -384,7 +333,7 @@ public class ApplicationServiceImplTest {
         applicationView.setVersion("testversion");
         applicationView.setOwner("owner");
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
-        net.geant.nmaas.portal.api.domain.AppDeploymentSpec appDeploymentSpec = new net.geant.nmaas.portal.api.domain.AppDeploymentSpec();
+        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(1);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);

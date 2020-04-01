@@ -1,0 +1,337 @@
+{
+	"name":"Oxidized",
+	"version":"0.25.1",
+	"license":"Apache 2.0",
+	"licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+	"tags": [ "management", "backup", "configuration"],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Network device configuration backup tool",
+			"fullDescription": "Oxidized is a network device configuration backup tool. It's a great RANCID replacement.<br>Main features:<ul><li>automatically adds/removes threads to meet configured retrieval interval</li><li>restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])</li><li>syslog udp+file example to catch config change event (ios/junos) and trigger config fetch</li><li>will signal ios/junos user who made change, which output modules can use (via POST)</li><li>The git output module uses this info - 'git blame' will for each line show who made the change and when</li><li>restful API to reload list of nodes (GET /reload)</li><li>restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])</li><li>restful API to show list of nodes (GET /nodes)</li><li>restful API to show list of version for a node (/node/version[NODE]) and diffs</li></ul>"
+		},
+		{
+			"language": "de",
+			"briefDescription": "Network device configuration backup tool",
+			"fullDescription": "Oxidized is a network device configuration backup tool. It's a great RANCID replacement.<br>Main features:<ul><li>automatically adds/removes threads to meet configured retrieval interval</li><li>restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])</li><li>syslog udp+file example to catch config change event (ios/junos) and trigger config fetch</li><li>will signal ios/junos user who made change, which output modules can use (via POST)</li><li>The git output module uses this info - 'git blame' will for each line show who made the change and when</li><li>restful API to reload list of nodes (GET /reload)</li><li>restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])</li><li>restful API to show list of nodes (GET /nodes)</li><li>restful API to show list of version for a node (/node/version[NODE]) and diffs</li></ul>"
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Network device configuration backup tool",
+			"fullDescription": "Oxidized is a network device configuration backup tool. It's a great RANCID replacement.<br>Main features:<ul><li>automatically adds/removes threads to meet configured retrieval interval</li><li>restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])</li><li>syslog udp+file example to catch config change event (ios/junos) and trigger config fetch</li><li>will signal ios/junos user who made change, which output modules can use (via POST)</li><li>The git output module uses this info - 'git blame' will for each line show who made the change and when</li><li>restful API to reload list of nodes (GET /reload)</li><li>restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])</li><li>restful API to show list of nodes (GET /nodes)</li><li>restful API to show list of version for a node (/node/version[NODE]) and diffs</li></ul>"
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Narzędzie do tworzenia kopii zapasowej konfiguracji urządzenia sieciowego",
+			"fullDescription": "Oxidized is a network device configuration backup tool. It's a great RANCID replacement.<br>Main features:<ul><li>automatically adds/removes threads to meet configured retrieval interval</li><li>restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])</li><li>syslog udp+file example to catch config change event (ios/junos) and trigger config fetch</li><li>will signal ios/junos user who made change, which output modules can use (via POST)</li><li>The git output module uses this info - 'git blame' will for each line show who made the change and when</li><li>restful API to reload list of nodes (GET /reload)</li><li>restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])</li><li>restful API to show list of nodes (GET /nodes)</li><li>restful API to show list of version for a node (/node/version[NODE]) and diffs</li></ul>"
+		}
+	],
+	"wwwUrl": "https://github.com/ytti/oxidized/wiki",
+	"sourceUrl": "https://github.com/ytti/oxidized",
+	"issuesUrl": "https://github.com/ytti/oxidized/issues",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-oxidized",
+				"version": "1.0.0"
+			},
+			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
+		},
+		"defaultStorageSpace":1,
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "DEFAULT",
+				"name": "Oxidized",
+				"tag": "oxidized",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired":true,
+		"templates": [
+			{
+				"configFileName":"config",
+				"configFileTemplateContent":"---\nusername: ${oxidizedUsername}\npassword: ${oxidizedPassword}\nmodel: junos\ninterval: 600\nuse_syslog: false\ndebug: false\nthreads: 30\ntimeout: 20\nretries: 3\nprompt: !ruby/regexp /^([\\w.@-]+[#>]\\s?)$/\nrest: 0.0.0.0:8888\nvars: {}\ngroups: {}\npid: \"/storage/pid\"\ninput:\n  default: ssh, telnet\n  debug: false\n  ssh:\n    secure: false\noutput:\n  default: git\n  file:\n    directory: \"/storage/configs\"\n  git:\n    user: oxidized\n    email: oxidized@man.poznan.pl\n    repo: \"/storage/oxidized.git\"\nsource:\n  default: csv\n  csv:\n    file: \"/root/.config/oxidized/router.db\"\n    delimiter: !ruby/regexp /:/\n    map:\n      name: 0\n      model: 1\nmodel_map:\n  cisco: ios\n  juniper: junos"
+			},
+			{
+				"configFileName":"router.db",
+				"configFileTemplateContent":"<#list targets as target>\n${target.ipAddress}:junos\n</#list>"
+			}
+		]
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Access credentials",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "accessCredentials",
+									"components": [
+										{
+											"label": "Oxidized access username",
+											"type": "textfield",
+											"input": true,
+											"key": "accessUsername",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Oxidized access password",
+											"type": "password",
+											"input": true,
+											"key": "accessPassword",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										}
+									]
+								},
+								{
+									"label": "Configuration",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "configuration",
+									"components": [
+										{
+											"label": "Device access username",
+											"type": "textfield",
+											"input": true,
+											"key": "oxidizedUsername",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Device access password",
+											"type": "password",
+											"input": true,
+											"key": "oxidizedPassword",
+											"tab": 0,
+											"validate": {
+												"required": true
+											}
+										},
+										{
+											"label": "Targets",
+											"hideLabel": true,
+											"disableAddingRemovingRows": false,
+											"addAnother": "Add device",
+											"addAnotherPosition": "bottom",
+											"multiple": true,
+											"tableView": true,
+											"alwaysEnabled": false,
+											"type": "datagrid",
+											"input": true,
+											"key": "targets",
+											"tab": 0,
+											"defaultValue": [
+												{
+													"ipAddress": ""
+												}
+											],
+											"validate": {
+												"required": true
+											},
+											"components": [
+												{
+													"label": "Device (IP address)",
+													"hideLabel": true,
+													"tableView": true,
+													"type": "textfield",
+													"input": true,
+													"key": "ipAddress",
+													"placeholder": "127.0.0.1",
+													"tab": 0,
+													"defaultValue": "",
+													"validate": {
+														"required": true,
+														"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+													},
+													"inputFormat": "plain",
+													"row": "0-0"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 1GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	},
+	"configUpdateWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Access credentials",
+					"hideLabel": true,
+					"tableView": true,
+					"type": "container",
+					"input": true,
+					"key": "accessCredentials",
+					"components": [
+						{
+							"label": "Oxidized access username",
+							"type": "textfield",
+							"input": true,
+							"key": "accessUsername",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						},
+						{
+							"label": "Oxidized access password",
+							"type": "password",
+							"input": true,
+							"key": "accessPassword",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						}
+					]
+				},
+				{
+					"label": "Configuration",
+					"hideLabel": true,
+					"tableView": true,
+					"type": "container",
+					"input": true,
+					"key": "configuration",
+					"components": [
+						{
+							"label": "Username",
+							"type": "textfield",
+							"input": true,
+							"key": "oxidizedUsername",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						},
+						{
+							"label": "Password",
+							"type": "password",
+							"input": true,
+							"key": "oxidizedPassword",
+							"validate": {
+								"required": true
+							}
+						},
+						{
+							"label": "Targets",
+							"hideLabel": true,
+							"disableAddingRemovingRows": false,
+							"addAnother": "Add device",
+							"addAnotherPosition": "bottom",
+							"multiple": true,
+							"tableView": true,
+							"alwaysEnabled": false,
+							"type": "datagrid",
+							"input": true,
+							"key": "targets",
+							"defaultValue": [
+								{
+									"ipAddress": ""
+								}
+							],
+							"validate": {
+								"required": true
+							},
+							"components": [
+								{
+									"label": "Device (IP address)",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "textfield",
+									"input": true,
+									"key": "ipAddress",
+									"placeholder": "127.0.0.1",
+									"defaultValue": "",
+									"validate": {
+										"required": true,
+										"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+									},
+									"inputFormat": "plain",
+									"row": "0-0"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	}
+}

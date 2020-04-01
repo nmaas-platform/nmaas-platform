@@ -22,8 +22,7 @@
 						</form>
 						<div class="form-group">
 							<button type="submit" (click)="triggerSSO()" class="btn btn-primary btn-block" [disabled]="!this.configuration?.ssoLoginAllowed || loading || ssoLoading">
-								{{ 'LOGIN.LOGIN_WITH' | translate }} <img alt="sso login" src="../../../assets/images/EduGAIN_logo.png" style="max-height: inherit;
-								max-width: 72px; vertical-align: text-bottom	; background: transparent no-repeat center center;">
+								{{ 'LOGIN.LOGIN_WITH' | translate }}
 							</button>
 							<img alt="sso" *ngIf="ssoLoading" src="data:"/>
 							<div *ngIf="ssoError" class="alert alert-danger">{{ssoError}}</div>

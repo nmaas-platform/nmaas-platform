@@ -10,6 +10,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KS
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -45,32 +49,42 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Loggable(LogLevel.DEBUG)
     public void deployService(Identifier deploymentId) {
         try {
-            installHelmChart(deploymentId, repositoryManager.loadService(deploymentId));
+            updateHelmRepo();
+            installHelmChart(repositoryManager.loadService(deploymentId));
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 
-    private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) {
+    private void updateHelmRepo() {
+        helmCommandExecutor.executeHelmRepoUpdateCommand();
+    }
+
+    private void installHelmChart(KubernetesNmServiceInfo serviceInfo) {
         helmCommandExecutor.executeHelmInstallCommand(
                 namespaceService.namespace(serviceInfo.getDomain()),
-                deploymentId,
+                serviceInfo.getDescriptiveDeploymentId().getValue(),
                 serviceInfo.getKubernetesTemplate(),
-                createArgumentsMap(deploymentId, serviceInfo)
+                createArgumentsMap(serviceInfo)
         );
     }
 
-    private Map<String, String> createArgumentsMap(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo){
+    private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo){
         Map<String, String> arguments = new HashMap<>();
-        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
+        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, serviceInfo.getDescriptiveDeploymentId().getValue());
         deploymentManager.getStorageClass(serviceInfo.getDomain()).ifPresent(s -> arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, s));
         if(deploymentManager.getForceDedicatedWorkers()){
             arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
         }
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, getStorageSpaceString(serviceInfo.getStorageSpace()));
-        arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
-        if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
-            arguments.putAll(getIngressConfigOptionVariables(serviceInfo));
+        Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
+        if(!externalAccessMethods.isEmpty()) {
+            arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
+            if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
+                arguments.putAll(getIngressConfigOptionVariables(externalAccessMethods, serviceInfo.getDomain()));
+            }
+        } else {
+            arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(false));
         }
         if(serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()){
             serviceInfo.getAdditionalParameters().forEach(arguments::put);
@@ -78,23 +92,27 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         return arguments;
     }
 
-    private Map<String, String> getIngressConfigOptionVariables(KubernetesNmServiceInfo serviceInfo){
-        Map<String, String> ingressVariablesMap = HelmChartVariables.ingressVariablesMap(serviceInfo.getServiceExternalUrl(), getIngressClass(serviceInfo.getDomain()), ingressManager.getTlsSupported());
-        if(ingressManager.getTlsSupported()){
-            ingressVariablesMap.putAll(getIngressAddTlsVariables());
-        }
-        return ingressVariablesMap;
+    private Set<ServiceAccessMethod> serviceExternalAccessMethods(Set<ServiceAccessMethod> accessMethods) {
+        return accessMethods.stream()
+                .filter(m -> m.isOfType(ServiceAccessMethodType.DEFAULT) || m.isOfType(ServiceAccessMethodType.EXTERNAL))
+                .collect(Collectors.toSet());
+    }
+
+    private Map<String, String> getIngressConfigOptionVariables(Set<ServiceAccessMethod> externalAccessMethods, String domain){
+        return HelmChartVariables.ingressVariablesMap(
+                externalAccessMethods,
+                getIngressClass(domain),
+                ingressManager.getTlsSupported(),
+                ingressManager.getIssuerOrWildcardName(),
+                ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT)
+        );
     }
 
     private String getIngressClass(String domain){
-        if(ingressManager.getIngressPerDomain()){
+        if(Boolean.TRUE.equals(ingressManager.getIngressPerDomain())){
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
         }
         return ingressManager.getSupportedIngressClass();
-    }
-
-    private Map<String, String> getIngressAddTlsVariables(){
-        return HelmChartVariables.ingressVariablesAddTls(ingressManager.getIssuerOrWildcardName(), ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT));
     }
 
     private String getStorageSpaceString(Integer storageSpace){
@@ -105,7 +123,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Loggable(LogLevel.DEBUG)
     public boolean checkServiceDeployed(Identifier deploymentId) {
         try {
-            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(deploymentId);
+            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(
+                    repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue()
+            );
             return status.equals(HelmPackageStatus.DEPLOYED);
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
@@ -115,9 +135,10 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.DEBUG)
     public void deleteServiceIfExists(Identifier deploymentId) {
+        Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         try {
-            if(checkIfServiceExists(deploymentId)){
-                helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+            if(checkIfServiceExists(descriptiveDeploymentId)){
+                helmCommandExecutor.executeHelmDeleteCommand(descriptiveDeploymentId.getValue());
             }
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
@@ -134,8 +155,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         try {
+            updateHelmRepo();
             helmCommandExecutor.executeHelmUpgradeCommand(
-                    deploymentId,
+                    serviceInfo.getDescriptiveDeploymentId().getValue(),
                     template.getArchive()
             );
         } catch (CommandExecutionException cee) {

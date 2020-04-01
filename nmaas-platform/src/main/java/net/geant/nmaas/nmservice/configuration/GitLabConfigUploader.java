@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import java.util.Optional;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -10,7 +10,7 @@ import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileR
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApi.ApiVersion;
 import org.gitlab4j.api.GitLabApiException;
@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Interacts with a remote GitLab repository instance through a REST API in order to upload a set of application
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @Component
 @Profile("env_kubernetes")
+@Log4j2
 public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private static final String GROUPS_PATH_PREFIX = "groups";
@@ -60,30 +62,31 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
      * Information on how to access the repository is stored in {@link GitLabProject} object.
      *
      * @param deploymentId unique identifier of service deployment
+     * @param descriptiveDeploymentId human readable identifier of the deployment
      * @param configIds list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
      * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in database
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
-    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
+    public void transferConfigFiles(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         if(configFileRepositoryRequired){
             GitLabProject gitLabProject = loadGitlabProject(deploymentId);
             if(gitLabProject == null){
-                createProjectAndUploadFiles(deploymentId, configIds);
+                createProjectAndUploadFiles(deploymentId, descriptiveDeploymentId, configIds);
             } else{
                 updateConfigFiles(gitLabProject, configIds);
             }
         }
     }
 
-    private void createProjectAndUploadFiles(Identifier deploymentId, List<String> configIds){
+    private void createProjectAndUploadFiles(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> configIds){
         String domain = serviceRepositoryManager.loadDomain(deploymentId);
         String gitLabPassword = generateRandomPassword();
-        Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
+        Integer gitLabUserId = createUser(domain, descriptiveDeploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
-        GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
+        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, descriptiveDeploymentId);
+        GitLabProject project = project(descriptiveDeploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
         serviceRepositoryManager.updateGitLabProject(deploymentId, project);
         uploadConfigFilesToProject(gitLabProjectId, configIds);
     }
@@ -99,14 +102,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private GitLabProject loadGitlabProject(Identifier deploymentId){
         this.createGitLabApi();
         return serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
-    }
-
-    @Override
-    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired){
-        if(configFileRepositoryRequired){
-            GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
-            uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
-        }
     }
 
     @Override
@@ -249,9 +244,11 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private void uploadUpdateConfigFilesToProject(Integer gitLabProjectId, List<String> configIds){
         configIds.forEach(configId -> {
+            log.debug("Loading configuration file information for id " + configId + " ...");
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
             try {
+                log.debug("Updating file on GitLab repository ...");
                 gitlab.getRepositoryFileApi().updateFile(gitLabProjectId, file, commitBranch(), updateCommitMessage(configuration.getConfigFileName()));
             } catch (GitLabApiException e) {
                 throw new FileTransferException("Could not commit file " + configuration.getConfigFileName() + " due to exception: " + e.getMessage());

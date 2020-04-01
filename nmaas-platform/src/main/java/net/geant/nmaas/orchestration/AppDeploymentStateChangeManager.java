@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -98,8 +100,13 @@ public class AppDeploymentStateChangeManager {
     private MailAttributes getMailAttributes(AppDeployment appDeployment){
         return MailAttributes.builder()
                 .otherAttributes(ImmutableMap.of(
-                        "accessURL" ,deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId()).getUrl(),
-                        "domainName", appDeployment.getDomain(),
+                        "accessURL" ,deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
+                                .getServiceAccessMethods().stream()
+                                .filter(m -> m.getType().equals(ServiceAccessMethodType.DEFAULT))
+                                .map(ServiceAccessMethodView::getUrl)
+                                .findFirst()
+                                .orElse(""),
+                        "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                         "owner", appDeployment.getOwner(),
                         "appInstanceName",appDeployment.getDeploymentName(),
                         "appName",appDeployment.getAppName()

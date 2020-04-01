@@ -1,34 +1,38 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import java.util.Set;
 
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_CLASS;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_HOSTS;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_LETSENCRYPT;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_TLS_ENABLED;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_WILDCARD_OR_ISSUER;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 class HelmChartVariables {
-
-    private static final String INGRESS_HOSTS_KEY = "ingress.hosts";
-    private static final String INGRESS_TLS_KEY = "ingress.tls.enabled";
-
-    private static final String INGRESS_CLASS_KEY = "ingress.class";
-    private static final String INGRESS_LETSENCRYPT_KEY = "ingress.tls.acme";
-    private static final String INGRESS_WILDCARD_OR_ISSUER = "ingress.tls.certOrIssuer";
 
     private static final String PAR_OPEN = "{";
     private static final String PAR_CLOSE = "}";
 
-    static Map<String, String> ingressVariablesMap(String ingressHost, String ingressClass, Boolean tls) {
+    static Map<String, String> ingressVariablesMap(Set<ServiceAccessMethod> externalAccessMethods, String ingressClass, Boolean tlsEnabled, String ingressCertOrIssuer, Boolean acme) {
         validateIngressClass(ingressClass);
         Map<String, String> variables = new HashMap<>();
-        variables.put(INGRESS_HOSTS_KEY, PAR_OPEN + ingressHost + PAR_CLOSE);
-        variables.put(INGRESS_TLS_KEY, String.valueOf(tls));
-        variables.put(INGRESS_CLASS_KEY, ingressClass);
-        return variables;
-    }
-
-    static Map<String, String> ingressVariablesAddTls(String ingressCertOrIssuer, Boolean acme) {
-        Map<String, String> variables = new HashMap<>();
-        variables.put(INGRESS_LETSENCRYPT_KEY, String.valueOf(acme));
-        variables.put(INGRESS_WILDCARD_OR_ISSUER, ingressCertOrIssuer);
+        externalAccessMethods.forEach(m -> {
+                variables.put(m.getDeployParameters().get(INGRESS_HOSTS), PAR_OPEN + m.getUrl() + PAR_CLOSE);
+                variables.put(m.getDeployParameters().get(INGRESS_CLASS), ingressClass);
+                variables.put(m.getDeployParameters().get(INGRESS_TLS_ENABLED), String.valueOf(tlsEnabled));
+                if (tlsEnabled) {
+                    variables.put(m.getDeployParameters().get(INGRESS_LETSENCRYPT), String.valueOf(acme));
+                    variables.put(m.getDeployParameters().get(INGRESS_WILDCARD_OR_ISSUER), ingressCertOrIssuer);
+                }
+        });
         return variables;
     }
 

@@ -4,7 +4,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCer
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
@@ -16,7 +15,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.Kubern
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.service.impl.DomainServiceImpl;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -29,8 +28,7 @@ import java.util.Optional;
  * At this point it is assumed that exactly one cluster should exist.
  */
 @Component
-public class KubernetesClusterManager implements KClusterAttachPointManager, KClusterIngressManager,
-        KClusterDeploymentManager, KNamespaceService {
+public class KubernetesClusterManager implements KClusterIngressManager, KClusterDeploymentManager, KNamespaceService {
 
     private static final String NMAAS_NAMESPACE_PREFIX = "nmaas-ns-";
 
@@ -43,11 +41,6 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         this.repository = repository;
         this.domainTechDetailsRepository = domainTechDetailsRepository;
         this.namespaceValidator = namespaceValidator;
-    }
-
-    @Override
-    public KClusterAttachPoint getAttachPoint() {
-        return loadSingleCluster().getAttachPoint();
     }
 
     @Override
@@ -76,9 +69,15 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
     }
 
     @Override
+    public String getExternalServiceDomain() {
+        KClusterIngress cluster = loadSingleCluster().getIngress();
+        return cluster.getExternalServiceDomain();
+    }
+
+    @Override
     public String getExternalServiceDomain(String codename) {
         KClusterIngress cluster = loadSingleCluster().getIngress();
-        if(cluster.getIngressPerDomain()){
+        if(Boolean.TRUE.equals(cluster.getIngressPerDomain())){
             return domainTechDetailsRepository.findByDomainCodename(codename)
                 .orElseThrow(()-> new IllegalArgumentException("Domain not found")).getExternalServiceDomain();
         }

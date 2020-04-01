@@ -9,11 +9,7 @@
     font-size: 12px;
     margin: 8px 2px;
     border-radius: 12px;
-}
-
-.tag-button:hover{
-    background-color: rgb(51, 122, 183);
-    color: white;
+    cursor: default;
 }
 
 .block-light-gray{
@@ -29,4 +25,20 @@
 hr{
     margin-bottom: 8px;
     margin-top: 8px;
+}
+
+.no-padding{
+    padding: 0;
+    border: 0;
+}
+
+.first-button-substitute{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.disabled-url {
+    pointer-events: none;
+    cursor: default!important;
+    color: gray;
 }

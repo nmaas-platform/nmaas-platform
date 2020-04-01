@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
@@ -12,10 +11,13 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressRes
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorResponseException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
@@ -24,11 +26,12 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -36,8 +39,17 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.INTERNAL;
 
 /**
  * Implements service deployment mechanism on Kubernetes cluster.
@@ -52,9 +64,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterValidator clusterValidator;
     private KServiceLifecycleManager serviceLifecycleManager;
     private KServiceOperationsManager serviceOperationsManager;
-    private KClusterIngressManager clusterIngressManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
+    private KClusterIngressManager ingressManager;
     private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
     private JanitorService janitorService;
@@ -68,33 +80,39 @@ public class KubernetesManager implements ContainerOrchestrator {
         if(appDeploymentSpec == null){
             throw new NmServiceRequestVerificationException("App deployment spec cannot be null");
         }
-        if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
+        if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES)) {
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
-        if(appDeploymentSpec.getKubernetesTemplate() == null){
+        }
+        if(appDeploymentSpec.getKubernetesTemplate() == null) {
             throw new NmServiceRequestVerificationException("Kubernetes template cannot be null");
         }
-        if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()){
-            repositoryManager.storeService(new KubernetesNmServiceInfo(
-                    deploymentId,
-                    appDeployment.getDeploymentName(),
-                    appDeployment.getDomain(),
-                    appDeployment.getStorageSpace(),
-                    createAdditionalParametersMap(appDeploymentSpec.getDeployParameters()),
-                    KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
-            );
-        } else{
-            repositoryManager.storeService(new KubernetesNmServiceInfo(
-                    deploymentId,
-                    appDeployment.getDeploymentName(),
-                    appDeployment.getDomain(),
-                    appDeployment.getStorageSpace(),
-                    KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
-            );
+        if(appDeploymentSpec.getAccessMethods() == null) {
+            throw new NmServiceRequestVerificationException("Service access methods cannot be null");
         }
+
+        KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo(
+                deploymentId,
+                appDeployment.getDeploymentName(),
+                appDeployment.getDomain(),
+                appDeployment.getStorageSpace(),
+                appDeployment.getDescriptiveDeploymentId()
+        );
+        serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
+        serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
+        if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()) {
+            serviceInfo.setAdditionalParameters(createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment));
+        }
+        repositoryManager.storeService(serviceInfo);
     }
 
-    private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters){
+    private Set<ServiceAccessMethod> generateTemplateAccessMethods(Set<AppAccessMethod> accessMethods) {
+        return accessMethods.stream()
+                .map(ServiceAccessMethod::fromAppAccessMethod)
+                .collect(Collectors.toSet());
+    }
+
+    private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters, AppDeployment appDeployment){
         Map<String, String> additionalParameters = new HashMap<>();
         deployParameters.forEach((k,v) ->{
             switch (k){
@@ -115,6 +133,12 @@ public class KubernetesManager implements ContainerOrchestrator {
                         if(!value.isEmpty())
                             additionalParameters.put(v, value);
                     });
+                    break;
+                case DOMAIN_CODENAME:
+                    additionalParameters.put(v, appDeployment.getDomain());
+                    break;
+                case BASE_URL:
+                    additionalParameters.put(v, ingressManager.getExternalServiceDomain());
                     break;
             }
         });
@@ -138,7 +162,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             if(configFileRepositoryRequired){
                 gitLabManager.validateGitLabInstance();
             }
-            if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
+            if(!ingressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }
@@ -157,11 +181,14 @@ public class KubernetesManager implements ContainerOrchestrator {
             String serviceExternalUrl = ingressResourceManager.generateServiceExternalURL(
                     service.getDomain(),
                     service.getDeploymentName(),
-                    clusterIngressManager.getExternalServiceDomain(service.getDomain()),
-                    clusterIngressManager.getIngressPerDomain());
-            repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
+                    ingressManager.getExternalServiceDomain(service.getDomain()),
+                    ingressManager.getIngressPerDomain());
+
+            Set<ServiceAccessMethod> accessMethods = populateAccessMethodsWithUrl(service, serviceExternalUrl);
+            repositoryManager.updateKServiceAccessMethods(accessMethods);
+
             serviceLifecycleManager.deployService(deploymentId);
-            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
+            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(ingressManager.getResourceConfigOption())) {
                     ingressResourceManager.createOrUpdateIngressResource(
                             deploymentId,
                             service.getDomain(),
@@ -174,17 +201,46 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
+    private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(KubernetesNmServiceInfo service, String serviceExternalUrl) {
+        Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
+                .filter(m -> m.isOfType(INTERNAL))
+                .collect(Collectors.toSet());
+        accessMethods.addAll(service.getAccessMethods().stream()
+                .filter(m -> m.isOfType(DEFAULT))
+                .peek(m -> m.setUrl(serviceExternalUrl))
+                .collect(Collectors.toSet()));
+        accessMethods.addAll(service.getAccessMethods().stream()
+                .filter(m -> m.isOfType(EXTERNAL))
+                .peek(m -> m.setUrl(m.getName().toLowerCase() + "-" + serviceExternalUrl))
+                .collect(Collectors.toSet()));
+        return accessMethods;
+    }
+
     @Override
     @Loggable(LogLevel.INFO)
     public void checkService(Identifier deploymentId) {
         try {
             if (!serviceLifecycleManager.checkServiceDeployed(deploymentId))
                 throw new ContainerCheckFailedException("Service not deployed.");
-            if (!janitorService.checkIfReady(deploymentId, repositoryManager.loadService(deploymentId).getDomain())) {
+            KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+            if (!janitorService.checkIfReady(service.getDescriptiveDeploymentId(), service.getDomain())) {
                 throw new ContainerCheckFailedException("Service is not ready yet.");
             }
-        } catch (KServiceManipulationException e) {
-            throw new ContainerCheckFailedException(e.getMessage());
+            // NOTE: Current assumption is that there will be at max one INTERNAL access method identifiable by deployment name
+            try {
+                Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
+                        .peek(m -> {
+                            if (m.isOfType(INTERNAL)) {
+                                m.setUrl(janitorService.retrieveServiceIp(service.getDescriptiveDeploymentId(), service.getDomain()));
+                            }
+                        })
+                        .collect(Collectors.toSet());
+                repositoryManager.updateKServiceAccessMethods(accessMethods);
+            } catch (JanitorResponseException je) {
+                log.error("Could not retrieve IP for " + service.getDescriptiveDeploymentId());
+            }
+        } catch (KServiceManipulationException me) {
+            throw new ContainerCheckFailedException(me.getMessage());
         }
     }
 
@@ -194,11 +250,16 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            janitorService.deleteConfigMapIfExists(deploymentId, service.getDomain());
-            janitorService.deleteBasicAuthIfExists(deploymentId, service.getDomain());
-            janitorService.deleteTlsIfExists(deploymentId, service.getDomain());
-            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
-                ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
+            janitorService.deleteConfigMapIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteBasicAuthIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteTlsIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            /*
+            NOTE:
+            Currently (January 2020) option DEPLOY_USING_API is not used and shall be removed in future releases
+             */
+            if (IngressResourceConfigOption.DEPLOY_USING_API.equals(ingressManager.getResourceConfigOption())) {
+                Optional<ServiceAccessMethod> serviceAccessMethod = Optional.of((new ArrayList<>(service.getAccessMethods())).get(0));
+                ingressResourceManager.deleteIngressRule(serviceAccessMethod.orElseThrow(() -> new ContainerOrchestratorInternalErrorException("External access  url not found")).getUrl(), service.getDomain());
             }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
@@ -227,8 +288,11 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
-            String serviceExternalUrl = repositoryManager.loadService(deploymentId).getServiceExternalUrl();
-            return new AppUiAccessDetails("http://" + serviceExternalUrl);
+            Set<ServiceAccessMethodView> serviceAccessMethodViewSet = new HashSet<>();
+            repositoryManager.loadService(deploymentId).getAccessMethods().forEach(
+                    m -> serviceAccessMethodViewSet.add(ServiceAccessMethodView.fromServiceAccessMethod(m))
+            );
+            return new AppUiAccessDetails(serviceAccessMethodViewSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         }

@@ -154,45 +154,18 @@
                 </div>
             </div>
 
-            <div class="panel-default panel-heading">{{ 'CLUSTERS.ATTACH_POINT' | translate }}</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="routername" class="col-sm-2 control-label">{{ 'CLUSTERS.ROUTER_NAME' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="routername" name="routername"
-                               [(ngModel)]="cluster.attachPoint.routerName" [disabled]="isInMode(ComponentMode.VIEW)">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="routerid" class="col-sm-2 control-label">{{ 'CLUSTERS.ROUTER_ID' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="routerid" name="routerid"
-                               [(ngModel)]="cluster.attachPoint.routerId" [disabled]="isInMode(ComponentMode.VIEW)">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="routerintname" class="col-sm-2 control-label">{{ 'CLUSTERS.ROUTER_INTERFACE_NAME' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="routerintname" name="routerintname"
-                               [(ngModel)]="cluster.attachPoint.routerInterfaceName" [disabled]="isInMode(ComponentMode.VIEW)">
-                    </div>
-                </div>
-            </div>
-
             <div class="panel-default panel-heading">{{ 'CLUSTERS.EXTERNAL_NETWORKS' | translate }}</div>
             <div class="panel-body">
-                <table class="table table-hover table-condensed">
+                <table class="table table-hover table-condensed" aria-describedby="Clusters detalis table">
                     <thead>
                     <tr>
-                        <th>{{ 'CLUSTERS.ADDRESS' | translate }}</th>
-                        <th>{{ 'CLUSTERS.NETWORK' | translate }}</th>
-                        <th>{{ 'CLUSTERS.NETMASK_LENGTH' | translate }}</th>
-                        <th>{{ 'CLUSTERS.ASSIGNED' | translate }}</th>
-                        <th>{{ 'CLUSTERS.ASSIGNED_SINCE' | translate }}</th>
-                        <th>{{ 'CLUSTERS.ASSIGNED_TO' | translate }}</th>
-                        <th>&nbsp;</th>
+                        <th scope="col">{{ 'CLUSTERS.ADDRESS' | translate }}</th>
+                        <th scope="col">{{ 'CLUSTERS.NETWORK' | translate }}</th>
+                        <th scope="col">{{ 'CLUSTERS.NETMASK_LENGTH' | translate }}</th>
+                        <th scope="col">{{ 'CLUSTERS.ASSIGNED' | translate }}</th>
+                        <th scope="col">{{ 'CLUSTERS.ASSIGNED_SINCE' | translate }}</th>
+                        <th scope="col">{{ 'CLUSTERS.ASSIGNED_TO' | translate }}</th>
+                        <th scope="col">&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>

@@ -17,7 +17,9 @@
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
 						name="role" formControlName="role" style="min-width: 170px">
-						<option *ngFor="let r of getAllowedRoles()" [value]="r">{{"ENUM.USER_ROLES." + Role[r].toUpperCase() | translate}}</option>
+						<option *ngFor="let r of getAllowedRoles()" [value]="r">
+							{{"ENUM.USER_ROLES." + Role[r].toUpperCase() | translate}}
+						</option>
 					</select>
 				</div>
 				<div class="col-lg-3">
@@ -29,12 +31,12 @@
 		
 		<div *ngIf="isModeAllowed(ComponentMode.VIEW)|| isInMode(ComponentMode.PROFILVIEW)">
 			
-			<table class="table table-hover table-condensed">
+			<table class="table table-hover table-condensed" aria-describedby="User privilages in domain table">
 				<thead>
 					<tr>
-						<th>{{'USER_PRIVILEGES.DOMAIN' | translate}}</th>
-						<th>{{'USER_PRIVILEGES.ROLE' | translate}}</th>
-						<th>&nbsp;</th>
+						<th scope="col">{{'USER_PRIVILEGES.DOMAIN' | translate}}</th>
+						<th scope="col">{{'USER_PRIVILEGES.ROLE' | translate}}</th>
+						<th scope="col">&nbsp;</th>
 					</tr>
 				</thead>
 

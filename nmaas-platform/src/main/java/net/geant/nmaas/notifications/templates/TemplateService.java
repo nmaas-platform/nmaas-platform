@@ -90,7 +90,7 @@ public class TemplateService {
         if(template.size() == 1){
             return template.get(0);
         }
-        throw new IllegalArgumentException("Only one html template supported");
+        throw new IllegalArgumentException(String.format("Only one html template supported (actually got %d)", template.size()));
     }
 
 }

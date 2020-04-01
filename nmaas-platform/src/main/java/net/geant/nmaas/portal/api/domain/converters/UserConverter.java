@@ -1,12 +1,13 @@
 package net.geant.nmaas.portal.api.domain.converters;
 
-import java.util.Set;
-import java.util.stream.Collectors;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.User;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserConverter extends AbstractConverter<User, UserView> {
 

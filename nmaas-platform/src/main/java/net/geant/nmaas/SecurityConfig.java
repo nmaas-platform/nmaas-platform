@@ -14,7 +14,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,7 +29,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.Filter;
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -48,11 +46,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private static final  String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
-    private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
-    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
-
-	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
-
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 	
@@ -61,17 +54,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		if (Arrays.asList(env.getActiveProfiles()).contains("dcn_ansible")) {
-			auth.inMemoryAuthentication()
-					.passwordEncoder(passwordEncoder)
-					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(passwordEncoder.encode(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME)))
-					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
-		}
-	}
 
 	private static final String[] AUTH_WHITELIST = {
 			"/favicon.ico",
@@ -104,10 +86,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 				.authorizeRequests()
-	            .antMatchers("/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
-	            .and().httpBasic()
-			.and()
-				.authorizeRequests()
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
@@ -126,11 +104,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/api/mail").permitAll()
 				.antMatchers("/api/users/reset/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
-				.antMatchers("/api/**").authenticated()
-				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/access").authenticated()
+				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/management/**").authenticated()
+				.antMatchers("/api/**").authenticated()
 				.and()
 					.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(

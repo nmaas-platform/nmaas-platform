@@ -15,7 +15,10 @@
     "LANGUAGE": "Language",
     "ABOUT": "A propos",
     "BACK": "Retour à la page d'accueil",
-    "LANGUAGES": "Langages"
+    "LANGUAGES": "Langages",
+    "NOTIFICATION": "Send notification",
+    "ALL_USERS": "To all users"
+
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -76,10 +79,15 @@
     "PASSWORD": "Mot de passe",
     "PASSWORD_REQUIRED_MESSAGE": "Le mot de passe est requis",
     "LOGIN": "S'identifier",
-    "LOGIN_WITH": "Connectez-vous avec ...",
+    "LOGIN_WITH": "Login Federation",
     "LOGIN_FAILURE_MESSAGE": "Informations d'identification non valides",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement.",
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Il est impossible de se connecter au composant système"
+  },
+  "TEST_INSTANCE_MODAL": {
+    "HEADER": "Instance de test NMaaS",
+    "BODY": "Veuillez noter qu'il s'agit d'une instance de test NMaaS. Les mesures d'isolation de l'utilisateur et de sécurité des données ne sont pas aussi strictes que sur l'instance de production. N'utilisez pas cette instance pour surveiller un équipement réel.",
+    "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
     "TITLE": "Configuration du cluster Kubernetes",
@@ -103,6 +111,7 @@
     "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Resource configuration",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "INGRESS_PER_DOMAIN": "Ingress per domain",
     "TLS_SUPPORTED": "TLS supported",
     "DEPLOYMENT": "Deployment",
     "NAMESPACE_CONFIG_OPTION": "Paramètres \"Namespace\"",
@@ -172,10 +181,13 @@
     "ENABLE_BUTTON": "Activer",
     "DETAILS_BUTTON": "Détails",
     "DISABLE_BUTTON": "Désactiver",
-    "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation"
+    "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation",
+    "FIRST_LOGIN": "First login",
+    "LAST_SUCCESSFUL_LOGIN": "Last successful login",
+    "ITEMS_PER_PAGE": "Users per page"
   },
   "DOMAINS": {
-    "TITRE": "Organisation",
+    "TITLE": "Organisation",
     "CODE_NAME": "Code idientifiant",
     "NAME": "Nom",
     "ACTIVATE": "Actif",
@@ -199,7 +211,10 @@
     "ITEMS_PER_PAGE": "Instances par page",
     "ACTIONS": "Actes",
     "DEPLOYED": "Instances déployées",
-    "UNDEPLOYED": "Instances non déployées"
+    "UNDEPLOYED": "Instances non déployées",
+    "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "HIDE_UNDEPLOYED": "Hide undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
@@ -231,17 +246,19 @@
     "SUBMIT_BUTTON": "Soumettre",
     "LANGUAGE_ERROR": "Impossibilité de désactiver le langage actif ou le langage par défaut",
     "DEFAULT_LANGUAGE": "Language par défaut",
-    "LANGUAGE_SUPPORT": "Language support",
-    "LANGUAGE_ENABLED": "Enabled",
-    "LANGUAGE_DISABLED": "Disabled"
+    "LANGUAGE_SUPPORT": "Langues supportées",
+    "LANGUAGE_ENABLED": "Activé",
+    "LANGUAGE_DISABLED": "Désactivé",
+    "TEST_INSTANCE": "Marquer comme instance de test NMaaS"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
-    "NAME": "nom",
+    "NAME": "Nom",
     "CODE_NAME": "Identifiant de l'organisation",
     "ACTIVE": "Actif",
     "ID_IN_DB": "ID dans la base de données",
     "KUBERNETES_NAMESPACE": "\"Namespace\" Kubernetes",
+    "KUBERNETES_NAMESPACE_PLACEHOLDER": "Default value: codename",
     "KUBERNETES_STORAGE_CLASS": "\"StorageClass\" Kubernetes",
     "KUBERNETES_INGRESS_CLASS": "Kubernetes Ingress class",
     "DCN_STATUS": "Statut du réseau de supervision",
@@ -277,7 +294,11 @@
     "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Aucun réseau client spécifié.",
     "IP_ADDRESS": "IP Adresse",
     "MASK_LENGTH": "Masque de réseau",
-    "ADD": "Ajouter"
+    "ADD": "Ajouter",
+    "APP_STATUS": "Application properties",
+    "APP_NAME": "Nom de l'application",
+    "APP_ENABLED": "Activé",
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",
@@ -345,7 +366,10 @@
     "RATING": "Évaluation",
     "RATING_AVERAGE": "Note moyenne des utilisateurs",
     "RATING_INFO": "Cliquez sur l'étoile pour évaluer une application",
-    "RATING_BREAKDOWN": "Répartition par note"
+    "RATING_BREAKDOWN": "Répartition par note",
+    "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information.",
+    "TOOLTIP_MESSAGE_NOT_AVAILABLE": "This information is not available"
   },
   "RESTART_MODAL": {
     "HEADER": "Confirmation de redémarrage",
@@ -361,7 +385,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Le nom de l'instance name est requis.",
     "DOMAIN": "Organisation",
     "CLOSE_BUTTON": "Fermer",
-    "DEPLOY_BUTTON": "Déployer"
+    "DEPLOY_BUTTON": "Déployer",
+    "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
+    "SELECT_VERSION": "Sélectionnez la version"
   },
   "APP_INSTANCE": {
     "SOURCE": "Source",
@@ -373,6 +399,7 @@
     "MY_RATING": "Mon évaluation",
     "GO_TO_APP_BUTTON": "Aller à l'application",
     "UNDEPLOY_BUTTON": "Supprimer",
+    "APP_ACCESS_METHODS": "Access methods to application",
     "RESTART_BUTTON": "Re-démarrer",
     "REMOVE_BUTTON": "Supprimer échoué",
     "REDEPLOY_BUTTON": "Re-déployer",
@@ -458,6 +485,7 @@
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
     },
+    "SHOW_VERSIONS_LABEL": "Show available versions",
     "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web"
   },
   "UNDEPLOY_MODAL": {
@@ -518,6 +546,7 @@
     "TITLE": "Applications management",
     "NAME": "Name",
     "STATE": "State",
+    "VERSION": "Version",
     "ADD_BUTTON": "Add",
     "VIEW_BUTTON": "View",
     "EDIT_BUTTON": "Edit",
@@ -526,7 +555,8 @@
     "REJECTED_TAB": "Rejected",
     "NEW_TAB": "New",
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
-    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
+    "ADD_NEW_VERSION_BUTTON": "Add new version"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -621,7 +651,29 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates",
     "EXPOSE_WEB_UI": "Expose web user interface",
-    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface"
+    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}",
+    "ACCESS_METHODS": "Access methods",
+    "NEW_ACCESS_METHOD": "Add new access method"
+  },
+  "APP_ACCESS_METHOD_EDIT": {
+    "BASIC_INFO": "Basic information",
+    "TYPE": "Type",
+    "NAME": "Name",
+    "TAG": "Tag",
+    "DEPLOY_PARAMETERS": "Deploy parameters",
+    "PARAM": "Deploy parameter",
+    "REMOVE_PARAM": "Remove",
+    "ADD_PARAM": "Add",
+    "NEW_DEPLOY_PARAMETER": "New deploy parameter",
+    "NEW_KEY": "Deploy parameter key",
+    "NEW_VALUE": "Deploy parameter value",
+    "SAVE_CHANGES": "Save",
+    "REJECT_CHANGES": "Reject",
+    "APPLY_CHANGES": "Apply changes to deploy parameters",
+    "CHANGES_TOOLTIP": "Accept or reject changes in deployment parameters",
+    "REMOVE_TOOLTIP": "Remove access method"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",
@@ -740,5 +792,25 @@
     "HEADER": "503 - Service indisponible",
     "TEXT_FIRST_PART": "Le serveur est actuellement incapable de traiter votre demande en raison d'une surcharge temporaire ou d'un ou plusieurs services de clé actuellement hors ligne.",
     "TEXT_SECOND_PART": "Nous vous suggérons de faire une courte pause, par exemple pour le café - nous y sommes. Réessayez plus tard!"
+  },
+  "MESSAGE_MODAL": {
+    "HEADER": "Send message",
+    "CONFIRM": "Send",
+    "DISMISS": "Dismiss"
+  },
+  "APP_ACCESS_METHODS_MODAL": {
+    "HEADER": "Access methods to the application",
+    "EXTERNAL_HEADER": "External access options",
+    "SERVICE_NAME": "Service name",
+    "ACCESS_METHOD": "Access method",
+    "INTERNAL_HEADER": "Internal access options",
+    "HIDE_BUTTON": "Cancel",
+    "MAIN_ACCESS": "Main Interface",
+    "EXTERNAL_ACCESS": "Access the application"
+  },
+  "GUEST_USER_MODAL": {
+    "HEADER": "Guest User account",
+    "CONTENT": "You are currently logged as guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
+    "CONFIRM_BUTTON": "OK"
   }
 }

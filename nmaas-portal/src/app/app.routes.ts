@@ -5,11 +5,13 @@ import { AppMarketRoutes } from './appmarket';
 import { AuthGuard } from './auth/auth.guard';
 import { WelcomeRoutes } from './welcome/welcome.routes';
 import {ServiceUnavailableRoutes} from "./service-unavailable/service-unavailable.routes";
+import {PageNotFoundComponent} from "./shared/page-not-found/page-not-found.component";
 
 const appRoutes: Routes = [
     ...WelcomeRoutes,
     ...AppMarketRoutes,
     ...ServiceUnavailableRoutes,
+    { path: 'notfound', component: PageNotFoundComponent },
     { path: '**', redirectTo: '/welcome' }
 ];
 

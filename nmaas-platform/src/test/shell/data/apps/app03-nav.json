@@ -1,0 +1,160 @@
+{
+	"name":"NAV",
+	"version":"4.8.6",
+	"license":"GPL 3.0",
+	"licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+	"tags": [ "management", "monitoring"],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Network Administration Visualized - network management system",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Network Administration Visualized - network management system",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Network Administration Visualized - network management system",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Network Administration Visualized - system do zarządzania siecią",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		}
+	],
+	"wwwUrl": "https://nav.uninett.no/",
+	"sourceUrl": "https://github.com/UNINETT/nav",
+	"issuesUrl": "https://github.com/UNINETT/nav/issues",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nav",
+				"version": "1.0.0"
+			}
+		},
+		"defaultStorageSpace":20,
+		"deployParameters": {
+			"SMTP_HOSTNAME":"nav.config.EMAIL_HOST",
+			"SMTP_PORT":"nav.config.EMAIL_PORT",
+			"SMTP_USERNAME":"nav.config.EMAIL_HOST_USER",
+			"SMTP_PASSWORD":"nav.config.EMAIL_HOST_PASSWORD"
+		},
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "DEFAULT",
+				"name": "NAV",
+				"tag": "nav",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired":false
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"type": "htmlelement",
+									"input": false,
+									"content": "<p>All required configuration should be applied using NAV graphical interface</p>",
+									"tab": 0
+								}
+							]
+						},
+						{
+							"label": "Additional",
+							"key": "additionalParametersTab",
+							"components": [
+								{
+									"label": "additionalParameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 2,
+									"key": "additionalParameters",
+									"components": [
+										{
+											"label": "Admin email",
+											"type": "email",
+											"input": true,
+											"key": "nav#config#ADMIN_MAIL",
+											"inputFormat": "plain",
+											"tab": 2
+										},
+										{
+											"label": "Default sender email",
+											"type": "email",
+											"input": true,
+											"key": "nav#config#DEFAULT_FROM_EMAIL",
+											"inputFormat": "plain",
+											"tab": 2
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 20GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}

@@ -1,7 +1,5 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
@@ -32,24 +30,6 @@ public class DcnRepositoryManager {
     private void updateDcnState(String domain, DcnDeploymentState state) {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setState(state);
-        dcnInfoRepository.save(dcnInfo);
-    }
-
-    void updateAnsiblePlaybookForClientSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig) {
-        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
-        dcnInfo.setPlaybookForClientSideRouter(ansiblePlaybookVpnConfig);
-        dcnInfoRepository.save(dcnInfo);
-    }
-
-    void updateAnsiblePlaybookForCloudSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig) {
-        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
-        dcnInfo.setPlaybookForCloudSideRouter(ansiblePlaybookVpnConfig);
-        dcnInfoRepository.save(dcnInfo);
-    }
-
-    void updateDcnCloudEndpointDetails(String domain, DcnCloudEndpointDetails dcnCloudEndpointDetails) {
-        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
-        dcnInfo.setCloudEndpointDetails(dcnCloudEndpointDetails);
         dcnInfoRepository.save(dcnInfo);
     }
 

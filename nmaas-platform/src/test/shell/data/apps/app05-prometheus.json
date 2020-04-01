@@ -1,0 +1,536 @@
+{
+    "name": "Prometheus",
+    "version": "2.8.0",
+    "license": "Apache 2.0",
+    "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+    "briefDescription": "",
+    "tags": [
+        "monitoring",
+        "alerting"
+    ],
+    "descriptions": [
+        {
+            "language": "en",
+            "briefDescription": "Monitoring system & time series database",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "de",
+            "briefDescription": "Monitoring system & time series database",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "fr",
+            "briefDescription": "Monitoring system & time series database",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "pl",
+            "briefDescription": "Monitoring system & time series database",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        }
+    ],
+    "wwwUrl": "https://prometheus.io",
+    "sourceUrl": "https://github.com/prometheus/prometheus",
+    "issuesUrl": "https://github.com/prometheus/prometheus/issues",
+    "appDeploymentSpec": {
+        "supportedDeploymentEnvironments": [
+            "KUBERNETES"
+        ],
+        "kubernetesTemplate": {
+            "chart": {
+                "name": "nmaas-prometheus",
+                "version": "1.0.0"
+            }
+        },
+        "defaultStorageSpace": 20,
+        "exposesWebUI": true,
+        "accessMethods":  [
+            {
+                "type": "DEFAULT",
+                "name": "Prometheus",
+                "tag": "prometheus",
+                "deployParameters": {
+                    "INGRESS_HOSTS": "ingress.hosts",
+                    "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+                    "INGRESS_CLASS": "ingress.class",
+                    "INGRESS_LETSENCRYPT": "ingress.tls.acme",
+                    "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+                }
+            }
+        ]
+    },
+    "appConfigurationSpec": {
+        "configFileRepositoryRequired":true,
+        "templates": [
+            {
+                "configFileName":"prometheus.yml",
+                "configFileTemplateContent":"global:\n  scrape_interval: ${global_config.global_scrape}\n  evaluation_interval: ${global_config.global_evaluation}\nalerting:\n  alertmanagers:\n    - static_configs:\n      - targets:\nrule_files:\nscrape_configs:\n<#list targets as target>\n  - job_name: '${target.jobName}'\n    metrics_path: ${target.metrics_path}\n    scrape_interval: ${target.scrape_interval}\n    static_configs:\n    - targets: [<#list target.Addresses as address>'${address.ipAddress}'<#sep>,</#list>]\n<#if target.Labels?has_content>      labels:\n<#list target.Labels as labels>        ${labels.label_name}: ${labels.label_value}\n</#list></#if><#sep>\n</#list>"
+            }
+        ]
+    },
+    "state": "ACTIVE",
+    "configWizardTemplate": {
+        "template": {
+            "components": [
+                {
+                    "label": "Tabs",
+                    "components": [
+                        {
+                            "label": "Base",
+                            "key": "configTab",
+                            "components": [
+                                {
+                                    "label": "Access credentials",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 0,
+                                    "key": "accessCredentials",
+                                    "components": [
+                                        {
+                                            "label": "Prometheus access username",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "accessUsername",
+                                            "tab": 0,
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "inputFormat": "plain"
+                                        },
+                                        {
+                                            "label": "Prometheus access password",
+                                            "type": "password",
+                                            "input": true,
+                                            "key": "accessPassword",
+                                            "tab": 0,
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "inputFormat": "plain"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "label": "Configuration",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 0,
+                                    "key": "configuration",
+                                    "components": [
+                                        {
+                                            "label": "Global configuration",
+                                            "hideLabel": true,
+                                            "type": "container",
+                                            "persistent": true,
+                                            "key": "global_config",
+                                            "components": [
+                                                {
+                                                    "label": "Global scrape",
+                                                    "type": "textfield",
+                                                    "input": true,
+                                                    "inputFormat": "plain",
+                                                    "defaultValue": "15s",
+                                                    "key": "global_scrape"
+                                                },
+                                                {
+                                                    "label": "Global evaluation",
+                                                    "type": "textfield",
+                                                    "input": true,
+                                                    "inputFormat": "plain",
+                                                    "defaultValue": "30s",
+                                                    "key": "global_evaluation"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "Jobs",
+                                            "disableAddingRemovingRows": false,
+                                            "addAnother": "Add jobs",
+                                            "addAnotherPosition": "bottom",
+                                            "multiple": true,
+                                            "tableView": true,
+                                            "type": "datagrid",
+                                            "input": true,
+                                            "key": "targets",
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "components": [
+                                                {
+                                                    "label": "Job name",
+                                                    "type": "textfield",
+                                                    "input": true,
+                                                    "inputFormat": "plain",
+                                                    "key": "jobName",
+                                                    "validate": {
+                                                        "required": true,
+                                                        "minLength": 1
+                                                    },
+                                                    "row": "0-0"
+                                                },
+                                                {
+                                                    "label": "Scrape interval",
+                                                    "type": "textfield",
+                                                    "input": true,
+                                                    "defaultValue": "15s",
+                                                    "inputFormat": "plain",
+                                                    "key": "scrape_interval",
+                                                    "validate": {
+                                                        "required": true
+                                                    },
+                                                    "row": "0-1"
+                                                },
+                                                {
+                                                    "label": "Metrics path",
+                                                    "type": "textfield",
+                                                    "input": true,
+                                                    "defaultValue": "/metrics",
+                                                    "inputFormat": "plain",
+                                                    "key": "metrics_path",
+                                                    "validate": {
+                                                        "required": true
+                                                    },
+                                                    "row": "0-2"
+                                                },
+                                                {
+                                                    "label": "Targets",
+                                                    "hideLabel": false,
+                                                    "disableAddingRemovingRows": false,
+                                                    "addAnother": "Add address",
+                                                    "addAnotherPosition": "bottom",
+                                                    "multiple": true,
+                                                    "tableView": true,
+                                                    "alwaysEnabled": false,
+                                                    "type": "datagrid",
+                                                    "input": true,
+                                                    "key": "Addresses",
+                                                    "validate": {
+                                                        "required": true
+                                                    },
+                                                    "components": [
+                                                        {
+                                                            "label": "IP address and port",
+                                                            "hideLabel": false,
+                                                            "tableView": true,
+                                                            "type": "textfield",
+                                                            "input": true,
+                                                            "key": "ipAddress",
+                                                            "placeholder": "127.0.0.1:9001",
+                                                            "validate": {
+                                                                "required": true
+                                                            },
+                                                            "inputFormat": "plain",
+                                                            "row": "0-0"
+                                                        }
+                                                    ],
+                                                    "row": "0-3"
+                                                },
+                                                {
+                                                    "label": "Labels",
+                                                    "hideLabel": false,
+                                                    "disableAddingRemovingRows": false,
+                                                    "addAnother": "Add label",
+                                                    "addAnotherPosition": "bottom",
+                                                    "multiple": true,
+                                                    "tableView": true,
+                                                    "alwaysEnabled": false,
+                                                    "type": "datagrid",
+                                                    "input": true,
+                                                    "key": "Labels",
+                                                    "defaultValue": [],
+                                                    "components": [
+                                                        {
+                                                            "label": "Label name",
+                                                            "type": "textfield",
+                                                            "input": true,
+                                                            "inputFormat": "plain",
+                                                            "key": "label_name",
+                                                            "row": "0-4"
+                                                        },
+                                                        {
+                                                            "label": "Label value",
+                                                            "type": "textfield",
+                                                            "input": true,
+                                                            "inputFormat": "plain",
+                                                            "key": "label_value",
+                                                            "row": "0-0"
+                                                        }
+                                                    ],
+                                                    "row": "0-5"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Additional",
+                            "key": "additionalParametersTab",
+                            "components": [
+                                {
+                                    "label": "additionalParameters",
+                                    "hideLabel": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 2,
+                                    "key": "additionalParameters",
+                                    "components": [
+                                        {
+                                            "label": "Retention data size",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "defaultValue": "18GB",
+                                            "inputFormat": "plain",
+                                            "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#size\"",
+                                            "tab": 2
+                                        },
+                                        {
+                                            "label": "Retention period",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "defaultValue": "15d",
+                                            "inputFormat": "plain",
+                                            "key": "server#extraArgs#\"storage\\#tsdb\\#retention\\#time\"",
+                                            "tab": 2
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Advanced",
+                            "key": "advancedTab",
+                            "components": [
+                                {
+                                    "label": "Advanced",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 1,
+                                    "key": "advanced",
+                                    "components": [
+                                        {
+                                            "label": "Storage space (GB):",
+                                            "type": "number",
+                                            "input": true,
+                                            "key": "storageSpace",
+                                            "placeholder": "Default value: 20GB",
+                                            "tab": 1
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "tabs",
+                    "input": false,
+                    "key": "tabs"
+                },
+                {
+                    "type": "button",
+                    "label": "Apply configuration",
+                    "disableOnInvalid": true,
+                    "theme": "primary",
+                    "input": false,
+                    "tableView": true
+                }
+            ]
+        }
+    },
+    "configUpdateWizardTemplate": {
+        "template": {
+            "components": [
+                {
+                    "label": "Access credentials",
+                    "hideLabel": true,
+                    "tableView": true,
+                    "type": "container",
+                    "input": true,
+                    "key": "accessCredentials",
+                    "components": [
+                        {
+                            "label": "Prometheus access username",
+                            "type": "textfield",
+                            "input": true,
+                            "key": "accessUsername",
+                            "validate": {
+                                "required": true
+                            },
+                            "inputFormat": "plain"
+                        },
+                        {
+                            "label": "Prometheus access password",
+                            "type": "password",
+                            "input": true,
+                            "key": "accessPassword",
+                            "validate": {
+                                "required": true
+                            },
+                            "inputFormat": "plain"
+                        }
+                    ]
+                },
+                {
+                    "label": "Configuration",
+                    "hideLabel": true,
+                    "tableView": true,
+                    "type": "container",
+                    "input": true,
+                    "key": "configuration",
+                    "components": [
+                        {
+                            "label": "Global configuration",
+                            "hideLabel": true,
+                            "type": "container",
+                            "persistent": true,
+                            "key": "global_config",
+                            "components": [
+                                {
+                                    "label": "Global scrape",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "inputFormat": "plain",
+                                    "defaultValue": "15s",
+                                    "key": "global_scrape"
+                                },
+                                {
+                                    "label": "Global evaluation",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "inputFormat": "plain",
+                                    "defaultValue": "30s",
+                                    "key": "global_evaluation"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Jobs",
+                            "disableAddingRemovingRows": false,
+                            "addAnother": "Add jobs",
+                            "addAnotherPosition": "bottom",
+                            "multiple": true,
+                            "tableView": true,
+                            "type": "datagrid",
+                            "input": true,
+                            "key": "targets",
+                            "validate": {
+                                "required": true
+                            },
+                            "components": [
+                                {
+                                    "label": "Job name",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "inputFormat": "plain",
+                                    "key": "jobName",
+                                    "validate": {
+                                        "required": true,
+                                        "minLength": 1
+                                    },
+                                    "row": "0-0"
+                                },
+                                {
+                                    "label": "Scrape interval",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "defaultValue": "15s",
+                                    "inputFormat": "plain",
+                                    "key": "scrape_interval",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "row": "0-1"
+                                },
+                                {
+                                    "label": "Metrics path",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "defaultValue": "/metrics",
+                                    "inputFormat": "plain",
+                                    "key": "metrics_path",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "row": "0-2"
+                                },
+                                {
+                                    "label": "Targets",
+                                    "hideLabel": false,
+                                    "disableAddingRemovingRows": false,
+                                    "addAnother": "Add address",
+                                    "addAnotherPosition": "bottom",
+                                    "multiple": true,
+                                    "tableView": true,
+                                    "alwaysEnabled": false,
+                                    "type": "datagrid",
+                                    "input": true,
+                                    "key": "Addresses",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "components": [
+                                        {
+                                            "label": "IP address and port",
+                                            "hideLabel": false,
+                                            "tableView": true,
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "ipAddress",
+                                            "placeholder": "127.0.0.1:9001",
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "inputFormat": "plain",
+                                            "row": "0-0"
+                                        }
+                                    ],
+                                    "row": "0-3"
+                                },
+                                {
+                                    "label": "Labels",
+                                    "hideLabel": false,
+                                    "disableAddingRemovingRows": false,
+                                    "addAnother": "Add label",
+                                    "addAnotherPosition": "bottom",
+                                    "multiple": true,
+                                    "tableView": true,
+                                    "alwaysEnabled": false,
+                                    "type": "datagrid",
+                                    "input": true,
+                                    "key": "Labels",
+                                    "defaultValue": [],
+                                    "components": [
+                                        {
+                                            "label": "Label name",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "key": "label_name",
+                                            "row": "0-4"
+                                        },
+                                        {
+                                            "label": "Label value",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "key": "label_value",
+                                            "row": "0-0"
+                                        }
+                                    ],
+                                    "row": "0-5"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

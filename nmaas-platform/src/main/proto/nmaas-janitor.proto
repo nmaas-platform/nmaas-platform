@@ -21,18 +21,25 @@ message Credentials {
     string password = 2;
 }
 
-message InstanceRequest{
+message InstanceRequest {
     string api = 1;
     Instance deployment = 2;
 }
 
-message ServiceResponse{
+message ServiceResponse {
     string api = 1;
     Status status = 2;
     string message = 3;
 }
 
-message InstanceCredentialsRequest{
+message InfoServiceResponse {
+    string api = 1;
+    Status status = 2;
+    string message = 3;
+    string info = 4;
+}
+
+message InstanceCredentialsRequest {
     string api = 1;
     Instance instance = 2;
     Credentials credentials = 3;
@@ -54,4 +61,8 @@ service CertManagerService {
 
 service ReadinessService {
     rpc CheckIfReady(InstanceRequest) returns (ServiceResponse);
+}
+
+service InformationService {
+    rpc RetrieveServiceIp(InstanceRequest) returns (InfoServiceResponse);
 }

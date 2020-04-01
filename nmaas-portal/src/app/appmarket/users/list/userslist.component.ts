@@ -57,6 +57,15 @@ export class UsersListComponent implements OnInit {
     
     users.subscribe((all) => {
       this.allUsers = all;
+      /* parse date strings to date objects */
+      for(let u of this.allUsers) {
+        if(u.firstLoginDate) {
+          u.firstLoginDate = new Date(u.firstLoginDate)
+        }
+        if(u.lastSuccessfulLoginDate) {
+          u.lastSuccessfulLoginDate = new Date(u.lastSuccessfulLoginDate)
+        }
+      }
     });
 
   }

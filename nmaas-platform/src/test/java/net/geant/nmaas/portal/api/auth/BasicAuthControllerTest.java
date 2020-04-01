@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,9 +28,11 @@ public class BasicAuthControllerTest {
 
     private PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
 
+    private UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
+
     @BeforeEach
     public void setup(){
-        basicAuthController = new BasicAuthController(null, domains, passwordEncoder, null, null);
+        basicAuthController = new BasicAuthController(null, domains, passwordEncoder, null, null, userLoginService);
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
     }
 

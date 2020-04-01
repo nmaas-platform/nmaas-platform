@@ -19,9 +19,12 @@ public class ConfigurationView {
 
     private String defaultLanguage;
 
-    public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage){
+    private boolean testInstance = false;
+
+    public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance){
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
         this.defaultLanguage = defaultLanguage;
+        this.testInstance = testInstance;
     }
 }

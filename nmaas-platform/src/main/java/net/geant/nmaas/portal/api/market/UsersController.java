@@ -16,14 +16,13 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.results.UserLoginDate;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.captcha.ValidateCaptcha;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,11 +46,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -86,26 +81,42 @@ public class UsersController {
 
     private ApplicationEventPublisher eventPublisher;
 
+    private UserLoginRegisterService userLoginService;
+
     @Autowired
 	public UsersController(UserService userService,
 						   DomainService domainService,
 						   ModelMapper modelMapper,
 						   PasswordEncoder passwordEncoder,
 						   JWTTokenService jwtTokenService,
-						   ApplicationEventPublisher eventPublisher) {
+						   ApplicationEventPublisher eventPublisher,
+						   UserLoginRegisterService userLoginService) {
 		this.userService = userService;
 		this.domainService = domainService;
 		this.modelMapper = modelMapper;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtTokenService = jwtTokenService;
 		this.eventPublisher = eventPublisher;
+		this.userLoginService = userLoginService;
 	}
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public List<UserView> getUsers(Pageable pageable) {
+
+    	/* reads all users first and last successful login, transforms it to map*/
+    	Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+				.map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    	/* updates user view with first and last login date */
 		return userService.findAll(pageable).getContent().stream()
 				.map(user -> modelMapper.map(user, UserView.class))
+				.peek(uv -> {
+					if(userLoginDateMap.containsKey(uv.getId())) {
+						uv.setLastSuccessfulLoginDate(userLoginDateMap.get(uv.getId()).getMaxLoginDate());
+						uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
+					}
+				})
 				.collect(Collectors.toList());
 	}
 	
@@ -119,7 +130,13 @@ public class UsersController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public UserView retrieveUser(@PathVariable("userId") Long userId) {
 		User user = getUser(userId);
-		return modelMapper.map(user, UserView.class);
+		UserView uv = modelMapper.map(user, UserView.class);
+		/* updates user view with first and last login date */
+		userLoginService.getUserFirstAndLastSuccessfulLoginDate(user).ifPresent(userLoginDate -> {
+			uv.setFirstLoginDate(userLoginDate.getMinLoginDate());
+			uv.setLastSuccessfulLoginDate(userLoginDate.getMaxLoginDate());
+		});
+		return uv;
 	}
 
 	@PutMapping(value="/users/{userId}")
@@ -260,6 +277,7 @@ public class UsersController {
 		domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
 		domainService.addGlobalGuestUserRoleIfMissing(user.getId());
 		userService.update(user);
+		this.sendMail(this.userService.findAllUsersWithAdminRole().get(0), MailType.NEW_SSO_LOGIN, ImmutableMap.of("newUser", user.getUsername()));
 	}
 
 	@PostMapping("/users/reset/notification")

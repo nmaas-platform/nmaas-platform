@@ -5,10 +5,6 @@ import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-
-
-
-
 import {isNullOrUndefined, isUndefined} from 'util';
 import {Authority} from '../model/authority';
 import {catchError, debounceTime} from 'rxjs/operators';
@@ -32,9 +28,11 @@ export class DomainRoles {
 
 @Injectable()
 export class AuthService {
-  public loginUsingSsoService:boolean;
+  public loginUsingSsoService: boolean;
 
-  constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService) {}
+  constructor(private http: HttpClient,
+              private appConfig: AppConfigService,
+              private jwtHelper: JwtHelperService) {}
 
   private storeToken(token: string): void {
     localStorage.setItem(this.appConfig.config.tokenName, token);
@@ -49,7 +47,7 @@ export class AuthService {
   }
 
   public getSelectedLanguage(): string {
-    if(!isNullOrUndefined(localStorage.getItem('lang'))){
+    if (!isNullOrUndefined(localStorage.getItem('lang'))) {
       return localStorage.getItem('lang')
     }
     return !isNullOrUndefined(this.getToken()) ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
@@ -99,7 +97,7 @@ export class AuthService {
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
-      
+
       const domainRole: string[] = authorities[index].authority.split(':', 2);
       if (domainRole.length !== 2) {
         continue;
@@ -131,7 +129,7 @@ export class AuthService {
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
-      
+
       const domainRole: string[] = authorities[index].authority.split(':', 2);
       if (domainRole.length !== 2) {
         continue;
@@ -154,12 +152,12 @@ export class AuthService {
     }
 
     const authorities: Authority[] = this.jwtHelper.decodeToken(token).scopes;
-    
+
     for (let index = 0; index < authorities.length; index++) {
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
-      
+
       const domainIdStr: string[] = authorities[index].authority.split(':', 1);
       if (domainIdStr.length === 0) {
         continue;
@@ -186,6 +184,9 @@ export class AuthService {
   }
 
   public login(username: string, password: string): Observable<boolean> {
+    // hack so test instance modal is shown onl after login
+    localStorage.setItem(this.appConfig.getTestInstanceModalKey(), 'True');
+
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/basic/login',
       JSON.stringify({'username': username, 'password': password}), {headers: headers}).pipe(
@@ -210,13 +211,14 @@ export class AuthService {
         }
       }),
       catchError((error) => {
-        let message : string;
-        if(error.error['message'])
+        let message: string;
+        if (error.error['message']) {
           message = error.error['message'];
-        else
+        } else {
           message = 'Server error';
+        }
 
-        console.debug(error['status']+' - '+message);
+        console.debug(error['status'] + ' - ' + message);
         return observableThrowError(error);
       }));
   }
@@ -226,6 +228,9 @@ export class AuthService {
     console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl);
     console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
     console.debug('propagateSSOLogin ' + userid);
+    // hack so test instance modal is shown onl after login
+    localStorage.setItem(this.appConfig.getTestInstanceModalKey(), 'True');
+
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/sso/login',
       JSON.stringify({'userid': userid}), {headers: headers}).pipe(
@@ -260,7 +265,7 @@ export class AuthService {
 
   public isLogged(): boolean {
     const token = this.getToken();
-    if(token == null){
+    if (token == null) {
       return false;
     }
     return (token ? !this.jwtHelper.isTokenExpired(token) : false);

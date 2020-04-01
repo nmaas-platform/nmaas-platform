@@ -1,16 +1,24 @@
 package net.geant.nmaas.portal.api.market;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.validation.constraints.NotNull;
-
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
+import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainView;
+import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import org.apache.commons.lang.StringUtils;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,19 +34,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
-import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
-import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @RestController
 @RequestMapping("/api/domains")
@@ -50,14 +51,17 @@ public class DomainController extends AppBaseController {
 
 	private ApplicationEventPublisher eventPublisher;
 
+	private ApplicationStatePerDomainService applicationStatePerDomainService;
+
 	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
 	private static final String DOMAIN_NOT_FOUND = "Domain not found.";
 
 	@Autowired
-	public DomainController(UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher){
+	public DomainController(UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher, ApplicationStatePerDomainService applicationStatePerDomainService){
 		this.userService = userService;
 		this.domainService = domainService;
 		this.eventPublisher = eventPublisher;
+		this.applicationStatePerDomainService = applicationStatePerDomainService;
 	}
 
 	@GetMapping
@@ -124,6 +128,10 @@ public class DomainController extends AppBaseController {
 			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		}
+
+		List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.updateDomain(domainUpdate);
+		domain.setApplicationStatePerDomain(applicationStatePerDomainList);
+
 		domainService.updateDomain(domain);
 		domainService.updateDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 		
@@ -187,6 +195,5 @@ public class DomainController extends AppBaseController {
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		return modelMapper.map(domain, DomainView.class);
 	}
-	
-	
+
 }

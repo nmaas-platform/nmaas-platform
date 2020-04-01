@@ -12,10 +12,7 @@ import {AppInstanceModule} from './appinstance/appinstance.module';
 
 import {SharedModule} from '../shared/shared.module';
 
-import {AppsService} from '../service/apps.service';
-import {DomainService} from '../service/domain.service';
-import {TagService} from '../service/tag.service';
-import {UserService} from '../service/user.service';
+import {AppsService, DomainService, TagService, UserService} from '../service';
 
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
@@ -34,11 +31,14 @@ import {AppManagementModule} from "./appmanagement/appmanagement.module";
 import {SessionService} from "../service/session.service";
 import {LocalDatePipe} from "../pipe/local-date.pipe";
 import {LanguageManagementModule} from "./admin/languagemanagement/languagemanagement.module";
+import {TooltipModule} from 'ng2-tooltip-directive';
+import { ModalGuestUserComponent } from './modals/modal-guest-user/modal-guest-user.component';
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
+    ModalGuestUserComponent,
   ],
   imports: [
     FormsModule,
@@ -60,6 +60,7 @@ import {LanguageManagementModule} from "./admin/languagemanagement/languagemanag
     ConfigurationModule,
     BrowserModule,
     HttpClientModule,
+    TooltipModule,
     TranslateModule.forChild(),
   ],
   exports: [

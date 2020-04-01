@@ -8,6 +8,7 @@ import {UserDataService} from "../../../service/userdata.service";
 import {AuthService} from "../../../auth/auth.service";
 import {FormsModule} from "@angular/forms";
 import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
+import {NgxPaginationModule} from "ngx-pagination";
 
 describe('UserslistComponent', () => {
   let component: UsersListComponent;
@@ -31,7 +32,8 @@ describe('UserslistComponent', () => {
               }
           }),
           HttpClientModule,
-          FormsModule
+          FormsModule,
+          NgxPaginationModule
       ],
       providers:[ UserService, DomainService, UserDataService, AuthService, AppConfigService, JwtHelperService ]
     })

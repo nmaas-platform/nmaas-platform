@@ -1,15 +1,12 @@
-import {AuthService} from '../../../auth/auth.service';
 import {Component, OnInit, Input, ViewChild} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {Router} from '@angular/router';
 
 import {Application} from '../../../model/application';
-import {Domain} from '../../../model/domain';
 import {ModalComponent} from '..';
 import {AppInstanceService} from '../../../service/appinstance.service';
 import {DomainService} from '../../../service/domain.service';
 import { UserDataService } from '../../../service/userdata.service';
 import { isUndefined } from 'util';
-import {Observable} from "rxjs";
 
 @Component({
   selector: 'nmaas-modal-app-install',
@@ -28,14 +25,15 @@ export class AppInstallModalComponent implements OnInit {
   name: string;
   domainId: number;
   domainName: string;
+  selectedAppVersion: number;
   error:string;
-
-  userDomains: Domain[];
 
   constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private router: Router) {
   }
 
   ngOnInit() {
+    this.app.appVersions.sort((a,b) => a.appVersionId - b.appVersionId);
+    this.selectedAppVersion = this.app.appVersions[0].appVersionId;
     this.userDataService.selectedDomainId.subscribe(domainId => 
       { 
         if(!(isUndefined(domainId) || domainId === 0)) {
@@ -50,7 +48,7 @@ export class AppInstallModalComponent implements OnInit {
 
   public create(): void {
     if(this.domainId && this.app && this.app.id) {
-      this.appInstanceService.createAppInstance(this.domainId, this.app.id, this.name).subscribe(
+      this.appInstanceService.createAppInstance(this.domainId, this.selectedAppVersion, this.name).subscribe(
         instanceId => {
           this.modal.hide();
           this.router.navigate(['/instances', instanceId.id]);

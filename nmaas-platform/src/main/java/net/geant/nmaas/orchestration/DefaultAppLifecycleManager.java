@@ -14,11 +14,16 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.*;
+import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Default {@link AppLifecycleManager} implementation.
@@ -105,7 +110,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
         }
         if(isNotEmpty(configuration.getAccessCredentials())){
-            changeBasicAuth(deploymentId, serviceInfo.getDomain(), configuration.getAccessCredentials());
+            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), serviceInfo.getDomain(), configuration.getAccessCredentials());
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
@@ -122,19 +127,34 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
+    static Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
             if(entry.getValue() != null && !entry.getValue().isEmpty()){
-                newMap.put(entry.getKey().replace("#","."), entry.getValue());
+                newMap.put(
+                        entry.getKey().replace("#","."),
+                        escapeCommasIfRequired(addQuotationMarkIfRequired(entry.getValue()))
+                );
             }
         }
         return newMap;
     }
 
+    static String addQuotationMarkIfRequired(String value) {
+        return value.contains(" ") ? "\"" + value + "\"" : value;
+    }
+
+    static String escapeCommasIfRequired(String value) {
+        return value.replace(",", "\\,");
+    }
+
     private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
         Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
-        janitorService.createOrReplaceBasicAuth(deploymentId, domain, accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword"));
+        String basicAuthUsername = accessCredentialsMap.get("accessUsername");
+        String basicAuthPassword = accessCredentialsMap.get("accessPassword");
+        if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
+            janitorService.createOrReplaceBasicAuth(deploymentId, domain, basicAuthUsername, basicAuthPassword);
+        }
     }
 
     @Override
@@ -152,7 +172,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void updateApplication(Identifier deploymentId, Identifier applicationId) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Updating application is currently not supported.");
     }
 
     @Override
@@ -166,7 +186,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
         }
         if(isNotEmpty(configuration.getAccessCredentials())){
-            changeBasicAuth(deploymentId, appDeployment.getDomain(), configuration.getAccessCredentials());
+            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), appDeployment.getDomain(), configuration.getAccessCredentials());
         }
     }
 

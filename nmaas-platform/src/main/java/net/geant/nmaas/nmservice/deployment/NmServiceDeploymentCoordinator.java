@@ -131,7 +131,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
             return orchestrator.serviceAccessDetails(deploymentId);

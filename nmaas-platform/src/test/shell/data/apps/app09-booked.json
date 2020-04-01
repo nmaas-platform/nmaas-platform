@@ -1,0 +1,158 @@
+{
+	"name":"Booked",
+	"version":"2.7.7",
+	"license":"GPL 3.0",
+	"licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+	"tags": [ "management" ],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Web-based calendar and schedule",
+			"fullDescription": "A web-based calendar and resource scheduling system that allows administered management of reservations on any number of resources. Typical applications are conference room or machine reservation management."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Web-based calendar and schedule",
+			"fullDescription": "A web-based calendar and resource scheduling system that allows administered management of reservations on any number of resources. Typical applications are conference room or machine reservation management."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Web-based calendar and schedule",
+			"fullDescription": "A web-based calendar and resource scheduling system that allows administered management of reservations on any number of resources. Typical applications are conference room or machine reservation management."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Web-based calendar and schedule",
+			"fullDescription": "A web-based calendar and resource scheduling system that allows administered management of reservations on any number of resources. Typical applications are conference room or machine reservation management."
+		}
+	],
+	"wwwUrl": "https://www.bookedscheduler.com",
+	"sourceUrl": "https://sourceforge.net/p/phpscheduleit/code/HEAD/tree",
+	"issuesUrl": "https://sourceforge.net/p/phpscheduleit/bugs",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-booked",
+				"version": "1.0.0"
+			}
+		},
+		"defaultStorageSpace": 1,
+		"deployParameters": {
+			"BASE_URL": "baseDomain"
+		},
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "DEFAULT",
+				"name": "Booked",
+				"tag": "booked",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired": false
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "Administrator email address",
+											"type": "email",
+											"input": true,
+											"key": "booked#config#BOOKED_ADMIN_EMAIL",
+											"inputFormat": "plain",
+											"validate": {
+												"required": true
+											},
+											"tab": 0
+										},
+										{
+											"label": "Enable email notifications",
+											"type": "checkbox",
+											"defaultValue": false,
+											"input": true,
+											"key": "booked#config#BOOKED_ENABLE_EMAIL",
+											"inputFormat": "plain",
+											"tab": 0
+										},
+										{
+											"label": "Enable user registration",
+											"type": "checkbox",
+											"defaultValue": false,
+											"input": true,
+											"key": "booked#config#BOOKED_REGISTRATION",
+											"inputFormat": "plain",
+											"tab": 0
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 1GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}

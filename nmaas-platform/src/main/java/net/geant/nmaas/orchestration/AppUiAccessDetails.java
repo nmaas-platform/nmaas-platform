@@ -3,6 +3,9 @@ package net.geant.nmaas.orchestration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
+
+import java.util.Set;
 
 /**
  * User access details to the deployed application, typically its graphical user interface. In case of
@@ -14,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class AppUiAccessDetails {
 
     /**
-     * Simple HTTP URL to access the deployed application UI
+     * set of access methods to deployed application UI
      */
-    private String url;
+    private Set<ServiceAccessMethodView> serviceAccessMethods;
+
 }

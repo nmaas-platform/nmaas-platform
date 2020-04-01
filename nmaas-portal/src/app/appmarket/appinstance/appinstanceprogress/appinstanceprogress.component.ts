@@ -15,7 +15,6 @@ export class AppInstanceProgressComponent implements OnInit {
     @Input()
     stages: AppInstanceProgressStage[]  = new Array<AppInstanceProgressStage>();
 
-
     @Input()
     activeState: AppInstanceState = AppInstanceState.UNKNOWN;
 
@@ -33,9 +32,9 @@ export class AppInstanceProgressComponent implements OnInit {
         return this.translate.instant("APP_INSTANCE.PROGRESS." + stateProgress.toString());
     }
 
-    ngAfterViewInit() {
-        // available here
-    }
+    // ngAfterViewInit() {
+    //     // available here
+    // }
 
 //    public getCurrentStage(): AppInstanceProgressStage {
 //        console.debug('Test state: ' + this.activeState);

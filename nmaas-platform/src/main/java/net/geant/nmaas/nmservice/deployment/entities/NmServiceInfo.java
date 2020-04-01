@@ -39,7 +39,7 @@ public abstract class NmServiceInfo {
     @Column(name = "id")
     private Long id;
 
-    /** Unique name of the service provided by the caller */
+    /** Unique (within a domain) name of the service provided by the caller */
     @Column(nullable = false)
     private String name;
 
@@ -72,6 +72,10 @@ public abstract class NmServiceInfo {
     @Column(nullable = false)
     private Integer storageSpace;
 
+    /** Globally unique descriptive application deployment identifier */
+    @Column(nullable = false)
+    private Identifier descriptiveDeploymentId;
+
     /** GitLab project information created to store configuration files for this service (deployment) */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private GitLabProject gitLabProject;
@@ -81,20 +85,22 @@ public abstract class NmServiceInfo {
     @Fetch(FetchMode.SELECT)
     private Map<String, String> additionalParameters;
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
         this.domain = domain;
         this.storageSpace = storageSpace;
+        this.descriptiveDeploymentId = descriptiveDeploymentId;
     }
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Map <String, String> additionalParameters) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, Map <String, String> additionalParameters) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
         this.domain = domain;
         this.storageSpace = storageSpace;
+        this.descriptiveDeploymentId = descriptiveDeploymentId;
         this.additionalParameters = additionalParameters;
     }
 

@@ -1,152 +1,213 @@
+<div class="container" *ngIf="appInstance">
+    <div class="row">
+        <!-- App logo -->
+        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+            <div class="thumbnail" *ngIf="app">
+                <img alt="App logo"
+                     [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
+            </div>
+            <div class="thumbnail" *ngIf="!app">
+                <img alt="App logo" src="assets/images/app-logo-example.png"/>
+            </div>
+        </div>
+        <!-- App information-->
+        <div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <h2 style="margin-bottom: 4px;">{{appInstance?.name}} ({{app?.name}})</h2>
+                    <rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.id)"></rate>
+                    <div class="text-muted" style="font-size: small;">
+                        v.{{app?.appVersions.length > 0 ? app?.appVersions[0].version : 'None'}}
+                        |
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.licenseUrl">
+							<a class="{{app?.licenseUrl ? '' : 'disabled-url'}}" [href]="app?.licenseUrl" target="_blank">{{app?.license || 'License'}}</a>
+						</span>
+                        |
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.wwwUrl">
+							<a class="{{app?.wwwUrl ? '' : 'disabled-url'}}" [href]="app?.wwwUrl">WWW</a>
+						</span>
+                        |
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.sourceUrl">
+							<a class="{{app?.sourceUrl ? '' : 'disabled-url'}}" [href]="app?.sourceUrl" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+						</span>
+                        |
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.issuesUrl">
+							<a class="{{app?.issuesUrl ? '' : 'disabled-url'}}" [href]="app?.issuesUrl" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+						</span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <div class="text-right">
 
-		<div class="container">
-			<div class="row">
-				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
-					<div class="thumbnail" *ngIf="app">
-						<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
-					</div>
-					<div class="thumbnail" *ngIf="!app">
-						<img alt="App logo" src="assets/images/app-logo-example.png"/>
-					</div>
-				</div>
-				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<h2 style="margin-bottom: 4px;">{{appInstance?.name}} ({{app?.name}})</h2>
-							<rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.id)"></rate>
-							<div class="text-muted" style="font-size: small;">
-								v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
-								| <a href="{{app?.wwwUrl}}">WWW</a>
-								| <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
-								| <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
-							</div>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<div class="text-right">
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <!-- Tags -->
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
+                    <a *ngFor="let tag of app.tags" class="tag-button">
+                        {{tag | titlecase}}
+                    </a>
+                </div>
+                <!-- Deployment buttons -->
+                <div *ngIf="appInstance" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
+                        <a *ngIf="shouldDisplayButton()"
+                           href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}"
+                           class = "btn btn-success" role = "button">
+                            {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
+                        </a>
+                        <div class="btn-group" *ngIf="shouldDisplayModal()">
+                            <button class="btn btn-success" role="button" (click)="this.accessMethodsModal.show()">
+                                {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
+                            </button>
+                        </div>
+                        <button class="btn btn-default" *ngIf="configurationUpdateTemplate"
+                                (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+                        <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
+                                disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
+                        <button class="btn btn-danger"
+                                (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
 
-					</div>
-				</div>
-			</div>
-			<hr>
-			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
-					<a type="button" *ngFor="let tag of app.tags" class="btn tag-button">
-						{{tag | titlecase}}
-					</a>
-				</div>
-				<div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-					<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
-						<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button" [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true" tooltip="{{'APP_INSTANCE.GO_TO_APP_TOOLTIP' | translate }}" [display]="!app.appDeploymentSpec.exposesWebUI" [options]="defaultTooltipOptions">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
-						<button class="btn btn-default" *ngIf="configurationUpdateTemplate" (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
-						<button class="btn btn-primary" style="display: none" (click)="this.modal.show()" disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
-						<button class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
-					</div>
-					<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
-						<button class="btn btn-primary" (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
-						<button class="btn btn-primary btn-danger" (click)="removalFailed()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 
-	<nmaas-modal styleModal="warning">
-		<div class="nmaas-modal-header">
-			<h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
-		</div>
-		<div class="nmaas-modal-body">
-			<div class="form-group">
-				<p>{{'UNDEPLOY_MODAL.BODY' | translate}}</p>
-			</div>
-		</div>
-		<div class="nmaas-modal-footer">
-			<button type="button" class="btn btn-danger" (click)="this.undeploy()">{{'UNDEPLOY_MODAL.YES_BUTTON' | translate}}</button>
-			<button type="button" class="btn btn-primary" (click)="this.undeployModal.hide()">{{'UNDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
-		</div>
-	</nmaas-modal>
+                    </div>
 
-	<nmaas-modal #updateConfig>
-		<div class="nmaas-modal-header">
-			<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
-		</div>
-		<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
-			<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined && isSubmissionUpdated"
-					[form]="configurationUpdateTemplate"
-					[submission]="submission"
-					[refresh]="refreshUpdateForm"
-					(change)="changeConfigUpdate($event)">
-			</formio>
-		</div>
-		<div class="nmaas-modal-footer">
-			<button type="button" class="btn btn-danger" [disabled]="!isUpdateFormValid" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
-			<button type="button" class="btn btn-primary" (click)="this.closeConfigurationModal()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
-		</div>
-	</nmaas-modal>
+                    <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
+                        <button class="btn btn-primary"
+                                (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
+                        <button class="btn btn-primary btn-danger"
+                                (click)="removalFailed()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div class='row'>
-		<h3>{{'APP_INSTANCE.INSTALLATION_PROGRESS.HEADER' | translate}}</h3>
-		<hr>
-		<div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
-			<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
-		</div>
-		<div id="app-progress-info" class="col-xs-12">
-			<div id="app-progress-info-sub alert"
-				 [ngClass]="{
+    <!-- Undeploy modal-->
+    <!-- TODO should be moved to separate component-->
+    <nmaas-modal styleModal="warning">
+        <div class="nmaas-modal-header">
+            <h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
+        </div>
+        <div class="nmaas-modal-body">
+            <div class="form-group">
+                <p>{{'UNDEPLOY_MODAL.BODY' | translate}}</p>
+            </div>
+        </div>
+        <div class="nmaas-modal-footer">
+            <button type="button" class="btn btn-danger"
+                    (click)="this.undeploy()">{{'UNDEPLOY_MODAL.YES_BUTTON' | translate}}</button>
+            <button type="button" class="btn btn-primary"
+                    (click)="this.undeployModal.hide()">{{'UNDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
+        </div>
+    </nmaas-modal>
+
+    <!-- Update config modal -->
+    <!-- TODO should be moved to separate component-->
+    <nmaas-modal #updateConfig>
+        <div class="nmaas-modal-header">
+            <h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
+        </div>
+        <div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
+            <formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined && isSubmissionUpdated"
+                    [form]="configurationUpdateTemplate"
+                    [submission]="submission"
+                    [refresh]="refreshUpdateForm"
+                    (change)="changeConfigUpdate($event)">
+            </formio>
+        </div>
+        <div class="nmaas-modal-footer">
+            <button type="button" class="btn btn-danger" [disabled]="!isUpdateFormValid"
+                    (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
+            <button type="button" class="btn btn-primary"
+                    (click)="this.closeConfigurationModal()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
+        </div>
+    </nmaas-modal>
+
+    <!-- Progress bar -->
+    <div class='row'>
+        <h3>{{'APP_INSTANCE.INSTALLATION_PROGRESS.HEADER' | translate}}</h3>
+        <hr>
+        <div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
+            <nmaas-appinstanceprogress [stages]='getStages()'
+                                       [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
+        </div>
+        <div id="app-progress-info" class="col-xs-12">
+            <div id="app-progress-info-sub alert"
+                 [ngClass]="{
 				 'alert-danger': appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE] || appInstanceStatus?.state === AppInstanceState[AppInstanceState.UNKNOWN],
 				 'other-states': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN] }"
-				 class="col-xs-offset-1 col-xs-10">
+                 class="col-xs-offset-1 col-xs-10">
 				<span *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
 					{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
 				</span>
-				<span *ngIf="appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN]">
-					{{  'APP_INSTANCE.USER_FRIENDLY.' +  getStateAsString(appInstanceStatus?.state) | translate }}
+                <span *ngIf="appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN]">
+					{{  'APP_INSTANCE.USER_FRIENDLY.' + getStateAsString(appInstanceStatus?.state) | translate }}
 				</span>
-			</div>
-		</div>
-	</div>
+            </div>
+        </div>
+    </div>
 
-	<div class="row" *ngIf="this.appInstanceStateHistory">
-		<h3>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.HEADER' | translate}}</h3>
-		<hr>
-		<table class="table table-hover table-condensed">
-			<thead>
-			<tr>
-				<th>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.TIMESTAMP' | translate}}</th>
-				<th>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.STATE_TRANSITIONS' | translate}}</th>
-				<th>&nbsp;</th>
-			</tr>
-			</thead>
-			<tbody>
-			<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }" let-isLast="last">
-				<tr>
-					<td>{{history.timestamp | localDate:'medium' }}</td>
-					<td *ngIf="history.previousState !== null">{{history.previousState | translate }}<span class="glyphicon glyphicon-arrow-right" style="padding-left: 5px;padding-right: 5px"></span>{{history.currentState | translate }}</td>
-					<td *ngIf="history.previousState === null">{{history.currentState | translate }}</td>
-				</tr>
-			</ng-template>
-			</tbody>
-		</table>
-		<pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="{{ p_first }}"
-							 previousLabel="{{ 'PAGINATION.PREVIOUS' | translate }}"
-							 nextLabel="{{ 'PAGINATION.NEXT' | translate }}"
-							 screenReaderPaginationLabel="{{ 'PAGINATION.SCREEN_READER.PAGINATION' | translate }}"
-							 screenReaderPageLabel="{{ 'PAGINATION.SCREEN_READER.PAGE' | translate }}"
-							 screenReaderCurrentLabel="{{ 'PAGINATION.SCREEN_READER.CURRENT' | translate }}"></pagination-controls>
-	</div>
+    <!-- Apply configuration -->
+    <div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString())
+			|| AppInstanceState[appInstanceStatus?.state] === undefined
+			|| AppInstanceState[appInstanceStatus?.state].toString() == AppInstanceState.REMOVED.toString()
+			|| AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}">
+        <div class="col-xs-12">
+            <h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
+            <hr>
+            <formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
+                    [form]="configurationTemplate"
+                    [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+                    [refresh]="refreshForm"
+                    (formLoad)="changeForm()"
+                    (submit)="applyConfiguration($event.data)">
+            </formio>
+        </div>
+    </div>
 
-	<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() == AppInstanceState.REMOVED.toString() || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
-		<div class="col-xs-12">
-			<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
-			<hr>
-			<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
-					[form]="configurationTemplate"
-					[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-					[refresh]="refreshForm"
-					(formLoad)="changeForm()"
-					(submit)="applyConfiguration($event.data)">
-			</formio>
-		</div>
-	</div>
-	<hr>
-	<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
+    <!-- App Instance State History table -->
+    <div class="row" *ngIf="this.appInstanceStateHistory">
+        <h3>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.HEADER' | translate}}</h3>
+        <hr>
+        <table class="table table-hover table-condensed" aria-describedby="App instance deployment history table">
+            <thead>
+            <tr>
+                <th scope="col">{{'APP_INSTANCE.DEPLOYMENT_HISTORY.TIMESTAMP' | translate}}</th>
+                <th scope="col">{{'APP_INSTANCE.DEPLOYMENT_HISTORY.STATE_TRANSITIONS' | translate}}</th>
+                <th scope="col">&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-template ngFor let-history
+                         [ngForOf]="this.appInstanceStateHistory | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }"
+                         let-isLast="last">
+                <tr>
+                    <td>{{history.timestamp | localDate:'medium' }}</td>
+                    <td *ngIf="history.previousState !== null">
+                        {{history.previousState | translate }}
+                        <span class="glyphicon glyphicon-arrow-right"
+                              style="padding-left: 5px;padding-right: 5px"></span>
+                        {{history.currentState | translate }}
+                    </td>
+                    <td *ngIf="history.previousState === null">{{history.currentState | translate }}</td>
+                </tr>
+            </ng-template>
+            </tbody>
+        </table>
+        <pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="{{ p_first }}"
+                             previousLabel="{{ 'PAGINATION.PREVIOUS' | translate }}"
+                             nextLabel="{{ 'PAGINATION.NEXT' | translate }}"
+                             screenReaderPaginationLabel="{{ 'PAGINATION.SCREEN_READER.PAGINATION' | translate }}"
+                             screenReaderPageLabel="{{ 'PAGINATION.SCREEN_READER.PAGE' | translate }}"
+                             screenReaderCurrentLabel="{{ 'PAGINATION.SCREEN_READER.CURRENT' | translate }}"></pagination-controls>
+    </div>
+    <hr>
+
+    <!-- App restart modal -->
+    <nmaas-modal-app-restart [appInstanceId]="appInstanceId"
+                             [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
+    <!-- App access methods modal -->
+    <app-access-methods-modal *ngIf="appInstance?.serviceAccessMethods" [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
 </div>

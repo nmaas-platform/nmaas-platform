@@ -1,0 +1,72 @@
+<div class="panel panel-default">
+  <div class="panel-body panel-container">
+
+    <div class="col-sm-4">
+      <div class="basic-info-header">
+        <strong>{{'APP_ACCESS_METHOD_EDIT.BASIC_INFO' | translate}}</strong>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="{{id}}-type-{{accessMethod.type}}">{{'APP_ACCESS_METHOD_EDIT.TYPE' | translate}}: </label>
+        <select class="form-control" id="{{id}}-type-{{accessMethod.type}}" [(ngModel)]="accessMethod.type">
+          <option *ngIf="isDefault()" value="{{ServiceAccessMethodType.DEFAULT}}">DEFAULT</option>
+          <option *ngFor="let s of accessMethodTypes" value="{{ServiceAccessMethodType[s]}}">{{s}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="{{id}}-name-{{accessMethod.type}}">{{'APP_ACCESS_METHOD_EDIT.NAME' | translate}}: </label>
+        <input class="form-control" type="text" id="{{id}}-name-{{accessMethod.type}}" [(ngModel)]="accessMethod.name">
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="{{id}}-tag-{{accessMethod.type}}">{{'APP_ACCESS_METHOD_EDIT.TAG' | translate}}: </label>
+        <input class="form-control" type="text" id="{{id}}-tag-{{accessMethod.type}}" [(ngModel)]="accessMethod.tag">
+      </div>
+    </div>
+
+    <ul class="col-sm-7">
+      <li class="deploy-param-row" *ngIf="deployParamsMap.size != 0">
+        <strong>{{'APP_ACCESS_METHOD_EDIT.DEPLOY_PARAMETERS' | translate}}</strong>
+      </li>
+      <li *ngFor="let k of getDeploymentParamsKeys(); let i=index" class="deploy-param-row">
+        <div class="form-group col-sm-11">
+          <label class="control-label" for="{{id}}-{{i}}-param">{{'APP_ACCESS_METHOD_EDIT.PARAM' | translate}}: {{k}}</label>
+          <input class="form-control" type="text" id="{{id}}-{{i}}-param" [value]="deployParamsMap.get(k)">
+        </div>
+        <div class="col-sm-1">
+          <button class="btn btn-danger" role="button" (click)="removeDeployParam(k)">{{'APP_ACCESS_METHOD_EDIT.REMOVE_PARAM' | translate}}</button>
+        </div>
+      </li>
+      <li class="deploy-param-row">
+        <strong>{{'APP_ACCESS_METHOD_EDIT.NEW_DEPLOY_PARAMETER' | translate}}</strong>
+      </li>
+      <li class="deploy-param-row">
+        <div class="form-group col-sm-11">
+          <div class="double-form col-sm-6">
+            <label class="control-label" for="new-key">{{'APP_ACCESS_METHOD_EDIT.NEW_KEY' | translate}}</label>
+            <input type="text" id="new-key" class="form-control" [(ngModel)]="newKey">
+          </div>
+          <div class="double-form col-sm-6">
+            <label class="control-label" for="new-value">{{'APP_ACCESS_METHOD_EDIT.NEW_VALUE' | translate}}</label>
+            <input type="text" id="new-value" class="form-control" [(ngModel)]="newValue">
+          </div>
+        </div>
+        <div class="col-sm-1">
+          <button class="btn btn-success" role="button" (click)="addNewDeployParam()" [disabled]="!isNewDeployParamValid()">{{'APP_ACCESS_METHOD_EDIT.ADD_PARAM' | translate}}</button>
+        </div>
+      </li>
+      <li class="button-container" tooltip="{{'APP_ACCESS_METHOD_EDIT.CHANGES_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+        <div class="btn-group">
+          <button class="btn btn-success" role="button" (click)="updateDeployParams()">{{'APP_ACCESS_METHOD_EDIT.SAVE_CHANGES' | translate}}</button>
+          <button class="btn btn-danger" role="button" (click)="reject()">{{'APP_ACCESS_METHOD_EDIT.REJECT_CHANGES' | translate}}</button>
+        </div>
+        <strong class="margin-right">{{'APP_ACCESS_METHOD_EDIT.APPLY_CHANGES' | translate}}</strong>
+      </li>
+    </ul>
+
+    <div class="col-sm-1 button-container" tooltip="{{'APP_ACCESS_METHOD_EDIT.REMOVE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+      <em class="fas fa-remove icon-black icon-bigger" (click)="remove()"></em>
+    </div>
+
+  </div>
+
+</div>
+

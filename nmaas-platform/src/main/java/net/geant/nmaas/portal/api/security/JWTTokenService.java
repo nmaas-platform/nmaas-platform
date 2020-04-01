@@ -1,19 +1,21 @@
 package net.geant.nmaas.portal.api.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.NoArgsConstructor;
+import net.geant.nmaas.portal.persistent.entity.User;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import io.jsonwebtoken.*;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
-
-import net.geant.nmaas.portal.persistent.entity.User;
 
 @Service("jwtTokenService")
 @NoArgsConstructor

@@ -1,0 +1,274 @@
+{
+    "name": "Grafana",
+    "version": "5.4.3",
+    "license": "Apache 2.0",
+    "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+    "tags": [
+        "monitoring",
+        "visualization"
+    ],
+    "descriptions": [
+        {
+            "language": "en",
+            "briefDescription": "Open source analytics & monitoring solution for every database",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
+        },
+        {
+            "language": "de",
+            "briefDescription": "Open source analytics & monitoring solution for every database",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
+        },
+        {
+            "language": "fr",
+            "briefDescription": "Open source analytics & monitoring solution for every database",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
+        },
+        {
+            "language": "pl",
+            "briefDescription": "Rozwiązanie open source do analizy i wizualizacji danych",
+            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
+        }
+    ],
+    "wwwUrl": "https://grafana.com/",
+    "sourceUrl": "https://github.com/grafana/grafana",
+    "issuesUrl": "https://github.com/grafana/grafana/issues",
+    "appDeploymentSpec": {
+        "supportedDeploymentEnvironments": [
+            "KUBERNETES"
+        ],
+        "kubernetesTemplate": {
+            "chart": {
+                "name": "nmaas-grafana",
+                "version": "1.1.0"
+            }
+        },
+        "defaultStorageSpace": 1,
+        "exposesWebUI": true,
+        "accessMethods":  [
+            {
+                "type": "DEFAULT",
+                "name": "Grafana",
+                "tag": "grafana",
+                "deployParameters": {
+                    "INGRESS_HOSTS": "ingress.hosts",
+                    "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+                    "INGRESS_CLASS": "ingress.class",
+                    "INGRESS_LETSENCRYPT": "ingress.tls.acme",
+                    "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+                }
+            }
+        ]
+    },
+    "appConfigurationSpec": {
+        "configFileRepositoryRequired":true,
+        "templates": [
+            {
+                "configFileName":"datasource.yaml",
+                "configFileTemplateContent":"<#if source_name?has_content>apiVersion: 1\ndeleteDatasources:\n  - name: ${source_name}\n    orgId: 1\ndatasources:\n- name: ${source_name}\n  type: prometheus\n  access: proxy\n  orgId: 1\n  url: \"http://<#if prom_ext_addr?has_content>${prom_ext_addr}<#else>${prom_int_addr}</#if>\"\n  basicAuth: false\n  isDefault: true\n  version: 1\n  editable: true</#if>"
+            }
+        ]
+    },
+    "state": "ACTIVE",
+    "configWizardTemplate": {
+        "template": {
+            "components": [
+                {
+                    "label": "Tabs",
+                    "components": [
+                        {
+                            "label": "Base",
+                            "key": "configTab",
+                            "components": [
+                                {
+                                    "label": "Mandatory parameters",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 0,
+                                    "key": "mandatoryParameters",
+                                    "components": [
+                                        {
+                                            "label": "Grafana admin username",
+                                            "type": "textfield",
+                                            "key": "adminUser",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "validate": {
+                                                "required": true
+                                            }
+                                        },
+                                        {
+                                            "label": "Grafana admin password",
+                                            "type": "password",
+                                            "key": "adminPassword",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "validate": {
+                                                "required": true
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "label": "Configuration",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 0,
+                                    "key": "configuration",
+                                    "components": [
+                                        {
+                                            "label": "Connect to existing Prometheus instance",
+                                            "type": "checkbox",
+                                            "defaultValue": false,
+                                            "key": "use_name",
+                                            "input": true,
+                                            "inputFormat": "plain"
+                                        },
+                                        {
+                                            "label": "Existing Prometheus instance",
+                                            "hideLabel": true,
+                                            "optionsLabelPosition": "right",
+                                            "values": [
+                                                {
+                                                    "label": "NMaaS Prometheus instance",
+                                                    "value": "inCluster"
+                                                },
+                                                {
+                                                    "label": "External Prometheus instance",
+                                                    "value": "external"
+                                                }
+                                            ],
+                                            "inline": true,
+                                            "type": "radio",
+                                            "key": "prometheus",
+                                            "defaultValue": "external",
+                                            "conditional": {
+                                                "show": true,
+                                                "when": "use_name",
+                                                "eq": true
+                                            }
+                                        },
+                                        {
+                                            "label": "Data source name",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "source_name",
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "inputFormat": "plain",
+                                            "customConditional": "show = (row.use_name === true)"
+                                        },
+                                        {
+                                            "label": "Prometheus instance address",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "prom_ext_addr",
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "inputFormat": "plain",
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'external')"
+                                        },
+                                        {
+                                            "label": "Select Prometheus instance",
+                                            "type": "select",
+                                            "key": "prom_int_addr",
+                                            "data": {
+                                                "values": "insert-app-instances-here"
+                                            },
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'inCluster')"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Additional",
+                            "key": "additionalParametersTab",
+                            "components": [
+                                {
+                                    "label": "additionalParameters",
+                                    "hideLabel": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 1,
+                                    "key": "additionalParameters",
+                                    "components": [
+                                        {
+                                            "label": "SMTP host (by default uses in-cluster Postfix)",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "smtp#host",
+                                            "inputFormat": "plain",
+                                            "defaultValue": "nmaas-postfix.nmaas-system:587",
+                                            "tab": 1
+                                        },
+                                        {
+                                            "label": "SMTP username",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "smtp#user",
+                                            "inputFormat": "plain",
+                                            "tab": 1
+                                        },
+                                        {
+                                            "label": "SMTP user password",
+                                            "type": "password",
+                                            "input": true,
+                                            "key": "smtp#password",
+                                            "inputFormat": "plain",
+                                            "tab": 1
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Advanced",
+                            "key": "advancedTab",
+                            "components": [
+                                {
+                                    "label": "Advanced",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 2,
+                                    "key": "advanced",
+                                    "components": [
+                                        {
+                                            "label": "Storage space (GB):",
+                                            "type": "number",
+                                            "input": true,
+                                            "key": "storageSpace",
+                                            "placeholder": "Default value: 1GB",
+                                            "tab": 2
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "tabs",
+                    "input": false,
+                    "key": "tabs"
+                },
+                {
+                    "type": "button",
+                    "label": "Apply configuration",
+                    "disableOnInvalid": true,
+                    "theme": "primary",
+                    "input": false,
+                    "tableView": true
+                }
+            ]
+        }
+    }
+}

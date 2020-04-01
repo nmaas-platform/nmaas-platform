@@ -93,6 +93,12 @@ public class AppDeployment {
 
     private String appName;
 
+    private Long instanceId;
+
+    /** Globally unique descriptive application deployment identifier */
+    @Column(nullable = false)
+    private Identifier descriptiveDeploymentId;
+
     public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState){
         history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
     }

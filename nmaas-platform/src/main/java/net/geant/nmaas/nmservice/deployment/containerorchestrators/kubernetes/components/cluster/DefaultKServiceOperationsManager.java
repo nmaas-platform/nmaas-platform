@@ -4,7 +4,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KS
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +15,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     @Override
     @Loggable(LogLevel.INFO)
     public void restartService(Identifier deploymentId) {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Service restart is currently not supported.");
     }
+
 }

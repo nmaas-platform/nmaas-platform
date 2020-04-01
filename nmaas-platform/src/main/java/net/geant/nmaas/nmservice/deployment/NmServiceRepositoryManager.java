@@ -90,4 +90,8 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         return repository.getDeploymentNameByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
+    public Identifier loadDescriptiveDeploymentId(Identifier deploymentId) {
+        return repository.getDescriptiveDeploymentIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    }
+
 }

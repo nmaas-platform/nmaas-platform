@@ -1,6 +1,8 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_IN_PROGRESS;
@@ -78,7 +81,11 @@ public class AppDeploymentStateChangeManagerTest {
     public void shouldTriggerNotificationEvent() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
-        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails("url"));
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
+            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+        }}));
+        when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
+
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
         ApplicationEvent newEvent = manager.notifyStateChange(event);
         assertThat(newEvent, is(nullValue()));

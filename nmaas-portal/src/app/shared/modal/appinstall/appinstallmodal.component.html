@@ -2,8 +2,14 @@
 	<div class="nmaas-modal-header">{{'INSTALL_MODAL.HEADER' | translate}} {{app?.name}}</div>
 	<div class="nmaas-modal-body">
 		<div class="form-group">
-			<label for="instance_name" class="control-label">{{'INSTALL_MODAL.INSTANCE_NAME' | translate}}</label>
-			<input type="text" class="form-control" id="instance_name" name="instance_name" pattern="[a-zA-Z0-9-]*" [(ngModel)]="name" #instance_name="ngModel" minlength="3" maxlength="10" required>
+			<label for="instance_name-{{app?.id}}" class="control-label">{{'INSTALL_MODAL.INSTANCE_NAME' | translate}}</label>
+			<input type="text" class="form-control" id="instance_name-{{app?.id}}" name="instance_name" pattern="[a-zA-Z0-9-]*" [(ngModel)]="name" #instance_name="ngModel" minlength="3" maxlength="10" required>
+			<div *ngIf="app">
+				<label for="selectedVersion" class="control-label">{{'INSTALL_MODAL.SELECT_VERSION' | translate}}</label>
+				<select class="form-control" name="selectedVersion" id="selectedVersion" [(ngModel)]="selectedAppVersion" required>
+					<option *ngFor="let appVersion of app?.appVersions" [value]="appVersion.appVersionId">{{appVersion.version}}</option>
+				</select>
+			</div>
 			<div *ngIf="instance_name.invalid && (instance_name.dirty || instance_name.touched)"
 				 class="alert alert-danger">
 				<div *ngIf="instance_name.errors.pattern">{{'INSTALL_MODAL.INSTANCE_NAME_PATTERN_ERROR' | translate}}</div>

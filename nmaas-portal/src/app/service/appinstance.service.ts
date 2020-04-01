@@ -14,16 +14,19 @@ import {Observable} from 'rxjs';
 import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
 import {AppConfiguration} from "../model/appconfiguration";
 import {map} from 'rxjs/operators';
+import {AppInstanceExtended} from "../model/appinstanceextended";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppInstanceService extends GenericDataService {
 
   constructor(http: HttpClient, appConfig: AppConfigService) {
     super(http, appConfig);
   }
 
-  public getSortedAllAppInstances(criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
-    return this.get<AppInstance[]>(this.getUrl()).pipe(
+  public getSortedAllAppInstances(domainId: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
+    return this.get<AppInstance[]>(this.getUrl() + "domain/" + domainId  + '?sort='+criteria.sortColumn+','+criteria.sortDirection).pipe(
         map(
       (data) => {
         data.sort((a, b) => {
@@ -39,8 +42,8 @@ export class AppInstanceService extends GenericDataService {
     )
   }
 
-  public getSortedMyAppInstances(criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl() + 'my').pipe(
+  public getSortedMyAppInstances(domainId: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
+    return this.get<AppInstance[]>(this.getUrl() + 'domain/' + domainId + '/my' + '?sort='+criteria.sortColumn+','+criteria.sortDirection).pipe(
         map(
       (data) => {
         data.sort((a, b) => {
@@ -72,8 +75,8 @@ export class AppInstanceService extends GenericDataService {
     return this.delete<any>(this.getUrl() + appInstanceId);
   }
 
-  public getAppInstance(appInstanceId: number): Observable<AppInstance> {
-    return this.get<AppInstance>(this.getUrl() + appInstanceId);
+  public getAppInstance(appInstanceId: number): Observable<AppInstanceExtended> {
+    return this.get<AppInstanceExtended>(this.getUrl() + appInstanceId);
   }
 
   public applyConfiguration(appInstanceId: number, configuration: AppConfiguration): Observable<void> {

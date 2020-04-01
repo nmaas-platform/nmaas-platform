@@ -1,5 +1,100 @@
 {"versions" : [
-
+  {
+    "verNo" : "1.3.0",
+    "date" : "(2020/04/01)",
+    "topic" : [
+      {
+        "title" : "Single application can have multiple access methods",
+        "tags" : "[New Feature]",
+        "description" : "Advanced support for application that may expose multiple UIs or other access methods like SSH."
+      },
+      {
+        "title" : "Support for multiple versions of a single application",
+        "tags" : "[New Feature]",
+        "description" : "Added possibility to add and deploy multiple versions of an application."
+      },
+      {
+        "title" : "Janitor able to retrieve service IP address from K8s API",
+        "tags" : "[New Feature]",
+        "description" : "NMaaS Janitor component is able to retrieve particular service IP address assigned by the MetalLB load balancer."
+      },
+      {
+        "title" : "Enhanced user management",
+        "tags" : "[Enhancement]",
+        "description" : "Added tracking of user first and latest login. Added email notification when user logs in with SSO for the first time."
+      },
+      {
+        "title" : "User interface improvements",
+        "tags" : "[Enhancement]",
+        "description" : "Several enhancements making the user interface more appealing."
+      }
+    ]
+  },
+  {
+    "verNo" : "1.2.5",
+    "date" : "(2020/03/10)",
+    "topic" : [
+      {
+        "title" : "Adding support for new application",
+        "tags" : "[Enhancement]",
+        "description" : "Applied some changes in order to support new application."
+      }
+    ]
+  },
+  {
+    "verNo" : "1.2.4",
+    "date" : "(2020/02/19)",
+    "topic" : [
+      {
+        "title" : "Adding support for new application",
+        "tags" : "[Enhancement]",
+        "description" : "Applied some changes in order to support new application."
+      }
+    ]
+  },
+  {
+    "verNo" : "1.2.3",
+    "date" : "(2020/01/10)",
+    "topic" : [
+      {
+        "title" : "Displaying and filtering application instances",
+        "tags" : "[Bugfix]",
+        "description" : "Applied fix in how application instances are displayed and filtered by domain and given user."
+      }
+    ]
+  },
+  {
+    "verNo" : "1.2.2",
+    "date" : "(2019/12/10)",
+    "topic" : [
+      {
+        "title" : "Updating application basic auth credentials",
+        "tags" : "[Bugfix]",
+        "description" : "The configuration update wizard form will allow to change basic auth credentials for given application instance."
+      },
+      {
+        "title" : "Admin area user interface enhancements",
+        "tags" : "[Enhancement]",
+        "description" : "Set of UI improvements mainly on the administrator views."
+      }
+    ]
+  },
+  {
+    "verNo" : "1.2.1",
+    "date" : "(2019/11/08)",
+    "topic" : [
+      {
+        "title" : "Human readable Helm release names",
+        "tags" : "[Enhancement]",
+        "description" : "Application instances deployed with release names allowing for easy identification."
+      },
+      {
+        "title" : "Ability to mark NMaaS installation as a test instance",
+        "tags" : "[Enhancement]",
+        "description" : "When user logs in on a test NMaaS instance a popup window is deployed with appropriate information."
+      }
+    ]
+  },
   {
     "verNo" : "1.2.0",
     "date" : "(2019/05/17)",
