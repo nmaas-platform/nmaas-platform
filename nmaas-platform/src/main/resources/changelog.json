@@ -1,5 +1,36 @@
 {"versions" : [
   {
+    "verNo" : "1.3.0",
+    "date" : "(2020/04/01)",
+    "topic" : [
+      {
+        "title" : "Single application can have multiple access methods",
+        "tags" : "[New Feature]",
+        "description" : "Advanced support for application that may expose multiple UIs or other access methods like SSH."
+      },
+      {
+        "title" : "Support for multiple versions of a single application",
+        "tags" : "[New Feature]",
+        "description" : "Added possibility to add and deploy multiple versions of an application."
+      },
+      {
+        "title" : "Janitor able to retrieve service IP address from K8s API",
+        "tags" : "[New Feature]",
+        "description" : "NMaaS Janitor component is able to retrieve particular service IP address assigned by the MetalLB load balancer."
+      },
+      {
+        "title" : "Enhanced user management",
+        "tags" : "[Enhancement]",
+        "description" : "Added tracking of user first and latest login. Added email notification when user logs in with SSO for the first time."
+      },
+      {
+        "title" : "User interface improvements",
+        "tags" : "[Enhancement]",
+        "description" : "Several enhancements making the user interface more appealing."
+      }
+    ]
+  },
+  {
     "verNo" : "1.2.5",
     "date" : "(2020/03/10)",
     "topic" : [
