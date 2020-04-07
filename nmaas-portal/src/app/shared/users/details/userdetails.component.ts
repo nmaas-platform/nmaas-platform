@@ -8,8 +8,8 @@ import {
     Output,
     ViewChild
 } from '@angular/core';
-import {AuthService} from "../../../auth/auth.service";
-import {PasswordComponent} from "../../common/password/password.component";
+import {AuthService} from '../../../auth/auth.service';
+import {PasswordComponent} from '../../common/password/password.component';
 
 @Component({
   selector: 'nmaas-userdetails',
@@ -19,7 +19,7 @@ import {PasswordComponent} from "../../common/password/password.component";
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   @ViewChild(PasswordComponent)
-  public readonly passwordModal:PasswordComponent;
+  public readonly passwordModal: PasswordComponent;
 
   @Input()
   public user: User = new User();
@@ -27,14 +27,14 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   public _errorMessage: string;
 
   @Input()
-  get errorMessage(){
+  get errorMessage() {
       return this._errorMessage;
   }
 
   @Output()
   errorMessageChange: EventEmitter<any> = new EventEmitter();
 
-  set errorMessage(val){
+  set errorMessage(val) {
       this._errorMessage = val;
   }
 
@@ -45,20 +45,20 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   public refresh: EventEmitter<any> = new EventEmitter();
 
   @Input()
-  get userDetailsMode(){
+  get userDetailsMode() {
       return this.mode;
   }
 
   @Output()
   userDetailsModeChange: EventEmitter<any> = new EventEmitter();
 
-  set userDetailsMode(val){
+  set userDetailsMode(val) {
       this.mode = val;
       this.userDetailsModeChange.emit(this.mode);
   }
 
 
-  constructor(private authService:AuthService) {
+  constructor(private authService: AuthService) {
     super();
   }
 

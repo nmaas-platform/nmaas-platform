@@ -329,7 +329,7 @@
     "HEADER": "Privileges",
     "DOMAIN": "Organisation",
     "ROLE": "Role",
-    "ADD_BUTTON": "Ajouter",
+    "ADD_BUTTON": "Ajouter/Update",
     "REMOVE_BUTTON": "Supprimer"
   },
   "SCREENSHOTS": {

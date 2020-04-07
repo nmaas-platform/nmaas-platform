@@ -25,7 +25,8 @@
     </h3>
 
     <br>
-    <table class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)" aria-describedby="Users list">
+    <table class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)"
+           aria-describedby="Users list">
         <thead>
         <tr>
             <th scope="col" class="column-sortable" sortable-column="username">{{ 'USERS.USER_NAME' | translate }}</th>
@@ -35,7 +36,8 @@
                 *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.GLOBAL_ROLE' | translate }}</th>
             <th scope="col" class="column-sortable" sortable-column="roles"
                 *ngIf="domainId !== domainService.getGlobalDomainId()">{{ 'USERS.ROLES' | translate }}</th>
-            <th scope="col" class="column-sortable" sortable-column="firstLoginDate">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
+            <th scope="col" class="column-sortable"
+                sortable-column="firstLoginDate">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
             <th scope="col" class="column-sortable"
                 sortable-column="lastSuccessfulLoginDate">{{ 'USERS.LAST_SUCCESSFUL_LOGIN' | translate }}</th>
             <th scope="col" class="column-sortable" sortable-column="enabled">{{ 'USERS.ENABLED' | translate }}</th>
@@ -72,11 +74,6 @@
                 <span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span>
             </td>
             <td>
-                <a (click)="view(user.id)" *ngIf="isModeAllowed(ComponentMode.VIEW)">
-                    <!-- {{ 'USERS.DETAILS_BUTTON' | translate }} -->
-                    <em class="far fa-eye icon-black icon-bigger"></em>
-                </a>
-
                 <span class="dropdown">
 						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false"
                            aria-haspopup="true"
@@ -84,9 +81,14 @@
 							<em class="fas fa-cog icon-black icon-bigger"></em>
 						</a>
 						<ul class="dropdown-menu pull-right-drop">
+                            <li>
+                                <a (click)="view(user.id)" *ngIf="isModeAllowed(ComponentMode.VIEW)">
+                                    {{ 'USERS.DETAILS_BUTTON' | translate }}
+                                </a>
+                            </li>
 							<li>
 								<a (click)="changeUserStatus(user, false)"
-                                   *ngIf="user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
+                                   *ngIf="user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN') && user.username!==authService.getUsername()"> <!--user should not be able to disable himself -->
 									{{ 'USERS.DISABLE_BUTTON' | translate }}</a>
 							</li>
 							<li>
@@ -101,7 +103,7 @@
                                    (click)="addToCurrentDomain(user)">{{'USERS.GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON' | translate}}</a>
                             </li>
 							<li>
-								<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()"
+								<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId() && user.username!==authService.getUsername()"
                                    (click)="remove(user)">{{ 'USERS.REMOVE_FROM_DOMAIN_BUTTON' | translate }}</a>
 							</li>
 						</ul>

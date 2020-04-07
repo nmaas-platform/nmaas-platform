@@ -80,7 +80,8 @@ export class DomainComponent extends BaseComponent implements OnInit {
                     },
                     err => {
                         console.error(err);
-                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403 || err.statusCode === 500)) {
+                        if (err.statusCode && (err.statusCode === 404 ||
+                            err.statusCode === 401 || err.statusCode === 403 || err.statusCode === 500)) {
                             this.router.navigateByUrl('/notfound');
                         }
                     });
@@ -195,6 +196,8 @@ export class DomainComponent extends BaseComponent implements OnInit {
                             console.warn('Not matching applications')
                         }
                     }
+                } else {
+                    console.warn('Number of applications differs')
                 }
             }, error => {
                 console.error(error);
