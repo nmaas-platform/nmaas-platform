@@ -48,7 +48,7 @@
 				class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.VIEW_BUTTON' | translate}}</button>
 			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit" [disabled]="userDetailsForm.invalid"
 				class="btn btn-danger">{{'USER_DETAILS.SUBMIT_BUTTON' | translate}}</button>
-			<button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)" type="button"
+			<button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT) && authService.hasRole('ROLE_SYSTEM_ADMIN')" type="button"
 				class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.EDIT_BUTTON' | translate}}</button>
 			<button (click)="passwordModal.show()" class="btn btn-success" *ngIf="canChangePassword() && !user.ssoUser" style="float: right;">{{'USER_DETAILS.CHANGE_PASSWORD_BUTTON' | translate}}</button>
 		</form>

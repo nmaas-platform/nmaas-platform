@@ -7,10 +7,10 @@ import {UserService} from '../../../service/user.service';
 import {BaseComponent} from '../../common/basecomponent/base.component';
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable, of} from "rxjs";
-import {CacheService} from "../../../service/cache.service";
-import {UserDataService} from "../../../service/userdata.service";
-import {isNullOrUndefined} from "util";
+import {Observable, of} from 'rxjs';
+import {CacheService} from '../../../service/cache.service';
+import {UserDataService} from '../../../service/userdata.service';
+import {isNullOrUndefined} from 'util';
 import {map, shareReplay, take} from 'rxjs/operators';
 
 @Component({
@@ -34,7 +34,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
   public newPrivilegeForm: FormGroup;
 
   constructor(protected fb: FormBuilder, protected domainService: DomainService,
-    protected userService: UserService, protected authService: AuthService, protected userData:UserDataService) {
+    protected userService: UserService, public authService: AuthService, protected userData: UserDataService) {
     super();
     this.newPrivilegeForm = fb.group(
       {
@@ -44,26 +44,33 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
       });
 
     this.roles = this.getAllowedRoles();
-    userData.selectedDomainId.subscribe(value => this.domainId = value);
+    userData.selectedDomainId.subscribe(value => {
+        this.domainId = value;
+        this.newPrivilegeForm.get('domainId').setValue(this.domainId);
+    });
   }
 
   public getAllowedRoles(): Role[] {
     let roles: Role[];
-    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) && this.newPrivilegeForm.get('domainId').value==this.domainService.getGlobalDomainId()) {
-      roles = [Role.ROLE_SYSTEM_ADMIN, Role.ROLE_TOOL_MANAGER, Role.ROLE_OPERATOR];
+    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) &&
+        Number(this.newPrivilegeForm.get('domainId').value) === this.domainService.getGlobalDomainId()) {
+        // console.debug('Admin global roles set');
+      roles = [Role.ROLE_OPERATOR, Role.ROLE_TOOL_MANAGER, Role.ROLE_SYSTEM_ADMIN];
       roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
-    } else if (this.newPrivilegeForm.get('domainId').value!=null) {
-      roles = [Role.ROLE_DOMAIN_ADMIN, Role.ROLE_USER, Role.ROLE_GUEST];
+    } else if (this.newPrivilegeForm.get('domainId').value != null) {
+        // console.debug('Standard roles set');
+      roles = [Role.ROLE_GUEST, Role.ROLE_USER, Role.ROLE_DOMAIN_ADMIN ];
       roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
     } else {
+        // console.debug('Empty roles set');
       roles = [];
     }
     return roles;
   }
 
-  private filterRoles(roles:Role[], domainId:number): Role[]{
-      let role = this.user.roles.find(value => value.domainId == domainId);
-      if(isNullOrUndefined(role)){
+  private filterRoles(roles: Role[], domainId: number): Role[] {
+      const role = this.user.roles.find(value => value.domainId == domainId);
+      if (isNullOrUndefined(role)) {
           return roles;
       }
       return roles.filter(value => Role[value] != role.role.toString());
@@ -88,9 +95,6 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
              this.newPrivilegeForm.reset();
              this.userService.getOne(this.user.id).subscribe((user) => this.user = user);
         });
-
-
-
   }
 
   public remove(userId: number, role: Role, domainId?: number): void {

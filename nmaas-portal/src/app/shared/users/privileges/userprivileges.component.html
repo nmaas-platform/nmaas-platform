@@ -1,15 +1,14 @@
 <div style="margin-bottom: 120px;" class="panel panel-default">
 	<div class="panel-heading">{{'USER_PRIVILEGES.HEADER' | translate}}</div>
 	<div class="panel-body">
-		<div *ngIf="isModeAllowed(ComponentMode.CREATE)">
+		<div *ngIf="isModeAllowed(ComponentMode.CREATE) && user != null && user.username !== authService.getUsername()"> <!-- user should not be able to change his roles -->
 			<form *ngIf="user" [formGroup]="newPrivilegeForm" (submit)="add()" class="form-inline row">
-				<div class="form-group col-lg-3">
+				<div *ngIf="domainId" class="form-group col-lg-3">
 					<label for="domainId">{{'USER_PRIVILEGES.DOMAIN' | translate}}:</label>
 					<select class="form-control" [formGroup]="newPrivilegeForm"
-						id="domainId" name="domainId" formControlName="domainId" style="min-width: 170px">
+						id="domainId" name="domainId" formControlName="domainId" style="min-width: 170px" [attr.disabled]="domainId!==domainService.getGlobalDomainId()? '' : null">
 						<option *ngFor="let domain of domains" [value]="domain.id">{{domain.name}}</option>
 					</select>
-
 				</div>
 
 				<div class="form-group col-lg-3">
@@ -45,9 +44,10 @@
 					<tr *ngIf="userrole.domainId != domainService.getGlobalDomainId() || userrole.role != 'ROLE_GUEST'">
 						<td>{{getDomainName(userrole.domainId)|async}}</td>
 						<td>{{"ENUM.USER_ROLES." + userrole.role.toUpperCase() | translate}}</td>
-						<td *ngIf="!isInMode(ComponentMode.PROFILVIEW)" class="text-right"><button type="button"
-								class="btn btn-danger"
-								(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button></td>
+						<td *ngIf="!isInMode(ComponentMode.PROFILVIEW) && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="text-right">
+							<button type="button" class="btn btn-danger"
+								(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button>
+						</td>
 					</tr>
 					</ng-template>
 				</tbody>
@@ -58,7 +58,7 @@
 							<td>{{getDomainName(userrole.domainId)|async}}</td>
 							<td>{{"ENUM.USER_ROLES." + userrole.role.toUpperCase() | translate}}</td>
 							<td class="text-right">
-								<button type="button" class="btn btn-danger"
+								<button *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') && domainId===domainService.getGlobalDomainId()"  type="button" class="btn btn-danger"
 										(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button>
 							</td>
 						</tr>
