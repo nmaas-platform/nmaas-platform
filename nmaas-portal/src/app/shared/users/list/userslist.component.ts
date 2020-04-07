@@ -4,11 +4,11 @@ import {CacheService} from '../../../service/cache.service';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
 import {BaseComponent} from '../../common/basecomponent/base.component';
-import {Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Observable, of} from 'rxjs';
 
-import { isUndefined } from 'util';
-import {UserRole} from '../../../model/userrole';
+import {isUndefined} from 'util';
+import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from '../../../service/userdata.service';
 import {AuthService} from '../../../auth/auth.service';
 import {map, shareReplay, take} from 'rxjs/operators';
@@ -33,6 +33,12 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   @Output()
   public onView: EventEmitter<number> = new EventEmitter<number>();
+
+  @Output()
+  public onAddToDomain: EventEmitter<User> = new EventEmitter<User>();
+
+  @Output()
+  public onModeChange: EventEmitter<number> = new EventEmitter<number>();
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
@@ -163,6 +169,23 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     // store max items per page value in this session
     sessionStorage.setItem(this.users_item_number_key, item);
     this.maxItemsOnPage = item;
+  }
+
+  public isGlobalGuestAndHasNoRoleInThisDomain(user: User): boolean {
+    const isGlobalGuest = user.roles.filter(r =>
+        r.domainId === this.domainService.getGlobalDomainId() &&
+        typeof r.role === 'string' ? Role[r.role] : r.role === Role.ROLE_GUEST).length > 0;
+    // console.log('is global guest:\t' + isGlobalGuest);
+    const hasNoRoleInThisDomain = user.roles.filter(r => r.domainId === this.domainId).length === 0;
+    return isGlobalGuest && hasNoRoleInThisDomain;
+  }
+
+  public addToCurrentDomain(user: User) {
+    this.onAddToDomain.emit(user);
+  }
+
+  public changeMode() {
+    this.onModeChange.emit(0);
   }
 
 }

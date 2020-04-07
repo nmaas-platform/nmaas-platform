@@ -1,3 +1,8 @@
 <div class="col-sm-12 col-sm-offset-1 col-sm-10 col-md-offset-1 col-md-10" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
-	<nmaas-userslist [users]="allUsers" [allowedModes]="[ComponentMode.VIEW, ComponentMode.DELETE]" (onView)="onUserView($event)" (onDelete)="onUserDelete($event)"></nmaas-userslist>
+	<nmaas-userslist *ngIf="!isInAddToDomainMode" [users]="allUsers" [allowedModes]="[ComponentMode.VIEW, ComponentMode.DELETE]"
+					 (onView)="onUserView($event)" (onModeChange)="onModeChange($event)" (onDelete)="onUserDelete($event)">
+	</nmaas-userslist>
+	<nmaas-userslist *ngIf="isInAddToDomainMode"  [users]="usersToAdd" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]"
+					 (onView)="onUserView($event)" (onModeChange)="onModeChange($event)" (onAddToDomain)="onUserAddToDomain($event)">
+	</nmaas-userslist>
 </div>

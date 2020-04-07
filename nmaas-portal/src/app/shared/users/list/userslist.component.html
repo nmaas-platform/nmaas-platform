@@ -15,7 +15,14 @@
     </span>
 </div>
 <div class="row">
-    <h3>{{ 'USERS.TITLE' | translate }}</h3>
+    <h3>
+        {{ 'USERS.TITLE' | translate }}
+        <button *ngIf="authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN')"
+                class="btn btn-primary" (click)="changeMode()">
+            {{'USERS.ADD_TO_DOMAIN_BUTTON' | translate}}
+        </button>
+    </h3>
+
     <br>
     <table class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)" aria-describedby="Users list">
         <thead>
@@ -64,7 +71,7 @@
                 <span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span>
             </td>
             <td>
-                <a (click)="view(user.id)">
+                <a (click)="view(user.id)" *ngIf="isModeAllowed(ComponentMode.VIEW)">
                     <!-- {{ 'USERS.DETAILS_BUTTON' | translate }} -->
                     <em class="far fa-eye icon-black icon-bigger"></em>
                 </a>
@@ -86,6 +93,12 @@
                                    *ngIf="!user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')">
 									{{ 'USERS.ENABLE_BUTTON' | translate }}</a>
 							</li>
+                            <li>
+                                <a *ngIf="isModeAllowed(ComponentMode.EDIT) &&
+                                    domainId != domainService.getGlobalDomainId() &&
+                                    isGlobalGuestAndHasNoRoleInThisDomain(user)"
+                                   (click)="addToCurrentDomain(user)">{{'USERS.GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON' | translate}}</a>
+                            </li>
 							<li>
 								<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()"
                                    (click)="remove(user)">{{ 'USERS.REMOVE_FROM_DOMAIN_BUTTON' | translate }}</a>

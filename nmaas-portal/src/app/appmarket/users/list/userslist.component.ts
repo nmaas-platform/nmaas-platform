@@ -1,12 +1,12 @@
 import {AuthService} from '../../../auth/auth.service';
 import {User} from '../../../model/user';
-import {Role, UserRole} from '../../../model/userrole';
+import {Role} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit} from '@angular/core';
 import {ComponentMode} from '../../../shared/common/componentmode';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {Observable, of} from 'rxjs';
 import {isNullOrUndefined} from 'util';
@@ -23,7 +23,10 @@ export class UsersListComponent implements OnInit {
   private domainId: number;
 
   private allUsers: User[] = [];
+  private usersToAdd: User[] = [];
   //  private domainUsers: Map<number, User[]> = new Map<number, User[]>();
+
+  private isInAddToDomainMode = false;
 
   constructor(protected authService: AuthService,
     protected userService: UserService,
@@ -42,31 +45,51 @@ export class UsersListComponent implements OnInit {
     console.log('Update users for domainId=' + domainId);
     if (isNullOrUndefined(domainId) || domainId === 0) {
       this.domainId = undefined;
-    } else
+    } else {
       this.domainId = domainId;
+    }
 
     let users: Observable<User[]> = null;
 
-    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])) {      
+    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])) {
       users = this.userService.getAll(this.domainId);
     } else if (!isNullOrUndefined(this.domainId) && this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
       users = this.userService.getAll(this.domainId);
     } else {
       users = of<User[]>([]);
     }
-    
+
     users.subscribe((all) => {
       this.allUsers = all;
       /* parse date strings to date objects */
-      for(let u of this.allUsers) {
-        if(u.firstLoginDate) {
+      for (const u of this.allUsers) {
+        if (u.firstLoginDate) {
           u.firstLoginDate = new Date(u.firstLoginDate)
         }
-        if(u.lastSuccessfulLoginDate) {
+        if (u.lastSuccessfulLoginDate) {
           u.lastSuccessfulLoginDate = new Date(u.lastSuccessfulLoginDate)
         }
       }
     });
+
+    if (this.domainId !== this.domainService.getGlobalDomainId()) {
+      this.userService.getAll().subscribe(
+          all => {
+            this.usersToAdd = all.filter(
+                u => u.roles.filter(r => r.domainId === this.domainId).length === 0 && // user has no roles in current domain
+                u.roles.filter(r => this.userRoleAsEnum(r.role) === Role.ROLE_GUEST && // user has role guest in global domain
+                    r.domainId === this.domainService.getGlobalDomainId()).length === 1);
+            for (const u of this.usersToAdd) {
+              if (u.firstLoginDate) {
+                u.firstLoginDate = new Date(u.firstLoginDate)
+              }
+              if (u.lastSuccessfulLoginDate) {
+                u.lastSuccessfulLoginDate = new Date(u.lastSuccessfulLoginDate)
+              }
+            }
+          }
+      );
+    }
 
   }
 
@@ -75,7 +98,25 @@ export class UsersListComponent implements OnInit {
   }
 
   public onUserDelete($event): void {
-      this.userService.removeRole($event.id, $event.roles.find(value => value.domainId===this.domainId).role,this.domainId).subscribe(()=> this.update(this.domainId))
+      this.userService.removeRole(
+          $event.id, $event.roles.find(value => value.domainId === this.domainId).role, this.domainId)
+          .subscribe(() => this.update(this.domainId)
+          )
+  }
+
+  public onUserAddToDomain($event): void {
+    this.userService.addRole($event.id, Role.ROLE_USER, this.domainId).subscribe(() => this.update(this.domainId))
+  }
+
+  public onModeChange($event): void {
+    this.isInAddToDomainMode = !this.isInAddToDomainMode;
+  }
+
+  public userRoleAsEnum(role: string | Role): Role {
+    if (typeof role === 'string') {
+      return Role[role];
+    }
+    return role;
   }
 
 }
