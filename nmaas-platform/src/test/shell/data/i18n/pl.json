@@ -181,9 +181,12 @@
     "DETAILS_BUTTON": "Szczegóły",
     "DISABLE_BUTTON": "Dezaktywuj",
     "REMOVE_FROM_DOMAIN_BUTTON": "Usuń z domeny",
-    "FIRST_LOGIN": "First login",
-    "LAST_SUCCESSFUL_LOGIN": "Last successful login",
-    "ITEMS_PER_PAGE": "Users per page"
+    "FIRST_LOGIN": "Data pierwszego logowania",
+    "LAST_SUCCESSFUL_LOGIN": "Data ostatniego udanego logowania",
+    "ITEMS_PER_PAGE": "Ilość wyświetlanych uzytkowników na stronie",
+    "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Nadaj rolę USER",
+    "ADD_TO_DOMAIN_BUTTON": "Dodaj uzytkowników do domeny",
+    "GO_BACK_BUTTON": "Wróć"
   },
   "DOMAINS": {
     "TITLE": "Domeny",

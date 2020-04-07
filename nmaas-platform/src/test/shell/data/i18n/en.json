@@ -183,7 +183,10 @@
     "REMOVE_FROM_DOMAIN_BUTTON": "Remove from domain",
     "FIRST_LOGIN": "First login",
     "LAST_SUCCESSFUL_LOGIN": "Last successful login",
-    "ITEMS_PER_PAGE": "Users per page"
+    "ITEMS_PER_PAGE": "Users per page",
+    "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Grant USER role",
+    "ADD_TO_DOMAIN_BUTTON": "Add users to domain",
+    "GO_BACK_BUTTON": "Back"
   },
   "DOMAINS": {
     "TITLE": "Domains",
