@@ -94,6 +94,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
         () => {
              this.newPrivilegeForm.reset();
              this.userService.getOne(this.user.id).subscribe((user) => this.user = user);
+             this.newPrivilegeForm.get('domainId').setValue(this.domainId);
         });
   }
 
