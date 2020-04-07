@@ -52,7 +52,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   constructor(private userService: UserService,
               public domainService: DomainService,
               private userDataService: UserDataService,
-              private authService: AuthService) {
+              public authService: AuthService) {
     super();
     userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }

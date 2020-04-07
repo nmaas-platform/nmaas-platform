@@ -19,7 +19,8 @@
         {{ 'USERS.TITLE' | translate }}
         <button *ngIf="authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN')"
                 class="btn btn-primary" (click)="changeMode()">
-            {{'USERS.ADD_TO_DOMAIN_BUTTON' | translate}}
+            <span *ngIf="isModeAllowed(ComponentMode.DELETE)">{{'USERS.ADD_TO_DOMAIN_BUTTON' | translate}}</span>
+            <span *ngIf="isModeAllowed(ComponentMode.EDIT)">{{'USERS.GO_BACK_BUTTON' | translate}}</span>
         </button>
     </h3>
 
