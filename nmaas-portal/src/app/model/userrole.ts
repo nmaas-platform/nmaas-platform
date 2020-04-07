@@ -17,7 +17,7 @@ export class UserRole {
   public domainId: number = undefined;
 
   public role: Role  = undefined;
-  
+
   constructor(domainId?: number, role?: Role) {
     this.domainId = domainId;
     this.role = role;

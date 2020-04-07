@@ -351,14 +351,32 @@ public class UsersController {
 	@GetMapping("/domains/{domainId}/users")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public List<UserView> getDomainUsers(@PathVariable Long domainId) {
-		return domainService.getMembers(domainId).stream().map(domain -> modelMapper.map(domain, UserView.class)).collect(Collectors.toList());
+		/* reads all users first and last successful login, transforms it to map*/
+		Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+				.map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		return domainService.getMembers(domainId).stream()
+				.map(domain -> modelMapper.map(domain, UserView.class))
+				.peek(uv -> {
+					if(userLoginDateMap.containsKey(uv.getId())) {
+						uv.setLastSuccessfulLoginDate(userLoginDateMap.get(uv.getId()).getMaxLoginDate());
+						uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
+					}
+				})
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("/domains/{domainId}/users/{userId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public UserView getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) {
     	try {
-			return modelMapper.map(domainService.getMember(domainId, userId), UserView.class);
+    		User user = domainService.getMember(domainId, userId);
+			UserView uv = modelMapper.map(user, UserView.class);
+			userLoginService.getUserFirstAndLastSuccessfulLoginDate(user).ifPresent(userLoginDate -> {
+				uv.setFirstLoginDate(userLoginDate.getMinLoginDate());
+				uv.setLastSuccessfulLoginDate(userLoginDate.getMaxLoginDate());
+			});
+			return uv;
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}
