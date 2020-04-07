@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.persistent.entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
+import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 
 import javax.persistence.*;
 import java.util.HashMap;
@@ -21,13 +22,12 @@ public class InternationalizationSimple extends InternationalizationAbstract{
     private List<InternationalizationNode> languageNodes;
 
     /**
-     * converts InternationalizationSimple object to Internationalization
+     * converts InternationalizationSimple object to InternationalizationView
      * @return
      */
-    public Internationalization getAsInternationalization(){
-        Internationalization result =  new Internationalization(); //create simple object
+    public InternationalizationView getAsInternationalizationView(){
+        InternationalizationView result =  new InternationalizationView(); //create simple object
         // rewrite trivial properties
-        result.setId(this.getId());
         result.setLanguage(this.getLanguage());
         result.setEnabled(this.isEnabled());
 

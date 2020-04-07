@@ -1,10 +1,10 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
-import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -37,13 +37,13 @@ public class ConfigurationManagerTest {
 
     ConfigurationView configView;
 
-    private Internationalization internationalization;
+    private InternationalizationView internationalization;
 
     @BeforeEach
     public void setup(){
         this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository);
         this.config = new Configuration(1L, false, false, "en", false);
-        this.internationalization = new Internationalization(1L, "pl", true, "{\"test\":\"test\"}");
+        this.internationalization = new InternationalizationView("pl", true, "{\"test\":\"test\"}");
         this.configView = new ConfigurationView(1L, false, false, "pl", false);
     }
 
