@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
-import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +32,7 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-        this.repository.save(new Internationalization(1L, "pl", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
+        this.repository.save(new InternationalizationView("pl", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
     }
 
     @AfterEach
