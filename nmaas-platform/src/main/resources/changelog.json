@@ -1,5 +1,21 @@
 {"versions" : [
   {
+    "verNo" : "1.3.1",
+    "date" : "(2020/04/08)",
+    "topic" : [
+      {
+        "title" : "Domain administrator can add users to his domain",
+        "tags" : "[New Feature]",
+        "description" : "Now the local domain admin can add users to his domain from the list of all users registered in the system."
+      },
+      {
+        "title" : "Enhanced user role assignment",
+        "tags" : "[Enhancement]",
+        "description" : "Several improvements in how user related actions can be performed by administrators."
+      }
+    ]
+  },
+  {
     "verNo" : "1.3.0",
     "date" : "(2020/04/01)",
     "topic" : [
@@ -193,5 +209,4 @@
       }
     ]
   }
-
 ]}
