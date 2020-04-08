@@ -11,7 +11,7 @@ import javax.persistence.*;
 @MappedSuperclass
 public abstract class InternationalizationAbstract {
 
-    @Setter(AccessLevel.PROTECTED)
+//    @Setter(AccessLevel.PROTECTED)
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;

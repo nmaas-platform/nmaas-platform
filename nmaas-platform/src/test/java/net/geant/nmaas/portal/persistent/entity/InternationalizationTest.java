@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
@@ -11,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class InternationalizationTest {
 
-    private Internationalization internationalization;
+    private InternationalizationView internationalization;
 
     private InternationalizationSimple internationalizationSimple;
 
@@ -38,14 +39,14 @@ public class InternationalizationTest {
 
     @BeforeEach
     public void setup(){
-        this.internationalization = new Internationalization(1L, "english", true, content);
+        this.internationalization = new InternationalizationView("english", true, content);
     }
 
     @Test
     public void internationalizationShouldDeserializeToInternationalizationSimple(){
         this.internationalizationSimple = this.internationalization.getAsInternationalizationSimple();
         assertTrue(StringUtils.isNotBlank(internationalization.getContent()));
-        assertEquals(internationalization.getId(), internationalizationSimple.getId());
+//        assertEquals(internationalization.getId(), internationalizationSimple.getId());
         assertEquals(internationalization.getLanguage(), internationalizationSimple.getLanguage());
         assertEquals(internationalization.isEnabled(), internationalizationSimple.isEnabled());
         assertTrue(internationalizationSimple.getLanguageNodes().size() > 0);
@@ -54,8 +55,8 @@ public class InternationalizationTest {
     @Test
     public void InternationalizationSimpleShouldSerializeToInternationalization(){
         this.internationalizationSimple = this.internationalization.getAsInternationalizationSimple();
-        Internationalization test = this.internationalizationSimple.getAsInternationalization();
-        assertEquals(internationalization.getId(), test.getId());
+        InternationalizationView test = this.internationalizationSimple.getAsInternationalizationView();
+//        assertEquals(internationalization.getId(), test.getId());
         assertEquals(internationalization.getLanguage(), test.getLanguage());
         assertEquals(internationalization.isEnabled(), test.isEnabled());
         ObjectMapper om = new ObjectMapper();
