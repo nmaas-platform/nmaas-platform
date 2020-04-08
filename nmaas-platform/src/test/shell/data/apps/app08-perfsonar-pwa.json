@@ -39,7 +39,7 @@
 				"version": "0.1.0"
 			}
 		},
-		"defaultStorageSpace": 5,
+		"defaultStorageSpace": 1,
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
@@ -62,6 +62,98 @@
 	"state": "DISABLED",
 	"configWizardTemplate": {
 		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "Default username",
+											"type": "textfield",
+											"input": true,
+											"key": "nmaas-perfsonar-centralmanagement-sca-auth#env#username",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Default password",
+											"type": "password",
+											"input": true,
+											"key": "nmaas-perfsonar-centralmanagement-sca-auth#env#password",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Default email",
+											"type": "email",
+											"input": true,
+											"key": "nmaas-perfsonar-centralmanagement-sca-auth#env#email",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 1GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
 		}
 	}
 }

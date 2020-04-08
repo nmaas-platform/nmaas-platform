@@ -234,6 +234,17 @@ echo App11 screenshots
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/statping/statping3.png;type=image/png" $API_URL/apps/11/screenshots
 echo
 
+echo
+echo App12
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app12-perfsonar-maddash.json
+echo
+echo App12 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/perfsonar.png;type=image/png" $API_URL/apps/12/logo
+echo
+echo App12 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-maddash/perfsonar-maddash1.png;type=image/png" $API_URL/apps/12/screenshots
+echo
+
 echo 
 echo ---------------------
 echo Get all apps
