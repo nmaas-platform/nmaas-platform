@@ -35,7 +35,7 @@
 		],
 		"kubernetesTemplate": {
 			"chart": {
-				"name": "nmaas-perfsonar-pwa",
+				"name": "nmaas-perfsonar-centralmanagement",
 				"version": "0.1.0"
 			}
 		},
