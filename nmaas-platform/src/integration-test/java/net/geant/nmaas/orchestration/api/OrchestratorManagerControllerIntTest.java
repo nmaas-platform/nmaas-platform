@@ -73,7 +73,6 @@ public class OrchestratorManagerControllerIntTest {
         Application application = new Application("testapp", "testversion","owner");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
-        application.getAppDeploymentSpec().setDefaultStorageSpace(20);
         application.getAppConfigurationSpec().setConfigFileRepositoryRequired(true);
         when(appRepo.findById(any())).thenReturn(Optional.of(application));
     }

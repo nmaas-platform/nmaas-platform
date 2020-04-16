@@ -44,7 +44,6 @@ public class DcnRepositoryManagerTest {
                 .applicationId(Identifier.newInstance(""))
                 .deploymentName(DEPLOYMENT_NAME)
                 .configFileRepositoryRequired(true)
-                .storageSpace(20)
                 .build();
         appDeploymentRepository.save(appDeployment);
     }

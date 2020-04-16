@@ -21,9 +21,9 @@ public class AppDeploymentSpecView {
 
     private KubernetesTemplateView kubernetesTemplate;
 
-    private Integer defaultStorageSpace;
-
     private boolean exposesWebUI;
+
+    private List<AppStorageVolumeView> storageVolumes;
 
     private List<AppAccessMethodView> accessMethods;
 

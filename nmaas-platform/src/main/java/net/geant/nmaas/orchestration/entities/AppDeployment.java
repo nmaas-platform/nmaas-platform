@@ -86,9 +86,6 @@ public class AppDeployment {
     @Type(type = "text")
     private String errorMessage;
 
-    /** Required storage space to be allocated for this particular instance in GB */
-    private Integer storageSpace;
-
     private String owner;
 
     private String appName;

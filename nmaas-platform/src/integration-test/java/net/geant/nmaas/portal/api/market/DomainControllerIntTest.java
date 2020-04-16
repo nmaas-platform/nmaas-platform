@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-public class DomainControllerTest extends BaseControllerTestSetup {
+public class DomainControllerIntTest extends BaseControllerTestSetup {
 
     private static final String DEF_DOM_NAME = "defdom";
 

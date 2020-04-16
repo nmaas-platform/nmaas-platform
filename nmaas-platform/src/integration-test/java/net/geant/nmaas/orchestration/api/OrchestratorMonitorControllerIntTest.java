@@ -63,7 +63,6 @@ public class OrchestratorMonitorControllerIntTest {
                 .applicationId(Identifier.newInstance("applicationId1"))
                 .deploymentName("deploymentName1")
                 .configFileRepositoryRequired(true)
-                .storageSpace(20)
                 .build();
 
         AppDeployment deployment2 = AppDeployment.builder()
@@ -72,7 +71,6 @@ public class OrchestratorMonitorControllerIntTest {
                 .applicationId(Identifier.newInstance("applicationId2"))
                 .deploymentName("deploymentName2")
                 .configFileRepositoryRequired(true)
-                .storageSpace(20)
                 .build();
         deployment2.setState(AppDeploymentState.APPLICATION_DEPLOYED);
 
@@ -82,7 +80,6 @@ public class OrchestratorMonitorControllerIntTest {
                 .applicationId(Identifier.newInstance("applicationId3"))
                 .deploymentName("deploymentName3")
                 .configFileRepositoryRequired(true)
-                .storageSpace(20)
                 .build();
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
 
@@ -152,7 +149,6 @@ public class OrchestratorMonitorControllerIntTest {
                 .applicationId(Identifier.newInstance("2"))
                 .deploymentName("deploymentName")
                 .configFileRepositoryRequired(true)
-                .storageSpace(20)
                 .build();
 
         AppDeploymentView output = modelMapper.map(source, AppDeploymentView.class);

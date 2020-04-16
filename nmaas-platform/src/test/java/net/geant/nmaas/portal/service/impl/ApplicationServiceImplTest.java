@@ -1,15 +1,20 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.Collections;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
+import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppStorageVolume;
+import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -19,13 +24,13 @@ import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,11 +38,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.modelmapper.ModelMapper;
 
 @ExtendWith(MockitoExtension.class)
 public class ApplicationServiceImplTest {
@@ -219,24 +225,6 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToDefaultStorageSpaceLowerThanZero(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = modelMapper.map(getDefaultAppView(), Application.class);
-            app.getAppDeploymentSpec().setDefaultStorageSpace(-3);
-            applicationService.update(app);
-        });
-    }
-
-    @Test
-    public void updateMethodShouldThrowExceptionDueToNullDefaultStorageSpace(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = modelMapper.map(getDefaultAppView(), Application.class);
-            app.getAppDeploymentSpec().setDefaultStorageSpace(null);
-            applicationService.update(app);
-        });
-    }
-
-    @Test
     public void updateMethodShouldThrowExceptionDueToNullKubernetesChart(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = modelMapper.map(getDefaultAppView(), Application.class);
@@ -259,10 +247,11 @@ public class ApplicationServiceImplTest {
         Application application = new Application("test", "testversion","owner");
         application.setId(1L);
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
-        application.setAppDeploymentSpec(new AppDeploymentSpec());
-        application.getAppDeploymentSpec().setDefaultStorageSpace(1);
-        application.getAppDeploymentSpec().setKubernetesTemplate(new KubernetesTemplate());
-        application.getAppDeploymentSpec().getKubernetesTemplate().setChart(new KubernetesChart("chart", "version"));
+        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart("chart", "version"), null));
+        appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(true, 2, null)));
+        appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
+        application.setAppDeploymentSpec(appDeploymentSpec);
         application.setConfigWizardTemplate(new ConfigWizardTemplate("test-template"));
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         Application result = applicationService.update(application);
@@ -335,11 +324,13 @@ public class ApplicationServiceImplTest {
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
-        appDeploymentSpec.setDefaultStorageSpace(1);
+        appDeploymentSpec.setStorageVolumes(Collections.singletonList(new AppStorageVolumeView(true, 2, null)));
+        appDeploymentSpec.setAccessMethods(Collections.singletonList(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
-        applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
-        applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
+        AppConfigurationSpecView appConfigurationSpec = new AppConfigurationSpecView();
+        appConfigurationSpec.setConfigFileRepositoryRequired(false);
+        applicationView.setAppConfigurationSpec(appConfigurationSpec);
         return applicationView;
     }
 

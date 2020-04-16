@@ -54,9 +54,6 @@ public class AppDeploymentSpec implements Serializable {
     private KubernetesTemplate kubernetesTemplate;
 
     @Column(nullable = false)
-    private Integer defaultStorageSpace;
-
-    @Column(nullable = false)
     private boolean exposesWebUI;
 
     @ElementCollection
@@ -64,10 +61,14 @@ public class AppDeploymentSpec implements Serializable {
     private Map<ParameterType, String> deployParameters;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<AppStorageVolume> storageVolumes;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<AppAccessMethod> accessMethods;
 
     public void validate(){
         checkArgument(kubernetesTemplate != null, "Kubernetes template cannot be null");
-        checkArgument(defaultStorageSpace != null && defaultStorageSpace > 0, "Default storage space cannot be lower than 0GB");
+        checkArgument(accessMethods != null && accessMethods.size() > 0, "At least one access method has to be specified");
+        checkArgument(storageVolumes != null && storageVolumes.size() > 0, "At least one storage volume has to be specified");
     }
 }
