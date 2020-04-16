@@ -281,23 +281,23 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 
 echo.
-echo App12
-curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app12-debian-repository.json
+echo App13
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app13-debian-repository.json
 echo.
-echo App12 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\debian.svg;type=image/svg+xml" %API_URL%/apps/12/logo
+echo App13 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\debian.svg;type=image/svg+xml" %API_URL%/apps/13/logo
 echo.
-echo App12 screenshots
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository1.png;type=image/png" %API_URL%/apps/12/screenshots
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository1.png;type=image/png" %API_URL%/apps/13/screenshots
 echo.
-echo App12 screenshots
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository2.png;type=image/png" %API_URL%/apps/12/screenshots
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository2.png;type=image/png" %API_URL%/apps/13/screenshots
 echo.
-echo App12 screenshots
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository3.png;type=image/png" %API_URL%/apps/12/screenshots
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository3.png;type=image/png" %API_URL%/apps/13/screenshots
 echo.
-echo App12 screenshots
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository4.png;type=image/png" %API_URL%/apps/12/screenshots
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository4.png;type=image/png" %API_URL%/apps/13/screenshots
 echo.
 
 echo.
