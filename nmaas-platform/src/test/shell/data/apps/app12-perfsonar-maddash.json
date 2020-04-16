@@ -1,0 +1,148 @@
+{
+	"name":"MaDDash",
+	"version":"4.2.2",
+	"license":"",
+	"licenseUrl": "",
+	"tags": [ "visualization" ],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Monitoring and Debugging Dashboard",
+			"fullDescription": "The Monitoring and Debugging Dashboard (MaDDash) is a tool for collecting large amounts of inherently two-dimensional data and presenting it in visually useful ways. The project consists of the server side that schedules jobs to collect data and a web front-end to display that data. A summary of the collected data is also made available as a JSON REST API. This initial use case was collecting point-to-point network measurements published by perfSONAR and displaying them as an organized collection grids on the web front-end. These were presented with one endpoint as the row and the second endpoint as the column. In principle though, MaDDash can be extended to support any two-dimensional data."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Monitoring and Debugging Dashboard",
+			"fullDescription": "The Monitoring and Debugging Dashboard (MaDDash) is a tool for collecting large amounts of inherently two-dimensional data and presenting it in visually useful ways. The project consists of the server side that schedules jobs to collect data and a web front-end to display that data. A summary of the collected data is also made available as a JSON REST API. This initial use case was collecting point-to-point network measurements published by perfSONAR and displaying them as an organized collection grids on the web front-end. These were presented with one endpoint as the row and the second endpoint as the column. In principle though, MaDDash can be extended to support any two-dimensional data."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Monitoring and Debugging Dashboard",
+			"fullDescription": "The Monitoring and Debugging Dashboard (MaDDash) is a tool for collecting large amounts of inherently two-dimensional data and presenting it in visually useful ways. The project consists of the server side that schedules jobs to collect data and a web front-end to display that data. A summary of the collected data is also made available as a JSON REST API. This initial use case was collecting point-to-point network measurements published by perfSONAR and displaying them as an organized collection grids on the web front-end. These were presented with one endpoint as the row and the second endpoint as the column. In principle though, MaDDash can be extended to support any two-dimensional data."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Monitoring and Debugging Dashboard",
+			"fullDescription": "The Monitoring and Debugging Dashboard (MaDDash) is a tool for collecting large amounts of inherently two-dimensional data and presenting it in visually useful ways. The project consists of the server side that schedules jobs to collect data and a web front-end to display that data. A summary of the collected data is also made available as a JSON REST API. This initial use case was collecting point-to-point network measurements published by perfSONAR and displaying them as an organized collection grids on the web front-end. These were presented with one endpoint as the row and the second endpoint as the column. In principle though, MaDDash can be extended to support any two-dimensional data."
+		}
+	],
+	"wwwUrl": "http://docs.perfsonar.net/maddash_intro.html",
+	"sourceUrl": "https://github.com/perfsonar/maddash",
+	"issuesUrl": "https://github.com/perfsonar/maddash/issues",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-perfsonar-maddash",
+				"version": "0.1.0"
+			}
+		},
+		"defaultStorageSpace": 5,
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "DEFAULT",
+				"name": "MaDDash",
+				"tag": "maddash",
+				"deployParameters": {
+					"INGRESS_HOSTS": "ingress.hosts",
+					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+					"INGRESS_CLASS": "ingress.class",
+					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired": false
+	},
+	"state": "DISABLED",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "Default username",
+											"type": "textfield",
+											"input": true,
+											"key": "nmaas-perfsonar-maddash#env#admin#username",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Default password",
+											"type": "password",
+											"input": true,
+											"key": "nmaas-perfsonar-maddash#env#admin#password",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 5GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}
