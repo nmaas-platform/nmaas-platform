@@ -8,25 +8,25 @@
 		{
 			"language": "en",
 			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc."
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
 		},
 		{
 			"language": "de",
 			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc."
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
 		},
 		{
 			"language": "fr",
 			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc."
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
 		},
 		{
 			"language": "pl",
 			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc."
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
 		}
 	],
-	"wwwUrl": "",
+	"wwwUrl": "https://wiki.debian.org/DebianRepository/SetupWithReprepro",
 	"sourceUrl": "",
 	"issuesUrl": "",
 	"appDeploymentSpec": {
@@ -42,7 +42,7 @@
 		"storageVolumes": [
 			{
 				"main": true,
-				"defaultSize": 10,
+				"defaultStorageSpace": 10,
 				"deployParameters": {
 					"PERSISTENCE_ENABLED": "persistence.enabled",
 					"PERSISTENCE_NAME": "persistence.name",

@@ -39,7 +39,18 @@
 				"version": "0.1.0"
 			}
 		},
-		"defaultStorageSpace": 5,
+		"storageVolumes": [
+			{
+				"main": true,
+				"defaultStorageSpace": 5,
+				"deployParameters": {
+					"PERSISTENCE_ENABLED": "persistence.enabled",
+					"PERSISTENCE_NAME": "persistence.name",
+					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
+				}
+			}
+		],
 		"deployParameters": {
 			"DOMAIN_CODENAME": "metallb.subnet_name"
 		},
