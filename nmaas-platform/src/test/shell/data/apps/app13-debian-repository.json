@@ -1,5 +1,5 @@
 {
-	"name":"Debian package repository",
+	"name":"Debian repository",
 	"version":"1.0",
 	"license":"Debian",
 	"licenseUrl": "",
@@ -7,23 +7,23 @@
 	"descriptions": [
 		{
 			"language": "en",
-			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
+			"briefDescription": "Debian package repository based on Reprepro",
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br><br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br><br>More information about the tool can be found at <a href=https://wiki.debian.org/DebianRepository/SetupWithReprepro>Debian Wiki</a>."
 		},
 		{
 			"language": "de",
-			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
+			"briefDescription": "Debian package repository based on Reprepro",
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br><br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br><br>More information about the tool can be found at <a href=https://wiki.debian.org/DebianRepository/SetupWithReprepro>Debian Wiki</a>."
 		},
 		{
 			"language": "fr",
-			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
+			"briefDescription": "Debian package repository based on Reprepro",
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br><br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br><br>More information about the tool can be found at <a href=https://wiki.debian.org/DebianRepository/SetupWithReprepro>Debian Wiki</a>."
 		},
 		{
 			"language": "pl",
-			"briefDescription": "Debian repository based on Reprepro",
-			"fullDescription": "Reprepro is a tool for managing APT repositories.<br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br>More information about the tool can be found at https://wiki.debian.org/DebianRepository/SetupWithReprepro."
+			"briefDescription": "Debian package repository based on Reprepro",
+			"fullDescription": "Reprepro is a tool for managing APT repositories.<br><br>Reprepro is able to manage multiple repositories for multiple distribution versions and one package pool. It can process updates from an incoming directory, copy package (references) between distribution versions, list all packages and/or package versions available in the repository, etc.<br><br>More information about the tool can be found at <a href=https://wiki.debian.org/DebianRepository/SetupWithReprepro>Debian Wiki</a>."
 		}
 	],
 	"wwwUrl": "https://wiki.debian.org/DebianRepository/SetupWithReprepro",
