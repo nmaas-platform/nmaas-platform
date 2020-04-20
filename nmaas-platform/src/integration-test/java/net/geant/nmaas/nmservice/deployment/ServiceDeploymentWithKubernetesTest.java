@@ -4,6 +4,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
@@ -56,7 +57,7 @@ class ServiceDeploymentWithKubernetesTest {
 		AppDeployment appDeployment = appDeployment();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
-		appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(true, 2, null)));
+		appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)));
 		appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance(1L), appDeployment, appDeploymentSpec);
 		KubernetesNmServiceInfo info = repositoryManager.loadService(deploymentId);

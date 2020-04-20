@@ -7,7 +7,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.ServiceAccessMethodRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.ServiceStorageVolumeRepository;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
@@ -16,7 +15,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType.MAIN;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType.SHARED;
 
 @Component
 @Profile("env_kubernetes")
@@ -33,12 +38,13 @@ public class KubernetesRepositoryManager extends NmServiceRepositoryManager<Kube
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateStorageSpace(Identifier deploymentId, Integer storageSpace) {
         KubernetesNmServiceInfo serviceInfo = loadService(deploymentId);
-        ServiceStorageVolume storageVolume = serviceInfo.getStorageVolumes().stream()
-                .filter(ServiceStorageVolume::getMain)
-                .findFirst()
-                .orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        storageVolume.setSize(storageSpace);
-        storageVolumeRepository.save(storageVolume);
+        List<ServiceStorageVolume> storageVolumes = serviceInfo.getStorageVolumes().stream()
+                .filter(v -> Arrays.asList(MAIN, SHARED).contains(v.getType()))
+                .collect(Collectors.toList());
+        storageVolumes.forEach(v -> {
+            v.setSize(storageSpace);
+            storageVolumeRepository.save(v);
+        });
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

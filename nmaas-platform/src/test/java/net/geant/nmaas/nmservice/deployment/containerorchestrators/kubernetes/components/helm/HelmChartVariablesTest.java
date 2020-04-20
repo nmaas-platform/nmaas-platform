@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -20,24 +21,35 @@ public class HelmChartVariablesTest {
 
     @Test
     public void shouldGenerateProperPersistenceVariablesForStorageVolume() {
-        Map<HelmChartPersistenceVariable, String> pvMap = new HashMap<>();
-        pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "persistence.enabled");
-        pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "persistence.name");
-        pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "persistence.size");
-        pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_CLASS, "persistence.storageClass");
-        ServiceStorageVolume serviceStorageVolume = new ServiceStorageVolume(true, 2, pvMap);
+        Map<HelmChartPersistenceVariable, String> pvMapMain = new HashMap<>();
+        pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "main.persistence.enabled");
+        pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "main.persistence.name");
+        pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "main.persistence.size");
+        pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_CLASS, "main.persistence.storageClass");
+        ServiceStorageVolume serviceStorageVolumeMain = new ServiceStorageVolume(ServiceStorageVolumeType.MAIN, 2, pvMapMain);
+
+        Map<HelmChartPersistenceVariable, String> pvMapSecond = new HashMap<>();
+        pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "secondary.persistence.enabled");
+        pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "secondary.persistence.name");
+        pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "secondary.persistence.size");
+        pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_CLASS, "secondary.persistence.storageClass");
+        ServiceStorageVolume serviceStorageVolumeSecond = new ServiceStorageVolume(ServiceStorageVolumeType.SHARED, 5, pvMapSecond);
 
         Map<String, String> variables = HelmChartVariables.persistenceVariablesMap(
-                Sets.newHashSet(serviceStorageVolume),
+                Sets.newHashSet(serviceStorageVolumeMain, serviceStorageVolumeSecond),
                 Optional.of("storageClass"),
                 "descriptiveDeploymentId"
         );
-        assertThat(variables.size(), is(4));
+        assertThat(variables.size(), is(8));
         assertTrue(variables.entrySet().containsAll(Arrays.asList(
-                Maps.immutableEntry("persistence.enabled", "true"),
-                Maps.immutableEntry("persistence.name", "descriptiveDeploymentId"),
-                Maps.immutableEntry("persistence.size", "2Gi"),
-                Maps.immutableEntry("persistence.storageClass", "storageClass")
+                Maps.immutableEntry("main.persistence.enabled", "true"),
+                Maps.immutableEntry("main.persistence.name", "descriptiveDeploymentId"),
+                Maps.immutableEntry("main.persistence.size", "2Gi"),
+                Maps.immutableEntry("main.persistence.storageClass", "storageClass"),
+                Maps.immutableEntry("secondary.persistence.enabled", "true"),
+                Maps.immutableEntry("secondary.persistence.name", "descriptiveDeploymentId"),
+                Maps.immutableEntry("secondary.persistence.size", "5Gi"),
+                Maps.immutableEntry("secondary.persistence.storageClass", "storageClass")
         )));
     }
 
@@ -47,7 +59,7 @@ public class HelmChartVariablesTest {
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "persistence.enabled");
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "persistence.name");
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "persistence.size");
-        ServiceStorageVolume serviceStorageVolume = new ServiceStorageVolume(true, 2, pvMap);
+        ServiceStorageVolume serviceStorageVolume = new ServiceStorageVolume(ServiceStorageVolumeType.MAIN, 2, pvMap);
 
         Map<String, String> variables = HelmChartVariables.persistenceVariablesMap(
                 Sets.newHashSet(serviceStorageVolume),

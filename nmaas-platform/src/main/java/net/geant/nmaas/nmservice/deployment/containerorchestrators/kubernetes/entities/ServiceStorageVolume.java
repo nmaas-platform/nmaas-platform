@@ -12,6 +12,8 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,8 +31,8 @@ public class ServiceStorageVolume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean main;
+    @Enumerated(EnumType.STRING)
+    private ServiceStorageVolumeType type;
 
     @Column(nullable = false)
     private Integer size;
@@ -39,15 +41,15 @@ public class ServiceStorageVolume {
     @Fetch(FetchMode.SELECT)
     private Map<HelmChartPersistenceVariable, String> deployParameters;
 
-    public ServiceStorageVolume(Boolean main, Integer size, Map<HelmChartPersistenceVariable, String> deployParameters) {
-        this.main = main;
+    public ServiceStorageVolume(ServiceStorageVolumeType type, Integer size, Map<HelmChartPersistenceVariable, String> deployParameters) {
+        this.type = type;
         this.size = size;
         this.deployParameters = deployParameters;
     }
 
     public static ServiceStorageVolume fromAppStorageVolume(AppStorageVolume appStorageVolume) {
         ServiceStorageVolume serviceStorageVolume = new ServiceStorageVolume();
-        serviceStorageVolume.setMain(appStorageVolume.getMain());
+        serviceStorageVolume.setType(appStorageVolume.getType());
         serviceStorageVolume.setSize(appStorageVolume.getDefaultStorageSpace());
         serviceStorageVolume.deployParameters = new HashMap<>();
         if (appStorageVolume.getDeployParameters() != null) {

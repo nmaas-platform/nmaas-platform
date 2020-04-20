@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class AppStorageVolumeView {
 
-    private Boolean main;
+    private ServiceStorageVolumeType type;
 
     private Integer defaultStorageSpace;
 

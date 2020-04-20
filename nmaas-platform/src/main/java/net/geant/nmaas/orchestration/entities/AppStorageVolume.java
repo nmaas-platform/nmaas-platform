@@ -4,12 +4,15 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,8 +28,8 @@ public class AppStorageVolume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean main;
+    @Enumerated(EnumType.STRING)
+    private ServiceStorageVolumeType type;
 
     @Column(nullable = false)
     private Integer defaultStorageSpace;
@@ -35,8 +38,8 @@ public class AppStorageVolume {
     @Fetch(FetchMode.SELECT)
     private Map<String, String> deployParameters;
 
-    public AppStorageVolume(Boolean main, Integer defaultStorageSpace, Map<String, String> deployParameters) {
-        this.main = main;
+    public AppStorageVolume(ServiceStorageVolumeType type, Integer defaultStorageSpace, Map<String, String> deployParameters) {
+        this.type = type;
         this.defaultStorageSpace = defaultStorageSpace;
         this.deployParameters = deployParameters;
     }

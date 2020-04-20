@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
@@ -232,7 +233,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     private ApplicationView getDefaultAppView(String name){
         List<AppStorageVolumeView> svList = new ArrayList<>();
-        svList.add(new AppStorageVolumeView(true, 5, null));
+        svList.add(new AppStorageVolumeView(ServiceStorageVolumeType.MAIN, 5, null));
         List<AppAccessMethodView> mvList = new ArrayList<>();
         mvList.add(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
         mvList.add(new AppAccessMethodView(ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));

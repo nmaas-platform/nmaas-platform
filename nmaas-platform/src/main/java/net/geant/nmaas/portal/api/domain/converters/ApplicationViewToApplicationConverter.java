@@ -65,7 +65,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
             return result;
         }
         for(AppStorageVolumeView sv : views) {
-            result.add(new AppStorageVolume(sv.getMain(), sv.getDefaultStorageSpace(), sv.getDeployParameters()));
+            result.add(new AppStorageVolume(sv.getType(), sv.getDefaultStorageSpace(), sv.getDeployParameters()));
         }
         return result;
     }

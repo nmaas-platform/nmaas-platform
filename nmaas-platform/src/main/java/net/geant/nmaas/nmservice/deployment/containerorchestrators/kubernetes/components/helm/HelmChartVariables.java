@@ -4,8 +4,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +39,7 @@ class HelmChartVariables {
         storageVolumes.forEach(v -> {
                 if (PERSISTENCE_ENABLED_DEFAULT_VALUE) {
                     variables.put(v.getDeployParameters().get(PERSISTENCE_ENABLED), String.valueOf(true));
-                    if (v.getMain()) {
+                    if (Arrays.asList(ServiceStorageVolumeType.MAIN, ServiceStorageVolumeType.SHARED).contains(v.getType())) {
                         variables.put(v.getDeployParameters().get(PERSISTENCE_NAME), defaultStorageName);
                     }
                     storageClass.ifPresent(s -> variables.put(v.getDeployParameters().get(PERSISTENCE_STORAGE_CLASS), s));

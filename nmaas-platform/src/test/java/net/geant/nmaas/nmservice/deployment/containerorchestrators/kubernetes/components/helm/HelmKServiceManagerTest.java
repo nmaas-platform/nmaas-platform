@@ -11,6 +11,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,7 @@ public class HelmKServiceManagerTest {
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "persistence.name");
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_CLASS, "persistence.storageClass");
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "persistence.size");
-        storageVolumes.add(new ServiceStorageVolume(true, 2, pvMap));
+        storageVolumes.add(new ServiceStorageVolume(ServiceStorageVolumeType.MAIN, 2, pvMap));
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         Map<HelmChartIngressVariable, String> ivMap = new HashMap<>();
         ivMap.put(HelmChartIngressVariable.INGRESS_ENABLED, "ingress.enabled");

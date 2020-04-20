@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
-import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
@@ -249,7 +249,7 @@ public class ApplicationServiceImplTest {
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart("chart", "version"), null));
-        appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(true, 2, null)));
+        appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)));
         appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         application.setAppDeploymentSpec(appDeploymentSpec);
         application.setConfigWizardTemplate(new ConfigWizardTemplate("test-template"));
@@ -324,7 +324,7 @@ public class ApplicationServiceImplTest {
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
-        appDeploymentSpec.setStorageVolumes(Collections.singletonList(new AppStorageVolumeView(true, 2, null)));
+        appDeploymentSpec.setStorageVolumes(Collections.singletonList(new AppStorageVolumeView(ServiceStorageVolumeType.MAIN, 2, null)));
         appDeploymentSpec.setAccessMethods(Collections.singletonList(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
