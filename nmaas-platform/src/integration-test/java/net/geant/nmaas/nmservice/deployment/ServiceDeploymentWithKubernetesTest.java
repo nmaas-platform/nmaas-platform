@@ -3,11 +3,15 @@ package net.geant.nmaas.nmservice.deployment;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,14 +57,14 @@ class ServiceDeploymentWithKubernetesTest {
 		AppDeployment appDeployment = appDeployment();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
-		appDeploymentSpec.setAccessMethods(Collections.emptySet());
+		appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)));
+		appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance(1L), appDeployment, appDeploymentSpec);
 		KubernetesNmServiceInfo info = repositoryManager.loadService(deploymentId);
 		assertThat(info, is(notNullValue()));
 		assertThat(info.getDeploymentId(), equalTo(appDeployment.getDeploymentId()));
 		assertThat(info.getDeploymentName(), equalTo(appDeployment.getDeploymentName()));
 		assertThat(info.getDomain(), equalTo(appDeployment.getDomain()));
-		assertThat(info.getStorageSpace(), equalTo(appDeployment.getStorageSpace()));
 		assertThat(info.getDescriptiveDeploymentId().getValue(), equalTo("domain-appname-100"));
 	}
 
@@ -84,7 +88,6 @@ class ServiceDeploymentWithKubernetesTest {
 				.applicationId(Identifier.newInstance("appId"))
 				.deploymentName("deploy")
 				.configFileRepositoryRequired(false)
-				.storageSpace(20)
 				.appName("AppName").build();
 	}
 

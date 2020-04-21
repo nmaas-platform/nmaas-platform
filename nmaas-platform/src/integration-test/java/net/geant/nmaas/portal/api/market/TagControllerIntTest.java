@@ -2,10 +2,13 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
-import java.util.Arrays;
-import java.util.Set;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
@@ -15,19 +18,22 @@ import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Arrays;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-public class TagControllerTest extends BaseControllerTestSetup {
+public class TagControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
     private ApplicationService appService;
@@ -105,7 +111,6 @@ public class TagControllerTest extends BaseControllerTestSetup {
         app.setTags(ImmutableSet.of("tag1", "tag2"));
         app.setAppConfigurationSpec(new AppConfigurationSpecView());
         app.setAppDeploymentSpec(new AppDeploymentSpecView());
-        app.getAppDeploymentSpec().setDefaultStorageSpace(20);
         app.setConfigWizardTemplate(new ConfigWizardTemplateView("config"));
         app.setState(state);
         return app;

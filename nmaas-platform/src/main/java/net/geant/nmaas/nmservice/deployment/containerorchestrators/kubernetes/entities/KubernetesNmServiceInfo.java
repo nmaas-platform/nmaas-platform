@@ -27,6 +27,12 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     private KubernetesTemplate kubernetesTemplate;
 
     /**
+     * Collection of storage volumes for the service
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<ServiceStorageVolume> storageVolumes;
+
+    /**
      * Collection of access methods to the service
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -36,8 +42,8 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
         super();
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId) {
-        super(deploymentId, deploymentName, domain, storageSpace, descriptiveDeploymentId);
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId) {
+        super(deploymentId, deploymentName, domain, descriptiveDeploymentId);
     }
 
 }

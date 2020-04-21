@@ -6,10 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -45,12 +44,9 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
-    private AppDeploymentRepositoryManager repositoryManager;
-
+    private AppDeploymentRepositoryManager deploymentRepositoryManager;
     private ApplicationEventPublisher eventPublisher;
-
-    private NmServiceInfoRepository nmServiceInfoRepository;
-
+    private NmServiceRepositoryManager serviceRepositoryManager;
     private JanitorService janitorService;
 
     @Override
@@ -59,7 +55,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier deployApplication(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
-        repositoryManager.store(appDeployment);
+        deploymentRepositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
     }
@@ -78,7 +74,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
         try {
-            repositoryManager.load(generatedId);
+            deploymentRepositoryManager.load(generatedId);
         } catch(InvalidDeploymentIdException e) {
             return false;
         }
@@ -95,25 +91,22 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable {
-        AppDeployment appDeployment = repositoryManager.load(deploymentId);
-        NmServiceInfo serviceInfo = (NmServiceInfo) nmServiceInfoRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No nm service info with provided identifier found."));
+    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
+        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
         appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
-            appDeployment.setStorageSpace(configuration.getStorageSpace());
-            serviceInfo.setStorageSpace(configuration.getStorageSpace());
+            serviceRepositoryManager.updateStorageSpace(deploymentId, configuration.getStorageSpace());
         }
         if(isNotEmpty(configuration.getAdditionalParameters())){
-            serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getAdditionalParameters())));
+            serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getAdditionalParameters())));
         }
         if(isNotEmpty(configuration.getMandatoryParameters())){
-            serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
+            serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
         }
         if(isNotEmpty(configuration.getAccessCredentials())){
-            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), serviceInfo.getDomain(), configuration.getAccessCredentials());
+            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), serviceRepositoryManager.loadDomain(deploymentId), configuration.getAccessCredentials());
         }
-        repositoryManager.update(appDeployment);
-        nmServiceInfoRepository.save(serviceInfo);
+        deploymentRepositoryManager.update(appDeployment);
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
@@ -179,10 +172,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
-        AppDeployment appDeployment = repositoryManager.load(deploymentId);
+        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
         if(isNotEmpty(configuration.getJsonInput())){
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
-            repositoryManager.update(appDeployment);
+            deploymentRepositoryManager.update(appDeployment);
             eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
         }
         if(isNotEmpty(configuration.getAccessCredentials())){

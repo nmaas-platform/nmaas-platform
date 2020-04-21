@@ -39,7 +39,18 @@
 				"version": "1.1.0"
 			}
 		},
-		"defaultStorageSpace":20,
+		"storageVolumes": [
+			{
+				"main": true,
+				"defaultStorageSpace": 20,
+				"deployParameters": {
+					"PERSISTENCE_ENABLED": "persistence.enabled",
+					"PERSISTENCE_NAME": "persistence.name",
+					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
+				}
+			}
+		],
 		"exposesWebUI": true,
 		"accessMethods":  [
 			{
@@ -47,6 +58,7 @@
 				"name": "LibreNMS",
 				"tag": "librenms",
 				"deployParameters": {
+					"INGRESS_ENABLED": "ingress.enabled",
 					"INGRESS_HOSTS": "ingress.hosts",
 					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
 					"INGRESS_CLASS": "ingress.class",

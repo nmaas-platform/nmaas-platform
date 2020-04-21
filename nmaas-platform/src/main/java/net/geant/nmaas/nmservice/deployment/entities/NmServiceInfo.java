@@ -68,10 +68,6 @@ public abstract class NmServiceInfo {
     @Fetch(FetchMode.SELECT)
     private List<String> managedDevicesIpAddresses;
 
-    /** Required storage space to be allocated for this particular instance in GB */
-    @Column(nullable = false)
-    private Integer storageSpace;
-
     /** Globally unique descriptive application deployment identifier */
     @Column(nullable = false)
     private Identifier descriptiveDeploymentId;
@@ -85,21 +81,19 @@ public abstract class NmServiceInfo {
     @Fetch(FetchMode.SELECT)
     private Map<String, String> additionalParameters;
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
         this.domain = domain;
-        this.storageSpace = storageSpace;
         this.descriptiveDeploymentId = descriptiveDeploymentId;
     }
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Identifier descriptiveDeploymentId, Map <String, String> additionalParameters) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId, Map <String, String> additionalParameters) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
         this.domain = domain;
-        this.storageSpace = storageSpace;
         this.descriptiveDeploymentId = descriptiveDeploymentId;
         this.additionalParameters = additionalParameters;
     }

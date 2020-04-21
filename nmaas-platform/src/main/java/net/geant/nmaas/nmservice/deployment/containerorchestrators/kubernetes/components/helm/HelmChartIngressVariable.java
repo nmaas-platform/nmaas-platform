@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 public enum HelmChartIngressVariable {
 
+    INGRESS_ENABLED,
     INGRESS_HOSTS,
     INGRESS_TLS_ENABLED,
     INGRESS_CLASS,

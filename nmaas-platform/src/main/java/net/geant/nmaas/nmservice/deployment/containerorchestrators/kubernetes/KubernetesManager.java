@@ -18,6 +18,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
@@ -32,6 +33,7 @@ import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -47,6 +49,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.INTERNAL;
@@ -74,36 +77,39 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     @Loggable(LogLevel.INFO)
     public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec) {
-        if(appDeployment == null){
-            throw new NmServiceRequestVerificationException("App deployment cannot be null");
-        }
-        if(appDeploymentSpec == null){
-            throw new NmServiceRequestVerificationException("App deployment spec cannot be null");
-        }
-        if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES)) {
-            throw new NmServiceRequestVerificationException(
+        try {
+            checkArgument(appDeployment != null, "App deployment cannot be null");
+            checkArgument(appDeploymentSpec != null, "App deployment spec cannot be null");
+            checkArgument(appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES),
                     "Service deployment not possible with currently used container orchestrator");
-        }
-        if(appDeploymentSpec.getKubernetesTemplate() == null) {
-            throw new NmServiceRequestVerificationException("Kubernetes template cannot be null");
-        }
-        if(appDeploymentSpec.getAccessMethods() == null) {
-            throw new NmServiceRequestVerificationException("Service access methods cannot be null");
+            checkArgument(appDeploymentSpec.getKubernetesTemplate() != null, "Kubernetes template cannot be null");
+            checkArgument(appDeploymentSpec.getStorageVolumes() != null && !appDeploymentSpec.getStorageVolumes().isEmpty(),
+                    "Service storage volumes cannot be null");
+            checkArgument(appDeploymentSpec.getAccessMethods() != null && !appDeploymentSpec.getAccessMethods().isEmpty(),
+                    "Service access methods cannot be null");
+        } catch (IllegalArgumentException iae) {
+            throw new NmServiceRequestVerificationException(iae.getMessage());
         }
 
         KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo(
                 deploymentId,
                 appDeployment.getDeploymentName(),
                 appDeployment.getDomain(),
-                appDeployment.getStorageSpace(),
                 appDeployment.getDescriptiveDeploymentId()
         );
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
+        serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
         if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()) {
             serviceInfo.setAdditionalParameters(createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment));
         }
         repositoryManager.storeService(serviceInfo);
+    }
+
+    private Set<ServiceStorageVolume> generateTemplateStorageVolumes(Set<AppStorageVolume> storageVolumes) {
+        return storageVolumes.stream()
+                .map(ServiceStorageVolume::fromAppStorageVolume)
+                .collect(Collectors.toSet());
     }
 
     private Set<ServiceAccessMethod> generateTemplateAccessMethods(Set<AppAccessMethod> accessMethods) {

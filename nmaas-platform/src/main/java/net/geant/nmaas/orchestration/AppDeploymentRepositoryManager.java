@@ -34,4 +34,5 @@ public interface AppDeploymentRepositoryManager {
     void updateErrorMessage(Identifier deploymentId, String errorMessage);
 
     String loadErrorMessage(Identifier deploymentId);
+
 }
