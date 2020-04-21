@@ -50,6 +50,8 @@ import { ModalNotificationSendComponent } from './modal/modal-notification-send/
 import {NgxPaginationModule} from "ngx-pagination";
 import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
 import {DomainRolesDirective} from "../directive/domain-roles.directive";
+import { SshKeysComponent } from './users/ssh-keys/ssh-keys.component';
+import { NewSshKeyComponent } from './users/new-ssh-key/new-ssh-key.component';
 
 @NgModule({
     imports: [
@@ -103,6 +105,8 @@ import {DomainRolesDirective} from "../directive/domain-roles.directive";
     ModalNotificationSendComponent,
       DomainRolesDirective,
       PageNotFoundComponent,
+      SshKeysComponent,
+      NewSshKeyComponent,
   ],
   providers: [
     PasswordValidator,
