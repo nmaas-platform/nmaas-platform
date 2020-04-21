@@ -1,15 +1,32 @@
-<div>
-  <table>
-    <thead>
-    <tr>
-      <th>Name</th>
-<!--      <th>Expiration data</th>-->
-      <th>Fingerprint</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr></tr>
-    </tbody>
-  </table>
+<div style="margin-bottom: 120px;" class="panel panel-default">
+<!--  TODO language labels-->
+    <div class="panel-heading">SSH keys</div>
+    <div class="panel-body">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <!--      <th>Expiration data</th>-->
+                <th>Fingerprint</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let key of keys | async">
+                <td>{{key.name}}</td>
+                <td>{{key.fingerprint}}</td>
+                <td>
+                    <button type="button" class="btn btn-danger">Invalidate</button>
+                </td>
+            </tr>
+            <tr *ngIf="(keys|async).length === 0">
+              <td colspan="3" style="text-align: center">No keys available</td>
+            </tr>
+            </tbody>
+        </table>
+      <div>
+          <span>Not working yet</span>
+        <a [routerLink]="'add-key'" class="btn btn-success">Add new key</a>
+      </div>
+    </div>
 </div>

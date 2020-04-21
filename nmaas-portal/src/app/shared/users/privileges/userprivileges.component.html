@@ -1,4 +1,4 @@
-<div style="margin-bottom: 120px;" class="panel panel-default">
+<div style="margin-bottom: 15px;" class="panel panel-default">
 	<div class="panel-heading">{{'USER_PRIVILEGES.HEADER' | translate}}</div>
 	<div class="panel-body">
 		<div *ngIf="isModeAllowed(ComponentMode.CREATE) && user != null && user.username !== authService.getUsername()"> <!-- user should not be able to change his roles -->

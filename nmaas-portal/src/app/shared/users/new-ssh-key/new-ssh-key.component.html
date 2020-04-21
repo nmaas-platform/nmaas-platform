@@ -1,3 +1,13 @@
-<p>
-  new-ssh-key works!
-</p>
+<div>
+  <form [formGroup]="requestForm" (ngSubmit)="create()">
+    <label>
+      Name:
+      <input type="text" formControlName="name">
+    </label>
+    <label>
+      Key:
+      <textarea formControlName="key"></textarea>
+    </label>
+    <input type="submit" class="btn btn-success" value="Add">
+  </form>
+</div>

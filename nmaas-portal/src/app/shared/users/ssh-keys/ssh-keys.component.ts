@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {SSHKeyService} from '../../../service/sshkey.service';
+import {Observable} from 'rxjs';
+import {SSHKeyView} from '../../../model/sshkey-view';
 
 @Component({
   selector: 'nmaas-ssh-keys',
@@ -7,9 +10,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SshKeysComponent implements OnInit {
 
-  constructor() { }
+  private keys: Observable<SSHKeyView[]> = undefined;
+
+  constructor(private keyService: SSHKeyService) { }
 
   ngOnInit() {
+    this.keys = this.keyService.getAll();
   }
 
 }
