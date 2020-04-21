@@ -42,7 +42,7 @@
 		},
 		"storageVolumes": [
 			{
-				"main": true,
+				"type": "MAIN",
 				"defaultStorageSpace": 1,
 				"deployParameters": {
 					"PERSISTENCE_ENABLED": "persistence.enabled",

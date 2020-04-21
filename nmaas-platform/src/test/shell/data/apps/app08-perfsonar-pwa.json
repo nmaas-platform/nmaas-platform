@@ -41,13 +41,33 @@
 		},
 		"storageVolumes": [
 			{
-				"main": true,
+				"type": "MAIN",
 				"defaultStorageSpace": 1,
 				"deployParameters": {
-					"PERSISTENCE_ENABLED": "persistence.enabled",
-					"PERSISTENCE_NAME": "persistence.name",
-					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
-					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
+					"PERSISTENCE_ENABLED": "nmaas-perfsonar-centralmanagement-sca-auth.persistence.enabled",
+					"PERSISTENCE_NAME": "nmaas-perfsonar-centralmanagement-sca-auth.persistence.name",
+					"PERSISTENCE_STORAGE_CLASS": "nmaas-perfsonar-centralmanagement-sca-auth.persistence.storageClass",
+					"PERSISTENCE_STORAGE_SPACE": "nmaas-perfsonar-centralmanagement-sca-auth.persistence.size"
+				}
+			},
+			{
+				"type": "SHARED",
+				"defaultStorageSpace": 1,
+				"deployParameters": {
+					"PERSISTENCE_ENABLED": "nmaas-perfsonar-centralmanagement-pwa-pub.persistence.enabled",
+					"PERSISTENCE_NAME": "nmaas-perfsonar-centralmanagement-pwa-pub.persistence.name",
+					"PERSISTENCE_STORAGE_CLASS": "nmaas-perfsonar-centralmanagement-pwa-pub.persistence.storageClass",
+					"PERSISTENCE_STORAGE_SPACE": "nmaas-perfsonar-centralmanagement-pwa-pub.persistence.size"
+				}
+			},
+			{
+				"type": "SHARED",
+				"defaultStorageSpace": 1,
+				"deployParameters": {
+					"PERSISTENCE_ENABLED": "nmaas-perfsonar-centralmanagement-pwa-admin.persistence.enabled",
+					"PERSISTENCE_NAME": "nmaas-perfsonar-centralmanagement-pwa-admin.persistence.name",
+					"PERSISTENCE_STORAGE_CLASS": "nmaas-perfsonar-centralmanagement-pwa-admin.persistence.storageClass",
+					"PERSISTENCE_STORAGE_SPACE": "nmaas-perfsonar-centralmanagement-pwa-admin.persistence.size"
 				}
 			}
 		],
@@ -58,11 +78,11 @@
 				"name": "PWA",
 				"tag": "pwa",
 				"deployParameters": {
-					"INGRESS_HOSTS": "ingress.hosts",
-					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
-					"INGRESS_CLASS": "ingress.class",
-					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
-					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+					"INGRESS_HOSTS": "nmaas-perfsonar-centralmanagement-nginx.ingress.hosts",
+					"INGRESS_TLS_ENABLED": "nmaas-perfsonar-centralmanagement-nginx.ingress.tls.enabled",
+					"INGRESS_CLASS": "nmaas-perfsonar-centralmanagement-nginx.ingress.class",
+					"INGRESS_LETSENCRYPT": "nmaas-perfsonar-centralmanagement-nginx.ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "nmaas-perfsonar-centralmanagement-nginx.ingress.tls.certOrIssuer"
 				}
 			}
 		]
