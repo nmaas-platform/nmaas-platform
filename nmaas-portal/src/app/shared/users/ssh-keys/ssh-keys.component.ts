@@ -10,7 +10,7 @@ import {SSHKeyView} from '../../../model/sshkey-view';
 })
 export class SshKeysComponent implements OnInit {
 
-  private keys: Observable<SSHKeyView[]> = undefined;
+  public keys: Observable<SSHKeyView[]> = undefined;
 
   constructor(private keyService: SSHKeyService) { }
 
