@@ -64,6 +64,7 @@
 				"name": "NAV",
 				"tag": "nav",
 				"deployParameters": {
+					"INGRESS_ENABLED": "ingress.enabled",
 					"INGRESS_HOSTS": "ingress.hosts",
 					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
 					"INGRESS_CLASS": "ingress.class",

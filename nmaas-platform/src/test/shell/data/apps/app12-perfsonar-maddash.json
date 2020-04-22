@@ -58,6 +58,7 @@
 				"name": "MaDDash",
 				"tag": "maddash",
 				"deployParameters": {
+					"INGRESS_ENABLED": "ingress.enabled",
 					"INGRESS_HOSTS": "ingress.hosts",
 					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
 					"INGRESS_CLASS": "ingress.class",
@@ -93,7 +94,7 @@
 											"label": "Default username",
 											"type": "textfield",
 											"input": true,
-											"key": "nmaas-perfsonar-maddash#env#admin#username",
+											"key": "env#admin#username",
 											"tab": 0,
 											"validate": {
 												"required": true
@@ -104,7 +105,7 @@
 											"label": "Default password",
 											"type": "password",
 											"input": true,
-											"key": "nmaas-perfsonar-maddash#env#admin#password",
+											"key": "env#admin#password",
 											"tab": 0,
 											"validate": {
 												"required": true

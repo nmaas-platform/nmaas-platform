@@ -78,6 +78,7 @@
 				"name": "PWA",
 				"tag": "pwa",
 				"deployParameters": {
+					"INGRESS_ENABLED": "nmaas-perfsonar-centralmanagement-nginx.ingress.enabled",
 					"INGRESS_HOSTS": "nmaas-perfsonar-centralmanagement-nginx.ingress.hosts",
 					"INGRESS_TLS_ENABLED": "nmaas-perfsonar-centralmanagement-nginx.ingress.tls.enabled",
 					"INGRESS_CLASS": "nmaas-perfsonar-centralmanagement-nginx.ingress.class",
