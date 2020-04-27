@@ -13,13 +13,13 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorResponseException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
-import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -43,6 +43,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -93,11 +94,13 @@ public class KubernetesManagerTest {
 
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");
+        service.setDescriptiveDeploymentId(Identifier.newInstance("deploymentId"));
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", null));
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", null));
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
         service.setAccessMethods(accessMethods);
+        service.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart(null, null), null, "subcomponent"));
         when(repositoryManager.loadService(any())).thenReturn(service);
     }
 
@@ -309,21 +312,19 @@ public class KubernetesManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionSinceServiceNotDeployed() {
-        assertThrows(ContainerCheckFailedException.class, () -> {
-            when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
-            when(janitorService.checkIfReady(any(), any())).thenReturn(false);
-            manager.checkService(Identifier.newInstance("deploymentId"));
-        });
+    public void shouldReturnFalseSinceServiceNotDeployed() {
+        when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
+        when(janitorService.checkIfReady(any(), any())).thenReturn(false);
+        assertFalse(manager.checkService(Identifier.newInstance("deploymentId")));
     }
 
     @Test
     public void shouldRemoveService() {
         manager.removeNmService(deploymentId);
         verify(serviceLifecycleManager, times(1)).deleteServiceIfExists(deploymentId);
-        verify(janitorService, times(1)).deleteConfigMapIfExists(null, "domain");
-        verify(janitorService, times(1)).deleteBasicAuthIfExists(null, "domain");
-        verify(janitorService, times(1)).deleteTlsIfExists(null, "domain");
+        verify(janitorService, times(1)).deleteConfigMapIfExists(Identifier.newInstance("deploymentId"), "domain");
+        verify(janitorService, times(1)).deleteBasicAuthIfExists(Identifier.newInstance("deploymentId"), "domain");
+        verify(janitorService, times(1)).deleteTlsIfExists(Identifier.newInstance("deploymentId"), "domain");
         verifyNoMoreInteractions(ingressResourceManager);
     }
 

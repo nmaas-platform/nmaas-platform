@@ -85,7 +85,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         if(template == null){
             return null;
         }
-        return new KubernetesTemplate(getKubernetesChartView(template.getChart()), template.getArchive());
+        return new KubernetesTemplate(getKubernetesChartView(template.getChart()), template.getArchive(), template.getMainDeploymentName());
     }
 
     private KubernetesChart getKubernetesChartView(KubernetesChartView kubernetesChart){

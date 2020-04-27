@@ -20,6 +20,7 @@ import { AppPreviewComponent } from './apppreview/apppreview.component';
 import {TooltipModule} from "ng2-tooltip-directive";
 import { AppVersionCreateWizardComponent } from './appversioncreatewizard/appversioncreatewizard.component';
 import { AppAccessMethodEditComponent } from './app-access-method-edit-component/app-access-method-edit.component';
+import { AppStorageVolumeEditComponent } from './app-storage-volume-edit-component/app-storage-volume-edit.component';
 
 export function getJsonTemplates(config: ConfigTemplateService) {
   return () => config.loadConfigTemplate();
@@ -27,7 +28,7 @@ export function getJsonTemplates(config: ConfigTemplateService) {
 
 
 @NgModule({
-  declarations: [ AppManagementListComponent, AppCreateWizardComponent, AppChangeStateModalComponent, AppPreviewComponent, AppVersionCreateWizardComponent, AppAccessMethodEditComponent ],
+  declarations: [ AppManagementListComponent, AppCreateWizardComponent, AppChangeStateModalComponent, AppPreviewComponent, AppVersionCreateWizardComponent, AppAccessMethodEditComponent, AppStorageVolumeEditComponent ],
   imports: [
     CommonModule,
     FormsModule,

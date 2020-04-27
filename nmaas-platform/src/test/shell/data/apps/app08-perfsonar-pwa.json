@@ -37,7 +37,8 @@
 			"chart": {
 				"name": "nmaas-perfsonar-centralmanagement",
 				"version": "0.1.0"
-			}
+			},
+			"mainDeploymentName":  "pwa-admin"
 		},
 		"storageVolumes": [
 			{

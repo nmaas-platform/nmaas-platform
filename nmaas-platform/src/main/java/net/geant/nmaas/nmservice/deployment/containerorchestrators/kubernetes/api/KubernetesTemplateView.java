@@ -14,4 +14,7 @@ public class KubernetesTemplateView {
     private KubernetesChartView chart;
 
     private String archive;
+
+    private String mainDeploymentName;
+
 }

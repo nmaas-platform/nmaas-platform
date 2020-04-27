@@ -111,11 +111,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, VERIFICATION_INITIATED);
             int currentWaitTime = 0;
             while (currentWaitTime <= serviceDeploymentCheckMaxWaitTime) {
-                try {
-                    orchestrator.checkService(deploymentId);
+                if (orchestrator.checkService(deploymentId)) {
                     notifyStateChangeListeners(deploymentId, VERIFIED, "");
                     return;
-                }catch(ContainerCheckFailedException e) {
+                } else {
                     Thread.sleep(serviceDeploymentCheckInternal * 1000L);
                     currentWaitTime += serviceDeploymentCheckInternal;
                 }

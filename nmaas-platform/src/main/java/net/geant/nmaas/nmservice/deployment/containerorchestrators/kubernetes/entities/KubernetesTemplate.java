@@ -36,9 +36,15 @@ public class KubernetesTemplate implements Serializable {
      */
     private String archive;
 
-    public KubernetesTemplate(KubernetesChart chart, String archive) {
+    /**
+     * Name of the deployment to be used by the Janitor to check if service was deployed successfully
+     */
+    private String mainDeploymentName;
+
+    public KubernetesTemplate(KubernetesChart chart, String archive, String mainDeploymentName) {
         this.chart = chart;
         this.archive = archive;
+        this.mainDeploymentName = mainDeploymentName;
     }
 
     public KubernetesTemplate(String chartName, String chartVersion, String archive) {
@@ -52,6 +58,7 @@ public class KubernetesTemplate implements Serializable {
             template.setChart(KubernetesChart.copy(toCopy.getChart()));
         }
         template.setArchive(toCopy.getArchive());
+        template.setMainDeploymentName(toCopy.getMainDeploymentName());
         return template;
     }
 
