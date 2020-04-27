@@ -16,6 +16,8 @@ import {ComponentMode} from "../../../shared";
 import {MultiSelect} from "primeng/primeng";
 import {KubernetesTemplate} from "../../../model/kubernetestemplate";
 import {ConfigFileTemplate} from "../../../model/configfiletemplate";
+import {AppStorageVolume} from '../../../model/app-storage-volume';
+import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/servicestoragevolume';
 import {AppAccessMethod} from '../../../model/app-access-method';
 import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
 
@@ -453,4 +455,22 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     public removeAccessMethod(event): void {
         this.app.appDeploymentSpec.accessMethods.splice(event, 1);
     }
+
+    public addNewStorageVolume(): void {
+        this.app.appDeploymentSpec.storageVolumes.push(new AppStorageVolume())
+    }
+
+    public storageVolumeTypeOptions(): string[] {
+        const keys: Set<string> = new Set(Object.keys(ServiceStorageVolumeType));
+        if (this.app.appDeploymentSpec.storageVolumes.
+        find(p => ServiceStorageVolume.getServiceStorageVolumeTypeAsEnum(p.type) === ServiceStorageVolumeType.MAIN)) {
+            keys.delete(ServiceStorageVolumeType[ServiceStorageVolumeType.MAIN]);
+        }
+        return Array.from(keys);
+    }
+
+    public removeStorageVolume(event): void {
+        this.app.appDeploymentSpec.storageVolumes.splice(event, 1);
+    }
+
 }

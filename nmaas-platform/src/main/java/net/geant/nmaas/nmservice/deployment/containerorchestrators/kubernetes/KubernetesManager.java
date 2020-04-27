@@ -224,13 +224,17 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void checkService(Identifier deploymentId) {
+    public boolean checkService(Identifier deploymentId) {
         try {
-            if (!serviceLifecycleManager.checkServiceDeployed(deploymentId))
-                throw new ContainerCheckFailedException("Service not deployed.");
+            if (!serviceLifecycleManager.checkServiceDeployed(deploymentId)) {
+                return false;
+            }
+
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            if (!janitorService.checkIfReady(service.getDescriptiveDeploymentId(), service.getDomain())) {
-                throw new ContainerCheckFailedException("Service is not ready yet.");
+            if (!janitorService.checkIfReady(
+                    getDeploymentIdForJanitorStatusCheck(service.getDescriptiveDeploymentId().value(), service.getKubernetesTemplate().getMainDeploymentName()),
+                    service.getDomain())) {
+                return false;
             }
             // NOTE: Current assumption is that there will be at max one INTERNAL access method identifiable by deployment name
             try {
@@ -244,10 +248,18 @@ public class KubernetesManager implements ContainerOrchestrator {
                 repositoryManager.updateKServiceAccessMethods(accessMethods);
             } catch (JanitorResponseException je) {
                 log.error("Could not retrieve IP for " + service.getDescriptiveDeploymentId());
+                return true;
             }
-        } catch (KServiceManipulationException me) {
-            throw new ContainerCheckFailedException(me.getMessage());
+
+            return true;
+
+        } catch (KServiceManipulationException | JanitorResponseException ex) {
+            throw new ContainerCheckFailedException(ex.getMessage());
         }
+    }
+
+    private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
+        return Identifier.newInstance(releaseName + "-" + componentName);
     }
 
     @Override

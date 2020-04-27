@@ -128,7 +128,7 @@ public class OxidizedConfigFileTemplatesTest {
         applicationView.setOwner("owner");
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive", null));
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());

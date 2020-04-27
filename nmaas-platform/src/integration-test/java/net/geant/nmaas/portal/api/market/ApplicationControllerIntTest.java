@@ -245,7 +245,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         applicationView.setState(ApplicationState.ACTIVE);
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive", null));
         appDeploymentSpec.setStorageVolumes(svList);
         appDeploymentSpec.setAccessMethods(mvList);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);

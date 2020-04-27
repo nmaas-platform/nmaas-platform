@@ -248,7 +248,7 @@ public class ApplicationServiceImplTest {
         application.setId(1L);
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart("chart", "version"), null));
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart("chart", "version"), null, null));
         appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)));
         appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         application.setAppDeploymentSpec(appDeploymentSpec);
@@ -323,7 +323,7 @@ public class ApplicationServiceImplTest {
         applicationView.setOwner("owner");
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive", null));
         appDeploymentSpec.setStorageVolumes(Collections.singletonList(new AppStorageVolumeView(ServiceStorageVolumeType.MAIN, 2, null)));
         appDeploymentSpec.setAccessMethods(Collections.singletonList(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
