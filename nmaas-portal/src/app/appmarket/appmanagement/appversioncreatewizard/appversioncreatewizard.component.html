@@ -67,7 +67,7 @@
           <label *ngIf="!isInMode(ComponentMode.EDIT)" for="kubernetesTemplateMainDeploymentName" class="control-label">{{'APPS_WIZARD.MAIN_DEPLOYMENT_NAME_LABEL' | translate}}</label>
           <label *ngIf="isInMode(ComponentMode.EDIT)" for="kubernetesTemplateMainDeploymentName" class="control-label">{{'APPS_WIZARD.MAIN_DEPLOYMENT_NAME_LABEL' | translate}}</label>
           <br>
-          <input type="text" class="form-control" id="kubernetesTemplateMainDeploymentName" name="kubernetesTemplateChartVersion"
+          <input type="text" class="form-control" id="kubernetesTemplateMainDeploymentName" name="kubernetesTemplateMainDeploymentName"
                  [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.mainDeploymentName" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.MAIN_DEPLOYMENT_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
         </div>
         <div class="form-group form-group-sm">
