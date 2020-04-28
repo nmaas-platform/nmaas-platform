@@ -25,7 +25,7 @@ public class SSHKeyEntity {
 
     private String name;
 
-    @Lob
+    @Column(columnDefinition="TEXT")
     private String key;
     // base64 encoded SHA256
     @EqualsAndHashCode.Exclude
