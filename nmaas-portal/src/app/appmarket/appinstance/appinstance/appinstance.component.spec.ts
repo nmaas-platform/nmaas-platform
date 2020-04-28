@@ -82,6 +82,12 @@ class AppInstanceProgressMock {
 class NmaasModalMock extends ModalComponent {
 }
 
+@Component({
+  selector: 'app-ssh-shell',
+  template: '<p>SSH shell mock</p>'
+})
+class SshShellMockComponent { }
+
 
 describe('Component: AppInstance', () => {
   let component: AppInstanceComponent;
@@ -204,6 +210,7 @@ describe('Component: AppInstance', () => {
         AppInstanceProgressMock,
         NmaasModalMock,
           AccessMethodsModalComponent,
+          SshShellMockComponent,
       ],
       imports: [
         FormsModule,

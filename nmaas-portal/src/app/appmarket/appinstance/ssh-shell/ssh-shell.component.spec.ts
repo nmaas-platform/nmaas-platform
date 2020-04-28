@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SshShellComponent } from './ssh-shell.component';
+import {NgTerminalModule} from 'ng-terminal';
+
 
 describe('SshShellComponent', () => {
   let component: SshShellComponent;
@@ -8,7 +10,12 @@ describe('SshShellComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SshShellComponent ]
+      declarations: [
+          SshShellComponent,
+      ],
+      imports: [
+          NgTerminalModule
+      ]
     })
     .compileComponents();
   }));
