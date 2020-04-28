@@ -1,13 +1,42 @@
-<div>
-  <form [formGroup]="requestForm" (ngSubmit)="create()">
-    <label>
-      Name:
-      <input type="text" formControlName="name">
-    </label>
-    <label>
-      Key:
-      <textarea formControlName="key"></textarea>
-    </label>
-    <input type="submit" class="btn btn-success" value="Add">
-  </form>
-</div>
+<button type="button" class="btn btn-success" (click)="modal.show()">{{'SSH_KEYS.BUTTON_NEW_KEY' | translate}}</button>
+
+<nmaas-modal styleModal="info">
+  <div class="nmaas-modal-header">{{'SSH_KEYS.MODAL.HEADER' | translate}}</div>
+  <div class="nmaas-modal-body" style="height: 60%; max-height: 80vh;overflow-y: auto;">
+    <div>
+      <form [formGroup]="requestForm" (ngSubmit)="create()">
+        <div class="form-group">
+          <label class="control-label" for="new-ssh-key-name">
+            {{'SSH_KEYS.MODAL.LABEL.NAME' | translate}}:
+          </label>
+          <input id="new-ssh-key-name" type="text" class="form-control" formControlName="name">
+        </div>
+        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+          <div *ngIf="name.errors.required">{{'SSH_KEYS.MODAL.ERROR.NAME_REQUIRED' | translate}}</div>
+          <div *ngIf="name.errors.minlength">{{'SSH_KEYS.MODAL.ERROR.NAME_MINLENGTH' | translate}}</div>
+          <div *ngIf="name.errors.maxlength">{{'SSH_KEYS.MODAL.ERROR.NAME_MAXLENGTH' | translate}}</div>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="new-ssh-key-value">
+            {{'SSH_KEYS.MODAL.LABEL.KEY' | translate}}:
+          </label>
+          <textarea id="new-ssh-key-value" class="form-control" formControlName="key" rows="12"></textarea>
+        </div>
+        <div *ngIf="key.invalid && (key.dirty || key.touched)" class="alert alert-danger">
+          <div *ngIf="key.errors.required">{{'SSH_KEYS.MODAL.ERROR.KEY_REQUIRED' | translate}}</div>
+          <div *ngIf="key.errors.pattern">{{'SSH_KEYS.MODAL.ERROR.KEY_PATTERN' | translate}}</div>
+        </div>
+
+        <input type="submit" class="btn btn-success" value="{{'SSH_KEYS.MODAL.BUTTON_ADD' | translate}}" [disabled]="!requestForm.valid">
+        <button type="button" class="btn btn-primary pull-right" (click)="modal.hide()">{{'SSH_KEYS.MODAL.BUTTON_CANCEL' | translate}}</button>
+
+      </form>
+      <hr/>
+      <div *ngIf="error" class="alert alert-danger">
+        {{error}}
+      </div>
+
+    </div>
+  </div>
+</nmaas-modal>
+
