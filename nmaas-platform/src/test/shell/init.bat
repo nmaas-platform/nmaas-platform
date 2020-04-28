@@ -281,6 +281,26 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 
 echo.
+echo App13
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app13-debian-repository.json
+echo.
+echo App13 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\debian.svg;type=image/svg+xml" %API_URL%/apps/13/logo
+echo.
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository1.png;type=image/png" %API_URL%/apps/13/screenshots
+echo.
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository2.png;type=image/png" %API_URL%/apps/13/screenshots
+echo.
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository3.png;type=image/png" %API_URL%/apps/13/screenshots
+echo.
+echo App13 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository4.png;type=image/png" %API_URL%/apps/13/screenshots
+echo.
+
+echo.
 echo ---------------------
 echo Get all apps
 curl -X GET %API_URL%/apps --header "Authorization: Bearer %token%"

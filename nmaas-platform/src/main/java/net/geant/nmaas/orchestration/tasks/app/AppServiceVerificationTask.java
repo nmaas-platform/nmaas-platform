@@ -23,9 +23,9 @@ public class AppServiceVerificationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(AppVerifyServiceActionEvent event) {
-        try{
+        try {
             serviceDeployment.verifyNmService(event.getRelatedTo());
-        }catch(Exception ex){
+        } catch(Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }

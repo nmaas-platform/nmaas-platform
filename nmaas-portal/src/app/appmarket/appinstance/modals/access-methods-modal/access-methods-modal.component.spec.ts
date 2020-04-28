@@ -46,8 +46,7 @@ describe('AccessMethodsModalComponent', () => {
 
   it('should have inner list', () => {
     expect(component.accessMethods.length).toEqual(am.length);
-    expect(component.defaultAccessMethod).toBeDefined();
-    expect(component.externalAccessMethods.length).toEqual(2);
+    expect(component.externalAccessMethods.length).toEqual(3);
     expect(component.internalAccessMethods.length).toEqual(1);
   });
 });

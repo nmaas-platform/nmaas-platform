@@ -6,15 +6,15 @@ import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -36,29 +36,40 @@ public class NmServiceVerificationTest {
 
     @Test
     public void shouldVerifyDeploymentSuccessRightAway() {
-        doNothing().when(orchestrator).checkService(any());
-        provider.verifyNmService(Identifier.newInstance("id"));
+        assertDoesNotThrow(() -> {
+            when(orchestrator.checkService(any())).thenReturn(true);
+            provider.verifyNmService(Identifier.newInstance("id"));
+        });
     }
 
     @Test
     public void shouldVerifyDeploymentSuccessAfterThirdAttempt() {
-        doThrow(new ContainerCheckFailedException(""))
-                .doThrow(new ContainerCheckFailedException(""))
-                .doNothing()
-                .when(orchestrator).checkService(any());
-        provider.verifyNmService(Identifier.newInstance("id"));
+        assertDoesNotThrow(() -> {
+            when(orchestrator.checkService(any()))
+                    .thenReturn(false)
+                    .thenReturn(false)
+                    .thenReturn(true);
+            provider.verifyNmService(Identifier.newInstance("id"));
+        });
     }
 
     @Test
     public void shouldVerifyDeploymentFailure(){
         assertThrows(CouldNotVerifyNmServiceException.class, () -> {
-            doThrow(new ContainerCheckFailedException(""))
-                    .doThrow(new ContainerCheckFailedException(""))
-                    .doThrow(new ContainerCheckFailedException(""))
-                    .doThrow(new ContainerCheckFailedException(""))
-                    .doThrow(new ContainerCheckFailedException(""))
-                    .doThrow(new ContainerCheckFailedException(""))
-                    .when(orchestrator).checkService(any());
+            when(orchestrator.checkService(any()))
+                    .thenReturn(false)
+                    .thenReturn(false)
+                    .thenReturn(false)
+                    .thenReturn(false)
+                    .thenReturn(false);
+            provider.verifyNmService(Identifier.newInstance("id"));
+        });
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUnexpectedErrorOccurs(){
+        assertThrows(CouldNotVerifyNmServiceException.class, () -> {
+            when(orchestrator.checkService(any())).thenThrow(new ContainerCheckFailedException(""));
             provider.verifyNmService(Identifier.newInstance("id"));
         });
     }

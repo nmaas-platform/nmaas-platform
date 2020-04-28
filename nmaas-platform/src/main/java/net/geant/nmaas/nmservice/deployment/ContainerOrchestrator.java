@@ -68,10 +68,11 @@ public interface ContainerOrchestrator {
      * Checks if NM service was successfully deployed and is running.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws ContainerCheckFailedException if service containers were not deployed successfully
+     * @throws ContainerCheckFailedException if some unexpected issue occurred during service deployment status check
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
+     * @return <code>true</code> if service was deployed successfully
      */
-    void checkService(Identifier deploymentId);
+    boolean checkService(Identifier deploymentId);
 
     /**
      * Retrieves deployed service access details to be presented to the client.

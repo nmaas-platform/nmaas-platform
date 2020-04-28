@@ -42,7 +42,18 @@
                 "version": "1.1.0"
             }
         },
-        "defaultStorageSpace": 1,
+        "storageVolumes": [
+            {
+                "type": "MAIN",
+                "defaultStorageSpace": 1,
+                "deployParameters": {
+                    "PERSISTENCE_ENABLED": "persistence.enabled",
+                    "PERSISTENCE_NAME": "persistence.name",
+                    "PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+                    "PERSISTENCE_STORAGE_SPACE": "persistence.size"
+                }
+            }
+        ],
         "exposesWebUI": true,
         "accessMethods":  [
             {
@@ -50,6 +61,7 @@
                 "name": "Grafana",
                 "tag": "grafana",
                 "deployParameters": {
+                    "INGRESS_ENABLED": "ingress.enabled",
                     "INGRESS_HOSTS": "ingress.hosts",
                     "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
                     "INGRESS_CLASS": "ingress.class",

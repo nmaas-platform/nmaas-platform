@@ -16,7 +16,6 @@ export class AccessMethodsModalComponent implements OnInit {
   @Input()
   public accessMethods: ServiceAccessMethod[];
 
-  public defaultAccessMethod: ServiceAccessMethod = undefined;
   public externalAccessMethods: ServiceAccessMethod[] = [];
   public internalAccessMethods: ServiceAccessMethod[] = [];
 
@@ -24,8 +23,8 @@ export class AccessMethodsModalComponent implements OnInit {
 
   ngOnInit() {
     if (this.accessMethods) {
-      this.defaultAccessMethod = this.accessMethods.find(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.DEFAULT);
-      this.externalAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.EXTERNAL);
+      this.externalAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.EXTERNAL
+          || this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.DEFAULT);
       this.internalAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.INTERNAL);
     }
   }

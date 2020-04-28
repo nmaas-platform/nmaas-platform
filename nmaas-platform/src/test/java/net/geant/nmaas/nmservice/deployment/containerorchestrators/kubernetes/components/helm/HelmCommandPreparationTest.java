@@ -88,23 +88,23 @@ public class HelmCommandPreparationTest {
     @Test
     public void shouldConstructInstallCommandWithArgumentsWithDisabledTls() {
         Map<String, String> arguments = new HashMap<>();
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
+        arguments.put("persistence.name", "testPersistenceName");
+        arguments.put("persistence.storageClass", "testStorageClass");
         assertThat(HelmInstallCommand.commandWithArchive(NAMESPACE, RELEASE_NAME, arguments, CHART_ARCHIVE_NAME, false).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
-                        containsString("persistenceName"),
-                        containsString("storageClass")));
+                        containsString("testPersistenceName"),
+                        containsString("testStorageClass")));
     }
 
     @Test
     public void shouldConstructInstallCommandWithArgumentsWithEnabledTls() {
         Map<String, String> arguments = new HashMap<>();
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
+        arguments.put("persistence.name", "testPersistenceName");
+        arguments.put("persistence.storageClass", "testStorageClass");
         assertThat(HelmInstallCommand.commandWithArchive(NAMESPACE, RELEASE_NAME, arguments, CHART_ARCHIVE_NAME, true).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
-                        containsString("persistenceName"),
-                        containsString("storageClass"),
+                        containsString("testPersistenceName"),
+                        containsString("testStorageClass"),
                         containsString(TLS)));
     }
 

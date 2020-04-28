@@ -199,12 +199,11 @@
                         <input type="text" class="form-control" id="kubernetesTemplateChartVersion" name="kubernetesTemplateChartVersion"
                                [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version" required tooltip="{{'APPS_WIZARD.CHART_VERSION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                     </div>
-                    <div class="form-group form-group-sm" [ngClass]="{'has-error':  storageSpace.invalid && (storageSpace.dirty || storageSpace.touched),
- 			    		 	'has-success': storageSpace.valid && (storageSpace.dirty || storageSpace.touched)}">
-                        <label for="defaultStorageSpace" class="control-label">{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_LABEL' | translate}} *</label>
+                    <div class="form-group form-group-sm">
+                        <label for="kubernetesTemplateMainDeploymentName" class="control-label">{{'APPS_WIZARD.MAIN_DEPLOYMENT_NAME_LABEL' | translate}}</label>
                         <br>
-                        <input type="number" class="form-control no-spin" id="defaultStorageSpace" name="defaultStorageSpace" [min]="1" required
-                               [(ngModel)]="app.appDeploymentSpec.defaultStorageSpace" #storageSpace="ngModel" tooltip="{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                        <input type="text" class="form-control" id="kubernetesTemplateMainDeploymentName" name="kubernetesTemplateMainDeploymentName"
+                               [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.mainDeploymentName" tooltip="{{'APPS_WIZARD.MAIN_DEPLOYMENT_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                     </div>
                     <div class="form-group form-group-sm">
                         <label for="exposesWebUI" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.EXPOSE_WEB_UI' | translate }}</label>
@@ -221,6 +220,16 @@
                         <label for="val" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETER_LABEL' | translate}}: {{val}}</label>
                         <br>
                         <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
+                    </div>
+
+                    <div class="form-group form-group-sm">
+                        <h4>{{'APPS_WIZARD.STORAGE_VOLUMES' | translate}}</h4>
+                        <ul *ngIf="app.appDeploymentSpec.storageVolumes">
+                            <li *ngFor="let s of app.appDeploymentSpec.storageVolumes; let i=index" class="no-bullet-list">
+                                <app-storage-volume-edit [storageVolume]="s" [id]="i" [storageVolumeTypes]="storageVolumeTypeOptions()" (output)="removeStorageVolume($event)"></app-storage-volume-edit>
+                            </li>
+                        </ul>
+                        <button class="btn btn-success" role="button" (click)="addNewStorageVolume()">{{'APPS_WIZARD.NEW_STORAGE_VOLUME' | translate}}</button>
                     </div>
 
                     <div class="form-group form-group-sm">

@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-public class RatingControllerTest extends BaseControllerTestSetup {
+public class RatingControllerintTest extends BaseControllerTestSetup {
 
     @Autowired
     private ApplicationRepository appRepo;

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
@@ -92,6 +93,14 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     public Identifier loadDescriptiveDeploymentId(Identifier deploymentId) {
         return repository.getDescriptiveDeploymentIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    }
+
+    public abstract void updateStorageSpace(Identifier deploymentId, Integer storageSpace);
+
+    public void addAdditionalParameters(Identifier deploymentId, Map<String, String> additionalParameters) {
+        T nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        nmServiceInfo.addAdditionalParameters(additionalParameters);
+        repository.save(nmServiceInfo);
     }
 
 }

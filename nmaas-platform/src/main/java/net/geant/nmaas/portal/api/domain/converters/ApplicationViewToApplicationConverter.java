@@ -8,7 +8,9 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
+import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -16,7 +18,11 @@ import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ApplicationViewToApplicationConverter extends AbstractConverter<ApplicationView, Application> {
@@ -45,12 +51,23 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
     private AppDeploymentSpec getAppDeploymentSpec(ApplicationView source){
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setSupportedDeploymentEnvironments(source.getAppDeploymentSpec().getSupportedDeploymentEnvironments());
-        appDeploymentSpec.setDefaultStorageSpace(source.getAppDeploymentSpec().getDefaultStorageSpace());
         appDeploymentSpec.setDeployParameters(source.getAppDeploymentSpec().getDeployParameters());
         appDeploymentSpec.setKubernetesTemplate(getKubernetesTemplate(source.getAppDeploymentSpec().getKubernetesTemplate()));
         appDeploymentSpec.setExposesWebUI(source.getAppDeploymentSpec().isExposesWebUI());
+        appDeploymentSpec.setStorageVolumes(getAppStorageVolumes(source.getAppDeploymentSpec().getStorageVolumes()));
         appDeploymentSpec.setAccessMethods(getAppAccessMethods(source.getAppDeploymentSpec().getAccessMethods()));
         return appDeploymentSpec;
+    }
+
+    private Set<AppStorageVolume> getAppStorageVolumes(List<AppStorageVolumeView> views) {
+        Set<AppStorageVolume> result = new HashSet<>();
+        if(views == null) {
+            return result;
+        }
+        for(AppStorageVolumeView sv : views) {
+            result.add(new AppStorageVolume(sv.getType(), sv.getDefaultStorageSpace(), sv.getDeployParameters()));
+        }
+        return result;
     }
 
     private Set<AppAccessMethod> getAppAccessMethods(List<AppAccessMethodView> views) {
@@ -58,7 +75,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         if(views == null) {
             return result;
         }
-        for(AppAccessMethodView av: views) {
+        for(AppAccessMethodView av : views) {
             result.add(new AppAccessMethod(av.getType(), av.getName(), av.getTag(), av.getDeployParameters()));
         }
         return result;
@@ -68,7 +85,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         if(template == null){
             return null;
         }
-        return new KubernetesTemplate(getKubernetesChartView(template.getChart()), template.getArchive());
+        return new KubernetesTemplate(getKubernetesChartView(template.getChart()), template.getArchive(), template.getMainDeploymentName());
     }
 
     private KubernetesChart getKubernetesChartView(KubernetesChartView kubernetesChart){

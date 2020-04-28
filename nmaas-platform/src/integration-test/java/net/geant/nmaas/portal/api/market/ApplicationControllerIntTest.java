@@ -4,8 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
+import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
+import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
+import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
@@ -40,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @Transactional
-class ApplicationControllerTest extends BaseControllerTestSetup {
+class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
     private ApplicationBaseRepository appBaseRepo;
@@ -222,10 +232,12 @@ class ApplicationControllerTest extends BaseControllerTestSetup {
     }
 
     private ApplicationView getDefaultAppView(String name){
-        List<AppAccessMethodView> lst = new ArrayList<>();
-        lst.add(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
-        lst.add(new AppAccessMethodView(ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
-        lst.add(new AppAccessMethodView(ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        List<AppStorageVolumeView> svList = new ArrayList<>();
+        svList.add(new AppStorageVolumeView(ServiceStorageVolumeType.MAIN, 5, null));
+        List<AppAccessMethodView> mvList = new ArrayList<>();
+        mvList.add(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
+        mvList.add(new AppAccessMethodView(ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
+        mvList.add(new AppAccessMethodView(ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
         ApplicationView applicationView = new ApplicationView();
         applicationView.setName(name);
         applicationView.setVersion("1.1.0");
@@ -233,9 +245,9 @@ class ApplicationControllerTest extends BaseControllerTestSetup {
         applicationView.setState(ApplicationState.ACTIVE);
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
-        appDeploymentSpec.setDefaultStorageSpace(10);
-        appDeploymentSpec.setAccessMethods(lst);
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive", null));
+        appDeploymentSpec.setStorageVolumes(svList);
+        appDeploymentSpec.setAccessMethods(mvList);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("{}"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());

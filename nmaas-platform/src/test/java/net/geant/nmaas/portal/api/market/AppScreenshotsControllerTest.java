@@ -81,32 +81,6 @@ public class AppScreenshotsControllerTest {
 
     }
 
-    /**
-     * ignored because file cannot be mocked properly
-     */
-    @Disabled
-    @Test
-    public void shouldGetAppLogo() {
-        // TODO
-        ResponseEntity<InputStreamResource> re = null;
-        try {
-            re = this.appScreenshotsController.getLogo(appWithLogo.getId());
-        } catch (FileNotFoundException e) {
-            fail();
-        }
-        assertNotNull(re);
-        assertEquals(HttpStatus.OK, re.getStatusCode());
-    }
-
-    @Disabled
-    @Test
-    public void shouldThrowFileNotFoundExceptionWhenFileNotFound() {
-        // TODO
-        FileNotFoundException fe = assertThrows(FileNotFoundException.class, () -> {
-            this.appScreenshotsController.getLogo(appWithLogo.getId());
-        });
-    }
-
     @Test
     public void shouldUpdateLogoWhenExists() {
 
