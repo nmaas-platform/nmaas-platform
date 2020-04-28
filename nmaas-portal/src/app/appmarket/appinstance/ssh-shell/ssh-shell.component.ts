@@ -18,7 +18,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     // TODO move to service (temporary)
-    this.socket = new WebSocket('wss://localhost:9000/ssh');
+    this.socket = new WebSocket('ws://localhost:9000/ssh/servlet');
     this.socket.onopen = (event) => {
       console.log('Connection opened');
       console.log(event);
@@ -32,24 +32,25 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.socket.onmessage = (event) => {
       console.log(event.data);
-      this.child.write('\r\n$ ' + event.data);
+      this.child.write(event.data + '\r\n$ ');
     };
   }
 
   ngAfterViewInit() {
     // terminal is available now
     // default handler with enhancement
+    this.child.write('$ ');
     this.child.keyEventInput.subscribe(e => {
-      console.log('keyboard event:' + e.domEvent.keyCode + ', ' + e.key);
+      // console.log('keyboard event:' + e.domEvent.keyCode + ', ' + e.key);
 
       const ev = e.domEvent;
       const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
 
       if (ev.keyCode === 13) { // enter
-        // this.child.write('\r\n$ ');
         this.socket.send(this.line);
-        console.log('[LINE]: ' + this.line);
+        // console.debug('[LINE]: ' + this.line);
         this.line = '';
+        this.child.write('\r\n');
       } else if (ev.keyCode === 8) { // backspace
         // Do not delete the prompt
         if (this.child.underlying.buffer.active.cursorX > 2) {
