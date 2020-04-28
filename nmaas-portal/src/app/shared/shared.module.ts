@@ -47,9 +47,11 @@ import {MaxLengthDirective} from '../directive/max-length.directive';
 import {AppConfigService} from '../service';
 import { ModalTestInstanceComponent } from './modal/modal-test-instance/modal-test-instance.component';
 import { ModalNotificationSendComponent } from './modal/modal-notification-send/modal-notification-send.component';
-import {NgxPaginationModule} from "ngx-pagination";
-import {PageNotFoundComponent} from "./page-not-found/page-not-found.component";
-import {DomainRolesDirective} from "../directive/domain-roles.directive";
+import {NgxPaginationModule} from 'ngx-pagination';
+import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
+import {DomainRolesDirective} from '../directive/domain-roles.directive';
+import { SshKeysComponent } from './users/ssh-keys/ssh-keys.component';
+import { NewSshKeyComponent } from './users/new-ssh-key/new-ssh-key.component';
 
 @NgModule({
     imports: [
@@ -103,6 +105,8 @@ import {DomainRolesDirective} from "../directive/domain-roles.directive";
     ModalNotificationSendComponent,
       DomainRolesDirective,
       PageNotFoundComponent,
+      SshKeysComponent,
+      NewSshKeyComponent,
   ],
   providers: [
     PasswordValidator,
@@ -149,6 +153,7 @@ import {DomainRolesDirective} from "../directive/domain-roles.directive";
         ModalTestInstanceComponent,
         ModalNotificationSendComponent,
         DomainRolesDirective,
+        SshKeysComponent,
     ]
 })
 export class SharedModule {}

@@ -836,5 +836,32 @@
     "HEADER": "Guest User account",
     "CONTENT": "You are currently logged as guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
     "CONFIRM_BUTTON": "OK"
+  },
+  "SSH_KEYS": {
+    "HEADER": "SSH keys",
+    "TABLE": {
+      "NAME": "Name",
+      "FINGERPRINT": "Fingerprint",
+      "ACTIONS": "Actions"
+    },
+    "BUTTON_INVALIDATE": "Invalidate",
+    "NO_KEYS": "No keys available",
+    "BUTTON_NEW_KEY": "Add new key",
+    "MODAL": {
+      "HEADER": "Add new SSH key",
+      "LABEL": {
+        "NAME": "Name",
+        "KEY": "Key"
+      },
+      "BUTTON_ADD": "Add",
+      "BUTTON_CANCEL": "Cancel",
+      "ERROR": {
+        "NAME_REQUIRED": "Name is required",
+        "NAME_MINLENGTH": "Name must have at lest 6 characters",
+        "NAME_MAXLENGTH": "Name cannot be longer than 16 characters",
+        "KEY_REQUIRED": "Key is required",
+        "KEY_PATTERN": "Key does not match required pattern"
+      }
+    }
   }
 }
