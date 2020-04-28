@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.util.Base64;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode
 public class SSHKeyEntity {
 
     @Id
@@ -26,10 +28,12 @@ public class SSHKeyEntity {
     @Lob
     private String key;
     // base64 encoded SHA256
+    @EqualsAndHashCode.Exclude
     private String fingerprint;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @EqualsAndHashCode.Exclude
     private User owner;
 
     public SSHKeyEntity(User owner, String name, String key) {
