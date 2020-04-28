@@ -13,8 +13,8 @@ import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingExce
 import net.geant.nmaas.nmservice.configuration.repositories.ConfigFileTemplatesRepository;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,18 +35,14 @@ class NmServiceConfigurationFilePreparer {
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "targets";
     private static final String DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY = "ipAddress";
 
+    @Autowired
     private NmServiceConfigFileRepository configurations;
 
+    @Autowired
     private ConfigFileTemplatesRepository templatesRepository;
 
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
-
     @Autowired
-    NmServiceConfigurationFilePreparer(NmServiceConfigFileRepository configurations, ConfigFileTemplatesRepository templatesRepository, NmServiceRepositoryManager nmServiceRepositoryManager){
-        this.configurations = configurations;
-        this.templatesRepository = templatesRepository;
-        this.nmServiceRepositoryManager = nmServiceRepositoryManager;
-    }
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration) {
         final Map<String, Object> appConfigurationModel = createModelFromJson(appConfiguration);

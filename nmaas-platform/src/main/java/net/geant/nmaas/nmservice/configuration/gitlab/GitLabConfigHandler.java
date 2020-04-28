@@ -1,8 +1,9 @@
-package net.geant.nmaas.nmservice.configuration;
+package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
@@ -21,17 +22,17 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.commitBranch;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.commitMessage;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.committedFile;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.createStandardUser;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.fullAccessCode;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.generateRandomPassword;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.groupName;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.groupPath;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.projectName;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.statusIsDifferentThenNotFound;
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.updateCommitMessage;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.commitBranch;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.commitMessage;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.committedFile;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.createStandardUser;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.fullAccessCode;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateRandomPassword;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.groupName;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.groupPath;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.projectName;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.statusIsDifferentThenNotFound;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.updateCommitMessage;
 
 /**
  * Interacts with a remote GitLab repository instance through a REST API in order to upload a set of application
@@ -42,7 +43,7 @@ import static net.geant.nmaas.nmservice.configuration.GitLabConfigHelper.updateC
 @Profile("env_kubernetes")
 @AllArgsConstructor
 @Log4j2
-public class GitLabConfigHandler {
+public class GitLabConfigHandler implements GitConfigHandler {
 
     private KubernetesRepositoryManager repositoryManager;
     private NmServiceConfigFileRepository configurations;
@@ -57,6 +58,7 @@ public class GitLabConfigHandler {
      * @param descriptiveDeploymentId human readable identifier of the deployment
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
      */
+    @Override
     public void createRepository(Identifier deploymentId, Identifier descriptiveDeploymentId, User owner) {
         String domain = repositoryManager.loadDomain(deploymentId);
         String gitLabPassword = generateRandomPassword();
@@ -138,6 +140,7 @@ public class GitLabConfigHandler {
      * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in database
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
+    @Override
     public void commitConfigFiles(Identifier deploymentId, List<String> configIds) {
         loadGitlabProject(deploymentId).ifPresent(p -> uploadConfigFilesToProject(p.getProjectId(), configIds));
     }
@@ -166,6 +169,7 @@ public class GitLabConfigHandler {
      * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in database
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
+    @Override
     public void removeConfigFiles(Identifier deploymentId){
         loadGitlabProject(deploymentId).ifPresent(p -> removeProject(p.getProjectId()));
     }

@@ -1,7 +1,6 @@
-package net.geant.nmaas.nmservice.configuration;
+package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHandler;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.gitlab4j.api.GitLabApiException;

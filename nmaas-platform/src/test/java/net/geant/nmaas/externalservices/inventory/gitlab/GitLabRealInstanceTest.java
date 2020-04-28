@@ -1,42 +1,32 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
-import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
+import lombok.extern.log4j.Log4j2;
+import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Project;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Log4j2
 public class GitLabRealInstanceTest {
 
-    private GitLabRepository repository = mock(GitLabRepository.class);
-
-    private GitLabManager manager;
-
-    @BeforeEach
-    public void setup(){
-        when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Collections.singletonList(
-                new GitLab("gitlab.nmaas.qalab.geant.net", "1_2GyoByrZnbX1ykVrxB", 80)
-            )
-        );
-        manager = new GitLabManager(repository, null);
-    }
-
+    @Disabled
     @Test
-    public void shouldThrowExceptionOnTooManyConfigs() throws GitLabApiException {
-        assertDoesNotThrow(() -> {
-            List<Project> projects = (manager.projects().getProjects());
-            assertTrue(projects.size() > 0);
+    public void shouldConnectToTestInstanceAndRemoveAllRepositories() throws GitLabApiException {
+        GitLabApi api = new GitLabApi(GitLabApi.ApiVersion.V4, "https://gitlab.nmaas.qalab.geant.net", "1_2GyoByrZnbX1ykVrxB");
+        List<Project> projects = api.getProjectApi().getProjects();
+        projects.forEach(p -> {
+            try {
+                api.getProjectApi().deleteProject(p.getId());
+            } catch (GitLabApiException e) {
+                log.info(String.format("Removal failed for project %d", p.getId()));
+            }
         });
+        assertEquals(0, api.getProjectApi().getProjects().size());
     }
 
 }

@@ -2,6 +2,7 @@ package net.geant.nmaas.externalservices.inventory.gitlab.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "gitlab")
 public class GitLab {
 
@@ -30,6 +32,12 @@ public class GitLab {
 
     @Column(nullable = false)
     private Integer port;
+
+    public GitLab(String server, String token, Integer port) {
+        this.server = server;
+        this.token = token;
+        this.port = port;
+    }
 
     @JsonIgnore
     public String getApiUrl(){

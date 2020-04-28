@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.configuration;
+package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
