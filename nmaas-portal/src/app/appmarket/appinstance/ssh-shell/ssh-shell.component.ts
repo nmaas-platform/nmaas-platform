@@ -18,6 +18,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     // TODO move to service (temporary)
+    // TODO work with wss (tls required)
     this.socket = new WebSocket('ws://localhost:9000/ssh/servlet');
     this.socket.onopen = (event) => {
       console.log('Connection opened');
