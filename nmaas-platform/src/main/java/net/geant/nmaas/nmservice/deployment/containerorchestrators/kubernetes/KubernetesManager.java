@@ -259,7 +259,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
-        return Identifier.newInstance(releaseName + "-" + componentName);
+        return componentName != null ?
+                Identifier.newInstance(releaseName + "-" + componentName) :
+                Identifier.newInstance(releaseName);
     }
 
     @Override
