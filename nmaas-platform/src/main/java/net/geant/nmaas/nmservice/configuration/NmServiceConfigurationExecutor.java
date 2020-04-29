@@ -44,7 +44,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nmServiceDeployment.getApplicationId(), nmServiceDeployment.getAppConfiguration());
             if(nmServiceDeployment.isConfigFileRepositoryRequired()) {
                 Identifier descriptiveDeploymentId = nmServiceDeployment.getDescriptiveDeploymentId();
-                configHandler.createRepository(deploymentId, descriptiveDeploymentId, null);
+                configHandler.createRepository(deploymentId, descriptiveDeploymentId, nmServiceDeployment.getOwnerSshKeys());
                 configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
                 janitorService.createOrReplaceConfigMap(descriptiveDeploymentId, nmServiceDeployment.getDomainName());
             }

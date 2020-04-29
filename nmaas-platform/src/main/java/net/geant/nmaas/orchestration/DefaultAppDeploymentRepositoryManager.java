@@ -8,6 +8,9 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +27,8 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     private AppDeploymentRepository repository;
 
     private UserRepository userRepository;
+
+    private SSHKeyRepository sshKeyRepository;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -57,10 +63,13 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
 
     @Override
     public AppDeploymentOwner loadOwner(Identifier deploymentId) {
-        return AppDeploymentOwner.fromUser(
-                userRepository.findByUsername(load(deploymentId).getOwner())
-                        .orElseThrow(() -> new InvalidDeploymentIdException("Owner for " + deploymentId + " not found in the repository."))
-        );
+        User owner = userRepository.findByUsername(load(deploymentId).getOwner())
+                .orElseThrow(() -> new InvalidDeploymentIdException("Owner for " + deploymentId + " not found in the repository."));
+        List<SSHKeyEntity> ownerSshKeys = sshKeyRepository.findAllByOwner(owner);
+        AppDeploymentOwner appDeploymentOwner = new AppDeploymentOwner();
+        appDeploymentOwner.setUsername(owner.getUsername());
+        appDeploymentOwner.setSshKeys(ownerSshKeys.stream().map(SSHKeyEntity::getKey).collect(Collectors.toList()));
+        return appDeploymentOwner;
     }
 
     @Override

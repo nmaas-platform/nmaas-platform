@@ -15,10 +15,10 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.models.RepositoryFile;
-import org.gitlab4j.api.models.User;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,14 +56,15 @@ public class GitLabConfigHandler implements GitConfigHandler {
      *
      * @param deploymentId unique identifier of service deployment
      * @param descriptiveDeploymentId human readable identifier of the deployment
+     * @param sshKeys owner ssh keys
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
      */
     @Override
-    public void createRepository(Identifier deploymentId, Identifier descriptiveDeploymentId, User owner) {
+    public void createRepository(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> sshKeys) {
         String domain = repositoryManager.loadDomain(deploymentId);
         String gitLabPassword = generateRandomPassword();
         Integer gitLabUserId = createUser(domain, descriptiveDeploymentId, gitLabPassword);
-        //TODO addUserSshKey();
+        addUserSshKeys(gitLabUserId, sshKeys);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
         Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, descriptiveDeploymentId);
         GitLabProject project = project(descriptiveDeploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
@@ -76,6 +77,16 @@ public class GitLabConfigHandler implements GitConfigHandler {
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
+    }
+
+    private void addUserSshKeys(Integer gitLabUserId, List<String> sshKeys) {
+        sshKeys.forEach(k -> {
+            try {
+                gitLabManager.users().addSshKey(gitLabUserId, LocalTime.now().toString(), k);
+            } catch (GitLabApiException e) {
+                throw new FileTransferException(e.getClass().getName() + e.getMessage());
+            }
+        });
     }
 
     private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, String domain) {

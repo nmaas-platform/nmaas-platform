@@ -121,6 +121,15 @@
 											"key": "booked#config#BOOKED_REGISTRATION",
 											"inputFormat": "plain",
 											"tab": 0
+										},
+										{
+											"label": "Enable use of Booked API",
+											"type": "checkbox",
+											"defaultValue": false,
+											"input": true,
+											"key": "booked#config#BOOKED_ENABLE_API",
+											"inputFormat": "plain",
+											"tab": 0
 										}
 									]
 								}
