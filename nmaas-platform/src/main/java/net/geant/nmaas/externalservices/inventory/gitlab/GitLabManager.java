@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
@@ -9,8 +10,11 @@ import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.GroupApi;
+import org.gitlab4j.api.ProjectApi;
+import org.gitlab4j.api.RepositoryFileApi;
+import org.gitlab4j.api.UserApi;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,20 +24,13 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Component
+@AllArgsConstructor
 @Log4j2
 public class GitLabManager {
 
     private GitLabRepository repository;
 
     private ModelMapper modelMapper;
-
-    private GitLabApi gitLabApi;
-
-    @Autowired
-    public GitLabManager(GitLabRepository repository, ModelMapper modelMapper){
-        this.repository = repository;
-        this.modelMapper = modelMapper;
-    }
 
     List<GitLabView> getAllGitlabConfig(){
         return this.repository.findAll().stream()
@@ -85,14 +82,34 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getPort();
     }
 
+    public GroupApi groups() {
+        return api().getGroupApi();
+    }
+
+    public ProjectApi projects() {
+        return api().getProjectApi();
+    }
+
+    public UserApi users() {
+        return api().getUserApi();
+    }
+
+    public RepositoryFileApi repositoryFiles() {
+        return api().getRepositoryFileApi();
+    }
+
+    private GitLabApi api() {
+        GitLab gitLabInstance = loadSingleGitlabConfig();
+        return new GitLabApi(GitLabApi.ApiVersion.V4, gitLabInstance.getApiUrl(), gitLabInstance.getToken());
+    }
+
     public void validateGitLabInstance() {
         GitLab gitLabInstance = this.loadSingleGitlabConfig();
         checkArgument(gitLabInstance.getPort() != null, "GitLab port is null");
         checkArgument(gitLabInstance.getServer() != null && !gitLabInstance.getServer().isEmpty(), "GitLab server is null or empty");
         checkArgument(gitLabInstance.getToken() != null && !gitLabInstance.getToken().isEmpty(), "GitLab token is null or empty");
-        this.createGitLabApi(gitLabInstance.getApiUrl(), gitLabInstance.getToken());
         try {
-            this.gitLabApi.getVersion();
+            api().getVersion();
             log.debug("GitLab instance is running");
         } catch (GitLabApiException e){
             throw new GitLabInvalidConfigurationException("GitLab instance is not running -> " + e.getMessage());
@@ -106,9 +123,4 @@ public class GitLabManager {
         return repository.findAll().get(0);
     }
 
-    private void createGitLabApi(String apiUrl, String token){
-        if(this.gitLabApi == null || !this.gitLabApi.getGitLabServerUrl().equals(apiUrl) || !this.gitLabApi.getAuthToken().equals(token)){
-            this.gitLabApi = new GitLabApi(GitLabApi.ApiVersion.V4, apiUrl, token);
-        }
-    }
 }

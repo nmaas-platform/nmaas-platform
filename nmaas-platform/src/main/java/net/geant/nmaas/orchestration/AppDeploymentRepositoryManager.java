@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
+import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public interface AppDeploymentRepositoryManager {
     void updateState(Identifier deploymentId, AppDeploymentState currentState);
 
     AppDeployment load(Identifier deploymentId);
+
+    AppDeploymentOwner loadOwner(Identifier deploymentId);
 
     Optional<AppDeployment> load(String deploymentName, String domain);
 
