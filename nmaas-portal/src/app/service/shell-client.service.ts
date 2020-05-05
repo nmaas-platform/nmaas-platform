@@ -1,17 +1,36 @@
 import {Injectable, NgZone} from '@angular/core';
 import {SSEService} from './sse.service';
-import {observable, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {AppConfigService} from './appconfig.service';
+import {EventSourcePolyfill, OnMessageEvent} from 'ng-event-source';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShellClientService {
 
-  constructor(private _zone: NgZone, private _sseService: SSEService) { }
+  private events: EventSourcePolyfill = undefined;
 
-  getServerSentEvent(url: string): Observable<MessageEvent> {
-    return new Observable<MessageEvent>(observableEvents => {
-      const events = this._sseService.getEventSource(url);
+  constructor(private _zone: NgZone, private _sseService: SSEService, private http: HttpClient, private appConfig: AppConfigService) { }
+
+  initConnection(id: number): Observable<string> {
+    // @ts-ignore
+    return this.http.post<string>(this.appConfig.getApiUrl() + '/shell/' + id + '/init', {}, {responseType: 'text'});
+  }
+
+  sendCommand(sessionId: string, command: Object = {}): Observable<any> {
+    return this.http.post(this.appConfig.getApiUrl() + '/shell/' + sessionId + '/command', command);
+  }
+
+  close() {
+    this.events.close();
+    this.events = undefined;
+  }
+
+  getServerSentEvent(sessionId: string): Observable<OnMessageEvent> {
+    return new Observable<OnMessageEvent>(observableEvents => {
+      const events = this._sseService.getEventSource(this.appConfig.getApiUrl() + '/shell/' + sessionId);
 
       events.onopen = onopenEvent => {
         this._zone.run(() => {
@@ -30,6 +49,8 @@ export class ShellClientService {
           observableEvents.error(onerrorEvent);
         })
       };
+
+      this.events = events;
     });
   }
 }

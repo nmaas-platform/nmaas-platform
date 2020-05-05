@@ -10,7 +10,8 @@ import {ShellClientService} from '../../../service/shell-client.service';
 export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private line = '';
-  private socket: WebSocket;
+
+  private sessionId: string = undefined;
 
   @ViewChild('term') child: NgTerminal; // for Angular 7
   // @ViewChild('term', { static: true }) child: NgTerminal; // for Angular 8
@@ -18,16 +19,23 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private shellClientService: ShellClientService) { }
 
   ngOnInit() {
-    // TODO handle endpoint
-    this.shellClientService.getServerSentEvent('http://localhost:9000/someendpoint').subscribe(
-        event => {
-          console.log('Message:', event)
-          this.child.write(event.data + '\r\n$ ');
+    this.shellClientService.initConnection(0).subscribe(
+        sessionId => {
+          this.sessionId = sessionId;
+          this.shellClientService.getServerSentEvent(sessionId).subscribe(
+              event => {
+                console.log('Message:', event)
+                this.child.write(event.data + '\r\n$ ');
+              },
+              sseError => {
+                console.error(sseError);
+              }
+          );
         },
-        error => {
-          console.error(error);
+        connError => {
+          console.error(connError);
         }
-    )
+    );
   }
 
   ngAfterViewInit() {
@@ -41,7 +49,9 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
       const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
 
       if (ev.keyCode === 13) { // enter
-        this.socket.send(this.line);
+        this.shellClientService.sendCommand(this.sessionId, {
+          'command': this.line
+        });
         // console.debug('[LINE]: ' + this.line);
         this.line = '';
         this.child.write('\r\n');
@@ -58,7 +68,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.socket.close();
+    this.shellClientService.close();
   }
 
 }
