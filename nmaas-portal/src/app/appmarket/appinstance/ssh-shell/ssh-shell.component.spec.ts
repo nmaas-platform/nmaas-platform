@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SshShellComponent } from './ssh-shell.component';
 import {NgTerminalModule} from 'ng-terminal';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 
 describe('SshShellComponent', () => {
@@ -14,7 +15,8 @@ describe('SshShellComponent', () => {
           SshShellComponent,
       ],
       imports: [
-          NgTerminalModule
+          NgTerminalModule,
+          HttpClientTestingModule
       ]
     })
     .compileComponents();
