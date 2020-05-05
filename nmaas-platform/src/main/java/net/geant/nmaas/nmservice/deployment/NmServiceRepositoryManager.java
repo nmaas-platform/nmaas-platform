@@ -95,6 +95,10 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         return repository.getDescriptiveDeploymentIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
+    public GitLabProject loadGitLabProject(Identifier deploymentId) {
+        return repository.getGitLabProjectByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    }
+
     public abstract void updateStorageSpace(Identifier deploymentId, Integer storageSpace);
 
     public void addAdditionalParameters(Identifier deploymentId, Map<String, String> additionalParameters) {

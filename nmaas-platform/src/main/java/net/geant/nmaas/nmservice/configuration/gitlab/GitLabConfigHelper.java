@@ -12,6 +12,7 @@ public class GitLabConfigHelper {
     static final String GROUPS_PATH_PREFIX = "groups";
     static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
+    private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
 
 
     static User createStandardUser(String username, String email, String name) {
@@ -26,6 +27,14 @@ public class GitLabConfigHelper {
 
     static String generateRandomPassword() {
         return RandomStringUtils.random(10, true, true);
+    }
+
+    static String generateWebhookId() {
+        return String.valueOf(System.nanoTime());
+    }
+
+    static String generateRandomToken() {
+        return RandomStringUtils.random(DEFAULT_WEBHOOK_TOKEN_LENGTH, true, true);
     }
 
     static String projectName(Identifier deploymentId) {

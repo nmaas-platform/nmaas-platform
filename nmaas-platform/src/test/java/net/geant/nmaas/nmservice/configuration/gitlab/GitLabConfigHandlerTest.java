@@ -15,16 +15,16 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GitlabConfigUploaderTest {
+public class GitLabConfigHandlerTest {
 
     private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
     private GitLabManager gitLabManager = mock(GitLabManager.class);
 
-    private GitLabConfigHandler uploader;
+    private GitLabConfigHandler handler;
 
     @BeforeEach
     public void setup() {
-        uploader = new GitLabConfigHandler(repositoryManager, null, gitLabManager);
+        handler = new GitLabConfigHandler(repositoryManager, null, gitLabManager);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class GitlabConfigUploaderTest {
         when(gitLabManager.getGitlabServer()).thenReturn("test-server");
         when(gitLabManager.getGitlabPort()).thenReturn(80);
         when(gitLabManager.projects()).thenReturn(projectApi);
-        String result = uploader.getHttpUrlToRepo(1);
+        String result = handler.getHttpUrlToRepo(1);
         assertThat(result, is("http://test-server:80/group/project.git"));
     }
 }
