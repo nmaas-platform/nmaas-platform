@@ -51,7 +51,14 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
       if (ev.keyCode === 13) { // enter
         this.shellClientService.sendCommand(this.sessionId, {
           'command': this.line
-        });
+        }).subscribe(
+            data => {
+              console.log('Command sent');
+            },
+            error => {
+              console.error(error);
+            }
+        );
         // console.debug('[LINE]: ' + this.line);
         this.line = '';
         this.child.write('\r\n');

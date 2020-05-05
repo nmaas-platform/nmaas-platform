@@ -9,6 +9,6 @@ export class SSEService {
   constructor() { }
 
   getEventSource(url: string) {
-    return new EventSourcePolyfill(url, {headers: {'Authorization': 'Bareer ' + localStorage.getItem('token')}});
+    return new EventSourcePolyfill(url, {headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}});
   }
 }
