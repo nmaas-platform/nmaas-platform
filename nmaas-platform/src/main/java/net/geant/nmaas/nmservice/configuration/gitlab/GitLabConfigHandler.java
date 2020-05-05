@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
@@ -13,8 +12,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.Project;
+import org.gitlab4j.api.models.Group;
+import org.gitlab4j.api.models.ProjectHook;
 import org.gitlab4j.api.models.RepositoryFile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +29,11 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.createStandardUser;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.fullAccessCode;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateRandomPassword;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateRandomToken;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateWebhookId;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.groupName;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.groupPath;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.projectName;
-import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.statusIsDifferentThenNotFound;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.updateCommitMessage;
 
 /**
@@ -41,13 +43,21 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
  */
 @Component
 @Profile("env_kubernetes")
-@AllArgsConstructor
 @Log4j2
 public class GitLabConfigHandler implements GitConfigHandler {
 
     private KubernetesRepositoryManager repositoryManager;
     private NmServiceConfigFileRepository configurations;
     private GitLabManager gitLabManager;
+
+    public GitLabConfigHandler(KubernetesRepositoryManager repositoryManager, NmServiceConfigFileRepository configurations, GitLabManager gitLabManager) {
+        this.repositoryManager = repositoryManager;
+        this.configurations = configurations;
+        this.gitLabManager = gitLabManager;
+    }
+
+    @Value("nmaas.platform.webhooks.baseurl")
+    private String webhooksBaseUrl;
 
     /**
      * Creates a new GitLab user if one with given email does not exist already and add / replaces his SSH keys
@@ -108,8 +118,14 @@ public class GitLabConfigHandler implements GitConfigHandler {
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         Integer gitLabUserId = getUserId(member);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, descriptiveDeploymentId);
+        Integer gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
+        addMemberToProject(gitLabProjectId, gitLabUserId);
+        String webhookId = generateWebhookId();
+        String webhookToken = generateRandomToken();
+        addWebhookToProject(gitLabProjectId, webhookId, webhookToken);
         GitLabProject project = project(descriptiveDeploymentId, member, gitLabProjectId);
+        project.setWebhookId(webhookId);
+        project.setWebhookToken(webhookToken);
         repositoryManager.updateGitLabProject(deploymentId, project);
     }
 
@@ -123,26 +139,23 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, String domain) {
         try {
-            return gitLabManager.groups().getGroup(groupPath(domain)).getId();
-        } catch (GitLabApiException e) {
-            if (statusIsDifferentThenNotFound(e.getHttpStatus()))
-                throw new FileTransferException("" + e.getMessage());
-            try {
+            Optional<Group> group = gitLabManager.groups().getOptionalGroup(groupPath(domain));
+            if (group.isPresent()) {
+                return group.get().getId();
+            } else {
                 gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
                 Integer groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
                 gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
                 return groupId;
-            } catch (GitLabApiException e1) {
-                throw new FileTransferException("" + e1.getMessage());
             }
+        } catch (GitLabApiException e) {
+            throw new FileTransferException("" + e.getMessage());
         }
     }
 
-    private Integer createProjectWithinGroupWithMember(Integer groupId, Integer userId, Identifier deploymentId) {
+    private Integer createProjectWithinGroup(Integer groupId, Identifier deploymentId) {
         try {
-            Project project = gitLabManager.projects().createProject(groupId, projectName(deploymentId));
-            gitLabManager.projects().addMember(project.getId(), userId, fullAccessCode());
-            return project.getId();
+            return gitLabManager.projects().createProject(groupId, projectName(deploymentId)).getId();
         } catch (GitLabApiException e) {
             throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
         }
@@ -151,7 +164,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private GitLabProject project(Identifier deploymentId, String member, Integer gitLabProjectId) {
         try {
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabProjectId);
+            String gitLabSshRepoUrl = gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo();
+            return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabSshRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
@@ -162,6 +176,28 @@ public class GitLabConfigHandler implements GitConfigHandler {
         String[] urlParts = urlFromGitlabApiParts[1].split("/");
         urlParts[0] = gitLabManager.getGitlabServer() + ":" + gitLabManager.getGitlabPort();
         return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
+    }
+
+    private void addMemberToProject(Integer gitLabProjectId, Integer gitLabUserId) {
+        try {
+            gitLabManager.projects().addMember(gitLabProjectId, gitLabUserId, fullAccessCode());
+        } catch (GitLabApiException e) {
+            throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
+        }
+    }
+
+    private void addWebhookToProject(Integer gitLabProjectId, String webhookId, String webhookToken) {
+        try {
+            ProjectHook hook = new ProjectHook();
+            hook.setPushEvents(true);
+            gitLabManager.projects().addHook(gitLabProjectId, getWebhookUrl(webhookId), hook, true, webhookToken);
+        } catch (GitLabApiException e) {
+            throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
+        }
+    }
+
+    private String getWebhookUrl(String webhookId) {
+        return webhooksBaseUrl + "/" + webhookId;
     }
 
     private NmServiceConfiguration loadConfigurationFromDatabase(String configId) {
