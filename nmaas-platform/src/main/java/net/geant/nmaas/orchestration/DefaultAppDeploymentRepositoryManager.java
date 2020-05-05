@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -68,6 +69,12 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
         List<SSHKeyEntity> ownerSshKeys = sshKeyRepository.findAllByOwner(owner);
         AppDeploymentOwner appDeploymentOwner = new AppDeploymentOwner();
         appDeploymentOwner.setUsername(owner.getUsername());
+        appDeploymentOwner.setEmail(owner.getEmail());
+        if (StringUtils.isNotEmpty(owner.getFirstname()) && StringUtils.isNotEmpty(owner.getLastname())) {
+            appDeploymentOwner.setName(owner.getFirstname() + " " + owner.getLastname());
+        } else {
+            appDeploymentOwner.setName(appDeploymentOwner.getUsername());
+        }
         appDeploymentOwner.setSshKeys(ownerSshKeys.stream().map(SSHKeyEntity::getKey).collect(Collectors.toList()));
         return appDeploymentOwner;
     }

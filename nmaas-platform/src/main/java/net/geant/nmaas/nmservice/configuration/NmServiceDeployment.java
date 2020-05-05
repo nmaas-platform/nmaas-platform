@@ -16,6 +16,8 @@ public class NmServiceDeployment {
     private Identifier applicationId;
     private String domainName;
     private String ownerUsername;
+    private String ownerEmail;
+    private String ownerName;
     private List<String> ownerSshKeys;
     private boolean configFileRepositoryRequired;
     private AppConfiguration appConfiguration;
@@ -27,6 +29,8 @@ public class NmServiceDeployment {
         nmServiceDeployment.applicationId = appDeployment.getApplicationId();
         nmServiceDeployment.domainName = appDeployment.getDomain();
         nmServiceDeployment.ownerUsername = appDeploymentOwner.getUsername();
+        nmServiceDeployment.ownerEmail = appDeploymentOwner.getEmail();
+        nmServiceDeployment.ownerName = appDeploymentOwner.getName();
         nmServiceDeployment.ownerSshKeys = appDeploymentOwner.getSshKeys();
         nmServiceDeployment.configFileRepositoryRequired = appDeployment.isConfigFileRepositoryRequired();
         nmServiceDeployment.appConfiguration = appDeployment.getConfiguration();

@@ -50,43 +50,75 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private GitLabManager gitLabManager;
 
     /**
-     * Creates a new GitLab repository dedicated for the client requesting the deployment.
-     * If an account for this client does not yet exists it is created.
-     * Information on how to access the repository is stored in {@link GitLabProject} object.
+     * Creates a new GitLab user if one with given email does not exist already and add / replaces his SSH keys
      *
-     * @param deploymentId unique identifier of service deployment
-     * @param descriptiveDeploymentId human readable identifier of the deployment
-     * @param sshKeys owner ssh keys
-     * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
+     * @param userUsername username of the new user
+     * @param userEmail email of the new user
+     * @param userName full name of the new user
+     * @param userSshKeys list of SSH keys of the new user
+     * @throws FileTransferException if a problem with during user creation is encountered
      */
     @Override
-    public void createRepository(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> sshKeys) {
-        String domain = repositoryManager.loadDomain(deploymentId);
-        String gitLabPassword = generateRandomPassword();
-        Integer gitLabUserId = createUser(domain, descriptiveDeploymentId, gitLabPassword);
-        addUserSshKeys(gitLabUserId, sshKeys);
-        Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, descriptiveDeploymentId);
-        GitLabProject project = project(descriptiveDeploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
-        repositoryManager.updateGitLabProject(deploymentId, project);
-    }
-
-    private Integer createUser(String domain, Identifier deploymentId, String password) {
+    public void createUser(String userUsername, String userEmail, String userName, List<String> userSshKeys) {
         try {
-            return gitLabManager.users().createUser(createStandardUser(domain, deploymentId), password, false).getId();
+            if (!gitLabManager.users().getOptionalUser(userUsername).isPresent()) {
+                gitLabManager.users().createUser(
+                        createStandardUser(userUsername, userEmail, userName),
+                        generateRandomPassword(),
+                        false
+                );
+            }
+            replaceUserSshKeys(userUsername, userSshKeys);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
     }
 
-    private void addUserSshKeys(Integer gitLabUserId, List<String> sshKeys) {
-        sshKeys.forEach(k -> {
+    private void replaceUserSshKeys(String username, List<String> sshKeys) throws GitLabApiException {
+        Integer userId = getUserId(username);
+        gitLabManager.users().getSshKeys(userId).forEach(k -> {
             try {
-                gitLabManager.users().addSshKey(gitLabUserId, LocalTime.now().toString(), k);
+                gitLabManager.users().deleteSshKey(k.getId());
             } catch (GitLabApiException e) {
-                throw new FileTransferException(e.getClass().getName() + e.getMessage());
+                throw new FileTransferException(e.getMessage());
             }
         });
+        sshKeys.forEach(k -> {
+            try {
+                gitLabManager.users().addSshKey(userId, LocalTime.now().toString(), k);
+            } catch (GitLabApiException e) {
+                throw new FileTransferException(e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Creates a new GitLab repository dedicated for the client requesting the deployment.
+     * If an account for this client does not yet exists it is created.
+     * Information on how to access the repository is stored in {@link GitLabProject} object.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @param member username of an existing user to be added as a member for created repository
+     * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
+     * @throws FileTransferException if a problem with repository creation is encountered
+     */
+    @Override
+    public void createRepository(Identifier deploymentId, String member) {
+        String domain = repositoryManager.loadDomain(deploymentId);
+        Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
+        Integer gitLabUserId = getUserId(member);
+        Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
+        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, descriptiveDeploymentId);
+        GitLabProject project = project(descriptiveDeploymentId, member, gitLabProjectId);
+        repositoryManager.updateGitLabProject(deploymentId, project);
+    }
+
+    private Integer getUserId(String username) {
+        try {
+            return gitLabManager.users().getUser(username).getId();
+        } catch (GitLabApiException e) {
+            throw new FileTransferException("" + e.getMessage());
+        }
     }
 
     private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, String domain) {
@@ -116,18 +148,13 @@ public class GitLabConfigHandler implements GitConfigHandler {
         }
     }
 
-    private GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId) {
+    private GitLabProject project(Identifier deploymentId, String member, Integer gitLabProjectId) {
         try {
-            String gitLabUser = getUser(gitLabUserId);
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitLabProjectId);
+            return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
-    }
-
-    private String getUser(Integer gitLabUserId) throws GitLabApiException {
-        return gitLabManager.users().getUser(gitLabUserId).getUsername();
     }
 
     String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
