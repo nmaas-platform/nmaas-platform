@@ -11,6 +11,10 @@ public class AppDeploymentOwner {
 
     private String username;
 
+    private String name;
+
+    private String email;
+
     private List<String> sshKeys;
 
 }
