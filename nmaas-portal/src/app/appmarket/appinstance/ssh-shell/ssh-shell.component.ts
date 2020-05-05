@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NgTerminal} from 'ng-terminal';
+import {ShellClientService} from '../../../service/shell-client.service';
 
 @Component({
   selector: 'app-ssh-shell',
@@ -14,27 +15,19 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('term') child: NgTerminal; // for Angular 7
   // @ViewChild('term', { static: true }) child: NgTerminal; // for Angular 8
 
-  constructor() { }
+  constructor(private shellClientService: ShellClientService) { }
 
   ngOnInit() {
-    // TODO move to service (temporary)
-    // TODO work with wss (tls required)
-    this.socket = new WebSocket('ws://localhost:9000/ssh/servlet');
-    this.socket.onopen = (event) => {
-      console.log('Connection opened');
-      console.log(event);
-    };
-    this.socket.onclose = (event) => {
-      console.log('Connection closed');
-      // console.log(event);
-    };
-    this.socket.onerror = (event) => {
-      console.error(event);
-    };
-    this.socket.onmessage = (event) => {
-      console.log(event.data);
-      this.child.write(event.data + '\r\n$ ');
-    };
+    // TODO handle endpoint
+    this.shellClientService.getServerSentEvent('http://localhost:9000/someendpoint').subscribe(
+        event => {
+          console.log('Message:', event)
+          this.child.write(event.data + '\r\n$ ');
+        },
+        error => {
+          console.error(error);
+        }
+    )
   }
 
   ngAfterViewInit() {
