@@ -78,7 +78,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         Integer userId = getUserId(username);
         gitLabManager.users().getSshKeys(userId).forEach(k -> {
             try {
-                gitLabManager.users().deleteSshKey(k.getId());
+                gitLabManager.users().deleteSshKey(userId, k.getId());
             } catch (GitLabApiException e) {
                 throw new FileTransferException(e.getMessage());
             }
