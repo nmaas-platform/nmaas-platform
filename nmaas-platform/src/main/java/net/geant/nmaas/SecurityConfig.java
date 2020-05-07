@@ -91,6 +91,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers(AUTH_SSO_LOGIN).permitAll()
+				// TODO temporary
+				.antMatchers(HttpMethod.POST, "/api/gitlab/webhooks/**").permitAll()
+				// --
 				.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
@@ -138,7 +141,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 													new AntPathRequestMatcher("/api/monitor/all", "GET"),
 													new AntPathRequestMatcher("/api/mail"),
 													new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
-													new AntPathRequestMatcher("/api/i18n/all/enabled", "GET")
+													new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
+													// TODO temporary
+													new AntPathRequestMatcher("/api/gitlab/webhooks/**", "POST")													// --
 											}
 											),
 									null,
