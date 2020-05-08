@@ -56,7 +56,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         this.gitLabManager = gitLabManager;
     }
 
-    @Value("nmaas.platform.webhooks.baseurl")
+    @Value("${nmaas.platform.webhooks.baseurl}")
     private String webhooksBaseUrl;
 
     /**
