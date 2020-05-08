@@ -22,7 +22,7 @@ public class GitLabWebhookControllerSecTest extends BaseControllerTestSetup {
     @Test
     public void shouldAuthorizeSinceNoAuthInPlace() throws Exception{
         mvc.perform(post("/api/gitlab/webhooks/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
 }

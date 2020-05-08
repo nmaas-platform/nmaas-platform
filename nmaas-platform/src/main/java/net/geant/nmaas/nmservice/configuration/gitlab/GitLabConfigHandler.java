@@ -121,7 +121,10 @@ public class GitLabConfigHandler implements GitConfigHandler {
         Integer gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
         addMemberToProject(gitLabProjectId, gitLabUserId);
         String webhookId = generateWebhookId();
+        log.info("webhookId: " + webhookId);
         String webhookToken = generateRandomToken();
+        log.info("webhookToken: " + webhookToken);
+        log.info("webhooksBaseUrl: " + webhooksBaseUrl);
         addWebhookToProject(gitLabProjectId, webhookId, webhookToken);
         GitLabProject project = project(descriptiveDeploymentId, member, gitLabProjectId);
         project.setWebhookId(webhookId);
@@ -190,7 +193,9 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             ProjectHook hook = new ProjectHook();
             hook.setPushEvents(true);
-            gitLabManager.projects().addHook(gitLabProjectId, getWebhookUrl(webhookId), hook, true, webhookToken);
+            String completeWebhookUrl = getWebhookUrl(webhookId);
+            log.info("completeWebhookUrl: " + completeWebhookUrl);
+            gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
             throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
         }
