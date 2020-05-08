@@ -21,6 +21,9 @@ public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRep
     @Query("select t from #{#entityName} t where t.deploymentId = ?1")
     Optional<T> findByDeploymentId(Identifier deploymentId);
 
+    @Query("select t from #{#entityName} t where t.descriptiveDeploymentId = ?1")
+    Optional<T> findByDescriptiveDeploymentId(Identifier descriptiveDeploymentId);
+
     @Query("SELECT n.state FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<NmServiceDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
