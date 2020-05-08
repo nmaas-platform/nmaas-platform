@@ -35,4 +35,5 @@ public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRep
 
     @Query("SELECT n.gitLabProject FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<GitLabProject> getGitLabProjectByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
 }
