@@ -55,7 +55,7 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
     public T loadServiceByGitLabProjectWebhookId(String webhookId) {
         GitLabProject project = gitLabProjectRepository.findByWebhookId(webhookId).orElseThrow(() -> new InvalidDeploymentIdException(webhookId));
         Identifier deploymentId = project.getDeploymentId();
-        return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        return repository.findByDescriptiveDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
     @EventListener
