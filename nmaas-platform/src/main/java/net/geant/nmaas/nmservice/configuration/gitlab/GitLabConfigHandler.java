@@ -121,10 +121,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         Integer gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
         addMemberToProject(gitLabProjectId, gitLabUserId);
         String webhookId = generateWebhookId();
-        log.info("webhookId: " + webhookId);
         String webhookToken = generateRandomToken();
-        log.info("webhookToken: " + webhookToken);
-        log.info("webhooksBaseUrl: " + webhooksBaseUrl);
         addWebhookToProject(gitLabProjectId, webhookId, webhookToken);
         GitLabProject project = project(descriptiveDeploymentId, member, gitLabProjectId);
         project.setWebhookId(webhookId);
