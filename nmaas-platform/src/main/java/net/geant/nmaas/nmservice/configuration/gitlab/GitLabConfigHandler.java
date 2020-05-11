@@ -133,7 +133,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             return gitLabManager.users().getUser(username).getId();
         } catch (GitLabApiException e) {
-            throw new FileTransferException("" + e.getMessage());
+            throw new FileTransferException("GITLAB: " + e.getMessage());
         }
     }
 
@@ -149,7 +149,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
                 return groupId;
             }
         } catch (GitLabApiException e) {
-            throw new FileTransferException("" + e.getMessage());
+            throw new FileTransferException("GITLAB: " + e.getMessage());
         }
     }
 
@@ -157,7 +157,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             return gitLabManager.projects().createProject(groupId, projectName(deploymentId)).getId();
         } catch (GitLabApiException e) {
-            throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
+            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
         }
     }
 
@@ -167,7 +167,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             String gitLabSshRepoUrl = gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo();
             return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabSshRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
-            throw new FileTransferException(e.getClass().getName() + e.getMessage());
+            throw new FileTransferException("GITLAB: " + e.getMessage());
         }
     }
 
@@ -182,7 +182,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             gitLabManager.projects().addMember(gitLabProjectId, gitLabUserId, fullAccessCode());
         } catch (GitLabApiException e) {
-            throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
+            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
         }
     }
 
@@ -194,7 +194,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             log.info("completeWebhookUrl: " + completeWebhookUrl);
             gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
-            throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
+            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
         }
     }
 
