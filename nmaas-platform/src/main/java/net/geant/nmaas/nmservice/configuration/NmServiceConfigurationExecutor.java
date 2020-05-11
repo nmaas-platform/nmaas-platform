@@ -75,6 +75,19 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     @Override
     @Loggable(LogLevel.INFO)
+    public void reloadNmService(NmServiceDeployment nmServiceDeployment) {
+        try {
+            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_INITIATED);
+            janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
+            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATED);
+        } catch(Exception e){
+            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_FAILED, e.getMessage());
+            throw new NmServiceConfigurationFailedException(e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) {
         try{
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_INITIATED);

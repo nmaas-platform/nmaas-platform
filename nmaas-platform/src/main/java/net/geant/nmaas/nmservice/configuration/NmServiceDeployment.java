@@ -1,6 +1,9 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -9,6 +12,9 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class NmServiceDeployment {
 
     private Identifier deploymentId;
