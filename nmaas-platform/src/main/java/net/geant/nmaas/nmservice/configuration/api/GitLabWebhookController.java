@@ -37,6 +37,8 @@ public class GitLabWebhookController {
                         .domainName(service.getDomain())
                         .build()
                 );
+            } else {
+                log.info("Skipped configuration reload");
             }
         } catch (InvalidDeploymentIdException e) {
             throw new InvalidWebhookException(String.format("No service found for given webhook identifier (%s)", id));
