@@ -25,6 +25,14 @@ public interface NmServiceConfigurationProvider {
     void updateNmService(NmServiceDeployment nmServiceDeployment);
 
     /**
+     * Reloads NM service configuration from repository
+     *
+     * @param nmServiceDeployment contains all necessary information about the application instance being configured
+     * @throws NmServiceConfigurationFailedException if NM service couldn't be configured for some reason
+     */
+    void reloadNmService(NmServiceDeployment nmServiceDeployment);
+
+    /**
      * Removes NM service configuration
      *
      * @param deploymentId unique identifier of service deployment
