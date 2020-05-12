@@ -5,6 +5,7 @@ import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -97,6 +98,11 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_FAILED);
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
+    }
+
+    @Override
+    public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
+        return configHandler.configRepositoryAccessDetails(deploymentId);
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {

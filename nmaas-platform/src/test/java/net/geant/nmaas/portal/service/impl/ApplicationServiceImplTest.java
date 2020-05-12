@@ -330,6 +330,7 @@ public class ApplicationServiceImplTest {
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         AppConfigurationSpecView appConfigurationSpec = new AppConfigurationSpecView();
         appConfigurationSpec.setConfigFileRepositoryRequired(false);
+        appConfigurationSpec.setConfigUpdateEnabled(false);
         applicationView.setAppConfigurationSpec(appConfigurationSpec);
         return applicationView;
     }

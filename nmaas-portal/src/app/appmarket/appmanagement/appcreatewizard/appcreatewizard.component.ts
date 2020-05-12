@@ -1,21 +1,21 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
-import {Application, ConfigWizardTemplate} from "../../../model";
-import {MenuItem, SelectItem} from "primeng/api";
-import {AppImagesService, AppsService, TagService} from "../../../service";
-import {AppDescription} from "../../../model/appdescription";
-import {InternationalizationService} from "../../../service/internationalization.service";
-import {isNullOrUndefined} from "util";
-import {ConfigTemplateService} from "../../../service/configtemplate.service";
-import {ParameterType} from "../../../model/parametertype";
-import {ModalComponent} from "../../../shared/modal";
-import {BaseComponent} from "../../../shared/common/basecomponent/base.component";
-import {ActivatedRoute, Router} from "@angular/router";
-import {TranslateService} from "@ngx-translate/core";
-import {DomSanitizer} from "@angular/platform-browser";
-import {ComponentMode} from "../../../shared";
-import {MultiSelect} from "primeng/primeng";
-import {KubernetesTemplate} from "../../../model/kubernetestemplate";
-import {ConfigFileTemplate} from "../../../model/configfiletemplate";
+import {Application, ConfigWizardTemplate} from '../../../model';
+import {MenuItem, SelectItem} from 'primeng/api';
+import {AppImagesService, AppsService, TagService} from '../../../service';
+import {AppDescription} from '../../../model/appdescription';
+import {InternationalizationService} from '../../../service/internationalization.service';
+import {isNullOrUndefined} from 'util';
+import {ConfigTemplateService} from '../../../service/configtemplate.service';
+import {ParameterType} from '../../../model/parametertype';
+import {ModalComponent} from '../../../shared/modal';
+import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
+import {ActivatedRoute, Router} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
+import {DomSanitizer} from '@angular/platform-browser';
+import {ComponentMode} from '../../../shared';
+import {MultiSelect} from 'primeng/primeng';
+import {KubernetesTemplate} from '../../../model/kubernetestemplate';
+import {ConfigFileTemplate} from '../../../model/configfiletemplate';
 import {AppStorageVolume} from '../../../model/app-storage-volume';
 import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/servicestoragevolume';
 import {AppAccessMethod} from '../../../model/app-access-method';
@@ -39,8 +39,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     public app: Application;
     public appName: string;
     public steps: MenuItem[];
-    public activeStepIndex: number = 0;
-    public rulesAccepted: boolean = false;
+    public activeStepIndex = 0;
+    public rulesAccepted = false;
     public tags: SelectItem[] = [];
     public newTags: string[] = [];
     public deployParameter: SelectItem[] = [];
@@ -48,17 +48,17 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     public logo: any[] = [];
     public screenshots: any[] = [];
     public errorMessage: string = undefined;
-    public urlPattern: string = '(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)';
+    public urlPattern = '(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)';
     public configFileTemplates: ConfigFileTemplate[] = [];
-    public addConfigUpdate: boolean = false;
-    public basicAuth: boolean = false;
+    public addConfigUpdate = false;
+    public basicAuth = false;
     public selectedLanguages: string[] = [];
     public languages: SelectItem[] = [];
-    public formDisplayChange: boolean = true;
+    public formDisplayChange = true;
 
     public defaultTooltipOptions = {
         'placement': 'right',
-        'show-delay': "50",
+        'show-delay': '50',
         'theme': 'dark'
     };
 
@@ -76,7 +76,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         this.tagService.getTags().subscribe(tag => tag.forEach(val => {
             this.tags.push({label: val, value: val});
         }));
-        this.getParametersTypes().forEach(val => this.deployParameter.push({label: val.replace("_", " "), value: val}));
+        this.getParametersTypes().forEach(val => this.deployParameter.push({label: val.replace('_', ' '), value: val}));
         this.steps = this.getSteps();
         this.route.params.subscribe(params => {
             if (isNullOrUndefined(params['id'])) {
@@ -129,7 +129,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
                 this.tags.push({label: appTag, value: appTag});
             }
         });
-        this.internationalization.getAllSupportedLanguages().subscribe(val => val.filter(lang => lang.language != "en").forEach(lang => this.languages.push({
+        this.internationalization.getAllSupportedLanguages().subscribe(val => val.filter(lang => lang.language != 'en')
+            .forEach(lang => this.languages.push({
             label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'),
             value: lang.language
         })));
@@ -152,7 +153,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     private convertToProperImageFile(file: any) {
-        let result: any = new File([file], 'uploaded file', {type: file.type});
+        const result: any = new File([file], 'uploaded file', {type: file.type});
         result.objectURL = this.dom.bypassSecurityTrustUrl(URL.createObjectURL(result));
         return result;
     }
@@ -161,10 +162,10 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         this.app = new Application();
         this.internationalization.getAllSupportedLanguages().subscribe(val => {
             val.forEach(lang => {
-                let appDescription: AppDescription = new AppDescription();
+                const appDescription: AppDescription = new AppDescription();
                 appDescription.language = lang.language;
                 this.app.descriptions.push(appDescription);
-                if (lang.language != "en") {
+                if (lang.language != 'en') {
                     this.languages.push({
                         label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'),
                         value: lang.language
@@ -211,15 +212,17 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public templateHasContent(): boolean {
-        return this.configFileTemplates.length > 0 && !isNullOrUndefined(this.configFileTemplates[0].configFileName) && !isNullOrUndefined(this.configFileTemplates[0].configFileTemplateContent);
+        return this.configFileTemplates.length > 0
+            && !isNullOrUndefined(this.configFileTemplates[0].configFileName)
+            && !isNullOrUndefined(this.configFileTemplates[0].configFileTemplateContent);
     }
 
     public uploadLogo(id: number) {
         if (this.isInMode(ComponentMode.EDIT) && isNullOrUndefined(this.logo[0])) {
-            this.appImagesService.deleteLogo(id).subscribe(() => console.debug("Logo deleted"));
+            this.appImagesService.deleteLogo(id).subscribe(() => console.debug('Logo deleted'));
         }
         if (!isNullOrUndefined(this.logo[0])) {
-            this.appsService.uploadAppLogo(id, this.logo[0]).subscribe(() => console.debug("Logo uploaded"));
+            this.appsService.uploadAppLogo(id, this.logo[0]).subscribe(() => console.debug('Logo uploaded'));
         }
     }
 
@@ -234,8 +237,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     private uploadScreenshots(id: number) {
-        for (let screenshot of this.screenshots) {
-            this.appsService.uploadScreenshot(id, screenshot).subscribe(() => console.debug("Screenshot uploaded"));
+        for (const screenshot of this.screenshots) {
+            this.appsService.uploadScreenshot(id, screenshot).subscribe(() => console.debug('Screenshot uploaded'));
         }
     }
 
@@ -252,8 +255,11 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public isInvalidDescriptions(): boolean {
-        let enAppDescription = this.app.descriptions.filter(lang => lang.language === "en")[0];
-        return isNullOrUndefined(enAppDescription.fullDescription) || enAppDescription.fullDescription === "" || isNullOrUndefined(enAppDescription.briefDescription) || enAppDescription.briefDescription === "";
+        const enAppDescription = this.app.descriptions.filter(lang => lang.language === 'en')[0];
+        return isNullOrUndefined(enAppDescription.fullDescription)
+            || enAppDescription.fullDescription === ''
+            || isNullOrUndefined(enAppDescription.briefDescription)
+            || enAppDescription.briefDescription === '';
     }
 
     public getDescriptionsInSelectedLanguage(lang: string): AppDescription {
@@ -261,7 +267,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public createAppDescription(lang: string): AppDescription {
-        let description: AppDescription = new AppDescription();
+        const description: AppDescription = new AppDescription();
         description.language = lang;
         return description;
     }
@@ -323,12 +329,17 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         this.configFileTemplates.splice(id, 1);
     }
 
+    /**
+     * checks if form has basic auth params
+     */
     public hasAlreadyBasicAuth(): boolean {
         if (isNullOrUndefined(this.app.configWizardTemplate)) {
             return false;
         }
-        let config: string = JSON.stringify(this.app.configWizardTemplate.template);
-        return config.search(/accessCredentials/g) != -1 && config.search(/accessUsername/g) != -1 && config.search(/accessPassword/g) != -1;
+        const config: string = JSON.stringify(this.app.configWizardTemplate.template);
+        return config.search(/accessCredentials/g) != -1
+            && config.search(/accessUsername/g) != -1
+            && config.search(/accessPassword/g) != -1;
     }
 
     public handleBasicAuth() {
@@ -344,7 +355,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public addBasicAuth(): any {
-        let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
+        const config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
         if (!isNullOrUndefined(config)) {
             config.unshift(this.configTemplateService.getBasicAuth(this.app.name));
         }
@@ -356,17 +367,18 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public removeBasicAuth(): any {
-        let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
+        const config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
         if (!isNullOrUndefined(config)) {
-            let index = config.findIndex(val => val.key === 'accessCredentials');
+            const index = config.findIndex(val => val.key === 'accessCredentials');
             config.splice(index, 1);
         }
-        this.app.configUpdateWizardTemplate.template.components = this.app.configUpdateWizardTemplate.template.components.filter(val => val.key != "accessCredentials");
+        this.app.configUpdateWizardTemplate.template.components =
+            this.app.configUpdateWizardTemplate.template.components.filter(val => val.key != 'accessCredentials');
         this.removeEmptyUpdateConfig();
     }
 
     public removeEmptyUpdateConfig(): void {
-        let updateConfig = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ["components", 0, "components"]);
+        const updateConfig = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ['components', 0, 'components']);
         if (isNullOrUndefined(updateConfig) || updateConfig.length === 0) {
             this.app.configUpdateWizardTemplate = undefined;
             this.addConfigUpdate = false;
@@ -409,7 +421,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public addDefaultElement(): void {
-        let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
+        let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
         if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
             config = config.find(val => val.key === 'configuration');
             config.components.length = 0;
@@ -418,7 +430,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public removeDefaultElement(): void {
-        let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
+        const config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
         if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
             config.find(val => val.key === 'configuration').components.length = 0;
         }
@@ -426,7 +438,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
     public removeElementsFromUpdateConfig(): void {
         if (!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
-            let config = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ["components"]);
+            const config = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ['components']);
             if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
                 config.find(val => val.key === 'configuration').components.length = 0;
             }
@@ -439,10 +451,18 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
             (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
     };
 
+    /**
+     * Add new empty app access method to list
+     */
     public addNewAccessMethod(): void {
         this.app.appDeploymentSpec.accessMethods.push(new AppAccessMethod())
     }
 
+    /**
+     * returns list of available access method types
+     * Only one DEFAULT access method is possible,
+     * so this function returns all possible types but DEFAULT if default is currently being used
+     */
     public accessMethodTypeOptions(): string[] {
         const keys: Set<string> = new Set(Object.keys(ServiceAccessMethodType));
         if (this.app.appDeploymentSpec.accessMethods.
@@ -452,14 +472,24 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         return Array.from(keys);
     }
 
+    /**
+     * remove app access method from list
+     * @param event - id of an element to be removed
+     */
     public removeAccessMethod(event): void {
         this.app.appDeploymentSpec.accessMethods.splice(event, 1);
     }
 
+    /**
+     * Add new empty storage volume to list
+     */
     public addNewStorageVolume(): void {
         this.app.appDeploymentSpec.storageVolumes.push(new AppStorageVolume())
     }
 
+    /**
+     * get available storage volume types
+     */
     public storageVolumeTypeOptions(): string[] {
         const keys: Set<string> = new Set(Object.keys(ServiceStorageVolumeType));
         if (this.app.appDeploymentSpec.storageVolumes.
@@ -469,6 +499,10 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         return Array.from(keys);
     }
 
+    /**
+     * remove storage volume from list
+     * @param event - index of element to be removed
+     */
     public removeStorageVolume(event): void {
         this.app.appDeploymentSpec.storageVolumes.splice(event, 1);
     }

@@ -430,9 +430,12 @@ public class AppInstanceController extends AppBaseController {
         }
 
         try {
-            ai.setServiceAccessMethods(this.appDeploymentMonitor.userAccessDetails(appInstance.getInternalId()).getServiceAccessMethods());
+            Identifier identifier = appInstance.getInternalId();
+            ai.setServiceAccessMethods(this.appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
+            ai.setAppConfigRepositoryAccessDetails(this.appDeploymentMonitor.configRepositoryAccessDetails(identifier));
         } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
             ai.setServiceAccessMethods(null);
+            ai.setAppConfigRepositoryAccessDetails(null);
         }
 
         try {

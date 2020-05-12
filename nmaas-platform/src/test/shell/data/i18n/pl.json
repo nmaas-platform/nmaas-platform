@@ -534,7 +534,9 @@
   "UPDATE_CONFIG_MODAL": {
     "HEADER": "Zaktualizuj konfigurację",
     "SUBMIT_BUTTON": "Prześlij",
-    "CANCEL_BUTTON": "Anuluj"
+    "CANCEL_BUTTON": "Anuluj",
+    "CONFIRM_BUTTON": "OK",
+    "CLONE_LABEL": "Clone template utilizing git client of your choice or using bash with following command"
   },
   "SUBSCRIPTION": {
     "COMMENTS_NOT_EMPTY_MESSAGE": "Komentarz nie może być pusty"
@@ -662,7 +664,8 @@
     "STORAGE_VOLUMES": "Wolumen danych",
     "NEW_STORAGE_VOLUME": "Dodaj wolumen danych",
     "ACCESS_METHODS": "Metody dostepu",
-    "NEW_ACCESS_METHOD": "Dodaj metodę dostępu"
+    "NEW_ACCESS_METHOD": "Dodaj metodę dostępu",
+    "CONFIG_UPDATE_ENABLED": "Zezwól na aktualizowanie konfiguracji"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Informacje podstawowe",

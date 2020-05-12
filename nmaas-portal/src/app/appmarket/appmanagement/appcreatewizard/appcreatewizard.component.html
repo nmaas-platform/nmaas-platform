@@ -265,6 +265,12 @@
                             </div>
                         </div>
                         <div class="form-group form-group-sm">
+                            <label for="configUpdateEnabled" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.CONFIG_UPDATE_ENABLED' | translate}}</label>
+                            <div class="col-sm-10">
+                                <input type="checkbox" id="configUpdateEnabled" name="configUpdateEnabled" [(ngModel)]="app.appConfigurationSpec.configUpdateEnabled">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
                             <label for="basicAuth" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.BASIC_AUTH_LABEL' | translate}}</label>
                             <div class="col-sm-10">
                                 <input type="checkbox" id="basicAuth" name="basicAuth" (change)="changeBasicAuthInForms()" [defaultChecked]="hasAlreadyBasicAuth()" [(ngModel)]="basicAuth" tooltip="{{'APPS_WIZARD.BASIC_AUTH_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
@@ -300,20 +306,6 @@
                     <div class="panel-heading">{{'APPS_WIZARD.CONFIG_WIZARD_TEMPLATE_LABEL' | translate}}</div>
                     <div class="panel-body">
                         <form-builder *ngIf="formDisplayChange && app.configWizardTemplate.template" [form]="app.configWizardTemplate.template" (change)="setConfigTemplate($event)"></form-builder>
-                    </div>
-                </div>
-                <div class="panel">
-                    <div class="panel-heading">{{'APPS_WIZARD.UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL' | translate}}</div>
-                    <div class="panel-body">
-                        <div class="form-group form-group-sm" style="padding-bottom: 5vh;">
-                            <label for="addConfigUpdate" style="text-align: left; padding-left: 0; font-size: 12px" class="col-sm-2 control-label">{{'APPS_WIZARD.ADD_CONFIG_UPDATE_TEMPLATE_LABEL' | translate}}</label>
-                            <div class="col-sm-10">
-                                <input type="checkbox" id="addConfigUpdate" (change)="handleConfigTemplate()" name="addConfigUpdate" [defaultChecked]="false" [(ngModel)]="addConfigUpdate" tooltip="{{'APPS_WIZARD.ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
-                            </div>
-                        </div>
-                        <div *ngIf="addConfigUpdate && app.configUpdateWizardTemplate">
-                            <form-builder *ngIf="formDisplayChange" [form]="app.configUpdateWizardTemplate.template" (change)="setUpdateConfigTemplate($event)"></form-builder>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,1 @@
+ALTER TABLE app_configuration_spec ADD COLUMN config_update_enabled boolean DEFAULT FALSE;

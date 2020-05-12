@@ -30,4 +30,6 @@ public class AppConfigurationSpec implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ConfigFileTemplate> templates = new ArrayList<>();
+
+    private boolean configUpdateEnabled = false;
 }

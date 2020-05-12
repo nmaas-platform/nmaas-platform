@@ -1,6 +1,8 @@
 package net.geant.nmaas.orchestration;
 
 import lombok.AllArgsConstructor;
+import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
@@ -30,6 +32,8 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     private NmServiceDeploymentProvider serviceDeployment;
 
+    private NmServiceConfigurationProvider serviceConfiguration;
+
     @Override
     public AppLifecycleState state(Identifier deploymentId) {
         return retrieveCurrentState(deploymentId);
@@ -58,6 +62,16 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
             return retrieveAccessDetails(deploymentId);
         else
             throw new InvalidAppStateException("Application deployment process didn't finish yet.");
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
+        try {
+            return serviceConfiguration.configRepositoryAccessDetails(deploymentId);
+        } catch (ConfigRepositoryAccessDetailsNotFoundException e) {
+            throw new InvalidDeploymentIdException(e.getMessage());
+        }
     }
 
     @Override
