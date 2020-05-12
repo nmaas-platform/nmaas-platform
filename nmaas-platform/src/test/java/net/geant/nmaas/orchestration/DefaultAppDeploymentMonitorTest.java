@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
@@ -35,12 +36,13 @@ public class DefaultAppDeploymentMonitorTest {
 
     private DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
     private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
+    private NmServiceConfigurationProvider configure = mock(NmServiceConfigurationProvider.class);
 
     private DefaultAppDeploymentMonitor monitor;
 
     @BeforeEach
     public void setup() {
-        monitor = new DefaultAppDeploymentMonitor(repositoryManager, deploy);
+        monitor = new DefaultAppDeploymentMonitor(repositoryManager, deploy, configure);
     }
 
     @Test
