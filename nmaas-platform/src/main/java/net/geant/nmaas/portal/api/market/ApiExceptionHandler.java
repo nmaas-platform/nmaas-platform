@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookException;
 import net.geant.nmaas.portal.api.domain.ApiError;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.MarketException;
@@ -37,9 +38,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return createApiError(ex, HttpStatus.UNAUTHORIZED);
 	}
 	
-	@ExceptionHandler(value = { MissingElementException.class })
+	@ExceptionHandler(value = { MissingElementException.class, InvalidWebhookException.class})
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ApiError handleMissingElementException(WebRequest req, MarketException ex) {
+	public ApiError handleMissingElementException(WebRequest req, Exception ex) {
 		return createApiError(ex, HttpStatus.NOT_FOUND);
 	}
 	

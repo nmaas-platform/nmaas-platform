@@ -3,13 +3,19 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import java.util.Arrays;
-import net.geant.nmaas.externalservices.inventory.janitor.*;
+import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
+import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;
+import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
+import net.geant.nmaas.externalservices.inventory.janitor.InformationServiceGrpc;
+import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager;
+import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class JanitorService {
@@ -21,7 +27,11 @@ public class JanitorService {
     @Autowired
     public JanitorService(KNamespaceService namespaceService, Environment env) {
         this.namespaceService = namespaceService;
-        this.channel = ManagedChannelBuilder.forAddress(env.getProperty("janitor.address"), env.getProperty("janitor.port", Integer.class)).usePlaintext().build();
+        this.channel = ManagedChannelBuilder.forAddress(
+                env.getProperty("janitor.address"),
+                env.getProperty("janitor.port", Integer.class))
+                .usePlaintext()
+                .build();
     }
 
     private JanitorManager.InstanceRequest buildInstanceRequest(Identifier deploymentId, String domain) {
@@ -60,8 +70,7 @@ public class JanitorService {
 
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(deploymentId, domain));
 
-        if (response.getStatus() != JanitorManager.Status.OK)
-            throw new JanitorResponseException(response.getMessage());
+        throwExceptionIfExecutionFailed(response);
     }
 
     public void deleteConfigMapIfExists(Identifier deploymentId, String domain) {
@@ -69,32 +78,37 @@ public class JanitorService {
 
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
 
-        if (response.getStatus() != JanitorManager.Status.OK)
-            throw new JanitorResponseException(response.getMessage());
+        throwExceptionIfExecutionFailed(response);
     }
 
     public void createOrReplaceBasicAuth(Identifier deploymentId, String domain, String user, String password) {
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
 
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
-        if (response.getStatus() != JanitorManager.Status.OK)
-            throw new JanitorResponseException(response.getMessage());
+
+        throwExceptionIfExecutionFailed(response);
     }
 
     public void deleteBasicAuthIfExists(Identifier deploymentId, String domain) {
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
 
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
-        if (response.getStatus() != JanitorManager.Status.OK)
-            throw new JanitorResponseException(response.getMessage());
+
+        throwExceptionIfExecutionFailed(response);
     }
 
     public void deleteTlsIfExists(Identifier deploymentId, String domain) {
         CertManagerServiceGrpc.CertManagerServiceBlockingStub stub = CertManagerServiceGrpc.newBlockingStub(channel);
 
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
-        if (response.getStatus() != JanitorManager.Status.OK)
-            throw new JanitorResponseException(response.getMessage());
+
+        throwExceptionIfExecutionFailed(response);
+    }
+
+    private void throwExceptionIfExecutionFailed(JanitorManager.ServiceResponse response) {
+        if (response.getStatus() != JanitorManager.Status.OK) {
+            throw new JanitorResponseException("JANITOR: " + response.getMessage());
+        }
     }
 
     //TODO: Replace with proper health check once it's implemented in Janitor
@@ -114,7 +128,7 @@ public class JanitorService {
             case FAILED:
             case UNRECOGNIZED:
             default:
-                throw new JanitorResponseException(response.getMessage());
+                throw new JanitorResponseException("JANITOR: " + response.getMessage());
         }
     }
 
@@ -127,7 +141,7 @@ public class JanitorService {
                 return response.getInfo();
             case FAILED:
             default:
-                throw new JanitorResponseException(response.getMessage());
+                throw new JanitorResponseException("JANITOR: " + response.getMessage());
         }
     }
 }

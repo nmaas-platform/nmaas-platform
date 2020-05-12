@@ -10,44 +10,35 @@ import org.springframework.http.HttpStatus;
 public class GitLabConfigHelper {
 
     static final String GROUPS_PATH_PREFIX = "groups";
-    static final int DEFAULT_DOMAIN_LIMIT_ON_CREATED_PROJECTS = 100;
-    static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
+    private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
 
-    static String projectName(Identifier deploymentId) {
-        return deploymentId.value();
-    }
 
-    static User createStandardUser(String domain, Identifier deploymentId) {
+    static User createStandardUser(String username, String email, String name) {
         User user = new User();
-        user.setName(name(domain, deploymentId));
-        String userName = userName(domain, deploymentId);
-        user.setUsername(userName);
-        user.setEmail(userEmail(userName));
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setName(name);
         user.setCanCreateGroup(false);
-        user.setProjectsLimit(limitOnProjects());
+        user.setCanCreateProject(false);
         return user;
-    }
-
-    private static String name(String domain, Identifier deploymentId) {
-        return domain + " (" + deploymentId + ")";
-    }
-
-    private static String userName(String domain, Identifier deploymentId) {
-        return domain + "-" + deploymentId;
-    }
-
-    private static String userEmail(String username) {
-        return username + "@" + DEFAULT_CLIENT_EMAIL_DOMAIN;
     }
 
     static String generateRandomPassword() {
         return RandomStringUtils.random(10, true, true);
     }
 
-    static int limitOnProjects() {
-        return DEFAULT_DOMAIN_LIMIT_ON_CREATED_PROJECTS;
+    static String generateWebhookId() {
+        return String.valueOf(System.nanoTime());
+    }
+
+    static String generateRandomToken() {
+        return RandomStringUtils.random(DEFAULT_WEBHOOK_TOKEN_LENGTH, true, true);
+    }
+
+    static String projectName(Identifier deploymentId) {
+        return deploymentId.value();
     }
 
     static String groupName(String domain) {

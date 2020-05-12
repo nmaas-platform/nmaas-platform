@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
+import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
@@ -18,6 +19,9 @@ import java.util.Map;
 
 @Log4j2
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
+
+    @Autowired
+    protected GitLabProjectRepository gitLabProjectRepository;
 
     @Autowired
     protected NmServiceInfoRepository<T> repository;
@@ -46,6 +50,12 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     public T loadService(Identifier deploymentId) {
         return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    }
+
+    public T loadServiceByGitLabProjectWebhookId(String webhookId) {
+        GitLabProject project = gitLabProjectRepository.findByWebhookId(webhookId).orElseThrow(() -> new InvalidDeploymentIdException(webhookId));
+        Identifier deploymentId = project.getDeploymentId();
+        return repository.findByDescriptiveDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
     @EventListener
@@ -93,6 +103,10 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     public Identifier loadDescriptiveDeploymentId(Identifier deploymentId) {
         return repository.getDescriptiveDeploymentIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    }
+
+    public GitLabProject loadGitLabProject(Identifier deploymentId) {
+        return repository.getGitLabProjectByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
     public abstract void updateStorageSpace(Identifier deploymentId, Integer storageSpace);

@@ -5,45 +5,52 @@ package net.geant.nmaas.nmservice.deployment.entities;
  */
 public enum NmServiceDeploymentState {
 
-    INIT(true),
-    REQUEST_VERIFIED(true),
-    REQUEST_VERIFICATION_FAILED(false),
-    ENVIRONMENT_PREPARATION_INITIATED(true),
-    ENVIRONMENT_PREPARED(true),
-    ENVIRONMENT_PREPARATION_FAILED(false),
-    READY_FOR_DEPLOYMENT(true),
-    CONFIGURATION_INITIATED(true),
-    CONFIGURED(true),
-    CONFIGURATION_FAILED(false),
-    DEPLOYMENT_INITIATED(true),
-    DEPLOYED(true),
-    DEPLOYMENT_FAILED(false),
-    VERIFICATION_INITIATED(true),
-    VERIFIED(true),
-    VERIFICATION_FAILED(false),
-    CONFIGURATION_UPDATE_INITIATED(true),
-    CONFIGURATION_UPDATED(true),
-    CONFIGURATION_UPDATE_FAILED(true),
-    CONFIGURATION_REMOVAL_INITIATED(true),
-    CONFIGURATION_REMOVED(true),
-    CONFIGURATION_REMOVAL_FAILED(false),
-    REMOVAL_INITIATED(false),
-    REMOVED(false),
-    REMOVAL_FAILED(false),
-    RESTART_INITIATED(true),
-    RESTARTED(true),
-    RESTART_FAILED(false),
-    ERROR(false),
-    FAILED_APPLICATION_REMOVED(false);
+    INIT(true, false),
+    REQUEST_VERIFIED(true, false),
+    REQUEST_VERIFICATION_FAILED(false, false),
+    ENVIRONMENT_PREPARATION_INITIATED(true, false),
+    ENVIRONMENT_PREPARED(true, false),
+    ENVIRONMENT_PREPARATION_FAILED(false, false),
+    READY_FOR_DEPLOYMENT(true, false),
+    CONFIGURATION_INITIATED(true, false),
+    CONFIGURED(true, false),
+    CONFIGURATION_FAILED(false, false),
+    DEPLOYMENT_INITIATED(true, false),
+    DEPLOYED(true,false),
+    DEPLOYMENT_FAILED(false, false),
+    VERIFICATION_INITIATED(true, false),
+    VERIFIED(true, true),
+    VERIFICATION_FAILED(false, false),
+    CONFIGURATION_UPDATE_INITIATED(true, false),
+    CONFIGURATION_UPDATED(true, false),
+    CONFIGURATION_UPDATE_FAILED(true, true),
+    CONFIGURATION_REMOVAL_INITIATED(true, false),
+    CONFIGURATION_REMOVED(true, false),
+    CONFIGURATION_REMOVAL_FAILED(false, false),
+    REMOVAL_INITIATED(false, false),
+    REMOVED(false, false),
+    REMOVAL_FAILED(false, false),
+    RESTART_INITIATED(true, false),
+    RESTARTED(true, true),
+    RESTART_FAILED(false, false),
+    ERROR(false, false),
+    FAILED_APPLICATION_REMOVED(false, false);
 
     private boolean isRunning;
 
-    NmServiceDeploymentState(boolean isRunning) {
+    private boolean isOnline;
+
+    NmServiceDeploymentState(boolean isRunning, boolean isOnline) {
         this.isRunning = isRunning;
+        this.isOnline = isOnline;
     }
 
     public boolean isRunning() {
         return isRunning;
+    }
+
+    public boolean isOnline() {
+        return  isOnline;
     }
 
 }

@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface GitConfigHandler {
 
-    void createRepository(Identifier deploymentId, Identifier descriptiveDeploymentId, List<String> sshKeys);
+    void createUser(String userUsername, String userEmail, String userName, List<String> userSshKeys);
+
+    void createRepository(Identifier deploymentId, String member);
 
     void commitConfigFiles(Identifier deploymentId, List<String> configIds);
 

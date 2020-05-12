@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.repository;
 
+import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
@@ -20,6 +21,9 @@ public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRep
     @Query("select t from #{#entityName} t where t.deploymentId = ?1")
     Optional<T> findByDeploymentId(Identifier deploymentId);
 
+    @Query("select t from #{#entityName} t where t.descriptiveDeploymentId = ?1")
+    Optional<T> findByDescriptiveDeploymentId(Identifier descriptiveDeploymentId);
+
     @Query("SELECT n.state FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<NmServiceDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
@@ -31,5 +35,8 @@ public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRep
 
     @Query("SELECT n.descriptiveDeploymentId FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<Identifier> getDescriptiveDeploymentIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
+    @Query("SELECT n.gitLabProject FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
+    Optional<GitLabProject> getGitLabProjectByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
 }

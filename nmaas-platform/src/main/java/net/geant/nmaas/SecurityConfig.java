@@ -91,6 +91,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers(AUTH_SSO_LOGIN).permitAll()
+				// TODO temporary
+				.antMatchers(HttpMethod.POST, "/api/gitlab/webhooks/**").permitAll()
+				// --
 				.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
@@ -110,38 +113,43 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/management/**").authenticated()
 				.antMatchers("/api/**").authenticated()
 				.and()
-					.addFilterBefore(statelessAuthFilter(
-						new SkipPathRequestMatcher(
-								new AntPathRequestMatcher[] { 
-										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
-										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
-										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
-										new AntPathRequestMatcher("/api/configuration/**", "GET"),
-										new AntPathRequestMatcher("/api/management/shibboleth/", "GET"),
-										new AntPathRequestMatcher("/v2/api-docs"),
-										new AntPathRequestMatcher("/swagger-resources"),
-										new AntPathRequestMatcher("/swagger-resources/**"),
-										new AntPathRequestMatcher("/configuration/ui"),
-										new AntPathRequestMatcher("/configuration/security"),
-										new AntPathRequestMatcher("/actuator/health"),
-										new AntPathRequestMatcher("/actuator/prometheus"),
-										new AntPathRequestMatcher("/swagger-ui.html"),
-										new AntPathRequestMatcher("/webjars/**"),
-										new AntPathRequestMatcher("/favicon.ico"),
-										new AntPathRequestMatcher(AUTH_SSO_LOGIN),
-										new AntPathRequestMatcher("/api/info/**"),
-										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
-										new AntPathRequestMatcher("/api/content/**"),
-										new AntPathRequestMatcher("/api/users/reset/**"),
-										new AntPathRequestMatcher("/api/mail"),
-										new AntPathRequestMatcher("/api/monitor/all", "GET"),
-										new AntPathRequestMatcher("/api/mail"),
-										new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
-										new AntPathRequestMatcher("/api/i18n/all/enabled", "GET")
-								}),
-								null,//failureHandler, 
-								tokenAuthenticationService),
-						UsernamePasswordAuthenticationFilter.class);
+					.addFilterBefore(
+							statelessAuthFilter(
+									new SkipPathRequestMatcher(
+											new AntPathRequestMatcher[] {
+													new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
+													new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
+													new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+													new AntPathRequestMatcher("/api/configuration/**", "GET"),
+													new AntPathRequestMatcher("/api/management/shibboleth/", "GET"),
+													new AntPathRequestMatcher("/v2/api-docs"),
+													new AntPathRequestMatcher("/swagger-resources"),
+													new AntPathRequestMatcher("/swagger-resources/**"),
+													new AntPathRequestMatcher("/configuration/ui"),
+													new AntPathRequestMatcher("/configuration/security"),
+													new AntPathRequestMatcher("/actuator/health"),
+													new AntPathRequestMatcher("/actuator/prometheus"),
+													new AntPathRequestMatcher("/swagger-ui.html"),
+													new AntPathRequestMatcher("/webjars/**"),
+													new AntPathRequestMatcher("/favicon.ico"),
+													new AntPathRequestMatcher(AUTH_SSO_LOGIN),
+													new AntPathRequestMatcher("/api/info/**"),
+													new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
+													new AntPathRequestMatcher("/api/content/**"),
+													new AntPathRequestMatcher("/api/users/reset/**"),
+													new AntPathRequestMatcher("/api/mail"),
+													new AntPathRequestMatcher("/api/monitor/all", "GET"),
+													new AntPathRequestMatcher("/api/mail"),
+													new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
+													new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
+													// TODO temporary
+													new AntPathRequestMatcher("/api/gitlab/webhooks/**", "POST")													// --
+											}
+											),
+									null,
+									tokenAuthenticationService),
+							UsernamePasswordAuthenticationFilter.class
+					);
 	}
 
 	private Filter statelessAuthFilter(RequestMatcher skipPaths, AuthenticationFailureHandler failureHandler, TokenAuthenticationService tokenService) {
