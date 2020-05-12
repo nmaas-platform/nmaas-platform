@@ -534,7 +534,9 @@
     "UPDATE_CONFIG_MODAL": {
       "HEADER": "Update configuration",
       "SUBMIT_BUTTON": "Submit",
-      "CANCEL_BUTTON": "Cancel"
+      "CANCEL_BUTTON": "Cancel",
+      "CONFIRM_BUTTON": "OK",
+      "CLONE_LABEL": "Clone template utilizing git client of your choice or using bash with following command"
     },
     "SUBSCRIPTION": {
       "COMMENTS_NOT_EMPTY_MESSAGE": "Le commentaire ne peut pas être vide"
@@ -662,7 +664,8 @@
     "STORAGE_VOLUMES": "Storage volumes",
     "NEW_STORAGE_VOLUME": "Add new storage volume",
     "ACCESS_METHODS": "Access methods",
-    "NEW_ACCESS_METHOD": "Add new access method"
+    "NEW_ACCESS_METHOD": "Add new access method",
+    "CONFIG_UPDATE_ENABLED": "Enable configuration updates"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Basic information",
