@@ -27,11 +27,12 @@ public class ShellSessionsStorage {
 
     /**
      * creates connection and session id
-     * @param appInstanceId
-     * @return
+     * @param appInstanceId app instance identifier
+     * @return shell session id
      */
     public String createSession(Long appInstanceId) {
         // TODO setup connection to given app instance id
+        // Handle logic here
         String sessionId = UUID.randomUUID().toString();
         if(this.storage.containsKey(sessionId)) {
             // TODO handle
@@ -50,7 +51,7 @@ public class ShellSessionsStorage {
 
     /**
      * returns an observer with event emitter
-     * @param sessionId
+     * @param sessionId shell session id
      * @return observer with event emitter
      */
     public ShellSessionObserver getObserver(String sessionId) {
@@ -59,8 +60,8 @@ public class ShellSessionsStorage {
 
     /**
      * executes command
-     * @param sessionId
-     * @param commandRequest
+     * @param sessionId shell session id
+     * @param commandRequest command to be executed
      */
     public void executeCommand(String sessionId, ShellCommandRequest commandRequest) {
         this.storage.get(sessionId).getObservable().executeCommand(commandRequest);
