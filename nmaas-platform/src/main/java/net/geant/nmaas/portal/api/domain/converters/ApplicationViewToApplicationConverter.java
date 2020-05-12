@@ -39,7 +39,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
     }
 
     private AppConfigurationSpec getAppConfigurationSpec(ApplicationView source){
-        return new AppConfigurationSpec(null, source.getAppConfigurationSpec().isConfigFileRepositoryRequired(), getConfigFileTemplates(source));
+        return new AppConfigurationSpec(null, source.getAppConfigurationSpec().isConfigFileRepositoryRequired(), getConfigFileTemplates(source), source.getAppConfigurationSpec().isConfigUpdateEnabled());
     }
 
     private List<ConfigFileTemplate> getConfigFileTemplates(ApplicationView source){

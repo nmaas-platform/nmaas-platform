@@ -435,6 +435,8 @@ public class AppInstanceController extends AppBaseController {
             ai.setServiceAccessMethods(null);
         }
 
+        ai.setAppConfigRepositoryAccessDetails(this.appDeploymentMonitor.configRepositoryAccessDetails(appInstance.getInternalId()));
+
         try {
             ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
         } catch (InvalidDeploymentIdException e) {

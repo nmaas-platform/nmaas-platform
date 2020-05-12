@@ -16,4 +16,6 @@ public class AppConfigurationSpecView {
     private List<ConfigFileTemplateView> templates = new ArrayList<>();
 
     private boolean configFileRepositoryRequired = false;
+
+    private boolean configUpdateEnabled = false;
 }
