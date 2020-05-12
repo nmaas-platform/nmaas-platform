@@ -180,6 +180,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return this.configurationTemplate;
     }
 
+    /**
+     * updates form with retrieved application values
+     * aim is to provide certain applications access to another instances
+     * e.g. provide access to prometheus instance for Grafana
+     */
     changeForm() {
         if (!this.wasUpdated) {
             let temp = JSON.stringify(this.configurationTemplate);
@@ -196,6 +201,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         }
     }
 
+    /**
+     * converts list of AppInstances into key-value (label) pairs to be used in select input type
+     * @param apps
+     */
     private getRunningAppsMap(apps: AppInstance[]): any {
         const appMap = [];
         apps = this.filterRunningApps(apps);
@@ -203,6 +212,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return appMap;
     }
 
+    /**
+     * filter list of applications to provide access to related applications
+     * e.g. for Grafana return only running Prometheus instances
+     * @param apps
+     */
     private filterRunningApps(apps: AppInstance[]): AppInstance[] {
         switch (this.appInstance.applicationName) {
             case 'Grafana':
@@ -273,7 +287,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     public removalFailed(): void {
-        console.debug('Removing failed test...');
         this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.debug('Removed failed instance'));
     }
 
@@ -366,23 +379,17 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     public getConfigurationModal() {
-        this.appInstanceService.getConfiguration(this.appInstanceId).subscribe(config => {
-            this.appInstance.configuration = config;
-            this.submission['data']['configuration'] = config;
-            this.refreshUpdateForm.emit({
-                property: 'submission',
-                value: this.submission
-            });
-            this.isSubmissionUpdated = true;
-            this.updateConfigModal.show();
-        });
+        this.updateConfigModal.show();
     }
 
     public closeConfigurationModal() {
-        this.isSubmissionUpdated = false;
         this.updateConfigModal.hide();
     }
 
+    /**
+     * converts URL to use https
+     * @param url
+     */
     public validateURL(url: string): string {
         if (isNullOrUndefined(url)) {
             return '';
@@ -396,6 +403,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return 'https://' + url;
     }
 
+    /**
+     * converts string to corresponding ServiceAccessMethodType enum value
+     * @param a
+     */
     public accessMethodTypeAsEnum(a: ServiceAccessMethodType | string): ServiceAccessMethodType {
         if (typeof  a === 'string') {
             return ServiceAccessMethodType[a];
@@ -403,14 +414,18 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return a;
     }
 
+    /**
+     * checks if there is only one access method with type DEFAULT
+     * returns true if conditions are satisfied
+     */
     public shouldDisplayButton(): boolean {
         if (!this.appInstance) {
             return false;
         }
-        if(!this.appInstance.serviceAccessMethods) {
+        if (!this.appInstance.serviceAccessMethods) {
             return false;
         }
-        if(this.appInstance.serviceAccessMethods.length !== 1) {
+        if (this.appInstance.serviceAccessMethods.length !== 1) {
             return false;
         }
         if (this.accessMethodTypeAsEnum(this.appInstance.serviceAccessMethods[0].type) !== ServiceAccessMethodType.DEFAULT) {
@@ -419,6 +434,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return true;
     }
 
+    /**
+     * checks if there are multiple access methods or if one access method is not default
+     * returns true if conditions are satisfied
+     */
     public shouldDisplayModal(): boolean {
         if (!this.appInstance) {
             return false;

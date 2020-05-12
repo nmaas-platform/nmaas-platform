@@ -1,6 +1,7 @@
-import {ConfigFileTemplate} from "./configfiletemplate";
+import {ConfigFileTemplate} from './configfiletemplate';
 
-export class AppConfigurationSpec{
-    public configFileRepositoryRequired: boolean = false;
+export class AppConfigurationSpec {
+    public configFileRepositoryRequired = false;
+    public configUpdateEnabled = false;
     public templates: ConfigFileTemplate[] = [];
 }

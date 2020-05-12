@@ -165,6 +165,9 @@ describe('Component: AppInstance', () => {
     userFriendlyState: 'Application instance is running',
     application: application,
     domain: domain,
+    appConfigRepositoryAccessDetails: {
+      cloneUrl: 'http://clone.me'
+    }
   };
 
   const appInstanceHistory: AppInstanceStateHistory[] = [
