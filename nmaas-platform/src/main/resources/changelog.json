@@ -1,12 +1,22 @@
 {"versions" : [
   {
     "verNo" : "1.3.2",
-    "date" : "(2020/--/--)",
+    "date" : "(2020/05/13)",
     "topic" : [
       {
-        "title" : "--",
-        "tags" : "[New Feature]",
-        "description" : "--"
+        "title" : "Advanced application deployment support",
+        "tags" : "[Enhancement]",
+        "description" : "Additional application deployment specification parameters were added in order to support more complex deployments."
+      },
+      {
+        "title" : "Advanced support for using Git repository for configuration updates",
+        "tags" : "[New feature]",
+        "description" : "Users are given SSH based access to Git repositories in order to apply changes in configuration files."
+      },
+      {
+        "title" : "Uploading user SSH keys",
+        "tags" : "[New feature]",
+        "description" : "Users are able to upload their SSH public keys on the Profile view."
       }
     ]
   },

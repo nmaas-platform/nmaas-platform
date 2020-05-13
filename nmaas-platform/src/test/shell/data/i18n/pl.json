@@ -401,11 +401,11 @@
     "MY_RATING": "Moja ocena",
     "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
     "UNDEPLOY_BUTTON": "Zatrzymaj",
-    "APP_ACCESS_METHODS": "Access methods to application",
+    "APP_ACCESS_METHODS": "Metody dostępu do aplikacji",
     "RESTART_BUTTON": "Restart",
-    "REMOVE_BUTTON": "Usuń wadliwą instancje",
+    "REMOVE_BUTTON": "Usuń wadliwą instancję",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
-    "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
+    "UPDATE_CONFIG_BUTTON": "Aktualizacja konfiguracji",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
@@ -415,7 +415,7 @@
       "DEFAULT_ERROR_MESSAGE": "Skontaktuj się z zespołem wsparcia"
     },
     "DEPLOYMENT_HISTORY": {
-      "HEADER": "Historia uruchomień",
+      "HEADER": "Historia uruchomienia aplikacji",
       "TIMESTAMP": "Timestamp",
       "STATE_TRANSITIONS": "Przejścia stanu"
     },
@@ -536,7 +536,7 @@
     "SUBMIT_BUTTON": "Prześlij",
     "CANCEL_BUTTON": "Anuluj",
     "CONFIRM_BUTTON": "OK",
-    "CLONE_LABEL": "Clone template utilizing git client of your choice or using bash with following command"
+    "CLONE_LABEL": "Use the following command to clone the Git repository containing configuration files used by this application instance. Each change applied to any of the files and pushed back to the repository will be used to update the running application."
   },
   "SUBSCRIPTION": {
     "COMMENTS_NOT_EMPTY_MESSAGE": "Komentarz nie może być pusty"
@@ -746,7 +746,7 @@
   "FOOTER": {
     "NOTICE": "Polityka Prywatności",
     "CONTACT":  "Kontakt",
-    "WEBSITE": "Wejdź na stronę GÉANT",
+    "WEBSITE": "Otwórz stronę GÉANT",
     "TOP": "GÓRA"
   },
   "FILTER": {
@@ -760,7 +760,7 @@
     "VALIDATION": "Walidacja",
     "PREPARATION": "Przygotowywanie",
     "CONNECTING": "Łączenie",
-    "CONFIGURATION_AWAITING": "Oczekiwanie na konfiguracje",
+    "CONFIGURATION_AWAITING": "Oczekiwanie na konfigurację",
     "DEPLOYING": "Instalowanie",
     "RUNNING": "Uruchomiono",
     "UNDEPLOYING": "Odinstalowywanie",
@@ -781,7 +781,9 @@
       "ROLE_USER": "Użytkownik",
       "ROLE_TOOL_MANAGER": "Dostawca aplikacji",
       "ROLE_DOMAIN_ADMIN": "Administrator domeny",
-      "ROLE_GUEST": "Gość"
+      "ROLE_GUEST": "Gość",
+      "ROLE_INCOMPLETE":  "Konto w trakcie tworzenia",
+      "ROLE_NOT_ACCEPTED" : "Konto jeszcze nie zaakceptowane"
     }
   },
   "PAGINATION": {
