@@ -13,7 +13,7 @@ public class InvalidDeploymentIdException extends RuntimeException {
     }
 
     public InvalidDeploymentIdException(Identifier deploymentId) {
-        super(deploymentId.value());
+        super(deploymentId != null ? deploymentId.value() : "null");
     }
 
 }
