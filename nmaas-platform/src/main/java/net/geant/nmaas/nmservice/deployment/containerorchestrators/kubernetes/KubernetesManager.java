@@ -50,6 +50,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod.DEFAULT_INTERNAL_ACCESS_USERNAME;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.INTERNAL;
@@ -241,7 +242,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                 Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
                         .peek(m -> {
                             if (m.isOfType(INTERNAL)) {
-                                m.setUrl(janitorService.retrieveServiceIp(service.getDescriptiveDeploymentId(), service.getDomain()));
+                                m.setUrl(getUserAtIpAddressUrl(janitorService.retrieveServiceIp(service.getDescriptiveDeploymentId(), service.getDomain())));
                             }
                         })
                         .collect(Collectors.toSet());
@@ -256,6 +257,10 @@ public class KubernetesManager implements ContainerOrchestrator {
         } catch (KServiceManipulationException | JanitorResponseException ex) {
             throw new ContainerCheckFailedException(ex.getMessage());
         }
+    }
+
+    private String getUserAtIpAddressUrl(String ipAddress) {
+        return DEFAULT_INTERNAL_ACCESS_USERNAME + "@" + ipAddress;
     }
 
     private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {

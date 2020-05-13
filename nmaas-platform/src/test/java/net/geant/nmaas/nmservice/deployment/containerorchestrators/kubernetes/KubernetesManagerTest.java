@@ -294,7 +294,7 @@ public class KubernetesManagerTest {
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")
                             && m.getProtocol().equals("SSH")
-                            && m.getUrl().equals("192.168.100.1")));
+                            && m.getUrl().equals("netops@192.168.100.1")));
         });
     }
 

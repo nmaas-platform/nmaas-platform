@@ -110,8 +110,8 @@
         <div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
             <div>
                 <p>{{'UPDATE_CONFIG_MODAL.CLONE_LABEL' | translate}}</p>
-                <label>
-                    <input type="text" style="width: 100%" disabled value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
+                <label style="min-width: 100%;">
+                    <input type="text" disabled value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
                 </label>
             </div>
         </div>
