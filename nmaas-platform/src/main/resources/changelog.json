@@ -10,12 +10,12 @@
       },
       {
         "title" : "Advanced support for using Git repository for configuration updates",
-        "tags" : "[New feature]",
+        "tags" : "[New Feature]",
         "description" : "Users are given SSH based access to Git repositories in order to apply changes in configuration files."
       },
       {
         "title" : "Uploading user SSH keys",
-        "tags" : "[New feature]",
+        "tags" : "[New Feature]",
         "description" : "Users are able to upload their SSH public keys on the Profile view."
       }
     ]
