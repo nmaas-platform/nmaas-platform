@@ -69,8 +69,6 @@
                                 disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
                         <button class="btn btn-danger"
                                 (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
-
-
                     </div>
 
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
@@ -105,7 +103,7 @@
 
     <!-- Update config modal -->
     <!-- TODO should be moved to separate component-->
-    <nmaas-modal #updateConfig>
+    <nmaas-modal styleModal="info" #updateConfig>
         <div class="nmaas-modal-header">
             <h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
         </div>
@@ -113,7 +111,7 @@
             <div>
                 <p>{{'UPDATE_CONFIG_MODAL.CLONE_LABEL' | translate}}</p>
                 <label>
-                    <input type="text" disabled value="git clone {{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
+                    <input type="text" style="width: 100%" disabled value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
                 </label>
             </div>
         </div>
