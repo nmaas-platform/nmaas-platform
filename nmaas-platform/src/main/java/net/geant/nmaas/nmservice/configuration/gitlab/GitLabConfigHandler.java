@@ -167,11 +167,15 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private GitLabProject project(Identifier deploymentId, String member, Integer gitLabProjectId) {
         try {
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            String gitLabSshRepoUrl = gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo();
+            String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
             return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabSshRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException("GITLAB: " + e.getMessage());
         }
+    }
+
+    String getSshUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
+        return StringUtils.replace(gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo(), ":", "/");
     }
 
     String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
