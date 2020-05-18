@@ -44,6 +44,17 @@ public class GitLabConfigHandlerTest {
     }
 
     @Test
+    public void shouldBuildSshUrlToRepo() throws GitLabApiException {
+        ProjectApi projectApi = mock(ProjectApi.class);
+        Project project = mock(Project.class);
+        when(projectApi.getProject(anyInt())).thenReturn(project);
+        when(project.getSshUrlToRepo()).thenReturn("git@gitlab.nmaas.eu:groups-pllab/pllab-oxidized-142.git");
+        when(gitLabManager.projects()).thenReturn(projectApi);
+        String result = handler.getSshUrlToRepo(1);
+        assertThat(result, is("git@gitlab.nmaas.eu/groups-pllab/pllab-oxidized-142.git"));
+    }
+
+    @Test
     public void shouldRetrieveRepositoryCloneUrl() {
         Identifier deploymentId = Identifier.newInstance(1L);
         GitLabProject gitLabProject = new GitLabProject(deploymentId, "", "", "", "testCloneUrl", null);
