@@ -15,7 +15,7 @@ Platform exposes a REST API consumed by the NMaaS Portal GUI.
  * Swagger (2.8.0)
  * Log4j2 (2.11.1)
  * Lombok (1.18.2)
- * Gitlab4j (4.9.18)
+ * Gitlab4j (4.14.27)
  * Flyway (5.2.0)
 
 ### Prerequisites

@@ -1,5 +1,7 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
@@ -25,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,12 +38,13 @@ public class DefaultAppDeploymentMonitorTest {
 
     private DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
     private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
+    private NmServiceConfigurationProvider configure = mock(NmServiceConfigurationProvider.class);
 
     private DefaultAppDeploymentMonitor monitor;
 
     @BeforeEach
     public void setup() {
-        monitor = new DefaultAppDeploymentMonitor(repositoryManager, deploy);
+        monitor = new DefaultAppDeploymentMonitor(repositoryManager, deploy, configure);
     }
 
     @Test
@@ -112,6 +116,21 @@ public class DefaultAppDeploymentMonitorTest {
         assertThrows(InvalidAppStateException.class, () -> {
             when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
             monitor.userAccessDetails(deploymentId);
+        });
+    }
+
+    @Test
+    public void shouldRetrieveConfigRepoAccessDetails() {
+        when(configure.configRepositoryAccessDetails(deploymentId)).thenReturn(AppConfigRepositoryAccessDetails.of("testCloneURL"));
+        AppConfigRepositoryAccessDetails repositoryAccessDetails = monitor.configRepositoryAccessDetails(deploymentId);
+        assertEquals("testCloneURL", repositoryAccessDetails.getCloneUrl());
+    }
+
+    @Test
+    public void shouldNotRetrieveConfigRepoAccessDetailsIfNotExist() {
+        assertThrows(InvalidDeploymentIdException.class, () -> {
+            when(configure.configRepositoryAccessDetails(deploymentId)).thenThrow(ConfigRepositoryAccessDetailsNotFoundException.class);
+            monitor.configRepositoryAccessDetails(deploymentId);
         });
     }
 

@@ -6,9 +6,11 @@ import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
+import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.gitlab4j.api.GitLabApiException;
@@ -18,6 +20,7 @@ import org.gitlab4j.api.models.RepositoryFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -164,11 +167,15 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private GitLabProject project(Identifier deploymentId, String member, Integer gitLabProjectId) {
         try {
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            String gitLabSshRepoUrl = gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo();
+            String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
             return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabSshRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException("GITLAB: " + e.getMessage());
         }
+    }
+
+    String getSshUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
+        return StringUtils.replace(gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo(), ":", "/");
     }
 
     String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
@@ -260,8 +267,20 @@ public class GitLabConfigHandler implements GitConfigHandler {
         });
     }
 
+    @Override
+    public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
+        Optional<GitLabProject> gitLabProject = loadGitlabProject(deploymentId);
+        if (gitLabProject.isPresent()) {
+            String cloneUrl = gitLabProject.get().getCloneUrl();
+            if (!StringUtils.isEmpty(cloneUrl)) {
+                return AppConfigRepositoryAccessDetails.of(cloneUrl);
+            }
+        }
+        throw new ConfigRepositoryAccessDetailsNotFoundException("Could not find GitLab project for deployment or cloneUrl is empty");
+    }
+
     private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId){
-        return Optional.of(repositoryManager.loadService(deploymentId).getGitLabProject());
+        return Optional.ofNullable(repositoryManager.loadGitLabProject(deploymentId));
     }
 
 }

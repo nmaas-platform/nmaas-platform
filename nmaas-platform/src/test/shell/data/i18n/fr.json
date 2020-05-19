@@ -402,11 +402,11 @@
     "MY_RATING": "Mon évaluation",
     "GO_TO_APP_BUTTON": "Aller à l'application",
     "UNDEPLOY_BUTTON": "Supprimer",
-    "APP_ACCESS_METHODS": "Access methods to application",
+    "APP_ACCESS_METHODS": "View application access methods",
     "RESTART_BUTTON": "Re-démarrer",
     "REMOVE_BUTTON": "Supprimer échoué",
     "REDEPLOY_BUTTON": "Re-déployer",
-    "UPDATE_CONFIG_BUTTON": "Update",
+    "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
@@ -534,7 +534,9 @@
     "UPDATE_CONFIG_MODAL": {
       "HEADER": "Update configuration",
       "SUBMIT_BUTTON": "Submit",
-      "CANCEL_BUTTON": "Cancel"
+      "CANCEL_BUTTON": "Cancel",
+      "CONFIRM_BUTTON": "OK",
+      "CLONE_LABEL": "Use the following command to clone the Git repository containing configuration files used by this application instance. Each change applied to any of the files and pushed back to the repository will be used to update the running application."
     },
     "SUBSCRIPTION": {
       "COMMENTS_NOT_EMPTY_MESSAGE": "Le commentaire ne peut pas être vide"
@@ -662,7 +664,8 @@
     "STORAGE_VOLUMES": "Storage volumes",
     "NEW_STORAGE_VOLUME": "Add new storage volume",
     "ACCESS_METHODS": "Access methods",
-    "NEW_ACCESS_METHOD": "Add new access method"
+    "NEW_ACCESS_METHOD": "Add new access method",
+    "CONFIG_UPDATE_ENABLED": "Enable configuration updates"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Basic information",
@@ -778,7 +781,9 @@
       "ROLE_USER": "User",
       "ROLE_TOOL_MANAGER": "Application manager",
       "ROLE_DOMAIN_ADMIN": "Domain admin",
-      "ROLE_GUEST": "Guest"
+      "ROLE_GUEST": "Guest",
+      "ROLE_INCOMPLETE":  "Account creation in progress",
+      "ROLE_NOT_ACCEPTED" : "Account not active yet"
     }
   },
   "PAGINATION": {

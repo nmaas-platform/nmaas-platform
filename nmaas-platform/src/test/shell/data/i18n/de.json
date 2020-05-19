@@ -209,7 +209,7 @@
     "APPLICATION": "Anwendung",
     "STATE": "Status",
     "DETAILS_BUTTON": "Details",
-    "GO_TO_APP_BUTTON": "Gehe zu App",
+    "GO_TO_APP_BUTTON": "Open application UI",
     "ITEMS_PER_PAGE": "Instanzen pro Seite",
     "ACTIONS": "Aktionen",
     "DEPLOYED": "Bereitgestellte Instanzen",
@@ -399,13 +399,13 @@
     "TAGS": "Tags",
     "RATING": "Bewertung",
     "MY_RATING": "Meine Bewertung",
-    "GO_TO_APP_BUTTON": "Gehe zu App",
+    "GO_TO_APP_BUTTON": "Open application UI",
     "UNDEPLOY_BUTTON": "Deinstallieren",
-    "APP_ACCESS_METHODS": "Access methods to application",
+    "APP_ACCESS_METHODS": "View application access methods",
     "RESTART_BUTTON": "Neustart",
     "REMOVE_BUTTON": "Entfernen fehlgeschlagen",
     "REDEPLOY_BUTTON": "Neuinstallieren",
-    "UPDATE_CONFIG_BUTTON": "Update",
+    "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installationsfortschritt",
@@ -534,7 +534,9 @@
   "UPDATE_CONFIG_MODAL": {
     "HEADER": "Konfiguration aktualisieren",
     "SUBMIT_BUTTON": "Senden",
-    "CANCEL_BUTTON": "Abbrechen"
+    "CANCEL_BUTTON": "Abbrechen",
+    "CONFIRM_BUTTON": "OK",
+    "CLONE_LABEL": "Use the following command to clone the Git repository containing configuration files used by this application instance. Each change applied to any of the files and pushed back to the repository will be used to update the running application."
   },
   "SUBSCRIPTION": {
     "COMMENTS_NOT_EMPTY_MESSAGE": "Kommentar darf nicht leer sein"
@@ -661,7 +663,8 @@
     "STORAGE_VOLUMES": "Storage volumes",
     "NEW_STORAGE_VOLUME": "Add new storage volume",
     "ACCESS_METHODS": "Access methods",
-    "NEW_ACCESS_METHOD": "Add new access method"
+    "NEW_ACCESS_METHOD": "Add new access method",
+    "CONFIG_UPDATE_ENABLED": "Enable configuration updates"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Basic information",
@@ -772,12 +775,14 @@
       "DELETED": "Gelöscht"
     },
     "USER_ROLES": {
-      "ROLE_SYSTEM_ADMIN": "System Admin",
+      "ROLE_SYSTEM_ADMIN": "System admin",
       "ROLE_OPERATOR": "Operator",
       "ROLE_USER": "User",
-      "ROLE_TOOL_MANAGER": "Anwendungsmanager",
-      "ROLE_DOMAIN_ADMIN": "Domain Admin",
-      "ROLE_GUEST": "Guest"
+      "ROLE_TOOL_MANAGER": "Application manager",
+      "ROLE_DOMAIN_ADMIN": "Domain admin",
+      "ROLE_GUEST": "Guest",
+      "ROLE_INCOMPLETE":  "Account creation in progress",
+      "ROLE_NOT_ACCEPTED" : "Account not active yet"
     }
   },
   "PAGINATION": {

@@ -429,10 +429,17 @@ public class AppInstanceController extends AppBaseController {
             ai.setDomainId(appInstance.getDomain().getId());
         }
 
+        Identifier identifier = appInstance.getInternalId();
         try {
-            ai.setServiceAccessMethods(this.appDeploymentMonitor.userAccessDetails(appInstance.getInternalId()).getServiceAccessMethods());
+            ai.setServiceAccessMethods(this.appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
         } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
             ai.setServiceAccessMethods(null);
+        }
+
+        try {
+            ai.setAppConfigRepositoryAccessDetails(this.appDeploymentMonitor.configRepositoryAccessDetails(identifier));
+        } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
+            ai.setAppConfigRepositoryAccessDetails(null);
         }
 
         try {

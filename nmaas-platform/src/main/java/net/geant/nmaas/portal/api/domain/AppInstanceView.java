@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
+import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 
 import java.util.Set;
 
@@ -33,4 +34,6 @@ public class AppInstanceView extends AppInstanceBase {
 	private ConfigWizardTemplateView configUpdateWizardTemplate;
 
 	private String descriptiveDeploymentId;
+
+	private AppConfigRepositoryAccessDetails appConfigRepositoryAccessDetails;
 }

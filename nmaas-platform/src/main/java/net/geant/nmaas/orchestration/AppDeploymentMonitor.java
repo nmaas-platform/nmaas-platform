@@ -50,6 +50,15 @@ public interface AppDeploymentMonitor {
     AppUiAccessDetails userAccessDetails(Identifier deploymentId);
 
     /**
+     * Retrieves the URL that should be used in order to clone the Git repository that contains configuration files
+     * of the deployed application.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @return a class containing the URL to be used for cloning the repository with SSH
+     */
+    AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId);
+
+    /**
      * Retrieves information about application deployment state transitions.
      *
      * @param deploymentId unique identifier of the deployed user application

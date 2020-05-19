@@ -1,6 +1,8 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
+import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 
 /**
@@ -38,4 +40,14 @@ public interface NmServiceConfigurationProvider {
      * @param deploymentId unique identifier of service deployment
      */
     void removeNmService(Identifier deploymentId);
+
+    /**
+     * Retrieves deployed service repository access details to be presented to the client
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return repository access details
+     * @throws ConfigRepositoryAccessDetailsNotFoundException if repository details could not be found
+     */
+    AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId);
+
 }

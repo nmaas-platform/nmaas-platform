@@ -11,5 +11,5 @@ public class AppInstanceViewExtended extends AppInstanceView {
 
     private DomainBase domain;
 
-    private ApplicationBriefView application;
+    private ApplicationView application;
 }
