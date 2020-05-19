@@ -125,20 +125,6 @@ public class ApplicationInstanceServiceTest {
     }
 
     @Test
-    public void createMethodShouldThrowIllegalArgumentExceptionDueToNameIsNotUnique(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            Domain domain = new Domain((long) 1, "test", "test");
-            Application application = new Application((long) 1, "test", "testVersion", "admin");
-            when(validator.valid(anyString())).thenReturn(true);
-            List<AppInstance> appInstances = new ArrayList<>();
-            AppInstance appInstance = new AppInstance(application, domain, "test");
-            appInstances.add(appInstance);
-            when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
-            applicationInstanceService.create(domain, application, "test");
-        });
-    }
-
-    @Test
     public void createMethodShouldThrowApplicationSubscriptionNotActiveExceptionDueToMissingSubscriptionOrSubscriptionNotActive(){
         assertThrows(ApplicationSubscriptionNotActiveException.class, () -> {
             Domain domain = new Domain((long) 1, "test", "test");
@@ -146,7 +132,6 @@ public class ApplicationInstanceServiceTest {
             Application application = new Application((long) 1, "test", "testVersion", "admin");
             when(validator.valid(anyString())).thenReturn(true);
             List<AppInstance> appInstances = new ArrayList<>();
-            when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
             when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(false);
             when(applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)).thenReturn(true);
             applicationInstanceService.create(domain, application, "test");
@@ -165,7 +150,6 @@ public class ApplicationInstanceServiceTest {
             Application application = new Application((long) 1, "test", "testVersion", "admin");
             when(validator.valid(anyString())).thenReturn(true);
             List<AppInstance> appInstances = new ArrayList<>();
-            when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
             applicationInstanceService.create(domain, application, "test");
 
         });
@@ -178,7 +162,6 @@ public class ApplicationInstanceServiceTest {
         Application application = new Application((long) 1,"test","testversion","owner");
         when(validator.valid(anyString())).thenReturn(true);
         List<AppInstance> appInstances = new ArrayList<>();
-        when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
         when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test");
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
@@ -195,7 +178,6 @@ public class ApplicationInstanceServiceTest {
         when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain));
         when(validator.valid(anyString())).thenReturn(true);
         List<AppInstance> appInstances = new ArrayList<>();
-        when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
         when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test");
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
