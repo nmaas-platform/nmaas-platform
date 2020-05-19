@@ -65,7 +65,6 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 			throw new IllegalArgumentException("Domain is inactive");
 		checkParam(application);
 		checkNameCharacters(name);
-		checkNameUniqueness(domain, name);
 
 		if (!this.applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)) {
             throw new IllegalArgumentException("Application is disabled in domain settings");
@@ -222,12 +221,6 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		if(user == null)
 			throw new IllegalArgumentException("user is null");
 		checkParam(user.getId())    ;
-	}
-
-	private void checkNameUniqueness(Domain domain, String name){
-		if(findAllByDomain(domain).stream().anyMatch(s -> s.getName().equalsIgnoreCase(name))){
-			throw new IllegalArgumentException("Name is already taken");
-		}
 	}
 
 	private void checkNameCharacters(String name){

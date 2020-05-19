@@ -197,6 +197,21 @@ public class AppInstanceController extends AppBaseController {
         Domain domain = domains.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
         AppInstance appInstance;
+        /*
+        check name uniqueness
+        forbidden names - names of all app instances in domain, where state is different than done
+         */
+        Set<String> forbiddenNames = instances.findAllByDomain(domain).stream() // get all app instances in domain
+                .filter(appInst -> {
+                    AppInstanceState state = mapAppInstanceState(appDeploymentMonitor.state(appInst.getInternalId())); // map their internal state to app instance state
+                    return !(state.equals(AppInstanceState.DONE) || state.equals(AppInstanceState.REMOVED)); // check if it does not equal 'DONE' or 'REMOVED'
+                })
+                .map(AppInstance::getName) // take names only
+                .collect(Collectors.toSet());
+        if(forbiddenNames.contains(appInstanceRequest.getName())) {
+            throw new IllegalArgumentException("Name is already taken");
+        }
+
         try {
             appInstance = instances.create(domain, app, appInstanceRequest.getName());
         } catch (ApplicationSubscriptionNotActiveException e) {
