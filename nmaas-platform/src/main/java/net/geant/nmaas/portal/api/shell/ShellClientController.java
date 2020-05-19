@@ -17,7 +17,7 @@ import java.security.Principal;
 @Log4j2
 public class ShellClientController {
 
-    private ShellSessionsStorage storage;
+    private final ShellSessionsStorage storage;
 
     @Autowired
     public ShellClientController(ShellSessionsStorage storage){
@@ -57,5 +57,15 @@ public class ShellClientController {
     @PostMapping(value = "/shell/{id}/command")
     public void execute(Principal principal, @PathVariable String id, @RequestBody ShellCommandRequest commandRequest) {
         this.storage.executeCommand(id, commandRequest);
+    }
+
+    /**
+     * This method is responsible for completing session, closing and removing connection
+     * @param principal
+     * @param id session id
+     */
+    @DeleteMapping(value = "/shell/{id}")
+    public void complete(Principal principal, @PathVariable String id) {
+        this.storage.completeSession(id);
     }
 }

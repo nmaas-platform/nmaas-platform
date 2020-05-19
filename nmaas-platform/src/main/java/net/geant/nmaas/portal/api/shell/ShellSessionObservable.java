@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Observable;
 
 /**
- * this class is responsible for command execution logic,
+ * this class is responsible for maintaining ssh connection and command execution logic
  * currently does nothing but echo
  */
 @Log4j2
@@ -18,8 +18,10 @@ public class ShellSessionObservable extends Observable {
 
     private final String sessionId;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    // TODO some state
+    // TODO some state - e.g. ssh connection
+
     public ShellSessionObservable(String sessionId) {
+        // TODO create connection
         this.sessionId = sessionId;
     }
 
@@ -38,5 +40,10 @@ public class ShellSessionObservable extends Observable {
             log.info("Failed to send command execution result");
         }
 
+    }
+
+    public void complete() {
+        // TODO complete connection
+        this.deleteObservers();
     }
 }
