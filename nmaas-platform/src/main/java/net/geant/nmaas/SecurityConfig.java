@@ -155,7 +155,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 tokenAuthenticationService),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .addFilterAfter(
+                .addFilterBefore(
                         gitlabTokenFilter("/api/gitlab/webhooks/**",
                                 null,
                                 gitLabProjectRepository),

@@ -36,8 +36,12 @@ public class StatelessGitlabAuthenticationFilter extends AbstractAuthenticationP
         String incomingToken = request.getHeader(GITLAB_TOKEN_HEADER);
         String uri = request.getRequestURI(); // obtain uri
         log.info("GitlabTokenAuthFilter for URI: " + uri);
+        if(incomingToken == null) {
+            throw new GitlabTokenAuthenticationException("No token provided");
+        }
         String[] element = uri.split("/");
         String id = element[element.length - 1]; // take last element in uri path
+        log.info("Project id: " + id);
         Optional<GitLabProject> candidate = this.repository.findByWebhookId(id);
         if(!candidate.isPresent()) {
             throw new RuntimeException("GitLabProjectNotAvailable");
@@ -46,7 +50,8 @@ public class StatelessGitlabAuthenticationFilter extends AbstractAuthenticationP
         if(incomingToken.equals(projectToken)) {
             return new UsernamePasswordAuthenticationToken(id, null, null);
         } else {
-            return null; // authentication still in progress
+            throw new GitlabTokenAuthenticationException("Invalid token");
+//            return null; // authentication still in progress
         }
     }
 }
