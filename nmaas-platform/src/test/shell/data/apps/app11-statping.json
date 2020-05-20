@@ -44,7 +44,6 @@
 				"type": "MAIN",
 				"defaultStorageSpace": 2,
 				"deployParameters": {
-					"INGRESS_ENABLED": "ingress.enabled",
 					"PERSISTENCE_ENABLED": "persistence.enabled",
 					"PERSISTENCE_NAME": "persistence.name",
 					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",

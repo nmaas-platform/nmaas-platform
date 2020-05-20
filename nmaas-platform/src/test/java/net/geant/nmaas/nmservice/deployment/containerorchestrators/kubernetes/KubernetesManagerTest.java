@@ -184,7 +184,8 @@ public class KubernetesManagerTest {
         assertTrue(accessMethod.get().isOfType(ServiceAccessMethodType.EXTERNAL));
         assertEquals("tag", accessMethod.get().getName());
         assertNull(accessMethod.get().getUrl());
-        assertNull(serviceInfo.getValue().getAdditionalParameters());
+        assertNotNull(serviceInfo.getValue().getAdditionalParameters());
+        assertTrue(serviceInfo.getValue().getAdditionalParameters().isEmpty());
     }
 
     @Test
@@ -195,6 +196,7 @@ public class KubernetesManagerTest {
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
                 .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag", null)))
                 .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .globalDeployParameters(getStringStringMap())
                 .deployParameters(getParameterTypeStringMap())
                 .build();
         ArgumentCaptor<KubernetesNmServiceInfo> serviceInfo = ArgumentCaptor.forClass(KubernetesNmServiceInfo.class);
@@ -203,13 +205,22 @@ public class KubernetesManagerTest {
         verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
         assertEquals(deploymentId, serviceInfo.getValue().getDeploymentId());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(6, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(8, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
+        assertEquals("customvalue2", serviceInfo.getValue().getAdditionalParameters().get("customkey2"));
         assertEquals("hostname", serviceInfo.getValue().getAdditionalParameters().get("smtpHostname"));
         assertEquals("5", serviceInfo.getValue().getAdditionalParameters().get("smtpPort"));
         assertEquals("username", serviceInfo.getValue().getAdditionalParameters().get("smtpUsername"));
         assertEquals("password", serviceInfo.getValue().getAdditionalParameters().get("smtpPassword"));
         assertEquals("domain", serviceInfo.getValue().getAdditionalParameters().get("domainCodeName"));
         assertEquals("extBaseUrl", serviceInfo.getValue().getAdditionalParameters().get("baseUrl"));
+    }
+
+    private Map<String, String> getStringStringMap() {
+        Map<String, String> globalDeployParameters = new HashMap<>();
+        globalDeployParameters.put("customkey1", "customvalue1");
+        globalDeployParameters.put("customkey2", "customvalue2");
+        return globalDeployParameters;
     }
 
     private Map<ParameterType, String> getParameterTypeStringMap() {

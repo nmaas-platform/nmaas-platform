@@ -75,8 +75,8 @@ public class HelmCommandExecutor {
         return hostChartsDirectory;
     }
 
-    private String constructChartNameWithRepo(String chartName) {
-        return helmRepositoryName + "/" + chartName;
+    String constructChartNameWithRepo(String chartName) {
+        return chartName.contains("/") ? chartName : helmRepositoryName + "/" + chartName;
     }
 
     void executeHelmDeleteCommand(String releaseName) {
