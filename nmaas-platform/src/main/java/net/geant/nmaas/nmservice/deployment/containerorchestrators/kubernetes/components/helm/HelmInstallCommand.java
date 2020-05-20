@@ -1,9 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class HelmInstallCommand extends HelmCommand {
 
     private static final String INSTALL = "install";
@@ -70,6 +73,7 @@ public class HelmInstallCommand extends HelmCommand {
     }
 
     static String commaSeparatedValuesString(Map<String, String> values) {
+        values.entrySet().forEach(e -> log.info(e.getKey() + " " + e.getValue()));
         return values.entrySet().stream()
                 .map(entry -> {
                     if (entry.getKey().contains(TEXT_TO_REPLACE_WITH_VALUE)) {
