@@ -39,7 +39,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * Default {@link AppLifecycleManager} implementation.
  */
 @Service
-//@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Log4j2
 @AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
