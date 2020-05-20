@@ -52,6 +52,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setSupportedDeploymentEnvironments(source.getAppDeploymentSpec().getSupportedDeploymentEnvironments());
         appDeploymentSpec.setDeployParameters(source.getAppDeploymentSpec().getDeployParameters());
+        appDeploymentSpec.setGlobalDeployParameters(source.getAppDeploymentSpec().getGlobalDeployParameters());
         appDeploymentSpec.setKubernetesTemplate(getKubernetesTemplate(source.getAppDeploymentSpec().getKubernetesTemplate()));
         appDeploymentSpec.setExposesWebUI(source.getAppDeploymentSpec().isExposesWebUI());
         appDeploymentSpec.setStorageVolumes(getAppStorageVolumes(source.getAppDeploymentSpec().getStorageVolumes()));

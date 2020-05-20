@@ -101,9 +101,14 @@ public class KubernetesManager implements ContainerOrchestrator {
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
+        Map<String, String> additionalParameters = new HashMap<>();
         if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()) {
-            serviceInfo.setAdditionalParameters(createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment));
+            additionalParameters.putAll(createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment));
         }
+        if(appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
+            additionalParameters.putAll(appDeploymentSpec.getGlobalDeployParameters());
+        }
+        serviceInfo.setAdditionalParameters(additionalParameters);
         repositoryManager.storeService(serviceInfo);
     }
 
