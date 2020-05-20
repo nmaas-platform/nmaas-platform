@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 public class HelmInstallCommand extends HelmCommand {
 
     private static final String INSTALL = "install";
+    private static final String TEXT_TO_REPLACE_WITH_VALUE = "%VALUE%";
 
     /**
      * Creates {@link HelmInstallCommand} with provided custom input.
@@ -68,8 +69,15 @@ public class HelmInstallCommand extends HelmCommand {
         return sb;
     }
 
-    private static String commaSeparatedValuesString(Map<String, String> values) {
-        return values.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(COMMA));
+    static String commaSeparatedValuesString(Map<String, String> values) {
+        return values.entrySet().stream()
+                .map(entry -> {
+                    if (entry.getKey().contains(TEXT_TO_REPLACE_WITH_VALUE)) {
+                        return entry.getKey().replace(TEXT_TO_REPLACE_WITH_VALUE, entry.getValue());
+                    } else {
+                        return entry.getKey() + "=" + entry.getValue();
+                    }
+                }).collect(Collectors.joining(COMMA));
     }
 
     private HelmInstallCommand(String command) {

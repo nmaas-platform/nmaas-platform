@@ -54,7 +54,7 @@
 			}
 		],
 		"deployParameters": {
-			"DOMAIN_CODENAME": "service.annotations.metallb.universe.tf/address-pool"
+			"DOMAIN_CODENAME": "service.annotations=\"metallb\\.universe\\.tf/address-pool=%VALUE%\""
 		},
 		"globalDeployParameters": {
 			"service.type": "LoadBalancer",
