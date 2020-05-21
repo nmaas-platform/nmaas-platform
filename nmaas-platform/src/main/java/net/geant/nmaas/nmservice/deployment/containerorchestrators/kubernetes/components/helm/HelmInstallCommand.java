@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class HelmInstallCommand extends HelmCommand {
 
     private static final String INSTALL = "install";
-    private static final String TEXT_TO_REPLACE_WITH_VALUE = "%VALUE%";
+    static final String TEXT_TO_REPLACE_WITH_VALUE = "%VALUE%";
 
     /**
      * Creates {@link HelmInstallCommand} with provided custom input.

@@ -71,11 +71,10 @@
 				"name": "InfluxDB",
 				"tag": "influxdb",
 				"deployParameters": {
-					"INGRESS_HOSTS": "ingress.hostname",
+					"INGRESS_ENABLED": "ingress.enabled",
+					"INGRESS_HOSTS": "ingress.hostname=%VALUE%",
 					"INGRESS_TLS_ENABLED": "ingress.tls",
-					"INGRESS_CLASS": "ingress.annotations.kubernetes.io/ingress.class",
-					"INGRESS_LETSENCRYPT": "ingress.annotations.kubernetes.io/tls-acme",
-					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+					"INGRESS_CLASS": "ingress.annotations=\"kubernetes\\.io/ingress.class=%VALUE%\""
 				}
 			}
 		]
