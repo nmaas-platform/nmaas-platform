@@ -37,4 +37,13 @@ public class HelmCommandExecutorTest {
         HelmCommandExecutor executor = new HelmCommandExecutor();
         assertThat(executor.parseStatus("this is some example string"), equalTo(HelmPackageStatus.UNKNOWN));
     }
+
+    @Test
+    public void shouldConstructChartName() {
+        HelmCommandExecutor executor = new HelmCommandExecutor();
+        executor.helmRepositoryName = "nmaas";
+        assertThat(executor.constructChartNameWithRepo("chart-name"), equalTo("nmaas/chart-name"));
+        assertThat(executor.constructChartNameWithRepo("repo-name/chart-name"), equalTo("repo-name/chart-name"));
+    }
+
 }

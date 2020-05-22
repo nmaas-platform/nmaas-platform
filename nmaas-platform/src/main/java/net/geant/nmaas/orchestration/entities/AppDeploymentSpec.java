@@ -60,6 +60,10 @@ public class AppDeploymentSpec implements Serializable {
     @Fetch(FetchMode.SELECT)
     private Map<ParameterType, String> deployParameters;
 
+    @ElementCollection
+    @Fetch(FetchMode.SELECT)
+    private Map<String, String> globalDeployParameters;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<AppStorageVolume> storageVolumes;
 

@@ -266,6 +266,14 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 echo
 
 echo
+echo App14
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app14-influxdb.json
+echo
+echo App14 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/influxdb.png;type=image/png" $API_URL/apps/14/logo
+echo
+
+echo
 echo ---------------------
 echo Get all apps
 curl -X GET $API_URL/apps --header "Authorization: Bearer $TOKEN"

@@ -114,9 +114,9 @@
 					</thead>
 
 					<tbody>
-					<tr *ngFor="let applicationStatus of this.appStatusList; let i = index">
+					<tr *ngFor="let applicationStatePerDomain of this.domain.applicationStatePerDomain; let i = index">
 						<td class="row-container">
-							<div class="col-sm-4">{{applicationStatus.application.name}}</div>
+							<div class="col-sm-4">{{applicationStatePerDomain.applicationBaseName}}</div>
 
 							<div class="col-sm-8">
 								<button class="btn pull-right custom-collapse" type="button" data-toggle="collapse" [attr.data-target]="'#collapse-'+i" aria-expanded="false"> </button>
@@ -201,7 +201,7 @@
             			</thead>
 
 						<tbody>
-							<ng-template ngFor let-user [ngForOf]="users">
+							<ng-template ngFor let-user [ngForOf]="domainUsers">
 								<tr>
 									<td *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')">{{user.id}}</td>
 									<td>{{user.username}}</td>

@@ -6,7 +6,7 @@ import {DomainService} from '../../../service';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {isUndefined} from 'util';
 import {NG_VALIDATORS, PatternValidator} from '@angular/forms';
-import {Application, User} from '../../../model';
+import {User} from '../../../model';
 import {AppsService, UserService} from '../../../service';
 import {Observable, of} from 'rxjs';
 import {UserRole} from '../../../model/userrole';
@@ -18,13 +18,6 @@ import {DcnDeploymentType} from '../../../model/dcndeploymenttype';
 import {CustomerNetwork} from '../../../model/customernetwork';
 import {MinLengthDirective} from '../../../directive/min-length.directive';
 import {MaxLengthDirective} from '../../../directive/max-length.directive';
-import {DomainApplicationStatePerDomain} from '../../../model/domainapplicationstateperdomain';
-
-class ApplicationStatus {
-    public id: number;
-    public application: Application;
-    public enabled: boolean;
-}
 
 
 @Component({
@@ -44,14 +37,11 @@ export class DomainComponent extends BaseComponent implements OnInit {
     private domainId: number;
     public domain: Domain;
     public dcnUpdated = false;
-    private users: User[];
+    private domainUsers: User[];
     protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
     private keys: any = Object.keys(DcnDeploymentType).filter((type) => {
         return isNaN(Number(type));
     });
-
-    public appStatusList: ApplicationStatus[] = [];
-
 
     @ViewChild(ModalComponent)
     public modal: ModalComponent;
@@ -76,7 +66,6 @@ export class DomainComponent extends BaseComponent implements OnInit {
                 this.domainService.getOne(this.domainId).subscribe(
                     (domain: Domain) => {
                         this.domain = domain;
-                        this.getListOfApplicationsWithStatus();
                     },
                     err => {
                         console.error(err);
@@ -94,7 +83,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
                 users = this.userService.getAll(this.domainId);
 
                 users.subscribe((all) => {
-                    this.users = all;
+                    this.domainUsers = all;
                 });
             }
         });
@@ -172,36 +161,5 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
     public addNetwork() {
         this.domain.domainDcnDetails.customerNetworks.push(new CustomerNetwork());
-    }
-
-    public getListOfApplicationsWithStatus() {
-        this.appsService.getAllApps().subscribe(
-            data => {
-                data.sort((a: Application, b: Application): number => {
-                    return a.id - b.id;
-                });
-                this.domain.applicationStatePerDomain.sort(
-                    (a: DomainApplicationStatePerDomain, b: DomainApplicationStatePerDomain): number => {
-                        return (a.applicationBaseId - b.applicationBaseId);
-                    });
-                if (data.length === this.domain.applicationStatePerDomain.length) {
-                    for (let i = 0; i < data.length; i++) {
-                        if (data[i].id === this.domain.applicationStatePerDomain[i].applicationBaseId) {
-                            this.appStatusList.push({
-                                id: data[i].id,
-                                application: data[i],
-                                enabled: this.domain.applicationStatePerDomain[i].enabled
-                            });
-                        } else {
-                            console.warn('Not matching applications')
-                        }
-                    }
-                } else {
-                    console.warn('Number of applications differs')
-                }
-            }, error => {
-                console.error(error);
-            }
-        )
     }
 }

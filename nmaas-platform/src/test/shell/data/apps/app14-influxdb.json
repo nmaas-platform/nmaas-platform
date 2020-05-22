@@ -1,0 +1,171 @@
+{
+	"name": "InfluxDB",
+	"version": "1.7.10",
+	"license": "MIT",
+	"licenseUrl": "https://github.com/influxdata/influxdb/blob/master/LICENSE",
+	"tags": [
+		"database"
+	],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Time series database",
+			"fullDescription": "InfluxDB is an open-source time series database (TSDB) developed by InfluxData. It is written in Go and optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet of Things sensor data, and real-time analytics. It also has support for processing data from Graphite.<br><br>InfluxDB has no external dependencies and provides a SQL-like language, listening on port 8086, with built-in time-centric functions for querying a data structure composed of measurements, series, and points. Each point consists of several key-value pairs called the fieldset and a timestamp. When grouped together by a set of key-value pairs called the tagset, these define a series. Finally, series are grouped together by a string identifier to form a measurement.<br><br>Values can be 64-bit integers, 64-bit floating points, strings, and booleans. Points are indexed by their time and tagset. Retention policies are defined on a measurement and control how data is downsampled and deleted. Continuous Queries run periodically, storing results in a target measurement."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Time series database",
+			"fullDescription": "InfluxDB is an open-source time series database (TSDB) developed by InfluxData. It is written in Go and optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet of Things sensor data, and real-time analytics. It also has support for processing data from Graphite.<br><br>InfluxDB has no external dependencies and provides a SQL-like language, listening on port 8086, with built-in time-centric functions for querying a data structure composed of measurements, series, and points. Each point consists of several key-value pairs called the fieldset and a timestamp. When grouped together by a set of key-value pairs called the tagset, these define a series. Finally, series are grouped together by a string identifier to form a measurement.<br><br>Values can be 64-bit integers, 64-bit floating points, strings, and booleans. Points are indexed by their time and tagset. Retention policies are defined on a measurement and control how data is downsampled and deleted. Continuous Queries run periodically, storing results in a target measurement."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Time series database",
+			"fullDescription": "InfluxDB is an open-source time series database (TSDB) developed by InfluxData. It is written in Go and optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet of Things sensor data, and real-time analytics. It also has support for processing data from Graphite.<br><br>InfluxDB has no external dependencies and provides a SQL-like language, listening on port 8086, with built-in time-centric functions for querying a data structure composed of measurements, series, and points. Each point consists of several key-value pairs called the fieldset and a timestamp. When grouped together by a set of key-value pairs called the tagset, these define a series. Finally, series are grouped together by a string identifier to form a measurement.<br><br>Values can be 64-bit integers, 64-bit floating points, strings, and booleans. Points are indexed by their time and tagset. Retention policies are defined on a measurement and control how data is downsampled and deleted. Continuous Queries run periodically, storing results in a target measurement."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Time series database",
+			"fullDescription": "InfluxDB is an open-source time series database (TSDB) developed by InfluxData. It is written in Go and optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet of Things sensor data, and real-time analytics. It also has support for processing data from Graphite.<br><br>InfluxDB has no external dependencies and provides a SQL-like language, listening on port 8086, with built-in time-centric functions for querying a data structure composed of measurements, series, and points. Each point consists of several key-value pairs called the fieldset and a timestamp. When grouped together by a set of key-value pairs called the tagset, these define a series. Finally, series are grouped together by a string identifier to form a measurement.<br><br>Values can be 64-bit integers, 64-bit floating points, strings, and booleans. Points are indexed by their time and tagset. Retention policies are defined on a measurement and control how data is downsampled and deleted. Continuous Queries run periodically, storing results in a target measurement."
+		}
+	],
+	"wwwUrl": "https://www.influxdata.com/products/influxdb-overview",
+	"sourceUrl": "https://github.com/influxdata/influxdb",
+	"issuesUrl": "https://github.com/influxdata/influxdb/issues",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "influxdata/influxdb",
+				"version": "4.4.8"
+			}
+		},
+		"storageVolumes": [
+			{
+				"type": "MAIN",
+				"defaultStorageSpace": 20,
+				"deployParameters": {
+					"PERSISTENCE_ENABLED": "persistence.enabled",
+					"PERSISTENCE_NAME": "persistence.name",
+					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
+				}
+			}
+		],
+		"deployParameters": {
+			"DOMAIN_CODENAME": "service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%"
+		},
+		"globalDeployParameters": {
+			"service.type": "LoadBalancer",
+			"resources.requests.memory": "512Mi",
+			"resources.requests.cpu": "250m",
+			"resources.limits.memory": "2Gi",
+			"resources.limits.cpu": "2000m",
+			"setDefaultUser.enabled": "true"
+		},
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "DEFAULT",
+				"name": "InfluxDB",
+				"tag": "influxdb",
+				"deployParameters": {
+					"INGRESS_ENABLED": "ingress.enabled",
+					"INGRESS_HOSTS": "ingress.hostname=%VALUE%",
+					"INGRESS_TLS_ENABLED": "ingress.tls",
+					"INGRESS_CLASS": "ingress.annotations.\"kubernetes\\.io\\.ingress\\.class\"=%VALUE%"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired": false
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "InfluxDB admin username",
+											"type": "textfield",
+											"input": true,
+											"key": "setDefaultUser#user#username",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "InfluxDB admin password",
+											"type": "password",
+											"input": true,
+											"key": "setDefaultUser#user#password",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 20GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}

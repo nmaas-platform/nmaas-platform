@@ -29,4 +29,6 @@ public class AppDeploymentSpecView {
 
     private Map<ParameterType, String> deployParameters;
 
+    private Map<String, String> globalDeployParameters;
+
 }
