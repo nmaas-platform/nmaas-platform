@@ -144,6 +144,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                                 new AntPathRequestMatcher("/api/mail"),
                                                 new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
                                                 new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
+                                                new AntPathRequestMatcher("/api/gitlab/webhooks/**")
                                         }
                                 ),
                                 null,
