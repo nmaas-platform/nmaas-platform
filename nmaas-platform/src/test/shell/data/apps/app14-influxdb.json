@@ -54,7 +54,7 @@
 			}
 		],
 		"deployParameters": {
-			"DOMAIN_CODENAME": "service.annotations=\"metallb\\.universe\\.tf/address-pool=%VALUE%\""
+			"DOMAIN_CODENAME": "service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%"
 		},
 		"globalDeployParameters": {
 			"service.type": "LoadBalancer",
@@ -74,7 +74,7 @@
 					"INGRESS_ENABLED": "ingress.enabled",
 					"INGRESS_HOSTS": "ingress.hostname=%VALUE%",
 					"INGRESS_TLS_ENABLED": "ingress.tls",
-					"INGRESS_CLASS": "ingress.annotations=\"kubernetes\\.io/ingress.class=%VALUE%\""
+					"INGRESS_CLASS": "ingress.annotations.\"kubernetes\\.io\\.ingress\\.class\"=%VALUE%"
 				}
 			}
 		]

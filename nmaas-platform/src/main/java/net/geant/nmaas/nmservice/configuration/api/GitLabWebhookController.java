@@ -7,6 +7,7 @@ import net.geant.nmaas.nmservice.configuration.NmServiceDeployment;
 import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +29,8 @@ public class GitLabWebhookController {
         try {
             log.info("Triggered webhook with id: " + id);
             KubernetesNmServiceInfo service = repositoryManager.loadServiceByGitLabProjectWebhookId(id);
-            log.info("Service found: " + service.getDescriptiveDeploymentId());
-            if (service.getState().isOnline()) {
-                log.info("Triggering configuration reload");
+            if (service.getState().isOnline() || NmServiceDeploymentState.VERIFICATION_FAILED.equals(service.getState())) {
+                log.info("Triggering configuration reload for service: " + service.getDescriptiveDeploymentId());
                 configurationProvider.reloadNmService(NmServiceDeployment.builder()
                         .deploymentId(service.getDeploymentId())
                         .descriptiveDeploymentId(service.getDescriptiveDeploymentId())
