@@ -27,7 +27,7 @@ public class GitLabWebhookControllerSecTest extends BaseControllerTestSetup {
     public void setup(){
         GitLabProject project = new GitLabProject();
         project.setWebhookId("1");
-        project.setWebhookToken("example-token");
+        project.setWebhookToken("correct-token");
         when(gitLabProjectRepository.findByWebhookId(project.getWebhookId())).thenReturn(Optional.of(project));
         createMVC();
     }
@@ -39,10 +39,17 @@ public class GitLabWebhookControllerSecTest extends BaseControllerTestSetup {
     }
 
     @Test
+    public void shouldNotAuthorizeWithIncorrectToken() throws Exception{
+        mvc.perform(post("/api/gitlab/webhooks/1")
+                .header("X-Gitlab-Token", "incorrect-token"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     public void shouldAuthorizeWithGitlabHeader() throws Exception{
         mvc.perform(post("/api/gitlab/webhooks/1")
-            .header("X-Gitlab-Token", "example-token"))
-                .andExpect(status().isNotFound());
+            .header("X-Gitlab-Token", "correct-token"))
+                .andExpect(status().isOk());
     }
 
 }

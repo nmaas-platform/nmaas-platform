@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.api.security;
 
-import net.geant.nmaas.portal.api.exception.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 public class GitlabTokenAuthenticationException extends AuthenticationException {
     public GitlabTokenAuthenticationException(String message) {

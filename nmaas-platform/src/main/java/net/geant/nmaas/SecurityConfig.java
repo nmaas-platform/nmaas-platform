@@ -96,9 +96,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(AUTH_BASIC_TOKEN).permitAll()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers(AUTH_SSO_LOGIN).permitAll()
-                // TODO temporary
-//                .antMatchers(HttpMethod.POST, "/api/gitlab/webhooks/**").permitAll()
-                // --
                 .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
@@ -147,8 +144,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                                 new AntPathRequestMatcher("/api/mail"),
                                                 new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
                                                 new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
-                                                // TODO temporary
-//                                                new AntPathRequestMatcher("/api/gitlab/webhooks/**", "POST")                                                    // --
                                         }
                                 ),
                                 null,
@@ -165,15 +160,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private Filter statelessAuthFilter(RequestMatcher skipPaths, AuthenticationFailureHandler failureHandler, TokenAuthenticationService tokenService) {
         StatelessAuthenticationFilter filter = new StatelessAuthenticationFilter(skipPaths, tokenService);
-        if (failureHandler != null)
+        if (failureHandler != null) {
             filter.setAuthenticationFailureHandler(failureHandler);
+        }
         return filter;
     }
 
     private Filter gitlabTokenFilter(String url, AuthenticationFailureHandler failureHandler, GitLabProjectRepository gitLabProjectRepository) {
         StatelessGitlabAuthenticationFilter filter = new StatelessGitlabAuthenticationFilter(url, gitLabProjectRepository);
-        if (failureHandler != null)
+        if (failureHandler != null) {
             filter.setAuthenticationFailureHandler(failureHandler);
+        }
         return filter;
     }
 
