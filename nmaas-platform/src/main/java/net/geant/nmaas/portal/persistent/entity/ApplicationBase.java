@@ -50,6 +50,7 @@ public class ApplicationBase implements Serializable {
     private String wwwUrl;
     private String sourceUrl;
     private String issuesUrl;
+    private String nmaasDocumentationUrl;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private FileInfo logo;

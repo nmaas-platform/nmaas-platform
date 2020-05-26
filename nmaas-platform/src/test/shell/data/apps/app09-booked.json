@@ -29,6 +29,7 @@
 	"wwwUrl": "https://www.bookedscheduler.com",
 	"sourceUrl": "https://sourceforge.net/p/phpscheduleit/code/HEAD/tree",
 	"issuesUrl": "https://sourceforge.net/p/phpscheduleit/bugs",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Booked",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"

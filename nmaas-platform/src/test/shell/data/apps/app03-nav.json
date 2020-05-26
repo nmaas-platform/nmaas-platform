@@ -29,6 +29,7 @@
 	"wwwUrl": "https://nav.uninett.no/",
 	"sourceUrl": "https://github.com/UNINETT/nav",
 	"issuesUrl": "https://github.com/UNINETT/nav/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-NAV",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
