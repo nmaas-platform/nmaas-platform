@@ -152,6 +152,10 @@
 			|| AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}">
         <div class="col-xs-12">
             <h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
+            <p *ngIf="appInstance !== undefined && configurationTemplate !== undefined && app?.nmaasDocumentationUrl">
+                {{ 'APP_INSTANCE.CONFIGURATION.DOCUMENTATION_INFO' | translate }}
+                <a href="{{app.nmaasDocumentationUrl}}">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
+            </p>
             <hr>
             <formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
                     [form]="configurationTemplate"
