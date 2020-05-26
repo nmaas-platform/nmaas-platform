@@ -29,6 +29,7 @@
 	"wwwUrl": "https://statping.com",
 	"sourceUrl": "https://github.com/statping/statping",
 	"issuesUrl": "https://github.com/statping/statping/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Statping",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"

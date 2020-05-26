@@ -29,6 +29,7 @@
 	"wwwUrl": "",
 	"sourceUrl": "",
 	"issuesUrl": "",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-SPAInventory",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"

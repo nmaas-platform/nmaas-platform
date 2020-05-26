@@ -29,6 +29,7 @@
 	"wwwUrl": "https://ubuntu.com",
 	"sourceUrl": "https://ubuntu.com",
 	"issuesUrl": "https://ubuntu.com",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Bastion",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
