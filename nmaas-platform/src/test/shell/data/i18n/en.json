@@ -424,7 +424,9 @@
       "CONFIGURATION_TAB": "Configuration",
       "ADVANCED_TAB": "Advanced",
       "ADDITIONAL_TAB": "Additional parameters",
-      "STORAGE_SPACE": "Storage space"
+      "STORAGE_SPACE": "Storage space",
+      "NMAAS_TOOLS": "NMaaS Tools Page",
+      "DOCUMENTATION_INFO": "Detailed field description available at"
     },
     "REQUIRED_FIELDS": "required fields",
     "APPLY_CONFIG_BUTTON": "Apply configuration",
@@ -665,7 +667,9 @@
     "NEW_STORAGE_VOLUME": "Add new storage volume",
     "ACCESS_METHODS": "Access methods",
     "NEW_ACCESS_METHOD": "Add new access method",
-    "CONFIG_UPDATE_ENABLED": "Enable configuration updates"
+    "CONFIG_UPDATE_ENABLED": "Enable configuration updates",
+    "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
+    "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Basic information",

@@ -32,6 +32,7 @@
     "wwwUrl": "https://grafana.com/",
     "sourceUrl": "https://github.com/grafana/grafana",
     "issuesUrl": "https://github.com/grafana/grafana/issues",
+    "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Grafana",
     "appDeploymentSpec": {
         "supportedDeploymentEnvironments": [
             "KUBERNETES"

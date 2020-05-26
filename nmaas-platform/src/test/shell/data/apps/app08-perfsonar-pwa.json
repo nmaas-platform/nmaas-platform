@@ -29,6 +29,7 @@
 	"wwwUrl": "http://docs.perfsonar.net/pwa.html",
 	"sourceUrl": "https://github.com/perfsonar/psconfig-web",
 	"issuesUrl": "https://github.com/perfsonar/psconfig-web/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-pSConfigWebAdmin(perfSONAR)",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
