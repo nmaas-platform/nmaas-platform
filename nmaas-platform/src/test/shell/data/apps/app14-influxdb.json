@@ -31,6 +31,7 @@
 	"wwwUrl": "https://www.influxdata.com/products/influxdb-overview",
 	"sourceUrl": "https://github.com/influxdata/influxdb",
 	"issuesUrl": "https://github.com/influxdata/influxdb/issues",
+	"nmaasDocumentationUrl": "https://link.",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
