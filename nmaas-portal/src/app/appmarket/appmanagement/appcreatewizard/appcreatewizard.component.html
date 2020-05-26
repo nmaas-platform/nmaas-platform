@@ -230,6 +230,11 @@
                     </div>
 
                     <div class="form-group form-group-sm">
+                        <h4>{{'APPS_WIZARD.STATIC_GLOBAL_DEPLOY_PARAMETERS' | translate}}</h4>
+                        <app-static-global-deploy-parameters-edit [appDeploymentSpec]="app.appDeploymentSpec"></app-static-global-deploy-parameters-edit>
+                    </div>
+
+                    <div class="form-group form-group-sm">
                         <h4>{{'APPS_WIZARD.STORAGE_VOLUMES' | translate}}</h4>
                         <ul *ngIf="app.appDeploymentSpec.storageVolumes">
                             <li *ngFor="let s of app.appDeploymentSpec.storageVolumes; let i=index" class="no-bullet-list">
