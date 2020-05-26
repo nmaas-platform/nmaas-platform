@@ -1,23 +1,43 @@
-		<footer class="footer col-xs-12" id="global-footer">
-			<div class="col-xs-offset-2 col-xs-8 text-left">
-				<div class="row footer-line">
-					<hr class="col-xs-12">
-				</div>
-				<div class="row footer-upper">
-					<div class="col-xs-10">
-						<div>
-							<a href="https://www.geant.org/">{{ 'FOOTER.WEBSITE' | translate }}</a> |
-							<a routerLink="/privacy">{{ 'FOOTER.NOTICE' | translate }}</a> |
-							<a routerLink="/about">{{ 'FOOTER.CONTACT' | translate }}</a>
-						</div>
-					</div>
-					<div class="col-xs-2">
-						<div>
-							<a class="footer-light footer-move-top" (click)="this.moveToTop();">
-								<em class="fas fa-arrow-up"></em> {{ 'FOOTER.TOP' | translate }}
-							</a>
-						</div>
-					</div>
-				</div>
+<footer class="footer col-xs-12" id="global-footer">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-3 col-md-3 col-sm-3">
+				<!-- NMaaS Logo optionally -->
+                <a href="https://www.geant.org/">
+                    <img src="/assets/images/geant-logo.png" class="image-link"/>
+                </a>
 			</div>
-		</footer>
+			<div class="col-lg-3 col-md-3 col-sm-3">
+				<!-- Empty container -->
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-3">
+                <p style="font_size:7pt">
+                    <img src="/assets/images/eu_logo_cropped.png" style="padding: 0px 10px 0px 0px;float: left"/>
+                    {{ 'FOOTER.TEXT' | translate }}
+                </p>
+
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-3">
+				<p><a href="http://www.geant.org/Policies">{{ 'FOOTER.COOKIES' | translate }}</a></p>
+				<p><a href="http://www.geant.org/Disclaimer">{{ 'FOOTER.DISCLAIMER' | translate }}</a></p>
+				<p><a href="https://www.geant.org/Documents/GEANT_Anti-Slavery_Policy.pdf">{{ 'FOOTER.ANTI_SLAVERY' | translate }}</a></p>
+				<p><a href="https://www.geant.org/privacy-notice/Pages/GEANT-Privacy-Notice.aspx">{{ 'FOOTER.PRIVACY' | translate }}</a></p>
+                <p><a routerLink="/privacy">{{ 'FOOTER.NOTICE' | translate }}</a></p>
+                <p><a routerLink="/about">{{ 'FOOTER.CONTACT' | translate }}</a></p>
+			</div>
+		</div>
+
+        <div class="row">
+            <div class="col-xs-10">
+            </div>
+            <div class="col-xs-2">
+                <div>
+                    <a class="footer-light footer-move-top" (click)="this.moveToTop();">
+                        <em class="fas fa-arrow-up"></em> {{ 'FOOTER.TOP' | translate }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+	</div>
+</footer>
