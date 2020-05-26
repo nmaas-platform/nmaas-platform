@@ -668,6 +668,7 @@
     "ACCESS_METHODS": "Access methods",
     "NEW_ACCESS_METHOD": "Add new access method",
     "CONFIG_UPDATE_ENABLED": "Enable configuration updates",
+    "STATIC_GLOBAL_DEPLOY_PARAMETERS": "Static global deploy parameters",
     "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
     "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)"
   },
