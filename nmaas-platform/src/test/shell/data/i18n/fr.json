@@ -665,7 +665,8 @@
     "NEW_STORAGE_VOLUME": "Add new storage volume",
     "ACCESS_METHODS": "Access methods",
     "NEW_ACCESS_METHOD": "Add new access method",
-    "CONFIG_UPDATE_ENABLED": "Enable configuration updates"
+    "CONFIG_UPDATE_ENABLED": "Enable configuration updates",
+    "STATIC_GLOBAL_DEPLOY_PARAMETERS": "Static global deploy parameters"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Basic information",
