@@ -1,0 +1,1 @@
+alter table application_base add column nmaas_documentation_url varchar(255);

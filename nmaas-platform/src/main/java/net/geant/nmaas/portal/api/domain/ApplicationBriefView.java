@@ -26,6 +26,7 @@ public class ApplicationBriefView {
 	String wwwUrl;
 	String sourceUrl;
 	String issuesUrl;
+	String nmaasDocumentationUrl;
 
 	String owner;
 	
