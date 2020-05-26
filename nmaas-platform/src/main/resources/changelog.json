@@ -1,12 +1,22 @@
 {"versions" : [
   {
     "verNo" : "1.3.3",
-    "date" : "(2020/05/xx)",
+    "date" : "(2020/05/27)",
     "topic" : [
       {
-        "title" : "--",
+        "title" : "Added support for global Helm deployment parameters",
+        "tags" : "[New Feature]",
+        "description" : "The possibility to define static parameters to be passed during application installation allowed for integration of new tools."
+      },
+      {
+        "title" : "Janitor enhancements",
         "tags" : "[Enhancement]",
-        "description" : "--"
+        "description" : "Improved the way Janitor is handling ConfigMap creation and added support for StatefulSets."
+      },
+      {
+        "title" : "Portal layout improvements",
+        "tags" : "[Enhancement]",
+        "description" : "Added GÉANT logo and EU funding clause in the footer."
       }
     ]
   },
