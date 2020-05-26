@@ -1,9 +1,13 @@
 footer {
-  position: absolute;
-  bottom: 0;
+  flex-shrink: 0;
   padding-bottom: 15px;
-  color: gray;
-  font-size: larger;
+  padding-top: 15px;
+  background-color: #e7e7e7;
+}
+
+/*explicit text alignment for chrome*/
+footer p {
+  text-align: left;
 }
 
 a:link{
@@ -69,4 +73,9 @@ a:hover {
 
 .footer-size-normal{
   font-size: smaller;
+}
+
+.image-link {
+  max-width:100%;
+  height: auto;
 }
