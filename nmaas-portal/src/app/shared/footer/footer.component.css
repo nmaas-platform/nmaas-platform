@@ -77,5 +77,11 @@ a:hover {
 
 .image-link {
   max-width:100%;
-  height: auto;
+  max-height: 100%;
+}
+
+.row-center {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
 }
