@@ -245,7 +245,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                         service.getDomain())) {
                     return false;
                 }
-            } catch (JanitorResponseException je) {
+            } catch (Exception je) {
                 log.error("Exception thrown by Janitor during service status check");
                 return true;
             }
