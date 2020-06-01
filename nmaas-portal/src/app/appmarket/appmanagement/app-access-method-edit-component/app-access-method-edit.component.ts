@@ -30,20 +30,14 @@ export class AppAccessMethodEditComponent implements OnInit {
 
   public defaultTooltipOptions = {
     'placement': 'bottom',
-    'show-delay': "50",
+    'show-delay': '50',
     'theme': 'dark'
   };
 
-  constructor() { }
-
-  ngOnInit() {
-    this.deployParamsMap = AppAccessMethodEditComponent.convertObjectToStringMap(this.accessMethod.deployParameters)
-  }
-
   private static convertObjectToStringMap(arg: object): Map<string, string> {
-    let result = new Map<string, string>();
-    for(let k of Object.keys(arg)) {
-      if(!result.has(k) && typeof arg[k] === 'string') {
+    const result = new Map<string, string>();
+    for (const k of Object.keys(arg)) {
+      if (!result.has(k) && typeof arg[k] === 'string') {
         result.set(k, arg[k]);
       }
     }
@@ -52,24 +46,30 @@ export class AppAccessMethodEditComponent implements OnInit {
 
   private static convertStringMapToObject(arg: Map<string, string>): object {
     const result = {};
-    for(let k of arg.keys()) {
+    for (const k of arg.keys()) {
       result[k] = arg.get(k);
     }
     return result;
+  }
+
+  constructor() { }
+
+  ngOnInit() {
+    this.deployParamsMap = AppAccessMethodEditComponent.convertObjectToStringMap(this.accessMethod.deployParameters)
   }
 
   public isNewDeployParamValid(): boolean {
     if (!this.newKey || !this.newValue) {
       return false;
     }
-    if(!!this.newKey && this.deployParamsMap.has(this.newKey)) {
+    if (!!this.newKey && this.deployParamsMap.has(this.newKey)) {
       return false;
     }
     return (!!this.newKey && !!this.newValue);
   }
 
   public addNewDeployParam(): void {
-    if (this.isNewDeployParamValid()){
+    if (this.isNewDeployParamValid()) {
       this.deployParamsMap.set(this.newKey, this.newValue);
       this.newKey = '';
       this.newValue = '';

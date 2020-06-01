@@ -424,7 +424,9 @@
       "CONFIGURATION_TAB": "Podstawowa",
       "ADVANCED_TAB": "Zaawansowana",
       "ADDITIONAL_TAB": "Rozszerzona",
-      "STORAGE_SPACE": "Przestrzeń dyskowa"
+      "STORAGE_SPACE": "Przestrzeń dyskowa",
+      "NMAAS_TOOLS": "NMaaS Tools Page",
+      "DOCUMENTATION_INFO": "Detailed field descriptions are available at"
     },
     "REQUIRED_FIELDS": "pola wymagane",
     "APPLY_CONFIG_BUTTON": "Prześlij konfigurację",
@@ -665,7 +667,10 @@
     "NEW_STORAGE_VOLUME": "Dodaj wolumen danych",
     "ACCESS_METHODS": "Metody dostepu",
     "NEW_ACCESS_METHOD": "Dodaj metodę dostępu",
-    "CONFIG_UPDATE_ENABLED": "Zezwól na aktualizowanie konfiguracji"
+    "CONFIG_UPDATE_ENABLED": "Zezwól na aktualizowanie konfiguracji",
+    "STATIC_GLOBAL_DEPLOY_PARAMETERS": "Static global deploy parameters",
+    "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
+    "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Informacje podstawowe",
@@ -747,7 +752,12 @@
     "NOTICE": "Polityka Prywatności",
     "CONTACT":  "Kontakt",
     "WEBSITE": "Otwórz stronę GÉANT",
-    "TOP": "GÓRA"
+    "TOP": "GÓRA",
+    "COOKIES": "Cookies",
+    "DISCLAIMER": "Disclaimer",
+    "ANTI_SLAVERY": "GÉANT Anti-Slavery Policy",
+    "PRIVACY": "Privacy Policy",
+    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3)."
   },
   "FILTER": {
     "TAGS": "Tagi",

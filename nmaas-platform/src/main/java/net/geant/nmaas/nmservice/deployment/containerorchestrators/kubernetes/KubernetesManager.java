@@ -101,9 +101,14 @@ public class KubernetesManager implements ContainerOrchestrator {
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
+        Map<String, String> additionalParameters = new HashMap<>();
         if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()) {
-            serviceInfo.setAdditionalParameters(createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment));
+            additionalParameters.putAll(createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment));
         }
+        if(appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
+            additionalParameters.putAll(appDeploymentSpec.getGlobalDeployParameters());
+        }
+        serviceInfo.setAdditionalParameters(additionalParameters);
         repositoryManager.storeService(serviceInfo);
     }
 
@@ -232,11 +237,19 @@ public class KubernetesManager implements ContainerOrchestrator {
             }
 
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            if (!janitorService.checkIfReady(
-                    getDeploymentIdForJanitorStatusCheck(service.getDescriptiveDeploymentId().value(), service.getKubernetesTemplate().getMainDeploymentName()),
-                    service.getDomain())) {
-                return false;
+
+            // TODO: Temporary when exception is thrown by Janitor during status check it is ignored as most likely it is caused by missing StatefulSet support
+            try {
+                if (!janitorService.checkIfReady(
+                        getDeploymentIdForJanitorStatusCheck(service.getDescriptiveDeploymentId().value(), service.getKubernetesTemplate().getMainDeploymentName()),
+                        service.getDomain())) {
+                    return false;
+                }
+            } catch (Exception je) {
+                log.error("Exception thrown by Janitor during service status check");
+                return true;
             }
+
             // NOTE: Current assumption is that there will be at max one INTERNAL access method identifiable by deployment name
             try {
                 Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()

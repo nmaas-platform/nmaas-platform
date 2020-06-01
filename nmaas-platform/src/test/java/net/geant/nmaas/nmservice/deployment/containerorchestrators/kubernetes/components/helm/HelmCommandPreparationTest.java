@@ -109,6 +109,14 @@ public class HelmCommandPreparationTest {
     }
 
     @Test
+    public void shouldConstructProperListOfInstallValues() {
+        Map<String, String> mapOfValues = new HashMap<>();
+        mapOfValues.put("key1", "value1");
+        mapOfValues.put("key2=%VALUE%", "value2");
+        assertThat(HelmInstallCommand.commaSeparatedValuesString(mapOfValues), equalTo("key1=value1,key2=value2"));
+    }
+
+    @Test
     public void shouldConstructDeleteCommandWithDisabledTls() {
         assertThat(HelmDeleteCommand.command(RELEASE_NAME, false).asString(), equalTo(CORRECT_HELM_DELETE_COMMAND));
     }

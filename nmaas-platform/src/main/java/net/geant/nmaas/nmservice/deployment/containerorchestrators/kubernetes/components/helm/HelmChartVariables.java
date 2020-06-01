@@ -18,6 +18,7 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_HOSTS;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_LETSENCRYPT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_TLS_ENABLED;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_TLS_HOSTS;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable.INGRESS_WILDCARD_OR_ISSUER;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartPersistenceVariable.PERSISTENCE_ENABLED;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartPersistenceVariable.PERSISTENCE_NAME;
@@ -66,16 +67,45 @@ class HelmChartVariables {
         externalAccessMethods.forEach(m -> {
                 if (enabled) {
                     validateIngressClass(ingressClass);
-                    variables.put(m.getDeployParameters().get(INGRESS_ENABLED), String.valueOf(true));
-                    variables.put(m.getDeployParameters().get(INGRESS_HOSTS), PAR_OPEN + m.getUrl() + PAR_CLOSE);
-                    variables.put(m.getDeployParameters().get(INGRESS_CLASS), ingressClass);
-                    variables.put(m.getDeployParameters().get(INGRESS_TLS_ENABLED), String.valueOf(tlsEnabled));
+                    if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_ENABLED))) {
+                        variables.put(m.getDeployParameters().get(INGRESS_ENABLED), String.valueOf(true));
+                    }
+                    if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_HOSTS))) {
+                        if (m.getDeployParameters().get(INGRESS_HOSTS).contains(HelmInstallCommand.TEXT_TO_REPLACE_WITH_VALUE)) {
+                            // added in order to support different passing of ingress hostname
+                            variables.put(m.getDeployParameters().get(INGRESS_HOSTS), m.getUrl());
+                        } else {
+                            // left to support standard case with a list of ingress hosts
+                            variables.put(m.getDeployParameters().get(INGRESS_HOSTS), PAR_OPEN + m.getUrl() + PAR_CLOSE);
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_CLASS))) {
+                        variables.put(m.getDeployParameters().get(INGRESS_CLASS), ingressClass);
+                    }
+                    if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_TLS_ENABLED))) {
+                        variables.put(m.getDeployParameters().get(INGRESS_TLS_ENABLED), String.valueOf(tlsEnabled));
+                    }
                     if (tlsEnabled) {
-                        variables.put(m.getDeployParameters().get(INGRESS_LETSENCRYPT), String.valueOf(acme));
-                        variables.put(m.getDeployParameters().get(INGRESS_WILDCARD_OR_ISSUER), ingressCertOrIssuer);
+                        if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_TLS_HOSTS))) {
+                            if (m.getDeployParameters().get(INGRESS_TLS_HOSTS).contains(HelmInstallCommand.TEXT_TO_REPLACE_WITH_VALUE)) {
+                                // added in order to support different passing of ingress hostname
+                                variables.put(m.getDeployParameters().get(INGRESS_TLS_HOSTS), m.getUrl());
+                            } else {
+                                // left to support standard case with a list of ingress hosts
+                                variables.put(m.getDeployParameters().get(INGRESS_TLS_HOSTS), PAR_OPEN + m.getUrl() + PAR_CLOSE);
+                            }
+                        }
+                        if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_LETSENCRYPT))) {
+                            variables.put(m.getDeployParameters().get(INGRESS_LETSENCRYPT), String.valueOf(acme));
+                        }
+                        if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_WILDCARD_OR_ISSUER))) {
+                            variables.put(m.getDeployParameters().get(INGRESS_WILDCARD_OR_ISSUER), ingressCertOrIssuer);
+                        }
                     }
                 } else {
-                    variables.put(m.getDeployParameters().get(INGRESS_ENABLED), String.valueOf(false));
+                    if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_ENABLED))) {
+                        variables.put(m.getDeployParameters().get(INGRESS_ENABLED), String.valueOf(false));
+                    }
                 }
             }
         );

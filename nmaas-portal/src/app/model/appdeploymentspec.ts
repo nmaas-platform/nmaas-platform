@@ -11,4 +11,5 @@ export class AppDeploymentSpec {
     public deployParameters: object = {}; // this should be Map<ParameterType, string> = new Map(); but JS cannot stringify this
     public storageVolumes: AppStorageVolume[] = [];
     public accessMethods: AppAccessMethod[] = [];
+    public globalDeployParameters: object = {}; // this should be Map<ParameterType, string> = new Map(); but JS cannot stringify this
 }

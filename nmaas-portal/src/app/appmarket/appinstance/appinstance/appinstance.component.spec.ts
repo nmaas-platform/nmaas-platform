@@ -109,6 +109,7 @@ describe('Component: AppInstance', () => {
     wwwUrl: null,
     sourceUrl: null,
     issuesUrl: null,
+    nmaasDocumentationUrl: null,
     owner: 'admin',
     descriptions: [],
     tags: ['tag1', 'tag2'],

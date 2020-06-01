@@ -29,6 +29,7 @@
 	"wwwUrl": "https://github.com/ytti/oxidized/wiki",
 	"sourceUrl": "https://github.com/ytti/oxidized",
 	"issuesUrl": "https://github.com/ytti/oxidized/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Oxidized",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
@@ -36,9 +37,8 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-oxidized",
-				"version": "1.0.0"
-			},
-			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
+				"version": "1.0.3"
+			}
 		},
 		"storageVolumes": [
 			{

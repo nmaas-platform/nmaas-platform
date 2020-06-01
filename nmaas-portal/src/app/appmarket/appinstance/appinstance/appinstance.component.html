@@ -17,7 +17,7 @@
                     <h2 style="margin-bottom: 4px;">{{appInstance?.name}} ({{app?.name}})</h2>
                     <rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.id)"></rate>
                     <div class="text-muted" style="font-size: small;">
-                        v.{{app?.appVersions?.length > 0 ? app?.appVersions[0].version : 'None'}}
+                        {{app?.version ? 'v.' + app?.version : 'None'}}
                         |
                         <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.licenseUrl">
 							<a class="{{app?.licenseUrl ? '' : 'disabled-url'}}" [href]="app?.licenseUrl" target="_blank">{{app?.license || 'License'}}</a>
@@ -152,6 +152,10 @@
 			|| AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}">
         <div class="col-xs-12">
             <h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
+            <p *ngIf="appInstance !== undefined && configurationTemplate !== undefined && app?.nmaasDocumentationUrl">
+                {{ 'APP_INSTANCE.CONFIGURATION.DOCUMENTATION_INFO' | translate }}
+                <a href="{{app.nmaasDocumentationUrl}}">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
+            </p>
             <hr>
             <formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
                     [form]="configurationTemplate"

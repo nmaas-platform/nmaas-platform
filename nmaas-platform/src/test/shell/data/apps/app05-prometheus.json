@@ -33,6 +33,7 @@
     "wwwUrl": "https://prometheus.io",
     "sourceUrl": "https://github.com/prometheus/prometheus",
     "issuesUrl": "https://github.com/prometheus/prometheus/issues",
+    "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Prometheus",
     "appDeploymentSpec": {
         "supportedDeploymentEnvironments": [
             "KUBERNETES"

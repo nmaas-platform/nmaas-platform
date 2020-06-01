@@ -1,10 +1,9 @@
 import {Component, OnInit, Input, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 
-import {Application} from '../../../model/application';
+import {Application} from '../../../model';
 import {ModalComponent} from '..';
-import {AppInstanceService} from '../../../service/appinstance.service';
-import {DomainService} from '../../../service/domain.service';
+import {AppInstanceService, DomainService} from '../../../service';
 import { UserDataService } from '../../../service/userdata.service';
 import { isUndefined } from 'util';
 
@@ -26,34 +25,36 @@ export class AppInstallModalComponent implements OnInit {
   domainId: number;
   domainName: string;
   selectedAppVersion: number;
-  error:string;
+  error: string;
 
-  constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private router: Router) {
+  constructor(private appInstanceService: AppInstanceService,
+              private domainService: DomainService,
+              private userDataService: UserDataService,
+              private router: Router) {
   }
 
   ngOnInit() {
-    this.app.appVersions.sort((a,b) => a.appVersionId - b.appVersionId);
+    this.app.appVersions.sort((a, b) => a.appVersionId - b.appVersionId);
     this.selectedAppVersion = this.app.appVersions[0].appVersionId;
-    this.userDataService.selectedDomainId.subscribe(domainId => 
-      { 
-        if(!(isUndefined(domainId) || domainId === 0)) {
+    this.userDataService.selectedDomainId.subscribe(domainId => {
+        if (!(isUndefined(domainId) || domainId === 0)) {
           this.domainId = domainId;
           this.domainService.getOne(this.domainId).subscribe((domain) => this.domainName = domain.name);
         } else {
           this.modal.hide();
         }
       }
-    );    
+    );
   }
 
   public create(): void {
-    if(this.domainId && this.app && this.app.id) {
+    if (this.domainId && this.app && this.app.id) {
       this.appInstanceService.createAppInstance(this.domainId, this.selectedAppVersion, this.name).subscribe(
         instanceId => {
           this.modal.hide();
           this.router.navigate(['/instances', instanceId.id]);
         },
-          err=>{
+          err => {
           this.error = err.message;
         });
     }

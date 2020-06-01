@@ -29,6 +29,7 @@
 	"wwwUrl": "https://wiki.debian.org/DebianRepository/SetupWithReprepro",
 	"sourceUrl": "",
 	"issuesUrl": "",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Debianrepository",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
