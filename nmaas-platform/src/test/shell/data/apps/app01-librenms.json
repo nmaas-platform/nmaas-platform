@@ -29,6 +29,7 @@
 	"wwwUrl": "http://www.librenms.org",
 	"sourceUrl": "https://github.com/librenms/librenms",
 	"issuesUrl": "https://github.com/librenms/librenms/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-LibreNMS",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"

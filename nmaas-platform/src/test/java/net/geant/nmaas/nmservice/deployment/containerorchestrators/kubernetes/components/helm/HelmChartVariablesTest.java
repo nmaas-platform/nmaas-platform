@@ -85,6 +85,7 @@ public class HelmChartVariablesTest {
         ingressVariables.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.host");
         ingressVariables.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class");
         ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_ENABLED, "ingress.tls");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_HOSTS, "ingress.tls.host");
         serviceAccessMethod.setDeployParameters(ingressVariables);
 
         Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
@@ -100,6 +101,37 @@ public class HelmChartVariablesTest {
                 Maps.immutableEntry("ingress.host", "{default.url}"),
                 Maps.immutableEntry("ingress.class", "iClassTest"),
                 Maps.immutableEntry("ingress.tls", "false")
+        )));
+    }
+
+    @Test
+    public void shouldGenerateProperIngressVariablesForDefaultAccessMethodWithCustomValuePacement() {
+        ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
+        serviceAccessMethod.setType(ServiceAccessMethodType.DEFAULT);
+        serviceAccessMethod.setName("default");
+        serviceAccessMethod.setUrl("default.url");
+        Map<HelmChartIngressVariable, String> ingressVariables = new HashMap<>();
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_ENABLED, "ingress.enabled");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.host=%VALUE%");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_ENABLED, "ingress.tls");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_HOSTS, "ingress.tls.host=%VALUE%");
+        serviceAccessMethod.setDeployParameters(ingressVariables);
+
+        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
+                true,
+                Sets.newHashSet(serviceAccessMethod),
+                "iClassTest",
+                true,
+                "issuer",
+                true);
+        assertThat(variables.size(), is(5));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(
+                Maps.immutableEntry("ingress.enabled", "true"),
+                Maps.immutableEntry("ingress.host=%VALUE%", "default.url"),
+                Maps.immutableEntry("ingress.class", "iClassTest"),
+                Maps.immutableEntry("ingress.tls", "true"),
+                Maps.immutableEntry("ingress.tls.host=%VALUE%", "default.url")
         )));
     }
 

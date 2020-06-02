@@ -32,6 +32,7 @@ public class ApplicationViewToApplicationBaseConverter extends AbstractConverter
         applicationBase.setTags(getTags(source));
         applicationBase.setDescriptions(getDescriptions(source));
         applicationBase.setVersions(getAppVersions(source));
+        applicationBase.setNmaasDocumentationUrl(source.getNmaasDocumentationUrl());
         return applicationBase;
     }
 

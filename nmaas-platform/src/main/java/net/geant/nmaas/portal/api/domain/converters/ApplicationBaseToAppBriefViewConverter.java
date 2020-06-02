@@ -25,6 +25,7 @@ public class ApplicationBaseToAppBriefViewConverter extends AbstractConverter<Ap
                 .wwwUrl(source.getWwwUrl())
                 .sourceUrl(source.getSourceUrl())
                 .issuesUrl(source.getIssuesUrl())
+                .nmaasDocumentationUrl(source.getNmaasDocumentationUrl())
                 .descriptions(getDescriptions(source))
                 .tags(getTags(source))
                 .build();

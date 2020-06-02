@@ -35,7 +35,7 @@ public class StatelessGitlabAuthenticationFilter extends AbstractAuthenticationP
         String incomingToken = request.getHeader(GITLAB_TOKEN_HEADER);
         // obtain uri
         String uri = request.getRequestURI();
-        log.debug("GitlabTokenAuthFilter for URI: " + uri);
+        log.debug("URI: " + uri);
         if(incomingToken == null) {
             throw new GitlabTokenAuthenticationException("No token provided");
         }

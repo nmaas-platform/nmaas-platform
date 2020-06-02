@@ -272,6 +272,23 @@ echo
 echo App14 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/influxdb.png;type=image/png" $API_URL/apps/14/logo
 echo
+echo App14 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/influxdb/influxdb1.png;type=image/png" $API_URL/apps/14/screenshots
+echo
+echo App14 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/influxdb/influxdb2.png;type=image/png" $API_URL/apps/14/screenshots
+echo
+
+echo
+echo App15
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app15-jenkins.json
+echo
+echo App15 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/jenkins.svg;type=image/svg+xml" $API_URL/apps/15/logo
+echo
+echo App15 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/jenkins/jenkins1.png;type=image/png" $API_URL/apps/15/screenshots
+echo
 
 echo
 echo App15

@@ -1,0 +1,40 @@
+<div class="panel panel-default">
+  <div class="panel-body panel-container">
+
+    <ul class="col-sm-12">
+      <li class="deploy-param-row" *ngIf="getDeploymentParamsKeys().length != 0">
+        <strong>{{'APP_ACCESS_METHOD_EDIT.DEPLOY_PARAMETERS' | translate}}</strong>
+      </li>
+      <li *ngFor="let k of getDeploymentParamsKeys(); let i=index" class="deploy-param-row">
+        <div class="form-group col-sm-11">
+          <label class="control-label" for="{{i}}-param">{{'APP_ACCESS_METHOD_EDIT.PARAM' | translate}}: {{k}}</label>
+          <input class="form-control" type="text" id="{{i}}-param" [(ngModel)]="appDeploymentSpec.globalDeployParameters[k]">
+        </div>
+        <div class="col-sm-1">
+          <button class="btn btn-danger" role="button" (click)="removeDeployParam(k)">{{'APP_ACCESS_METHOD_EDIT.REMOVE_PARAM' | translate}}</button>
+        </div>
+      </li>
+      <li class="deploy-param-row">
+        <strong>{{'APP_ACCESS_METHOD_EDIT.NEW_DEPLOY_PARAMETER' | translate}}</strong>
+      </li>
+      <li class="deploy-param-row">
+        <div class="form-group col-sm-11">
+          <div class="double-form col-sm-6">
+            <label class="control-label" for="new-key">{{'APP_ACCESS_METHOD_EDIT.NEW_KEY' | translate}}</label>
+            <input type="text" id="new-key" class="form-control" [(ngModel)]="newKey">
+          </div>
+          <div class="double-form col-sm-6">
+            <label class="control-label" for="new-value">{{'APP_ACCESS_METHOD_EDIT.NEW_VALUE' | translate}}</label>
+            <input type="text" id="new-value" class="form-control" [(ngModel)]="newValue">
+          </div>
+        </div>
+        <div class="col-sm-1">
+          <button class="btn btn-success" role="button" (click)="addNewDeployParam()" [disabled]="!isNewDeployParamValid()">{{'APP_ACCESS_METHOD_EDIT.ADD_PARAM' | translate}}</button>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+
+</div>
+
