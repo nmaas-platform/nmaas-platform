@@ -6,7 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * POC
@@ -32,7 +34,7 @@ public class ShellClientController {
      * @return - session id
      */
     @PostMapping(value = "/shell/{id}/init", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String init(Principal principal, @PathVariable Long id){
+    public String init(Principal principal, @PathVariable Long id) throws InvalidKeySpecException, NoSuchAlgorithmException {
         return this.storage.createSession(id);
     }
 

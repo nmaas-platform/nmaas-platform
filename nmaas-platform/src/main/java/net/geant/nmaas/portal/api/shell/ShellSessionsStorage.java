@@ -7,6 +7,8 @@ import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +26,7 @@ public class ShellSessionsStorage {
     @AllArgsConstructor
     private class ObserverObservablePair implements Serializable {
         private final ShellSessionObserver observer;
-        private final ShellSessionObservable observable;
+        private final GenericShellSessionObservable observable;
 
         private void complete() {
             observer.complete();
@@ -41,7 +43,7 @@ public class ShellSessionsStorage {
      * @param appInstanceId app instance identifier
      * @return shell session id
      */
-    public synchronized String createSession(Long appInstanceId) {
+    public synchronized String createSession(Long appInstanceId) throws InvalidKeySpecException, NoSuchAlgorithmException {
         AppInstance instance = this.instanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
         // TODO check if you can connect to this app instance
@@ -55,7 +57,7 @@ public class ShellSessionsStorage {
 
         // create observer and observable and bind them
         // TODO pass connection params to observable
-        ShellSessionObservable observable = new ShellSessionObservable(sessionId);
+        GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId);
         ShellSessionObserver observer = new ShellSessionObserver();
         observable.addObserver(observer);
 

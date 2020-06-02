@@ -10,23 +10,19 @@ import java.util.Map;
 import java.util.Observable;
 
 /**
- * this class is responsible for maintaining ssh connection and command execution logic
- * currently does nothing but echo
+ * PoC for command execution, does echo
  */
 @Log4j2
-public class ShellSessionObservable extends Observable {
+public class EchoShellSessionObservable extends GenericShellSessionObservable {
 
     private final String sessionId;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    // TODO some state - e.g. ssh connection
 
-    public ShellSessionObservable(String sessionId) {
-        // TODO create connection
+    public EchoShellSessionObservable(String sessionId) {
         this.sessionId = sessionId;
     }
 
     public void executeCommand(ShellCommandRequest commandRequest) {
-        // TODO handle logic (produce result)
         Map<String, Object> map = new HashMap<>();
         map.put("session", this.sessionId);
         map.put("date", LocalDateTime.now());
@@ -42,8 +38,4 @@ public class ShellSessionObservable extends Observable {
 
     }
 
-    public void complete() {
-        // TODO complete connection
-        this.deleteObservers();
-    }
 }
