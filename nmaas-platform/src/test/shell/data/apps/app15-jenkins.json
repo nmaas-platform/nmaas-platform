@@ -31,6 +31,7 @@
 	"wwwUrl": "https://www.jenkins.io",
 	"sourceUrl": "https://github.com/jenkinsci/jenkins",
 	"issuesUrl": "",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Jenkins",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"

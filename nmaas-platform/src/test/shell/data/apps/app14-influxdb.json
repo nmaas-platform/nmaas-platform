@@ -31,6 +31,7 @@
 	"wwwUrl": "https://www.influxdata.com/products/influxdb-overview",
 	"sourceUrl": "https://github.com/influxdata/influxdb",
 	"issuesUrl": "https://github.com/influxdata/influxdb/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-InfluxDB",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
