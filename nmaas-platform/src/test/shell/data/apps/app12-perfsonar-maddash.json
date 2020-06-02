@@ -94,7 +94,7 @@
 											"label": "Default username",
 											"type": "textfield",
 											"input": true,
-											"key": "env#admin#username",
+											"key": "env#MADDASH_USERNAME",
 											"tab": 0,
 											"validate": {
 												"required": true
@@ -105,7 +105,7 @@
 											"label": "Default password",
 											"type": "password",
 											"input": true,
-											"key": "env#admin#password",
+											"key": "env#MADDASH_PASSWORD",
 											"tab": 0,
 											"validate": {
 												"required": true

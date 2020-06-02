@@ -307,6 +307,12 @@ echo.
 echo App14 logo
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\influxdb.png;type=image/png" %API_URL%/apps/14/logo
 echo.
+echo App14 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\influxdb\influxdb1.png;type=image/png" %API_URL%/apps/14/screenshots
+echo.
+echo App14 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\influxdb\influxdb2.png;type=image/png" %API_URL%/apps/14/screenshots
+echo.
 
 echo.
 echo App15

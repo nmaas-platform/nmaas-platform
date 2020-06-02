@@ -31,6 +31,7 @@
 	"wwwUrl": "https://www.jenkins.io",
 	"sourceUrl": "https://github.com/jenkinsci/jenkins",
 	"issuesUrl": "",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Jenkins",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
@@ -82,7 +83,8 @@
 				"deployParameters": {
 					"INGRESS_ENABLED": "master.ingress.enabled",
 					"INGRESS_HOSTS": "master.ingress.hostName=%VALUE%",
-					"INGRESS_CLASS": "master.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%"
+					"INGRESS_CLASS": "master.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+					"INGRESS_TLS_HOSTS": "master.ingress.tls[0].hosts"
 				}
 			}
 		]
@@ -90,7 +92,7 @@
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired": false
 	},
-	"state": "ACTIVE",
+	"state": "DISABLED",
 	"configWizardTemplate": {
 		"template": {
 			"components": [
