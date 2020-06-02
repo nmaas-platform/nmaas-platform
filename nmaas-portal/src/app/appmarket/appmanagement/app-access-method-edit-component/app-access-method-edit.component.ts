@@ -48,7 +48,7 @@ export class AppAccessMethodEditComponent implements OnInit {
 
   public addNewDeployParam(): void {
     if (this.isNewDeployParamValid()) {
-      this.accessMethod.deployParameters[this.newKey] = this.newKey
+      this.accessMethod.deployParameters[this.newKey] = this.newValue
       this.newKey = '';
       this.newValue = '';
     }
