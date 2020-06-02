@@ -238,16 +238,10 @@ public class KubernetesManager implements ContainerOrchestrator {
 
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
 
-            // TODO: Temporary when exception is thrown by Janitor during status check it is ignored as most likely it is caused by missing StatefulSet support
-            try {
-                if (!janitorService.checkIfReady(
-                        getDeploymentIdForJanitorStatusCheck(service.getDescriptiveDeploymentId().value(), service.getKubernetesTemplate().getMainDeploymentName()),
-                        service.getDomain())) {
-                    return false;
-                }
-            } catch (Exception je) {
-                log.error("Exception thrown by Janitor during service status check");
-                return true;
+            if (!janitorService.checkIfReady(
+                    getDeploymentIdForJanitorStatusCheck(service.getDescriptiveDeploymentId().value(), service.getKubernetesTemplate().getMainDeploymentName()),
+                    service.getDomain())) {
+                return false;
             }
 
             // NOTE: Current assumption is that there will be at max one INTERNAL access method identifiable by deployment name
