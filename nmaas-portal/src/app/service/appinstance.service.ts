@@ -11,10 +11,10 @@ import {GenericDataService} from './genericdata.service';
 
 import {Observable} from 'rxjs';
 
-import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
-import {AppConfiguration} from "../model/appconfiguration";
+import {AppInstanceStateHistory} from '../model/appinstancestatehistory';
+import {AppConfiguration} from '../model/appconfiguration';
 import {map} from 'rxjs/operators';
-import {AppInstanceExtended} from "../model/appinstanceextended";
+import {AppInstanceExtended} from '../model/appinstanceextended';
 
 @Injectable({
   providedIn: 'root',
@@ -116,12 +116,16 @@ export class AppInstanceService extends GenericDataService {
     ];
   }
 
-  public restartAppInstance(appInstanceId:number):Observable<any>{
-    return this.post<number,any>((this.getUrl() +  appInstanceId + '/restart'), appInstanceId);
+  public restartAppInstance(appInstanceId: number): Observable<any> {
+    return this.post<number, any>((this.getUrl() +  appInstanceId + '/restart'), appInstanceId);
   }
 
   public getRunningAppInstances(domainId: number): Observable<AppInstance[]> {
-    return this.get(this.getUrl() + "running/domain/" + domainId);
+    return this.get(this.getUrl() + 'running/domain/' + domainId);
+  }
+
+  public checkStatus(appInstanceId: number): Observable<any> {
+    return this.post(this.getUrl() + appInstanceId + '/check', null);
   }
 
 }
