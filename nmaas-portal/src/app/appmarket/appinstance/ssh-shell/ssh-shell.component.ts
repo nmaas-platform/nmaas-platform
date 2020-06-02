@@ -1,6 +1,7 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NgTerminal} from 'ng-terminal';
 import {ShellClientService} from '../../../service/shell-client.service';
+import {isNullOrUndefined} from 'util';
 
 @Component({
   selector: 'app-ssh-shell',
@@ -11,6 +12,9 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private line = '';
 
+  @Input()
+  private appInstanceId: number = undefined;
+
   private sessionId: string = undefined;
 
   @ViewChild('term') child: NgTerminal; // for Angular 7
@@ -19,23 +23,27 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private shellClientService: ShellClientService) { }
 
   ngOnInit() {
-    this.shellClientService.initConnection(0).subscribe(
-        sessionId => {
-          this.sessionId = sessionId;
-          this.shellClientService.getServerSentEvent(sessionId).subscribe(
-              event => {
-                console.log('Message:', event)
-                this.child.write(event.data + '\r\n$ ');
+      if (!isNullOrUndefined(this.appInstanceId)) {
+          this.shellClientService.initConnection(this.appInstanceId).subscribe(
+              sessionId => {
+                  this.sessionId = sessionId;
+                  this.shellClientService.getServerSentEvent(sessionId).subscribe(
+                      event => {
+                          console.log('Message:', event)
+                          this.child.write(event.data + '\r\n$ ');
+                      },
+                      sseError => {
+                          console.error(sseError);
+                      }
+                  );
               },
-              sseError => {
-                console.error(sseError);
+              connError => {
+                  console.error(connError);
               }
           );
-        },
-        connError => {
-          console.error(connError);
-        }
-    );
+      } else {
+          console.error('App instance id is undefined')
+      }
   }
 
   ngAfterViewInit() {

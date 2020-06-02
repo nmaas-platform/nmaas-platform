@@ -63,6 +63,10 @@
                                 {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
                             </button>
                         </div>
+                        <!-- TODO language label -->
+                        <a [routerLink]="router.url + '/shell'" class="btn btn-default" role="button">
+                            Shell
+                        </a>
                         <button class="btn btn-default" *ngIf="app.appConfigurationSpec.configUpdateEnabled"
                                 (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
                         <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
@@ -204,10 +208,6 @@
                              screenReaderCurrentLabel="{{ 'PAGINATION.SCREEN_READER.CURRENT' | translate }}"></pagination-controls>
     </div>
     <hr>
-
-    <div class="row">
-        <app-ssh-shell></app-ssh-shell>
-    </div>
 
     <!-- App restart modal -->
     <nmaas-modal-app-restart [appInstanceId]="appInstanceId"

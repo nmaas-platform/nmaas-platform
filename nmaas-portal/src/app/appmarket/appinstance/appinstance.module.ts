@@ -22,6 +22,7 @@ import {TooltipModule} from 'ng2-tooltip-directive';
 import {AccessMethodsModalComponent} from './modals/access-methods-modal/access-methods-modal.component';
 import { SshShellComponent } from './ssh-shell/ssh-shell.component';
 import {NgTerminalModule} from 'ng-terminal';
+import { AppInstanceShellViewComponent } from './appinstance-shell-view/appinstance-shell-view.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {NgTerminalModule} from 'ng-terminal';
       AppInstanceListComponent,
       AppRestartModalComponent,
       AccessMethodsModalComponent,
-      SshShellComponent
+      SshShellComponent,
+      AppInstanceShellViewComponent
   ],
     imports: [
         FormioModule,
@@ -48,7 +50,7 @@ import {NgTerminalModule} from 'ng-terminal';
     ],
   exports: [
     AppInstanceComponent,
-    AppInstanceListComponent
+    AppInstanceListComponent,
   ],
   providers: [
     AppsService,
