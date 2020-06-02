@@ -404,6 +404,7 @@
     "APP_ACCESS_METHODS": "View application access methods",
     "RESTART_BUTTON": "Restart",
     "REMOVE_BUTTON": "Remove failed",
+    "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Redeploy",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
