@@ -16,7 +16,7 @@
 		<hr>
 		<div *ngIf="domain" class="bottom-container">
 			<a [routerLink]="['/apps', app.id]" class="btn btn-primary" role="button">{{'APPLICATIONS.DETAILS_BUTTON' | translate}}</a>
-			<div class="flex-spacer"></div>
+			<div class="flex-spacer-bottom-container"></div>
 			<span class="label-font" *ngIf="selected">{{'APPLICATIONS.SUBSCRIBED_BUTTON' | translate}}</span>
 			<span *ngIf="router.url == '/subscriptions' && showDeployButton()" class="pull-right" tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_DEPLOY' | translate}}" [options]="defaultTooltipOptions">
 				<button class="btn btn-default"  [disabled]="!isApplicationEnabledInDomain()" (click)="modal.show()" >{{'INSTALL_MODAL.DEPLOY_BUTTON' | translate}}</button>
