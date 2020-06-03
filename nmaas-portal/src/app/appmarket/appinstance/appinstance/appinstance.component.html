@@ -74,6 +74,8 @@
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
                         <button class="btn btn-primary"
                                 (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
+                        <button class="btn btn-default"
+                                (click)="checkStatus()">{{'APP_INSTANCE.CHECK_STATUS_BUTTON' | translate}}</button>
                         <button class="btn btn-primary btn-danger"
                                 (click)="removalFailed()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
                     </div>

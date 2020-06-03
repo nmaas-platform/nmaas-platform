@@ -404,6 +404,7 @@
     "APP_ACCESS_METHODS": "Metody dostępu do aplikacji",
     "RESTART_BUTTON": "Restart",
     "REMOVE_BUTTON": "Usuń wadliwą instancję",
+    "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
     "UPDATE_CONFIG_BUTTON": "Aktualizacja konfiguracji",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",

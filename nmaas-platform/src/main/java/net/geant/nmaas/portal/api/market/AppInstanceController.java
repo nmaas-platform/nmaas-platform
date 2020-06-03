@@ -315,6 +315,17 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
+    @PostMapping("/{appInstanceId}/check")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public void checkStatus(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            appLifecycleManager.updateApplicationStatus(appInstance.getInternalId());
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {
         if (appInstance == null)
             throw new MissingElementException("App instance is null");

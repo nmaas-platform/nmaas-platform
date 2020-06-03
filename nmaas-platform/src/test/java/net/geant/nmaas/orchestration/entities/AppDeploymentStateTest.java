@@ -82,6 +82,7 @@ public class AppDeploymentStateTest {
         assertThat(state.nextState(NmServiceDeploymentState.INIT), is(REQUESTED));
         assertThat(state.nextState(NmServiceDeploymentState.REMOVAL_INITIATED), is(APPLICATION_REMOVAL_IN_PROGRESS));
         assertThat(state.nextState(NmServiceDeploymentState.FAILED_APPLICATION_REMOVED), is(FAILED_APPLICATION_REMOVED));
+        assertThat(state.nextState(NmServiceDeploymentState.VERIFICATION_INITIATED), is(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS));
     }
 
     private static Stream<AppDeploymentState> allRunningStates() {
