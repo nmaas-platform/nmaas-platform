@@ -488,6 +488,8 @@ public enum AppDeploymentState {
                     return APPLICATION_REMOVAL_IN_PROGRESS;
                 case FAILED_APPLICATION_REMOVED:
                     return FAILED_APPLICATION_REMOVED;
+                case VERIFICATION_INITIATED:
+                    return APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
                 default:
             }
         }
