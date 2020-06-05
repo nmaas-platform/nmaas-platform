@@ -58,7 +58,7 @@ public class AppDeploymentSpec implements Serializable {
 
     @ElementCollection
     @Fetch(FetchMode.SELECT)
-    private Map<ParameterType, String> deployParameters;
+    private Map<String, String> deployParameters;
 
     @ElementCollection
     @Fetch(FetchMode.SELECT)

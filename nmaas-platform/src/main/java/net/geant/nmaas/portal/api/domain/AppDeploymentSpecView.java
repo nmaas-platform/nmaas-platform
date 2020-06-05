@@ -27,7 +27,7 @@ public class AppDeploymentSpecView {
 
     private List<AppAccessMethodView> accessMethods;
 
-    private Map<ParameterType, String> deployParameters;
+    private Map<String, String> deployParameters;
 
     private Map<String, String> globalDeployParameters;
 

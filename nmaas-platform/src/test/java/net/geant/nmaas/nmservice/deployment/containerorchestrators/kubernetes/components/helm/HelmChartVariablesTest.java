@@ -23,7 +23,6 @@ public class HelmChartVariablesTest {
     public void shouldGenerateProperPersistenceVariablesForStorageVolume() {
         Map<HelmChartPersistenceVariable, String> pvMapMain = new HashMap<>();
         pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "main.persistence.enabled");
-        pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "main.persistence.name");
         pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "main.persistence.size");
         pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_CLASS, "main.persistence.storageClass");
         ServiceStorageVolume serviceStorageVolumeMain = new ServiceStorageVolume(ServiceStorageVolumeType.MAIN, 2, pvMapMain);
@@ -32,7 +31,6 @@ public class HelmChartVariablesTest {
         pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "secondary.persistence.enabled");
         pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "secondary.persistence.name");
         pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "secondary.persistence.size");
-        pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_CLASS, "secondary.persistence.storageClass");
         ServiceStorageVolume serviceStorageVolumeSecond = new ServiceStorageVolume(ServiceStorageVolumeType.SHARED, 5, pvMapSecond);
 
         Map<String, String> variables = HelmChartVariables.persistenceVariablesMap(
@@ -40,16 +38,14 @@ public class HelmChartVariablesTest {
                 Optional.of("storageClass"),
                 "descriptiveDeploymentId"
         );
-        assertThat(variables.size(), is(8));
+        assertThat(variables.size(), is(6));
         assertTrue(variables.entrySet().containsAll(Arrays.asList(
                 Maps.immutableEntry("main.persistence.enabled", "true"),
-                Maps.immutableEntry("main.persistence.name", "descriptiveDeploymentId"),
                 Maps.immutableEntry("main.persistence.size", "2Gi"),
                 Maps.immutableEntry("main.persistence.storageClass", "storageClass"),
                 Maps.immutableEntry("secondary.persistence.enabled", "true"),
                 Maps.immutableEntry("secondary.persistence.name", "descriptiveDeploymentId"),
-                Maps.immutableEntry("secondary.persistence.size", "5Gi"),
-                Maps.immutableEntry("secondary.persistence.storageClass", "storageClass")
+                Maps.immutableEntry("secondary.persistence.size", "5Gi")
         )));
     }
 
