@@ -1,0 +1,1 @@
+alter table app_deployment_spec_deploy_parameters alter column deploy_parameters_key varchar(255) not null;
