@@ -4,5 +4,6 @@ export enum ParameterType{
     SMTP_USERNAME,
     SMTP_PASSWORD,
     DOMAIN_CODENAME,
-    BASE_URL
+    BASE_URL,
+    RELEASE_NAME
 }

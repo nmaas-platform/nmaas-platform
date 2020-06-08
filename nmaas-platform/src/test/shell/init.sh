@@ -291,6 +291,20 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 echo
 
 echo
+echo App16
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app16-elasticstack.json
+echo
+echo App16 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/elk.svg;type=image/svg+xml" $API_URL/apps/14/logo
+echo
+echo App16 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/elasticstack/elk1.png;type=image/png" $API_URL/apps/14/screenshots
+echo
+echo App16 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/elasticstack/elk2.png;type=image/png" $API_URL/apps/14/screenshots
+echo
+
+echo
 echo ---------------------
 echo Get all apps
 curl -X GET $API_URL/apps --header "Authorization: Bearer $TOKEN"
