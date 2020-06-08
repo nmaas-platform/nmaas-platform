@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -73,6 +72,6 @@ public class AppDeploymentSpec implements Serializable {
     public void validate(){
         checkArgument(kubernetesTemplate != null, "Kubernetes template cannot be null");
         checkArgument(accessMethods != null && accessMethods.size() > 0, "At least one access method has to be specified");
-        checkArgument(storageVolumes != null && storageVolumes.size() > 0, "At least one storage volume has to be specified");
+        //checkArgument(storageVolumes != null && storageVolumes.size() > 0, "At least one storage volume has to be specified");
     }
 }
