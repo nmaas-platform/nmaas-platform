@@ -43,7 +43,7 @@
 		<div class="form-group">
 			<label for="kubernetesNamespace" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.KUBERNETES_NAMESPACE' | translate }}</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesNamespace" pattern="[a-z-]*" maxlength="64" #namespace="ngModel"
+				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesNamespace" pattern="[a-z0-9-]*" maxlength="64" #namespace="ngModel"
 				name="kubernetesNamespace" [(ngModel)]="domain.domainTechDetails.kubernetesNamespace" placeholder="{{'DOMAIN_DETAILS.KUBERNETES_NAMESPACE_PLACEHOLDER' | translate}}">
 				<div *ngIf="namespace.invalid && (namespace.dirty || namespace.touched)" class="alert alert-danger">
 					<div *ngIf="namespace.errors.pattern">{{ 'DOMAIN_DETAILS.NAMESPACE_PATTERN_VALIDATION_MESSAGE' | translate }}</div>
