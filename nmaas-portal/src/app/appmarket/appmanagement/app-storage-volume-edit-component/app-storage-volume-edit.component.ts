@@ -23,8 +23,6 @@ export class AppStorageVolumeEditComponent implements OnInit {
   @Output()
   public output: EventEmitter<number> = new EventEmitter<number>();
 
-  public deployParamsMap: Map<string, string> = new Map<string, string>();
-
   public newKey = '';
   public newValue = '';
 
@@ -34,35 +32,15 @@ export class AppStorageVolumeEditComponent implements OnInit {
     'theme': 'dark'
   };
 
-  private static convertObjectToStringMap(arg: object): Map<string, string> {
-    const result = new Map<string, string>();
-    for (const k of Object.keys(arg)) {
-      if (!result.has(k) && typeof arg[k] === 'string') {
-        result.set(k, arg[k]);
-      }
-    }
-    return result;
-  }
-
-  private static convertStringMapToObject(arg: Map<string, string>): object {
-    const result = {};
-    for (const k of arg.keys()) {
-      result[k] = arg.get(k);
-    }
-    return result;
-  }
-
   constructor() { }
 
-  ngOnInit() {
-    this.deployParamsMap = AppStorageVolumeEditComponent.convertObjectToStringMap(this.storageVolume.deployParameters)
-  }
+  ngOnInit() {}
 
   public isNewDeployParamValid(): boolean {
     if (!this.newKey || !this.newValue) {
       return false;
     }
-    if (!!this.newKey && this.deployParamsMap.has(this.newKey)) {
+    if (!!this.newKey && this.storageVolume.deployParameters.hasOwnProperty(this.newKey)) {
       return false;
     }
     return (!!this.newKey && !!this.newValue);
@@ -70,28 +48,20 @@ export class AppStorageVolumeEditComponent implements OnInit {
 
   public addNewDeployParam(): void {
     if (this.isNewDeployParamValid()) {
-      this.deployParamsMap.set(this.newKey, this.newValue);
+      this.storageVolume.deployParameters[this.newKey] = this.newValue;
       this.newKey = '';
       this.newValue = '';
     }
   }
 
   public removeDeployParam(key: string): void {
-    if (this.deployParamsMap.has(key)) {
-      this.deployParamsMap.delete(key);
+    if (this.storageVolume.deployParameters.hasOwnProperty(key)) {
+      delete this.storageVolume.deployParameters[key];
     }
   }
 
-  public updateDeployParams(): void {
-    this.storageVolume.deployParameters = AppStorageVolumeEditComponent.convertStringMapToObject(this.deployParamsMap);
-  }
-
-  public reject(): void {
-    this.deployParamsMap = AppStorageVolumeEditComponent.convertObjectToStringMap(this.storageVolume.deployParameters);
-  }
-
   public getDeploymentParamsKeys(): string[] {
-    return Array.from(this.deployParamsMap.keys());
+    return Object.keys(this.storageVolume.deployParameters)
   }
 
   public isMain(): boolean {

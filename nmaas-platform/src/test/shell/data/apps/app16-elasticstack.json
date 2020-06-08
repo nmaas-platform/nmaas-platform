@@ -1,0 +1,145 @@
+{
+	"name":"ELK Stack",
+	"version":"7.5.0",
+	"license":"Apache 2.0",
+	"licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+	"tags": [ "monitoring", "visualization"],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Elasticsearch, Logstash and Kibana",
+			"fullDescription": "\"ELK\" is the acronym for three open source projects: Elasticsearch, Logstash, and Kibana. Elasticsearch is a search and analytics engine. Logstash is a server‑side data processing pipeline that ingests data from multiple sources simultaneously, transforms it, and then sends it to a \"stash\" like Elasticsearch. Kibana lets users visualize data with charts and graphs in Elasticsearch."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Elasticsearch, Logstash and Kibana",
+			"fullDescription": "\"ELK\" is the acronym for three open source projects: Elasticsearch, Logstash, and Kibana. Elasticsearch is a search and analytics engine. Logstash is a server‑side data processing pipeline that ingests data from multiple sources simultaneously, transforms it, and then sends it to a \"stash\" like Elasticsearch. Kibana lets users visualize data with charts and graphs in Elasticsearch."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Elasticsearch, Logstash and Kibana",
+			"fullDescription": "\"ELK\" is the acronym for three open source projects: Elasticsearch, Logstash, and Kibana. Elasticsearch is a search and analytics engine. Logstash is a server‑side data processing pipeline that ingests data from multiple sources simultaneously, transforms it, and then sends it to a \"stash\" like Elasticsearch. Kibana lets users visualize data with charts and graphs in Elasticsearch."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Elasticsearch, Logstash and Kibana",
+			"fullDescription": "\"ELK\" is the acronym for three open source projects: Elasticsearch, Logstash, and Kibana. Elasticsearch is a search and analytics engine. Logstash is a server‑side data processing pipeline that ingests data from multiple sources simultaneously, transforms it, and then sends it to a \"stash\" like Elasticsearch. Kibana lets users visualize data with charts and graphs in Elasticsearch."
+		}
+	],
+	"wwwUrl": "https://www.elastic.co",
+	"sourceUrl": "https://github.com/elastic",
+	"issuesUrl": "https://github.com/elastic/elasticsearch/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-ELK",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "elastic-stack",
+				"version": "1.8.0"
+			}
+		},
+		"deployParameters": {
+			"DOMAIN_CODENAME_ELASTICSEARCH": "elasticsearch.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
+			"DOMAIN_CODENAME_LOGSTASH": "logstash.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
+			"RELEASE_NAME_ELASTICSEARCH": "elasticsearch.clusterName",
+			"RELEASE_NAME_KIBANA": "kibana.elasticsearchHosts=http://%VALUE%-pllabprod:9200",
+			"RELEASE_NAME_LOGSTASH": "logstash.logstashConfig.uptime.conf=\"input { exec { command => \"uptime\" interval => 30 } }\noutput { elasticsearch { hosts => [\"http://%VALUE%-pllabprod:9200\"] index => \"logstash\" } }\""
+		},
+		"globalDeployParameters": {
+			"elasticsearch.nodeGroup": "pllabprod"
+		},
+		"exposesWebUI": true,
+		"accessMethods":  [
+			{
+				"type": "EXTERNAL",
+				"name": "Elasticsearch",
+				"tag": "elasticsearch",
+				"deployParameters": {
+					"INGRESS_ENABLED": "elasticsearch.ingress.enabled",
+					"INGRESS_HOSTS": "elasticsearch.ingress.hosts",
+					"INGRESS_CLASS": "elasticsearch.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+					"INGRESS_TLS_HOSTS": "elasticsearch.ingress.tls[0].hosts"
+				}
+			},
+			{
+				"type": "EXTERNAL",
+				"name": "Kibana",
+				"tag": "kibana",
+				"deployParameters": {
+					"INGRESS_ENABLED": "kibana.ingress.enabled",
+					"INGRESS_HOSTS": "kibana.ingress.hosts",
+					"INGRESS_CLASS": "kibana.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+					"INGRESS_TLS_HOSTS": "kibana.ingress.tls[0].hosts"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired": false
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "Elasticsearch storage space (GB):",
+											"type": "textfield",
+											"input": true,
+											"key": "elasticsearch#volumeClaimTemplate#resources#requests#storage",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain",
+											"defaultValue": "10Gi"
+										},
+										{
+											"label": "Logstash storage space (GB):",
+											"type": "textfield",
+											"input": true,
+											"key": "logstash#volumeClaimTemplate#resources#requests#storage",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain",
+											"defaultValue": "5Gi"
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}

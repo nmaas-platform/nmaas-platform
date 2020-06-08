@@ -18,7 +18,7 @@
 			<label for="codename" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.CODE_NAME' | translate }}</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="codename"
-					name="codename" pattern="[a-z-]*"
+					name="codename" pattern="[a-z0-9-]*"
 					[(ngModel)]="domain.codename" #codename="ngModel" minlength="2" maxlength="8" required>
 				<div *ngIf="codename.invalid && (codename.dirty || codename.touched)"
 					class="alert alert-danger">

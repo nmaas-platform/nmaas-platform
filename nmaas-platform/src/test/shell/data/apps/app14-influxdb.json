@@ -31,6 +31,7 @@
 	"wwwUrl": "https://www.influxdata.com/products/influxdb-overview",
 	"sourceUrl": "https://github.com/influxdata/influxdb",
 	"issuesUrl": "https://github.com/influxdata/influxdb/issues",
+	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-InfluxDB",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"KUBERNETES"
@@ -73,7 +74,8 @@
 				"deployParameters": {
 					"INGRESS_ENABLED": "ingress.enabled",
 					"INGRESS_HOSTS": "ingress.hostname=%VALUE%",
-					"INGRESS_CLASS": "ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%"
+					"INGRESS_CLASS": "ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+					"INGRESS_TLS_ENABLED": "ingress.tls"
 				}
 			}
 		]
@@ -81,7 +83,7 @@
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired": false
 	},
-	"state": "ACTIVE",
+	"state": "DISABLED",
 	"configWizardTemplate": {
 		"template": {
 			"components": [

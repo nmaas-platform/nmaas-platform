@@ -190,7 +190,10 @@ public class KubernetesManagerTest {
 
     @Test
     public void shouldVerifyDeploymentAndCreateServiceInfoWithAdditionalParameters() {
-        AppDeployment deployment = AppDeployment.builder().deploymentId(deploymentId).domain("domain").build();
+        AppDeployment deployment = AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .descriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"))
+                .domain("domain").build();
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
@@ -205,7 +208,7 @@ public class KubernetesManagerTest {
         verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
         assertEquals(deploymentId, serviceInfo.getValue().getDeploymentId());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(8, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(9, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
         assertEquals("customvalue2", serviceInfo.getValue().getAdditionalParameters().get("customkey2"));
         assertEquals("hostname", serviceInfo.getValue().getAdditionalParameters().get("smtpHostname"));
@@ -214,6 +217,7 @@ public class KubernetesManagerTest {
         assertEquals("password", serviceInfo.getValue().getAdditionalParameters().get("smtpPassword"));
         assertEquals("domain", serviceInfo.getValue().getAdditionalParameters().get("domainCodeName"));
         assertEquals("extBaseUrl", serviceInfo.getValue().getAdditionalParameters().get("baseUrl"));
+        assertEquals("descriptiveDeploymentId", serviceInfo.getValue().getAdditionalParameters().get("releaseName"));
     }
 
     private Map<String, String> getStringStringMap() {
@@ -223,14 +227,15 @@ public class KubernetesManagerTest {
         return globalDeployParameters;
     }
 
-    private Map<ParameterType, String> getParameterTypeStringMap() {
-        Map<ParameterType, String> deployParameters = new HashMap<>();
-        deployParameters.put(ParameterType.SMTP_HOSTNAME, "smtpHostname");
-        deployParameters.put(ParameterType.SMTP_PORT, "smtpPort");
-        deployParameters.put(ParameterType.SMTP_USERNAME, "smtpUsername");
-        deployParameters.put(ParameterType.SMTP_PASSWORD, "smtpPassword");
-        deployParameters.put(ParameterType.DOMAIN_CODENAME, "domainCodeName");
-        deployParameters.put(ParameterType.BASE_URL, "baseUrl");
+    private Map<String, String> getParameterTypeStringMap() {
+        Map<String, String> deployParameters = new HashMap<>();
+        deployParameters.put(ParameterType.SMTP_HOSTNAME.toString(), "smtpHostname");
+        deployParameters.put(ParameterType.SMTP_PORT.toString(), "smtpPort");
+        deployParameters.put(ParameterType.SMTP_USERNAME.toString(), "smtpUsername");
+        deployParameters.put(ParameterType.SMTP_PASSWORD.toString(), "smtpPassword");
+        deployParameters.put(ParameterType.DOMAIN_CODENAME.toString(), "domainCodeName");
+        deployParameters.put(ParameterType.BASE_URL.toString(), "baseUrl");
+        deployParameters.put(ParameterType.RELEASE_NAME.toString(), "releaseName");
         return deployParameters;
     }
 

@@ -19,13 +19,13 @@
     </div>
 
     <ul class="col-sm-7">
-      <li class="deploy-param-row" *ngIf="deployParamsMap.size != 0">
+      <li class="deploy-param-row" *ngIf="getDeploymentParamsKeys().length != 0">
         <strong>{{'APP_STORAGE_VOLUME_EDIT.DEPLOY_PARAMETERS' | translate}}</strong>
       </li>
       <li *ngFor="let k of getDeploymentParamsKeys(); let i=index" class="deploy-param-row">
         <div class="form-group col-sm-11">
           <label class="control-label" for="{{id}}-{{i}}-param">{{'APP_STORAGE_VOLUME_EDIT.PARAM' | translate}}: {{k}}</label>
-          <input class="form-control" type="text" id="{{id}}-{{i}}-param" [value]="deployParamsMap.get(k)">
+          <input class="form-control" type="text" id="{{id}}-{{i}}-param" [(ngModel)]="storageVolume.deployParameters[k]">
         </div>
         <div class="col-sm-1">
           <button class="btn btn-danger" role="button" (click)="removeDeployParam(k)">{{'APP_STORAGE_VOLUME_EDIT.REMOVE_PARAM' | translate}}</button>
@@ -48,13 +48,6 @@
         <div class="col-sm-1">
           <button class="btn btn-success" role="button" (click)="addNewDeployParam()" [disabled]="!isNewDeployParamValid()">{{'APP_STORAGE_VOLUME_EDIT.ADD_PARAM' | translate}}</button>
         </div>
-      </li>
-      <li class="button-container" tooltip="{{'APP_STORAGE_VOLUME_EDIT.CHANGES_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
-        <div class="btn-group">
-          <button class="btn btn-success" role="button" (click)="updateDeployParams()">{{'APP_STORAGE_VOLUME_EDIT.SAVE_CHANGES' | translate}}</button>
-          <button class="btn btn-danger" role="button" (click)="reject()">{{'APP_STORAGE_VOLUME_EDIT.REJECT_CHANGES' | translate}}</button>
-        </div>
-        <strong class="margin-right">{{'APP_STORAGE_VOLUME_EDIT.APPLY_CHANGES' | translate}}</strong>
       </li>
     </ul>
 

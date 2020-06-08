@@ -86,9 +86,10 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) {
-		if(domainService.existsDomain(domainRequest.getName())) 
+		if(domainService.existsDomain(domainRequest.getName())) {
 			throw new ProcessingException("Domain already exists.");
-		
+		}
+
 		Domain domain;
 		try {
 			domain = domainService.createDomain(domainRequest);
@@ -109,9 +110,10 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) DomainView domainUpdate) {
-		if(!domainId.equals(domainUpdate.getId()))
+		if(!domainId.equals(domainUpdate.getId())) {
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
-		
+		}
+
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		
 		domain.setName(domainUpdate.getName());
@@ -142,7 +144,7 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR')")
 	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody DomainView domainUpdate) {
-		if(!domainId.equals(domainUpdate.getId())){
+		if(!domainId.equals(domainUpdate.getId())) {
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
@@ -153,7 +155,6 @@ public class DomainController extends AppBaseController {
 
 		domainService.updateDomain(domain);
 		domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
-
 
 		return new Id(domainId);
 	}

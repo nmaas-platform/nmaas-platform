@@ -39,14 +39,24 @@ class HelmChartVariables {
         Map<String, String> variables = new HashMap<>();
         storageVolumes.forEach(v -> {
                 if (PERSISTENCE_ENABLED_DEFAULT_VALUE) {
-                    variables.put(v.getDeployParameters().get(PERSISTENCE_ENABLED), String.valueOf(true));
-                    if (Arrays.asList(ServiceStorageVolumeType.MAIN, ServiceStorageVolumeType.SHARED).contains(v.getType())) {
-                        variables.put(v.getDeployParameters().get(PERSISTENCE_NAME), defaultStorageName);
+                    if (StringUtils.isNotEmpty(v.getDeployParameters().get(PERSISTENCE_ENABLED))) {
+                        variables.put(v.getDeployParameters().get(PERSISTENCE_ENABLED), String.valueOf(true));
                     }
-                    storageClass.ifPresent(s -> variables.put(v.getDeployParameters().get(PERSISTENCE_STORAGE_CLASS), s));
-                    variables.put(v.getDeployParameters().get(PERSISTENCE_STORAGE_SPACE), getStorageSpaceString(v.getSize()));
+                    if (StringUtils.isNotEmpty(v.getDeployParameters().get(PERSISTENCE_NAME))) {
+                        if (Arrays.asList(ServiceStorageVolumeType.MAIN, ServiceStorageVolumeType.SHARED).contains(v.getType())) {
+                            variables.put(v.getDeployParameters().get(PERSISTENCE_NAME), defaultStorageName);
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(v.getDeployParameters().get(PERSISTENCE_STORAGE_CLASS))) {
+                        storageClass.ifPresent(s -> variables.put(v.getDeployParameters().get(PERSISTENCE_STORAGE_CLASS), s));
+                    }
+                    if (StringUtils.isNotEmpty(v.getDeployParameters().get(PERSISTENCE_STORAGE_SPACE))) {
+                        variables.put(v.getDeployParameters().get(PERSISTENCE_STORAGE_SPACE), getStorageSpaceString(v.getSize()));
+                    }
                 } else {
-                    variables.put(v.getDeployParameters().get(PERSISTENCE_ENABLED), String.valueOf(false));
+                    if (StringUtils.isNotEmpty(v.getDeployParameters().get(PERSISTENCE_ENABLED))) {
+                        variables.put(v.getDeployParameters().get(PERSISTENCE_ENABLED), String.valueOf(false));
+                    }
                 }
             }
         );

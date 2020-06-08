@@ -455,4 +455,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         return false;
     }
 
+    public checkStatus(): void {
+        this.appInstanceService.checkStatus(this.appInstanceId).subscribe(
+            data => {
+                console.log('Deployment verified');
+            },
+            error => {
+                console.error(error);
+            }
+        )
+    }
+
 }

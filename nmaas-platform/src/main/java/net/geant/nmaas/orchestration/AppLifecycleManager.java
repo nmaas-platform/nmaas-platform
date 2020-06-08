@@ -69,11 +69,17 @@ public interface AppLifecycleManager {
      */
     void restartApplication(Identifier deploymentId);
 
-
     /**
      * Removes application, if it fails on any stage of deployment. Additionally, it rollback successful stages.
      *
      * @param deploymentId unique identifier of the deployed user application
      */
     void removeFailedApplication(Identifier deploymentId);
+
+    /**
+     * Run required process to update the current state of deployed application.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     */
+    void updateApplicationStatus(Identifier deploymentId);
 }
