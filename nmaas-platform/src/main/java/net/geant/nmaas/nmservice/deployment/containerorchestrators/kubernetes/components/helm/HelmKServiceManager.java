@@ -77,8 +77,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         Set<ServiceStorageVolume> serviceStorageVolumes = serviceInfo.getStorageVolumes();
         if(!serviceStorageVolumes.isEmpty()) {
             arguments.putAll(getPersistenceVariables(serviceStorageVolumes, deploymentManager.getStorageClass(serviceInfo.getDomain()), serviceInfo.getDescriptiveDeploymentId().getValue()));
-        } else {
-            throw new IllegalArgumentException("No storage volumes defined for " + serviceInfo.getDescriptiveDeploymentId());
         }
         Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
         if(!externalAccessMethods.isEmpty()) {

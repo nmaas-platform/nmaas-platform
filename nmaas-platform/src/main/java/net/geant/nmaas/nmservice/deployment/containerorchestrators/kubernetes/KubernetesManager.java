@@ -84,8 +84,6 @@ public class KubernetesManager implements ContainerOrchestrator {
             checkArgument(appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES),
                     "Service deployment not possible with currently used container orchestrator");
             checkArgument(appDeploymentSpec.getKubernetesTemplate() != null, "Kubernetes template cannot be null");
-            checkArgument(appDeploymentSpec.getStorageVolumes() != null && !appDeploymentSpec.getStorageVolumes().isEmpty(),
-                    "Service storage volumes cannot be null");
             checkArgument(appDeploymentSpec.getAccessMethods() != null && !appDeploymentSpec.getAccessMethods().isEmpty(),
                     "Service access methods cannot be null");
         } catch (IllegalArgumentException iae) {
