@@ -662,6 +662,8 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates",
     "EXPOSE_WEB_UI": "Expose web user interface",
     "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface",
+    "ALLOW_SSH_ACCESS": "Allow SSH Access",
+    "ALLOW_SSH_ACCESS_TOOLTIP": "Check if application allows SSH access",
     "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
     "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}",
     "STORAGE_VOLUMES": "Storage volumes",
