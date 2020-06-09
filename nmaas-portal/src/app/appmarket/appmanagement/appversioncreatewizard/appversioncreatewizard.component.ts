@@ -18,6 +18,21 @@ import {AppStorageVolume} from '../../../model/app-storage-volume';
 import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/servicestoragevolume';
 import {AppAccessMethod} from '../../../model/app-access-method';
 import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {AbstractControl, ValidatorFn} from '@angular/forms';
+
+export function noParameterTypeInControlValueValidator(): ValidatorFn {
+
+    const labels = Object.keys(ParameterType).map(key => ParameterType[key]).filter(value => typeof value === 'string') as string[];
+
+    return (control: AbstractControl): {[key: string]: any} | null => {
+        if (!(typeof control.value === 'string')) {
+            return null;
+        }
+        const notValid = labels.filter(val => control.value.includes(val)).length === 0;
+        console.log('checking: ', control.value, 'valid: ', !notValid);
+        return notValid ? {'noParameterTypeInControlValue': {value: control.value}} : null;
+    };
+}
 
 @Component({
     selector: 'app-appversioncreatewizard',
@@ -47,6 +62,12 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     public formDisplayChange = true;
     public logo: any[] = [];
     public screenshots: any[] = [];
+
+    // properties for global parameters deploy validation
+    // in future extensions pack this into single object
+    public deployParamKeyValidator: ValidatorFn = noParameterTypeInControlValueValidator();
+    public keyValidatorMessage: string = 'Key name should contain one of following values: ' + this.getParametersTypes().join(', ');
+    public keyErrorKey = 'noParameterTypeInControlValue';
 
     public defaultTooltipOptions = {
         'placement': 'right',
