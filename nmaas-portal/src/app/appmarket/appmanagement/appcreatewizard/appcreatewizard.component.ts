@@ -20,6 +20,8 @@ import {AppStorageVolume} from '../../../model/app-storage-volume';
 import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/servicestoragevolume';
 import {AppAccessMethod} from '../../../model/app-access-method';
 import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {ValidatorFn} from '@angular/forms';
+import {noParameterTypeInControlValueValidator} from '../appversioncreatewizard/appversioncreatewizard.component';
 
 @Component({
     encapsulation: ViewEncapsulation.None,
@@ -55,6 +57,12 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     public selectedLanguages: string[] = [];
     public languages: SelectItem[] = [];
     public formDisplayChange = true;
+
+    // properties for global parameters deploy validation
+    // in future extensions pack this into single object
+    public deployParamKeyValidator: ValidatorFn = noParameterTypeInControlValueValidator();
+    public keyValidatorMessage: string = 'Key name should contain one of following values: ' + this.getParametersTypes().join(', ');
+    public keyErrorKey = 'noParameterTypeInControlValue';
 
     public defaultTooltipOptions = {
         'placement': 'right',
