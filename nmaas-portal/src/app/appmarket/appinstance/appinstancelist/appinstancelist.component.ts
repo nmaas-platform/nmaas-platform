@@ -10,11 +10,11 @@ import {AppConfigService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable, of} from 'rxjs';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {TranslateService} from "@ngx-translate/core";
+import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
-import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
-import {SessionService} from "../../../service/session.service";
-import {Domain} from "../../../model/domain";
+import {TranslateStateModule} from '../../../shared/translate-state/translate-state.module';
+import {SessionService} from '../../../service/session.service';
+import {Domain} from '../../../model/domain';
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -75,21 +75,25 @@ export class AppInstanceListComponent implements OnInit {
     this.domainService.getAll().subscribe(result => {
       this.domains.push(...result);
     });
-    let i = sessionStorage.getItem(this.item_number_key);
+    const i = sessionStorage.getItem(this.item_number_key);
     if (i) {
       this.maxItemsOnPage = +i;
       this.maxItemsOnPageSec = +i;
     }
+    // adjust display for GUESTS and USERS (they cannot own any instance)
+    if (this.authService.hasDomainRole(this.domainId, 'ROLE_USER') || this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST')) {
+      this.listSelection = AppInstanceListSelection.ALL;
+    }
   }
 
   public getDomainNameById(id: number): string {
-    if(this.domains === undefined){
+    if (this.domains === undefined) {
       return 'none';
     }
     return this.domains.find(value => value.id === id).name;
   }
 
-  public translateEnum(value: AppInstanceListSelection): string{
+  public translateEnum(value: AppInstanceListSelection): string {
     let outValue = '';
     if (value.toString() === 'ALL') {
       this.translateService.get('ENUM.ALL').subscribe((res: string) => {
@@ -119,14 +123,15 @@ export class AppInstanceListComponent implements OnInit {
   public checkPrivileges(app) {
     return app.owner.username === this.authService.getUsername()
         || this.authService.hasRole('ROLE_SYSTEM_ADMIN')
-        || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN');
+        || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN')
+        || this.authService.hasDomainRole(app.domainId, 'ROLE_USER');
   }
 
   public onSelectionChange(event) {
     this.update(this.domainId);
   }
 
-  public setItems(item){
+  public setItems(item) {
     sessionStorage.setItem(this.item_number_key, item);
     this.maxItemsOnPage = item;
     this.maxItemsOnPageSec = item;
@@ -136,7 +141,7 @@ export class AppInstanceListComponent implements OnInit {
     this.getInstances($event)
   }
 
-  getInstances(criteria: CustomerSearchCriteria){
+  getInstances(criteria: CustomerSearchCriteria) {
     console.debug('Crit: ', criteria);
     this.appInstances = of<AppInstance[]>([]);
     switch (+this.listSelection) {
