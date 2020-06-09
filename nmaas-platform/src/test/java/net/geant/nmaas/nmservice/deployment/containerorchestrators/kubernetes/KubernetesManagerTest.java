@@ -139,18 +139,6 @@ public class KubernetesManagerTest {
     }
 
     @Test
-    public void shouldVerifyDeploymentWithNoServiceStorageVolumes() {
-        AppDeploymentSpec spec = AppDeploymentSpec.builder()
-                .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
-                .kubernetesTemplate(new KubernetesTemplate())
-                .build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
-            manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, new AppDeployment(), spec);
-        });
-        assertTrue(thrown.getMessage().contains("Service storage volumes cannot be null"));
-    }
-
-    @Test
     public void shouldVerifyDeploymentWithNoServiceAccessMethods() {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
