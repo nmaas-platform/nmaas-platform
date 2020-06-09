@@ -55,6 +55,9 @@ public class AppDeploymentSpec implements Serializable {
     @Column(nullable = false)
     private boolean exposesWebUI;
 
+    @Column(nullable = false)
+    private boolean allowSshAccess;
+
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<String, String> deployParameters;
