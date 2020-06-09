@@ -57,6 +57,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         appDeploymentSpec.setExposesWebUI(source.getAppDeploymentSpec().isExposesWebUI());
         appDeploymentSpec.setStorageVolumes(getAppStorageVolumes(source.getAppDeploymentSpec().getStorageVolumes()));
         appDeploymentSpec.setAccessMethods(getAppAccessMethods(source.getAppDeploymentSpec().getAccessMethods()));
+        appDeploymentSpec.setAllowSshAccess(source.getAppDeploymentSpec().isAllowSshAccess());
         return appDeploymentSpec;
     }
 

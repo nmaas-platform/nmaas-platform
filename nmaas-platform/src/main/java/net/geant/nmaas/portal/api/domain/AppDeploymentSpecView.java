@@ -21,6 +21,8 @@ public class AppDeploymentSpecView {
 
     private KubernetesTemplateView kubernetesTemplate;
 
+    private boolean allowSshAccess;
+
     private boolean exposesWebUI;
 
     private List<AppStorageVolumeView> storageVolumes;
