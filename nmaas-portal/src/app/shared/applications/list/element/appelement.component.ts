@@ -63,7 +63,8 @@ export class AppElementComponent implements OnInit, OnChanges {
 
   public showDeployButton(): boolean {
     return this.domainId !== this.appConfigService.getNmaasGlobalDomainId() &&
-        !this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
+        !this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST') &&
+        !this.authService.hasDomainRole(this.domainId, 'ROLE_USER');
   }
 
   public getDescription(): AppDescription {
