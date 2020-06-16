@@ -63,20 +63,28 @@
                                 {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
                             </button>
                         </div>
-                        <button class="btn btn-default" *ngIf="app.appConfigurationSpec.configUpdateEnabled"
-                                (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+                        <div class="btn-group" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
+                            <button class="btn btn-default" *ngIf="app.appConfigurationSpec.configUpdateEnabled"
+                                    (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+                        </div>
+
                         <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
+                                *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
                         <button class="btn btn-danger"
+                                *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
                     </div>
 
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
                         <button class="btn btn-primary"
+                                *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
                         <button class="btn btn-default"
+                                *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 (click)="checkStatus()">{{'APP_INSTANCE.CHECK_STATUS_BUTTON' | translate}}</button>
                         <button class="btn btn-primary btn-danger"
+                                *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 (click)="removalFailed()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
                     </div>
                 </div>

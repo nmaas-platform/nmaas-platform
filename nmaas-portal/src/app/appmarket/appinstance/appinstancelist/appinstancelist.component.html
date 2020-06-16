@@ -57,7 +57,7 @@
                 sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
             <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center"
                 sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
-            <th scope="col"
+            <th scope="col" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_USER', 'ROLE_TOOL_MANAGER']"
                 class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
         </tr>
         </thead>
@@ -72,7 +72,7 @@
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
                 <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
                 <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
-                <td class="col-lg-3 col-md-3 text-center">
+                <td class="col-lg-3 col-md-3 text-center" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_USER', 'ROLE_TOOL_MANAGER']">
                     <a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url"
                        href="{{appInstance?.url}}" role="button">
                         <em class="far fa-eye icon-black icon-bigger"></em>

@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import java.util.EnumMap;
+
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -22,6 +24,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Component
+@Log4j2
 public class AppInstancePermissionCheck extends BasePermissionCheck {
 
 	static final String APPINSTANCE = "appInstance";
@@ -49,7 +52,7 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.READ});
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.READ});
-		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {Permissions.ANY});
+		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
 	}
 	
 	@Override

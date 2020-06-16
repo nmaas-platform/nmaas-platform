@@ -71,7 +71,6 @@ export class AppInstanceListComponent implements OnInit {
 
   ngOnInit() {
     this.sessionService.registerCulture(this.translateService.currentLang);
-    this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
     this.domainService.getAll().subscribe(result => {
       this.domains.push(...result);
     });
@@ -80,10 +79,16 @@ export class AppInstanceListComponent implements OnInit {
       this.maxItemsOnPage = +i;
       this.maxItemsOnPageSec = +i;
     }
-    // adjust display for GUESTS and USERS (they cannot own any instance)
-    if (this.authService.hasDomainRole(this.domainId, 'ROLE_USER') || this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST')) {
-      this.listSelection = AppInstanceListSelection.ALL;
-    }
+
+    this.userDataService.selectedDomainId.subscribe(domainId => {
+      // adjust display for GUESTS and USERS (they cannot own any instance)
+      if (this.authService.hasDomainRole(domainId, 'ROLE_USER') || this.authService.hasDomainRole(domainId, 'ROLE_GUEST')) {
+        this.listSelection = AppInstanceListSelection.ALL;
+      }
+
+      this.update(domainId)
+    });
+
   }
 
   public getDomainNameById(id: number): string {

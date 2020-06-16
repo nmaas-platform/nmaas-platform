@@ -111,9 +111,8 @@ public class AppInstancePermissionCheckTest {
 		Set<Permissions> perms = null;
 		
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
-		assertEquals(1, perms.size());
-		assertThat(perms, hasItems(Permissions.ANY));
-		
+		assertEquals(0, perms.size());
+
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN2_APP2.getId(), AppInstancePermissionCheck.APPINSTANCE);
 		assertEquals(0, perms.size());
 		
