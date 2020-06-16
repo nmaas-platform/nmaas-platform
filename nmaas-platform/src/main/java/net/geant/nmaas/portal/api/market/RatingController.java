@@ -44,14 +44,14 @@ public class RatingController extends AppBaseController {
 	}
 	
 	@GetMapping(value="/my")
-	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
+//	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	public AppRateView getMyAppRating(@PathVariable("appId") Long appId, @NotNull Principal principal) {
 		User user = getUser(principal.getName());
 		return getUserAppRating(appId, user.getId());
 	}
 
 	@GetMapping(value="/user/{userId}")
-	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
+//	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	public AppRateView getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
 		Application app = getApp(appId);
 		User user = getUser(userId);
@@ -63,7 +63,7 @@ public class RatingController extends AppBaseController {
 	}
 
 	@PostMapping(value="/my/{rate}")
-	@PreAuthorize("hasPermission(#appId, 'application', 'WRITE')")
+//	@PreAuthorize("hasPermission(#appId, 'application', 'WRITE')")
 	@Transactional
 	public ApiResponse setUserAppRating(@PathVariable("appId") Long appId, @PathVariable("rate") Integer rate, @NotNull Principal principal) {
 		Application app = getApp(appId);
