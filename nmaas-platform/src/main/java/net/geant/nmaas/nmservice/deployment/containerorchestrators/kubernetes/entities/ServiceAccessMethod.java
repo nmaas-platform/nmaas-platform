@@ -29,7 +29,7 @@ import java.util.Map;
 @EqualsAndHashCode
 public class ServiceAccessMethod {
 
-    public static final String DEFAULT_INTERNAL_ACCESS_USERNAME = "netops";
+    public static final String DEFAULT_INTERNAL_SSH_ACCESS_USERNAME = "netops";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

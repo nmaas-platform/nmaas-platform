@@ -10,6 +10,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCon
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorResponseException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
@@ -50,7 +51,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod.DEFAULT_INTERNAL_ACCESS_USERNAME;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod.DEFAULT_INTERNAL_SSH_ACCESS_USERNAME;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.INTERNAL;
@@ -245,12 +246,17 @@ public class KubernetesManager implements ContainerOrchestrator {
                 return false;
             }
 
-            // NOTE: Current assumption is that there will be at max one INTERNAL access method identifiable by deployment name
             try {
                 Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
                         .peek(m -> {
                             if (m.isOfType(INTERNAL)) {
-                                m.setUrl(getUserAtIpAddressUrl(janitorService.retrieveServiceIp(service.getDescriptiveDeploymentId(), service.getDomain())));
+                                m.setUrl(getUserAtIpAddressUrl(
+                                        janitorService.retrieveServiceIp(
+                                                buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
+                                                service.getDomain()
+                                        ),
+                                        m.getProtocol()
+                                ));
                             }
                         })
                         .collect(Collectors.toSet());
@@ -267,8 +273,14 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private String getUserAtIpAddressUrl(String ipAddress) {
-        return DEFAULT_INTERNAL_ACCESS_USERNAME + "@" + ipAddress;
+    private Identifier buildServiceId(Identifier deploymentId, Map<HelmChartIngressVariable, String> deployParameters) {
+        return deployParameters != null && deployParameters.get(HelmChartIngressVariable.K8S_SERVICE_SUFFIX) != null ?
+                Identifier.newInstance(deploymentId + "-" + deployParameters.get(HelmChartIngressVariable.K8S_SERVICE_SUFFIX)) :
+                deploymentId;
+    }
+
+    private String getUserAtIpAddressUrl(String ipAddress, String protocol) {
+        return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
     }
 
     private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {

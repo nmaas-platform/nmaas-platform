@@ -77,6 +77,22 @@
 					"INGRESS_CLASS": "kibana.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
 					"INGRESS_TLS_HOSTS": "kibana.ingress.tls[0].hosts"
 				}
+			},
+			{
+				"type": "INTERNAL",
+				"name": "DATA",
+				"tag": "logstash",
+				"deployParameters": {
+					"K8S_SERVICE_SUFFIX": "logstash"
+				}
+			},
+			{
+				"type": "INTERNAL",
+				"name": "DATA",
+				"tag": "elasticsearch",
+				"deployParameters": {
+					"K8S_SERVICE_SUFFIX": "pllabprod"
+				}
 			}
 		]
 	},

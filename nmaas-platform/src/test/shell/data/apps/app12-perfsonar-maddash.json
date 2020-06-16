@@ -52,6 +52,7 @@
 			}
 		],
 		"exposesWebUI": true,
+		"allowSshAccess": true,
 		"accessMethods":  [
 			{
 				"type": "DEFAULT",
