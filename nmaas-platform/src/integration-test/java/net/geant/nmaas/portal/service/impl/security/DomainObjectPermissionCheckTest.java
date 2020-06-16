@@ -89,8 +89,8 @@ public class DomainObjectPermissionCheckTest {
 		Set<Permissions> perms = null;
 		
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
-		assertEquals(4, perms.size());
-		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE));
+		assertEquals(1, perms.size());
+		assertThat(perms, hasItems(Permissions.READ));
 		
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN2.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(0, perms.size());
