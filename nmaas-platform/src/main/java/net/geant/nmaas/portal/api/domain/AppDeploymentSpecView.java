@@ -17,6 +17,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class AppDeploymentSpecView {
 
+    private Long id;
+
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
     private KubernetesTemplateView kubernetesTemplate;
