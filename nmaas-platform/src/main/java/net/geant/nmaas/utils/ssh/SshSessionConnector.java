@@ -104,8 +104,10 @@ public class SshSessionConnector {
 			String error = IOUtils.readFully(c.getErrorStream()).toString();
 			String output = IOUtils.readFully(c.getInputStream()).toString();
 			c.join(5, TimeUnit.SECONDS);
-			if (exitStatusIndicatesThatSomethingWentWrong(c.getExitStatus()))
-				throw new CommandExecutionException("Command execution failed (exit status: " + c.getExitStatus() + "; details: " + error + ")");
+			if (exitStatusIndicatesThatSomethingWentWrong(c.getExitStatus())) {
+//				throw new CommandExecutionException("Command execution failed (exit status: " + c.getExitStatus() + "; details: " + error + ")");
+				return error;
+			}
 			return output;
 		} catch (IOException ex) {
 			throw new SshConnectionException("Unable to read command execution error message -> " + ex.getMessage());
