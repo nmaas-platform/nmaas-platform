@@ -41,7 +41,7 @@ describe('ClusterDetailsComponent', () => {
     it('should return correct length of maps', ()=>{
         expect(component.controllerConfigOption.size).toBe(3);
         expect(component.namespaceConfigOption.size).toBe(3);
-        expect(component.resourceConfigOption.size).toBe(3);
+        expect(component.resourceConfigOption.size).toBe(2);
     });
 
     it('should return array of keys', ()=>{
