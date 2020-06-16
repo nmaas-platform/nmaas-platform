@@ -58,7 +58,6 @@ export enum IngressControllerConfigOption{
 
 export enum IngressResourceConfigOption{
     NOT_USED = 'NOT_USED',
-    DEPLOY_USING_API = 'DEPLOY_USING_API',
     DEPLOY_FROM_CHART = 'DEPLOY_FROM_CHART'
 }
 
