@@ -20,10 +20,10 @@ public class GenericPermissionCheck extends BasePermissionCheck {
 	
 	public GenericPermissionCheck() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
-		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE});
-		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE});
-		permMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.READ});
-		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.CREATE, Permissions.READ, Permissions.WRITE, Permissions.DELETE});
+		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[] {});
+		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {});
+		permMatrix.put(Role.ROLE_USER, new Permissions[] {});
+		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
 	}
 	
