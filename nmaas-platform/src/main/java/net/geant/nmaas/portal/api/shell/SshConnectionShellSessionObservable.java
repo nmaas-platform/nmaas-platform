@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.utils.ssh.BasicCredentials;
-import net.geant.nmaas.utils.ssh.SshConnector;
 import net.geant.nmaas.utils.ssh.SshSessionConnector;
 import net.schmizz.sshj.userauth.keyprovider.KeyPairWrapper;
 
+import java.io.*;
 import java.security.*;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -102,6 +102,8 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     }
 
+
+
     public SshConnectionShellSessionObservable(String sessionId) throws InvalidKeySpecException, NoSuchAlgorithmException {
         this.sessionId = sessionId;
 
@@ -114,21 +116,39 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
                 new BasicCredentials(SSH_USERNAME),
                 new KeyPairWrapper(kp)
         );
+        BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
+
     }
 
+    /**
+     * executes command synchronously returning result immediately,
+     * however command is executed in single session scope (one command <=> one session)
+     * @param commandRequest
+     */
     public void executeCommand(ShellCommandRequest commandRequest) {
         log.info(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
 
-        // probably should parse newline characters somehow, maybe base 64?
-        String result = this.sshConnector.executeCommandInSession(commandRequest.getCommand());
+        String result = this.sshConnector.executeSingleCommand(commandRequest.getCommand());
 
         log.info(sessionId + "\tRESULT:\t" + result);
-        this.setChanged();
-        this.notifyObservers(result);
+        for(String r: result.split("\n")) {
+            this.sendMessage(r);
+        }
+    }
+
+    public void executeCommandAsync(ShellCommandRequest commandRequest) {
+        log.info(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
+
+        this.sshConnector.executeCommandInSession(commandRequest.getCommand());
     }
 
     public void complete() {
         this.sshConnector.close();
         super.complete();
+    }
+
+    private synchronized void sendMessage(String message) {
+        this.setChanged();
+        this.notifyObservers(message);
     }
 }

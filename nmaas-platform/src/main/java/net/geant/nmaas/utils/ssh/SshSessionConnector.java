@@ -10,6 +10,7 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor
@@ -18,6 +19,7 @@ public class SshSessionConnector {
 
 	private SSHClient client;
 	private Session session;
+	private Session.Shell shell;
 
 	public SshSessionConnector(String hostname, int port, BasicCredentials credentials, KeyProvider keyProvider) {
 		connect(hostname, port);
@@ -27,6 +29,14 @@ public class SshSessionConnector {
 		if(isAuthenticated()) {
 			openSession();
 		}
+	}
+
+	public InputStream getInputStream() {
+		return this.shell.getInputStream();
+	}
+
+	public InputStream getErrorStream() {
+		return this.shell.getErrorStream();
 	}
 
 	private void connect(String hostname, int port) {
@@ -53,6 +63,8 @@ public class SshSessionConnector {
 	private void openSession() {
 		try {
 			this.session = client.startSession();
+			this.session.allocateDefaultPTY();
+			this.shell = this.session.startShell();
 		} catch (ConnectionException | TransportException e) {
 			throw new SshConnectionException("Unable to start ssh session -> " + e.getMessage());
 		}
@@ -62,36 +74,28 @@ public class SshSessionConnector {
 	private void closeSession() {
 		try {
 			this.session.close();
-		} catch (TransportException | ConnectionException e) {
+			this.client.disconnect();
+		} catch (IOException e) {
 			throw new SshConnectionException("Unable to stop ssh session -> " + e.getMessage());
 		}
 	}
 
-	public String executeCommandInSession(String command) {
+	/**
+	 * executes single command in session
+	 * @param command
+	 */
+	public void executeCommandInSession(String command) {
 		if(!isSessionOpened()){
 			throw new SshConnectionException("Session is not opened");
 		}
 		try {
-			final Session.Command cmd = session.exec(command);
-			String result = IOUtils.readFully(cmd.getInputStream()).toString();
-			String error = IOUtils.readFully(cmd.getErrorStream()).toString();
-			cmd.join(30, TimeUnit.SECONDS); // this probably closes ssh session
-			if (exitStatusIndicatesThatSomethingWentWrong(cmd.getExitStatus())) {
-				log.error("Something went wrong during command execution -> " + error);
-				return error;
-			}
-			return result;
+			this.shell.getOutputStream().write(command.getBytes());
 		} catch (IOException e) {
 			throw new SshConnectionException("Unable to stop execute command in session -> " + e.getMessage());
 		}
 	}
 
 
-	/**
-	 * executes single command in session
-	 * @param command
-	 * @return
-	 */
 	public String executeSingleCommand(String command) {
 		if(!isAuthenticated())
 			throw new SshConnectionException("Not authenticated connection to " + client.getRemoteAddress());
