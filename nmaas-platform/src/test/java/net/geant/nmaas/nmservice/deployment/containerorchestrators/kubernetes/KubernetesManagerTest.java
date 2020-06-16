@@ -8,6 +8,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCon
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
@@ -99,6 +100,9 @@ public class KubernetesManagerTest {
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", null));
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", null));
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
+        Map<HelmChartIngressVariable, String> deployParameters = new HashMap<>();
+        deployParameters.put(HelmChartIngressVariable.K8S_SERVICE_SUFFIX, "component1");
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service", null, "DATA", deployParameters));
         service.setAccessMethods(accessMethods);
         service.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart(null, null), null, "subcomponent"));
         when(repositoryManager.loadService(any())).thenReturn(service);
@@ -262,7 +266,7 @@ public class KubernetesManagerTest {
         manager.deployNmService(deploymentId);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-        assertEquals(3, accessMethodsArg.getValue().size());
+        assertEquals(4, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
@@ -287,18 +291,26 @@ public class KubernetesManagerTest {
         assertDoesNotThrow(() -> {
             when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
             when(janitorService.checkIfReady(any(), any())).thenReturn(true);
-            when(janitorService.retrieveServiceIp(any(), any())).thenReturn("192.168.100.1");
+            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId"),"domain"))
+                    .thenReturn("192.168.100.1");
+            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId-component1"),"domain"))
+                    .thenReturn("192.168.100.2");
 
             manager.checkService(Identifier.newInstance("deploymentId"));
 
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
             verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(3, accessMethodsArg.getValue().size());
+            assertEquals(4, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")
                             && m.getProtocol().equals("SSH")
                             && m.getUrl().equals("netops@192.168.100.1")));
+            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                    m.isOfType(ServiceAccessMethodType.INTERNAL)
+                            && m.getName().equals("data-service")
+                            && m.getProtocol().equals("DATA")
+                            && m.getUrl().equals("192.168.100.2")));
         });
     }
 
