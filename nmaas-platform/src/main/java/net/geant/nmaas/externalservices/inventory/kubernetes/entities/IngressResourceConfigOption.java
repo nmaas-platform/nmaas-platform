@@ -11,16 +11,6 @@ public enum IngressResourceConfigOption {
             // no need to check anything
         }
     },
-    /** Deploy or update ingress resource using Kubernetes API */
-    DEPLOY_USING_API {
-        @Override
-        public void validate(KClusterIngress ingress) {
-            checkArgument(ingress.getExternalServiceDomain() != null && !ingress.getExternalServiceDomain().isEmpty()
-                    , "When deploying ingress resource the external service domain can't be empty.");
-            checkArgument(ingress.getTlsSupported() != null
-                    , "When deploying ingress resource the TLS support flag must be set.");
-        }
-    },
     /** Use ingress resource definition from the application helm chart */
     DEPLOY_FROM_CHART {
         @Override
