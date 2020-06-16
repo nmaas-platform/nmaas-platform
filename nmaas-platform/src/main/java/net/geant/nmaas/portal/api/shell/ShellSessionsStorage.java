@@ -83,7 +83,13 @@ public class ShellSessionsStorage {
      */
     public void executeCommand(String sessionId, ShellCommandRequest commandRequest) {
         isSessionAvailable(sessionId);
+        /*
+         * choose version to use:
+         * normal -> works but featureless
+         * async -> experimental but with more potential
+         */
         this.storage.get(sessionId).getObservable().executeCommand(commandRequest);
+//        this.storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
     }
 
     /**

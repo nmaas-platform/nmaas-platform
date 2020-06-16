@@ -6,6 +6,8 @@ public abstract class GenericShellSessionObservable extends Observable {
 
     public abstract void executeCommand(ShellCommandRequest commandRequest);
 
+    public abstract void executeCommandAsync(ShellCommandRequest commandRequest);
+
     public void complete() {
         this.deleteObservers();
     }

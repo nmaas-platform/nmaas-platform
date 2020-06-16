@@ -38,4 +38,10 @@ public class EchoShellSessionObservable extends GenericShellSessionObservable {
 
     }
 
+    @Override
+    public void executeCommandAsync(ShellCommandRequest commandRequest) {
+        this.executeCommand(commandRequest);
+    }
+
+
 }

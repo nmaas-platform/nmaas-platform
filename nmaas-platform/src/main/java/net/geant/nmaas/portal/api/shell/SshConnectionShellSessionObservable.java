@@ -18,6 +18,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * this class is responsible for maintaining ssh connection and command execution logic
@@ -102,7 +104,8 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     }
 
-
+    private final ExecutorService resultReader;
+    private final ExecutorService errorReader;
 
     public SshConnectionShellSessionObservable(String sessionId) throws InvalidKeySpecException, NoSuchAlgorithmException {
         this.sessionId = sessionId;
@@ -116,7 +119,44 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
                 new BasicCredentials(SSH_USERNAME),
                 new KeyPairWrapper(kp)
         );
-        BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
+
+        resultReader = Executors.newSingleThreadExecutor();
+        resultReader.execute(() -> {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
+            try {
+                String line = reader.readLine();
+                while (line != null) {
+                    log.info("Line:\t" + line);
+                    this.sendMessage(line);
+                    line = reader.readLine();
+                }
+                log.info("Line reader finished");
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            } finally {
+                log.info("Result reader closed");
+            }
+        });
+
+        errorReader = Executors.newSingleThreadExecutor();
+        errorReader.execute(() -> {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getErrorStream()));
+            try {
+                String line = reader.readLine();
+                while (line != null) {
+                    log.info("Line:\t" + line);
+                    this.sendMessage(line);
+                    line = reader.readLine();
+                }
+                log.info("Line reader finished");
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            } finally {
+                log.info("Error reader closed");
+                log.info(this.sshConnector.getErrorStream());
+            }
+        });
+
 
     }
 
@@ -136,6 +176,10 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
         }
     }
 
+    /**
+     * executes single command in asynchronous manner
+     * @param commandRequest
+     */
     public void executeCommandAsync(ShellCommandRequest commandRequest) {
         log.info(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
 
@@ -144,6 +188,8 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     public void complete() {
         this.sshConnector.close();
+        this.resultReader.shutdown();
+        this.errorReader.shutdown();
         super.complete();
     }
 

@@ -90,6 +90,7 @@ public class SshSessionConnector {
 		}
 		try {
 			this.shell.getOutputStream().write(command.getBytes());
+			log.info("Command:\t" + command + "\t written to shell stream");
 		} catch (IOException e) {
 			throw new SshConnectionException("Unable to stop execute command in session -> " + e.getMessage());
 		}

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.shell;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.concurrent.Executors;
  * it OBSERVES event source (e.g. ssh session) and emits events to event emitter
  */
 @Getter
+@Log4j2
 public class ShellSessionObserver implements Observer {
 
     private static final Long DEFAULT_HEARTBEAT_INTERVAL_MS = 30000L;
@@ -44,7 +46,8 @@ public class ShellSessionObserver implements Observer {
                 }
             } catch (IOException | InterruptedException e) {
                 this.emitter.completeWithError(e);
-                e.printStackTrace();
+                log.error("Failed to send hartbeat");
+                log.error(e.getMessage());
             }
         });
     }
@@ -53,9 +56,11 @@ public class ShellSessionObserver implements Observer {
     public void update(Observable observable, Object o) {
         try {
             this.emitter.send(o);
+            log.info("Message:\t" + o.toString());
         } catch (IOException e) {
             this.emitter.completeWithError(e);
-            e.printStackTrace();
+            log.error("Failed to send message:\t" + o.toString());
+            log.error(e.getMessage());
         }
     }
 
