@@ -14,7 +14,7 @@
                     <li *ngIf="checkUserRole()" [routerLinkActiveOptions]="{exact:true}"
                         [routerLinkActive]="['active']"><a
                             [routerLink]="['/subscriptions']">{{ 'NAVBAR.SUBSCRIPTIONS' | translate }}</a></li>
-                    <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_USER']"
+                    <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_USER', 'ROLE_GUEST']"
                         [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
                             [routerLink]="['/instances']">{{ 'NAVBAR.INSTANCES' | translate }}</a></li>
                 </ul>

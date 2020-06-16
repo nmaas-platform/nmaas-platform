@@ -181,7 +181,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/{appInstanceId}")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
     public AppInstanceViewExtended getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                                   @NotNull Principal principal) {
@@ -285,7 +285,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/{appInstanceId}/state")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
     public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                       @NotNull Principal principal) {
@@ -294,7 +294,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/{appInstanceId}/state/history")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
     public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId, @NotNull Principal principal) {
         try {
@@ -306,7 +306,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @PostMapping("/{appInstanceId}/restart")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'CREATE')")
     @Transactional
     public void restartAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         try {
