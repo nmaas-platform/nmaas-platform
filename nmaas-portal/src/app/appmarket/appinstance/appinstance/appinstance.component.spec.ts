@@ -24,7 +24,7 @@ import {AppDeploymentSpec} from '../../../model/appdeploymentspec';
 import {AppConfigurationSpec} from '../../../model/appconfigurationspec';
 import {ApplicationState} from '../../../model/applicationstate';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
-import {Component, Input, Pipe, PipeTransform} from '@angular/core';
+import {Component, Directive, Input, Pipe, PipeTransform} from '@angular/core';
 import {Domain} from '../../../model/domain';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 import {ModalComponent} from '../../../shared/modal';
@@ -82,6 +82,11 @@ class AppInstanceProgressMock {
 class NmaasModalMock extends ModalComponent {
 }
 
+@Directive({
+  selector: '[roles]',
+  inputs: ['roles']
+})
+class MockRolesDirective {}
 
 describe('Component: AppInstance', () => {
   let component: AppInstanceComponent;
@@ -208,6 +213,7 @@ describe('Component: AppInstance', () => {
         AppInstanceProgressMock,
         NmaasModalMock,
           AccessMethodsModalComponent,
+          MockRolesDirective,
       ],
       imports: [
         FormsModule,
