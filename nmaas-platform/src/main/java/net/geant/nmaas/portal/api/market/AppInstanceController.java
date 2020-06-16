@@ -87,7 +87,8 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstanceView> getAllInstances(Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        return instances.findAll(pageable).getContent().stream()
+        List<AppInstance> source = pageable == null ?instances.findAll() : instances.findAll(pageable).getContent();
+        return source.stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
     }
@@ -114,7 +115,8 @@ public class AppInstanceController extends AppBaseController {
 
         // system admin on global view has an overall view over all instances
         if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            return instances.findAll(pageable).getContent().stream()
+            List<AppInstance> source = pageable == null ?instances.findAll() : instances.findAll(pageable).getContent();
+            return source.stream()
                     .map(this::mapAppInstance)
                     .collect(Collectors.toList());
         } else {
@@ -179,7 +181,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/{appInstanceId}")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
     public AppInstanceViewExtended getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                                   @NotNull Principal principal) {
@@ -283,7 +285,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/{appInstanceId}/state")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
     public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                       @NotNull Principal principal) {
@@ -292,7 +294,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/{appInstanceId}/state/history")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
     public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId, @NotNull Principal principal) {
         try {
@@ -304,7 +306,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @PostMapping("/{appInstanceId}/restart")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'CREATE')")
     @Transactional
     public void restartAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         try {

@@ -157,9 +157,8 @@ public class AppInstanceControllerTest {
         AppInstance appInstance = new AppInstance(application, name, domain, admin);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
-        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
-        when(applicationInstanceService.findAll(null)).thenReturn(appInstancePage);
+        when(applicationInstanceService.findAll()).thenReturn(appInstanceList);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());

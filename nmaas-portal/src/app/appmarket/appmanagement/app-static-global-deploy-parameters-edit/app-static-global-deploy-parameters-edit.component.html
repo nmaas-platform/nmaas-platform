@@ -8,7 +8,7 @@
       <li *ngFor="let k of getDeploymentParamsKeys(); let i=index" class="deploy-param-row">
         <div class="form-group col-sm-11">
           <label class="control-label" for="{{i}}-param">{{'APP_ACCESS_METHOD_EDIT.PARAM' | translate}}: {{k}}</label>
-          <input class="form-control" type="text" id="{{i}}-param" [(ngModel)]="appDeploymentSpec.globalDeployParameters[k]">
+          <input class="form-control" type="text" id="{{i}}-param" [(ngModel)]="appDeploymentSpec[propertyName][k]">
         </div>
         <div class="col-sm-1">
           <button class="btn btn-danger" role="button" (click)="removeDeployParam(k)">{{'APP_ACCESS_METHOD_EDIT.REMOVE_PARAM' | translate}}</button>
@@ -21,11 +21,23 @@
         <div class="form-group col-sm-11">
           <div class="double-form col-sm-6">
             <label class="control-label" for="new-key">{{'APP_ACCESS_METHOD_EDIT.NEW_KEY' | translate}}</label>
-            <input type="text" id="new-key" class="form-control" [(ngModel)]="newKey">
+            <input type="text" id="new-key" class="form-control" [formControl]="newKeyFormControl">
+            <div *ngIf="newKeyFormControl.invalid && (newKeyFormControl.dirty || newKeyFormControl.touched)"
+                 class="alert alert-danger">
+              <div *ngIf="keyValidatorErrorKey && newKeyFormControl.errors[keyValidatorErrorKey] && keyValidatorMessage">
+                {{keyValidatorMessage}}
+              </div>
+            </div>
           </div>
           <div class="double-form col-sm-6">
             <label class="control-label" for="new-value">{{'APP_ACCESS_METHOD_EDIT.NEW_VALUE' | translate}}</label>
-            <input type="text" id="new-value" class="form-control" [(ngModel)]="newValue">
+            <input type="text" id="new-value" class="form-control" [formControl]="newValueFormControl">
+            <div *ngIf="newValueFormControl.invalid && (newValueFormControl.dirty || newValueFormControl.touched)"
+                 class="alert alert-danger">
+              <div *ngIf="valueValidatorErrorKey && newKeyFormControl.errors[valueValidatorErrorKey] && valueValidatorMessage">
+                {{valueValidatorMessage}}
+              </div>
+            </div>
           </div>
         </div>
         <div class="col-sm-1">

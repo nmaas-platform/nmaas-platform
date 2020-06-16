@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppStaticGlobalDeployParametersEditComponent } from './app-static-global-deploy-parameters-edit.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TooltipModule} from 'ng2-tooltip-directive';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {AppStorageVolume} from '../../../model/app-storage-volume';
@@ -16,6 +16,7 @@ describe('AppStaticGlobalDeployParametersEditComponent', () => {
       declarations: [ AppStaticGlobalDeployParametersEditComponent ],
       imports: [
         FormsModule,
+          ReactiveFormsModule,
         TooltipModule,
         TranslateModule.forRoot({
           loader: {
@@ -35,11 +36,13 @@ describe('AppStaticGlobalDeployParametersEditComponent', () => {
       supportedDeploymentEnvironments: [],
       kubernetesTemplate: undefined,
       exposesWebUI: false,
+      allowSshAccess: false,
       deployParameters: {},
       storageVolumes: [],
       accessMethods:  [],
       globalDeployParameters: {}
     }
+    component.propertyName = 'deployParameters';
     fixture.detectChanges();
   });
 

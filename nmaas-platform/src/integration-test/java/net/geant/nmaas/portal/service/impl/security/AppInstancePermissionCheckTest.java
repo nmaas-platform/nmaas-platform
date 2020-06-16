@@ -99,8 +99,8 @@ public class AppInstancePermissionCheckTest {
 		assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ, Permissions.WRITE, Permissions.DELETE, Permissions.OWNER));
 
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER2, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
-		assertEquals(2, perms.size());
-		assertThat(perms, hasItems(Permissions.CREATE, Permissions.READ));
+		assertEquals(1, perms.size());
+		assertThat(perms, hasItems(Permissions.READ));
 		
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN2_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
 		assertEquals(0, perms.size());
@@ -111,9 +111,8 @@ public class AppInstancePermissionCheckTest {
 		Set<Permissions> perms = null;
 		
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
-		assertEquals(1, perms.size());
-		assertThat(perms, hasItems(Permissions.READ));
-		
+		assertEquals(0, perms.size());
+
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN2_APP2.getId(), AppInstancePermissionCheck.APPINSTANCE);
 		assertEquals(0, perms.size());
 		

@@ -662,6 +662,8 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania.",
     "EXPOSE_WEB_UI": "Udostępnij graficzny interfejs użytkownika",
     "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interfejs użytkownika",
+    "ALLOW_SSH_ACCESS": "Allow SSH Access",
+    "ALLOW_SSH_ACCESS_TOOLTIP": "Check if application allows SSH access",
     "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
     "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}",
     "STORAGE_VOLUMES": "Wolumen danych",
@@ -670,6 +672,7 @@
     "NEW_ACCESS_METHOD": "Dodaj metodę dostępu",
     "CONFIG_UPDATE_ENABLED": "Zezwól na aktualizowanie konfiguracji",
     "STATIC_GLOBAL_DEPLOY_PARAMETERS": "Static global deploy parameters",
+    "DEPLOY_PARAMETERS": "Global deploy parameters",
     "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
     "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)"
   },

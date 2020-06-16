@@ -132,10 +132,10 @@ public class JanitorService {
         }
     }
 
-    public String retrieveServiceIp(Identifier deploymentId, String domain) {
+    public String retrieveServiceIp(Identifier serviceId, String domain) {
         InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
 
-        JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(serviceId, domain));
         switch (response.getStatus()) {
             case OK:
                 return response.getInfo();
