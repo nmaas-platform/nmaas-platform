@@ -1,6 +1,6 @@
 {
 	"name":"ELK Stack",
-	"version":"7.5.0",
+	"version":"7.7.1",
 	"license":"Apache 2.0",
 	"licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
 	"tags": [ "monitoring", "visualization"],
@@ -38,17 +38,21 @@
 			"chart": {
 				"name": "elastic-stack",
 				"version": "1.8.0"
-			}
+			},
+			"mainDeploymentName": "pllabprod"
 		},
 		"deployParameters": {
 			"DOMAIN_CODENAME_ELASTICSEARCH": "elasticsearch.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
 			"DOMAIN_CODENAME_LOGSTASH": "logstash.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
 			"RELEASE_NAME_ELASTICSEARCH": "elasticsearch.clusterName",
 			"RELEASE_NAME_KIBANA": "kibana.elasticsearchHosts=http://%VALUE%-pllabprod:9200",
-			"RELEASE_NAME_LOGSTASH": "logstash.logstashConfig.uptime.conf=\"input { exec { command => \"uptime\" interval => 30 } }\noutput { elasticsearch { hosts => [\"http://%VALUE%-pllabprod:9200\"] index => \"logstash\" } }\""
+			"RELEASE_NAME_LOGSTASH": "logstash.logstashPipeline.\"uptime\\.conf\"=\"input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://%VALUE%-pllabprod:9200\"] index => \"logstash\" } }"
 		},
 		"globalDeployParameters": {
-			"elasticsearch.nodeGroup": "pllabprod"
+			"elasticsearch.nodeGroup": "pllabprod",
+			"elasticsearch.imageTag": "7.7.1",
+			"logstash.imageTag": "7.7.1",
+			"kibana.imageTag": "7.7.1"
 		},
 		"exposesWebUI": true,
 		"accessMethods":  [
