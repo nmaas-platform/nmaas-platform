@@ -13,6 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AppConfigurationSpecView {
 
+    private Long id;
+
     private List<ConfigFileTemplateView> templates = new ArrayList<>();
 
     private boolean configFileRepositoryRequired = false;

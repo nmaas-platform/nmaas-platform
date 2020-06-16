@@ -39,7 +39,10 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
     }
 
     private AppConfigurationSpec getAppConfigurationSpec(ApplicationView source){
-        return new AppConfigurationSpec(null, source.getAppConfigurationSpec().isConfigFileRepositoryRequired(), getConfigFileTemplates(source), source.getAppConfigurationSpec().isConfigUpdateEnabled());
+        return new AppConfigurationSpec(source.getAppConfigurationSpec().getId(),
+                source.getAppConfigurationSpec().isConfigFileRepositoryRequired(),
+                getConfigFileTemplates(source),
+                source.getAppConfigurationSpec().isConfigUpdateEnabled());
     }
 
     private List<ConfigFileTemplate> getConfigFileTemplates(ApplicationView source){
@@ -50,6 +53,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
 
     private AppDeploymentSpec getAppDeploymentSpec(ApplicationView source){
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+        appDeploymentSpec.setId(source.getAppDeploymentSpec().getId());
         appDeploymentSpec.setSupportedDeploymentEnvironments(source.getAppDeploymentSpec().getSupportedDeploymentEnvironments());
         appDeploymentSpec.setDeployParameters(source.getAppDeploymentSpec().getDeployParameters());
         appDeploymentSpec.setGlobalDeployParameters(source.getAppDeploymentSpec().getGlobalDeployParameters());
