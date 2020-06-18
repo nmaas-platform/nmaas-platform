@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -7,6 +8,7 @@ import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.springframework.http.HttpStatus;
 
+@Log4j2
 public class GitLabConfigHelper {
 
     static final String GROUPS_PATH_PREFIX = "groups";
@@ -22,6 +24,7 @@ public class GitLabConfigHelper {
         user.setName(name);
         user.setCanCreateGroup(false);
         user.setCanCreateProject(false);
+        log.info(String.format("Creating GitLab user (username: %s, email: %s, name: %s)", username, email, name));
         return user;
     }
 
