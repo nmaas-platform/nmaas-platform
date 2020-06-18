@@ -170,6 +170,19 @@
               "ref": "nmaas-console"
             }
           ]
+        },
+        {
+          "name": "io.grpc.netty.shaded.io.grpc.netty",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
         }
       ],
       "root": {

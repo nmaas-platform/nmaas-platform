@@ -119,12 +119,17 @@ public class GitLabConfigHandler implements GitConfigHandler {
     public void createRepository(Identifier deploymentId, String member) {
         String domain = repositoryManager.loadDomain(deploymentId);
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
+        log.info("Retrieving or creating user");
         Integer gitLabUserId = getUserId(member);
+        log.info("Retrieving or creating group");
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
+        log.info("Creating project within the group");
         Integer gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
+        log.info("Adding member to the project");
         addMemberToProject(gitLabProjectId, gitLabUserId);
         String webhookId = generateWebhookId();
         String webhookToken = generateRandomToken();
+        log.info("Adding webhook to the project");
         addWebhookToProject(gitLabProjectId, webhookId, webhookToken);
         GitLabProject project = project(descriptiveDeploymentId, member, gitLabProjectId);
         project.setWebhookId(webhookId);
@@ -198,7 +203,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             ProjectHook hook = new ProjectHook();
             hook.setPushEvents(true);
             String completeWebhookUrl = getWebhookUrl(webhookId);
-            log.info("completeWebhookUrl: " + completeWebhookUrl);
+            log.info(String.format("completeWebhookUrl: %s", completeWebhookUrl));
             gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
             throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
