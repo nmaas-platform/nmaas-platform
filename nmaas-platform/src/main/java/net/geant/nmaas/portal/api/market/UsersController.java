@@ -100,6 +100,7 @@ public class UsersController {
 		this.userLoginService = userLoginService;
 	}
 
+	//TODO hasRole('ROLE_DOMAIN_ADMIN') to be removed
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public List<UserView> getUsers(Pageable pageable) {
@@ -125,7 +126,8 @@ public class UsersController {
 		return Arrays.stream(Role.values())
 				.collect(Collectors.toList());
 	}
-		
+
+	//TODO <most probably> hasRole('ROLE_DOMAIN_ADMIN') to be removed
 	@GetMapping(value="/users/{userId}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public UserView retrieveUser(@PathVariable("userId") Long userId) {

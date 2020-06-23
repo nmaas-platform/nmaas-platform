@@ -1,12 +1,8 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
-import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +62,8 @@ public class DomainObjectPermissionCheckTest {
 		Set<Permissions> perms = null;
 		
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
-		assertEquals(1, perms.size());
+		assertEquals(2, perms.size());
+		assertThat(perms, hasItems(Permissions.READ, Permissions.OWNER));
 
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN2.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(0, perms.size());
