@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.api.shell;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.utils.ssh.BasicCredentials;
 import net.geant.nmaas.utils.ssh.SshSessionConnector;
@@ -9,15 +7,10 @@ import net.schmizz.sshj.userauth.keyprovider.KeyPairWrapper;
 
 import java.io.*;
 import java.security.*;
-import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -106,6 +99,42 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     private final ExecutorService resultReader;
     private final ExecutorService errorReader;
 
+    /**
+     * abstraction layer over reader, used to read phrases from stream
+     */
+    private static class CustomReader {
+
+        private final Reader reader;
+
+        public CustomReader(Reader reader) {
+            this.reader = reader;
+        }
+
+        public String readWord() throws IOException {
+            StringBuilder result = new StringBuilder();
+
+            int ch = reader.read();
+            while (ch != -1) {
+                // skip endline characters
+                if((char) ch == '\n') {
+                    ch = reader.read(); // assure progress
+                    continue;
+                }
+                if((char) ch == '\r') { // carriage return is replaced with newline token
+                    result.append("<#>NEWLINE<#>"); // newline control token
+                    break;
+                }
+                result.append((char) ch);
+                if(result.toString().endsWith("$ ")) { // break after reaching command prompt
+                    break;
+                }
+                ch = reader.read();
+            }
+
+            return result.toString();
+        }
+    }
+
     public SshConnectionShellSessionObservable(String sessionId) throws InvalidKeySpecException, NoSuchAlgorithmException {
         this.sessionId = sessionId;
 
@@ -122,12 +151,13 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
         resultReader = Executors.newSingleThreadExecutor();
         resultReader.execute(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
+            CustomReader customReader = new CustomReader(reader);
             try {
-                String line = reader.readLine();
-                while (line != null) {
-                    log.debug("Line:\t" + line);
-                    this.sendMessage(line);
-                    line = reader.readLine();
+                String part = customReader.readWord();
+                while (part != null) {
+                    log.debug("Part:\t" + part);
+                    this.sendMessage(part);
+                    part = customReader.readWord();
                 }
                 log.info("Result Line reader finished");
             } catch (IOException e) {
@@ -161,7 +191,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     /**
      * executes command synchronously returning result immediately,
      * however command is executed in single session scope (one command <=> one session)
-     * @param commandRequest
+     * @param commandRequest command request
      */
     public void executeCommand(ShellCommandRequest commandRequest) {
         log.info(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
@@ -176,7 +206,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     /**
      * executes single command in asynchronous manner
-     * @param commandRequest
+     * @param commandRequest command request
      */
     public void executeCommandAsync(ShellCommandRequest commandRequest) {
         log.info(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
