@@ -11,11 +11,19 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,13 +41,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -49,6 +57,9 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     @SpyBean
     private DomainService domainService;
 
+    @SpyBean
+    private UserService userService;
+
     @MockBean
     private ApplicationService applicationService;
 
@@ -57,6 +68,9 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
     @MockBean
     private ApplicationInstanceService applicationInstanceService;
+
+    @MockBean
+    private AppInstanceRepository applicationInstanceRepository;
 
     @MockBean
     private AppLifecycleManager appLifecycleManager;
@@ -127,7 +141,6 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isInternalServerError());
         verify(appLifecycleManager, times(0)).deployApplication(ArgumentMatchers.any(AppDeployment.class));
-
     }
 
     @Test
@@ -160,7 +173,6 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).deployApplication(ArgumentMatchers.any(AppDeployment.class));
-
     }
 
     @Test
@@ -204,11 +216,12 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldRestartApplication() throws Exception{
+    void shouldRestartApplication() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
         AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, user);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
@@ -216,7 +229,43 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldThrowAnExceptionWhenInputIsIncorrect() throws Exception{
+    void shouldRestartAndRedeployApplicationAsAdminInDomain() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.DOMAIN1_ADMIN;
+        when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userService.findById(user.getId())).thenReturn(Optional.of(user));
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, user);
+        when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+        verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId());
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+        verify(appLifecycleManager, times(1)).redeployApplication(appInstance.getInternalId());
+    }
+
+    @Test
+    void shouldNotRestartNorRedeployApplicationAsUserInDomain() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.DOMAIN1_USER1;
+        when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userService.findById(user.getId())).thenReturn(Optional.of(user));
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, user);
+        when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldThrowAnExceptionWhenInputIsIncorrect() throws Exception {
         when(applicationInstanceService.find(0L)).thenReturn(Optional.empty());
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart",0L)
                 .header("Authorization","Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
@@ -224,25 +273,107 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetRequestedAppInstance() throws Exception {
+    void shouldGetRequestedAppInstanceAndCheckStatusSinceAdmin() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        ApplicationBase applicationBase = new ApplicationBase(1L, "name");
-        Application application = new Application("name", "version", "owner");
-        application.setId(1L);
-        AppInstance appInstance = new AppInstance(10L, application, domain, "test");
-        appInstance.setInternalId(new Identifier("1014"));
-        application.setAppDeploymentSpec(new AppDeploymentSpec());
-        application.setAppConfigurationSpec(new AppConfigurationSpec());
 
-        when(applicationBaseRepository.findByName("name")).thenReturn(Optional.of(applicationBase));
-        when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
-        when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.find(10L)).thenReturn(Optional.of(appInstance));
-        when(appDeploymentMonitor.userAccessDetails(appInstance.getInternalId())).thenThrow(new InvalidDeploymentIdException());
+        ApplicationBase applicationBase = testApplicationBase();
+        Application application = testApplication();
+        AppInstance appInstance = testAppInstance(domain, application);
+
+        mockAppInstanceGetProcess(domain, user, applicationBase, application, appInstance);
+
         mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
     }
+
+    @Test
+    void shouldNotGetRequestedAppInstanceNorCheckStatusSinceGuestInDomain() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.DOMAIN1_GUEST;
+
+        ApplicationBase applicationBase = testApplicationBase();
+        Application application = testApplication();
+        AppInstance appInstance = testAppInstance(domain, application);
+        mockAppInstanceGetProcess(domain, user, applicationBase, application, appInstance);
+
+        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldGetRequestedAppInstanceButNotCheckStatusSinceUserInDomain() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.DOMAIN1_USER1;
+
+        ApplicationBase applicationBase = testApplicationBase();
+        Application application = testApplication();
+        AppInstance appInstance = testAppInstance(domain, application);
+        mockAppInstanceGetProcess(domain, user, applicationBase, application, appInstance);
+
+        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldDeleteAppInstanceSinceAdminInDomain() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.DOMAIN1_ADMIN;
+
+        when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userService.findById(user.getId())).thenReturn(Optional.of(user));
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, UsersHelper.ADMIN);
+        when(applicationInstanceService.find(10L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
+
+        mvc.perform(delete("/api/apps/instances/{appInstanceId}", 10L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+    }
+
+    private void mockAppInstanceGetProcess(Domain domain, User user, ApplicationBase applicationBase, Application application, AppInstance appInstance) {
+        when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
+        when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userService.findById(user.getId())).thenReturn(Optional.of(user));
+        when(applicationBaseRepository.findByName("name")).thenReturn(Optional.of(applicationBase));
+        when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
+        when(applicationInstanceService.find(10L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
+        when(appDeploymentMonitor.userAccessDetails(appInstance.getInternalId())).thenThrow(new InvalidDeploymentIdException());
+    }
+
+    private ApplicationBase testApplicationBase() {
+        return new ApplicationBase(1L, "name");
+    }
+
+    private Application testApplication() {
+        Application application = new Application("name", "version", "owner");
+        application.setId(1L);
+        application.setAppDeploymentSpec(new AppDeploymentSpec());
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
+        return application;
+    }
+
+    private AppInstance testAppInstance(Domain domain, Application application) {
+        AppInstance appInstance = new AppInstance(10L, application, domain, "test");
+        appInstance.setInternalId(new Identifier("1014"));
+        return appInstance;
+    }
+
 }

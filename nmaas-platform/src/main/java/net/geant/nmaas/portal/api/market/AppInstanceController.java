@@ -129,7 +129,7 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/running/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
+    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
         Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
         return getAllRunningInstancesByOwnerAndDomain(owner, domain);
@@ -154,11 +154,9 @@ public class AppInstanceController extends AppBaseController {
             return instances.findAllByOwner(user, pageable).getContent().stream()
                     .map(this::mapAppInstance)
                     .collect(Collectors.toList());
-
         } else {
             return getUserDomainAppInstances(domainId, principal.getName(), pageable);
         }
-
     }
 
     @GetMapping("/domain/{domainId}/user/{username}")
@@ -246,18 +244,6 @@ public class AppInstanceController extends AppBaseController {
         );
     }
 
-    @PostMapping("/{appInstanceId}/redeploy")
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
-    @Transactional
-    public void redeployAppInstance(@PathVariable Long appInstanceId) {
-        try {
-            AppInstance appInstance = getAppInstance(appInstanceId);
-            this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
-        } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
-        }
-    }
-
     @DeleteMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
@@ -275,7 +261,7 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
     public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                  @NotNull Principal principal) {
+                                     @NotNull Principal principal) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.removeFailedApplication(appInstance.getInternalId());
@@ -306,12 +292,24 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @PostMapping("/{appInstanceId}/restart")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'CREATE')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void restartAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             this.appLifecycleManager.restartApplication(appInstance.getInternalId());
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
+    @PostMapping("/{appInstanceId}/redeploy")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @Transactional
+    public void redeployAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -329,8 +327,9 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {
-        if (appInstance == null)
+        if (appInstance == null) {
             throw new MissingElementException("App instance is null");
+        }
 
         try {
             return prepareAppInstanceStatus(

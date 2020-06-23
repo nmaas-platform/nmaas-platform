@@ -33,24 +33,29 @@ public class JWTTokenService {
 	}
 
 	public String getToken(User user) {
-		if(user == null || StringUtils.isEmpty(user.getUsername())) 
+		if(user == null || StringUtils.isEmpty(user.getUsername())) {
 			throw new IllegalArgumentException("User or username is not set");
+		}
 			
 		return Jwts.builder()
-		.setSubject(user.getUsername())
-		.setIssuer(jwtSettings.getIssuer())
-		.setIssuedAt(new Date())
-		.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
-		.claim(SCOPES, user.getRoles().stream().filter(role -> role.getDomain().isActive()).map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
-		.claim(LANGUAGE, user.getSelectedLanguage())
-		.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
-		.compact();
+					.setSubject(user.getUsername())
+					.setIssuer(jwtSettings.getIssuer())
+					.setIssuedAt(new Date())
+					.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
+					.claim(SCOPES, user.getRoles().stream()
+							.filter(role -> role.getDomain().isActive())
+							.map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+							.collect(Collectors.toList()))
+					.claim(LANGUAGE, user.getSelectedLanguage())
+					.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
+					.compact();
 	}
 	
 	public String getRefreshToken(User user) {
-		if(user == null || StringUtils.isEmpty(user.getUsername())) 
+		if(user == null || StringUtils.isEmpty(user.getUsername())) {
 			throw new IllegalArgumentException("User or username is not set");
-		
+		}
+
 		return Jwts.builder()
 					.setSubject(user.getUsername())
 					.setIssuer(jwtSettings.getIssuer())
@@ -63,8 +68,8 @@ public class JWTTokenService {
 					.compact();
 	}
 
-	public String getResetToken(String email){
-		if(email == null || email.isEmpty()){
+	public String getResetToken(String email) {
+		if(email == null || email.isEmpty()) {
 			throw new IllegalArgumentException("Email cannot be null or empty");
 		}
 
@@ -86,7 +91,6 @@ public class JWTTokenService {
 		} catch(JwtException e) {
 			return false;
 		}
-		
 	}
 	
 	public Claims getClaims(String token) {

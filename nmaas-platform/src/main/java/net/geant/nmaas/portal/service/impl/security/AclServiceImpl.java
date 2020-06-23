@@ -22,7 +22,6 @@ public class AclServiceImpl implements AclService {
 						  AppInstancePermissionCheck appInstancePermissionCheck,
 						  AppTemplatePermissionCheck appTemplatePermissionCheck,
 						  UserService userService) {
-
 		add(domainObjectPermissionCheck);
 		add(commentPermissionCheck);
 		add(appInstancePermissionCheck);
@@ -57,13 +56,17 @@ public class AclServiceImpl implements AclService {
 	public boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions[] perms) {
 		Optional<User> userOptional = users.findById(userId);
 		// if user is not present then do not authorize
-		if(!userOptional.isPresent())
+		if(!userOptional.isPresent()) {
 			return false;
+		}
+
 		// check all available permission checks if user is authorized
 		for (PermissionCheck permCheck : permissionChecks) {
-			if (permCheck.supports(targetType) && permCheck.check(userOptional.get(), targetId, targetType, perms))
+			if (permCheck.supports(targetType) && permCheck.check(userOptional.get(), targetId, targetType, perms)) {
 				return true;
+			}
 		}
+
 		// finally check default permission checker if available
 		return (defaultPermissionCheck != null && defaultPermissionCheck.check(userOptional.get(), targetId, targetType, perms));
 	}
