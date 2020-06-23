@@ -1,3 +1,3 @@
-<div *ngIf="appInstanceId" class="row">
+<div *ngIf="appInstanceId && ready" class="row">
   <app-ssh-shell [appInstanceId]="appInstanceId"></app-ssh-shell>
 </div>

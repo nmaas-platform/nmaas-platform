@@ -42,11 +42,13 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
                       },
                       sseError => {
                           console.error(sseError);
+                          this.sessionId = null;
                       }
                   );
               },
               connError => {
                   console.error(connError);
+                  this.sessionId = null;
               }
           );
       } else {
@@ -92,7 +94,9 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.shellClientService.close();
+      if (this.appInstanceId) {
+          this.shellClientService.close();
+      }
   }
 
 }

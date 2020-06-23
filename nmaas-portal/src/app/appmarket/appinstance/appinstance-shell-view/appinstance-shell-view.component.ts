@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {AppInstanceService} from '../../../service';
 
 @Component({
     selector: 'app-appinstance-shell-view',
@@ -9,16 +10,39 @@ import {ActivatedRoute} from '@angular/router';
 export class AppInstanceShellViewComponent implements OnInit {
 
     public appInstanceId: number = undefined;
+    public ready = false;
 
-    constructor(private route: ActivatedRoute) {
+    constructor(private route: ActivatedRoute,
+                private router: Router,
+                private appInstanceService: AppInstanceService) {
     }
 
     ngOnInit() {
         this.route.params.subscribe(
             params => {
                 this.appInstanceId = +params['id'];
+                this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
+                    data => {
+                        if (!data.application.appDeploymentSpec.allowSshAccess) {
+                            this.notFound();
+                        } else {
+                            this.ready = true;
+                        }
+                    },
+                    error => {
+                        console.error(error);
+                        this.notFound();
+                    }
+                )
             }
         );
+    }
+
+    private notFound(): void {
+        const promise = this.router.navigateByUrl('/notfound');
+        promise.then(result => {
+            if (result) { console.log('Redirected'); } else { console.log('Failed'); }
+        })
     }
 
 }

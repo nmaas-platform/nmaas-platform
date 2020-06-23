@@ -67,9 +67,9 @@
                             <button class="btn btn-default" *ngIf="app.appConfigurationSpec.configUpdateEnabled"
                                     (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
                         </div>
-                        <!-- TODO language label -->
-                        <a [routerLink]="router.url + '/shell'" class="btn btn-default" role="button">
-                            Shell
+                        <a *ngIf="app.appDeploymentSpec.allowSshAccess"
+                           [routerLink]="router.url + '/shell'" class="btn btn-default" role="button">
+                            {{'APP_INSTANCE.SHELL' | translate}}
                         </a>
                         <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
