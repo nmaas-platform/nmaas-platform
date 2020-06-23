@@ -14,6 +14,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class AppStorageVolumeView {
 
+    private Long id;
+
     private ServiceStorageVolumeType type;
 
     private Integer defaultStorageSpace;

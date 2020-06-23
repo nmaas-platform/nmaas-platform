@@ -34,5 +34,11 @@ public class ConfigWizardTemplate implements Serializable {
 		super();
 		this.template = template;
 	}
+
+	public ConfigWizardTemplate(Long id, String template) {
+		super();
+		this.id = id;
+		this.template = template;
+	}
 	
 }

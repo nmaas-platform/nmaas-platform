@@ -94,7 +94,7 @@ public class ApplicationToApplicationViewConverter extends AbstractConverter<App
             return result;
         }
         for(AppStorageVolume v: storageVolumes) {
-            result.add(new AppStorageVolumeView(v.getType(), v.getDefaultStorageSpace(), v.getDeployParameters()));
+            result.add(new AppStorageVolumeView(v.getId(), v.getType(), v.getDefaultStorageSpace(), v.getDeployParameters()));
         }
         return result;
     }
@@ -105,7 +105,7 @@ public class ApplicationToApplicationViewConverter extends AbstractConverter<App
             return result;
         }
         for(AppAccessMethod a: appAccessMethods) {
-            result.add(new AppAccessMethodView(a.getType(), a.getName(), a.getTag(), a.getDeployParameters()));
+            result.add(new AppAccessMethodView(a.getId(), a.getType(), a.getName(), a.getTag(), a.getDeployParameters()));
         }
         return result;
     }
@@ -114,21 +114,25 @@ public class ApplicationToApplicationViewConverter extends AbstractConverter<App
         if(template == null){
             return null;
         }
-        return new KubernetesTemplateView(getKubernetesChartView(template.getChart()), template.getArchive(), template.getMainDeploymentName());
+        return new KubernetesTemplateView(
+                template.getId(),
+                getKubernetesChartView(template.getChart()),
+                template.getArchive(),
+                template.getMainDeploymentName());
     }
 
     private KubernetesChartView getKubernetesChartView(KubernetesChart kubernetesChart){
         if(kubernetesChart == null){
             return null;
         }
-        return new KubernetesChartView(kubernetesChart.getName(), kubernetesChart.getVersion());
+        return new KubernetesChartView(kubernetesChart.getId(), kubernetesChart.getName(), kubernetesChart.getVersion());
     }
 
     private ConfigWizardTemplateView getConfigWizardTemplateView(ConfigWizardTemplate template){
         if(template == null || StringUtils.isEmpty(template.getTemplate())){
             return null;
         }
-        return new ConfigWizardTemplateView(template.getTemplate());
+        return new ConfigWizardTemplateView(template.getId(), template.getTemplate());
     }
 
     private List<AppDescriptionView> getDescriptions(ApplicationBase source){

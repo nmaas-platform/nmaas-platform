@@ -14,6 +14,8 @@ import lombok.Setter;
 @Getter
 public class ConfigWizardTemplateView {
 
+	private Long id;
+
 	@JsonRawValue
 	String template;
 

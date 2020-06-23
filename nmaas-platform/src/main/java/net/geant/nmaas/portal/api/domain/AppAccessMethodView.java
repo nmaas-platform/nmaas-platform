@@ -14,6 +14,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class AppAccessMethodView {
 
+    private Long id;
+
     private ServiceAccessMethodType type;
 
     // Name of the access method displayed in the UI
