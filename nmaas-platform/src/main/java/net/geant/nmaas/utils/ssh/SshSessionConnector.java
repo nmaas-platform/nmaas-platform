@@ -89,9 +89,11 @@ public class SshSessionConnector {
 			throw new SshConnectionException("Session is not opened");
 		}
 		try {
-			this.shell.getOutputStream().write(command.getBytes());
+			// write command to stream
+			// endline is essential for command to be executed
+			this.shell.getOutputStream().write((command + "\n").getBytes());
 			this.shell.getOutputStream().flush();
-			log.info("Command:\t" + command + "\t written to shell stream");
+			log.debug("Command:\t" + command + "\t written to shell stream");
 		} catch (IOException e) {
 			throw new SshConnectionException("Unable to stop execute command in session -> " + e.getMessage());
 		}
