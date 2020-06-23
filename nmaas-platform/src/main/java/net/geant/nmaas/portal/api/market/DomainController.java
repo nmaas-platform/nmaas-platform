@@ -64,9 +64,10 @@ public class DomainController extends AppBaseController {
 		this.applicationStatePerDomainService = applicationStatePerDomainService;
 	}
 
+	//TODO Re-add this preauthorize annotation in the future
 	@GetMapping
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	//@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public List<DomainView> getDomains() {
 		return domainService.getDomains().stream()
 				.map(d -> modelMapper.map(d, DomainView.class))
