@@ -47,6 +47,9 @@ public class ShellSessionsStorage {
         AppInstance instance = this.instanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
         // TODO check if you can connect to this app instance
+        if(!instance.getApplication().getAppDeploymentSpec().isAllowSshAccess()) {
+            throw new RuntimeException("SSH connection is not allowed");
+        }
         // TODO extract connection parameters
 
         String sessionId = UUID.randomUUID().toString();
