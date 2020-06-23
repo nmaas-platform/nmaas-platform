@@ -66,16 +66,26 @@ public class DomainController extends AppBaseController {
 
 	@GetMapping
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public List<DomainView> getDomains() {
-		return domainService.getDomains().stream().map(d -> modelMapper.map(d, DomainView.class)).collect(Collectors.toList());
+		return domainService.getDomains().stream()
+				.map(d -> modelMapper.map(d, DomainView.class))
+				.collect(Collectors.toList());
+	}
+
+	@GetMapping("/{domainId}")
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
+	public DomainView getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
+		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
+		return modelMapper.map(domain, DomainView.class);
 	}
 	
 	@GetMapping("/my")
 	@Transactional(readOnly = true)
 	public List<DomainView> getMyDomains(@NotNull Principal principal) {
-		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
-					
 		try {
+			User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 			return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, DomainView.class)).collect(Collectors.toList());
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
@@ -90,9 +100,8 @@ public class DomainController extends AppBaseController {
 			throw new ProcessingException("Domain already exists.");
 		}
 
-		Domain domain;
 		try {
-			domain = domainService.createDomain(domainRequest);
+			Domain domain = domainService.createDomain(domainRequest);
 			this.domainService.storeDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 
 			if(domain.getDomainDcnDetails().isDcnConfigured()){
@@ -185,16 +194,9 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public void deleteDomain(@PathVariable Long domainId) {		
-		if(!domainService.removeDomain(domainId))
+		if(!domainService.removeDomain(domainId)) {
 			throw new MissingElementException("Unable to delete domain");
-	}
-
-	@GetMapping("/{domainId}")
-	@Transactional(readOnly = true)	
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public DomainView getDomain(@PathVariable Long domainId) {
-		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		return modelMapper.map(domain, DomainView.class);
+		}
 	}
 
 }

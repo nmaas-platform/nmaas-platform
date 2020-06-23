@@ -323,11 +323,15 @@ public class ApplicationServiceImplTest {
         applicationView.setOwner("owner");
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive", null));
-        appDeploymentSpec.setStorageVolumes(Collections.singletonList(new AppStorageVolumeView(ServiceStorageVolumeType.MAIN, 2, null)));
-        appDeploymentSpec.setAccessMethods(Collections.singletonList(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(
+                1L,
+                new KubernetesChartView(1L, "name", "version"),
+                "archive",
+                null));
+        appDeploymentSpec.setStorageVolumes(Collections.singletonList(new AppStorageVolumeView(12L, ServiceStorageVolumeType.MAIN, 2, null)));
+        appDeploymentSpec.setAccessMethods(Collections.singletonList(new AppAccessMethodView(13L, ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
-        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(1L, "template"));
         AppConfigurationSpecView appConfigurationSpec = new AppConfigurationSpecView();
         appConfigurationSpec.setConfigFileRepositoryRequired(false);
         appConfigurationSpec.setConfigUpdateEnabled(false);

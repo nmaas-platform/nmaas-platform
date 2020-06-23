@@ -176,7 +176,7 @@ public class ConvertersIntTest {
         appView.setIssuesUrl("default-website.com");
         appView.setId(1L);
         appView.setVersion("0.0.1");
-        appView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
+        appView.setConfigWizardTemplate(new ConfigWizardTemplateView(45L, "template"));
         appView.setAppConfigurationSpec(new AppConfigurationSpecView());
         appView.setAppDeploymentSpec(new AppDeploymentSpecView());
         appView.getAppDeploymentSpec().setExposesWebUI(true);

@@ -233,11 +233,11 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     private ApplicationView getDefaultAppView(String name){
         List<AppStorageVolumeView> svList = new ArrayList<>();
-        svList.add(new AppStorageVolumeView(ServiceStorageVolumeType.MAIN, 5, null));
+        svList.add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, null));
         List<AppAccessMethodView> mvList = new ArrayList<>();
-        mvList.add(new AppAccessMethodView(ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
-        mvList.add(new AppAccessMethodView(ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
-        mvList.add(new AppAccessMethodView(ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
+        mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
+        mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
         ApplicationView applicationView = new ApplicationView();
         applicationView.setName(name);
         applicationView.setVersion("1.1.0");
@@ -245,11 +245,11 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         applicationView.setState(ApplicationState.ACTIVE);
         applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive", null));
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(null, new KubernetesChartView(null, "name", "version"), "archive", null));
         appDeploymentSpec.setStorageVolumes(svList);
         appDeploymentSpec.setAccessMethods(mvList);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
-        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("{}"));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(null, "{}"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
         applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
         return applicationView;

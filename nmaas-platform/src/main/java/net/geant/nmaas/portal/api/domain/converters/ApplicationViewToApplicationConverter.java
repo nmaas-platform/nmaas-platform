@@ -38,20 +38,29 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         return app;
     }
 
-    private AppConfigurationSpec getAppConfigurationSpec(ApplicationView source){
-        return new AppConfigurationSpec(source.getAppConfigurationSpec().getId(),
+    private AppConfigurationSpec getAppConfigurationSpec(ApplicationView source) {
+        return new AppConfigurationSpec(
+                source.getAppConfigurationSpec().getId(),
                 source.getAppConfigurationSpec().isConfigFileRepositoryRequired(),
                 getConfigFileTemplates(source),
-                source.getAppConfigurationSpec().isConfigUpdateEnabled());
+                source.getAppConfigurationSpec().isConfigUpdateEnabled()
+        );
     }
 
-    private List<ConfigFileTemplate> getConfigFileTemplates(ApplicationView source){
+    private List<ConfigFileTemplate> getConfigFileTemplates(ApplicationView source) {
         return Optional.ofNullable(source.getAppConfigurationSpec().getTemplates()).orElse(Collections.emptyList()).stream()
-                .map(template -> new ConfigFileTemplate(template.getId(), template.getApplicationId(), template.getConfigFileName(), template.getConfigFileTemplateContent()))
+                .map(template ->
+                        new ConfigFileTemplate(
+                                template.getId(),
+                                template.getApplicationId(),
+                                template.getConfigFileName(),
+                                template.getConfigFileTemplateContent()
+                        )
+                )
                 .collect(Collectors.toList());
     }
 
-    private AppDeploymentSpec getAppDeploymentSpec(ApplicationView source){
+    private AppDeploymentSpec getAppDeploymentSpec(ApplicationView source) {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setId(source.getAppDeploymentSpec().getId());
         appDeploymentSpec.setSupportedDeploymentEnvironments(source.getAppDeploymentSpec().getSupportedDeploymentEnvironments());
@@ -67,45 +76,65 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
 
     private Set<AppStorageVolume> getAppStorageVolumes(List<AppStorageVolumeView> views) {
         Set<AppStorageVolume> result = new HashSet<>();
-        if(views == null) {
+        if (views == null) {
             return result;
         }
-        for(AppStorageVolumeView sv : views) {
-            result.add(new AppStorageVolume(sv.getType(), sv.getDefaultStorageSpace(), sv.getDeployParameters()));
+        for (AppStorageVolumeView sv : views) {
+            result.add(
+                    new AppStorageVolume(
+                            sv.getId(),
+                            sv.getType(),
+                            sv.getDefaultStorageSpace(),
+                            sv.getDeployParameters()
+                    )
+            );
         }
         return result;
     }
 
     private Set<AppAccessMethod> getAppAccessMethods(List<AppAccessMethodView> views) {
         Set<AppAccessMethod> result = new HashSet<>();
-        if(views == null) {
+        if (views == null) {
             return result;
         }
-        for(AppAccessMethodView av : views) {
-            result.add(new AppAccessMethod(av.getType(), av.getName(), av.getTag(), av.getDeployParameters()));
+        for (AppAccessMethodView av : views) {
+            result.add(
+                    new AppAccessMethod(
+                            av.getId(),
+                            av.getType(),
+                            av.getName(),
+                            av.getTag(),
+                            av.getDeployParameters()
+                    )
+            );
         }
         return result;
     }
 
-    private KubernetesTemplate getKubernetesTemplate(KubernetesTemplateView template){
-        if(template == null){
+    private KubernetesTemplate getKubernetesTemplate(KubernetesTemplateView template) {
+        if (template == null) {
             return null;
         }
-        return new KubernetesTemplate(getKubernetesChartView(template.getChart()), template.getArchive(), template.getMainDeploymentName());
+        return new KubernetesTemplate(template.getId(),
+                getKubernetesChartView(template.getChart()),
+                template.getArchive(),
+                template.getMainDeploymentName());
     }
 
-    private KubernetesChart getKubernetesChartView(KubernetesChartView kubernetesChart){
-        if(kubernetesChart == null || StringUtils.isEmpty(kubernetesChart.getName())){
+    private KubernetesChart getKubernetesChartView(KubernetesChartView kubernetesChart) {
+        if (kubernetesChart == null || StringUtils.isEmpty(kubernetesChart.getName())) {
             return null;
         }
-        return new KubernetesChart(kubernetesChart.getName(), kubernetesChart.getVersion());
+        return new KubernetesChart(kubernetesChart.getId(),
+                kubernetesChart.getName(),
+                kubernetesChart.getVersion());
     }
 
-    private ConfigWizardTemplate getConfigWizardTemplate(ConfigWizardTemplateView template){
-        if(template == null || StringUtils.isEmpty(template.getTemplate())){
+    private ConfigWizardTemplate getConfigWizardTemplate(ConfigWizardTemplateView template) {
+        if (template == null || StringUtils.isEmpty(template.getTemplate())) {
             return null;
         }
-        return new ConfigWizardTemplate(template.getTemplate());
+        return new ConfigWizardTemplate(template.getId(), template.getTemplate());
     }
 
 }
