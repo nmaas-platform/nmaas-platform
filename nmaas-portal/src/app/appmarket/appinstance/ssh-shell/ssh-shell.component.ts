@@ -30,7 +30,15 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
                   this.shellClientService.getServerSentEvent(sessionId).subscribe(
                       event => {
                           console.log('Message:', event)
-                          this.child.write(event.data + '\r\n$ ');
+                          const mesg = event.data;
+                          if (mesg == null) {
+                              console.error('empty message');
+                          } else if (mesg.endsWith('<#>NEWLINE<#>')) {
+                              this.child.write(mesg.replace('<#>NEWLINE<#>', '') + '\r\n');
+                          } else {
+                              this.child.write(mesg);
+                          }
+                          // this.child.write(event.data + '\r\n$ ');
                       },
                       sseError => {
                           console.error(sseError);
@@ -49,7 +57,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     // terminal is available now
     // default handler with enhancement
-    this.child.write('$ ');
+    // this.child.write('$ ');
     this.child.keyEventInput.subscribe(e => {
       // console.log('keyboard event:' + e.domEvent.keyCode + ', ' + e.key);
 
@@ -74,6 +82,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
         // Do not delete the prompt
         if (this.child.underlying.buffer.active.cursorX > 2) {
           this.child.write('\b \b');
+          this.line = this.line.slice(0, -1); // remove last character from line
         }
       } else if (printable) { // standard
         this.child.write(e.key);
