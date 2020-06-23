@@ -1,6 +1,6 @@
 import {AuthService} from '../../../auth/auth.service';
 import {Domain} from '../../../model/domain';
-import {User} from '../../../model/user';
+import {User} from '../../../model';
 import {Role, RoleAware} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
@@ -33,8 +33,11 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
   public newPrivilegeForm: FormGroup;
 
-  constructor(protected fb: FormBuilder, protected domainService: DomainService,
-    protected userService: UserService, public authService: AuthService, protected userData: UserDataService) {
+  constructor(protected fb: FormBuilder,
+              public domainService: DomainService,
+              protected userService: UserService,
+              public authService: AuthService,
+              protected userData: UserDataService) {
     super();
     this.newPrivilegeForm = fb.group(
       {
@@ -46,30 +49,42 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
     this.roles = this.getAllowedRoles();
     userData.selectedDomainId.subscribe(value => {
         this.domainId = value;
+        // after the domain is retrieved, set selected domain as current
         this.newPrivilegeForm.get('domainId').setValue(this.domainId);
     });
   }
 
+    /**
+     * returns list of roles, available to be selected
+     */
   public getAllowedRoles(): Role[] {
     let roles: Role[];
     if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) &&
         Number(this.newPrivilegeForm.get('domainId').value) === this.domainService.getGlobalDomainId()) {
-        // console.debug('Admin global roles set');
+        // admin (global) role set
       roles = [Role.ROLE_OPERATOR, Role.ROLE_TOOL_MANAGER, Role.ROLE_SYSTEM_ADMIN];
       roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
-      this.newPrivilegeForm.get('role').setValue(roles[0]);
     } else if (this.newPrivilegeForm.get('domainId').value != null) {
-        // console.debug('Standard roles set');
+        // default (domain) role set
       roles = [Role.ROLE_GUEST, Role.ROLE_USER, Role.ROLE_DOMAIN_ADMIN ];
       roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
-      this.newPrivilegeForm.get('role').setValue(roles[0]);
     } else {
-        // console.debug('Empty roles set');
+        // no roles
       roles = [];
+    }
+    const selectedRole = this.newPrivilegeForm.get('role').value;
+    // selects default role if current role is null
+    if (roles.length > 0 && selectedRole == null) {
+        this.newPrivilegeForm.get('role').setValue(roles[0]);
     }
     return roles;
   }
 
+    /**
+     * filters out role, that user already posses
+     * @param roles
+     * @param domainId
+     */
   private filterRoles(roles: Role[], domainId: number): Role[] {
       const role = this.user.roles.find(value => value.domainId == domainId);
       if (isNullOrUndefined(role)) {
@@ -114,5 +129,12 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
                 shareReplay(1),
                 take(1));
         }
+  }
+
+    /**
+     * clear selected role after new domain is selected
+     */
+  public clearSelectedRole() {
+      this.newPrivilegeForm.get('role').setValue(null);
   }
 }
