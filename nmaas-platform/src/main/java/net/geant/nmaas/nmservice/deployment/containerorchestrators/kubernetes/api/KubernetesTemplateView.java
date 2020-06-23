@@ -11,6 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class KubernetesTemplateView {
 
+    private Long id;
+
     private KubernetesChartView chart;
 
     private String archive;
