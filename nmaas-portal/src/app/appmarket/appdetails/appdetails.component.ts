@@ -148,14 +148,13 @@ export class AppDetailsComponent implements OnInit {
             || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN]);
     }
 
-    protected isDeploymentAllowed(): boolean {
+    public isDeploymentAllowed(): boolean {
         if (isUndefined(this.domainId) || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
             return false;
         }
 
         return this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])
-            || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])
-            || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_USER]);
+            || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN]);
     }
 
     public isApplicationEnabledInDomain(): boolean {

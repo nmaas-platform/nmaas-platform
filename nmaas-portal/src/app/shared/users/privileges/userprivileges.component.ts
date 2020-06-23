@@ -57,10 +57,12 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
         // console.debug('Admin global roles set');
       roles = [Role.ROLE_OPERATOR, Role.ROLE_TOOL_MANAGER, Role.ROLE_SYSTEM_ADMIN];
       roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
+      this.newPrivilegeForm.get('role').setValue(roles[0]);
     } else if (this.newPrivilegeForm.get('domainId').value != null) {
         // console.debug('Standard roles set');
       roles = [Role.ROLE_GUEST, Role.ROLE_USER, Role.ROLE_DOMAIN_ADMIN ];
       roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
+      this.newPrivilegeForm.get('role').setValue(roles[0]);
     } else {
         // console.debug('Empty roles set');
       roles = [];

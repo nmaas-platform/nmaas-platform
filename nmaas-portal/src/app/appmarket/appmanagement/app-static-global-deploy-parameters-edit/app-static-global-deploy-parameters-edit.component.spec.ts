@@ -33,6 +33,7 @@ describe('AppStaticGlobalDeployParametersEditComponent', () => {
     fixture = TestBed.createComponent(AppStaticGlobalDeployParametersEditComponent);
     component = fixture.componentInstance;
     component.appDeploymentSpec = {
+      id: 0,
       supportedDeploymentEnvironments: [],
       kubernetesTemplate: undefined,
       exposesWebUI: false,

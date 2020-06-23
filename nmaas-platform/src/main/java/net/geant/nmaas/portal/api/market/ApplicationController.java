@@ -91,7 +91,7 @@ public class ApplicationController extends AppBaseController {
     }
 
     @GetMapping(value = "/base/{appId}")
-	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
+//	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
 	public ApplicationBriefView getBaseApplication(@PathVariable(value = "appId") Long id) {
 		ApplicationBase app = appBaseService.getBaseApp(id);
@@ -106,7 +106,7 @@ public class ApplicationController extends AppBaseController {
 	}
 
 	@GetMapping(value="/{appId}")
-	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
+//	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
 	public ApplicationView getApplication(@PathVariable(value = "appId") Long id) {
 		Application app = getApp(id);
