@@ -34,7 +34,7 @@ public class ShellSessionObserver implements Observer {
         this.executor = Executors.newSingleThreadExecutor();
         this.executor.execute(() -> {
             try {
-                for(long i = 0L; true; i++) {
+                for(long i = 0L; i < SSE_TIMEOUT_24H_MS/DEFAULT_HEARTBEAT_INTERVAL_MS; i++) {
                     SseEmitter.SseEventBuilder builder = SseEmitter.event()
                             .name("heartbeat")
                             .id(Long.toString(i))
@@ -44,10 +44,13 @@ public class ShellSessionObserver implements Observer {
 
                     Thread.sleep(DEFAULT_HEARTBEAT_INTERVAL_MS);
                 }
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 this.emitter.completeWithError(e);
-                log.error("Failed to send hartbeat");
+                log.error("Failed to send heartbeat");
                 log.error(e.getMessage());
+            } catch (InterruptedException e) {
+                log.warn("Heartbeat thread was interrupted");
+                log.warn(e.getMessage());
             }
         });
     }
@@ -56,7 +59,7 @@ public class ShellSessionObserver implements Observer {
     public void update(Observable observable, Object o) {
         try {
             this.emitter.send(o);
-            log.info("Message:\t" + o.toString());
+            log.debug("Message:\t" + o.toString());
         } catch (IOException e) {
             this.emitter.completeWithError(e);
             log.error("Failed to send message:\t" + o.toString());
@@ -68,8 +71,8 @@ public class ShellSessionObserver implements Observer {
      * close the sse connection
      */
     public void complete() {
+        this.executor.shutdownNow();
         this.emitter.complete();
-        this.executor.shutdown();
     }
 
 }

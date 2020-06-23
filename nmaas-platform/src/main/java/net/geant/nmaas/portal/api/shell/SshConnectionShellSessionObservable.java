@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 public class SshConnectionShellSessionObservable extends GenericShellSessionObservable {
 
     private final String sessionId;
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private final SshSessionConnector sshConnector;
 
     private final static String SSH_USERNAME = "nmaastest";
@@ -126,11 +125,11 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
             try {
                 String line = reader.readLine();
                 while (line != null) {
-                    log.info("Line:\t" + line);
+                    log.debug("Line:\t" + line);
                     this.sendMessage(line);
                     line = reader.readLine();
                 }
-                log.info("Line reader finished");
+                log.info("Result Line reader finished");
             } catch (IOException e) {
                 log.error(e.getMessage());
             } finally {
@@ -144,16 +143,15 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
             try {
                 String line = reader.readLine();
                 while (line != null) {
-                    log.info("Line:\t" + line);
+                    log.debug("Error:\t" + line);
                     this.sendMessage(line);
                     line = reader.readLine();
                 }
-                log.info("Line reader finished");
+                log.info("Error Line reader finished");
             } catch (IOException e) {
                 log.error(e.getMessage());
             } finally {
                 log.info("Error reader closed");
-                log.info(this.sshConnector.getErrorStream());
             }
         });
 
@@ -188,8 +186,8 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     public void complete() {
         this.sshConnector.close();
-        this.resultReader.shutdown();
-        this.errorReader.shutdown();
+        this.resultReader.shutdownNow();
+        this.errorReader.shutdownNow();
         super.complete();
     }
 

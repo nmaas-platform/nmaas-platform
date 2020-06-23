@@ -88,8 +88,8 @@ public class ShellSessionsStorage {
          * normal -> works but featureless
          * async -> experimental but with more potential
          */
-        this.storage.get(sessionId).getObservable().executeCommand(commandRequest);
-//        this.storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
+//        this.storage.get(sessionId).getObservable().executeCommand(commandRequest);
+        this.storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
     }
 
     /**
