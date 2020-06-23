@@ -33,6 +33,7 @@ describe('AppStorageVolumeEditComponent', () => {
     component.id = 0;
     component.storageVolumeTypes = ['MAIN', 'SHARED'];
     component.storageVolume = {
+      id: 21,
       type: ServiceStorageVolumeType.MAIN,
       defaultStorageSpace: 3,
       deployParameters: {}

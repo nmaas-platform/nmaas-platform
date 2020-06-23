@@ -33,6 +33,7 @@ describe('AppAccessMethodEditComponent', () => {
     component.id = 0;
     component.accessMethodTypes = ['INTERNAL', 'EXTERNAL'];
     component.accessMethod = {
+      id: 2,
       type: ServiceAccessMethodType.INTERNAL,
       name: 'd',
       tag: 't',
