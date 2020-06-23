@@ -492,7 +492,8 @@
       "REMOVED": "Application non déployée avec succès"
     },
     "SHOW_VERSIONS_LABEL": "Show available versions",
-    "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web"
+    "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web",
+    "SHELL": "Shell"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",
