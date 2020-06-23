@@ -111,7 +111,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
         app.setTags(ImmutableSet.of("tag1", "tag2"));
         app.setAppConfigurationSpec(new AppConfigurationSpecView());
         app.setAppDeploymentSpec(new AppDeploymentSpecView());
-        app.setConfigWizardTemplate(new ConfigWizardTemplateView("config"));
+        app.setConfigWizardTemplate(new ConfigWizardTemplateView(1L, "config"));
         app.setState(state);
         return app;
     }

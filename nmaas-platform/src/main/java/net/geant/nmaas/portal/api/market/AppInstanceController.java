@@ -477,13 +477,17 @@ public class AppInstanceController extends AppBaseController {
         }
 
         try {
-            ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
+            ai.setConfigWizardTemplate(new ConfigWizardTemplateView(
+                    appInstance.getApplication().getConfigWizardTemplate().getId(),
+                    appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
         } catch (Exception e) {
             ai.setConfigWizardTemplate(null);
         }
 
         try {
-            ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigUpdateWizardTemplate().getTemplate()));
+            ai.setConfigUpdateWizardTemplate(new ConfigWizardTemplateView(
+                    appInstance.getApplication().getConfigUpdateWizardTemplate().getId(),
+                    appInstance.getApplication().getConfigUpdateWizardTemplate().getTemplate()));
         } catch (Exception e) {
             ai.setConfigUpdateWizardTemplate(null);
         }
