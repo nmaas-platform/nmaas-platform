@@ -189,7 +189,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @PostMapping("/domain/{domainId}")
-    @PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
+    @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
     public Id createAppInstance(@RequestBody AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal, @PathVariable Long domainId) {
