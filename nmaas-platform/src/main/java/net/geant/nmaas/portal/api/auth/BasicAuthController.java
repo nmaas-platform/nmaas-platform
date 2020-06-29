@@ -65,7 +65,7 @@ public class BasicAuthController {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
 
-        log.info(format("User [%s] logged in with roles [%s] \t Host: [%s] \t user-agent: [%s] \t ip: [%s]",
+        log.info(format("User [%s] logged in with:\n \t- roles [%s]\n \t- host: [%s]\n \t- user-agent: [%s]\n \t- ip: [%s]",
                 userLogin.getUsername(),
                 user.getRoles().stream().map(UserRole::getRoleAsString).collect(Collectors.toList()),
                 request.getHeader(HttpHeaders.HOST),
