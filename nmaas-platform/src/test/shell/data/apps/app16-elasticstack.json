@@ -97,7 +97,8 @@
 		]
 	},
 	"appConfigurationSpec": {
-		"configFileRepositoryRequired": false
+		"configFileRepositoryRequired": true,
+		"configUpdateEnabled": true
 	},
 	"state": "DISABLED",
 	"configWizardTemplate": {
