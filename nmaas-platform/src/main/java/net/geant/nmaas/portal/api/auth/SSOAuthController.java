@@ -88,7 +88,7 @@ public class SSOAuthController {
 
 		userLoginService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 
-		log.info(format("User [%s] logged in with roles [%s] \t Host: [%s] \t user-agent: [%s] \t ip: [%s]",
+		log.info(format("User [%s] logged in with:\n \t- roles [%s]\n \t- host: [%s]\n \t- user-agent: [%s]\n \t- ip: [%s]",
 				user.getUsername(),
 				user.getRoles().stream().map(UserRole::getRoleAsString).collect(Collectors.toList()),
 				request.getHeader(HttpHeaders.HOST),
