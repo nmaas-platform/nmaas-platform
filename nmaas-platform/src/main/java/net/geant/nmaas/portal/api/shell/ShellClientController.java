@@ -11,8 +11,11 @@ import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
 
 /**
- * POC
- * SSH Shell over SSE
+ * Controller for handling SSH Shell over SSE
+ * - create connection
+ * - connect to SSE stream of results
+ * - execute commands
+ * - close connections
  */
 @RestController
 @RequestMapping("/api")

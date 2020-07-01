@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.utils.ssh.SshSessionConnector;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -14,7 +15,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * service layer component for handling connections
+ * Service layer component for handling connections
+ * ShellSessionObservable is in charge of creating ssh connection, by default SshConnectionShellSessionObservable is used
+ * ShellSessionObserver observes given observable and is a sink for the command execution results
+ * Default sink utilizes SSE to pass results to the client
  */
 @Component
 @AllArgsConstructor
@@ -22,9 +26,13 @@ public class ShellSessionsStorage {
 
     private final ApplicationInstanceService instanceService;
 
+    /**
+     * this class stores observer-observable pair
+     * in future it can be extended to store multiple observers for single observable
+     */
     @Getter
     @AllArgsConstructor
-    private class ObserverObservablePair implements Serializable {
+    private static class ObserverObservablePair implements Serializable {
         private final ShellSessionObserver observer;
         private final GenericShellSessionObservable observable;
 
@@ -39,18 +47,17 @@ public class ShellSessionsStorage {
 
     /**
      * creates connection and session id
-     * this method is synchronized, so assigned session id will not be assigned in a meantime
+     * this method is synchronized, so assigned session id will not be re-assigned in a meantime
      * @param appInstanceId app instance identifier
      * @return shell session id
      */
     public synchronized String createSession(Long appInstanceId) throws InvalidKeySpecException, NoSuchAlgorithmException {
         AppInstance instance = this.instanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
-        // TODO check if you can connect to this app instance
+        // check if you can connect to this app instance
         if(!instance.getApplication().getAppDeploymentSpec().isAllowSshAccess()) {
             throw new RuntimeException("SSH connection is not allowed");
         }
-        // TODO extract connection parameters
 
         String sessionId = UUID.randomUUID().toString();
         // new session id must be unique
@@ -58,9 +65,13 @@ public class ShellSessionsStorage {
             sessionId = UUID.randomUUID().toString();
         }
 
+        // create ssh connector
+        // TODO extract connection parameters from app instance
+        // TODO replace default connector with app instance specific connectors
+        SshSessionConnector defaultConnector = SshConnectionShellSessionObservable.getDefaultConnector();
+
         // create observer and observable and bind them
-        // TODO pass connection params to observable
-        GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId);
+        GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId, defaultConnector);
         ShellSessionObserver observer = new ShellSessionObserver();
         observable.addObserver(observer);
 
@@ -70,7 +81,7 @@ public class ShellSessionsStorage {
     }
 
     /**
-     * returns an observer with event emitter
+     * returns an observer with event emitter for given emitter
      * @param sessionId shell session id
      * @return observer with event emitter
      */
@@ -85,13 +96,6 @@ public class ShellSessionsStorage {
      * @param commandRequest command to be executed
      */
     public void executeCommand(String sessionId, ShellCommandRequest commandRequest) {
-        isSessionAvailable(sessionId);
-        /*
-         * choose version to use:
-         * normal -> works but featureless
-         * async -> experimental but with more potential
-         */
-//        this.storage.get(sessionId).getObservable().executeCommand(commandRequest);
         this.storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
     }
 

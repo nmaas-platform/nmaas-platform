@@ -25,8 +25,11 @@ public class ShellSessionObserver implements Observer {
     private final SseEmitter emitter;
     private final ExecutorService executor;
 
-    // send very long timeout
-    // 24 hours
+    /**
+     * Creates and maintains SSE connection with user
+     * Default stream timeout is 24 hours
+     * Heartbeats are sent by thread every 30 seconds
+     */
     public ShellSessionObserver() {
         this.emitter = new SseEmitter(SSE_TIMEOUT_24H_MS);
 
@@ -55,6 +58,11 @@ public class ShellSessionObserver implements Observer {
         });
     }
 
+    /**
+     * method called by observable, it passes results directly to the output SSE
+     * @param observable ssh connection observable
+     * @param o message
+     */
     @Override
     public void update(Observable observable, Object o) {
         try {

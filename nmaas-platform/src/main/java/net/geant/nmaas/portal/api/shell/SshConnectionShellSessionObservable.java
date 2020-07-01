@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.shell;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.utils.ssh.BasicCredentials;
 import net.geant.nmaas.utils.ssh.SshSessionConnector;
@@ -19,55 +20,22 @@ import java.util.concurrent.Executors;
  * currently does nothing but echo
  */
 @Log4j2
+@NoArgsConstructor
 public class SshConnectionShellSessionObservable extends GenericShellSessionObservable {
 
-    private final String sessionId;
-    private final SshSessionConnector sshConnector;
+    private String sessionId;
+    private SshSessionConnector sshConnector;
 
     private final static String SSH_USERNAME = "nmaastest";
     private final static String SSH_HOST = "nmaastest-master1.qalab.geant.net";
 
-
-    public final static String SSH_PUB_KEY_X509 =
-            "-----BEGIN PUBLIC KEY-----\n" +
-                    "MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEAo1lfdfK74mV5Xqr7sLYQ\n" +
-                    "bp0kF3PZHXzQt6p+J3QuiOVMbe1XEVPZP7QiJqikrGEghIPklYvOSLQE9wcr2mA+\n" +
-                    "NyIXWq3QI0zaGyW/C45dqr8o8bOjTos0i0CemYXQh58xKUl77bqytQvknv5oxOAV\n" +
-                    "uJrdRNqt3UmSK2VW3cTAbUxXrsC/lYgGYz04VAHylV2VW5tqeWh83BXKIjp3ANkD\n" +
-                    "OrfcO1WIUw9c/5yafBbBwkqlIlWO617exR6U/Ad178fTvJ4Shws7NvCpnunaow5Q\n" +
-                    "pbk87LDb/R/Hzbo/I+98D94qMx+x9IVA7yvyegw3z6FHKx4RkvUgfk7cz7RuDh+m\n" +
-                    "XwIBJQ==\n" +
-                    "-----END PUBLIC KEY-----";
-    public final static String SSH_PRIV_KEY =
-            "-----BEGIN PRIVATE KEY-----\n" +
-                    "MIIEugIBADANBgkqhkiG9w0BAQEFAASCBKQwggSgAgEAAoIBAQCjWV918rviZXle\n" +
-                    "qvuwthBunSQXc9kdfNC3qn4ndC6I5Uxt7VcRU9k/tCImqKSsYSCEg+SVi85ItAT3\n" +
-                    "ByvaYD43IhdardAjTNobJb8Ljl2qvyjxs6NOizSLQJ6ZhdCHnzEpSXvturK1C+Se\n" +
-                    "/mjE4BW4mt1E2q3dSZIrZVbdxMBtTFeuwL+ViAZjPThUAfKVXZVbm2p5aHzcFcoi\n" +
-                    "OncA2QM6t9w7VYhTD1z/nJp8FsHCSqUiVY7rXt7FHpT8B3Xvx9O8nhKHCzs28Kme\n" +
-                    "6dqjDlCluTzssNv9H8fNuj8j73wP3iozH7H0hUDvK/J6DDfPoUcrHhGS9SB+TtzP\n" +
-                    "tG4OH6ZfAgElAoIBAAjUZgZgJdTi4/dHgzn8AONicKdSXsNS2tl+1mL/XHYaO3uQ\n" +
-                    "SeVCzXkQp+Zp+xA8mflTPMnQNKn75Je7Ms2IqWrDko9HqmLF4kaoGCojXwJPhawz\n" +
-                    "OUKEEK2Uyk182tbmAqhJKUse2To3/oUigjQnydKglla/tl79DtHpzVgYeRqqF+WZ\n" +
-                    "ImNGQP4cqxWI7OJ7RHgfmh1zOmW4S2pf+a6zD/Z69vnqHKtkQ668jwwb91ySUGbG\n" +
-                    "RiPL5h+YMTcebwmb9uYedxOz/t9fL2zARMwMcZrohLmRlCzZJHpI2ygL80zOV5u0\n" +
-                    "rDITW51s6tQrPkSXrWeOw0cL+qzQ4BEvC0CaAg0CgYEA7ZE7Uw4BPl6vXstQ+PBG\n" +
-                    "KdZeg2cKFfrYGwVdJQHKOluOVVrZe2YQJAsvZzZZe9YEJnJ2z9m1QJr3akqjgAvd\n" +
-                    "xL1WiO+dUp9ZTwLJfR11hx6aiqzTJ5DS9VSqFQMPBQlAXce46KP18SMd8olM/iBW\n" +
-                    "Wc3HEjqY7Lu7l32V9Q2B+qkCgYEAsAX0cFrzFad7fHpL20cu+Nb0Q/GKrodsO+zt\n" +
-                    "xt8eIY9GrdEQ+opAVNPM3OW35buzr0KKrXttfOGnnDWw77Ikt14T7qrr/XM2bUA7\n" +
-                    "ZMayk9VRGtbYfy6br6LMU7wDYfm0d6rYV7IpMOuvB5ufObpU5WGF4rX+lkV7FBQ4\n" +
-                    "KNV8hccCgYBNDIHxbFNuLIvnZIj2ynee3b3JwI2mQ4RbymNl8r4gw791oOyWuVFX\n" +
-                    "zEa5sMMTaAFYk9OBrmRMTe9gvkLda6He8Ux/cE6zAz+PPyyXR9MXENgs+cfxKA0R\n" +
-                    "S+QifYhUqQ305tQvxnlHSajZCe91A5GglcQF6X20j+nQRGf8cxVmDQKBgByLWBI4\n" +
-                    "QxhErD2y94tXpsCRj2T2vIsBNCVksO/RJ3sQUKaQmvgyGEUbbVRA7WOGONBP+tAG\n" +
-                    "LW4ybjUByapUPU4q7nm62ikZmh+N4B4uDx7kUldhHDBMv0zp957gN+Zf2BNn0A44\n" +
-                    "kQ7aHGIZPGo55EDfYdG8pdMt3Jt45oMpidCBAoGAY9PPPhnhawR7lU99qkAEp2q/\n" +
-                    "hOIQuZVRXOLUS04EE+YaZoGZ7XbMWG48QYk++Kfr8LwbG3wWWHSywnx2kXrEUu7n\n" +
-                    "we0cs9qikUog1n5kNUQYzQQwVFMOKG7deP3HQ0Mhwg7VLOyzodryr0sNEq5S+Xqf\n" +
-                    "wWiKDSVL4RJDRKFJAdc=\n" +
-                    "-----END PRIVATE KEY-----";
-
+    /**
+     * transforms string public key to java format
+     * @param pubKey string public key
+     * @return Java formatted public key in X509
+     * @throws InvalidKeySpecException
+     * @throws NoSuchAlgorithmException
+     */
     public static PublicKey getPublicKey(String pubKey) throws InvalidKeySpecException, NoSuchAlgorithmException {
 
         KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -82,6 +50,13 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     }
 
+    /**
+     * transforms string private key to java format
+     * @param privKey string private key
+     * @return Java formatted private key in PKCS8
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     public static PrivateKey getPrivateKey(String privKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -96,20 +71,40 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     }
 
-    private final ExecutorService resultReader;
-    private final ExecutorService errorReader;
+    public static SshSessionConnector getDefaultConnector() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        PublicKey pub_key = getPublicKey(DefaultShellConnectionData.SSH_PUB_KEY_X509);
+        PrivateKey priv_key = getPrivateKey(DefaultShellConnectionData.SSH_PRIV_KEY);
+        KeyPair kp = new KeyPair(pub_key, priv_key);
+
+         return new SshSessionConnector(
+                SSH_HOST,
+                22,
+                new BasicCredentials(SSH_USERNAME),
+                new KeyPairWrapper(kp)
+        );
+    }
+
+    private ExecutorService resultReader;
+    private ExecutorService errorReader;
 
     /**
-     * abstraction layer over reader, used to read phrases from stream
+     * Purpose of this class is to read results from shell input stream
+     *
      */
-    private static class CustomReader {
+    private static class ShellResultReader {
 
         private final Reader reader;
 
-        public CustomReader(Reader reader) {
+        public ShellResultReader(Reader reader) {
             this.reader = reader;
         }
 
+        /**
+         * Reads single message from the shell, it can be an entire line of result,
+         * or part of line till command prompt is reached; e.g. `host@localhost:~/ $`
+         * @return single message to be passed
+         * @throws IOException exception
+         */
         public String readWord() throws IOException {
             StringBuilder result = new StringBuilder();
 
@@ -122,42 +117,46 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
                 }
                 if((char) ch == '\r') { // carriage return is replaced with newline token
                     result.append("<#>NEWLINE<#>"); // newline control token
-                    break;
+                    break; // newline is the end of the message
                 }
                 result.append((char) ch);
                 if(result.toString().endsWith("$ ")) { // break after reaching command prompt
-                    break;
+                    break; // reaching prompt is the end of the message
                 }
-                ch = reader.read();
+                ch = reader.read(); // finally read next character
+            }
+            if(ch == -1) {
+                return null;
             }
 
             return result.toString();
         }
     }
 
-    public SshConnectionShellSessionObservable(String sessionId) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    /**
+     * Creates observable, sets up SSH connection
+     * @param sessionId
+     * @param connector
+     */
+    public SshConnectionShellSessionObservable(String sessionId, SshSessionConnector connector) {
         this.sessionId = sessionId;
+        this.sshConnector = connector;
 
-        PublicKey pub_key = getPublicKey(SSH_PUB_KEY_X509);
-        PrivateKey priv_key = getPrivateKey(SSH_PRIV_KEY);
-        KeyPair kp = new KeyPair(pub_key, priv_key);
-        this.sshConnector = new SshSessionConnector(
-                SSH_HOST,
-                22,
-                new BasicCredentials(SSH_USERNAME),
-                new KeyPairWrapper(kp)
-        );
-
+        /*
+          below executors are used to read results from input stream asynchronously
+          this solution may prove to be inefficient
+          it is suggested to use some kind of reactive library to handle this functionality e.g. JavaRX
+         */
         resultReader = Executors.newSingleThreadExecutor();
         resultReader.execute(() -> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
-            CustomReader customReader = new CustomReader(reader);
+            ShellResultReader shellResultReader = new ShellResultReader(reader);
             try {
-                String part = customReader.readWord();
+                String part = shellResultReader.readWord();
                 while (part != null) {
                     log.debug("Part:\t" + part);
                     this.sendMessage(part);
-                    part = customReader.readWord();
+                    part = shellResultReader.readWord();
                 }
                 log.info("Result Line reader finished");
             } catch (IOException e) {
@@ -189,8 +188,10 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     }
 
     /**
-     * executes command synchronously returning result immediately,
-     * however command is executed in single session scope (one command <=> one session)
+     * Executes command synchronously returning result immediately,
+     * However command is executed in single session scope (one command <=> one session)
+     * Execution results are automatically sent to observers
+     * This method has only debug purpose
      * @param commandRequest command request
      */
     public void executeCommand(ShellCommandRequest commandRequest) {
@@ -205,15 +206,19 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     }
 
     /**
-     * executes single command in asynchronous manner
+     * Executes single command in asynchronous manner
+     * Results of the command are read from input stream by executors and submitted to observers
      * @param commandRequest command request
      */
     public void executeCommandAsync(ShellCommandRequest commandRequest) {
-        log.info(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
+        log.debug(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
 
         this.sshConnector.executeCommandInSession(commandRequest.getCommand());
     }
 
+    /**
+     * completes the observable, destroys connection and readers
+     */
     public void complete() {
         this.sshConnector.close();
         this.resultReader.shutdownNow();
