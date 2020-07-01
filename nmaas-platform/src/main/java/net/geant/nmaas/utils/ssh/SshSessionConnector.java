@@ -13,6 +13,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This is implementation of the SSH connector that allows executing ssh commands in scope of shell session
+ * How to use:
+ * 0. Prepare key pair
+ * 1. Create instance
+ * 2. Get Input Stream
+ * 3. Execute command in session
+ * 4. Read result from input stream
+ * 5. finally close connection
+ */
 @NoArgsConstructor
 @Log4j2
 public class SshSessionConnector {
@@ -21,6 +31,14 @@ public class SshSessionConnector {
 	private Session session;
 	private Session.Shell shell;
 
+	/**
+	 * Creates SSH connection using public and private keys
+	 * Connection->Authentication->Session->Shell
+	 * @param hostname target
+	 * @param port connection port
+	 * @param credentials BasicCredentials (username is enough - this connector won't attempt password authentication)
+	 * @param keyProvider private-public key pair
+	 */
 	public SshSessionConnector(String hostname, int port, BasicCredentials credentials, KeyProvider keyProvider) {
 		connect(hostname, port);
 		if(isConnected()) {
@@ -31,10 +49,19 @@ public class SshSessionConnector {
 		}
 	}
 
+	/**
+	 * Use this input stream to obtain results from executed commands
+	 * Returns entire shell appearance
+	 * @return InputStream with shell output
+	 */
 	public InputStream getInputStream() {
 		return this.shell.getInputStream();
 	}
 
+	/**
+	 * Returns stream of errors
+	 * @return InputStream with errors
+	 */
 	public InputStream getErrorStream() {
 		return this.shell.getErrorStream();
 	}
@@ -81,8 +108,9 @@ public class SshSessionConnector {
 	}
 
 	/**
-	 * executes single command in session
-	 * @param command
+	 * utilizes shell OutputStream to execute commands during shell session
+	 * the outcome of executed command will be available in resulting InputStream
+	 * @param command command to be executed
 	 */
 	public void executeCommandInSession(String command) {
 		if(!isSessionOpened()){
@@ -100,6 +128,12 @@ public class SshSessionConnector {
 	}
 
 
+	/**
+	 * Executes command SYNCHRONOUSLY in single scope - this should not affect shell session
+	 * Result is available immediately as String
+	 * @param command command to be executed
+	 * @return outcome of executed command
+	 */
 	public String executeSingleCommand(String command) {
 		if(!isAuthenticated())
 			throw new SshConnectionException("Not authenticated connection to " + client.getRemoteAddress());
@@ -109,7 +143,6 @@ public class SshSessionConnector {
 			String output = IOUtils.readFully(c.getInputStream()).toString();
 			c.join(5, TimeUnit.SECONDS);
 			if (exitStatusIndicatesThatSomethingWentWrong(c.getExitStatus())) {
-//				throw new CommandExecutionException("Command execution failed (exit status: " + c.getExitStatus() + "; details: " + error + ")");
 				return error;
 			}
 			return output;
@@ -118,15 +151,14 @@ public class SshSessionConnector {
 		}
 	}
 
+	/**
+	 * closes session and disconnects client
+	 * connection cannot be re-created after using this method using this instance
+	 */
 	public void close() {
 		if (client != null) {
 			if(isSessionOpened()) {
 				closeSession();
-			}
-			try {
-				client.disconnect();
-			} catch (IOException e) {
-				log.warn(e.getMessage());
 			}
 			client = null;
 		}
@@ -136,15 +168,15 @@ public class SshSessionConnector {
         return exitStatus != 0;
     }
 
-	private boolean isConnected() {
-		return client.isConnected();
+	public boolean isConnected() {
+		return client != null && client.isConnected();
 	}
 
-	private boolean isAuthenticated() {
-		return (isConnected() && client.isAuthenticated());
+	public boolean isAuthenticated() {
+		return isConnected() && client.isAuthenticated();
 	}
 
-	private boolean isSessionOpened() {
+	public boolean isSessionOpened() {
 		return isConnected() && isAuthenticated() && this.session.isOpen();
 	}
 
