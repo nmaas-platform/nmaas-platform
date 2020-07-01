@@ -52,6 +52,36 @@ public class SshConnectionShellSessionObservableTest {
     }
 
     @Test
+    public void testSynchronousCommandExecution() throws IOException {
+        SshSessionConnector mockConnector = mock(SshSessionConnector.class);
+
+        PipedInputStream inputStream = new PipedInputStream();
+        PipedOutputStream outputStream = new PipedOutputStream(inputStream);
+
+        when(mockConnector.getInputStream()).thenReturn(inputStream);
+        when(mockConnector.getErrorStream()).thenReturn(new PipedInputStream()); // do nothing
+
+        when(mockConnector.executeSingleCommand(anyString())).thenReturn("result\nresult\nresult");
+
+        SshConnectionShellSessionObservable underTest = new SshConnectionShellSessionObservable("sessionId", mockConnector);
+        TestObserver to = new TestObserver();
+        underTest.addObserver(to);
+
+        String line1 = "some result line\r\n";
+        underTest.executeCommand(new ShellCommandRequest(line1, ""));
+        String line2 = "host@localhost:~/ $ \n";
+        underTest.executeCommand(new ShellCommandRequest(line2, ""));
+        String line3 = "continuation\r\n";
+        underTest.executeCommand(new ShellCommandRequest(line3, ""));
+        String line4 = "some another line\r\n";
+        underTest.executeCommand(new ShellCommandRequest(line4, ""));
+
+        assertEquals(4*3, to.getMessages().size());
+
+        underTest.complete();
+    }
+
+    @Test
     public void testAsynchronousCommandExecution() throws IOException, InterruptedException {
         SshSessionConnector mockConnector = mock(SshSessionConnector.class);
 

@@ -22,8 +22,8 @@ public class ShellSessionObserver implements Observer {
     private static final Long SSE_TIMEOUT_24H_MS = 86400000L;
 
     // TODO verify if emitter access should be synchronized
-    private final SseEmitter emitter;
-    private final ExecutorService executor;
+    protected SseEmitter emitter;
+    private ExecutorService executor;
 
     /**
      * Creates and maintains SSE connection with user
@@ -32,7 +32,13 @@ public class ShellSessionObserver implements Observer {
      */
     public ShellSessionObserver() {
         this.emitter = new SseEmitter(SSE_TIMEOUT_24H_MS);
+        this.startExecutor();
+    }
 
+    /**
+     * starts executor, that sends heartbeat via stream
+     */
+    protected void startExecutor() {
         // send heartbeat to assure that connection is not closed on client side
         this.executor = Executors.newSingleThreadExecutor();
         this.executor.execute(() -> {

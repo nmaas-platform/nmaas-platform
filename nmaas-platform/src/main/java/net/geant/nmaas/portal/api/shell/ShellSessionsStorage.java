@@ -96,6 +96,7 @@ public class ShellSessionsStorage {
      * @param commandRequest command to be executed
      */
     public void executeCommand(String sessionId, ShellCommandRequest commandRequest) {
+        isSessionAvailable(sessionId);
         this.storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
     }
 
