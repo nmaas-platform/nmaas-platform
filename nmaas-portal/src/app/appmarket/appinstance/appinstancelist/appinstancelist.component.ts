@@ -60,13 +60,13 @@ export class AppInstanceListComponent implements OnInit {
   public domains: Domain[] = [];
 
   constructor(private appInstanceService: AppInstanceService,
-              private domainService: DomainService,
+              public domainService: DomainService,
               private userDataService: UserDataService,
               public authService: AuthService,
               private appConfig: AppConfigService,
               private translateService: TranslateService,
               private sessionService: SessionService,
-              private translateState: TranslateStateModule) {
+              public translateState: TranslateStateModule) {
   }
 
   ngOnInit() {
