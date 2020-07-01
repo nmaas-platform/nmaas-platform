@@ -17,6 +17,8 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private sessionId: string = undefined;
 
+  private minPosition = 0;
+
   @ViewChild('term') child: NgTerminal; // for Angular 7
   // @ViewChild('term', { static: true }) child: NgTerminal; // for Angular 8
 
@@ -33,10 +35,11 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
                           const mesg = event.data;
                           if (mesg == null) {
                               console.error('empty message');
-                          } else if (mesg.endsWith('<#>NEWLINE<#>')) {
+                          } else if (mesg.endsWith('<#>NEWLINE<#>')) { // newline token
                               this.child.write(mesg.replace('<#>NEWLINE<#>', '') + '\r\n');
                           } else {
                               this.child.write(mesg);
+                              this.minPosition = mesg.length; // set new cursor position so prompt cannot be deleted
                           }
                           // this.child.write(event.data + '\r\n$ ');
                       },
@@ -59,14 +62,13 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     // terminal is available now
     // default handler with enhancement
-    // this.child.write('$ ');
     this.child.keyEventInput.subscribe(e => {
       // console.log('keyboard event:' + e.domEvent.keyCode + ', ' + e.key);
 
       const ev = e.domEvent;
       const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
 
-      if (ev.keyCode === 13) { // enter
+      if (e.key === '\r') { // enter - submit new command
         this.shellClientService.sendCommand(this.sessionId, {
           'command': this.line
         }).subscribe(
@@ -77,15 +79,17 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
               console.error(error);
             }
         );
-        // console.debug('[LINE]: ' + this.line);
         this.line = '';
         this.child.write('\r\n');
-      } else if (ev.keyCode === 8) { // backspace
+
+      } else if (e.key === String.fromCharCode(127)) { // backspace (DEL) for some reason this is ascii 127 instead of 8
+          // ev.keyCode === 8
         // Do not delete the prompt
-        if (this.child.underlying.buffer.active.cursorX > 2) {
-          this.child.write('\b \b');
+        if (this.child.underlying.buffer.active.cursorX > this.minPosition) {
+          this.child.write('\b \b'); // write backspace
           this.line = this.line.slice(0, -1); // remove last character from line
         }
+
       } else if (printable) { // standard
         this.child.write(e.key);
         this.line += e.key;
