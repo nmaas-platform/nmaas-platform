@@ -14,4 +14,12 @@ public class AppInstanceBase extends DomainAware{
     private String name;
 
     private String internalId;
+
+    private UserBase owner;
+
+    private AppInstanceState state;
+
+    private String userFriendlyState;
+
+    private Long createdAt;
 }
