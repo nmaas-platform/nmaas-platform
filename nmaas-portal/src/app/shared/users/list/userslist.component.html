@@ -36,9 +36,9 @@
                 *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.GLOBAL_ROLE' | translate }}</th>
             <th scope="col" class="column-sortable" sortable-column="roles"
                 *ngIf="domainId !== domainService.getGlobalDomainId()">{{ 'USERS.ROLES' | translate }}</th>
-            <th scope="col" class="column-sortable"
+            <th scope="col" class="column-sortable" *ngIf="!isModeAllowed(ComponentMode.EDIT)"
                 sortable-column="firstLoginDate">{{ 'USERS.FIRST_LOGIN' | translate }}</th>
-            <th scope="col" class="column-sortable"
+            <th scope="col" class="column-sortable" *ngIf="!isModeAllowed(ComponentMode.EDIT)"
                 sortable-column="lastSuccessfulLoginDate">{{ 'USERS.LAST_SUCCESSFUL_LOGIN' | translate }}</th>
             <th scope="col" class="column-sortable" sortable-column="enabled">{{ 'USERS.ENABLED' | translate }}</th>
             <th scope="col">&nbsp;</th>
@@ -67,8 +67,8 @@
 					{{"ENUM.USER_ROLES." + role.role.toUpperCase() | translate}}
 				</span>
             </td>
-            <td>{{getFirstLoginDateString(user)}}</td>
-            <td>{{getLastSuccessfulLoginDateString(user)}}</td>
+            <td *ngIf="!isModeAllowed(ComponentMode.EDIT)">{{getFirstLoginDateString(user)}}</td>
+            <td *ngIf="!isModeAllowed(ComponentMode.EDIT)">{{getLastSuccessfulLoginDateString(user)}}</td>
             <td>
                 <span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span>
                 <span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span>
