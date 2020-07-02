@@ -26,7 +26,7 @@ export class DomainsListComponent implements OnInit {
       this.domains = this.domainService.getAll().pipe(
           map((domains) => domains.filter((domain) => domain.id !== this.domainService.getGlobalDomainId())));
     } else {
-      this.domains = this.domainService.getAll().pipe(
+      this.domains = this.domainService.getMyDomains().pipe(
           map((domains) => domains.filter((domain) => this.authService.hasDomainRole(domain.id, Role[Role.ROLE_DOMAIN_ADMIN]))));
     }
   }
