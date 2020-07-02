@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {isUndefined} from 'util';
+import {isNullOrUndefined, isUndefined} from 'util';
 
 import {AppInstance, AppInstanceState} from '../../../model';
 import {DomainService} from '../../../service';
@@ -82,7 +82,9 @@ export class AppInstanceListComponent implements OnInit {
 
     this.userDataService.selectedDomainId.subscribe(domainId => {
       // adjust display for GUESTS and USERS (they cannot own any instance)
-      if (this.authService.hasDomainRole(domainId, 'ROLE_USER') || this.authService.hasDomainRole(domainId, 'ROLE_GUEST')) {
+      if (this.authService.hasDomainRole(domainId, 'ROLE_USER') ||
+          this.authService.hasDomainRole(domainId, 'ROLE_GUEST') ||
+          isNullOrUndefined(domainId)) {
         this.listSelection = AppInstanceListSelection.ALL;
       }
 
@@ -119,10 +121,14 @@ export class AppInstanceListComponent implements OnInit {
     }
     if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
       this.domainId = this.appConfig.getNmaasGlobalDomainId();
+      // get instances in global domain only for users who are not guests in global domain
+      if (!this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST')) {
+        this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
+      }
     } else {
       this.domainId = domainId;
+      this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
     }
-    this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
   }
 
   public checkPrivileges(app) {

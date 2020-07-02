@@ -1,10 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
-import net.geant.nmaas.portal.api.domain.PasswordChange;
-import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.api.domain.UserRoleView;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -91,7 +88,7 @@ public class UsersControllerTest {
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
 		when(userLoginService.getUserFirstAndLastSuccessfulLoginDate(userList.get(0))).thenReturn(Optional.empty());
 		UserRoleView userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRoleView.class);
-		UserView user = usersController.retrieveUser(userList.get(0).getId());
+		UserView user = (UserView)usersController.retrieveUser(userList.get(0).getId(), principal);
 		assertThat("Wrong username", user.getUsername().equals(userList.get(0).getUsername()));
 		assertThat("Wrong role", user.getRoles().iterator().next().getRole().equals(userRole.getRole()));
 	}
@@ -101,7 +98,7 @@ public class UsersControllerTest {
 		assertThrows(MissingElementException.class, () -> {
 			Long userId = 5L;
 			when(userService.findById(userId)).thenReturn(Optional.empty());
-			usersController.retrieveUser(userId);
+			usersController.retrieveUser(userId, principal);
 		});
 	}
 
