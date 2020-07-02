@@ -169,7 +169,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void testGetUsers() {
-        assertEquals(6, userController.getUsers(Pageable.unpaged()).size());
+        assertEquals(6, userController.getUsers(Pageable.unpaged(), principal).size());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void testGetUser() throws MissingElementException {
         long id = userRepo.findByUsername("admin").get().getId();
-        UserView user = userController.retrieveUser(id);
+        UserView user = (UserView)userController.retrieveUser(id, principal);
         assertEquals(new Long(id), user.getId());
         assertEquals("admin", user.getUsername());
     }

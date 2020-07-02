@@ -7,11 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.api.domain.PasswordChange;
-import net.geant.nmaas.portal.api.domain.PasswordReset;
-import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.api.domain.UserRoleView;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -100,10 +96,23 @@ public class UsersController {
 		this.userLoginService = userLoginService;
 	}
 
-	//TODO hasRole('ROLE_DOMAIN_ADMIN') to be removed
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-	public List<UserView> getUsers(Pageable pageable) {
+	public List<UserBase> getUsers(Pageable pageable, Principal principal) {
+
+		User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
+				() -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
+		/* when user is not system admin, than return only basic information about users */
+		if(owner.getRoles().stream().noneMatch(role -> role.getRole() == ROLE_SYSTEM_ADMIN)) {
+			return userService.findAll(pageable).getContent().stream()
+					.filter(user -> user.getRoles().stream().anyMatch( // select only users with guest role in global domain
+							role -> role.getRole() == ROLE_GUEST &&
+									role.getDomain().getId().equals(
+											domainService.getGlobalDomain().orElseThrow(
+													() -> new RuntimeException("Global domain does not exist")).getId()))
+					)
+					.map(user -> modelMapper.map(user, UserViewMinimal.class)).collect(Collectors.toList());
+		}
 
     	/* reads all users first and last successful login, transforms it to map*/
     	Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
@@ -127,11 +136,19 @@ public class UsersController {
 				.collect(Collectors.toList());
 	}
 
-	//TODO <most probably> hasRole('ROLE_DOMAIN_ADMIN') to be removed
 	@GetMapping(value="/users/{userId}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-	public UserView retrieveUser(@PathVariable("userId") Long userId) {
+	public UserBase retrieveUser(@PathVariable("userId") Long userId, Principal principal) {
 		User user = getUser(userId);
+		User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
+				() -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
+		/* calculate set of common domains between principal and user */
+		Set<Long> common = user.getRoles().stream().map(role -> role.getDomain().getId()).collect(Collectors.toSet());
+		common.retainAll(owner.getRoles().stream().map(role -> role.getDomain().getId()).collect(Collectors.toSet()));
+		/* if no common domain return only basic set of user information */
+		if(common.isEmpty()) {
+			return modelMapper.map(user, UserViewMinimal.class);
+		}
 		UserView uv = modelMapper.map(user, UserView.class);
 		/* updates user view with first and last login date */
 		userLoginService.getUserFirstAndLastSuccessfulLoginDate(user).ifPresent(userLoginDate -> {
