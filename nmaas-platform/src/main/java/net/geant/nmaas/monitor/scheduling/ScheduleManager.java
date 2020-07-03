@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Log4j2
 @Component
 public class ScheduleManager {
     private List<MonitorService> monitorServices;
@@ -43,6 +46,7 @@ public class ScheduleManager {
                     .findAny().orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", jobDescriptor.getServiceName().getName())));
             JobDetail jobDetail = newJob(service.getClass()).withIdentity(jobDescriptor.getServiceName().getName()).build();
             Trigger trigger = jobDescriptor.buildTrigger();
+            log.info("Scheduling job: " + jobDescriptor.getServiceName().toString());
             scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), false);
         } catch (SchedulerException e){
             throw new IllegalStateException(e.getMessage());

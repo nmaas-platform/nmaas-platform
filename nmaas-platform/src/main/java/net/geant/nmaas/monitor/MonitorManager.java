@@ -1,6 +1,7 @@
 package net.geant.nmaas.monitor;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Log4j2
 public class MonitorManager {
 
     private MonitorRepository repository;
@@ -54,6 +56,7 @@ public class MonitorManager {
         validateMonitorEntryUpdate(lastCheck, status);
         monitorEntry.setStatus(status);
         monitorEntry.setLastCheck(lastCheck);
+        log.info("Updating monitor entry: " + lastCheck.toString() + ", " + serviceType.toString() + ", " + status.toString());
         if(status.equals(MonitorStatus.SUCCESS))
             monitorEntry.setLastSuccess(lastCheck);
         else if(status.equals(MonitorStatus.FAILURE)){
