@@ -26,6 +26,7 @@ public class NmServiceDeployment {
     private String ownerName;
     private List<String> ownerSshKeys;
     private boolean configFileRepositoryRequired;
+    private boolean configUpdateEnabled;
     private AppConfiguration appConfiguration;
 
     public static NmServiceDeployment fromAppDeployment(AppDeployment appDeployment, AppDeploymentOwner appDeploymentOwner) {
@@ -39,6 +40,7 @@ public class NmServiceDeployment {
         nmServiceDeployment.ownerName = appDeploymentOwner.getName();
         nmServiceDeployment.ownerSshKeys = appDeploymentOwner.getSshKeys();
         nmServiceDeployment.configFileRepositoryRequired = appDeployment.isConfigFileRepositoryRequired();
+        nmServiceDeployment.configUpdateEnabled = appDeployment.isConfigUpdateEnabled();
         nmServiceDeployment.appConfiguration = appDeployment.getConfiguration();
         return nmServiceDeployment;
     }

@@ -122,13 +122,13 @@ public class AppInstanceControllerTest {
 
         when(applicationInstanceService.findAll(pageable)).thenReturn(appInstancePage);
 
-        List<AppInstanceView> result = appInstanceController.getAllInstances(pageable);
+        List<AppInstanceBase> result = appInstanceController.getAllInstances(pageable);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
@@ -143,13 +143,13 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceView> result = appInstanceController.getAllInstances(global.getId(), principal, pageable);
+        List<AppInstanceBase> result = appInstanceController.getAllInstances(global.getId(), principal, pageable);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
@@ -163,13 +163,13 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceView> result = appInstanceController.getAllInstances(global.getId(), principal, pageableInvalid);
+        List<AppInstanceBase> result = appInstanceController.getAllInstances(global.getId(), principal, pageableInvalid);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
@@ -184,13 +184,13 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceView> result = appInstanceController.getAllInstances(domain.getId(), principal, pageableInvalid);
+        List<AppInstanceBase> result = appInstanceController.getAllInstances(domain.getId(), principal, pageableInvalid);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
@@ -205,13 +205,13 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceView> result = appInstanceController.getMyAllInstances(global.getId(), principal, pageable);
+        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(global.getId(), principal, pageable);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
@@ -223,13 +223,13 @@ public class AppInstanceControllerTest {
 
         when(applicationInstanceService.findAllByOwner(admin, domain, pageable)).thenReturn(appInstancePage);
 
-        List<AppInstanceView> result = appInstanceController.getUserAllInstances(domain.getId(), admin.getUsername(), pageable);
+        List<AppInstanceBase> result = appInstanceController.getUserAllInstances(domain.getId(), admin.getUsername(), pageable);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
@@ -244,13 +244,13 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        List<AppInstanceView> result = appInstanceController.getMyAllInstances(principal, pageable);
+        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(principal, pageable);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
@@ -266,13 +266,13 @@ public class AppInstanceControllerTest {
 
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
 
-        List<AppInstanceView> result = appInstanceController.getRunningAppInstances(domain.getId(), principal);
+        List<AppInstanceBase> result = appInstanceController.getRunningAppInstances(domain.getId(), principal);
 
         assertEquals(1, result.size());
-        AppInstanceView appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test

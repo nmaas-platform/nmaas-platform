@@ -33,7 +33,7 @@
               "basePath": "${logsDir}",
               "maxDepth": "1",
               "IfLastModified": {
-                "age": "90d"
+                "age": "180d"
               }
             }
           }

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
@@ -50,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @Transactional
+@Log4j2
 class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
@@ -130,12 +132,27 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         ApplicationView app = modelMapper.map(appRepo.findByName("updateApp").get(0), ApplicationView.class);
+
+        // simulate bug from NMAAS-844
+        app.getAppDeploymentSpec().getAccessMethods().get(0).getDeployParameters().putIfAbsent("NEW.PARAM", "value");
+        app.getAppDeploymentSpec().getStorageVolumes().get(0).getDeployParameters().putIfAbsent("NEW.PARAM", "value");
+
+        app.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name4", "tag4", new HashMap<>()));
+        app.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name5", "tag5", new HashMap<>()));
+        app.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
+        app.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
+
         mvc.perform(patch("/api/apps")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(app))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        Application test = appRepo.findByName(app.getName()).get(0);
+
+        assertEquals(app.getAppDeploymentSpec().getStorageVolumes().size(), test.getAppDeploymentSpec().getStorageVolumes().size());
+        assertEquals(app.getAppDeploymentSpec().getAccessMethods().size(), test.getAppDeploymentSpec().getAccessMethods().size());
     }
 
     @Test
@@ -203,6 +220,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         assertEquals(DEFAULT_APP_NAME, app.getName());
         assertEquals("1.1.0", app.getVersion());
 
+        assertEquals(3, app.getAppDeploymentSpec().getAccessMethods().size());
+
         assertTrue(result.getResponse().getContentAsString().contains("name1"));
         assertTrue(result.getResponse().getContentAsString().contains("name2"));
         assertTrue(result.getResponse().getContentAsString().contains("name3"));
@@ -233,7 +252,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     private ApplicationView getDefaultAppView(String name){
         List<AppStorageVolumeView> svList = new ArrayList<>();
-        svList.add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, null));
+        svList.add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         List<AppAccessMethodView> mvList = new ArrayList<>();
         mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
         mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));

@@ -46,7 +46,9 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             if(nsd.isConfigFileRepositoryRequired()) {
                 configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
-                configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
+                if((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
+                    configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
+                }
                 janitorService.createOrReplaceConfigMap(nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
             }
             notifyStateChangeListeners(deploymentId, CONFIGURED);

@@ -46,7 +46,7 @@
 			"DOMAIN_CODENAME_LOGSTASH": "logstash.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
 			"RELEASE_NAME_ELASTICSEARCH": "elasticsearch.clusterName",
 			"RELEASE_NAME_KIBANA": "kibana.elasticsearchHosts=http://%VALUE%-pllabprod:9200",
-			"RELEASE_NAME_LOGSTASH": "logstash.logstashPipeline.\"uptime\\.conf\"=\"input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://%VALUE%-pllabprod:9200\"] index => \"logstash\" } }"
+			"RELEASE_NAME_LOGSTASH": "logstash.logstashPipeline.\"uptime\\.conf\"=\"input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://%VALUE%-pllabprod:9200\"] index => \"logstash\" } }\""
 		},
 		"globalDeployParameters": {
 			"elasticsearch.nodeGroup": "pllabprod",
@@ -97,9 +97,10 @@
 		]
 	},
 	"appConfigurationSpec": {
-		"configFileRepositoryRequired": false
+		"configFileRepositoryRequired": true,
+		"configUpdateEnabled": true
 	},
-	"state": "ACTIVE",
+	"state": "DISABLED",
 	"configWizardTemplate": {
 		"template": {
 			"components": [

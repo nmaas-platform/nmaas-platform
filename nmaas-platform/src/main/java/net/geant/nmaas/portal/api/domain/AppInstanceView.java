@@ -17,15 +17,7 @@ public class AppInstanceView extends AppInstanceBase {
 	
 	private Long applicationId;
 	
-	private Long createdAt;
-	
-	private UserBase owner;
-	
 	private String configuration;
-	
-	private AppInstanceState state;
-
-	private String userFriendlyState;
 
 	private Set<ServiceAccessMethodView> serviceAccessMethods;
 

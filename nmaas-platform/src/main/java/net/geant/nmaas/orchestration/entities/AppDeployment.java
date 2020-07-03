@@ -81,6 +81,10 @@ public class AppDeployment {
     @Column(nullable = false)
     private boolean configFileRepositoryRequired;
 
+    /** Indicates if configuration updates during runtime are supported */
+    @Column(nullable = false)
+    private boolean configUpdateEnabled;
+
     /** Contains information about deployment fails */
     @Lob
     @Type(type = "text")

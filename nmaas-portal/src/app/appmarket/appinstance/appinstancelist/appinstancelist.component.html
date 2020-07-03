@@ -48,10 +48,12 @@
         <tr>
             <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
                 sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
+            <th scope="col" class="col-lg-2 col-md-2 column-sortable text-center"
                 sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
             <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId"
-                *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+                *ngIf="domainId === undefined || domainId === domainService.getGlobalDomainId()">
+                {{ 'APP_INSTANCES.DOMAIN' | translate }}
+            </th>
             <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
                 sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
             <th scope="col" class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt"
@@ -59,7 +61,7 @@
             <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center"
                 sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
             <th scope="col" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_USER', 'ROLE_TOOL_MANAGER']"
-                class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
+                class="col-lg-2 col-md-2 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
         </tr>
         </thead>
         <tbody>
@@ -67,13 +69,15 @@
                      [ngForOf]="appDeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }">
             <tr>
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
-                <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
+                <td class="col-lg-2 col-md-2 text-center">{{appInstance?.applicationName}}</td>
                 <td class="col-lg-1 col-md-1 text-center"
-                    *ngIf="domainId === undefined">{{getDomainNameById(appInstance?.domainId)}}</td>
+                    *ngIf="domainId === undefined || domainId === domainService.getGlobalDomainId()">
+                    {{getDomainNameById(appInstance?.domainId)}}
+                </td>
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
                 <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
                 <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
-                <td class="col-lg-3 col-md-3 text-center" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_USER', 'ROLE_TOOL_MANAGER']">
+                <td class="col-lg-2 col-md-2 text-center" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_USER', 'ROLE_TOOL_MANAGER']">
                     <a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url"
                        href="{{appInstance?.url}}" role="button">
                         <em class="far fa-eye icon-black icon-bigger"></em>

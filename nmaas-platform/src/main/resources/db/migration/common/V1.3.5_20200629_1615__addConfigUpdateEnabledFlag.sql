@@ -1,0 +1,1 @@
+alter table app_deployment add column config_update_enabled boolean default false;

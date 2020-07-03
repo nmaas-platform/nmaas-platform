@@ -112,6 +112,28 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
+    void shouldDeployApplicationInstanceAsAdminInDomain() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.DOMAIN1_ADMIN;
+        Application application = new Application("name", "version", "owner");
+        application.setAppDeploymentSpec(new AppDeploymentSpec());
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
+        AppInstanceRequest appInstanceRequest = appInstanceRequest();
+        when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
+        when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
+        when(userService.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName()));
+        when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
+        mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void shouldNotDeployApplicationInstanceWhenNameIsUsedInDeployedInstance() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
