@@ -1,4 +1,6 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.shell.observable;
+
+import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
 
 import java.util.Observable;
 

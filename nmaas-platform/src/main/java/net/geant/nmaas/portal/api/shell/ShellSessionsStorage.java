@@ -2,9 +2,13 @@ package net.geant.nmaas.portal.api.shell;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnectorFactory;
+import net.geant.nmaas.portal.api.shell.observable.GenericShellSessionObservable;
+import net.geant.nmaas.portal.api.shell.observable.SshConnectionShellSessionObservable;
+import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.utils.ssh.SshSessionConnector;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -25,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ShellSessionsStorage {
 
     private final ApplicationInstanceService instanceService;
+    private final AsyncConnectorFactory connectorFactory;
 
     /**
      * this class stores observer-observable pair
@@ -65,13 +70,10 @@ public class ShellSessionsStorage {
             sessionId = UUID.randomUUID().toString();
         }
 
-        // create ssh connector
-        // TODO extract connection parameters from app instance
-        // TODO replace default connector with app instance specific connectors
-        SshSessionConnector defaultConnector = SshConnectionShellSessionObservable.getDefaultConnector();
+        AsyncConnector connector = connectorFactory.prepareConnection(instance);
 
         // create observer and observable and bind them
-        GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId, defaultConnector);
+        GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId, connector);
         ShellSessionObserver observer = new ShellSessionObserver();
         observable.addObserver(observer);
 

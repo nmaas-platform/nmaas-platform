@@ -1,17 +1,11 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.shell.observable;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.utils.ssh.BasicCredentials;
-import net.geant.nmaas.utils.ssh.SshSessionConnector;
-import net.schmizz.sshj.userauth.keyprovider.KeyPairWrapper;
+import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 
 import java.io.*;
-import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,66 +18,7 @@ import java.util.concurrent.Executors;
 public class SshConnectionShellSessionObservable extends GenericShellSessionObservable {
 
     private String sessionId;
-    private SshSessionConnector sshConnector;
-
-    private final static String SSH_USERNAME = "nmaastest";
-    private final static String SSH_HOST = "nmaastest-master1.qalab.geant.net";
-
-    /**
-     * transforms string public key to java format
-     * @param pubKey string public key
-     * @return Java formatted public key in X509
-     * @throws InvalidKeySpecException
-     * @throws NoSuchAlgorithmException
-     */
-    public static PublicKey getPublicKey(String pubKey) throws InvalidKeySpecException, NoSuchAlgorithmException {
-
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-
-        String publicKeyContent = pubKey
-                .replaceAll("\\n", "")
-                .replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "");
-
-        X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyContent));
-        return kf.generatePublic(keySpecX509);
-
-    }
-
-    /**
-     * transforms string private key to java format
-     * @param privKey string private key
-     * @return Java formatted private key in PKCS8
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    public static PrivateKey getPrivateKey(String privKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
-
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-
-        String privateKeyContent = privKey
-                .replaceAll("\\n", "")
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "");
-
-        PKCS8EncodedKeySpec keySpecPKCS8 = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyContent));
-        return kf.generatePrivate(keySpecPKCS8);
-
-    }
-
-    public static SshSessionConnector getDefaultConnector() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PublicKey pub_key = getPublicKey(DefaultShellConnectionData.SSH_PUB_KEY_X509);
-        PrivateKey priv_key = getPrivateKey(DefaultShellConnectionData.SSH_PRIV_KEY);
-        KeyPair kp = new KeyPair(pub_key, priv_key);
-
-         return new SshSessionConnector(
-                SSH_HOST,
-                22,
-                new BasicCredentials(SSH_USERNAME),
-                new KeyPairWrapper(kp)
-        );
-    }
-
+    private AsyncConnector sshConnector;
     private ExecutorService resultReader;
     private ExecutorService errorReader;
 
@@ -138,7 +73,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
      * @param sessionId
      * @param connector
      */
-    public SshConnectionShellSessionObservable(String sessionId, SshSessionConnector connector) {
+    public SshConnectionShellSessionObservable(String sessionId, AsyncConnector connector) {
         this.sessionId = sessionId;
         this.sshConnector = connector;
 
@@ -213,7 +148,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     public void executeCommandAsync(ShellCommandRequest commandRequest) {
         log.debug(sessionId + "\tCOMMAND:\t" + commandRequest.getCommand());
 
-        this.sshConnector.executeCommandInSession(commandRequest.getCommand());
+        this.sshConnector.executeCommand(commandRequest.getCommand());
     }
 
     /**

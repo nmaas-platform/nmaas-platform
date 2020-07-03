@@ -1,9 +1,8 @@
 package net.geant.nmaas.utils.ssh;
 
+import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnector;
 import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.transport.TransportException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.reflection.FieldSetter;
@@ -70,15 +69,15 @@ public class SshSessionConnectorTest {
         String result;
 
         String test1 = "first test";
-        connector.executeCommandInSession(test1);
+        connector.executeCommand(test1);
 
         result = reader.readLine();
         assertTrue(test1.equalsIgnoreCase(result));
 
         String test2 = "second test";
         String test3 = "third test";
-        connector.executeCommandInSession(test2);
-        connector.executeCommandInSession(test3);
+        connector.executeCommand(test2);
+        connector.executeCommand(test3);
 
         result = reader.readLine();
         assertTrue(test2.equalsIgnoreCase(result));

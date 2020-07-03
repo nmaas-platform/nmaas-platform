@@ -1,7 +1,9 @@
-package net.geant.nmaas.utils.ssh;
+package net.geant.nmaas.portal.api.shell.connectors;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.utils.ssh.BasicCredentials;
+import net.geant.nmaas.utils.ssh.SshConnectionException;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.ConnectionException;
@@ -25,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 @NoArgsConstructor
 @Log4j2
-public class SshSessionConnector {
+public class SshSessionConnector implements AsyncConnector {
 
 	private SSHClient client;
 	private Session session;
@@ -112,7 +114,7 @@ public class SshSessionConnector {
 	 * the outcome of executed command will be available in resulting InputStream
 	 * @param command command to be executed
 	 */
-	public void executeCommandInSession(String command) {
+	public void executeCommand(String command) {
 		if(!isSessionOpened()){
 			throw new SshConnectionException("Session is not opened");
 		}

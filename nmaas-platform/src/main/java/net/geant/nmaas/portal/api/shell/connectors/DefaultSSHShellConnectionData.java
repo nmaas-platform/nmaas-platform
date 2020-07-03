@@ -1,9 +1,18 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.shell.connectors;
+
+import net.geant.nmaas.utils.ssh.BasicCredentials;
+import net.schmizz.sshj.userauth.keyprovider.KeyPairWrapper;
+
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 /**
  * hardcoded ssh keys
  */
-public class DefaultShellConnectionData {
+public class DefaultSSHShellConnectionData {
 
     public final static String SSH_PUB_KEY_X509 =
             "-----BEGIN PUBLIC KEY-----\n" +
@@ -44,4 +53,62 @@ public class DefaultShellConnectionData {
                     "we0cs9qikUog1n5kNUQYzQQwVFMOKG7deP3HQ0Mhwg7VLOyzodryr0sNEq5S+Xqf\n" +
                     "wWiKDSVL4RJDRKFJAdc=\n" +
                     "-----END PRIVATE KEY-----";
+
+    private final static String SSH_USERNAME = "nmaastest";
+    private final static String SSH_HOST = "nmaastest-master1.qalab.geant.net";
+
+    /**
+     * transforms string public key to java format
+     * @param pubKey string public key
+     * @return Java formatted public key in X509
+     * @throws InvalidKeySpecException
+     * @throws NoSuchAlgorithmException
+     */
+    public static PublicKey getPublicKey(String pubKey) throws InvalidKeySpecException, NoSuchAlgorithmException {
+
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        String publicKeyContent = pubKey
+                .replaceAll("\\n", "")
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "");
+
+        X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyContent));
+        return kf.generatePublic(keySpecX509);
+
+    }
+
+    /**
+     * transforms string private key to java format
+     * @param privKey string private key
+     * @return Java formatted private key in PKCS8
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    public static PrivateKey getPrivateKey(String privKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        String privateKeyContent = privKey
+                .replaceAll("\\n", "")
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "");
+
+        PKCS8EncodedKeySpec keySpecPKCS8 = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyContent));
+        return kf.generatePrivate(keySpecPKCS8);
+
+    }
+
+    public static SshSessionConnector getDefaultConnector() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        PublicKey pub_key = getPublicKey(DefaultSSHShellConnectionData.SSH_PUB_KEY_X509);
+        PrivateKey priv_key = getPrivateKey(DefaultSSHShellConnectionData.SSH_PRIV_KEY);
+        KeyPair kp = new KeyPair(pub_key, priv_key);
+
+        return new SshSessionConnector(
+                SSH_HOST,
+                22,
+                new BasicCredentials(SSH_USERNAME),
+                new KeyPairWrapper(kp)
+        );
+    }
 }

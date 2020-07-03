@@ -1,5 +1,8 @@
 package net.geant.nmaas.portal.api.shell;
 
+import net.geant.nmaas.portal.api.shell.observable.EchoShellSessionObservable;
+import net.geant.nmaas.portal.api.shell.observable.GenericShellSessionObservable;
+import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 

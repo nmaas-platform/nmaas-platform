@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.api.shell;
 
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnectorFactory;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
@@ -12,6 +14,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,11 +22,15 @@ import static org.mockito.Mockito.when;
 public class ShellSessionsStorageTest {
 
     private ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
+    private AsyncConnectorFactory connectorFactory = mock(AsyncConnectorFactory.class);
+    private AsyncConnector connector = mock(AsyncConnector.class);
+
     private ShellSessionsStorage storage;
 
     @BeforeEach
     public void setup() {
-        storage = new ShellSessionsStorage(instanceService);
+        when(connectorFactory.prepareConnection(any())).thenReturn(connector);
+        storage = new ShellSessionsStorage(instanceService, connectorFactory);
     }
 
     @Test

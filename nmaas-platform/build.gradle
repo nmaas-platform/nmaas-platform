@@ -109,6 +109,7 @@ dependencies {
 	compile('io.grpc:grpc-netty-shaded:1.17.1')
 	compile('io.grpc:grpc-protobuf:1.17.1')
 	compile('io.grpc:grpc-stub:1.17.1')
+	compile('io.fabric8:kubernetes-client:4.10.2')
 
 	testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.0')
 	testCompile('org.junit.jupiter:junit-jupiter-params:5.4.0')

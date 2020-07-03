@@ -2,7 +2,9 @@ package net.geant.nmaas.portal.api.shell;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.utils.ssh.SshSessionConnector;
+import net.geant.nmaas.portal.api.shell.connectors.DefaultSSHShellConnectionData;
+import net.geant.nmaas.portal.api.shell.observable.SshConnectionShellSessionObservable;
+import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnector;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -23,18 +25,18 @@ import static org.mockito.Mockito.*;
 @Log4j2
 public class SshConnectionShellSessionObservableTest {
 
-    public final String PUB_KEY = DefaultShellConnectionData.SSH_PUB_KEY_X509;
-    public final String PRIV_KEY = DefaultShellConnectionData.SSH_PRIV_KEY;
+    public final String PUB_KEY = DefaultSSHShellConnectionData.SSH_PUB_KEY_X509;
+    public final String PRIV_KEY = DefaultSSHShellConnectionData.SSH_PRIV_KEY;
 
     @Test
     public void testPublicKeyConversion() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PublicKey publicKey = SshConnectionShellSessionObservable.getPublicKey(PUB_KEY);
+        PublicKey publicKey = DefaultSSHShellConnectionData.getPublicKey(PUB_KEY);
         System.out.println(publicKey);
     }
 
     @Test
     public void testPrivateKeyConversion() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PrivateKey privateKey = SshConnectionShellSessionObservable.getPrivateKey(PRIV_KEY);
+        PrivateKey privateKey = DefaultSSHShellConnectionData.getPrivateKey(PRIV_KEY);
         System.out.println(privateKey);
     }
 
@@ -92,7 +94,7 @@ public class SshConnectionShellSessionObservableTest {
             outputStream.write(invocation.getArgument(0).toString().getBytes());
             outputStream.flush();
             return null;
-        }).when(mockConnector).executeCommandInSession(anyString());
+        }).when(mockConnector).executeCommand(anyString());
 
         when(mockConnector.getInputStream()).thenReturn(inputStream);
         when(mockConnector.getErrorStream()).thenReturn(new PipedInputStream()); // do nothing
