@@ -3,8 +3,7 @@ package net.geant.nmaas.portal.api.shell.observable;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
-import net.geant.nmaas.portal.api.shell.connectors.DefaultSSHShellConnectionData;
-import net.geant.nmaas.portal.api.shell.observable.SshConnectionShellSessionObservable;
+import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnectorDefaultData;
 import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnector;
 import org.junit.jupiter.api.Test;
 
@@ -26,18 +25,18 @@ import static org.mockito.Mockito.*;
 @Log4j2
 public class SshConnectionShellSessionObservableTest {
 
-    public final String PUB_KEY = DefaultSSHShellConnectionData.SSH_PUB_KEY_X509;
-    public final String PRIV_KEY = DefaultSSHShellConnectionData.SSH_PRIV_KEY;
+    public final String PUB_KEY = SshSessionConnectorDefaultData.SSH_PUB_KEY_X509;
+    public final String PRIV_KEY = SshSessionConnectorDefaultData.SSH_PRIV_KEY;
 
     @Test
     public void testPublicKeyConversion() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PublicKey publicKey = DefaultSSHShellConnectionData.getPublicKey(PUB_KEY);
+        PublicKey publicKey = SshSessionConnectorDefaultData.getPublicKey(PUB_KEY);
         System.out.println(publicKey);
     }
 
     @Test
     public void testPrivateKeyConversion() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PrivateKey privateKey = DefaultSSHShellConnectionData.getPrivateKey(PRIV_KEY);
+        PrivateKey privateKey = SshSessionConnectorDefaultData.getPrivateKey(PRIV_KEY);
         System.out.println(privateKey);
     }
 

@@ -12,7 +12,7 @@ import java.util.Base64;
 /**
  * hardcoded ssh keys
  */
-public class DefaultSSHShellConnectionData {
+public class SshSessionConnectorDefaultData {
 
     public final static String SSH_PUB_KEY_X509 =
             "-----BEGIN PUBLIC KEY-----\n" +
@@ -100,8 +100,8 @@ public class DefaultSSHShellConnectionData {
     }
 
     public static SshSessionConnector getDefaultConnector() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PublicKey pub_key = getPublicKey(DefaultSSHShellConnectionData.SSH_PUB_KEY_X509);
-        PrivateKey priv_key = getPrivateKey(DefaultSSHShellConnectionData.SSH_PRIV_KEY);
+        PublicKey pub_key = getPublicKey(SshSessionConnectorDefaultData.SSH_PUB_KEY_X509);
+        PrivateKey priv_key = getPrivateKey(SshSessionConnectorDefaultData.SSH_PRIV_KEY);
         KeyPair kp = new KeyPair(pub_key, priv_key);
 
         return new SshSessionConnector(

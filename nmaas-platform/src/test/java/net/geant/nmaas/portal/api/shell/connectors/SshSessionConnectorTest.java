@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.shell.connectors;
 
-import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnector;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import org.junit.jupiter.api.BeforeEach;

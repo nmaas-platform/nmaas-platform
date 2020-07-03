@@ -52,6 +52,22 @@ public class SshSessionConnector implements AsyncConnector {
 	}
 
 	/**
+	 * Test purpose constructor
+	 * @param client - already connected (mocked) SSHClient instance
+	 * @param credentials
+	 * @param keyProvider
+	 */
+	public SshSessionConnector(SSHClient client, BasicCredentials credentials, KeyProvider keyProvider) {
+		this.client = client;
+		if(isConnected()) {
+			authenticate(credentials, keyProvider);
+		}
+		if(isAuthenticated()) {
+			openSession();
+		}
+	}
+
+	/**
 	 * Use this input stream to obtain results from executed commands
 	 * Returns entire shell appearance
 	 * @return InputStream with shell output

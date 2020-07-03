@@ -19,7 +19,7 @@ public class AsyncConnectorFactory {
         // TODO implement
         // return new KubernetesConnector();
         try {
-            return DefaultSSHShellConnectionData.getDefaultConnector();
+            return SshSessionConnectorDefaultData.getDefaultConnector();
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
             throw new RuntimeException("Cannot create connector");
         }

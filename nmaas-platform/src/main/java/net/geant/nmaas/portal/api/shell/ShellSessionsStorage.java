@@ -56,7 +56,7 @@ public class ShellSessionsStorage {
      * @param appInstanceId app instance identifier
      * @return shell session id
      */
-    public synchronized String createSession(Long appInstanceId) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public synchronized String createSession(Long appInstanceId) {
         AppInstance instance = this.instanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
         // check if you can connect to this app instance

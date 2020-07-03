@@ -16,7 +16,7 @@ import java.io.InputStream;
 @Log4j2
 public class KubernetesConnector implements AsyncConnector {
 
-    private static class SimpleListener implements ExecListener {
+    protected static class SimpleListener implements ExecListener {
         @Override
         public void onOpen(Response response) {
             log.info("Shell opened");
@@ -33,13 +33,13 @@ public class KubernetesConnector implements AsyncConnector {
         }
     }
 
-    private String podName;
-    private String namespace;
-    private String master;
+    private final String podName;
+    private final String namespace;
+    private final String master;
 
-    private Config config;
-    private KubernetesClient client;
-    private ExecWatch watch;
+    protected Config config;
+    protected KubernetesClient client;
+    protected ExecWatch watch;
 
     public KubernetesConnector() {
         podName = "default";
@@ -57,10 +57,12 @@ public class KubernetesConnector implements AsyncConnector {
         this.init();
     }
 
-    private void init() {
+    protected void init() {
         config = new ConfigBuilder().withMasterUrl(master).build();
         client = new DefaultKubernetesClient(config);
-        watch = client.pods().withName(podName)
+        watch = client.pods()
+                .inNamespace(namespace)
+                .withName(podName)
                 .withTTY()
                 .usingListener(new SimpleListener())
                 .exec();
@@ -69,6 +71,7 @@ public class KubernetesConnector implements AsyncConnector {
     public void executeCommand(String command) {
         try {
             watch.getInput().write((command + "\n").getBytes());
+            watch.getInput().flush();
         } catch (IOException e) {
             log.error(e.getMessage());
         }
