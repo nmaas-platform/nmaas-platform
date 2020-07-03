@@ -96,8 +96,8 @@ public class PortalConfig {
 			@Transactional
 			public void afterPropertiesSet() {
 				Arrays.stream(ServiceType.values())
-						.filter(service -> !monitorManager.existsByServiceName(service))
 						.forEach(service ->{
+							monitorManager.deleteMonitorEntry(service.toString()); // remove all existing entries
 							MonitorEntryView monitorEntry = service.getDefaultMonitorEntry();
 							this.monitorManager.createMonitorEntry(monitorEntry);
 							this.scheduleManager.createJob(monitorEntry);
