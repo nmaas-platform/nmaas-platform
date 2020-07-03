@@ -1,7 +1,8 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.shell.observable;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
 import net.geant.nmaas.portal.api.shell.connectors.DefaultSSHShellConnectionData;
 import net.geant.nmaas.portal.api.shell.observable.SshConnectionShellSessionObservable;
 import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnector;

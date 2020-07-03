@@ -1,5 +1,6 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.shell.observer;
 
+import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
 import net.geant.nmaas.portal.api.shell.observable.EchoShellSessionObservable;
 import net.geant.nmaas.portal.api.shell.observable.GenericShellSessionObservable;
 import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.utils.ssh;
+package net.geant.nmaas.portal.api.shell.connectors;
 
 import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnector;
 import net.schmizz.sshj.SSHClient;
