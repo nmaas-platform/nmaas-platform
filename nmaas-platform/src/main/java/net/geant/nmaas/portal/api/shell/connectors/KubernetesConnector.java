@@ -12,6 +12,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 @Log4j2
 public class KubernetesConnector implements AsyncConnector {
@@ -41,28 +42,34 @@ public class KubernetesConnector implements AsyncConnector {
     protected KubernetesClient client;
     protected ExecWatch watch;
 
-    public KubernetesConnector() {
-        podName = "default";
-        namespace = "default";
-        master = "https://localhost:8443/";
-
-        this.init();
-    }
-
     public KubernetesConnector(String podName, String namespace, String master) {
         this.podName = podName;
         this.namespace = namespace;
         this.master = master;
 
+        this.config = new ConfigBuilder().withMasterUrl(master).build();
+
+        this.init();
+    }
+
+    public KubernetesConnector(Config config, String namespace, String podName) {
+        this.namespace = namespace;
+        this.podName = podName;
+        this.master = config.getMasterUrl();
+
+        this.config = config;
+
         this.init();
     }
 
     protected void init() {
-        config = new ConfigBuilder().withMasterUrl(master).build();
         client = new DefaultKubernetesClient(config);
         watch = client.pods()
                 .inNamespace(namespace)
                 .withName(podName)
+                .redirectingInput()
+                .redirectingOutput()
+                .redirectingError()
                 .withTTY()
                 .usingListener(new SimpleListener())
                 .exec();
@@ -87,6 +94,7 @@ public class KubernetesConnector implements AsyncConnector {
 
     public void close() {
         watch.close();
+        client.close();
     }
 
     public String executeSingleCommand(String command) {

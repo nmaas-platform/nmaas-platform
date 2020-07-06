@@ -58,6 +58,9 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
                 if(result.toString().endsWith("$ ")) { // break after reaching command prompt
                     break; // reaching prompt is the end of the message
                 }
+                if(result.toString().endsWith("# ")) { // break after reaching command prompt
+                    break; // reaching prompt is the end of the message
+                }
                 ch = reader.read(); // finally read next character
             }
             if(ch == -1) {
