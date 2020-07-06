@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.shell;
 
+import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -19,7 +20,9 @@ public class ShellClientControllerTest {
         when(observer.getEmitter()).thenReturn(emitter);
         when(storage.getObserver(anyString())).thenReturn(observer);
 
-        ShellClientController controller = new ShellClientController(storage);
+        KubernetesConnectorHelper connectorHelper = mock(KubernetesConnectorHelper.class);
+
+        ShellClientController controller = new ShellClientController(storage, connectorHelper);
 
         controller.init(null, 12L);
         verify(storage, times(1)).createSession(anyLong());

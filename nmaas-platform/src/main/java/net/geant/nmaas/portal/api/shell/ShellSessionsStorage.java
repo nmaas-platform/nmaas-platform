@@ -56,7 +56,7 @@ public class ShellSessionsStorage {
      * @param appInstanceId app instance identifier
      * @return shell session id
      */
-    public synchronized String createSession(Long appInstanceId) {
+    public synchronized String createSession(Long appInstanceId, String podName) {
         AppInstance instance = this.instanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("This application instance does not exists"));
         // check if you can connect to this app instance
@@ -70,7 +70,12 @@ public class ShellSessionsStorage {
             sessionId = UUID.randomUUID().toString();
         }
 
-        AsyncConnector connector = connectorFactory.prepareConnection(instance);
+        AsyncConnector connector = null;
+        if(podName == null ) {
+            connector = connectorFactory.prepareConnection(instance);
+        } else {
+            connector = connectorFactory.prepareConnection(instance, podName);
+        }
 
         // create observer and observable and bind them
         GenericShellSessionObservable observable = new SshConnectionShellSessionObservable(sessionId, connector);
@@ -80,6 +85,10 @@ public class ShellSessionsStorage {
         storage.putIfAbsent(sessionId, new ObserverObservablePair(observer, observable));
 
         return sessionId;
+    }
+
+    public synchronized String createSession(Long appInstanceId) {
+        return this.createSession(appInstanceId, null);
     }
 
     /**

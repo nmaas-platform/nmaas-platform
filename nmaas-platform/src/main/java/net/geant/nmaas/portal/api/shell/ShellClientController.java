@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.shell;
 
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
 
 /**
  * Controller for handling SSH Shell over SSE
@@ -24,9 +26,12 @@ public class ShellClientController {
 
     private final ShellSessionsStorage storage;
 
+    private final KubernetesConnectorHelper connectorHelper;
+
     @Autowired
-    public ShellClientController(ShellSessionsStorage storage){
+    public ShellClientController(ShellSessionsStorage storage, KubernetesConnectorHelper connectorHelper){
         this.storage = storage;
+        this.connectorHelper = connectorHelper;
     }
 
     /**
@@ -34,11 +39,12 @@ public class ShellClientController {
      * FUTURE: possibly allows generating multiple connections to the same instance
      * @param principal
      * @param id - target app instance id
+     * @param podName - name of target connection kubernetes pod
      * @return - session id
      */
-    @PostMapping(value = "/shell/{id}/init", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String init(Principal principal, @PathVariable Long id) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        return this.storage.createSession(id);
+    @PostMapping(value = "/shell/{id}/init/{podName}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String init(Principal principal, @PathVariable Long id, @PathVariable String podName) {
+        return this.storage.createSession(id, podName);
     }
 
     /**
@@ -72,5 +78,16 @@ public class ShellClientController {
     @DeleteMapping(value = "/shell/{id}")
     public void complete(Principal principal, @PathVariable String id) {
         this.storage.completeSession(id);
+    }
+
+    /**
+     * Retrieves pod names for an AppInstance
+     * @param principal
+     * @param id identifier of AppInstance to retrieve pod names
+     * @return list of pod names
+     */
+    @GetMapping(value = "/shell/{id}/podnames")
+    public List<String> getPodNames(Principal principal, @PathVariable Long id) {
+        return this.connectorHelper.getPodNamesForAppInstance(id);
     }
 }
