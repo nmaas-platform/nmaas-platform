@@ -24,8 +24,8 @@ public class ShellClientControllerTest {
 
         ShellClientController controller = new ShellClientController(storage, connectorHelper);
 
-        controller.init(null, 12L);
-        verify(storage, times(1)).createSession(anyLong());
+        controller.init(null, 12L, "podName");
+        verify(storage, times(1)).createSession(anyLong(), anyString());
 
         controller.getShell(null, "sessionId");
         verify(storage, times(1)).getObserver(anyString());

@@ -9,6 +9,7 @@ import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -25,11 +26,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * Default sink utilizes SSE to pass results to the client
  */
 @Component
-@AllArgsConstructor
 public class ShellSessionsStorage {
 
     private final ApplicationInstanceService instanceService;
     private final AsyncConnectorFactory connectorFactory;
+
+    @Autowired
+    public ShellSessionsStorage(ApplicationInstanceService instanceService,
+                                AsyncConnectorFactory connectorFactory) {
+        this.instanceService = instanceService;
+        this.connectorFactory = connectorFactory;
+    }
 
     /**
      * this class stores observer-observable pair

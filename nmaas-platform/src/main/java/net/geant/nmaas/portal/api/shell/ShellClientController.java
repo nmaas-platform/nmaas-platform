@@ -4,12 +4,11 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 /**
@@ -29,7 +28,8 @@ public class ShellClientController {
     private final KubernetesConnectorHelper connectorHelper;
 
     @Autowired
-    public ShellClientController(ShellSessionsStorage storage, KubernetesConnectorHelper connectorHelper){
+    public ShellClientController(ShellSessionsStorage storage,
+                                 KubernetesConnectorHelper connectorHelper){
         this.storage = storage;
         this.connectorHelper = connectorHelper;
     }
@@ -43,6 +43,7 @@ public class ShellClientController {
      * @return - session id
      */
     @PostMapping(value = "/shell/{id}/init/{podName}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PreAuthorize("hasPermission(#id, 'appInstance', 'OWNER')")
     public String init(Principal principal, @PathVariable Long id, @PathVariable String podName) {
         return this.storage.createSession(id, podName);
     }

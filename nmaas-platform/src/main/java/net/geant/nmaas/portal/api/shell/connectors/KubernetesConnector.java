@@ -1,14 +1,11 @@
 package net.geant.nmaas.portal.api.shell.connectors;
 
 import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecListener;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.Response;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,32 +30,14 @@ public class KubernetesConnector implements AsyncConnector {
         }
     }
 
-    private final String podName;
-    private final String namespace;
+    protected String podName;
+    protected String namespace;
 
     protected Config config;
     protected KubernetesClient client;
     protected ExecWatch watch;
 
-    public KubernetesConnector(String master, String namespace, String podName) {
-        this.podName = podName;
-        this.namespace = namespace;
-
-        this.config = new ConfigBuilder().withMasterUrl(master).build();
-        this.client = new DefaultKubernetesClient(config);
-
-        this.initWatch();
-    }
-
-    public KubernetesConnector(Config config, String namespace, String podName) {
-        this.namespace = namespace;
-        this.podName = podName;
-
-        this.config = config;
-        this.client = new DefaultKubernetesClient(config);
-
-        this.initWatch();
-    }
+    protected KubernetesConnector(){}
 
     public KubernetesConnector(KubernetesClient client, String namespace, String podName) {
         this.namespace = namespace;
@@ -101,11 +80,10 @@ public class KubernetesConnector implements AsyncConnector {
 
     public void close() {
         watch.close();
-        client.close();
     }
 
     public String executeSingleCommand(String command) {
-        throw new NotImplementedException();
+        return "NOT IMPLEMENTED";
     }
 
 }
