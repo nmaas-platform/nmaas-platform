@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
@@ -63,13 +62,13 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 public class KubernetesManager implements ContainerOrchestrator {
 
     private KubernetesRepositoryManager repositoryManager;
+    private KubernetesDeploymentParametersProvider deploymentParametersProvider;
     private KClusterValidator clusterValidator;
     private KServiceLifecycleManager serviceLifecycleManager;
     private KServiceOperationsManager serviceOperationsManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
     private KClusterIngressManager ingressManager;
-    private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
     private JanitorService janitorService;
 
@@ -99,7 +98,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
         Map<String, String> additionalParameters = new HashMap<>();
         if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()) {
-            additionalParameters.putAll(createAdditionalParametersMap(appDeploymentSpec.getDeployParameters(), appDeployment));
+            additionalParameters.putAll(createAdditionalParametersMap(deploymentId, appDeploymentSpec.getDeployParameters()));
         }
         if(appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
             additionalParameters.putAll(appDeploymentSpec.getGlobalDeployParameters());
@@ -120,36 +119,35 @@ public class KubernetesManager implements ContainerOrchestrator {
                 .collect(Collectors.toSet());
     }
 
-    private Map<String, String> createAdditionalParametersMap(Map<String, String> deployParameters, AppDeployment appDeployment){
+    private Map<String, String> createAdditionalParametersMap(Identifier deploymentId, Map<String, String> deployParameters){
         Map<String, String> additionalParameters = new HashMap<>();
+        Map<String, String> deploymentParameters = deploymentParametersProvider.deploymentParameters(deploymentId);
         deployParameters.forEach((k,v) ->{
             switch (ParameterType.fromValue(k)) {
                 case SMTP_HOSTNAME:
-                    additionalParameters.put(v, deploymentManager.getSMTPServerHostname());
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_HOSTNAME.name()));
                     break;
                 case SMTP_PORT:
-                    additionalParameters.put(v, deploymentManager.getSMTPServerPort().toString());
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_PORT.name()));
                     break;
                 case SMTP_USERNAME:
-                    deploymentManager.getSMTPServerUsername().ifPresent(username->{
-                        if(!username.isEmpty())
-                            additionalParameters.put(v, username);
-                    });
+                    if (deploymentParameters.containsKey(ParameterType.SMTP_USERNAME.name())) {
+                        additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_USERNAME.name()));
+                    }
                     break;
                 case SMTP_PASSWORD:
-                    deploymentManager.getSMTPServerPassword().ifPresent(value->{
-                        if(!value.isEmpty())
-                            additionalParameters.put(v, value);
-                    });
+                    if (deploymentParameters.containsKey(ParameterType.SMTP_PASSWORD.name())) {
+                        additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_PASSWORD.name()));
+                    }
                     break;
                 case DOMAIN_CODENAME:
-                    additionalParameters.put(v, appDeployment.getDomain());
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.DOMAIN_CODENAME.name()));
                     break;
                 case BASE_URL:
-                    additionalParameters.put(v, ingressManager.getExternalServiceDomain());
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.BASE_URL.name()));
                     break;
                 case RELEASE_NAME:
-                    additionalParameters.put(v, appDeployment.getDescriptiveDeploymentId().value());
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.RELEASE_NAME.name()));
                     break;
             }
         });

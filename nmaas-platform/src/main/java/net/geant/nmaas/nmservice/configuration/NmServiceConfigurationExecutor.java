@@ -31,7 +31,7 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 @AllArgsConstructor
 public class NmServiceConfigurationExecutor implements NmServiceConfigurationProvider {
 
-    private NmServiceConfigurationFilePreparer filePreparer;
+    private ConfigFilePreparer filePreparer;
     private GitConfigHandler configHandler;
     private JanitorService janitorService;
     private ApplicationEventPublisher eventPublisher;

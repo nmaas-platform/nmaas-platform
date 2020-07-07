@@ -642,6 +642,8 @@
     "DEPLOY_PARAMETERS_DROPDOWN": "Wählen Sie globale Installationsparamter aus",
     "CONFIG_FILENAME_LABEL": "Name der Konfigurationsdatei",
     "CONFIG_FILENAME_TOOLTIP": "Geben Sie den Namen der Konfigurationsdatei an",
+    "CONFIG_FILEDIRECTORY_LABEL": "Configuration file directory (folder name)",
+    "CONFIG_FILEDIRECTORY_TOOLTIP": "Enter the name of folder in which the configuration file should be placed in repository",
     "CONFIG_CONTENT_LABEL": "Konfigurartionsvorlage",
     "CONFIG_CONTENT_TOOLTIP":"Geben Sie die Konfigurationsvorlage an. Bitte beachten Sie, dass diese mit der FreeMarker Template Language kompatibel sein muss.",
     "ADD_CONFIG_BUTTON": "Neue Vorlage hinzufügen",

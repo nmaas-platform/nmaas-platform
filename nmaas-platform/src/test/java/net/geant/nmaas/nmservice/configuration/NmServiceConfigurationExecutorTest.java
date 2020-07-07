@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 public class NmServiceConfigurationExecutorTest {
 
-    private NmServiceConfigurationFilePreparer filePreparer = mock(NmServiceConfigurationFilePreparer.class);
+    private ConfigFilePreparer filePreparer = mock(ConfigFilePreparer.class);
     private GitConfigHandler configHandler = mock(GitConfigHandler.class);
     private JanitorService janitorService = mock(JanitorService.class);
     private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);

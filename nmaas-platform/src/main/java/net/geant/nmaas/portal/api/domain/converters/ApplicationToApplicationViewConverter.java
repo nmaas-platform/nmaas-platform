@@ -70,7 +70,7 @@ public class ApplicationToApplicationViewConverter extends AbstractConverter<App
 
     private List<ConfigFileTemplateView> getConfigFileTemplates(Application source){
         return Optional.ofNullable(source.getAppConfigurationSpec().getTemplates()).orElse(Collections.emptyList()).stream()
-                .map(template -> new ConfigFileTemplateView(template.getId(), template.getApplicationId(), template.getConfigFileName(), template.getConfigFileTemplateContent()))
+                .map(template -> new ConfigFileTemplateView(template.getId(), template.getApplicationId(), template.getConfigFileName(), template.getConfigFileDirectory(), template.getConfigFileTemplateContent()))
                 .collect(Collectors.toList());
     }
 

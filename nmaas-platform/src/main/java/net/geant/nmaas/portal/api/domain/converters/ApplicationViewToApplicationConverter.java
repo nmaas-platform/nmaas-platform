@@ -54,6 +54,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
                                 template.getId(),
                                 template.getApplicationId(),
                                 template.getConfigFileName(),
+                                template.getConfigFileDirectory(),
                                 template.getConfigFileTemplateContent()
                         )
                 )

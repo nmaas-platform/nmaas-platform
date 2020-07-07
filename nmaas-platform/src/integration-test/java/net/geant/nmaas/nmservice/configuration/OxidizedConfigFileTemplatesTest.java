@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.convertToFreemarkerTemplate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -42,11 +43,12 @@ public class OxidizedConfigFileTemplatesTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
     private static final String TEST_CONFIG_ID_2 = "2";
-    private static final String TEST_TEMPLATE_NAME_1 = "config";
-    private static final String TEST_TEMPLATE_NAME_2 = "router.db";
+    private static final String TEST_CONFIG_FILE_NAME_1 = "config";
+    private static final String TEST_CONFIG_FILE_NAME_2 = "router.db";
+    private static final String TEST_CONFIG_FILE_DIRECTORY_2 = "config";
 
     @Autowired
-    private NmServiceConfigurationFilePreparer configurationsPreparer;
+    private ConfigFilePreparer configurationsPreparer;
 
     @Autowired
     private ApplicationService applicationService;
@@ -78,22 +80,26 @@ public class OxidizedConfigFileTemplatesTest {
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
         List<ConfigFileTemplate> configFileTemplates = configFileTemplatesRepository.getAllByApplicationId(oxidizedAppId);
         Optional<ConfigFileTemplate> nmServiceConfigurationTemplate =
-                configFileTemplates.stream().filter(t -> t.getConfigFileName().endsWith(TEST_TEMPLATE_NAME_1)).findFirst();
-        Template template = configurationsPreparer.convertToTemplate(nmServiceConfigurationTemplate.orElseThrow(Exception::new));
+                configFileTemplates.stream().filter(t -> t.getConfigFileName().endsWith(TEST_CONFIG_FILE_NAME_1)).findFirst();
+        Template template = convertToFreemarkerTemplate(nmServiceConfigurationTemplate.orElseThrow(Exception::new));
         NmServiceConfiguration nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
                         TEST_CONFIG_ID_1,
+                        TEST_CONFIG_FILE_NAME_1,
+                        null,
                         template,
                         testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("config"));
         assertThat(nmServiceConfiguration.getConfigFileContent(),
                 Matchers.allOf(containsString("user123"), containsString("pass123")));
         nmServiceConfigurationTemplate =
-                configFileTemplates.stream().filter(t -> t.getConfigFileName().endsWith(TEST_TEMPLATE_NAME_2)).findFirst();
-        template = configurationsPreparer.convertToTemplate(nmServiceConfigurationTemplate.orElseThrow(Exception::new));
+                configFileTemplates.stream().filter(t -> t.getConfigFileName().endsWith(TEST_CONFIG_FILE_NAME_2)).findFirst();
+        template = convertToFreemarkerTemplate(nmServiceConfigurationTemplate.orElseThrow(Exception::new));
         nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
                         TEST_CONFIG_ID_2,
+                        TEST_CONFIG_FILE_NAME_2,
+                        TEST_CONFIG_FILE_DIRECTORY_2,
                         template,
                         testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
