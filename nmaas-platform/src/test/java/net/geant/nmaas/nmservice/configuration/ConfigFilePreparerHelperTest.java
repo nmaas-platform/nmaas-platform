@@ -3,7 +3,6 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;

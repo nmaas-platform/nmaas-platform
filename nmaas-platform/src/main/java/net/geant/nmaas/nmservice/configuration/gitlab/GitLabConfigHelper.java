@@ -16,7 +16,6 @@ public class GitLabConfigHelper {
     static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
 
-
     static User createStandardUser(String username, String email, String name) {
         User user = new User();
         user.setUsername(username);
@@ -66,7 +65,7 @@ public class GitLabConfigHelper {
 
     static RepositoryFile committedFile(NmServiceConfiguration configuration) {
         RepositoryFile file = new RepositoryFile();
-        file.setFilePath(configuration.getConfigFileName());
+        file.setFilePath(configuration.getConfigFileDirectory() + "/" + configuration.getConfigFileName());
         file.setContent(configuration.getConfigFileContent());
         return file;
     }
