@@ -1,22 +1,23 @@
 import {TestBed, async} from '@angular/core/testing';
 import { AppMarketComponent } from './appmarket.component';
-import {RouterTestingModule} from "@angular/router/testing";
-import {ServiceUnavailableService} from "../service-unavailable/service-unavailable.service";
+import {RouterTestingModule} from '@angular/router/testing';
+import {ServiceUnavailableService} from '../service-unavailable/service-unavailable.service';
 import {
   MissingTranslationHandler,
   TranslateFakeLoader,
   TranslateLoader,
   TranslateModule,
   TranslateService
-} from "@ngx-translate/core";
-import {CustomMissingTranslationService} from "../i18n/custommissingtranslation.service";
-import {InternationalizationService} from "../service/internationalization.service";
-import {AppConfigService, ConfigurationService} from "../service";
-import {Observable, of} from "rxjs";
-import {Configuration} from "../model/configuration";
-import {Language} from "../model/language";
-import {Component} from "@angular/core";
-import {AuthService, DomainRoles} from "../auth/auth.service";
+} from '@ngx-translate/core';
+import {CustomMissingTranslationService} from '../i18n/custommissingtranslation.service';
+import {InternationalizationService} from '../service/internationalization.service';
+import {AppConfigService, ConfigurationService} from '../service';
+import {Observable, of} from 'rxjs';
+import {Configuration} from '../model/configuration';
+import {Language} from '../model/language';
+import {Component} from '@angular/core';
+import {AuthService, DomainRoles} from '../auth/auth.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 export class MockAuthService {
 
@@ -30,7 +31,7 @@ export class MockAuthService {
   }
 
   private getToken(): string {
-    return String("");
+    return String('');
   }
 
   private removeToken(): void {
@@ -38,7 +39,7 @@ export class MockAuthService {
   }
 
   public getUsername(): string {
-    return String("admin")
+    return String('admin')
   }
 
   public hasRole(name: string): boolean {
@@ -63,7 +64,7 @@ export class MockAuthService {
 
   public isLogged(): boolean {
     const token = this.getToken();
-    return token != "";
+    return token !== '';
 
   }
 }
@@ -71,13 +72,13 @@ export class MockAuthService {
 class MockServiceUnavailableService {
   public isServiceAvailable: boolean;
 
-  public validateServicesAvailability(){
+  public validateServicesAvailability() {
     this.isServiceAvailable = true;
   }
 }
 
-class MockConfigurationService{
-  protected uri:string;
+class MockConfigurationService {
+  protected uri: string;
 
   constructor() {
     this.uri = 'http://localhost/api';
@@ -87,26 +88,26 @@ class MockConfigurationService{
     return 'http://localhost/api';
   }
 
-  public getConfiguration():Observable<Configuration>{
+  public getConfiguration(): Observable<Configuration> {
     return of<Configuration>();
   }
 
-  public updateConfiguration(configuration:Configuration):Observable<any>{
+  public updateConfiguration(configuration: Configuration): Observable<any> {
     return of<Configuration>();
   }
 
 }
 
-class MockInternationalizationService{
-  public updateRequiredFlag: boolean = false;
+class MockInternationalizationService {
+  public updateRequiredFlag = false;
 
   constructor() {}
 
-  public saveLanguageContent(language: Language) : Observable<any> {
+  public saveLanguageContent(language: Language): Observable<any> {
       return of<any>();
   }
 
-  public getAllSupportedLanguages():Observable<Language[]>{
+  public getAllSupportedLanguages(): Observable<Language[]> {
     return of<any>();
   }
 
@@ -114,28 +115,28 @@ class MockInternationalizationService{
     return of<any>();
   }
 
-  public changeSupportedLanguageState(language: Language):Observable<any>{
+  public changeSupportedLanguageState(language: Language): Observable<any> {
     return of<any>();
   }
 
-  public getEnabledLanguages(): Observable<string[]>{
+  public getEnabledLanguages(): Observable<string[]> {
     return of<any>();
   }
 
-  private getInternationalizationUrl(): string{
-    return "";
+  private getInternationalizationUrl(): string {
+    return '';
     }
 
-  public setUpdateRequiredFlag(flag:boolean){
+  public setUpdateRequiredFlag(flag: boolean) {
       this.updateRequiredFlag = flag;
     }
 
-  public shouldUpdate(): boolean{
+  public shouldUpdate(): boolean {
       return this.updateRequiredFlag;
     }
 }
 
-class MockAppConfigService{
+class MockAppConfigService {
   config: any;
 
   constructor() { }
@@ -144,7 +145,7 @@ class MockAppConfigService{
   }
 
   public getApiUrl(): string {
-    return "";
+    return '';
   }
 
   public getNmaasGlobalDomainId(): number {
@@ -168,27 +169,34 @@ class MockAppConfigService{
   selector: 'app-navbar',
   template: '<p>Mock app-navbar Component</p>'
 })
-class MockAppNavbar{}
+class MockAppNavbar {}
 
 @Component({
   selector: 'modal-test-instance',
   template: '<p>Mock test instance modal</p>'
 })
-class MockTestInstanceModal{}
+class MockTestInstanceModal {}
 
 @Component({
   selector: 'modal-guest-user',
   template: '<p>Mock guest user modal</p>'
 })
-class MockGuestUserModal{}
+class MockGuestUserModal {}
+
+@Component({
+  selector: 'modal-provide-ssh-key',
+  template: '<p>Mock guest user modal</p>'
+})
+class MockProvideSshKeyModal {}
 
 describe('Component: AppMarket', () => {
   let component: AppMarketComponent;
   let fixture: any;
 
   beforeEach(async(() => {
-    let authUserSpy = jasmine.createSpyObj('AuthService', ['getDomainRoles']);
+    const authUserSpy = jasmine.createSpyObj('AuthService', ['getDomainRoles', 'hasRole']);
     authUserSpy.getDomainRoles.and.returnValue(new Map<number, DomainRoles>());
+    authUserSpy.hasRole.and.returnValue(false);
 
     TestBed.configureTestingModule({
       declarations: [
@@ -196,9 +204,11 @@ describe('Component: AppMarket', () => {
           MockAppNavbar,
           MockTestInstanceModal,
           MockGuestUserModal,
+          MockProvideSshKeyModal,
       ],
       imports: [
         RouterTestingModule,
+          HttpClientTestingModule,
         TranslateModule.forRoot({
           missingTranslationHandler: {
             provide: MissingTranslationHandler,
