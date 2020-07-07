@@ -19,6 +19,7 @@ import {LocalDatePipe} from '../../../pipe/local-date.pipe';
 import {ApplicationState} from '../../../model/applicationstate';
 import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
+import {ShellClientService} from '../../../service/shell-client.service';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -81,14 +82,17 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     public refreshUpdateForm: EventEmitter<any>;
     public readonly REPLACE_TEXT = '"insert-app-instances-here"';
 
+    public podNames: string[] = [];
+
     constructor(private appsService: AppsService,
                 public appImagesService: AppImagesService,
                 private appInstanceService: AppInstanceService,
-                private router: Router,
+                public router: Router,
                 private route: ActivatedRoute,
                 private location: Location,
                 private translateService: TranslateService,
                 private sessionService: SessionService,
+                private shellClientService: ShellClientService,
                 @Inject(LOCAL_STORAGE) public storage: StorageService) {
     }
 
@@ -274,6 +278,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
             this.appInstance = appInstance;
         });
+        this.shellClientService.getPossiblePods(this.appInstanceId).subscribe(pods => {
+            this.podNames = pods;
+            console.log(pods);
+        })
     }
 
     ngOnDestroy() {

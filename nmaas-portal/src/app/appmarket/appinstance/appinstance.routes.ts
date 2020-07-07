@@ -7,5 +7,5 @@ import {AppInstanceShellViewComponent} from './appinstance-shell-view/appinstanc
 export const AppInstanceRoutes: Route[] = [
     { path: 'instances', component: AppInstanceListComponent },
     { path: 'instances/:id', component: AppInstanceComponent },
-    { path: 'instances/:id/shell', component: AppInstanceShellViewComponent }
+    { path: 'instances/:id/shell/:podname', component: AppInstanceShellViewComponent }
 ];

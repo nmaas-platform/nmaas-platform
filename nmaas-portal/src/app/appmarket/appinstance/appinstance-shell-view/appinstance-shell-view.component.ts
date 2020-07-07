@@ -10,6 +10,7 @@ import {AppInstanceService} from '../../../service';
 export class AppInstanceShellViewComponent implements OnInit {
 
     public appInstanceId: number = undefined;
+    public podName: string = undefined;
     public ready = false;
 
     constructor(private route: ActivatedRoute,
@@ -21,6 +22,7 @@ export class AppInstanceShellViewComponent implements OnInit {
         this.route.params.subscribe(
             params => {
                 this.appInstanceId = +params['id'];
+                this.podName = params['podname'];
                 this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
                     data => {
                         if (!data.application.appDeploymentSpec.allowSshAccess) {

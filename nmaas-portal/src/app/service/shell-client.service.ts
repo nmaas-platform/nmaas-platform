@@ -14,9 +14,9 @@ export class ShellClientService {
 
   constructor(private _zone: NgZone, private _sseService: SSEService, private http: HttpClient, private appConfig: AppConfigService) { }
 
-  initConnection(id: number): Observable<string> {
+  initConnection(id: number, pod: string): Observable<string> {
     // @ts-ignore
-    return this.http.post<string>(this.appConfig.getApiUrl() + '/shell/' + id + '/init', {}, {responseType: 'text'});
+    return this.http.post<string>(this.appConfig.getApiUrl() + '/shell/' + id + '/init/' + pod, {}, {responseType: 'text'});
   }
 
   sendCommand(sessionId: string, command: Object = {}): Observable<any> {
@@ -52,5 +52,9 @@ export class ShellClientService {
 
       this.events = events;
     });
+  }
+
+  getPossiblePods(id: number): Observable<string[]> {
+    return this.http.get<string[]>(this.appConfig.getApiUrl() + '/shell/' + id + '/podnames');
   }
 }

@@ -15,6 +15,9 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()
   private appInstanceId: number = undefined;
 
+  @Input()
+  private podName: string = undefined;
+
   private sessionId: string = undefined;
 
   private minPosition = 0;
@@ -26,7 +29,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
       if (!isNullOrUndefined(this.appInstanceId)) {
-          this.shellClientService.initConnection(this.appInstanceId).subscribe(
+          this.shellClientService.initConnection(this.appInstanceId, this.podName).subscribe(
               sessionId => {
                   this.sessionId = sessionId;
                   this.shellClientService.getServerSentEvent(sessionId).subscribe(
