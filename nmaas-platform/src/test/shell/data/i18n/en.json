@@ -88,6 +88,11 @@
     "BODY": "Please be aware that this is a test NMaaS instance. The user isolation and data security measures are not so strict as on the production instance. Do not use this instance to monitor real equipment.",
     "OK_BUTTON": "OK"
   },
+  "PROVIDE_SSH_KEY_MODAL": {
+    "HEADER": "No SSH key provided",
+    "BODY": "Please note that in order to be able to update deployed application configuration You need to add a public SSH key on your Profile page. This key will be later on used to access dedicated Git repository containing application configuration files.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
     "HELM": "Helm",
