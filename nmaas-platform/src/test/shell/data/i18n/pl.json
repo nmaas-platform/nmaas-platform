@@ -88,6 +88,11 @@
     "BODY": "Pamiętaj, że jest to testowa instancja NMaaS. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej. Nie używaj tej instancji do monitorowania rzeczywistych urządzeń.",
     "OK_BUTTON": "OK"
   },
+  "PROVIDE_SSH_KEY_MODAL": {
+    "HEADER": "No SSH key provided",
+    "BODY": "Please note that in order to be able to update deployed application configuration You need to add a public SSH key on your Profile page. This key will be later on used to access dedicated Git repository containing application configuration files.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",
     "HELM": "Helm",
