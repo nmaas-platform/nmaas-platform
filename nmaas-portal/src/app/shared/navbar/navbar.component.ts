@@ -75,4 +75,12 @@ export class NavbarComponent implements OnInit, OnChanges {
         this.notificationModal.show();
     }
 
+    public isOnlyGuestInGlobalDomain(): boolean {
+        const globalDomainRoles = this.authService.getDomainRoles().get(this.domainService.getGlobalDomainId()).getRoles()
+        return globalDomainRoles  // does have any role in global domain (not undefined)
+            && globalDomainRoles.length === 1  // only one role in global domain
+            && globalDomainRoles[0] === 'ROLE_GUEST'  // this single role is ROLE_GUEST
+            && this.authService.getDomains().length === 1 // no roles in other domains
+    }
+
 }
