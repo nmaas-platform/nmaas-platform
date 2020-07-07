@@ -30,19 +30,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.convertToFreemarkerTemplate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class LibreNmsConfigFileTemplateTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
-    private static final String TEST_TEMPLATE_NAME = "addhosts.cfg";
+    private static final String TEST_CONFIG_FILE_NAME = "addhosts.cfg";
+    private static final String TEST_CONFIG_FILE_DIRECTORY = "config";
 
     @Autowired
-    private NmServiceConfigurationFilePreparer configurationsPreparer;
+    private ConfigFilePreparer configurationsPreparer;
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -59,7 +60,7 @@ public class LibreNmsConfigFileTemplateTest {
     public void setup() {
         ApplicationView app = getDefaultAppView();
         ConfigFileTemplateView librenmsConfigTemplate1 = new ConfigFileTemplateView();
-        librenmsConfigTemplate1.setConfigFileName(TEST_TEMPLATE_NAME);
+        librenmsConfigTemplate1.setConfigFileName(TEST_CONFIG_FILE_NAME);
         librenmsConfigTemplate1.setConfigFileTemplateContent("<#list targets as target>\\n-f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}\\n</#list>");
         app.getAppConfigurationSpec().setTemplates(Collections.singletonList(librenmsConfigTemplate1));
         librenmsAppId = applicationService.create(app,"admin").getId();
@@ -68,13 +69,14 @@ public class LibreNmsConfigFileTemplateTest {
     @Test
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() {
         List<ConfigFileTemplate> configFileTemplates = configFileTemplatesRepository.getAllByApplicationId(librenmsAppId);
-        Template template = configurationsPreparer.convertToTemplate(configFileTemplates.get(0));
+        Template template = convertToFreemarkerTemplate(configFileTemplates.get(0));
         NmServiceConfiguration nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
                         TEST_CONFIG_ID_1,
+                        TEST_CONFIG_FILE_NAME,
+                        TEST_CONFIG_FILE_DIRECTORY,
                         template,
                         testLibreNmsDefaultConfigurationInputModel());
-        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo(TEST_TEMPLATE_NAME));
         assertThat(nmServiceConfiguration.getConfigFileContent(),
                 Matchers.allOf(containsString("192.168.1.1"), containsString("v2c"), containsString("private")));
     }

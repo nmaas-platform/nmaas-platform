@@ -63,6 +63,8 @@ public abstract class NmServiceInfo {
      * The list of IP addresses of devices to be managed/monitored by the deployed service.
      * These addresses are provided by the user during wizard completion.
      * For these addresses specific routing entries needs to be by applied on the container once run.
+     *
+     * Comment: This feature is not used
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
