@@ -12,8 +12,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class AppInstanceView extends AppInstanceBase {
-
-	private Long id;
 	
 	private Long applicationId;
 	
