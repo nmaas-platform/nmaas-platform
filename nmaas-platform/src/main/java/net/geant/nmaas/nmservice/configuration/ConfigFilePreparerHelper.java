@@ -9,6 +9,7 @@ import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -17,7 +18,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-class ConfigFilePreparerHelper {
+public class ConfigFilePreparerHelper {
+
+    public String randomString(int length) {
+        return RandomStringUtils.randomAlphanumeric(length);
+    }
 
     static Map<String, Object> createModelEntriesFromUserInput(AppConfiguration appConfiguration) {
         try {

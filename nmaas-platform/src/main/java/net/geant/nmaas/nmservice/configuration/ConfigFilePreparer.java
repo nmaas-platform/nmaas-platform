@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.configuration;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
@@ -14,6 +13,7 @@ import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentParametersProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -31,16 +31,22 @@ import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.g
 
 @Component
 @NoArgsConstructor
-@AllArgsConstructor
 @Log4j2
 class ConfigFilePreparer {
 
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "targets";
     private static final String DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY = "ipAddress";
 
+    @Autowired
     private NmServiceConfigFileRepository configurations;
+
+    @Autowired
     private ConfigFileTemplatesRepository templatesRepository;
+
+    @Autowired
     private NmServiceRepositoryManager nmServiceRepositoryManager;
+
+    @Autowired
     private AppDeploymentParametersProvider deploymentParametersProvider;
 
     List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration) {
@@ -50,6 +56,8 @@ class ConfigFilePreparer {
         appConfigurationModel.putAll(deploymentParametersProvider.deploymentParameters(deploymentId));
         log.debug("Adding user provided model parameters");
         appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
+        log.debug("Adding bean model parameters");
+        appConfigurationModel.put("helper", new ConfigFilePreparerHelper());
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
         List<String> configIds = new ArrayList<>();
         log.debug("Generating configuration files");
