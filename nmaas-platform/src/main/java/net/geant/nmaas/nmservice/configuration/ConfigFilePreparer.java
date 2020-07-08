@@ -4,6 +4,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
@@ -31,6 +32,7 @@ import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.g
 @Component
 @NoArgsConstructor
 @AllArgsConstructor
+@Log4j2
 class ConfigFilePreparer {
 
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "targets";
@@ -42,11 +44,15 @@ class ConfigFilePreparer {
     private AppDeploymentParametersProvider deploymentParametersProvider;
 
     List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration) {
+        log.debug(String.format("Generating configuration files for %s", deploymentId.value()));
         Map<String, Object> appConfigurationModel = new HashMap<>();
+        log.debug("Adding default set of model parameters");
         appConfigurationModel.putAll(deploymentParametersProvider.deploymentParameters(deploymentId));
+        log.debug("Adding user provided model parameters");
         appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
         List<String> configIds = new ArrayList<>();
+        log.debug("Generating configuration files");
         for (ConfigFileTemplate configFileTemplate : templatesRepository.getAllByApplicationId(applicationId.longValue())) {
             final String configId = generateNewConfigId(configurations.findAll());
             final Template freemarkerTemplate = convertToFreemarkerTemplate(configFileTemplate);
@@ -59,6 +65,7 @@ class ConfigFilePreparer {
             storeConfigurationInRepository(config);
             configIds.add(configId);
         }
+        log.debug(String.format("Returning configuration files identifiers %s", configIds));
         return configIds;
     }
 

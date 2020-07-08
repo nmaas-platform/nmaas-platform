@@ -13,6 +13,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectHook;
@@ -72,6 +74,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if a problem with during user creation is encountered
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void createUser(String userUsername, String userEmail, String userName, List<String> userSshKeys) {
         try {
             if (!gitLabManager.users().getOptionalUser(userUsername).isPresent()) {
@@ -116,6 +119,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if a problem with repository creation is encountered
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void createRepository(Identifier deploymentId, String member) {
         String domain = repositoryManager.loadDomain(deploymentId);
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
@@ -229,6 +233,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void commitConfigFiles(Identifier deploymentId, List<String> configIds) {
         loadGitlabProject(deploymentId).ifPresent(p -> uploadConfigFilesToProject(p.getProjectId(), configIds));
     }
@@ -258,6 +263,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void removeConfigFiles(Identifier deploymentId){
         loadGitlabProject(deploymentId).ifPresent(p -> removeProject(p.getProjectId()));
     }
@@ -273,6 +279,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
         Optional<GitLabProject> gitLabProject = loadGitlabProject(deploymentId);
         if (gitLabProject.isPresent()) {
