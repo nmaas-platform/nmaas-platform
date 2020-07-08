@@ -103,7 +103,7 @@
 			{
 				"configFileName": "kibana.yml",
 				"configFileDirectory": "kibana",
-				"configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"zkwMPh85f4YvqWCtcHBgjVFabmfp3JMx\"\nxpack.encryptedSavedObjects.encryptionKey: \"ysQbBefPfZHHja2hpLc5BTZerR5ShK45\""
+				"configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\""
 			},
 			{
 				"configFileName":"logstash.yml",

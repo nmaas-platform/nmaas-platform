@@ -1,12 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.orchestration.AppDeploymentParametersProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -23,11 +24,16 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 
 @Component
 @Profile("env_kubernetes")
-@AllArgsConstructor
+@NoArgsConstructor
 public class KubernetesDeploymentParametersProvider implements AppDeploymentParametersProvider {
 
+    @Autowired
     private KClusterDeploymentManager deploymentManager;
+
+    @Autowired
     private KClusterIngressManager ingressManager;
+
+    @Autowired
     private AppDeploymentRepository appDeploymentRepository;
 
     @Override
