@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,14 +86,14 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@GetMapping("/domains/{domainId}/apps")
 	@Transactional(readOnly=true)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public List<ApplicationBriefView> getDomainSubscribedApplications(@PathVariable Long domainId) {
-		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBriefView.class)).collect(Collectors.toList());
+	public List<ApplicationBaseView> getDomainSubscribedApplications(@PathVariable Long domainId) {
+		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBaseView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps")
 	@Transactional(readOnly=true)
-	public List<ApplicationBriefView> getSubscribedApplications() {
-		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBriefView.class)).collect(Collectors.toList());
+	public List<ApplicationBaseView> getSubscribedApplications() {
+		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBaseView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps/{appId}")
