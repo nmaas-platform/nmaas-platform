@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class AppInstanceViewExtended extends AppInstanceView {
 
-    private DomainBase domain;
+    private DomainView domain;
 
     private ApplicationView application;
 }

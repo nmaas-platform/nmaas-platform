@@ -110,7 +110,8 @@ describe('Component: AppDetails', () => {
     appDeploymentSpec: new AppDeploymentSpec(),
     appConfigurationSpec: new AppConfigurationSpec(),
     state: ApplicationState.ACTIVE,
-    rowWithVersionVisible: false
+    rowWithVersionVisible: false,
+    rate: null,
   };
 
   beforeEach(async(() => {

@@ -9,8 +9,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
-import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -27,10 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
-import net.geant.nmaas.portal.api.domain.Id;
-
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/apps")
@@ -40,9 +35,9 @@ public class ApplicationController extends AppBaseController {
 
 	@GetMapping
 	@Transactional
-	public List<ApplicationBriefView> getApplications() {
+	public List<ApplicationBaseView> getApplications() {
 		return appBaseService.findAllActiveOrDisabledApps().stream()
-				.map(app -> modelMapper.map(app, ApplicationBriefView.class))
+				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.collect(Collectors.toList());
 	}
 

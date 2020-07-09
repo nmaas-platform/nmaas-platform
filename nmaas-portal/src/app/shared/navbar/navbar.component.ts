@@ -1,11 +1,11 @@
 import {Component, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
-import {interval, Subscription} from "rxjs";
-import {AuthService} from "../../auth/auth.service";
-import {DomainService} from "../../service";
-import {InternationalizationService} from "../../service/internationalization.service";
-import {ModalNotificationSendComponent} from "../modal/modal-notification-send/modal-notification-send.component";
+import {interval, Subscription} from 'rxjs';
+import {AuthService} from '../../auth/auth.service';
+import {DomainService} from '../../service';
+import {InternationalizationService} from '../../service/internationalization.service';
+import {ModalNotificationSendComponent} from '../modal/modal-notification-send/modal-notification-send.component';
 
 @Component({
     selector: 'app-navbar',
@@ -21,7 +21,7 @@ export class NavbarComponent implements OnInit, OnChanges {
     public refresh: Subscription;
     public isServiceAvailable: boolean;
 
-    constructor(private router: Router,
+    constructor(public router: Router,
                 public authService: AuthService,
                 private translate: TranslateService,
                 private languageService: InternationalizationService,
@@ -32,17 +32,17 @@ export class NavbarComponent implements OnInit, OnChanges {
         this.translate.use(language);
     }
 
-    getCurrent(){
+    getCurrent() {
         return this.translate.currentLang;
     }
 
-    getPathToCurrent(){
-        return "assets/images/country/" + this.getCurrent() + "_circle.png";
+    getPathToCurrent() {
+        return 'assets/images/country/' + this.getCurrent() + '_circle.png';
     }
 
     ngOnInit() {
         this.getSupportedLanguages();
-        if(this.authService.isLogged()) {
+        if (this.authService.isLogged()) {
             if (this.authService.hasRole('ROLE_SYSTEM_ADMIN')) {
                 this.refresh = interval(5000).subscribe(next => {
                     if (this.languageService.shouldUpdate()) {
@@ -57,8 +57,8 @@ export class NavbarComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
     }
 
-    public getSupportedLanguages(){
-        this.languageService.getEnabledLanguages().subscribe(langs =>{
+    public getSupportedLanguages() {
+        this.languageService.getEnabledLanguages().subscribe(langs => {
             this.translate.addLangs(langs);
             this.languages = langs;
         });

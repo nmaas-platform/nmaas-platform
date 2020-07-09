@@ -19,7 +19,7 @@ import {Domain} from '../../../model/domain';
   encapsulation: ViewEncapsulation.None,
 })
 
-export class AppListComponent implements OnInit, OnDestroy {
+export class AppListComponent implements OnInit {
 
   public ListType = ListType;
   public AppViewType = AppViewType;
@@ -45,8 +45,10 @@ export class AppListComponent implements OnInit, OnDestroy {
   public domain: Observable<Domain>;
 
 
-  constructor(private appSubscriptionService: AppSubscriptionsService, private userDataService: UserDataService,
-              private appConfig: AppConfigService, private translate: TranslateService) {
+  constructor(private appSubscriptionService: AppSubscriptionsService,
+              private userDataService: UserDataService,
+              private appConfig: AppConfigService,
+              private translate: TranslateService) {
     if (isUndefined(this.listType)) {
       this.listType = ListType.GRID;
     }
@@ -57,9 +59,6 @@ export class AppListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // do
-  }
-
-  ngOnDestroy(): void {
   }
 
   public getDescription(app: Application): AppDescription {
