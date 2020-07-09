@@ -45,8 +45,11 @@ export class AppElementComponent implements OnInit, OnChanges {
   @ViewChild(AppInstallModalComponent)
   public readonly modal: AppInstallModalComponent;
 
-  constructor(public appImagesService: AppImagesService, public appConfigService: AppConfigService, public router: Router,
-              public authService: AuthService, public translate: TranslateService) {
+  constructor(public appImagesService: AppImagesService,
+              public appConfigService: AppConfigService,
+              public router: Router,
+              public authService: AuthService,
+              public translate: TranslateService) {
   }
 
   ngOnInit() {

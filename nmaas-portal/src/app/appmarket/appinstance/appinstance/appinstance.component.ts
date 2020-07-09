@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
@@ -26,7 +26,7 @@ import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
     providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, LocalDatePipe]
 })
-export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class AppInstanceComponent implements OnInit, OnDestroy {
 
     public defaultTooltipOptions = {
         'placement': 'bottom',
@@ -134,6 +134,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
             this.updateAppInstanceState();
             this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
+
+            // TODO fix after modal init
+            console.log('Setting undeploy modal params')
             this.undeployModal.setModalType('warning');
             this.undeployModal.setStatusOfIcons(true);
         });
@@ -141,9 +144,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
     dateFormatChanges(): void {
         this.sessionService.registerCulture(this.translateService.currentLang);
-    }
-
-    ngAfterViewChecked(): void {
     }
 
     public getStateAsString(state: any): string {
@@ -283,11 +283,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     public redeploy(): void {
-        this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.debug('Redeployed'));
+        this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log('Redeployed'));
     }
 
     public removalFailed(): void {
-        this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.debug('Removed failed instance'));
+        this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.log('Removed failed instance'));
     }
 
     public changeAdditionalParameters(additionalParameters: any): void {

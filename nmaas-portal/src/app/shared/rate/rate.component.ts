@@ -44,7 +44,7 @@ export class RateComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['pathUrl']) {
+        if (changes['pathUrl'] && !changes['pathUrl']['firstChange']) {
             console.log('On Changes refresh called');
             this.refresh();
         }

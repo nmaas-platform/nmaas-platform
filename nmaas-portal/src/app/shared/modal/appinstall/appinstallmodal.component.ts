@@ -6,6 +6,7 @@ import {ModalComponent} from '..';
 import {AppInstanceService, DomainService} from '../../../service';
 import { UserDataService } from '../../../service/userdata.service';
 import { isUndefined } from 'util';
+import {Domain} from '../../../model/domain';
 
 @Component({
   selector: 'nmaas-modal-app-install',
@@ -20,6 +21,9 @@ export class AppInstallModalComponent implements OnInit {
 
   @Input()
   app: Application;
+
+  @Input()
+  domain: Domain;
 
   name: string;
   domainId: number;
@@ -36,15 +40,8 @@ export class AppInstallModalComponent implements OnInit {
   ngOnInit() {
     this.app.appVersions.sort((a, b) => a.appVersionId - b.appVersionId);
     this.selectedAppVersion = this.app.appVersions[0].appVersionId;
-    this.userDataService.selectedDomainId.subscribe(domainId => {
-        if (!(isUndefined(domainId) || domainId === 0)) {
-          this.domainId = domainId;
-          this.domainService.getOne(this.domainId).subscribe((domain) => this.domainName = domain.name);
-        } else {
-          this.modal.hide();
-        }
-      }
-    );
+    this.domainId = this.domain.id;
+    this.domainName = this.domain.name;
   }
 
   public create(): void {

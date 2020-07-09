@@ -25,4 +25,4 @@
 	</div>
 </div>
 
-<nmaas-modal-app-install [app]="app"></nmaas-modal-app-install>
+<nmaas-modal-app-install *ngIf="app && domain" [app]="app" [domain]="domain"></nmaas-modal-app-install>

@@ -1,9 +1,8 @@
 import {AuthService} from '../../../auth/auth.service';
 import { Domain } from '../../../model/domain';
-import { AppConfigService } from '../../../service/appconfig.service';
-import {DomainService} from '../../../service/domain.service';
+import {DomainService, AppConfigService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
-import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Subscription ,  Observable } from 'rxjs';
 
 import { isUndefined, isNullOrUndefined } from 'util';
@@ -15,9 +14,8 @@ import {interval} from 'rxjs/internal/observable/interval';
   templateUrl: './domainfilter.component.html',
   styleUrls: ['./domainfilter.component.css'],
 })
-export class DomainFilterComponent implements OnInit, OnDestroy {
+export class DomainFilterComponent implements OnInit {
 
-  //@Input()
   public domainId: number;
 
   public domainName: string;
@@ -26,22 +24,26 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
 
   public refresh: Subscription;
 
-  constructor(protected authService: AuthService, protected domainService: DomainService, protected userData: UserDataService, protected appConfig: AppConfigService) {}
+  constructor(protected authService: AuthService,
+              protected domainService: DomainService,
+              protected userData: UserDataService,
+              protected appConfig: AppConfigService) {}
 
   ngOnInit() {
-      if(this.authService.hasRole('ROLE_SYSTEM_ADMIN')){
+      if (this.authService.hasRole('ROLE_SYSTEM_ADMIN')) {
         this.refresh = interval(10000).subscribe(next => {
-            if(this.domainService.shouldUpdate()) {
+            if (this.domainService.shouldUpdate()) {
                 this.updateDomains();
                 this.domainService.setUpdateRequiredFlag(false);
             }
         });
       }
       this.updateDomains();
-      this.domains.subscribe(domain => this.userData.selectDomainId(domain[0].id));
       this.domains.subscribe(domain => {
-        this.domainName = domain[0].name;
+          this.domainName = domain[0].name;
+          this.userData.selectDomainId(domain[0].id)
       });
+
       this.userData.selectedDomainId.subscribe(id => this.domainId = id);
   }
 
@@ -50,30 +52,31 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
       this.domains = this.domainService.getAll();
     } else {
       this.domains = this.domainService.getMyDomains();
-      if(!isUndefined(this.domains) && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(),'ROLE_TOOL_MANAGER') && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(), 'ROLE_OPERATOR')) {
+      const globalDomainId = this.appConfig.getNmaasGlobalDomainId();
+      if (!isUndefined(this.domains)
+          && !this.authService.hasDomainRole(globalDomainId, 'ROLE_TOOL_MANAGER')
+          && !this.authService.hasDomainRole(globalDomainId, 'ROLE_OPERATOR')) {
            this.domains = this.domains.pipe(
-               map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId() && domain.active)));
+               map(
+                   (domains) => domains.filter((domain) => domain.id !== globalDomainId && domain.active))
+           );
       }
     }
   }
-  
-  ngOnDestroy(): void {
 
-  }
-  
   public onChange($event) {
-    console.log('onChange(',this.domainId,')');
+    console.log('onChange(', this.domainId, ')');
     this.userData.selectDomainId(Number(this.domainId));
   }
 
-  public changeDomain(domain: number, dName: string){
-    console.debug('domainChange(', domain,')');
+  public changeDomain(domain: number, dName: string) {
+    console.log('domainChange(', domain, ')');
     this.domainId = domain;
     this.domainName = dName;
     this.userData.selectDomainId(Number(domain));
   }
 
-  public getCurrent(){
+  public getCurrent() {
     return this.domainName;
   }
 

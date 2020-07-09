@@ -1,12 +1,12 @@
 
 <div class="tab-content col-sm-12 col-sm-12 col-md-12" style="margin-top:15px;">
-	<div class="tab-pane fade in"
+	<div *ngIf="listType === ListType.GRID" class="tab-pane fade in"
 		[class.active]="listType === ListType.GRID" id="tab-grid">
 		<div class="row auto-clear">
 			<nmaas-applist-element *ngFor="let app of applications | async" [app]="app" [domainId]="domainId" [selected]="(selected | async)?.has(app.id)" [domain]="domain | async" ></nmaas-applist-element>
 		</div>
 	</div>
-	<div class="tab-pane fade in"
+	<div *ngIf="listType === ListType.TABLE" class="tab-pane fade in"
 		[class.active]="listType === ListType.TABLE" id="tab-list">
 		<div class="row" >
 			<table class="table table-hover table-condensed" aria-describedby="Applications details list">
@@ -26,7 +26,7 @@
 						<td>{{app?.name}}</td>
 						<td>{{getDescription(app)?.briefDescription}}</td>
 						<td>{{app?.tags.join(", ")}}</td>
-						<td><rate [pathUrl]="'/apps/' + app?.id + '/rate'"></rate></td>
+						<td><rate [pathUrl]="'/apps/' + app?.id + '/rate'" [rate]="app?.rate"></rate></td>
 						<td>
 							<a [routerLink]="['/apps', app.id]"
 							class="btn btn-sm btn-primary" role="button">{{'APPLICATIONS.DETAILS_BUTTON' | translate}}</a></td>
