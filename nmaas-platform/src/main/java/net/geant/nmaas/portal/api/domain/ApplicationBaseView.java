@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,13 +17,14 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class ApplicationBaseView {
 
-    private Long id;
-    private String name;
-    private List<AppDescriptionView> descriptions;
-    private AppRateView rate;
-    private Set<ApplicationVersionView> appVersions = new HashSet<>();
-    private Set<String> tags = new HashSet<>();
+    protected Long id;
+    protected String name;
+    protected List<AppDescriptionView> descriptions;
+    protected AppRateView rate;
+    protected Set<ApplicationVersionView> appVersions = new HashSet<>();
+    protected Set<String> tags = new HashSet<>();
 
 }
