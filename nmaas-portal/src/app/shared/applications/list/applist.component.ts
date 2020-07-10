@@ -44,6 +44,8 @@ export class AppListComponent implements OnInit {
   @Input()
   public domain: Observable<Domain>;
 
+  public domainObject: Domain = undefined;
+
 
   constructor(private appSubscriptionService: AppSubscriptionsService,
               private userDataService: UserDataService,
@@ -58,7 +60,9 @@ export class AppListComponent implements OnInit {
   }
 
   ngOnInit() {
-    // do
+    this.domain.subscribe(data => {
+      this.domainObject = data;
+    });
   }
 
   public getDescription(app: Application): AppDescription {

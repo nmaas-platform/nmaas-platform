@@ -97,5 +97,5 @@
 	<comments [pathUrl]="'/apps/' + appId + '/comments'"></comments>
 
 
-	<nmaas-modal-app-install *ngIf="app" [app]="app">
+	<nmaas-modal-app-install *ngIf="app && domain" [app]="app" [domain]="domain">
 	</nmaas-modal-app-install>
