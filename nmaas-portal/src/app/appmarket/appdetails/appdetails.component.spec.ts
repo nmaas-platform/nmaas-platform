@@ -75,6 +75,9 @@ class CommentsMock {
 class NmassModalAppInstallMock {
   @Input()
   app: any;
+
+  @Input()
+  domain: any;
 }
 
 @Component({
