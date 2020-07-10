@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ConfigFilePreparerTest {
@@ -132,6 +133,26 @@ public class ConfigFilePreparerTest {
         routers.add(router2);
         model.put("targets", routers);
         return model;
+    }
+
+    @Test
+    public void shouldBuildConfigFromTemplateAndDeploymentParameters() {
+        assertDoesNotThrow(() -> {
+            ConfigFileTemplate template1 = new ConfigFileTemplate();
+            template1.setConfigFileName("config.yml");
+            template1.setConfigFileTemplateContent("server.name: \"${RELEASE_NAME}\"");
+            Template template = convertToFreemarkerTemplate(template1);
+            Map<String, Object> appConfigurationModel = new HashMap<>();
+            appConfigurationModel.put("RELEASE_NAME", "release_name");
+            String fileContent = configFilePreparer.buildConfigFromTemplateAndUserProvidedInput(
+                    "10",
+                    "config.yml",
+                    null,
+                    template,
+                    appConfigurationModel).getConfigFileContent();
+            assertNotNull(fileContent);
+            assertEquals("server.name: \"release_name\"", fileContent);
+        });
     }
 
 }
