@@ -21,6 +21,7 @@ import {SharedModule} from '../shared.module';
 import {AppInstallModalComponent} from '../modal/appinstall';
 import {ModalComponent} from '../modal';
 import {TooltipModule} from 'ng2-tooltip-directive';
+import {Domain} from '../../model/domain';
 
 describe('ApplicationsComponent', () => {
   let component: ApplicationsViewComponent;
@@ -64,6 +65,7 @@ describe('ApplicationsComponent', () => {
     fixture = TestBed.createComponent(ApplicationsViewComponent);
     component = fixture.componentInstance;
     component.domainId = 1;
+    component.domain = of<Domain>();
     appsService = fixture.debugElement.injector.get(AppsService);
     appSubscriptionsService = fixture.debugElement.injector.get(AppSubscriptionsService);
     userDataService = fixture.debugElement.injector.get(UserDataService);
