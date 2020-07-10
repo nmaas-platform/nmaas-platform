@@ -6,10 +6,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.api.domain.DomainView;
-import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -89,7 +86,7 @@ public class DomainController extends AppBaseController {
 			return modelMapper.map(domain, DomainView.class);
 		}
 		//otherwise base view
-		return modelMapper.map(domain, DomainBase.class);
+		return modelMapper.map(domain, DomainBaseWithState.class);
 	}
 	
 	@GetMapping("/my")
