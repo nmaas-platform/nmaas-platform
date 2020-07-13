@@ -20,13 +20,14 @@ import { AuthService } from './auth/auth.service';
 import {TranslateModule, TranslateLoader, MissingTranslationHandler} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {TranslateService} from "@ngx-translate/core";
-import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
-import {TranslateLoaderImpl} from "./i18n/translate-loader-impl.service";
-import {ServiceUnavailableModule} from "./service-unavailable/service-unavailable.module";
-import {RouterModule} from "@angular/router";
-import {ServiceUnavailableService} from "./service-unavailable/service-unavailable.service";
-import {MonitorService} from "./service/monitor.service";
+import {TranslateService} from '@ngx-translate/core';
+import {CustomMissingTranslationService} from './i18n/custommissingtranslation.service';
+import {TranslateLoaderImpl} from './i18n/translate-loader-impl.service';
+import {ServiceUnavailableModule} from './service-unavailable/service-unavailable.module';
+import {RouterModule} from '@angular/router';
+import {ServiceUnavailableService} from './service-unavailable/service-unavailable.service';
+import {MonitorService} from './service/monitor.service';
+import {NgTerminalModule} from 'ng-terminal';
 
 
 export function appConfigFactory( config: AppConfigService) {
@@ -35,7 +36,7 @@ export function appConfigFactory( config: AppConfigService) {
   }
 }
 
-export function serviceAvailableFactory(config: AppConfigService, http: HttpClient, provider: ServiceUnavailableService){
+export function serviceAvailableFactory(config: AppConfigService, http: HttpClient, provider: ServiceUnavailableService) {
   return function create() {
     return config.load().then( () => {
       return provider.validateServicesAvailability();
@@ -45,9 +46,9 @@ export function serviceAvailableFactory(config: AppConfigService, http: HttpClie
 
 export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     tokenGetter: () => {
-        return localStorage.getItem('token'); //TODO: change this to be able to replace 'token' with definied name
+        return localStorage.getItem('token'); // TODO: change this to be able to replace 'token' with definied name
     },
-    whitelistedDomains: [new RegExp("[\s\S]*")]
+    whitelistedDomains: [new RegExp('[\s\S]*')]
 });
 
 @NgModule({
@@ -77,7 +78,8 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
           useFactory: HttpLoaderFactory,
           deps: [HttpClient, AppConfigService, ServiceUnavailableService]
       }
-    })
+    }),
+      NgTerminalModule
   ],
   providers: [
     AuthGuard,
@@ -98,7 +100,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
       multi: true,
     }
   ],
-    exports:[
+    exports: [
       TranslateModule
     ],
   bootstrap: [ AppComponent ]

@@ -496,7 +496,8 @@
       "REMOVED": "Anwendung nach Fehler erfolgreich aufgehoben"
     },
     "SHOW_VERSIONS_LABEL": "Show available versions",
-    "GO_TO_APP_TOOLTIP": "Diese Anwendung stellt keine Webbenutzeroberfläche zur Verfügung"
+    "GO_TO_APP_TOOLTIP": "Diese Anwendung stellt keine Webbenutzeroberfläche zur Verfügung",
+    "SHELL": "Shell"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",

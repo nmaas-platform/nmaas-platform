@@ -88,6 +88,12 @@ class NmaasModalMock extends ModalComponent {
 })
 class MockRolesDirective {}
 
+@Component({
+  selector: 'app-ssh-shell',
+  template: '<p>SSH shell mock</p>'
+})
+class SshShellMockComponent { }
+
 describe('Component: AppInstance', () => {
   let component: AppInstanceComponent;
   let fixture: ComponentFixture<AppInstanceComponent>;
@@ -215,6 +221,7 @@ describe('Component: AppInstance', () => {
         NmaasModalMock,
           AccessMethodsModalComponent,
           MockRolesDirective,
+          SshShellMockComponent,
       ],
       imports: [
         FormsModule,

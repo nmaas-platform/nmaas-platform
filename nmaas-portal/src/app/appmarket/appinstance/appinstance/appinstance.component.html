@@ -67,7 +67,23 @@
                             <button class="btn btn-default" *ngIf="app.appConfigurationSpec.configUpdateEnabled"
                                     (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
                         </div>
-
+                        <!-- if only one pod available, select it by default -->
+                        <a *ngIf="app.appDeploymentSpec.allowSshAccess && podNames.length == 1"
+                           [routerLink]="router.url + '/shell/' + podNames[0]" class="btn btn-default" role="button">
+                            {{'APP_INSTANCE.SHELL' | translate}}
+                        </a>
+                        <!-- if more pods available, go dropdown -->
+                        <div class="btn-group" *ngIf="app.appDeploymentSpec.allowSshAccess && podNames.length > 1">
+                            <button type="button" class="btn btn-default dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{'APP_INSTANCE.SHELL' | translate}} <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li *ngFor="let podName of podNames">
+                                    <a [routerLink]="router.url + '/shell/' + podName">{{podName}}</a>
+                                </li>
+                            </ul>
+                        </div>
                         <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>

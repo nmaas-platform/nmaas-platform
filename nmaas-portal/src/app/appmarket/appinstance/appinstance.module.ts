@@ -13,20 +13,25 @@ import {AppsService} from '../../service/apps.service';
 import {AppInstanceService} from '../../service/appinstance.service';
 import {TagService} from '../../service/tag.service';
 import {AppInstanceListComponent} from './appinstancelist/appinstancelist.component';
-import {AppRestartModalComponent} from "./modals/apprestart";
+import {AppRestartModalComponent} from './modals/apprestart';
 import {TranslateModule} from '@ngx-translate/core';
-import {NgxPaginationModule} from "ngx-pagination";
-import {FormioAppConfig, FormioModule} from "angular-formio";
-import {AppConfig} from "../../../formio-config";
-import {TooltipModule} from "ng2-tooltip-directive";
-import {AccessMethodsModalComponent} from "./modals/access-methods-modal/access-methods-modal.component";
+import {NgxPaginationModule} from 'ngx-pagination';
+import {FormioAppConfig, FormioModule} from 'angular-formio';
+import {AppConfig} from '../../../formio-config';
+import {TooltipModule} from 'ng2-tooltip-directive';
+import {AccessMethodsModalComponent} from './modals/access-methods-modal/access-methods-modal.component';
+import { SshShellComponent } from './ssh-shell/ssh-shell.component';
+import {NgTerminalModule} from 'ng-terminal';
+import { AppInstanceShellViewComponent } from './appinstance-shell-view/appinstance-shell-view.component';
 
 @NgModule({
   declarations: [
       AppInstanceComponent,
       AppInstanceListComponent,
       AppRestartModalComponent,
-      AccessMethodsModalComponent
+      AccessMethodsModalComponent,
+      SshShellComponent,
+      AppInstanceShellViewComponent
   ],
     imports: [
         FormioModule,
@@ -41,10 +46,11 @@ import {AccessMethodsModalComponent} from "./modals/access-methods-modal/access-
         NgxPaginationModule,
         TranslateModule.forChild(),
         TooltipModule,
+        NgTerminalModule,
     ],
   exports: [
     AppInstanceComponent,
-    AppInstanceListComponent
+    AppInstanceListComponent,
   ],
   providers: [
     AppsService,

@@ -496,7 +496,8 @@
       "REMOVED": "Aplikacja została pomyślnie usunięta"
     },
     "SHOW_VERSIONS_LABEL": "Pokaż dostępne wersje",
-    "GO_TO_APP_TOOLTIP": "Ta aplikacja nie udostępnia interfejsu użytkownika"
+    "GO_TO_APP_TOOLTIP": "Ta aplikacja nie udostępnia interfejsu użytkownika",
+    "SHELL": "Shell"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",
