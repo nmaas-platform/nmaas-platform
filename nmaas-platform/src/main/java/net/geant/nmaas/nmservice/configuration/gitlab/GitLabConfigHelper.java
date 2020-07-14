@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.springframework.http.HttpStatus;
@@ -65,7 +66,11 @@ public class GitLabConfigHelper {
 
     static RepositoryFile committedFile(NmServiceConfiguration configuration) {
         RepositoryFile file = new RepositoryFile();
-        file.setFilePath(configuration.getConfigFileDirectory() + "/" + configuration.getConfigFileName());
+        if (StringUtils.isNotEmpty(configuration.getConfigFileDirectory())) {
+            file.setFilePath(configuration.getConfigFileDirectory() + "/" + configuration.getConfigFileName());
+        } else{
+            file.setFilePath(configuration.getConfigFileName());
+        }
         file.setContent(configuration.getConfigFileContent());
         return file;
     }

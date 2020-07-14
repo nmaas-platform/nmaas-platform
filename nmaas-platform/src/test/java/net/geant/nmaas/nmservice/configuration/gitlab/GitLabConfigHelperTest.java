@@ -17,8 +17,31 @@ public class GitLabConfigHelperTest {
                 "configFileContent"
         );
         RepositoryFile repositoryFile = GitLabConfigHelper.committedFile(configuration);
-        assertEquals(repositoryFile.getFilePath(), "configFileDirectory/configFileName");
-        assertEquals(repositoryFile.getContent(), "configFileContent");
+        assertEquals("configFileDirectory/configFileName", repositoryFile.getFilePath());
+        assertEquals("configFileContent", repositoryFile.getContent());
+    }
+
+    @Test
+    public void shouldCreateCommittedFileWithoutDirectory() {
+        NmServiceConfiguration configuration = new NmServiceConfiguration(
+                "configId",
+                "configFileName",
+                null,
+                "configFileContent"
+        );
+        RepositoryFile repositoryFile = GitLabConfigHelper.committedFile(configuration);
+        assertEquals("configFileName", repositoryFile.getFilePath());
+        assertEquals("configFileContent", repositoryFile.getContent());
+
+        configuration = new NmServiceConfiguration(
+                "configId",
+                "configFileName",
+                "",
+                "configFileContent"
+        );
+        repositoryFile = GitLabConfigHelper.committedFile(configuration);
+        assertEquals("configFileName", repositoryFile.getFilePath());
+        assertEquals("configFileContent", repositoryFile.getContent());
     }
 
 }
