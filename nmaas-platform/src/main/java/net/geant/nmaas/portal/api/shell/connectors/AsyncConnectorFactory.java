@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.api.shell.connectors;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.utils.k8sclient.KubernetesClientConfigFactory;
+import net.geant.nmaas.utils.k8sclient.KubernetesConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +28,6 @@ public class AsyncConnectorFactory {
 
         log.info("Attempting to connect to Kubernetes pod via nmaas-shell:\tnamespace: " + namespace + "\tpodname: " + podName);
         return new KubernetesConnector(configFactory.getClient(), namespace, podName);
-
     }
 
     public AsyncConnector prepareConnection(AppInstance appInstance) {

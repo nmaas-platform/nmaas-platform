@@ -1,38 +1,34 @@
-package net.geant.nmaas.portal.api.shell.connectors;
+package net.geant.nmaas.utils.k8sclient;
 
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
 
 import javax.annotation.PreDestroy;
 
 /**
- * provides standard nmass-shell service account connection configuration and KubernetesClient instance
+ * Provides KubernetesClient instance with suitable configuration depending on the Platform deployment
  * (to avoid multiple creation of client entity)
  */
 @Component
 @Log4j2
 public class KubernetesClientConfigFactory {
 
-    @Value("${nmass.kubernetes.apiserver.url:none}")
+    @Value("${nmaas.kubernetes.incluster:true}")
+    private boolean inCluster;
+
+    @Value("${nmaas.kubernetes.apiserver.url:none}")
     private String master;
 
+    // currently only used for testing purposes
     private static final String OAUTH_TOKEN = "TODO REPLACE";
 
     private Config config;
     private KubernetesClient client;
-
-    protected Config makeConfig() {
-        log.info("Kubernetes API server master url:\t" + master);
-        return new ConfigBuilder().withMasterUrl(master)
-                .withTrustCerts(true)
-                .withOauthToken(OAUTH_TOKEN)
-                .build();
-    }
 
     /**
      * Client is created only when necessary
@@ -49,15 +45,29 @@ public class KubernetesClientConfigFactory {
      * Lazy configuration creation
      * @return KubernetesClient configuration
      */
-    public synchronized Config getConfig() {
+    private Config getConfig() {
         if(this.config == null) {
             this.config = makeConfig();
         }
         return this.config;
     }
 
+    private Config makeConfig() {
+        if (inCluster) {
+            log.info("Using in cluster Kubernetes client configuration");
+            return new ConfigBuilder().build();
+        } else {
+            log.info(String.format("Kubernetes API server master url: %s", master));
+            return new ConfigBuilder().withMasterUrl(master)
+                    .withTrustCerts(true)
+                    .withOauthToken(OAUTH_TOKEN)
+                    .build();
+        }
+    }
+
     @PreDestroy
     protected void preDestroy() {
         client.close();
     }
+
 }

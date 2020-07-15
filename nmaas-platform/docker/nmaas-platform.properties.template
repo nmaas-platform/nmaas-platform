@@ -62,6 +62,9 @@ nmaas.portal.domains.namespace.pattern=[a-z0-9-]{0,64}
 
 nmaas.platform.webhooks.baseurl=${PLATFORM_BASEURL}/api/gitlab/webhooks
 
+# NMaaS Platform is running within the Kubernetes cluster
+nmaas.kubernetes.incluster=true
+
 # ------------------------------ #
 # Quartz scheduler configuration #
 # ------------------------------ #
