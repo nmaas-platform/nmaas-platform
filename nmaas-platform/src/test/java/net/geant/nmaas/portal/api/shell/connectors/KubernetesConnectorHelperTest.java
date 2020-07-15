@@ -18,12 +18,13 @@ import net.geant.nmaas.utils.k8sclient.KubernetesClientConfigFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -67,25 +68,32 @@ public class KubernetesConnectorHelperTest {
         when(nsPods.list()).thenReturn(podList);
 
         Pod pod0 = mock(Pod.class);
-        Pod pod1 = mock(Pod.class);
         ObjectMeta pod0Meta = mock(ObjectMeta.class);
-        ObjectMeta pod1Meta = mock(ObjectMeta.class);
         when(pod0.getMetadata()).thenReturn(pod0Meta);
-        when(pod1.getMetadata()).thenReturn(pod1Meta);
-        when(pod0Meta.getName()).thenReturn("good-prefix-name");
-        when(pod1Meta.getName()).thenReturn("bad-prefix-name");
-        List<Pod> items = new ArrayList<>();
-        items.add(pod0);
-        items.add(pod1);
-        when(podList.getItems()).thenReturn(items);
+        when(pod0Meta.getName()).thenReturn("good-prefix-name-with-hash");
+        when(pod0Meta.getLabels()).thenReturn(Collections.singletonMap("app", "good-prefix-name"));
 
+        Pod pod1 = mock(Pod.class);
+        ObjectMeta pod1Meta = mock(ObjectMeta.class);
+        when(pod1.getMetadata()).thenReturn(pod1Meta);
+        when(pod1Meta.getName()).thenReturn("bad-prefix-name-with-hash");
+
+        Pod pod2 = mock(Pod.class);
+        ObjectMeta pod2Meta = mock(ObjectMeta.class);
+        when(pod2.getMetadata()).thenReturn(pod2Meta);
+        when(pod2Meta.getName()).thenReturn("good-prefix-name-2-with-hash");
+        when(pod2Meta.getLabels()).thenReturn(Collections.singletonMap("not-app-label", "good-prefix-name"));
+
+        List<Pod> items = Arrays.asList(pod0, pod1, pod2);
+        when(podList.getItems()).thenReturn(items);
     }
 
     @Test
     public void shouldReturnPodNamesWithPrefix() {
-        List<String> result = helper.getPodNamesForAppInstance(1L);
-        assertEquals(1, result.size());
-        assertTrue(result.get(0).startsWith("good-prefix"));
-
+        Map<String, String> result = helper.getPodNamesForAppInstance(1L);
+        assertEquals(2, result.size());
+        assertEquals("good-prefix-name", result.get("good-prefix-name-with-hash"));
+        assertEquals("good-prefix-name-2-with-hash", result.get("good-prefix-name-2-with-hash"));
     }
+
 }

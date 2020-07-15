@@ -5,11 +5,19 @@ import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for handling SSH Shell over SSE
@@ -85,10 +93,23 @@ public class ShellClientController {
      * Retrieves pod names for an AppInstance
      * @param principal
      * @param id identifier of AppInstance to retrieve pod names
-     * @return list of pod names
+     * @return map of names of pods and corresponding service names (to be displayed to the user)
      */
     @GetMapping(value = "/shell/{id}/podnames")
-    public List<String> getPodNames(Principal principal, @PathVariable Long id) {
-        return this.connectorHelper.getPodNamesForAppInstance(id);
+    public List<PodInfo> getPodNames(Principal principal, @PathVariable Long id) {
+        return this.connectorHelper.getPodNamesForAppInstance(id).entrySet().stream()
+                .map(entry -> new PodInfo(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
+
+    static class PodInfo {
+        private String name;
+        private String displayName;
+
+        public PodInfo(String name, String displayName) {
+            this.name = name;
+            this.displayName = displayName;
+        }
+    }
+
 }
