@@ -10,7 +10,8 @@ import net.geant.nmaas.utils.k8sclient.KubernetesClientConfigFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,14 +33,14 @@ public class KubernetesConnectorHelper {
         this.applicationInstanceService = applicationInstanceService;
     }
 
-    public List<String> getPodNamesForAppInstance(Long appInstanceId) {
+    public Map<String, String> getPodNamesForAppInstance(Long appInstanceId) {
         return this.getPodNamesForAppInstance(
                 this.applicationInstanceService.find(appInstanceId).orElseThrow(
                         () -> new RuntimeException("App Instance not found"))
         );
     }
 
-    public List<String> getPodNamesForAppInstance(AppInstance appInstance) {
+    public Map<String, String> getPodNamesForAppInstance(AppInstance appInstance) {
 
         final String namespace = appInstance.getDomain().getCodename();
 
@@ -50,8 +51,12 @@ public class KubernetesConnectorHelper {
         PodList podList = client.pods().inNamespace(namespace).list();
 
         return podList.getItems().stream()
-                .map(pod -> pod.getMetadata().getName())
-                .filter(podName -> podName.startsWith(prefix))
-                .collect(Collectors.toList());
+                .map(pod -> new SimpleEntry<>(
+                        pod.getMetadata().getName(),
+                        pod.getMetadata().getLabels().getOrDefault("app", pod.getMetadata().getName()))
+                )
+                .filter(entry -> entry.getKey().startsWith(prefix))
+                .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
     }
+
 }

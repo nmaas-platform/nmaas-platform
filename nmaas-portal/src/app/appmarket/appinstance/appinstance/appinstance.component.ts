@@ -20,6 +20,7 @@ import {ApplicationState} from '../../../model/applicationstate';
 import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 import {ShellClientService} from '../../../service/shell-client.service';
+import {PodInfo} from '../../../model/podinfo';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -82,7 +83,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     public refreshUpdateForm: EventEmitter<any>;
     public readonly REPLACE_TEXT = '"insert-app-instances-here"';
 
-    public podNames: string[] = [];
+    public podNames: PodInfo[] = [];
 
     constructor(private appsService: AppsService,
                 public appImagesService: AppImagesService,
