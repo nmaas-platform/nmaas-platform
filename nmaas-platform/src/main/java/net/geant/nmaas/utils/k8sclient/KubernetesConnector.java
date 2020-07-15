@@ -1,10 +1,11 @@
-package net.geant.nmaas.portal.api.shell.connectors;
+package net.geant.nmaas.utils.k8sclient;
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecListener;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 import okhttp3.Response;
 
 import java.io.IOException;
@@ -21,12 +22,12 @@ public class KubernetesConnector implements AsyncConnector {
 
         @Override
         public void onFailure(Throwable t, Response response) {
-            log.info("shell barfed");
+            log.info("Shell barfed");
         }
 
         @Override
         public void onClose(int code, String reason) {
-            log.info("The shell will now close.");
+            log.info("Shell will now close.");
         }
     }
 
@@ -45,11 +46,9 @@ public class KubernetesConnector implements AsyncConnector {
         this.client = client;
 
         this.initWatch();
-
     }
 
     protected void initWatch() {
-
         watch = client.pods()
                 .inNamespace(namespace)
                 .withName(podName)

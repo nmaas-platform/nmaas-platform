@@ -3,8 +3,8 @@ package net.geant.nmaas.portal.api.shell.observable;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
-import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnectorDefaultData;
-import net.geant.nmaas.portal.api.shell.connectors.SshSessionConnector;
+import net.geant.nmaas.utils.ssh.SshSessionConnectorDefaultData;
+import net.geant.nmaas.utils.ssh.SshSessionConnector;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;

@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.utils.k8sclient.KubernetesClientConfigFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -43,5 +43,4 @@ public class EchoShellSessionObservable extends GenericShellSessionObservable {
         this.executeCommand(commandRequest);
     }
 
-
 }

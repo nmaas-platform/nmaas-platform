@@ -1,6 +1,5 @@
-package net.geant.nmaas.portal.api.shell.connectors;
+package net.geant.nmaas.utils.ssh;
 
-import net.geant.nmaas.utils.ssh.BasicCredentials;
 import net.schmizz.sshj.userauth.keyprovider.KeyPairWrapper;
 
 import java.security.*;
