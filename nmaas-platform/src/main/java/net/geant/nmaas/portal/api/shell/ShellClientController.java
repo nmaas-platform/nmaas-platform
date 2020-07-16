@@ -1,5 +1,9 @@
 package net.geant.nmaas.portal.api.shell;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,14 +106,15 @@ public class ShellClientController {
                 .collect(Collectors.toList());
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     static class PodInfo {
+
         private String name;
         private String displayName;
 
-        public PodInfo(String name, String displayName) {
-            this.name = name;
-            this.displayName = displayName;
-        }
     }
 
 }
