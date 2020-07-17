@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AppInstanceService} from '../../../service';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-appinstance-shell-view',
@@ -16,7 +17,8 @@ export class AppInstanceShellViewComponent implements OnInit {
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
-                private appInstanceService: AppInstanceService) {
+                private appInstanceService: AppInstanceService,
+                private translateService: TranslateService) {
     }
 
     ngOnInit() {
