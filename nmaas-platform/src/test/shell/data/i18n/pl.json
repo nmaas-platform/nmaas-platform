@@ -88,6 +88,11 @@
     "BODY": "Pamiętaj, że jest to testowa instancja NMaaS. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej. Nie używaj tej instancji do monitorowania rzeczywistych urządzeń.",
     "OK_BUTTON": "OK"
   },
+  "PROVIDE_SSH_KEY_MODAL": {
+    "HEADER": "No SSH key provided",
+    "BODY": "Please note that in order to be able to update deployed application configuration You need to add a public SSH key on your Profile page. This key will be later on used to access dedicated Git repository containing application configuration files.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",
     "HELM": "Helm",
@@ -647,8 +652,10 @@
     "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne",
     "CONFIG_FILENAME_LABEL": "Nazwa pliku konfiguracyjnego",
     "CONFIG_FILENAME_TOOLTIP": "Podaj nazwę pliku konfiguracyjnego",
-    "CONFIG_CONTENT_LABEL": "Szablon konfiguracyjny",
-    "CONFIG_CONTENT_TOOLTIP":"Podaj szablon konfiguracyjny. Pamiętaj że musi on być zgodny z FreeMarker Template Language.",
+    "CONFIG_FILEDIRECTORY_LABEL": "Nazwa katalogu",
+    "CONFIG_FILEDIRECTORY_TOOLTIP": "Podaj nazwę katalogu, w którym ma zostać umieszczony plik konfiguracyjny",
+    "CONFIG_CONTENT_LABEL": "Szablon zawartości pliku konfiguracyjnego",
+    "CONFIG_CONTENT_TOOLTIP":"Podaj szablon zawartości pliku konfiguracyjnego. Pamiętaj, że musi on być zgodny z FreeMarker Template Language.",
     "ADD_CONFIG_BUTTON": "Dodaj nowy szablon",
     "APP_CONFIG_TEMPLATES_HEADER": "Konfiguracja szablonów aplikacji",
     "APP_REQUIRED_DESCRIPTIONS_HEADER": "Wymagane opisy aplikacji",

@@ -52,6 +52,7 @@ import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {DomainRolesDirective} from '../directive/domain-roles.directive';
 import { SshKeysComponent } from './users/ssh-keys/ssh-keys.component';
 import { NewSshKeyComponent } from './users/new-ssh-key/new-ssh-key.component';
+import { ModalProvideSshKeyComponent } from './modal/modal-provide-ssh-key/modal-provide-ssh-key.component';
 
 @NgModule({
     imports: [
@@ -107,6 +108,7 @@ import { NewSshKeyComponent } from './users/new-ssh-key/new-ssh-key.component';
       PageNotFoundComponent,
       SshKeysComponent,
       NewSshKeyComponent,
+      ModalProvideSshKeyComponent,
   ],
   providers: [
     PasswordValidator,
@@ -154,6 +156,7 @@ import { NewSshKeyComponent } from './users/new-ssh-key/new-ssh-key.component';
         ModalNotificationSendComponent,
         DomainRolesDirective,
         SshKeysComponent,
+        ModalProvideSshKeyComponent,
     ]
 })
 export class SharedModule {}

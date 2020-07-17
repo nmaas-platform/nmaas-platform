@@ -9,10 +9,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DomainBase {
-    Long id;
-
-    String name;
-    String codename;
-    boolean active;
+public class DomainBaseWithState extends DomainBase {
+    List<ApplicationStatePerDomainView> applicationStatePerDomain;
 }

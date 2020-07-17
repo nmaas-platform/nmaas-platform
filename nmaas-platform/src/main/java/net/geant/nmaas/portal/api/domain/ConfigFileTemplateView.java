@@ -17,5 +17,7 @@ public class ConfigFileTemplateView {
 
     private String configFileName;
 
+    private String configFileDirectory;
+
     private String configFileTemplateContent;
 }

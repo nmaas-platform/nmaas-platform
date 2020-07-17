@@ -245,7 +245,9 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     // handle config methods
 
     public addConfig() {
-        this.configFileTemplates.push(new ConfigFileTemplate());
+        const newTemplate = new ConfigFileTemplate();
+        newTemplate.applicationId = this.app.id;
+        this.configFileTemplates.push(newTemplate);
     }
 
     public removeConfig(id: number) {

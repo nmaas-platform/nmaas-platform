@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * full Application & ApplicationBase DTO
+ */
 @Getter
 @Setter
 @NoArgsConstructor

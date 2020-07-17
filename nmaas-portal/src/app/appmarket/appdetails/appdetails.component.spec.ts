@@ -75,6 +75,9 @@ class CommentsMock {
 class NmassModalAppInstallMock {
   @Input()
   app: any;
+
+  @Input()
+  domain: any;
 }
 
 @Component({
@@ -110,7 +113,8 @@ describe('Component: AppDetails', () => {
     appDeploymentSpec: new AppDeploymentSpec(),
     appConfigurationSpec: new AppConfigurationSpec(),
     state: ApplicationState.ACTIVE,
-    rowWithVersionVisible: false
+    rowWithVersionVisible: false,
+    rate: null,
   };
 
   beforeEach(async(() => {

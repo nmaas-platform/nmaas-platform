@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,6 @@ public class GitLabConfigHelper {
     static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
-
 
     static User createStandardUser(String username, String email, String name) {
         User user = new User();
@@ -66,7 +66,11 @@ public class GitLabConfigHelper {
 
     static RepositoryFile committedFile(NmServiceConfiguration configuration) {
         RepositoryFile file = new RepositoryFile();
-        file.setFilePath(configuration.getConfigFileName());
+        if (StringUtils.isNotEmpty(configuration.getConfigFileDirectory())) {
+            file.setFilePath(configuration.getConfigFileDirectory() + "/" + configuration.getConfigFileName());
+        } else{
+            file.setFilePath(configuration.getConfigFileName());
+        }
         file.setContent(configuration.getConfigFileContent());
         return file;
     }

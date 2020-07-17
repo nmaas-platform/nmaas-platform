@@ -10,15 +10,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * medium ApplicationBase & Application DTO
+ */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ApplicationBriefView {
-	Long id;
-	
-	String name;
-	Set<ApplicationVersionView> appVersions = new HashSet<>();
+public class ApplicationBriefView extends ApplicationBaseView {
 	
 	String license;
 	String licenseUrl;
@@ -29,11 +28,7 @@ public class ApplicationBriefView {
 	String nmaasDocumentationUrl;
 
 	String owner;
-	
-	List<AppDescriptionView> descriptions;
 
 	ApplicationState state;
-
-	Set<String> tags = new HashSet<>();
 
 }

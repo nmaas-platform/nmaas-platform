@@ -128,7 +128,8 @@ describe('Component: AppInstance', () => {
     appDeploymentSpec: new AppDeploymentSpec(),
     appConfigurationSpec: new AppConfigurationSpec(),
     state: ApplicationState.ACTIVE,
-    rowWithVersionVisible: false
+    rowWithVersionVisible: false,
+    rate: null,
   };
   application.appDeploymentSpec.exposesWebUI = true;
 

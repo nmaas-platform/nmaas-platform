@@ -9,7 +9,7 @@ import {SSHKeyRequest} from '../model/sshkey-request';
 @Injectable({
   providedIn: 'root'
 })
-export class SSHKeyService extends GenericDataService{
+export class SSHKeyService extends GenericDataService {
 
   constructor(http: HttpClient, appConfig: AppConfigService) {
     super(http, appConfig);
