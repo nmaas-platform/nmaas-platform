@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -100,7 +101,11 @@ public class ShellClientController {
      * @return map of names of pods and corresponding service names (to be displayed to the user)
      */
     @GetMapping(value = "/shell/{id}/podnames")
+    @PreAuthorize("hasPermission(#id, 'appInstance', 'OWNER')")
     public List<PodInfo> getPodNames(Principal principal, @PathVariable Long id) {
+        if (!this.connectorHelper.checkAppInstanceSupportsSshAccess(id)) {
+            throw new ProcessingException(String.format("Can't retrieve pod names for application instance %s", id));
+        }
         return this.connectorHelper.getPodNamesForAppInstance(id).entrySet().stream()
                 .map(entry -> new PodInfo(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());

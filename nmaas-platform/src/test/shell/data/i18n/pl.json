@@ -494,6 +494,10 @@
     "GO_TO_APP_TOOLTIP": "Ta aplikacja nie udostępnia interfejsu użytkownika",
     "SHELL": "Shell"
   },
+  "SHELL": {
+    "CONNECTED_TO" : "Podłączony do",
+    "POD_NAME": "pod:"
+  },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",
     "BODY": "Czy chcesz zatrzymać tę instancję?",

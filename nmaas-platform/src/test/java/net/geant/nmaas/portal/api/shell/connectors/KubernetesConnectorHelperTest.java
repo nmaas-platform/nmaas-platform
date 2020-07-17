@@ -11,7 +11,9 @@ import io.fabric8.kubernetes.client.dsl.PodResource;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.utils.k8sclient.KubernetesClientConfigFactory;
@@ -48,6 +50,9 @@ public class KubernetesConnectorHelperTest {
         Domain domain = mock(Domain.class);
         when(appInstance.getDomain()).thenReturn(domain);
         when(domain.getCodename()).thenReturn("namespace");
+        Application application = mock(Application.class);
+        when(appInstance.getApplication()).thenReturn(application);
+        when(application.getAppDeploymentSpec()).thenReturn(AppDeploymentSpec.builder().allowSshAccess(true).build());
 
         Identifier appInstanceInternalId = mock(Identifier.class);
         when(appInstance.getInternalId()).thenReturn(appInstanceInternalId);

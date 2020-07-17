@@ -11,6 +11,7 @@ export class AppInstanceShellViewComponent implements OnInit {
 
     public appInstanceId: number = undefined;
     public podName: string = undefined;
+    public appInstanceName: string = undefined;
     public ready = false;
 
     constructor(private route: ActivatedRoute,
@@ -29,6 +30,7 @@ export class AppInstanceShellViewComponent implements OnInit {
                             this.notFound();
                         } else {
                             this.ready = true;
+                            this.appInstanceName = data.name;
                         }
                     },
                     error => {
