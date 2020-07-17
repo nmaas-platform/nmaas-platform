@@ -500,6 +500,10 @@
     "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web",
     "SHELL": "Shell"
   },
+  "SHELL": {
+    "CONNECTED_TO" : "Connected to",
+    "POD_NAME": "pod:"
+  },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",
     "BODY": "Voulez-vous poursuivre la suppression de l'instance de cette application?",

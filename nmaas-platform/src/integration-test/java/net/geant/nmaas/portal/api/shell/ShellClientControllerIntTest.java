@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,11 +36,12 @@ public class ShellClientControllerIntTest extends BaseControllerTestSetup {
         Map<String, String> podNames = new HashMap<>();
         podNames.put("name1", "displayName1");
         podNames.put("name2", "displayName2");
-        when(connectorHelper.getPodNamesForAppInstance(anyLong())).thenReturn(podNames);
+        when(connectorHelper.getPodNamesForAppInstance(1L)).thenReturn(podNames);
     }
 
     @Test
     public void shouldRetrievePodNames() throws Exception {
+        when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(true);
         MvcResult result = mvc.perform(get("/api/shell/{id}/podnames", 1L)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -49,6 +49,17 @@ public class ShellClientControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("name1"));
+    }
+
+    @Test
+    public void shouldNotRetrievePodNames() throws Exception {
+        when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(false);
+        mvc.perform(get("/api/shell/{id}/podnames", 1L)
+                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotAcceptable())
+                .andReturn();
     }
 
 }

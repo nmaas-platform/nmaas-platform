@@ -499,6 +499,10 @@
     "GO_TO_APP_TOOLTIP": "Diese Anwendung stellt keine Webbenutzeroberfläche zur Verfügung",
     "SHELL": "Shell"
   },
+  "SHELL": {
+    "CONNECTED_TO" : "Connected to",
+    "POD_NAME": "pod:"
+  },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",
     "BODY": "Möchten Sie die Anwendungsinstanz entfernen?",
