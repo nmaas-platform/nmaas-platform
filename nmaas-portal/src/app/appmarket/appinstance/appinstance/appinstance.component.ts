@@ -267,10 +267,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                     if (!this.appInstance || !this.appInstance.serviceAccessMethods) {
                         this.updateAppInstance();
                     }
-                }
-
-                if (this.appInstance.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
-                    this.updateAppInstancePodNames();
+                    if (this.appInstance.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
+                        this.updateAppInstancePodNames();
+                    }
                 }
             }
         );
@@ -287,9 +286,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     private updateAppInstancePodNames() {
+        console.log('update list of available pods');
         this.shellClientService.getPossiblePods(this.appInstanceId).subscribe(pods => {
             this.podNames = pods;
-            console.log(pods);
         });
     }
 
