@@ -58,4 +58,5 @@ export class ShellClientService {
   getPossiblePods(id: number): Observable<PodInfo[]> {
     return this.http.get<PodInfo[]>(this.appConfig.getApiUrl() + '/shell/' + id + '/podnames');
   }
+
 }
