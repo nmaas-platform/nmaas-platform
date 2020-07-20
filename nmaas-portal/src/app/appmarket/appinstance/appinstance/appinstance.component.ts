@@ -4,6 +4,7 @@ import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
+import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
@@ -67,7 +68,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     public appInstanceStatus: AppInstanceStatus;
 
     public appInstanceId: number;
-    public appInstance: AppInstance;
+    public appInstance: AppInstanceExtended;
     public appInstanceStateHistory: AppInstanceStateHistory[];
     public configurationTemplate: any;
     public configurationUpdateTemplate: any;
@@ -267,6 +268,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                         this.updateAppInstance();
                     }
                 }
+
+                if (this.appInstance.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
+                    this.updateAppInstancePodNames();
+                }
             }
         );
         this.appInstanceService.getAppInstanceHistory(this.appInstanceId).subscribe(history => {
@@ -279,10 +284,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
             this.appInstance = appInstance;
         });
+    }
+
+    private updateAppInstancePodNames() {
         this.shellClientService.getPossiblePods(this.appInstanceId).subscribe(pods => {
             this.podNames = pods;
             console.log(pods);
-        })
+        });
     }
 
     ngOnDestroy() {

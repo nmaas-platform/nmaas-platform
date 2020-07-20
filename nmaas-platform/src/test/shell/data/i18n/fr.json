@@ -502,7 +502,7 @@
   },
   "SHELL": {
     "CONNECTED_TO" : "Connected to",
-    "POD_NAME": "pod:"
+    "POD_NAME": "container name:"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",

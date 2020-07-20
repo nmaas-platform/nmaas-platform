@@ -501,7 +501,7 @@
   },
   "SHELL": {
     "CONNECTED_TO" : "Podłączony do",
-    "POD_NAME": "pod:"
+    "POD_NAME": "nazwa kontenera:"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",
