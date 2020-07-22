@@ -1,5 +1,8 @@
 package net.geant.nmaas.nmservice.configuration.entities;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,9 +13,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -32,14 +32,19 @@ public class NmServiceConfiguration {
     @Column(nullable = false)
     private String configFileName;
 
+    @Column
+    private String configFileDirectory;
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
     private String configFileContent;
 
-    public NmServiceConfiguration(String configId, String configFileName, String configFileContent) {
+    public NmServiceConfiguration(String configId, String configFileName, String configFileDirectory, String configFileContent) {
         this.configId = configId;
         this.configFileName = configFileName;
+        this.configFileDirectory = configFileDirectory;
         this.configFileContent = configFileContent;
     }
+
 }

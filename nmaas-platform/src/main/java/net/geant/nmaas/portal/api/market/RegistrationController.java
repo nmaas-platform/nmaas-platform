@@ -7,6 +7,7 @@ import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -94,12 +95,11 @@ public class RegistrationController {
 	
 	@GetMapping("/domains")
 	@Transactional(readOnly=true)
-	public List<DomainView> getDomains() {
-		Optional<DomainView> globalDomain = domains.getGlobalDomain().map(domain -> modelMapper.map(domain, DomainView.class));
-		final Long globalDomainId = globalDomain.map(DomainView::getId).orElseThrow(MissingElementException::new);
+	public List<DomainBase> getDomains() {
+		final Long globalDomainId = domains.getGlobalDomain().orElseThrow(MissingElementException::new).getId();
 		
 		return domains.getDomains().stream()
-						.map(domain -> modelMapper.map(domain, DomainView.class))
+						.map(domain -> modelMapper.map(domain, DomainBase.class))
 						.filter(domain -> !domain.getId().equals(globalDomainId))
 						.collect(Collectors.toList());
 		

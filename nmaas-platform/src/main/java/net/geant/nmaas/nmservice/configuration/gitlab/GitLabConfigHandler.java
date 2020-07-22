@@ -13,6 +13,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectHook;
@@ -72,6 +74,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if a problem with during user creation is encountered
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void createUser(String userUsername, String userEmail, String userName, List<String> userSshKeys) {
         try {
             if (!gitLabManager.users().getOptionalUser(userUsername).isPresent()) {
@@ -116,14 +119,15 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if a problem with repository creation is encountered
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void createRepository(Identifier deploymentId, String member) {
         String domain = repositoryManager.loadDomain(deploymentId);
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
-        log.info("Retrieving or creating user");
+        log.info(String.format("Retrieving or creating user %s", member));
         Integer gitLabUserId = getUserId(member);
-        log.info("Retrieving or creating group");
+        log.info(String.format("Retrieving or creating group %s", domain));
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        log.info("Creating project within the group");
+        log.info(String.format("Creating project %s within the group %s", descriptiveDeploymentId, domain));
         Integer gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
         log.info("Adding member to the project");
         addMemberToProject(gitLabProjectId, gitLabUserId);
@@ -229,6 +233,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void commitConfigFiles(Identifier deploymentId, List<String> configIds) {
         loadGitlabProject(deploymentId).ifPresent(p -> uploadConfigFilesToProject(p.getProjectId(), configIds));
     }
@@ -238,7 +243,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
             try {
-                if (gitLabManager.repositoryFiles().getOptionalFile(gitLabProjectId, file.getFileName(), commitBranch()).isPresent()) {
+                if (gitLabManager.repositoryFiles().getOptionalFile(gitLabProjectId, file.getFilePath(), commitBranch()).isPresent()) {
                     gitLabManager.repositoryFiles().updateFile(gitLabProjectId, file, commitBranch(), updateCommitMessage(configuration.getConfigFileName()));
                 } else {
                     gitLabManager.repositoryFiles().createFile(gitLabProjectId, file, commitBranch(), commitMessage(configuration.getConfigFileName()));
@@ -258,6 +263,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void removeConfigFiles(Identifier deploymentId){
         loadGitlabProject(deploymentId).ifPresent(p -> removeProject(p.getProjectId()));
     }
@@ -273,6 +279,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
         Optional<GitLabProject> gitLabProject = loadGitlabProject(deploymentId);
         if (gitLabProject.isPresent()) {

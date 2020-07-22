@@ -48,7 +48,6 @@ public class ApplicationViewToApplicationBaseConverter extends AbstractConverter
                 .collect(Collectors.toList());
     }
 
-
     private Set<Tag> getTags(ApplicationView source){
         return Optional.ofNullable(source.getTags()).orElse(Collections.emptySet()).stream()
                 .map(tag -> tagRepo.findByName(tag).orElse(new Tag(tag)))

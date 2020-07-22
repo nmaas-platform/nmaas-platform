@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AppInstanceService} from '../../../service';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-appinstance-shell-view',
@@ -11,11 +12,13 @@ export class AppInstanceShellViewComponent implements OnInit {
 
     public appInstanceId: number = undefined;
     public podName: string = undefined;
+    public appInstanceName: string = undefined;
     public ready = false;
 
     constructor(private route: ActivatedRoute,
                 private router: Router,
-                private appInstanceService: AppInstanceService) {
+                private appInstanceService: AppInstanceService,
+                private translateService: TranslateService) {
     }
 
     ngOnInit() {
@@ -29,6 +32,7 @@ export class AppInstanceShellViewComponent implements OnInit {
                             this.notFound();
                         } else {
                             this.ready = true;
+                            this.appInstanceName = data.name;
                         }
                     },
                     error => {

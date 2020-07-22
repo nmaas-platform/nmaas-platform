@@ -9,4 +9,5 @@ public interface AsyncConnector {
     InputStream getInputStream();
     InputStream getErrorStream();
     void close();
+
 }

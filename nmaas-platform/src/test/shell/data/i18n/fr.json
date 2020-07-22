@@ -89,6 +89,11 @@
     "BODY": "Veuillez noter qu'il s'agit d'une instance de test NMaaS. Les mesures d'isolation de l'utilisateur et de sécurité des données ne sont pas aussi strictes que sur l'instance de production. N'utilisez pas cette instance pour surveiller un équipement réel.",
     "OK_BUTTON": "OK"
   },
+  "PROVIDE_SSH_KEY_MODAL": {
+    "HEADER": "No SSH key provided",
+    "BODY": "Please note that in order to be able to update deployed application configuration You need to add a public SSH key on your Profile page. This key will be later on used to access dedicated Git repository containing application configuration files.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Configuration du cluster Kubernetes",
     "HELM": "Helm",
@@ -495,6 +500,10 @@
     "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web",
     "SHELL": "Shell"
   },
+  "SHELL": {
+    "CONNECTED_TO" : "Connected to",
+    "POD_NAME": "container name:"
+  },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",
     "BODY": "Voulez-vous poursuivre la suppression de l'instance de cette application?",
@@ -643,6 +652,8 @@
     "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
     "CONFIG_FILENAME_LABEL": "Configuration filename",
     "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
+    "CONFIG_FILEDIRECTORY_LABEL": "Configuration file directory (folder name)",
+    "CONFIG_FILEDIRECTORY_TOOLTIP": "Enter the name of folder in which the configuration file should be placed in repository",
     "CONFIG_CONTENT_LABEL": "Configuration template",
     "CONFIG_CONTENT_TOOLTIP":"Enter configuration template. Please be advised that it has to be compatible with FreeMarker Template Language.",
     "ADD_CONFIG_BUTTON": "Add new template",

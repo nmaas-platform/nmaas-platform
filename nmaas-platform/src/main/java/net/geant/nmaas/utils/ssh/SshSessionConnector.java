@@ -1,9 +1,8 @@
-package net.geant.nmaas.portal.api.shell.connectors;
+package net.geant.nmaas.utils.ssh;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.utils.ssh.BasicCredentials;
-import net.geant.nmaas.utils.ssh.SshConnectionException;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.ConnectionException;

@@ -15,6 +15,4 @@ public class DomainBase {
     String name;
     String codename;
     boolean active;
-
-    List<ApplicationStatePerDomainView> applicationStatePerDomain;
 }

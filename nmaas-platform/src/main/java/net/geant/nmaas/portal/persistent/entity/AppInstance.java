@@ -37,7 +37,7 @@ public class AppInstance extends DomainAware implements Serializable {
 	
 	String name;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional=false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	Application application;
 	
 	@Basic(fetch = FetchType.LAZY)

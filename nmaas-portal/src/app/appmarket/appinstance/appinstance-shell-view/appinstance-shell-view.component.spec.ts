@@ -5,6 +5,7 @@ import {SshShellComponent} from '../ssh-shell/ssh-shell.component';
 import {NgTerminalModule} from 'ng-terminal';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
 
 describe('AppInstanceShellViewComponent', () => {
     let component: AppInstanceShellViewComponent;
@@ -20,6 +21,12 @@ describe('AppInstanceShellViewComponent', () => {
                 NgTerminalModule,
                 HttpClientTestingModule,
                 RouterTestingModule,
+                TranslateModule.forRoot({
+                  loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                  }
+                })
             ]
         })
             .compileComponents();

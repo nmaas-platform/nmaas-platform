@@ -5,7 +5,10 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
 import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -121,7 +124,6 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
                 log.info("Error reader closed");
             }
         });
-
 
     }
 

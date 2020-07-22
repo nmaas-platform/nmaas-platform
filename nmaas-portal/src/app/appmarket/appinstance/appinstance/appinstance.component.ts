@@ -1,9 +1,10 @@
-import {AfterViewChecked, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
+import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
@@ -20,6 +21,7 @@ import {ApplicationState} from '../../../model/applicationstate';
 import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 import {ShellClientService} from '../../../service/shell-client.service';
+import {PodInfo} from '../../../model/podinfo';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -27,7 +29,7 @@ import {ShellClientService} from '../../../service/shell-client.service';
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
     providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, LocalDatePipe]
 })
-export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class AppInstanceComponent implements OnInit, OnDestroy {
 
     public defaultTooltipOptions = {
         'placement': 'bottom',
@@ -66,7 +68,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     public appInstanceStatus: AppInstanceStatus;
 
     public appInstanceId: number;
-    public appInstance: AppInstance;
+    public appInstance: AppInstanceExtended;
     public appInstanceStateHistory: AppInstanceStateHistory[];
     public configurationTemplate: any;
     public configurationUpdateTemplate: any;
@@ -82,7 +84,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     public refreshUpdateForm: EventEmitter<any>;
     public readonly REPLACE_TEXT = '"insert-app-instances-here"';
 
-    public podNames: string[] = [];
+    public podNames: PodInfo[] = [];
 
     constructor(private appsService: AppsService,
                 public appImagesService: AppImagesService,
@@ -138,6 +140,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
             this.updateAppInstanceState();
             this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
+
+            // TODO fix after modal init
+            console.log('Setting undeploy modal params')
             this.undeployModal.setModalType('warning');
             this.undeployModal.setStatusOfIcons(true);
         });
@@ -145,9 +150,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
     dateFormatChanges(): void {
         this.sessionService.registerCulture(this.translateService.currentLang);
-    }
-
-    ngAfterViewChecked(): void {
     }
 
     public getStateAsString(state: any): string {
@@ -259,11 +261,17 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
                 }
 
                 if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
+                    console.log("app instance is running");
                     if (this.storage.has('appConfig_' + this.appInstanceId.toString())) {
                         this.storage.remove('appConfig_' + this.appInstanceId.toString());
                     }
                     if (!this.appInstance || !this.appInstance.serviceAccessMethods) {
                         this.updateAppInstance();
+                    }
+                    console.log("is ssh access allowed: " + this.appInstance.application.appDeploymentSpec.allowSshAccess);
+                    console.log("array of pods has length: " + this.podNames.length);
+                    if (this.appInstance.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
+                        this.updateAppInstancePodNames();
                     }
                 }
             }
@@ -278,10 +286,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
             this.appInstance = appInstance;
         });
+    }
+
+    private updateAppInstancePodNames() {
+        console.log('update list of available pods');
         this.shellClientService.getPossiblePods(this.appInstanceId).subscribe(pods => {
             this.podNames = pods;
-            console.log(pods);
-        })
+        });
     }
 
     ngOnDestroy() {
@@ -291,11 +302,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
 
     public redeploy(): void {
-        this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.debug('Redeployed'));
+        this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log('Redeployed'));
     }
 
     public removalFailed(): void {
-        this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.debug('Removed failed instance'));
+        this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.log('Removed failed instance'));
     }
 
     public changeAdditionalParameters(additionalParameters: any): void {

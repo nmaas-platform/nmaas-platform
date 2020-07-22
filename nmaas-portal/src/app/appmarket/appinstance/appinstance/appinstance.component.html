@@ -69,7 +69,7 @@
                         </div>
                         <!-- if only one pod available, select it by default -->
                         <a *ngIf="app.appDeploymentSpec.allowSshAccess && podNames.length == 1"
-                           [routerLink]="router.url + '/shell/' + podNames[0]" class="btn btn-default" role="button">
+                           [routerLink]="router.url + '/shell/' + podNames[0].name" class="btn btn-default" role="button">
                             {{'APP_INSTANCE.SHELL' | translate}}
                         </a>
                         <!-- if more pods available, go dropdown -->
@@ -80,7 +80,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li *ngFor="let podName of podNames">
-                                    <a [routerLink]="router.url + '/shell/' + podName">{{podName}}</a>
+                                    <a [routerLink]="router.url + '/shell/' + podName.name">{{podName.displayName}}</a>
                                 </li>
                             </ul>
                         </div>

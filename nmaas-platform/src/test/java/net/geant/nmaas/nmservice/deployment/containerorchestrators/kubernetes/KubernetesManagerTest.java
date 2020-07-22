@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.collect.Sets;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
@@ -60,13 +59,13 @@ import static org.mockito.Mockito.when;
 public class KubernetesManagerTest {
 
     private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
+    private KubernetesDeploymentParametersProvider deploymentParametersProvider = mock(KubernetesDeploymentParametersProvider.class);
     private DefaultKClusterValidator clusterValidator = mock(DefaultKClusterValidator.class);
     private KServiceLifecycleManager serviceLifecycleManager = mock(HelmKServiceManager.class);
     private KServiceOperationsManager serviceOperationsManager = mock(DefaultKServiceOperationsManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
     private KClusterIngressManager ingressManager = mock(KClusterIngressManager.class);
-    private KClusterDeploymentManager deploymentManager = mock(KClusterDeploymentManager.class);
     private GitLabManager gitLabManager = mock(GitLabManager.class);
     private JanitorService janitorService = mock(JanitorService.class);
 
@@ -74,24 +73,28 @@ public class KubernetesManagerTest {
 
     private KubernetesManager manager = new KubernetesManager(
             repositoryManager,
+            deploymentParametersProvider,
             clusterValidator,
             serviceLifecycleManager,
             serviceOperationsManager,
             ingressControllerManager,
             ingressResourceManager,
             ingressManager,
-            deploymentManager,
             gitLabManager,
             janitorService
     );
 
     @BeforeEach
     public void setup() {
-        when(deploymentManager.getSMTPServerHostname()).thenReturn("hostname");
-        when(deploymentManager.getSMTPServerPort()).thenReturn(5);
-        when(deploymentManager.getSMTPServerUsername()).thenReturn(Optional.of("username"));
-        when(deploymentManager.getSMTPServerPassword()).thenReturn(Optional.of("password"));
-        when(ingressManager.getExternalServiceDomain()).thenReturn("extBaseUrl");
+        Map<String, String> parametersMap = new HashMap<>();
+        parametersMap.put(ParameterType.SMTP_HOSTNAME.name(), "hostname");
+        parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
+        parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
+        parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
+        parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
+        parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
+        parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
+        when(deploymentParametersProvider.deploymentParameters(any())).thenReturn(parametersMap);
 
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");

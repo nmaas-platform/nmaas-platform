@@ -37,7 +37,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "elastic-stack",
-				"version": "1.8.0"
+				"version": "1.9.1"
 			},
 			"mainDeploymentName": "pllabprod"
 		},
@@ -98,7 +98,24 @@
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired": true,
-		"configUpdateEnabled": true
+		"configUpdateEnabled": true,
+		"templates": [
+			{
+				"configFileName": "kibana.yml",
+				"configFileDirectory": "kibana",
+				"configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\""
+			},
+			{
+				"configFileName":"logstash.yml",
+				"configFileDirectory": "logstash",
+				"configFileTemplateContent":""
+			},
+			{
+				"configFileName":"elasticsearch.yml",
+				"configFileDirectory": "es-config",
+				"configFileTemplateContent":"cluster.name: \"${RELEASE_NAME}\"\nnetwork.host: 0.0.0.0\nxpack.security.enabled: true\nxpack.monitoring.enabled: true\nxpack.monitoring.collection.enabled: true\nxpack.security.transport.ssl.enabled: true"
+			}
+		]
 	},
 	"state": "DISABLED",
 	"configWizardTemplate": {

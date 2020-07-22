@@ -169,6 +169,15 @@
                 <input type="text" class="form-control" id="configFileName-{{i}}" name="configFileName-{{i}}" #configFileName="ngModel"
                        [(ngModel)]="configTemplate.configFileName" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_FILENAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
               </div>
+
+              <div class="form-group form-group-sm" [ngClass]="{'has-error':  configFileDirectory.invalid && (configFileDirectory.dirty || configFileDirectory.touched),
+ 			    		 	        'has-success': configFileDirectory.valid && (configFileDirectory.dirty || configFileDirectory.touched)}">
+                <label for="configFileDirectory-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILEDIRECTORY_LABEL' | translate}}</label>
+                <br>
+                <input type="text" class="form-control" id="configFileDirectory-{{i}}" name="configFileDirectory-{{i}}" #configFileDirectory="ngModel"
+                       [(ngModel)]="configTemplate.configFileDirectory" tooltip="{{'APPS_WIZARD.CONFIG_FILEDIRECTORY_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+              </div>
+
               <div class="form-group form-group-sm" [ngClass]="{'has-error':  configFileTemplateContent.invalid && (configFileTemplateContent.dirty || configFileTemplateContent.touched),
  			    		 	        'has-success': configFileTemplateContent.valid && (configFileTemplateContent.dirty || configFileTemplateContent.touched)}">
                 <label *ngIf="isInMode(ComponentMode.CREATE)" for="configFileTemplateContent-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_CONTENT_LABEL' | translate}}</label>

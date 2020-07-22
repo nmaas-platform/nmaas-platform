@@ -1,7 +1,11 @@
 package net.geant.nmaas.nmservice.configuration.entities;
 
 
-import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,10 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
 
 @Getter
 @Setter
@@ -35,8 +36,12 @@ public class ConfigFileTemplate implements Serializable {
     @Column(nullable = false)
     private String configFileName;
 
+    @Column
+    private String configFileDirectory;
+
     @Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(nullable = false)
     private String configFileTemplateContent;
+
 }

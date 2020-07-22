@@ -1,15 +1,28 @@
 package net.geant.nmaas.portal.api.shell;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for handling SSH Shell over SSE
@@ -85,10 +98,28 @@ public class ShellClientController {
      * Retrieves pod names for an AppInstance
      * @param principal
      * @param id identifier of AppInstance to retrieve pod names
-     * @return list of pod names
+     * @return map of names of pods and corresponding service names (to be displayed to the user)
      */
     @GetMapping(value = "/shell/{id}/podnames")
-    public List<String> getPodNames(Principal principal, @PathVariable Long id) {
-        return this.connectorHelper.getPodNamesForAppInstance(id);
+    @PreAuthorize("hasPermission(#id, 'appInstance', 'OWNER')")
+    public List<PodInfo> getPodNames(Principal principal, @PathVariable Long id) {
+        if (!this.connectorHelper.checkAppInstanceSupportsSshAccess(id)) {
+            throw new ProcessingException(String.format("Can't retrieve pod names for application instance %s", id));
+        }
+        return this.connectorHelper.getPodNamesForAppInstance(id).entrySet().stream()
+                .map(entry -> new PodInfo(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class PodInfo {
+
+        private String name;
+        private String displayName;
+
+    }
+
 }

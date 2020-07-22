@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 import {EventSourcePolyfill, OnMessageEvent} from 'ng-event-source';
+import {PodInfo} from "../model/podinfo";
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +55,8 @@ export class ShellClientService {
     });
   }
 
-  getPossiblePods(id: number): Observable<string[]> {
-    return this.http.get<string[]>(this.appConfig.getApiUrl() + '/shell/' + id + '/podnames');
+  getPossiblePods(id: number): Observable<PodInfo[]> {
+    return this.http.get<PodInfo[]>(this.appConfig.getApiUrl() + '/shell/' + id + '/podnames');
   }
+
 }

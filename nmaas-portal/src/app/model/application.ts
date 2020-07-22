@@ -4,6 +4,7 @@ import {AppDescription} from './appdescription';
 import {ApplicationState} from './applicationstate';
 import {AppConfigurationSpec} from './appconfigurationspec';
 import {ApplicationVersion} from './applicationversion';
+import {Rate} from './rate';
 
 export class Application {
   public id: number = undefined;
@@ -26,4 +27,5 @@ export class Application {
   public appConfigurationSpec: AppConfigurationSpec = new AppConfigurationSpec();
   public state: ApplicationState = ApplicationState.NEW;
   public rowWithVersionVisible: boolean = false;
+  public rate: Rate = undefined;
 }

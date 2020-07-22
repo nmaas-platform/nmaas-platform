@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.portal.api.auth.Registration;
-import net.geant.nmaas.portal.api.domain.DomainView;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -136,7 +136,7 @@ public class RegistrationControllerTest {
 
     @Test
     public void shouldGetDomains(){
-        List<DomainView> result = registrationController.getDomains();
+        List<DomainBase> result = registrationController.getDomains();
         assertEquals(1, result.size());
         assertEquals(DOMAIN.getCodename(), result.get(0).getCodename());
     }

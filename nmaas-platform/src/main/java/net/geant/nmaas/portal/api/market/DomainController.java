@@ -6,14 +6,13 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.api.domain.DomainView;
-import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -76,17 +75,26 @@ public class DomainController extends AppBaseController {
 	@GetMapping("/{domainId}")
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public DomainView getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
+	public DomainBase getDomain(@PathVariable(value = "domainId") Long domainId, @NotNull Principal principal) {
+		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		return modelMapper.map(domain, DomainView.class);
+		// if is system admin or domain admin than return full view
+		if(user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
+				|| user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
+				&& role.getRole() == Role.ROLE_DOMAIN_ADMIN)) {
+
+			return modelMapper.map(domain, DomainView.class);
+		}
+		//otherwise base view
+		return modelMapper.map(domain, DomainBaseWithState.class);
 	}
 	
 	@GetMapping("/my")
 	@Transactional(readOnly = true)
-	public List<DomainView> getMyDomains(@NotNull Principal principal) {
+	public List<DomainBase> getMyDomains(@NotNull Principal principal) {
 		try {
 			User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
-			return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, DomainView.class)).collect(Collectors.toList());
+			return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, DomainBase.class)).collect(Collectors.toList());
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}

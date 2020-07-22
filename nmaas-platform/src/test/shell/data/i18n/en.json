@@ -88,6 +88,11 @@
     "BODY": "Please be aware that this is a test NMaaS instance. The user isolation and data security measures are not so strict as on the production instance. Do not use this instance to monitor real equipment.",
     "OK_BUTTON": "OK"
   },
+  "PROVIDE_SSH_KEY_MODAL": {
+    "HEADER": "No SSH key provided",
+    "BODY": "Please note that in order to be able to update deployed application configuration You need to add a public SSH key on your Profile page. This key will be later on used to access dedicated Git repository containing application configuration files.",
+    "OK_BUTTON": "OK"
+  },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
     "HELM": "Helm",
@@ -494,6 +499,10 @@
     "GO_TO_APP_TOOLTIP": "This application does not expose a web user interface",
     "SHELL": "Shell"
   },
+  "SHELL": {
+    "CONNECTED_TO" : "Connected to",
+    "POD_NAME": "container name:"
+  },
   "UNDEPLOY_MODAL": {
     "HEADER": "Undeploy confirmation",
     "BODY": "Do you want to undeploy this application instance?",
@@ -641,8 +650,10 @@
     "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
-    "CONFIG_FILENAME_LABEL": "Configuration filename",
+    "CONFIG_FILENAME_LABEL": "Configuration file name",
     "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
+    "CONFIG_FILEDIRECTORY_LABEL": "Configuration file directory (folder name)",
+    "CONFIG_FILEDIRECTORY_TOOLTIP": "Enter the name of folder in which the configuration file should be placed in repository",
     "CONFIG_CONTENT_LABEL": "Configuration template",
     "CONFIG_CONTENT_TOOLTIP":"Enter configuration template. Please be advised that it has to be compatible with FreeMarker Template Language.",
     "ADD_CONFIG_BUTTON": "Add new template",
