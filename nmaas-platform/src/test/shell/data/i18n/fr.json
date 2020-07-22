@@ -502,7 +502,14 @@
   },
   "SHELL": {
     "CONNECTED_TO" : "Connected to",
-    "POD_NAME": "container name:"
+    "POD_NAME": "container name:",
+    "RECONNECT_BUTTON": "Reconnect",
+    "DISCONNECT_BUTTON": "Disconnect",
+    "EXIT_SHELL_MODAL": {
+      "HEADER": "Shell session ended",
+      "BODY": "Your connection was terminated, you will be redirected to the App Instance view page ",
+      "CONFIRM": "OK"
+    }
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",
