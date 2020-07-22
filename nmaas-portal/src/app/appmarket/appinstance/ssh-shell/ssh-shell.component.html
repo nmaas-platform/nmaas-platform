@@ -1,1 +1,20 @@
+<div>
+    <button class="btn btn-default" (click)="reconnect()">{{'SHELL.RECONNECT_BUTTON' | translate}}</button>
+    <button class="btn btn-default" (click)="disconnectWithModal()">{{'SHELL.DISCONNECT_BUTTON' | translate}}</button>
+</div>
+
 <ng-terminal #term></ng-terminal>
+
+<nmaas-modal styleModal="info" #disconnectModal>
+    <div class="nmaas-modal-header">
+        <h4>{{'SHELL.EXIT_SHELL_MODAL.HEADER' | translate}}</h4>
+    </div>
+    <div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
+        <div>
+            {{'SHELL.EXIT_SHELL_MODAL.BODY' | translate}}
+        </div>
+    </div>
+    <div class="nmaas-modal-footer">
+        <a type="button" class="btn btn-primary" [routerLink]="['instances', appInstanceId]">{{'SHELL.EXIT_SHELL_MODAL.CONFIRM' | translate}}</a>
+    </div>
+</nmaas-modal>

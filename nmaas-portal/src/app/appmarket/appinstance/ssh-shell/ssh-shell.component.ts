@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@an
 import {NgTerminal} from 'ng-terminal';
 import {ShellClientService} from '../../../service/shell-client.service';
 import {isNullOrUndefined} from 'util';
+import {ModalComponent} from '../../../shared/modal';
 
 @Component({
   selector: 'app-ssh-shell',
@@ -12,8 +13,11 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private line = '';
 
+    @ViewChild('disconnectModal')
+    public disconnectModal: ModalComponent;
+
   @Input()
-  private appInstanceId: number = undefined;
+  public appInstanceId: number = undefined;
 
   @Input()
   private podName: string = undefined;
@@ -27,30 +31,44 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private shellClientService: ShellClientService) { }
 
-  ngOnInit() {
+    /**
+     * gets events stream for existing session
+     * @param sessionId
+     */
+  private getEvents(sessionId: string): void {
+      this.shellClientService.getServerSentEvent(sessionId).subscribe(
+          event => {
+              console.log('Message:', event)
+              let message = event.data;
+              if (this.line !== '' && message.startsWith(this.line)) { // remove incoming command if present
+                  message = message.slice(this.line.length)
+                  this.line = ''; // clear command entry
+              }
+              if (message == null) {
+                  console.error('empty message');
+              } else if (message.endsWith('<#>NEWLINE<#>')) { // newline token
+                  this.child.write(message.replace('<#>NEWLINE<#>', '') + '\r\n');
+              } else {
+                  this.child.write(message);
+                  this.minPosition = message.length; // set new cursor position so prompt cannot be deleted
+              }
+          },
+          sseError => {
+              console.error(sseError);
+              this.sessionId = null;
+          }
+      );
+  }
+
+    /**
+     * creates new session and gets events stream for this session
+     */
+  public connect(): void {
       if (!isNullOrUndefined(this.appInstanceId)) {
           this.shellClientService.initConnection(this.appInstanceId, this.podName).subscribe(
               sessionId => {
                   this.sessionId = sessionId;
-                  this.shellClientService.getServerSentEvent(sessionId).subscribe(
-                      event => {
-                          console.log('Message:', event)
-                          const mesg = event.data;
-                          if (mesg == null) {
-                              console.error('empty message');
-                          } else if (mesg.endsWith('<#>NEWLINE<#>')) { // newline token
-                              this.child.write(mesg.replace('<#>NEWLINE<#>', '') + '\r\n');
-                          } else {
-                              this.child.write(mesg);
-                              this.minPosition = mesg.length; // set new cursor position so prompt cannot be deleted
-                          }
-                          // this.child.write(event.data + '\r\n$ ');
-                      },
-                      sseError => {
-                          console.error(sseError);
-                          this.sessionId = null;
-                      }
-                  );
+                  this.getEvents(sessionId);
               },
               connError => {
                   console.error(connError);
@@ -62,29 +80,58 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
       }
   }
 
+  public disconnect(): void {
+      console.log('disconnecting the shell')
+      if (this.appInstanceId && this.sessionId) {
+          this.shellClientService.closeConnection(this.sessionId);
+          this.sessionId = undefined;
+      }
+  }
+
+  public disconnectWithModal(): void {
+      this.disconnect();
+      this.disconnectModal.show()
+  }
+
+    /**
+     * TODO try to reconnect using the same session
+     */
+  public reconnect(): void {
+      this.disconnect();
+      this.child.underlying.reset();
+      this.connect();
+  }
+
+  ngOnInit() {
+      this.connect();
+  }
+
   ngAfterViewInit() {
     // terminal is available now
     // default handler with enhancement
     this.child.keyEventInput.subscribe(e => {
-      // console.log('keyboard event:' + e.domEvent.keyCode + ', ' + e.key);
 
       const ev = e.domEvent;
       const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
 
       if (e.key === '\r') { // enter - submit new command
-        this.shellClientService.sendCommand(this.sessionId, {
-          'command': this.line
-        }).subscribe(
-            data => {
-              console.log('Command sent');
-            },
-            error => {
-              console.error(error);
-            }
-        );
-        this.line = '';
-        this.child.write('\r\n');
-
+          if (this.line === 'exit') {
+              this.disconnectWithModal();
+              this.child.underlying.reset();
+          } else {
+              this.shellClientService.sendCommand(this.sessionId, {
+                  'command': this.line
+              }).subscribe(
+                  data => {
+                      console.log('Command sent', this.line);
+                  },
+                  error => {
+                      console.error(error);
+                  }
+              );
+              // this.line = '';
+              // this.child.write('\r\n');
+          }
       } else if (e.key === String.fromCharCode(127)) { // backspace (DEL) for some reason this is ascii 127 instead of 8
           // ev.keyCode === 8
         // Do not delete the prompt
@@ -101,9 +148,8 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-      if (this.appInstanceId) {
-          this.shellClientService.close();
-      }
+      console.log('shell component on destroy')
+      this.disconnect();
   }
 
 }
