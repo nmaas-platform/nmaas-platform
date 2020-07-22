@@ -334,7 +334,8 @@
     "DOMAIN": "Domain",
     "ROLE": "Rolle",
     "ADD_BUTTON": "Hinzufügen/Update",
-    "REMOVE_BUTTON": "Löschen"
+    "REMOVE_BUTTON": "Löschen",
+    "NO_ROLES_INFO": "Your aren't assigned to any domain yet. Please contact the administrator if have further questions."
   },
   "SCREENSHOTS": {
     "HEADER": "Screenshots",
