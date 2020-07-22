@@ -38,12 +38,14 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
   private getEvents(sessionId: string): void {
       this.shellClientService.getServerSentEvent(sessionId).subscribe(
           event => {
-              console.log('Message:', event)
+              console.debug('Message:', event)
               let message = event.data;
+              // this will work only when message containing redundant command is first after sending command
+              // (no other dangling operations in background)
               if (this.line !== '' && message.startsWith(this.line)) { // remove incoming command if present
                   message = message.slice(this.line.length)
-                  this.line = ''; // clear command entry
               }
+              this.line = ''; // clear command entry
               if (message == null) {
                   console.error('empty message');
               } else if (message.endsWith('<#>NEWLINE<#>')) { // newline token
@@ -54,7 +56,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
               }
           },
           sseError => {
-              console.error(sseError);
+              console.error('Error during sse connection attempt', sseError);
               this.sessionId = null;
           }
       );
@@ -68,6 +70,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
           this.shellClientService.initConnection(this.appInstanceId, this.podName).subscribe(
               sessionId => {
                   this.sessionId = sessionId;
+                  console.log('Connecting, sessionId:', this.sessionId)
                   this.getEvents(sessionId);
               },
               connError => {
@@ -75,16 +78,19 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
                   this.sessionId = null;
               }
           );
+          this.line = '';
       } else {
           console.error('App instance id is undefined')
       }
   }
 
   public disconnect(): void {
-      console.log('disconnecting the shell')
       if (this.appInstanceId && this.sessionId) {
+          console.log('disconnecting the shell')
           this.shellClientService.closeConnection(this.sessionId);
           this.sessionId = undefined;
+      } else {
+          console.log('could not disconnect the shell (probably already disconnected)')
       }
   }
 
@@ -141,8 +147,14 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
       } else if (printable) { // standard
-        this.child.write(e.key);
-        this.line += e.key;
+          // extend definition of printable characters
+          const code = e.key.charCodeAt(0)
+          console.debug('new char entered', code)
+          // ascii printable characters
+          if (32 <= code && code <= 126) {
+              this.child.write(e.key);
+              this.line += e.key;
+          }
       }
     })
   }

@@ -1,0 +1,8 @@
+.upper-button-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding-bottom: 10px;
+}

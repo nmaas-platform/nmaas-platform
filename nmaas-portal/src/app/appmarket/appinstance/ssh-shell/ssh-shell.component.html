@@ -1,6 +1,8 @@
-<div>
-    <button class="btn btn-default" (click)="reconnect()">{{'SHELL.RECONNECT_BUTTON' | translate}}</button>
-    <button class="btn btn-default" (click)="disconnectWithModal()">{{'SHELL.DISCONNECT_BUTTON' | translate}}</button>
+<div class="upper-button-container">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-warning" (click)="reconnect()">{{'SHELL.RECONNECT_BUTTON' | translate}}</button>
+        <button type="button" class="btn btn-danger" (click)="disconnectWithModal()">{{'SHELL.DISCONNECT_BUTTON' | translate}}</button>
+    </div>
 </div>
 
 <ng-terminal #term></ng-terminal>
@@ -15,6 +17,6 @@
         </div>
     </div>
     <div class="nmaas-modal-footer">
-        <a type="button" class="btn btn-primary" [routerLink]="['instances', appInstanceId]">{{'SHELL.EXIT_SHELL_MODAL.CONFIRM' | translate}}</a>
+        <a type="button" class="btn btn-primary" [routerLink]="['/instances', appInstanceId]">{{'SHELL.EXIT_SHELL_MODAL.CONFIRM' | translate}}</a>
     </div>
 </nmaas-modal>
