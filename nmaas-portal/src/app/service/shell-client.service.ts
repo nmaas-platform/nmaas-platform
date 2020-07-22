@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 import {EventSourcePolyfill, OnMessageEvent} from 'ng-event-source';
-import {PodInfo} from "../model/podinfo";
+import {PodInfo} from '../model/podinfo';
 
 @Injectable({
   providedIn: 'root'
@@ -15,21 +15,29 @@ export class ShellClientService {
 
   constructor(private _zone: NgZone, private _sseService: SSEService, private http: HttpClient, private appConfig: AppConfigService) { }
 
-  initConnection(id: number, pod: string): Observable<string> {
+  public initConnection(id: number, pod: string): Observable<string> {
     // @ts-ignore
     return this.http.post<string>(this.appConfig.getApiUrl() + '/shell/' + id + '/init/' + pod, {}, {responseType: 'text'});
   }
 
-  sendCommand(sessionId: string, command: Object = {}): Observable<any> {
+  public sendCommand(sessionId: string, command: Object = {}): Observable<any> {
     return this.http.post(this.appConfig.getApiUrl() + '/shell/' + sessionId + '/command', command);
   }
 
-  close() {
+  /**
+   * closes event stream, sends request to complete the session
+   */
+  public closeConnection(sessionId: string) {
+    this.closeEventStream()
+    this.http.delete(this.appConfig.getApiUrl() + '/shell/' + sessionId)
+  }
+
+  public closeEventStream() {
     this.events.close();
     this.events = undefined;
   }
 
-  getServerSentEvent(sessionId: string): Observable<OnMessageEvent> {
+  public getServerSentEvent(sessionId: string): Observable<OnMessageEvent> {
     return new Observable<OnMessageEvent>(observableEvents => {
       const events = this._sseService.getEventSource(this.appConfig.getApiUrl() + '/shell/' + sessionId);
 
@@ -55,7 +63,7 @@ export class ShellClientService {
     });
   }
 
-  getPossiblePods(id: number): Observable<PodInfo[]> {
+  public getPossiblePods(id: number): Observable<PodInfo[]> {
     return this.http.get<PodInfo[]>(this.appConfig.getApiUrl() + '/shell/' + id + '/podnames');
   }
 

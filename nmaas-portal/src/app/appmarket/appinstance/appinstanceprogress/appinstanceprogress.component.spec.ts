@@ -3,23 +3,23 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Pipe, PipeTransform} from '@angular/core';
 
 import {AppInstanceProgressComponent} from './appinstanceprogress.component';
-import {TranslateService} from "@ngx-translate/core";
-import {AppInstanceProgressStage, AppInstanceState} from "../../../model";
+import {TranslateService} from '@ngx-translate/core';
+import {AppInstanceProgressStage, AppInstanceState} from '../../../model';
 
 @Pipe({
-  name: "translate"
+  name: 'translate'
 })
 class TranslatePipeMock implements PipeTransform {
-  public name: string = "translate";
+  public name = 'translate';
 
   public transform(query: string, ...args: any[]): any {
     return query;
   }
 }
 
-class MockTranslateService{
-  public instant(key: string): string{
-    return "";
+class MockTranslateService {
+  public instant(key: string): string {
+    return '';
   }
 }
 
@@ -53,12 +53,12 @@ describe('AppInstanceProgressComponent', () => {
   });
 
   it('translate tag function should return', () => {
-    expect(component.getTranslateTag("some text")).toEqual('');
+    expect(component.getTranslateTag('some text')).toEqual('');
   });
 
   it('should display with given stages', () => {
-    let stages = new Array<AppInstanceProgressStage>();
-    stages.push(new AppInstanceProgressStage("Stage1", AppInstanceState.RUNNING));
+    const stages = new Array<AppInstanceProgressStage>();
+    stages.push(new AppInstanceProgressStage('Stage1', AppInstanceState.RUNNING));
     component.stages = stages;
     component.activeState = AppInstanceState.RUNNING;
     component.previousState = AppInstanceState.PREPARATION;

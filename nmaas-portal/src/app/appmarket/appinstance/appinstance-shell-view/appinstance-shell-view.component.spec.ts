@@ -6,6 +6,15 @@ import {NgTerminalModule} from 'ng-terminal';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {Component} from '@angular/core';
+import {ModalComponent} from '../../../shared/modal';
+
+@Component({
+    selector: 'nmaas-modal',
+    template: '<p>Nmaas Modal Mock</p>'
+})
+class NmaasModalMockComponent extends ModalComponent {
+}
 
 describe('AppInstanceShellViewComponent', () => {
     let component: AppInstanceShellViewComponent;
@@ -15,7 +24,8 @@ describe('AppInstanceShellViewComponent', () => {
         TestBed.configureTestingModule({
             declarations: [
                 AppInstanceShellViewComponent,
-                SshShellComponent
+                SshShellComponent,
+                NmaasModalMockComponent
             ],
             imports: [
                 NgTerminalModule,

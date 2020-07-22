@@ -113,6 +113,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                     this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
                     this.app = appInstance.application;
 
+                    this.updateAppInstancePodNames();
+
                     this.submission.data.configuration = JSON.parse(appInstance.configuration);
 
                     if (!isNullOrUndefined(this.appInstance.configUpdateWizardTemplate)) {
@@ -261,15 +263,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                 }
 
                 if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
-                    console.log("app instance is running");
+                    console.log('app instance is running');
                     if (this.storage.has('appConfig_' + this.appInstanceId.toString())) {
                         this.storage.remove('appConfig_' + this.appInstanceId.toString());
                     }
                     if (!this.appInstance || !this.appInstance.serviceAccessMethods) {
                         this.updateAppInstance();
                     }
-                    console.log("is ssh access allowed: " + this.appInstance.application.appDeploymentSpec.allowSshAccess);
-                    console.log("array of pods has length: " + this.podNames.length);
+                    console.log('is ssh access allowed: ' + this.appInstance.application.appDeploymentSpec.allowSshAccess);
+                    console.log('array of pods has length: ' + this.podNames.length);
                     if (this.appInstance.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
                         this.updateAppInstancePodNames();
                     }
