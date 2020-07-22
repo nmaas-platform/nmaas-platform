@@ -112,7 +112,6 @@ describe('Component: AppInstance', () => {
     let appInstanceService: AppInstanceService;
     let appImageService: AppImagesService;
     let domainService: DomainService;
-    let shellClientService: ShellClientService;
 
     const application: Application = {
         id: 2,
@@ -209,16 +208,17 @@ describe('Component: AppInstance', () => {
     // https://v7.angular.io/guide/testing#component-with-a-dependency
     const appsServiceStub: Partial<AppsService> = {};
     const authServiceStub: Partial<AuthService> = {};
-    const appConfigServiceStub: Partial<AppConfigService> = {};
     const appInstanceServiceStub: Partial<AppInstanceService> = {};
     const domainServiceStub: Partial<DomainService> = {};
     const appImagesServiceStub: Partial<AppImagesService> = {};
-    const shellClientServiceStub: Partial<ShellClientService> = {};
 
     beforeEach(async(() => {
         const mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getApiUrl', 'getHttpTimeout']);
         mockAppConfigService.getApiUrl.and.returnValue('http://localhost/api');
         mockAppConfigService.getHttpTimeout.and.returnValue(10000);
+
+        const mockShellClientService = jasmine.createSpyObj('ShellClientService', ['getPossiblePods']);
+        mockShellClientService.getPossiblePods.and.returnValue(of([]))
 
         // let authServiceSpy = jasmine.createSpyObj('AuthService', []);
 
@@ -258,7 +258,7 @@ describe('Component: AppInstance', () => {
                 {provide: AppInstanceService, useValue: appInstanceServiceStub},
                 {provide: DomainService, useValue: domainServiceStub},
                 {provide: AppImagesService, useValue: appImagesServiceStub},
-                {provide: ShellClientService, useValue: shellClientServiceStub},
+                {provide: ShellClientService, useValue: mockShellClientService},
                 {provide: ActivatedRoute, useValue: {params: of({id: 1})}}
             ]
         }).compileComponents().then((result) => {
@@ -278,9 +278,6 @@ describe('Component: AppInstance', () => {
         appInstanceService = fixture.debugElement.injector.get(AppInstanceService);
         appImageService = fixture.debugElement.injector.get(AppImagesService);
         domainService = fixture.debugElement.injector.get(DomainService);
-        shellClientService = fixture.debugElement.injector.get(ShellClientService);
-
-        spyOn(shellClientService, 'getPossiblePods').and.returnValue(of([]));
 
         spyOn(appsService, 'getApp').and.returnValue(of(application));
         spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(of([]));
