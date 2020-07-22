@@ -29,8 +29,12 @@
 			</form>
 			<hr>
 		</div>
+
+		<div *ngIf="isOnlyGuestInGlobalDomain()">
+			{{'USER_PRIVILEGES.NO_ROLES_INFO' | translate}}
+		</div>
 		
-		<div *ngIf="isModeAllowed(ComponentMode.VIEW)|| isInMode(ComponentMode.PROFILVIEW)">
+		<div *ngIf="(isModeAllowed(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)) && !isOnlyGuestInGlobalDomain()">
 			
 			<table class="table table-hover table-condensed" aria-describedby="User privilages in domain table">
 				<thead>
