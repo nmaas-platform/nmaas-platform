@@ -146,12 +146,11 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
             return true;
         }
 
-        const rolesLength = this.user.roles.length
-        const role = this.user.roles[0]
+        const isGuestInGlobalDomain = this.authService.hasDomainRole(this.domainService.getGlobalDomainId(), 'ROLE_GUEST')
+        const rolesLength = this.authService.getRoles().length
+        const domainsLength = this.authService.getDomains().length
 
-        return rolesLength === 1 &&
-            role.domainId === this.domainService.getGlobalDomainId() &&
-            this.roleToEnum(role.role) === Role.ROLE_GUEST;
+        return isGuestInGlobalDomain && rolesLength === 1 && domainsLength === 1;
     }
 
     private roleToEnum(role: string | Role): Role {
