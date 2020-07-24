@@ -12,6 +12,7 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -107,7 +108,10 @@ public class NotificationManager {
             }
         }
         if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
-            mailAttributes.setAddressees(userService.findAll().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
+            mailAttributes.setAddressees(userService.findAll().stream()
+                    .filter(User::isEnabled)
+                    .map(user -> modelMapper.map(user, UserView.class))
+                    .collect(Collectors.toList()));
         }
     }
 
