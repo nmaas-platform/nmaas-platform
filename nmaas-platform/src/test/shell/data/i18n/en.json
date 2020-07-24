@@ -335,7 +335,7 @@
     "ROLE": "Role",
     "ADD_BUTTON": "Add/Update",
     "REMOVE_BUTTON": "Remove",
-    "NO_ROLES_INFO": "Your aren't assigned to any domain yet. Please contact the administrator if have further questions."
+    "NO_ROLES_INFO": "Your aren't assigned to any domain yet. Please contact the administrator if You have further questions."
   },
   "SCREENSHOTS": {
     "HEADER": "Screenshots",
@@ -507,7 +507,7 @@
     "DISCONNECT_BUTTON": "Disconnect",
     "EXIT_SHELL_MODAL": {
       "HEADER": "Shell session ended",
-      "BODY": "Your connection was terminated, you will be redirected to the App Instance view page ",
+      "BODY": "Your connection was terminated",
       "CONFIRM": "OK"
     }
   },
@@ -872,7 +872,7 @@
     "EXTERNAL_ACCESS": "Access the application"
   },
   "GUEST_USER_MODAL": {
-    "HEADER": "Guest User account",
+    "HEADER": "Guest account",
     "CONTENT": "You are currently logged as guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
     "CONFIRM_BUTTON": "OK"
   },

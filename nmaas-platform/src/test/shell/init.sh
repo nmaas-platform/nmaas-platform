@@ -305,6 +305,17 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 echo
 
 echo
+echo App17
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app17-perfsonar-esmond.json
+echo
+echo App17 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/perfsonar.png;type=image/png" $API_URL/apps/17/logo
+echo
+echo App17 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/perfsonar-esmond/perfsonar-esmond1.png;type=image/png" $API_URL/apps/17/screenshots
+echo
+
+echo
 echo ---------------------
 echo Get all apps
 curl -X GET $API_URL/apps --header "Authorization: Bearer $TOKEN"

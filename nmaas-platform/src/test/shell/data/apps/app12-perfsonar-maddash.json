@@ -36,7 +36,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-perfsonar-maddash",
-				"version": "0.1.0"
+				"version": "1.0.0"
 			}
 		},
 		"storageVolumes": [
@@ -72,7 +72,7 @@
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired": false
 	},
-	"state": "DISABLED",
+	"state": "ACTIVE",
 	"configWizardTemplate": {
 		"template": {
 			"components": [
