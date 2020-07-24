@@ -140,11 +140,15 @@ public class NotificationManager {
     }
 
     private String getHeader(String header, UserView user) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
+        return FreeMarkerTemplateUtils.processTemplateIntoString(
+                new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)),
+                ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
     private String getContent(String content, Map<String, String> otherAttributes) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
+        return FreeMarkerTemplateUtils.processTemplateIntoString(
+                new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)),
+                otherAttributes).replace("\n", "<br/>"); // replace end line characters with html break
     }
 
     private List<String> getListOfMails(List<UserView> users){
