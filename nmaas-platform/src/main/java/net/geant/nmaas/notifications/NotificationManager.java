@@ -12,6 +12,7 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -107,7 +108,10 @@ public class NotificationManager {
             }
         }
         if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
-            mailAttributes.setAddressees(userService.findAll().stream().map(user -> modelMapper.map(user, UserView.class)).collect(Collectors.toList()));
+            mailAttributes.setAddressees(userService.findAll().stream()
+                    .filter(User::isEnabled)
+                    .map(user -> modelMapper.map(user, UserView.class))
+                    .collect(Collectors.toList()));
         }
     }
 
@@ -136,11 +140,15 @@ public class NotificationManager {
     }
 
     private String getHeader(String header, UserView user) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
+        return FreeMarkerTemplateUtils.processTemplateIntoString(
+                new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)),
+                ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
     private String getContent(String content, Map<String, String> otherAttributes) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
+        return FreeMarkerTemplateUtils.processTemplateIntoString(
+                new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)),
+                otherAttributes).replace("\n", "<br/>"); // replace end line characters with html break
     }
 
     private List<String> getListOfMails(List<UserView> users){
