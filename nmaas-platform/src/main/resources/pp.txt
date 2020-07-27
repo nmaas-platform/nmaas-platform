@@ -54,7 +54,7 @@ by the NMaaS service Operational Team and is not shared with any third party. </
 <p>NMaaS user personal data is retained in the database for the period in which particular user uses the service.
 Since the moment of reception of user account removal request the data is still kept in the database for a period of
 6 months after which it is removed. </p>
-<p>Log files are retained for a period of 6 months. </p>
+<p>Log files are retained for a period of 180 days. </p>
 <br>
 <h4><strong>Security</strong></h4>
 <p>We support the following processes to ensure the security of your personal data:
@@ -64,13 +64,13 @@ Since the moment of reception of user account removal request the data is still 
 <li>Resilience of processing systems and services;</li>
 <li>Regular testing of the effectiveness of measures implemented. </li></ul></p><br>
 <h4 ><strong>Your Rights</strong></h4>
-<p>You have the right to ensure:<ul>
+<p>While we process your personal data, we ensure that:<ul>
 <li>We process your data fairly and lawfully;</li>
 <li>Your data is accurate;</li>
 <li>The data we collect is not excessive but only the data we require to provide the service;</li>
 <li>Your data is secure;</li>
 <li>Your personal data is securely destroyed when no longer required</li></ul></p>
-<p>You also have the right to ask what personal data we hold about you, and to complain to the Supervisory Authority
+<p>You have the right to ask what personal data we hold about you, and to complain to the Supervisory Authority
 (Autoriteit Persoonsgegevens at <a href="https://autoriteitpersoonsgegevens.nl" target="_blank">
 https://autoriteitpersoonsgegevens.nl</a>) about our data processing activities if you feel your data is not
 being managed as described here. </p>
