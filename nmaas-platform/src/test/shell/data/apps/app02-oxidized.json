@@ -37,7 +37,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-oxidized",
-				"version": "1.0.3"
+				"version": "1.0.4"
 			}
 		},
 		"storageVolumes": [
@@ -74,12 +74,19 @@
 		"configUpdateEnabled": true,
 		"templates": [
 			{
-				"configFileName":"config",
-				"configFileTemplateContent":"---\nusername: ${oxidizedUsername}\npassword: ${oxidizedPassword}\nmodel: junos\ninterval: 600\nuse_syslog: false\ndebug: false\nthreads: 30\ntimeout: 20\nretries: 3\nprompt: !ruby/regexp /^([\\w.@-]+[#>]\\s?)$/\nrest: 0.0.0.0:8888\nvars: {}\ngroups: {}\npid: \"/storage/pid\"\ninput:\n  default: ssh, telnet\n  debug: false\n  ssh:\n    secure: false\noutput:\n  default: git\n  file:\n    directory: \"/storage/configs\"\n  git:\n    user: oxidized\n    email: oxidized@man.poznan.pl\n    repo: \"/storage/oxidized.git\"\nsource:\n  default: csv\n  csv:\n    file: \"/root/.config/oxidized/router.db\"\n    delimiter: !ruby/regexp /:/\n    map:\n      name: 0\n      model: 1\nmodel_map:\n  cisco: ios\n  juniper: junos"
+				"configFileName": "config",
+				"configFileDirectory": "base",
+				"configFileTemplateContent": "---\nusername: ${oxidizedUsername}\npassword: ${oxidizedPassword}\nmodel: junos\ninterval: 600\nuse_syslog: false\ndebug: false\nthreads: 30\ntimeout: 20\nretries: 3\nprompt: !ruby/regexp /^([\\w.@-]+[#>]\\s?)$/\nrest: 0.0.0.0:8888\nvars: {}\ngroups: {}\npid: \"/storage/pid\"\ninput:\n  default: ssh, telnet\n  debug: false\n  ssh:\n    secure: false\noutput:\n  default: git\n  file:\n    directory: \"/storage/configs\"\n  git:\n    user: oxidized\n    email: oxidized@man.poznan.pl\n    repo: \"/storage/oxidized.git\"\nsource:\n  default: csv\n  csv:\n    file: \"/root/.config/oxidized/router.db\"\n    delimiter: !ruby/regexp /:/\n    map:\n      name: 0\n      model: 1\nmodel_map:\n  cisco: ios\n  juniper: junos"
 			},
 			{
-				"configFileName":"router.db",
-				"configFileTemplateContent":"<#list targets as target>\n${target.ipAddress}:junos\n</#list>"
+				"configFileName": "router.db",
+				"configFileDirectory": "base",
+				"configFileTemplateContent": "<#list targets as target>\n${target.ipAddress}:junos\n</#list>"
+			},
+			{
+				"configFileName": "readme.txt",
+				"configFileDirectory": "model",
+				"configFileTemplateContent": "Specific model specification files should be placed in this directory"
 			}
 		]
 	},
