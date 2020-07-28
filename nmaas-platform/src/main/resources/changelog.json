@@ -1,12 +1,27 @@
 {"versions" : [
   {
     "verNo" : "1.3.5",
-    "date" : "(2020/07/--)",
+    "date" : "(2020/07/29)",
     "topic" : [
       {
-        "title" : "--",
+        "title" : "Added support for shell access to running applications",
+        "tags" : "[New Feature]",
+        "description" : "A shell window was integrated into the Portal view allowing for SSH-like access to running application instances."
+      },
+      {
+        "title" : "Added support for advanced configuration using Git repository",
+        "tags" : "[New Feature]",
+        "description" : "Enhanced both the NMaaS core components and Janitor to allow for creation of multiple ConfigMaps based on the content of Git repository of a given application instance."
+      },
+      {
+        "title" : "Added missing SSH key notification",
         "tags" : "[Enhancement]",
-        "description" : "--"
+        "description" : "A modal window is displayed for domain administrators if they have not provided their SSH keys yet. Without the key, users will not be able to modify application configuration files through Git repository."
+      },
+      {
+        "title" : "Improved data exchange between the backend and user Portal",
+        "tags" : "[Enhancement]",
+        "description" : "A technical optimisation was applied in order to minimize the amount of data exchanged between the central database and user Portal."
       }
     ]
   },

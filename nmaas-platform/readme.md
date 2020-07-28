@@ -9,7 +9,7 @@ Platform exposes a REST API consumed by the NMaaS Portal GUI.
 ---
  * Java 8
  * Spring 5
- * Spring Boot (2.1.5)
+ * Spring Boot (2.1.15)
  * freemarker (2.3.30)
  * Google Guava (23.0)
  * Swagger (2.8.0)
@@ -17,6 +17,7 @@ Platform exposes a REST API consumed by the NMaaS Portal GUI.
  * Lombok (1.18.2)
  * Gitlab4j (4.14.27)
  * Flyway (5.2.0)
+ * Kubernetes client from fabric8 (4.10.2)
 
 ### Prerequisites
 ---
