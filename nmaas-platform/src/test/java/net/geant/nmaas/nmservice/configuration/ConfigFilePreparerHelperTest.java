@@ -22,4 +22,9 @@ public class ConfigFilePreparerHelperTest {
         assertEquals(32, new ConfigFilePreparerHelper().randomString(32).length());
     }
 
+    @Test
+    public void shouldEncodePassword() {
+        assertEquals(60, new ConfigFilePreparerHelper().encode("password").length());
+    }
+
 }
