@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandling
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -22,6 +23,11 @@ public class ConfigFilePreparerHelper {
 
     public String randomString(int length) {
         return RandomStringUtils.randomAlphanumeric(length);
+    }
+
+    public String encode(String password) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        return passwordEncoder.encode(password);
     }
 
     static Map<String, Object> createModelEntriesFromUserInput(AppConfiguration appConfiguration) {
