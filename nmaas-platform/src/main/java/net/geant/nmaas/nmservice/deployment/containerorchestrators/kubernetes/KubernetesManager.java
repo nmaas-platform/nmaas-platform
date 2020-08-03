@@ -37,6 +37,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -234,30 +235,33 @@ public class KubernetesManager implements ContainerOrchestrator {
                 return false;
             }
 
-            try {
-                Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
-                        .peek(m -> {
-                            if (m.isOfType(INTERNAL)) {
-                                m.setUrl(getUserAtIpAddressUrl(
-                                        janitorService.retrieveServiceIp(
-                                                buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
-                                                service.getDomain()
-                                        ),
-                                        m.getProtocol()
-                                ));
-                            }
-                        })
-                        .collect(Collectors.toSet());
-                repositoryManager.updateKServiceAccessMethods(accessMethods);
-            } catch (JanitorResponseException je) {
-                log.error("Could not retrieve IP for " + service.getDescriptiveDeploymentId());
-                return true;
-            }
+            retrieveOrUpdateInternalServiceIpAddress(service);
 
             return true;
 
         } catch (KServiceManipulationException | JanitorResponseException ex) {
             throw new ContainerCheckFailedException(ex.getMessage());
+        }
+    }
+
+    private void retrieveOrUpdateInternalServiceIpAddress(KubernetesNmServiceInfo service) {
+        try {
+            Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
+                    .peek(m -> {
+                        if (m.isOfType(INTERNAL) && StringUtils.isEmpty(m.getUrl())) {
+                            m.setUrl(getUserAtIpAddressUrl(
+                                    janitorService.retrieveServiceIp(
+                                            buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
+                                            service.getDomain()
+                                    ),
+                                    m.getProtocol()
+                            ));
+                        }
+                    })
+                    .collect(Collectors.toSet());
+            repositoryManager.updateKServiceAccessMethods(accessMethods);
+        } catch (JanitorResponseException je) {
+            log.error("Could not retrieve IP for " + service.getDescriptiveDeploymentId());
         }
     }
 
@@ -313,6 +317,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
+            retrieveOrUpdateInternalServiceIpAddress(repositoryManager.loadService(deploymentId));
             Set<ServiceAccessMethodView> serviceAccessMethodViewSet = new HashSet<>();
             repositoryManager.loadService(deploymentId).getAccessMethods().forEach(
                     m -> serviceAccessMethodViewSet.add(ServiceAccessMethodView.fromServiceAccessMethod(m))
