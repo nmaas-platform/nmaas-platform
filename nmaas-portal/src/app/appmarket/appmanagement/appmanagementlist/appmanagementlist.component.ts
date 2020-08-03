@@ -32,11 +32,11 @@ export class AppManagementListComponent implements OnInit {
                 return apps
                     .map(app => {
                         // filter out deleted app versions
-                        app.appVersions = app.appVersions.filter(appVersion => appVersion.state !== ApplicationState.DELETED)
+                        app.appVersions = app.appVersions.filter(appVersion => (typeof appVersion.state === 'string') ? appVersion.state !== 'DELETED' : appVersion.state !== ApplicationState.DELETED)
                         return app
                     })
                     // filter out deleted apps or apps with no versions
-                    .filter(app => app.state !== ApplicationState.DELETED && app.appVersions.length >= 1)
+                    .filter(app => ((typeof app.state === 'string') ? app.state !== 'DELETED' : app.state !== ApplicationState.DELETED) && app.appVersions.length >= 1)
                     // sort by lowercase name
                     .sort((a, b) => {
                         if (a.name.toLowerCase() === b.name.toLowerCase()) {
