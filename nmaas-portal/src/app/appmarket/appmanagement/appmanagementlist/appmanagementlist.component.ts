@@ -5,8 +5,8 @@ import {Router} from "@angular/router";
 import {ApplicationState} from "../../../model/applicationstate";
 import {AuthService} from "../../../auth/auth.service";
 import {AppChangeStateModalComponent} from "../appchangestatemodal/appchangestatemodal.component";
-import {interval} from "rxjs";
 import {ApplicationVersion} from "../../../model/applicationversion";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'nmaas-appmanagementlist',
@@ -26,7 +26,17 @@ export class AppManagementListComponent implements OnInit {
   constructor(public appsService:AppsService, public router:Router, public authService: AuthService) { }
 
   ngOnInit() {
-    this.appsService.getAllApps().subscribe(val => {
+    this.appsService.getAllApps().pipe(
+        map(apps => {
+          const tmp = apps.filter(app => app.state !== ApplicationState.DELETED && ApplicationState[app.state] !== 'DELETED')
+          return tmp.sort((a,b) => {
+            if (a.name.toLowerCase() === b.name.toLowerCase()) {
+              return 0;
+            }
+            return (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1;
+          })
+        })
+    ).subscribe(val => {
       this.apps = val;
     });
   }
