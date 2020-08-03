@@ -244,7 +244,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private boolean retrieveOrUpdateInternalServiceIpAddress(KubernetesNmServiceInfo service) {
+    private void retrieveOrUpdateInternalServiceIpAddress(KubernetesNmServiceInfo service) {
         try {
             Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
                     .peek(m -> {
@@ -262,9 +262,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             repositoryManager.updateKServiceAccessMethods(accessMethods);
         } catch (JanitorResponseException je) {
             log.error("Could not retrieve IP for " + service.getDescriptiveDeploymentId());
-            return true;
         }
-        return false;
     }
 
     private Identifier buildServiceId(Identifier deploymentId, Map<HelmChartIngressVariable, String> deployParameters) {
