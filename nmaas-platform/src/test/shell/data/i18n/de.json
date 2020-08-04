@@ -418,6 +418,7 @@
     "REMOVE_BUTTON": "Entfernen fehlgeschlagen",
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Neuinstallieren",
+    "ABORT_BUTTON": "Abbrechen",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {

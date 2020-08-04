@@ -418,6 +418,7 @@
     "REMOVE_BUTTON": "Remove failed",
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Redeploy",
+    "ABORT_BUTTON": "Abort",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
     "INSTALLATION_PROGRESS": {

@@ -419,6 +419,7 @@
     "REMOVE_BUTTON": "Supprimer échoué",
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Re-déployer",
+    "ABORT_BUTTON": "Avorter",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
