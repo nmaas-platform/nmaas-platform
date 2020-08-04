@@ -12,6 +12,8 @@ import org.gitlab4j.api.models.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.anyInt;
@@ -58,7 +60,7 @@ public class GitLabConfigHandlerTest {
     public void shouldRetrieveRepositoryCloneUrl() {
         Identifier deploymentId = Identifier.newInstance(1L);
         GitLabProject gitLabProject = new GitLabProject(deploymentId, "", "", "", "testCloneUrl", null);
-        when(repositoryManager.loadGitLabProject(deploymentId)).thenReturn(gitLabProject);
+        when(repositoryManager.loadGitLabProject(deploymentId)).thenReturn(Optional.of(gitLabProject));
         AppConfigRepositoryAccessDetails repositoryAccessDetails = handler.configRepositoryAccessDetails(deploymentId);
         assertThat(repositoryAccessDetails.getCloneUrl(), is("testCloneUrl"));
     }
