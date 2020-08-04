@@ -385,6 +385,12 @@
     "YES_BUTTON": "Yes",
     "CANCEL_BUTTON": "Cancel"
   },
+  "ABORT_MODAL": {
+    "HEADER": "Abort confirmation",
+    "BODY": "Do you want to abort this application instance deployment process?",
+    "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
   "INSTALL_MODAL": {
     "HEADER": "Deploy new instance of ",
     "INSTANCE_NAME": "Instance name",

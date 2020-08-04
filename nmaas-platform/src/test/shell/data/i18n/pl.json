@@ -385,6 +385,12 @@
     "YES_BUTTON": "Tak",
     "CANCEL_BUTTON": "Anuluj"
   },
+  "ABORT_MODAL": {
+    "HEADER": "Potwierdzenie przerwania instalacji",
+    "BODY": "Czy chcesz przerwać proces intalacji tej aplikacji?",
+    "YES_BUTTON": "Tak",
+    "CANCEL_BUTTON": "Anuluj"
+  },
   "INSTALL_MODAL": {
     "HEADER": "Uruchom nową instancję",
     "INSTANCE_NAME": "Nazwa instancji",
