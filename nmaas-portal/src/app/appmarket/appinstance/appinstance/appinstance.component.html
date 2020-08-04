@@ -51,6 +51,16 @@
                     </a>
                 </div>
                 <!-- Deployment buttons -->
+
+                <!-- if application is still being deployed -->
+                <div class="btn-group pull-right"
+                     *ngIf="getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.RUNNING">
+                    <button class="btn btn-danger"
+                            *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
+                            (click)="this.abortModal.show()">{{'APP_INSTANCE.ABORT_BUTTON' | translate}}</button>
+                </div>
+
+                <!-- if application is already running -->
                 <div *ngIf="appInstance" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
                         <a *ngIf="shouldDisplayButton()"
@@ -92,6 +102,7 @@
                                 (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
                     </div>
 
+                    <!-- if application deployment failed -->
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
                         <button class="btn btn-primary"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
@@ -231,9 +242,14 @@
     </div>
     <hr>
 
+    <!-- App abort modal -->
+    <nmaas-modal-app-abort [appInstanceId]="appInstanceId"></nmaas-modal-app-abort>
+
     <!-- App restart modal -->
     <nmaas-modal-app-restart [appInstanceId]="appInstanceId"
                              [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
+
     <!-- App access methods modal -->
     <app-access-methods-modal *ngIf="appInstance?.serviceAccessMethods" [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
+
 </div>

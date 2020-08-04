@@ -7,6 +7,7 @@ import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStat
 import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../modals/apprestart';
+import {AppAbortModalComponent} from '../modals/app-abort-modal';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {RateComponent} from '../../../shared/rate';
 import {AppConfiguration} from '../../../model/appconfiguration';
@@ -27,7 +28,7 @@ import {PodInfo} from '../../../model/podinfo';
     selector: 'nmaas-appinstance',
     templateUrl: './appinstance.component.html',
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-    providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, LocalDatePipe]
+    providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, AppAbortModalComponent, LocalDatePipe]
 })
 export class AppInstanceComponent implements OnInit, OnDestroy {
 
@@ -47,6 +48,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
     @ViewChild(ModalComponent)
     public undeployModal: ModalComponent;
+
+    @ViewChild(AppAbortModalComponent)
+    public appAbortModal: AppAbortModalComponent;
 
     @ViewChild('updateConfig')
     public updateConfigModal: ModalComponent;
