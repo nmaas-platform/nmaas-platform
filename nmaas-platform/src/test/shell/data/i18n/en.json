@@ -385,6 +385,12 @@
     "YES_BUTTON": "Yes",
     "CANCEL_BUTTON": "Cancel"
   },
+  "ABORT_MODAL": {
+    "HEADER": "Abort confirmation",
+    "BODY": "Do you want to abort this application instance deployment process?",
+    "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
   "INSTALL_MODAL": {
     "HEADER": "Deploy new instance of ",
     "INSTANCE_NAME": "Instance name",
@@ -412,6 +418,7 @@
     "REMOVE_BUTTON": "Remove failed",
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Redeploy",
+    "ABORT_BUTTON": "Abort",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
     "INSTALLATION_PROGRESS": {

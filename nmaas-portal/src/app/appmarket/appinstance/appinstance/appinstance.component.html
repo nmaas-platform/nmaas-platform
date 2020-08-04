@@ -57,7 +57,7 @@
                      *ngIf="getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.RUNNING">
                     <button class="btn btn-danger"
                             *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
-                            (click)="this.abortModal.show()">{{'APP_INSTANCE.ABORT_BUTTON' | translate}}</button>
+                            (click)="this.appAbortModal.show()">{{'APP_INSTANCE.ABORT_BUTTON' | translate}}</button>
                 </div>
 
                 <!-- if application is already running -->

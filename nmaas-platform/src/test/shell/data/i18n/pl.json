@@ -385,6 +385,12 @@
     "YES_BUTTON": "Tak",
     "CANCEL_BUTTON": "Anuluj"
   },
+  "ABORT_MODAL": {
+    "HEADER": "Potwierdzenie przerwania instalacji",
+    "BODY": "Czy chcesz przerwać proces intalacji tej aplikacji?",
+    "YES_BUTTON": "Tak",
+    "CANCEL_BUTTON": "Anuluj"
+  },
   "INSTALL_MODAL": {
     "HEADER": "Uruchom nową instancję",
     "INSTANCE_NAME": "Nazwa instancji",
@@ -412,6 +418,7 @@
     "REMOVE_BUTTON": "Usuń wadliwą instancję",
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
+    "ABORT_BUTTON": "Przerwij",
     "UPDATE_CONFIG_BUTTON": "Aktualizacja konfiguracji",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {

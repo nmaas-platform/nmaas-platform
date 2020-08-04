@@ -385,6 +385,12 @@
     "YES_BUTTON": "Ja",
     "CANCEL_BUTTON": "Abbrechen"
   },
+  "ABORT_MODAL": {
+    "HEADER": "Abort confirmation",
+    "BODY": "Do you want to abort this application instance deployment process?",
+    "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
   "INSTALL_MODAL": {
     "HEADER": "Installiere neue Instanz von ",
     "INSTANCE_NAME": "Name der Instanz",
@@ -412,6 +418,7 @@
     "REMOVE_BUTTON": "Entfernen fehlgeschlagen",
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Neuinstallieren",
+    "ABORT_BUTTON": "Abbrechen",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {
