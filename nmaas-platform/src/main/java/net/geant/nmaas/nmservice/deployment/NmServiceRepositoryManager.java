@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Log4j2
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
@@ -105,8 +106,8 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         return repository.getDescriptiveDeploymentIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
-    public GitLabProject loadGitLabProject(Identifier deploymentId) {
-        return repository.getGitLabProjectByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    public Optional<GitLabProject> loadGitLabProject(Identifier deploymentId) {
+        return repository.getGitLabProjectByDeploymentId(deploymentId);
     }
 
     public abstract void updateStorageSpace(Identifier deploymentId, Integer storageSpace);

@@ -292,7 +292,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId){
-        return Optional.ofNullable(repositoryManager.loadGitLabProject(deploymentId));
+        return repositoryManager.loadGitLabProject(deploymentId);
     }
 
 }

@@ -15,6 +15,7 @@ import {PipesModule} from '../../../pipe/pipes.module';
 import {TooltipModule} from 'ng2-tooltip-directive';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {AppRestartModalComponent} from '../modals/apprestart';
+import {AppAbortModalComponent} from '../modals/app-abort-modal';
 import {RouterTestingModule} from '@angular/router/testing';
 import {StorageServiceModule} from 'ngx-webstorage-service';
 import {AppInstanceState, Application, User} from '../../../model';
@@ -226,6 +227,7 @@ describe('Component: AppInstance', () => {
             declarations: [
                 AppInstanceComponent,
                 AppRestartModalComponent,
+                AppAbortModalComponent,
                 SecurePipeMock,
                 RateComponentMock,
                 AppInstanceProgressMock,
