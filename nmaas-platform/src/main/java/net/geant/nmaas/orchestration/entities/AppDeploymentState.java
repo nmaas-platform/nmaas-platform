@@ -359,6 +359,11 @@ public enum AppDeploymentState {
             }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
+
+        @Override
+        public boolean isInEndState() {
+            return true;
+        }
     },
     APPLICATION_REMOVAL_FAILED {
         @Override
@@ -403,10 +408,20 @@ public enum AppDeploymentState {
     APPLICATION_CONFIGURATION_REMOVAL_FAILED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_REMOVAL_FAILED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
     },
     FAILED_APPLICATION_REMOVED {
-      @Override
-      public AppLifecycleState lifecycleState() {return AppLifecycleState.FAILED_APPLICATION_REMOVED; }
+        @Override
+        public AppLifecycleState lifecycleState() {return AppLifecycleState.FAILED_APPLICATION_REMOVED; }
+
+        @Override
+        public boolean isInEndState() {
+            return true;
+        }
     },
     APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS {
         @Override
@@ -477,15 +492,20 @@ public enum AppDeploymentState {
         return false;
     }
 
+    public boolean isInEndState() {
+        return false;
+    }
+
     protected AppDeploymentState nextStateForNotMatchingNmServiceDeploymentState(
             AppDeploymentState currentAppDeploymentState,
             NmServiceDeploymentState newNmServiceState) {
+        if (!currentAppDeploymentState.isInEndState() && newNmServiceState.equals(NmServiceDeploymentState.REMOVAL_INITIATED)) {
+            return APPLICATION_REMOVAL_IN_PROGRESS;
+        }
         if(currentAppDeploymentState.isInFailedState()) {
             switch (newNmServiceState) {
                 case INIT:
                     return REQUESTED;
-                case REMOVAL_INITIATED:
-                    return APPLICATION_REMOVAL_IN_PROGRESS;
                 case FAILED_APPLICATION_REMOVED:
                     return FAILED_APPLICATION_REMOVED;
                 case VERIFICATION_INITIATED:
@@ -497,8 +517,6 @@ public enum AppDeploymentState {
             switch (newNmServiceState) {
                 case RESTART_INITIATED:
                     return APPLICATION_RESTART_IN_PROGRESS;
-                case REMOVAL_INITIATED:
-                    return APPLICATION_REMOVAL_IN_PROGRESS;
                 case CONFIGURATION_UPDATE_INITIATED:
                     return APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
                 default:

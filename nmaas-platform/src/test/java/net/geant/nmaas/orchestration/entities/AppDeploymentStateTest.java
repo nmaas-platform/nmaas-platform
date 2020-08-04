@@ -105,6 +105,16 @@ public class AppDeploymentStateTest {
         });
     }
 
+    private static Stream<AppDeploymentState> allStatesButEndStates() {
+        return Arrays.stream(values()).filter(state -> !state.isInEndState());
+    }
+
+    @ParameterizedTest
+    @MethodSource("allStatesButEndStates")
+    void shouldSupportAppInstanceRemovalInAllStates(AppDeploymentState state) {
+        assertThat(state.nextState(NmServiceDeploymentState.REMOVAL_INITIATED), is(APPLICATION_REMOVAL_IN_PROGRESS));
+    }
+
     private static Stream<Arguments> stateTransitionsAndExpectedOutput() {
         return Stream.of(
                 Arguments.of(REQUESTED, NmServiceDeploymentState.REQUEST_VERIFIED, REQUEST_VALIDATED),
