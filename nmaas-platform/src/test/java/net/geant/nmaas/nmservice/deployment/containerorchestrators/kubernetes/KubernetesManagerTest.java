@@ -203,9 +203,12 @@ public class KubernetesManagerTest {
         verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
         assertEquals(deploymentId, serviceInfo.getValue().getDeploymentId());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(9, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(11, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
         assertEquals("customvalue2", serviceInfo.getValue().getAdditionalParameters().get("customkey2"));
+        assertEquals(4, serviceInfo.getValue().getAdditionalParameters().get("customkey3").length());
+        assertEquals(49, serviceInfo.getValue().getAdditionalParameters().get("customkey4").length());
+        assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey4").matches("beginning-(.*)-ending"));
         assertEquals("hostname", serviceInfo.getValue().getAdditionalParameters().get("smtpHostname"));
         assertEquals("5", serviceInfo.getValue().getAdditionalParameters().get("smtpPort"));
         assertEquals("username", serviceInfo.getValue().getAdditionalParameters().get("smtpUsername"));
@@ -219,6 +222,8 @@ public class KubernetesManagerTest {
         Map<String, String> globalDeployParameters = new HashMap<>();
         globalDeployParameters.put("customkey1", "customvalue1");
         globalDeployParameters.put("customkey2", "customvalue2");
+        globalDeployParameters.put("customkey3", "%RANDOM_STRING_4%");
+        globalDeployParameters.put("customkey4", "beginning-%RANDOM_STRING_32%-ending");
         return globalDeployParameters;
     }
 

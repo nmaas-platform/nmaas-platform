@@ -53,7 +53,8 @@
 			"elastic-stack.elasticsearch.imageTag": "7.7.1",
 			"elastic-stack.logstash.imageTag": "7.7.1",
 			"elastic-stack.kibana.imageTag": "7.7.1",
-			"elastic-stack.elasticsearch.clusterHealthCheckParams": "\"wait_for_status=yellow&timeout=1s\""
+			"elastic-stack.elasticsearch.clusterHealthCheckParams": "\"wait_for_status=yellow&timeout=1s\"",
+			"sp.encryptionString": "%RANDOM_STRING_32%"
 		},
 		"exposesWebUI": true,
 		"allowSshAccess": false,
