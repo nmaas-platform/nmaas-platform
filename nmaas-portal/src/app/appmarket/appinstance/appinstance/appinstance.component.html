@@ -57,7 +57,8 @@
                 <div class="btn-group pull-right"
                      *ngIf="getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.FAILURE
                          && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.RUNNING
-                         && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.REMOVED">
+                         && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.REMOVED
+                         && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.DONE">
                     <button class="btn btn-danger"
                             *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                             (click)="this.appAbortModal.show()">{{'APP_INSTANCE.ABORT_BUTTON' | translate}}</button>
