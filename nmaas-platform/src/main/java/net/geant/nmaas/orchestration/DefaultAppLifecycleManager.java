@@ -153,7 +153,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) {
-        eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+        if(!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
+            eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+        }
     }
 
     @Override

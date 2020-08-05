@@ -152,8 +152,16 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldTriggerAppInstanceRemoval() {
+        when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         appLifecycleManager.removeApplication(new Identifier());
         verify(eventPublisher, times(1)).publishEvent(any(AppRemoveActionEvent.class));
+    }
+
+    @Test
+    public void shouldNotTriggerAppInstanceRemovalIfAlreadyRemoved() {
+        when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_REMOVED);
+        appLifecycleManager.removeApplication(new Identifier());
+        verifyNoMoreInteractions(eventPublisher);
     }
 
     @Test
