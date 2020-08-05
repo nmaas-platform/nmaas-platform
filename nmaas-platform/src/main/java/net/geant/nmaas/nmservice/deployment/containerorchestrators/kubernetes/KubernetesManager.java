@@ -37,6 +37,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -102,7 +103,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             additionalParameters.putAll(createAdditionalParametersMap(deploymentId, appDeploymentSpec.getDeployParameters()));
         }
         if(appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
-            additionalParameters.putAll(appDeploymentSpec.getGlobalDeployParameters());
+            additionalParameters.putAll(createAdditionalGlobalParametersMap(appDeploymentSpec.getGlobalDeployParameters()));
         }
         serviceInfo.setAdditionalParameters(additionalParameters);
         repositoryManager.storeService(serviceInfo);
@@ -123,7 +124,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private Map<String, String> createAdditionalParametersMap(Identifier deploymentId, Map<String, String> deployParameters){
         Map<String, String> additionalParameters = new HashMap<>();
         Map<String, String> deploymentParameters = deploymentParametersProvider.deploymentParameters(deploymentId);
-        deployParameters.forEach((k,v) ->{
+        deployParameters.forEach((k,v) -> {
             switch (ParameterType.fromValue(k)) {
                 case SMTP_HOSTNAME:
                     additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_HOSTNAME.name()));
@@ -153,6 +154,25 @@ public class KubernetesManager implements ContainerOrchestrator {
             }
         });
         return additionalParameters;
+    }
+
+    private Map<String, String> createAdditionalGlobalParametersMap(Map<String, String> globalDeployParameters) {
+        Map<String, String> additionalParameters = new HashMap<>();
+        globalDeployParameters.forEach((k, v) -> {
+            additionalParameters.put(k, createParameterValueString(v));
+        });
+        return additionalParameters;
+    }
+
+    private String createParameterValueString(String value) {
+        if (value.contains("%RANDOM")) {
+            String randomExpression = value.split("%")[1];
+            if (randomExpression.contains("STRING")) {
+                int randomStringLength = Integer.parseInt(randomExpression.replace("RANDOM_STRING_", ""));
+                return value.replace("%" + randomExpression + "%", RandomStringUtils.randomAlphanumeric(randomStringLength));
+            }
+        }
+        return value;
     }
 
     @Override
