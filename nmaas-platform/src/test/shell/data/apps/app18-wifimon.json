@@ -45,7 +45,6 @@
 			"DOMAIN_CODENAME_LOGSTASH": "elastic-stack.logstash.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
 			"RELEASE_NAME_ELASTICSEARCH_CLUSTER_NAME": "elastic-stack.elasticsearch.clusterName",
 			"RELEASE_NAME_KIBANA": "elastic-stack.kibana.elasticsearchHosts=http://%VALUE%-pllabprod:9200",
-			"RELEASE_NAME_LOGSTASH": "elastic-stack.logstash.logstashPipeline.\"uptime\\.conf\"=\"input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://%VALUE%-pllabprod:9200\"] index => \"logstash\" } }\"",
 			"RELEASE_NAME_ELASTICSEARCH_MASTER_SERVICE": "elastic-stack.elasticsearch.masterService=%VALUE%-pllabprod"
 		},
 		"globalDeployParameters": {
@@ -140,14 +139,19 @@
 				"configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\""
 			},
 			{
-				"configFileName":"logstash.yml",
+				"configFileName": "logstash.yml",
 				"configFileDirectory": "logstash",
-				"configFileTemplateContent":""
+				"configFileTemplateContent": ""
 			},
 			{
-				"configFileName":"elasticsearch.yml",
+				"configFileName": "elasticsearch.yml",
 				"configFileDirectory": "es-config",
-				"configFileTemplateContent":"cluster.name: \"${RELEASE_NAME}\"\nnetwork.host: 0.0.0.0\nxpack.security.enabled: true\nxpack.monitoring.enabled: true\nxpack.monitoring.collection.enabled: true\nxpack.security.transport.ssl.enabled: true"
+				"configFileTemplateContent": "cluster.name: \"${RELEASE_NAME}\"\nnetwork.host: 0.0.0.0\nxpack.security.enabled: true\nxpack.monitoring.enabled: true\nxpack.monitoring.collection.enabled: true\nxpack.security.transport.ssl.enabled: true"
+			},
+			{
+				"configFileName": "uptime.conf",
+				"configFileDirectory": "pipelines",
+				"configFileTemplateContent": "input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://${RELEASE_NAME}-pllabprod:9200\"] index => \"logstash\" } }"
 			}
 		]
 	},
