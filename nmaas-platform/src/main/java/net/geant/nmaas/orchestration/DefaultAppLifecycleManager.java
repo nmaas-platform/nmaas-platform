@@ -93,21 +93,25 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
         AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
-        appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
-        if(configuration.getStorageSpace() != null){
+        if(appDeployment.getConfiguration() != null) {
+            appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
+        } else {
+            appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
+        }
+        if(configuration.getStorageSpace() != null) {
             serviceRepositoryManager.updateStorageSpace(deploymentId, configuration.getStorageSpace());
         }
-        if(isNotEmpty(configuration.getAdditionalParameters())){
+        if(isNotEmpty(configuration.getAdditionalParameters())) {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getAdditionalParameters())));
         }
-        if(isNotEmpty(configuration.getMandatoryParameters())){
+        if(isNotEmpty(configuration.getMandatoryParameters())) {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
         }
-        if(isNotEmpty(configuration.getAccessCredentials())){
+        if(isNotEmpty(configuration.getAccessCredentials())) {
             changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), serviceRepositoryManager.loadDomain(deploymentId), configuration.getAccessCredentials());
         }
         deploymentRepositoryManager.update(appDeployment);
-        if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
+        if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
     }

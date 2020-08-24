@@ -2,7 +2,6 @@ package net.geant.nmaas.orchestration;
 
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
@@ -35,7 +34,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void store(AppDeployment appDeployment) {
         if(repository.findByDeploymentId(appDeployment.getDeploymentId()).isPresent()) {
-            throw new InvalidDeploymentIdException("Deployment with id " + appDeployment.getDeploymentId() + " already exists in the repository. ");
+            throw new InvalidDeploymentIdException("Deployment with id " + appDeployment.getDeploymentId() + " already exists in the repository.");
         }
         appDeployment.addChangeOfStateToHistory(null, appDeployment.getState());
         repository.save(appDeployment);
@@ -80,7 +79,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
-    public Optional<AppDeployment> load(String deploymentName, String domain){
+    public Optional<AppDeployment> load(String deploymentName, String domain) {
         return repository.findByDeploymentNameAndDomain(deploymentName, domain);
     }
 
@@ -101,13 +100,6 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     public String loadErrorMessage(Identifier deploymentId) {
         return repository.getErrorMessageByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentNotFoundMessage(deploymentId)));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) {
-        AppDeployment appDeployment = load(deploymentId);
-        appDeployment.setConfiguration(configuration);
-        repository.save(appDeployment);
     }
 
     @Override

@@ -55,11 +55,13 @@ public class AppConfigurationController {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         boolean valid = validJSON(configuration.getJsonInput());
-        if (!valid)
+        if (!valid) {
             throw new ProcessingException("Configuration is not in valid JSON format");
+        }
 
-        if(configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0)
+        if(configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0) {
             throw new ProcessingException("Storage space cannot be less or equal 0");
+        }
 
         if(!instances.validateAgainstAppConfiguration(appInstance, configuration)) {
             throw new ProcessingException("Application configuration violates application state per domain rules");

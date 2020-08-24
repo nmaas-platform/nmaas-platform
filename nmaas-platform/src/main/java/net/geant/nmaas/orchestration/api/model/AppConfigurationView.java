@@ -22,6 +22,7 @@ public class AppConfigurationView {
 
     @JsonProperty("mandatoryParameters")
     private String mandatoryParameters;
+
     @JsonProperty("accessCredentials")
     private String accessCredentials;
 
