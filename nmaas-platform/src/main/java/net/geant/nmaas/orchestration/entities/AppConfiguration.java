@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.entities;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
+@EqualsAndHashCode
 @Table(name = "app_deployment_configuration")
 public class AppConfiguration {
 
