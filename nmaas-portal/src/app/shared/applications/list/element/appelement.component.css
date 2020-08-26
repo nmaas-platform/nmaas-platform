@@ -80,3 +80,12 @@ hr {
 	vertical-align: baseline;
 	border-radius: .25em;
 }
+
+.clickable {
+	cursor: pointer;
+}
+
+.clickable:hover {
+	transform: scale(1.1);
+	-webkit-transform: scale(1.1);
+}
