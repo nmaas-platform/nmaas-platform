@@ -1,6 +1,6 @@
 
 <div *ngIf="app" class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-	<div class="thumbnail" [class.subscribed]="selected">
+	<div class="thumbnail clickable" [class.subscribed]="selected" [routerLink]="['/apps', app.id]">
 		<div class = element-container>
 			<div class="image-container-outer">
 				<img class="center center-block image-container" alt="App logo" [src]="appImagesService.getAppLogoUrl(app?.id) | secure"
@@ -13,16 +13,5 @@
 				<div class="text-two-lines">{{getDescription()?.briefDescription}}</div>
 			</div>
 		</div>
-		<hr>
-		<div class="bottom-container">
-			<a [routerLink]="['/apps', app.id]" class="btn btn-primary" role="button">{{'APPLICATIONS.DETAILS_BUTTON' | translate}}</a>
-			<div class="flex-spacer-bottom-container"></div>
-			<span class="label-font" *ngIf="selected && domain">{{'APPLICATIONS.SUBSCRIBED_BUTTON' | translate}}</span>
-			<span *ngIf="router.url == '/subscriptions' && showDeployButton()" class="pull-right" tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_DEPLOY' | translate}}" [options]="defaultTooltipOptions">
-				<button class="btn btn-default"  [disabled]="!isApplicationEnabledInDomain()" (click)="modal.show()" >{{'INSTALL_MODAL.DEPLOY_BUTTON' | translate}}</button>
-			</span>
-		</div>
 	</div>
 </div>
-
-<nmaas-modal-app-install *ngIf="app && domain" [app]="app" [domain]="domain"></nmaas-modal-app-install>

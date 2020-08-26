@@ -14,7 +14,7 @@
 
 		<tbody>
 			<ng-template ngFor let-domain [ngForOf]="domains | async">
-			<tr>
+			<tr class="clickable" [routerLink]="['view/', domain.id]">
 				<td>{{domain?.codename}}</td>
 				<td>{{domain?.name}}</td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="domain?.active"></span><span class="glyphicon glyphicon-remove" *ngIf="!(domain?.active)"></span></td>				

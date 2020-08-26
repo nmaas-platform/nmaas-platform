@@ -2,6 +2,16 @@
 	background-color: #f7fff9;
 }
 
+
+tr.clickable {
+	cursor: pointer;
+}
+
+.dropdown:hover .dropdown-menu {
+	display: block;
+}
+
+
 /*
 @media (min-width:1200px){
     .auto-clear .col-lg-1:nth-child(12n+1){clear:left;}

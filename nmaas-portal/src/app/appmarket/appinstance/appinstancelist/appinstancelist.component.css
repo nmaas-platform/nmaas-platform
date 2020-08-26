@@ -24,3 +24,12 @@
     width: 20px;
     height: 20px;
 }
+
+tr.clickable {
+    cursor: pointer;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
