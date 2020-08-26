@@ -12,7 +12,7 @@
 
     <tbody>
       <ng-template ngFor let-lang [ngForOf]="languages" let-i="index">
-        <tr>
+        <tr class="clickable" [routerLink]="['/admin/languages/' + lang.language]">
           <td><img alt="language" src="assets/images/country/{{lang.language}}_circle.png" style="height: 22px;"></td>
           <td>{{'LANGUAGE.' + lang.language.toUpperCase() + '_LABEL' | translate}}</td>
           <td class="text-right">

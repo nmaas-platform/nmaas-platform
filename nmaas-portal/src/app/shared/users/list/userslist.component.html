@@ -46,7 +46,7 @@
         </thead>
 
         <tbody>
-        <tr *ngFor="let user of users | paginate: {itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: paginatorName}">
+        <tr *ngFor="let user of users | paginate: {itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: paginatorName}" class="clickable" (click)="view(user.id)">
             <td>{{user.username}}</td>
             <td *ngIf="domainId === domainService.getGlobalDomainId()">
                 <div *ngFor="let role of filterDomainNames(user); last as isLast">

@@ -22,14 +22,12 @@
 
 				<tbody>
 					<ng-template ngFor let-app [ngForOf]="applications | async">
-					<tr [class.subscribed]="(selected | async)?.has(app?.id)">
+					<tr [class.subscribed]="(selected | async)?.has(app?.id)" class="clickable" [routerLink]="['/apps', app.id]">
 						<td>{{app?.name}}</td>
 						<td>{{getDescription(app)?.briefDescription}}</td>
 						<td>{{app?.tags.join(", ")}}</td>
 						<td><rate [pathUrl]="'/apps/' + app?.id + '/rate'" [rate]="app?.rate"></rate></td>
-						<td>
-							<a [routerLink]="['/apps', app.id]"
-							class="btn btn-sm btn-primary" role="button">{{'APPLICATIONS.DETAILS_BUTTON' | translate}}</a></td>
+						<td></td>
 					</tr>
 					</ng-template>
 				</tbody>

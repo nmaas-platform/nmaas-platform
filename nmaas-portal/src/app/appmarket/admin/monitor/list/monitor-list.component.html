@@ -14,7 +14,7 @@
 
         <tbody>
             <ng-template ngFor let-entry [ngForOf]="monitorEntries">
-                <tr *ngIf="entry.status === null || entry.status === undefined">
+                <tr *ngIf="entry.status === null || entry.status === undefined" class="clickable" [routerLink]="['view/', entry.serviceName.toString()]">
                     <td>{{services[entry.serviceName]}}</td>
                     <td>
                         <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
@@ -26,10 +26,6 @@
                     </td>
                     <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
                     <td >
-                        <a [routerLink]="['view/', entry.serviceName.toString()]">
-                            <!-- {{ 'MONITOR.VIEW_SETTINGS_BUTTON' | translate }} -->
-                            <em class="far fa-eye icon-black icon-bigger"></em>
-                        </a>
                         <span class="dropdown">
                             <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
                                data-toggle="dropdown" href="#" role="button">
@@ -51,7 +47,7 @@
 					    </span>
                     </td>
                 </tr>
-                <tr *ngIf="entry.status !== null && entry.status !== undefined" [style.background-color]="entry.status.toString() === 'SUCCESS'?'#99ff99':entry.status.toString() === 'FAILURE'? '#FF6651' : null">
+                <tr *ngIf="entry.status !== null && entry.status !== undefined" [style.background-color]="entry.status.toString() === 'SUCCESS'?'#99ff99':entry.status.toString() === 'FAILURE'? '#FF6651' : null" class="clickable" [routerLink]="['view/', entry.serviceName.toString()]">
                     <td>{{services[entry.serviceName]}}</td>
                     <td>
                         <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
@@ -63,11 +59,6 @@
                     </td>
                     <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
                     <td>
-
-                        <a [routerLink]="['view/', entry.serviceName.toString()]">
-                            <!-- {{ 'MONITOR.VIEW_SETTINGS_BUTTON' | translate }} -->
-                            <em class="far fa-eye icon-black icon-bigger"></em>
-                        </a>
                         <span class="dropdown">
                             <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
                                data-toggle="dropdown" href="#" role="button">

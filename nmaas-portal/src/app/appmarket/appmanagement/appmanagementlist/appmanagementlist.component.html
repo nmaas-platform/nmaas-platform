@@ -36,7 +36,7 @@
         </td>
       </tr>
       <ng-template ngFor let-version [ngForOf]="app.appVersions">
-        <tr *ngIf="app.rowWithVersionVisible">
+        <tr *ngIf="app.rowWithVersionVisible" class="table-row" [routerLink]="['/admin/apps/edit/version', version?.appVersionId]">
           <td></td>
           <td style="width: 10%"></td>
           <td>{{version.version}}</td>

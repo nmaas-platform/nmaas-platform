@@ -60,14 +60,12 @@
                 sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
             <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center"
                 sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
-            <th scope="col" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_USER', 'ROLE_TOOL_MANAGER']"
-                class="col-lg-2 col-md-2 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
         </tr>
         </thead>
         <tbody>
         <ng-template ngFor let-appInstance
                      [ngForOf]="appDeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }">
-            <tr>
+            <tr class="clickable" [routerLink]="[appInstance.id]">
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
                 <td class="col-lg-2 col-md-2 text-center">{{appInstance?.applicationName}}</td>
                 <td class="col-lg-1 col-md-1 text-center"
@@ -77,24 +75,6 @@
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
                 <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
                 <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
-                <td class="col-lg-2 col-md-2 text-center" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_USER', 'ROLE_TOOL_MANAGER']">
-                    <a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url"
-                       href="{{appInstance?.url}}" role="button">
-                        <em class="far fa-eye icon-black icon-bigger"></em>
-                    </a>
-
-                    <span class="dropdown" *ngIf="checkPrivileges(appInstance)">
-										  <a style="display: inline-block" class="dropdown-toggle "
-                                             aria-expanded="false" aria-haspopup="true"
-                                             data-toggle="dropdown" href="#" role="button">
-											  <em class="fas fa-cog icon-black icon-bigger"></em>
-										  </a>
-										  <ul class="dropdown-menu pull-right-drop">
-											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>
-										  </ul>
-									  </span>
-
-                </td>
             </tr>
         </ng-template>
         </tbody>
@@ -111,7 +91,7 @@
     <table *ngIf="undeployedVisible" class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)"
            aria-describedby="Undeployed instances">
         <thead>
-        <tr>
+        <tr  class="clickable" [routerLink]="[appInstance.id]">
             <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
                 sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
             <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
@@ -124,8 +104,6 @@
                 sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
             <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center"
                 sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
-            <th scope="col"
-                class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
         </tr>
         </thead>
         <tbody>
@@ -139,23 +117,6 @@
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
                 <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
                 <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
-                <td class="col-lg-3 col-md-3 text-center">
-                    <a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url"
-                       href="{{appInstance?.url}}" role="button">
-                        <em class="far fa-eye icon-black icon-bigger"></em>
-                    </a>
-
-                    <span class="dropdown" *ngIf="checkPrivileges(appInstance)">
-										  <a style="display: inline-block" class="dropdown-toggle "
-                                             aria-expanded="false" aria-haspopup="true"
-                                             data-toggle="dropdown" href="#" role="button">
-											  <em class="fas fa-cog icon-black icon-bigger"></em>
-										  </a>
-										  <ul class="dropdown-menu pull-right-drop">
-											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>
-										  </ul>
-									  </span>
-                </td>
             </tr>
         </ng-template>
         </tbody>
