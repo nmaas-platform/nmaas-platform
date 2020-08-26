@@ -81,11 +81,11 @@ hr {
 	border-radius: .25em;
 }
 
-.clickable {
+.clickable-tail {
 	cursor: pointer;
 }
 
-.clickable:hover {
-	transform: scale(1.1);
-	-webkit-transform: scale(1.1);
+.clickable-tail:hover {
+	transform: scale(1.05);
+	-webkit-transform: scale(1.05);
 }
