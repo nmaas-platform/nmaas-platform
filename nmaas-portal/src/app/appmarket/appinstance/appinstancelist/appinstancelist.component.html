@@ -91,7 +91,7 @@
     <table *ngIf="undeployedVisible" class="table table-hover table-condensed" sortable-table (sorted)="onSorted($event)"
            aria-describedby="Undeployed instances">
         <thead>
-        <tr  class="clickable" [routerLink]="[appInstance.id]">
+        <tr>
             <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
                 sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
             <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
@@ -109,7 +109,7 @@
         <tbody>
         <ng-template ngFor let-appInstance
                      [ngForOf]="appUndeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPageSec, currentPage: secondPageNumber, id: p_second }">
-            <tr>
+            <tr class="clickable" [routerLink]="[appInstance.id]">
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
                 <td class="col-lg-1 col-md-1 text-center"
