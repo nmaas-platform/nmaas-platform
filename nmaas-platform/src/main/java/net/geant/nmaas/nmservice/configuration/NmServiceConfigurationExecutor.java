@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
@@ -95,7 +96,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         try{
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_INITIATED);
             configHandler.removeConfigFiles(deploymentId);
-            notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVED);
+            notifyStateChangeListenersWithDelay(deploymentId, CONFIGURATION_REMOVED, 1000);
         } catch (Exception e){
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_FAILED);
             throw new NmServiceConfigurationFailedException(e.getMessage());
@@ -109,6 +110,12 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
+    }
+
+    @SneakyThrows
+    private void notifyStateChangeListenersWithDelay(Identifier deploymentId, NmServiceDeploymentState state, int delayInMilis) {
+        Thread.sleep(delayInMilis);
+        notifyStateChangeListeners(deploymentId, state);
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
