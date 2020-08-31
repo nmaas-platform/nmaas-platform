@@ -79,22 +79,6 @@
 					"label": "Tabs",
 					"components": [
 						{
-							"label": "Base",
-							"key": "configTab",
-							"components": [
-								{
-									"label": "Mandatory parameters",
-									"hideLabel": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "mandatoryParameters",
-									"components": [
-									]
-								}
-							]
-						},
-						{
 							"label": "Advanced",
 							"key": "advancedTab",
 							"components": [

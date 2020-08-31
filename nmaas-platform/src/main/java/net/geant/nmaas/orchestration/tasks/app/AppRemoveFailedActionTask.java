@@ -36,6 +36,7 @@ public class AppRemoveFailedActionTask {
         try{
             this.serviceDeployment.removeNmService(event.getRelatedTo());
             this.configurationProvider.removeNmService(event.getRelatedTo());
+            Thread.sleep(1000);
             eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, event.getRelatedTo(), NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, ""));
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();

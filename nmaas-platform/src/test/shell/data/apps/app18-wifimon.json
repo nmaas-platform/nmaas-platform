@@ -36,7 +36,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-wifimon",
-				"version": "0.1.0"
+				"version": "0.1.1"
 			},
 			"mainDeploymentName":  "ui"
 		},
@@ -61,7 +61,7 @@
 			{
 				"type": "EXTERNAL",
 				"name": "WiFiMon UI",
-				"tag": "wifimon-ui",
+				"tag": "ui",
 				"deployParameters": {
 					"INGRESS_ENABLED": "ui.ingress.enabled",
 					"INGRESS_HOSTS": "ui.ingress.hosts",
@@ -74,7 +74,7 @@
 			{
 				"type": "EXTERNAL",
 				"name": "WiFiMon SP",
-				"tag": "wifimon-sp",
+				"tag": "sp",
 				"deployParameters": {
 					"INGRESS_ENABLED": "sp.ingress.enabled",
 					"INGRESS_HOSTS": "sp.ingress.hosts",
@@ -137,11 +137,6 @@
 				"configFileName": "kibana.yml",
 				"configFileDirectory": "kibana",
 				"configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\""
-			},
-			{
-				"configFileName": "logstash.yml",
-				"configFileDirectory": "logstash",
-				"configFileTemplateContent": ""
 			},
 			{
 				"configFileName": "elasticsearch.yml",
