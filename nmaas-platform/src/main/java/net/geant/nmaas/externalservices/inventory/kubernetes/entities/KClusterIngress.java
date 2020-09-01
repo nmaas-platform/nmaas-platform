@@ -33,6 +33,9 @@ public class KClusterIngress {
     /** Name of the ingress class handled by the existing ingress controller (required if useExistingController == true) */
     private String supportedIngressClass;
 
+    /** Name of the ingress class to be used for service exposed publicly */
+    private String publicIngressClass;
+
     /** Name of the chart to be downloaded from repository (required if useExistingController == false) */
     private String controllerChartName;
 
@@ -46,6 +49,9 @@ public class KClusterIngress {
 
     /** Common part of the external service URL assigned to deployed services */
     private String externalServiceDomain;
+
+    /** Common part of the public service URL assigned to deployed services */
+    private String publicServiceDomain;
 
     /** Indicates if TLS for ingress is supported */
     private Boolean tlsSupported;

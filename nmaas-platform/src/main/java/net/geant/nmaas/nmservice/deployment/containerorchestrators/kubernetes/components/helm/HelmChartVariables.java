@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +71,7 @@ class HelmChartVariables {
     static Map<String, String> ingressVariablesMap(Boolean enabled,
                                                    Set<ServiceAccessMethod> externalAccessMethods,
                                                    String ingressClass,
+                                                   String publicIngressClass,
                                                    Boolean tlsEnabled,
                                                    String ingressCertOrIssuer,
                                                    Boolean acme) {
@@ -90,7 +92,10 @@ class HelmChartVariables {
                         }
                     }
                     if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_CLASS))) {
-                        variables.put(m.getDeployParameters().get(INGRESS_CLASS), ingressClass);
+                        variables.put(
+                                m.getDeployParameters().get(INGRESS_CLASS),
+                                m.isOfType(ServiceAccessMethodType.PUBLIC) ? publicIngressClass : ingressClass
+                        );
                     }
                     if (StringUtils.isNotEmpty(m.getDeployParameters().get(INGRESS_TLS_ENABLED))) {
                         variables.put(m.getDeployParameters().get(INGRESS_TLS_ENABLED), String.valueOf(tlsEnabled));

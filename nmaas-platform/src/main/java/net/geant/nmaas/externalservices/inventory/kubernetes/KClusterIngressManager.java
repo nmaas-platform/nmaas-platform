@@ -11,6 +11,8 @@ public interface KClusterIngressManager {
 
     String getSupportedIngressClass();
 
+    String getPublicIngressClass();
+
     String getControllerChart();
 
     String getControllerChartArchive();
@@ -20,6 +22,8 @@ public interface KClusterIngressManager {
     String getExternalServiceDomain();
 
     String getExternalServiceDomain(String codename);
+
+    String getPublicServiceDomain();
 
     Boolean getTlsSupported();
 

@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -53,6 +54,7 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.INTERNAL;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.PUBLIC;
 
 /**
  * Implements service deployment mechanism on Kubernetes cluster.
@@ -213,8 +215,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                     service.getDeploymentName(),
                     ingressManager.getExternalServiceDomain(service.getDomain()),
                     ingressManager.getIngressPerDomain());
+            String serviceBasePublicUrl = ingressManager.getPublicServiceDomain();
 
-            Set<ServiceAccessMethod> accessMethods = populateAccessMethodsWithUrl(service, serviceExternalUrl);
+            Set<ServiceAccessMethod> accessMethods = populateAccessMethodsWithUrl(service, serviceExternalUrl, serviceBasePublicUrl);
             repositoryManager.updateKServiceAccessMethods(accessMethods);
             serviceLifecycleManager.deployService(deploymentId);
         } catch (InvalidDeploymentIdException | InvalidConfigurationException ex) {
@@ -224,7 +227,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(KubernetesNmServiceInfo service, String serviceExternalUrl) {
+    private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(KubernetesNmServiceInfo service, String serviceExternalUrl, String serviceBasePublicUrl) {
         Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
                 .filter(m -> m.isOfType(INTERNAL))
                 .collect(Collectors.toSet());
@@ -236,6 +239,12 @@ public class KubernetesManager implements ContainerOrchestrator {
                 .filter(m -> m.isOfType(EXTERNAL))
                 .peek(m -> m.setUrl(m.getName().toLowerCase() + "-" + serviceExternalUrl))
                 .collect(Collectors.toSet()));
+        if (serviceBasePublicUrl != null) {
+            accessMethods.addAll(service.getAccessMethods().stream()
+                    .filter(m -> m.isOfType(PUBLIC))
+                    .peek(m -> m.setUrl(UUID.randomUUID().toString() + "." + serviceBasePublicUrl))
+                    .collect(Collectors.toSet()));
+        }
         return accessMethods;
     }
 

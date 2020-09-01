@@ -21,6 +21,13 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="publicingressclass" class="col-sm-2 control-label">{{ 'CLUSTERS.PUBLIC_INGRESS_CLASS' | translate }}</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="publicingressclass" name="publicingressclass"
+                               [(ngModel)]="cluster.ingress.publicIngressClass" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="ingresscontrollerchartname" class="col-sm-2 control-label">{{ 'CLUSTERS.CONTROLLER_CHART_NAME' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="ingresscontrollerchartname" name="ingresscontrollerchartname"
@@ -48,6 +55,13 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="ingressexternalservicedomain" name="ingressexternalservicedomain"
                                [(ngModel)]="cluster.ingress.externalServiceDomain" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ingresspublicservicedomain" class="col-sm-2 control-label">{{ 'CLUSTERS.PUBLIC_SERVICE_DOMAIN' | translate }}</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="ingresspublicservicedomain" name="ingresspublicservicedomain"
+                               [(ngModel)]="cluster.ingress.publicServiceDomain" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">

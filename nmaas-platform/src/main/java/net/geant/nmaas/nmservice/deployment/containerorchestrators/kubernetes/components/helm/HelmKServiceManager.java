@@ -98,7 +98,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     private Set<ServiceAccessMethod> serviceExternalAccessMethods(Set<ServiceAccessMethod> accessMethods) {
         return accessMethods.stream()
-                .filter(m -> m.isOfType(ServiceAccessMethodType.DEFAULT) || m.isOfType(ServiceAccessMethodType.EXTERNAL))
+                .filter(m -> m.isOfType(ServiceAccessMethodType.DEFAULT) || m.isOfType(ServiceAccessMethodType.EXTERNAL) || m.isOfType(ServiceAccessMethodType.PUBLIC))
                 .collect(Collectors.toSet());
     }
 
@@ -107,6 +107,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 DEPLOY_FROM_CHART.equals(ingressResourceConfigOption),
                 externalAccessMethods,
                 getIngressClass(domain),
+                ingressManager.getPublicIngressClass(),
                 ingressManager.getTlsSupported(),
                 ingressManager.getIssuerOrWildcardName(),
                 ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT)
