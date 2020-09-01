@@ -3,5 +3,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.e
 public enum ServiceAccessMethodType {
     DEFAULT,
     EXTERNAL,
-    INTERNAL
+    INTERNAL,
+    PUBLIC
 }

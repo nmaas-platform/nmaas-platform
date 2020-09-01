@@ -1,0 +1,1 @@
+alter table k_cluster_ingress add column public_service_domain varchar(255);

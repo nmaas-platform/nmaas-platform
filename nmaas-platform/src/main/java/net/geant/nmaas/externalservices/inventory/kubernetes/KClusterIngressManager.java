@@ -21,6 +21,8 @@ public interface KClusterIngressManager {
 
     String getExternalServiceDomain(String codename);
 
+    String getPublicServiceDomain();
+
     Boolean getTlsSupported();
 
     Boolean getIngressPerDomain();

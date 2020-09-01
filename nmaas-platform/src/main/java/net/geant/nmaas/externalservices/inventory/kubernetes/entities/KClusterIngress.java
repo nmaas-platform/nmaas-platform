@@ -47,6 +47,9 @@ public class KClusterIngress {
     /** Common part of the external service URL assigned to deployed services */
     private String externalServiceDomain;
 
+    /** Common part of the public service URL assigned to deployed services */
+    private String publicServiceDomain;
+
     /** Indicates if TLS for ingress is supported */
     private Boolean tlsSupported;
 
