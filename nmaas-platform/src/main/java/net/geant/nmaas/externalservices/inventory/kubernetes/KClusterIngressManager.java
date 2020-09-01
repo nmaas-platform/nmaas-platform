@@ -11,6 +11,8 @@ public interface KClusterIngressManager {
 
     String getSupportedIngressClass();
 
+    String getPublicIngressClass();
+
     String getControllerChart();
 
     String getControllerChartArchive();

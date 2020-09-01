@@ -2,10 +2,12 @@
   "ingress": {
     "controllerConfigOption":"USE_EXISTING",
     "supportedIngressClass":"nginx",
+    "publicIngressClass":"public",
     "controllerChartName":"nginx",
     "controllerChartArchive":"nginx-ingress.tgz",
     "resourceConfigOption":"DEPLOY_FROM_CHART",
     "externalServiceDomain":"nmaas.geant.net",
+    "publicServiceDomain":"public.nmaas.geant.net",
     "tlsSupported":false,
     "certificateConfigOption": "USE_LETSENCRYPT",
     "issuerOrWildcardName": "nmaas-issuer",

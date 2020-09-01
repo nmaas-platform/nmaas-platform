@@ -54,6 +54,11 @@ public class KubernetesClusterManager implements KClusterIngressManager, KCluste
     }
 
     @Override
+    public String getPublicIngressClass() {
+        return loadSingleCluster().getIngress().getPublicIngressClass();
+    }
+
+    @Override
     public String getControllerChart() {
         return loadSingleCluster().getIngress().getControllerChartName();
     }

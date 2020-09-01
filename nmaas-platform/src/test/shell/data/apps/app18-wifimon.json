@@ -72,7 +72,7 @@
 				}
 			},
 			{
-				"type": "EXTERNAL",
+				"type": "PUBLIC",
 				"name": "WiFiMon SP",
 				"tag": "sp",
 				"deployParameters": {

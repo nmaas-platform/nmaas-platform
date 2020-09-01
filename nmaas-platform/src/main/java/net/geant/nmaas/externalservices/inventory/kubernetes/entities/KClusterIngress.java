@@ -33,6 +33,9 @@ public class KClusterIngress {
     /** Name of the ingress class handled by the existing ingress controller (required if useExistingController == true) */
     private String supportedIngressClass;
 
+    /** Name of the ingress class to be used for service exposed publicly */
+    private String publicIngressClass;
+
     /** Name of the chart to be downloaded from repository (required if useExistingController == false) */
     private String controllerChartName;
 

@@ -20,6 +20,8 @@ class KClusterIngressView {
 
     private String supportedIngressClass;
 
+    private String publicIngressClass;
+
     private String controllerChartName;
 
     private String controllerChartArchive;
@@ -27,6 +29,8 @@ class KClusterIngressView {
     private IngressResourceConfigOption resourceConfigOption;
 
     private String externalServiceDomain;
+
+    private String publicServiceDomain;
 
     private Boolean tlsSupported;
 

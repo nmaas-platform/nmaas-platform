@@ -88,6 +88,7 @@ public class HelmChartVariablesTest {
                 true,
                 Sets.newHashSet(serviceAccessMethod),
                 "iClassTest",
+                null,
                 false,
                 "issuer",
                 true);
@@ -118,6 +119,7 @@ public class HelmChartVariablesTest {
                 true,
                 Sets.newHashSet(serviceAccessMethod),
                 "iClassTest",
+                "publicIngressClassTest",
                 true,
                 "issuer",
                 true);
@@ -132,6 +134,34 @@ public class HelmChartVariablesTest {
     }
 
     @Test
+    public void shouldGenerateProperIngressVariablesForPublicAccessMethod() {
+        ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
+        serviceAccessMethod.setType(ServiceAccessMethodType.PUBLIC);
+        serviceAccessMethod.setName("public");
+        serviceAccessMethod.setUrl("public.url");
+        Map<HelmChartIngressVariable, String> ingressVariables = new HashMap<>();
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_ENABLED, "ingress.enabled");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.hosts");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class");
+        serviceAccessMethod.setDeployParameters(ingressVariables);
+
+        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
+                true,
+                Sets.newHashSet(serviceAccessMethod),
+                "iClassTest",
+                "publicIngressClassTest",
+                true,
+                "issuer",
+                true);
+        assertThat(variables.size(), is(3));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(
+                Maps.immutableEntry("ingress.enabled", "true"),
+                Maps.immutableEntry("ingress.hosts", "{public.url}"),
+                Maps.immutableEntry("ingress.class", "publicIngressClassTest")
+        )));
+    }
+
+    @Test
     public void shouldGenerateProperIngressVariablesForExternalAccessMethods() {
         ServiceAccessMethod serviceAccessMethod1 = getTestServiceExternalAccessMethod(1);
         ServiceAccessMethod serviceAccessMethod2 = getTestServiceExternalAccessMethod(2);
@@ -140,6 +170,7 @@ public class HelmChartVariablesTest {
                 true,
                 Sets.newHashSet(serviceAccessMethod1, serviceAccessMethod2),
                 "iClassTest",
+                null,
                 true,
                 "issuer",
                 false);
