@@ -873,12 +873,14 @@
   "APP_ACCESS_METHODS_MODAL": {
     "HEADER": "Access methods to the application",
     "EXTERNAL_HEADER": "External access options",
+    "EXTERNAL_ACCESS": "Access the application",
     "SERVICE_NAME": "Service name",
     "ACCESS_METHOD": "Access method",
     "INTERNAL_HEADER": "Internal access options",
     "HIDE_BUTTON": "Cancel",
     "MAIN_ACCESS": "Main Interface",
-    "EXTERNAL_ACCESS": "Access the application"
+    "PUBLIC_HEADER": "Public access options",
+    "PUBLIC_ACCESS": "Access the application"
   },
   "GUEST_USER_MODAL": {
     "HEADER": "Guest account",

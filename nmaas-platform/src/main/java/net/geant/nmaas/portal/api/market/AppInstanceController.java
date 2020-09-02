@@ -12,7 +12,14 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppInstanceBase;
+import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
+import net.geant.nmaas.portal.api.domain.AppInstanceState;
+import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
+import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
@@ -211,13 +218,13 @@ public class AppInstanceController extends AppBaseController {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
 
-        AppDeploymentSpecView appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpecView.class);
         AppDeployment appDeployment = AppDeployment.builder()
                 .domain(domain.getCodename())
                 .instanceId(appInstance.getId())
                 .applicationId(Identifier.newInstance(appInstance.getApplication().getId()))
                 .deploymentName(appInstance.getName())
                 .configFileRepositoryRequired(app.getAppConfigurationSpec().isConfigFileRepositoryRequired())
+                .configUpdateEnabled(app.getAppConfigurationSpec().isConfigUpdateEnabled())
                 .owner(principal.getName())
                 .appName(app.getName())
                 .descriptiveDeploymentId(createDescriptiveDeploymentId(domain.getCodename(), app.getName(), appInstance.getId()))
