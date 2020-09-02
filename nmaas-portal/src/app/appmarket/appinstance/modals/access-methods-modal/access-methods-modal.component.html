@@ -18,6 +18,23 @@
         </tbody>
       </table>
     </div>
+    <div *ngIf="publicAccessMethods.length > 0" class="">
+      <h4>{{'APP_ACCESS_METHODS_MODAL.PUBLIC_HEADER' | translate}}</h4>
+      <table class="table table-hover table-condensed" aria-describedby="Table with public access details">
+        <thead>
+        <tr>
+          <th scope="col">{{'APP_ACCESS_METHODS_MODAL.SERVICE_NAME' | translate}}</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let am of publicAccessMethods">
+          <td><strong>{{am.name}}</strong></td>
+          <td> <a type="button" class="btn btn-success" href="{{validateURL(am.url)}}">{{'APP_ACCESS_METHODS_MODAL.PUBLIC_ACCESS' | translate}}</a> </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
     <div *ngIf="internalAccessMethods.length > 0" class="">
       <h4>{{'APP_ACCESS_METHODS_MODAL.INTERNAL_HEADER' | translate}}</h4>
       <table class="table table-hover table-condensed" aria-describedby="Table with internal access details">
