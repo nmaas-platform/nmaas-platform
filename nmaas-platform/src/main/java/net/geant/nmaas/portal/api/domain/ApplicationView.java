@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 /**
  * full Application & ApplicationBase DTO
  */
@@ -18,7 +21,9 @@ public class ApplicationView extends ApplicationBriefView {
 	String version;
 	ConfigWizardTemplateView configWizardTemplate;
 	ConfigWizardTemplateView configUpdateWizardTemplate;
+	@Valid
 	AppDeploymentSpecView appDeploymentSpec;
+	@Valid
 	AppConfigurationSpecView appConfigurationSpec;
 	
 }

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,6 +17,7 @@ public class AppConfigurationSpecView {
 
     private Long id;
 
+    @NotNull
     private List<ConfigFileTemplateView> templates = new ArrayList<>();
 
     private boolean configFileRepositoryRequired = false;

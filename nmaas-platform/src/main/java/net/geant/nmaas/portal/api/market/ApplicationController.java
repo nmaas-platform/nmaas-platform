@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/apps")
@@ -53,7 +55,7 @@ public class ApplicationController extends AppBaseController {
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public Id addApplication(@RequestBody ApplicationView appRequest, Principal principal) {
+	public Id addApplication(@RequestBody @Valid ApplicationView appRequest, Principal principal) {
 		Application app = applications.create(appRequest, principal.getName());
 		appRequest.setId(app.getId());
 		ApplicationBase appBase = appBaseService.createApplicationOrAddNewVersion(appRequest);

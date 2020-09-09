@@ -38,6 +38,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		this.setMissingProperties(request, app.getId());
 		request.setAppVersionId(app.getId());
 		request.setOwner(owner);
+		clearIds(request);
 		app = modelMapper.map(request, Application.class);
 		checkParam(app);
 		return appRepo.save(app);
@@ -162,5 +163,21 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private void setMissingTemplatesId(ApplicationView app, Long appId){
 		app.getAppConfigurationSpec().getTemplates()
 				.forEach(template -> template.setApplicationId(appId));
+	}
+
+	private void clearIds(ApplicationView app) {
+		app.getConfigWizardTemplate().setId(null);
+		if(app.getConfigUpdateWizardTemplate() != null) {
+			app.getConfigUpdateWizardTemplate().setId(null);
+		}
+
+		app.getAppConfigurationSpec().setId(null);
+		app.getAppConfigurationSpec().getTemplates().forEach(a -> a.setId(null));
+
+		app.getAppDeploymentSpec().setId(null);
+		app.getAppDeploymentSpec().getAccessMethods().forEach(a -> a.setId(null));
+		app.getAppDeploymentSpec().getStorageVolumes().forEach(a -> a.setId(null));
+		app.getAppDeploymentSpec().getKubernetesTemplate().setId(null);
+		app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setId(null);
 	}
 }

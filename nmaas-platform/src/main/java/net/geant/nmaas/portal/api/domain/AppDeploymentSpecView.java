@@ -8,6 +8,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ap
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ public class AppDeploymentSpecView {
 
     private Long id;
 
+    @NotNull
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
     private KubernetesTemplateView kubernetesTemplate;
@@ -27,8 +29,10 @@ public class AppDeploymentSpecView {
 
     private boolean exposesWebUI;
 
+    @NotNull
     private List<AppStorageVolumeView> storageVolumes;
 
+    @NotNull
     private List<AppAccessMethodView> accessMethods;
 
     private Map<String, String> deployParameters;
