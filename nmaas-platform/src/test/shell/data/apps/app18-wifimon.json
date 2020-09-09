@@ -122,7 +122,8 @@
 					"K8S_SERVICE_SUFFIX": "pllabprod"
 				}
 			}
-		]
+		],
+		"storageVolumes": []
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired": true,

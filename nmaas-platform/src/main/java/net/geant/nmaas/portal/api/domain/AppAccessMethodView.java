@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -24,7 +25,7 @@ public class AppAccessMethodView {
     // Tag string for this access method to be used differently depending on the type
     private String tag;
 
-    private Map<String, String> deployParameters;
+    private Map<String, String> deployParameters = new HashMap<>();
 
 }
 
