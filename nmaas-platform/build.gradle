@@ -25,7 +25,7 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.15.RELEASE'
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.16.RELEASE'
 		classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1'
 		classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2'
 		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
@@ -95,11 +95,11 @@ dependencies {
 	runtime('org.postgresql:postgresql')
 
 	compile('org.hibernate:hibernate-envers')
-	compile('io.jsonwebtoken:jjwt:0.7.0')
+	compile('io.jsonwebtoken:jjwt:0.9.1')
 	compile('org.freemarker:freemarker:2.3.30')
 	compile('com.hierynomus:sshj:0.21.1')
 	compile('org.gitlab4j:gitlab4j-api:4.14.27')
-	compile('com.google.guava:guava:23.0')
+	compile('com.google.guava:guava:24.1-jre')
 
 	compile('io.springfox:springfox-swagger2:2.8.0')
 	compile('io.springfox:springfox-swagger-ui:2.8.0')
