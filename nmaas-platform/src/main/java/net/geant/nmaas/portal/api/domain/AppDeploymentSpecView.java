@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,19 +21,19 @@ public class AppDeploymentSpecView {
     private Long id;
 
     @NotNull
-    private List<AppDeploymentEnv> supportedDeploymentEnvironments;
+    private List<AppDeploymentEnv> supportedDeploymentEnvironments = new ArrayList<>();
 
-    private KubernetesTemplateView kubernetesTemplate;
+    private KubernetesTemplateView kubernetesTemplate = new KubernetesTemplateView();
 
     private boolean allowSshAccess;
 
     private boolean exposesWebUI;
 
     @NotNull
-    private List<AppStorageVolumeView> storageVolumes;
+    private List<AppStorageVolumeView> storageVolumes = new ArrayList<>();
 
     @NotNull
-    private List<AppAccessMethodView> accessMethods;
+    private List<AppAccessMethodView> accessMethods = new ArrayList<>();
 
     private Map<String, String> deployParameters;
 

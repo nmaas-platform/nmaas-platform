@@ -13,7 +13,7 @@ public class KubernetesTemplateView {
 
     private Long id;
 
-    private KubernetesChartView chart;
+    private KubernetesChartView chart = new KubernetesChartView();
 
     private String archive;
 

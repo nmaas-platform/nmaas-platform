@@ -145,6 +145,15 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if(request.getDescriptions() == null || request.getDescriptions().isEmpty()){
 			throw new IllegalArgumentException("Descriptions cannot be null");
 		}
+		if(request.getConfigWizardTemplate() == null) {
+			throw new IllegalArgumentException("ConfigTemplate must not be null");
+		}
+		if(request.getAppDeploymentSpec() == null) {
+			throw new IllegalArgumentException("AppDeploymentSpec must not be null");
+		}
+		if(request.getAppConfigurationSpec() == null) {
+			throw new IllegalArgumentException("AppConfigurationSpec must not be null");
+		}
 		if(appRepo.existsByNameAndVersion(request.getName(), request.getVersion()))
 		    throw new IllegalStateException("Application " + request.getName() + " in version " + request.getVersion() + " already exists.");
 	}
