@@ -64,6 +64,7 @@ public class User implements Serializable {
 	private String selectedLanguage;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
+//	@Builder.Default
 	private List<UserRole> roles = new ArrayList<>();
 	
 	public User(String username) {
