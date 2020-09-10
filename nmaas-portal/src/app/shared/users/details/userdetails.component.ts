@@ -18,7 +18,7 @@ import {PasswordComponent} from '../../common/password/password.component';
 })
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
-  @ViewChild(PasswordComponent)
+  @ViewChild(PasswordComponent, { static: true })
   public readonly passwordModal: PasswordComponent;
 
   @Input()

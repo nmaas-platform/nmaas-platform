@@ -10,7 +10,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 })
 export class ModalNotificationSendComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal: ModalComponent;
 
   public f: FormGroup = new FormGroup({

@@ -43,7 +43,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
         return isNaN(Number(type));
     });
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public modal: ModalComponent;
 
     constructor(public domainService: DomainService,

@@ -15,7 +15,7 @@ import {map} from "rxjs/operators";
 })
 export class AppManagementListComponent implements OnInit {
 
-    @ViewChild(AppChangeStateModalComponent)
+    @ViewChild(AppChangeStateModalComponent, { static: true })
     public modal: AppChangeStateModalComponent;
 
     public selectedAppName: string = "";

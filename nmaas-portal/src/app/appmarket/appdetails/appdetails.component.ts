@@ -46,13 +46,13 @@ export class AppDetailsComponent implements OnInit {
 
     protected state = 0;
 
-    @ViewChild(AppInstallModalComponent)
+    @ViewChild(AppInstallModalComponent, { static: false })
     public readonly appInstallModal: AppInstallModalComponent;
 
-    @ViewChild(CommentsComponent)
+    @ViewChild(CommentsComponent, { static: true })
     public readonly comments: CommentsComponent;
 
-    @ViewChild(RateComponent)
+    @ViewChild(RateComponent, { static: false })
     public readonly appRate: RateComponent;
 
     public appId: number;

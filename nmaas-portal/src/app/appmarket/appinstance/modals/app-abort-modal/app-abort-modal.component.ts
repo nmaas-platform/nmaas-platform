@@ -10,7 +10,7 @@ import {AppInstanceService} from "../../../../service";
 })
 export class AppAbortModalComponent implements OnInit {
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public readonly modal: ModalComponent;
 
     @Input()

@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
     resetPassword:boolean = false;
     resetPasswordForm:FormGroup;
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public modal: ModalComponent;
     ssoLoading: boolean = false;
     ssoError: string = '';

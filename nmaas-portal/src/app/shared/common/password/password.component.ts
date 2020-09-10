@@ -31,10 +31,10 @@ export class PasswordValidator implements Validator {
 })
 export class PasswordComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal:ModalComponent;
 
-  @ViewChild(PasswordStrengthMeterComponent)
+  @ViewChild(PasswordStrengthMeterComponent, { static: true })
   passwordMeter: PasswordStrengthMeterComponent;
 
   public passwordForm: FormGroup;

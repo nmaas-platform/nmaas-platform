@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "declaration": false,
+    "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
@@ -8,11 +9,11 @@
       "es6"
     ],
     "mapRoot": "./",
-    "module": "ES2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "outDir": "../build",
     "sourceMap": true,
-    "target": "ES6",
+    "target": "es2015",
     "typeRoots": [
       "../node_modules/@types"
     ]

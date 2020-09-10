@@ -32,10 +32,10 @@ import {noParameterTypeInControlValueValidator} from '../appversioncreatewizard/
 
 export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public modal: ModalComponent;
 
-    @ViewChild('tagsMultiSelect')
+    @ViewChild('tagsMultiSelect', { static: false })
     public tagsMultiSelect: MultiSelect;
 
     public app: Application;

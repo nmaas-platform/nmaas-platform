@@ -28,13 +28,13 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
     public submitted: boolean = false;
     public success: boolean = false;
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public readonly modal: ModalComponent;
 
-    @ViewChild(ModalInfoTermsComponent)
+    @ViewChild(ModalInfoTermsComponent, { static: true })
     public readonly modalInfoTerms: ModalInfoTermsComponent;
 
-    @ViewChild(ModalInfoPolicyComponent)
+    @ViewChild(ModalInfoPolicyComponent, { static: true })
     public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
     constructor(private fb: FormBuilder,

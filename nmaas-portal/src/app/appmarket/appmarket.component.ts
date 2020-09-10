@@ -19,13 +19,13 @@ export class AppMarketComponent implements OnInit, AfterViewChecked, AfterConten
 
   private height = 0;
   private navHeight = 0;
-  @ViewChild(ModalTestInstanceComponent)
+  @ViewChild(ModalTestInstanceComponent, { static: true })
   private testInstanceModal: ModalTestInstanceComponent;
 
-  @ViewChild(ModalGuestUserComponent)
+  @ViewChild(ModalGuestUserComponent, { static: true })
   private guestUserModal: ModalGuestUserComponent;
 
-  @ViewChild(ModalProvideSshKeyComponent)
+  @ViewChild(ModalProvideSshKeyComponent, { static: true })
   private provideSshKeyModal: ModalProvideSshKeyComponent;
 
   constructor(private router: Router,

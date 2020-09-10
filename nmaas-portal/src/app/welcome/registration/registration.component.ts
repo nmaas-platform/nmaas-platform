@@ -30,16 +30,16 @@ export class RegistrationComponent implements OnInit {
   public success: boolean = false;
   public errorMessage: string = '';
 
-  @ViewChild(PasswordStrengthMeterComponent)
+  @ViewChild(PasswordStrengthMeterComponent, { static: true })
   passwordMeter: PasswordStrengthMeterComponent;
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly  modal: ModalComponent;
 
-  @ViewChild(ModalInfoTermsComponent)
+  @ViewChild(ModalInfoTermsComponent, { static: true })
   public readonly modalInfoTerms: ModalInfoTermsComponent;
 
-  @ViewChild(ModalInfoPolicyComponent)
+  @ViewChild(ModalInfoPolicyComponent, { static: true })
   public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
   public registrationForm: FormGroup;
