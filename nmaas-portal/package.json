@@ -39,7 +39,7 @@
     "ng-event-source": "^1.0.14",
     "ng-recaptcha": "^5.0.0",
     "ng-terminal": "^2.4.0",
-    "ng2-tooltip-directive": "2.9.22",
+    "ng2-tooltip-directive": "2.9.20",
     "ngx-pagination": "^3.3.1",
     "ngx-webstorage-service": "^4.1.0",
     "primeicons": "^1.0.0",
