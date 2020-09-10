@@ -5,7 +5,6 @@ import {Comment, Id} from '../../model/index';
 import {isNullOrUndefined} from "util";
 import {AuthService} from "../../auth/auth.service";
 import {TranslateService} from '@ngx-translate/core';
-import {forEach} from "@angular/router/src/utils/collection";
 
 @Component({
     selector: 'comments',
