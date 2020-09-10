@@ -11,7 +11,6 @@ import {EMPTY, of} from "rxjs";
 import {AppConfigService, ChangelogService} from "../../service";
 import {InternationalizationService} from "../../service/internationalization.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {Footer} from "primeng/shared";
 
 describe('PrivacyPolicySubpageComponent', () => {
   let component: PrivacyPolicySubpageComponent;

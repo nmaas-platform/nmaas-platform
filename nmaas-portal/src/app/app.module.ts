@@ -24,9 +24,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {CustomMissingTranslationService} from './i18n/custommissingtranslation.service';
 import {TranslateLoaderImpl} from './i18n/translate-loader-impl.service';
 import {ServiceUnavailableModule} from './service-unavailable/service-unavailable.module';
-import {RouterModule} from '@angular/router';
 import {ServiceUnavailableService} from './service-unavailable/service-unavailable.service';
-import {MonitorService} from './service/monitor.service';
 import {NgTerminalModule} from 'ng-terminal';
 
 
@@ -39,6 +37,7 @@ export function appConfigFactory( config: AppConfigService) {
 export function serviceAvailableFactory(config: AppConfigService, http: HttpClient, provider: ServiceUnavailableService) {
   return function create() {
     return config.load().then( () => {
+        console.log('App Config', config.config)
       return provider.validateServicesAvailability();
     });
   }
@@ -48,7 +47,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     tokenGetter: () => {
         return localStorage.getItem('token'); // TODO: change this to be able to replace 'token' with definied name
     },
-    whitelistedDomains: [new RegExp('[\s\S]*')]
+    allowedDomains: appConfig.jwtAllowedDomains
 });
 
 @NgModule({

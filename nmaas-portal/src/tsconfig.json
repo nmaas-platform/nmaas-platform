@@ -18,12 +18,5 @@
       "../node_modules/@types"
     ]
   },
-  "compileOnSave": true,
-  "files": [
-    "main.ts",
-    "polyfills.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts"
-  ]
+  "compileOnSave": true
 }

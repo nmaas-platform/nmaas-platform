@@ -21,6 +21,8 @@ import {map, shareReplay, take} from 'rxjs/operators';
 @RoleAware
 export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
+    public Role = Role;
+
     public domainId: number;
 
     @Input()

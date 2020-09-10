@@ -10,6 +10,8 @@ import {isNullOrUndefined} from 'util';
 export class AppConfigService {
     config: any;
 
+    public jwtAllowedDomains: string[] = []
+
     constructor(private http: HttpClient) { }
 
     public load() {
@@ -17,6 +19,7 @@ export class AppConfigService {
             this.http.get('config.json')
                 .subscribe(config => {
                     this.config = config;
+                    this.jwtAllowedDomains.push(this.getApiUrl().replace('http://', '').replace('https://', '').split(/[/?#]/)[0]);
                     resolve();
                 });
         });
