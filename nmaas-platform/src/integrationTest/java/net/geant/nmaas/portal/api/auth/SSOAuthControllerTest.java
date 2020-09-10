@@ -98,7 +98,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
         this.mvc.perform(post("/api/auth/sso/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", token[1] + token[2]))))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
         this.mvc.perform(post("/api/auth/sso/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", Arrays.toString(token)))))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -120,7 +120,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
         this.mvc.perform(post("/api/auth/sso/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", Arrays.toString(token)))))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

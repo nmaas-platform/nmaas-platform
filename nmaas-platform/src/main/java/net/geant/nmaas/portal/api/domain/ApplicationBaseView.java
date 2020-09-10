@@ -1,9 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
@@ -24,7 +21,9 @@ public class ApplicationBaseView {
     protected String name;
     protected List<AppDescriptionView> descriptions;
     protected AppRateView rate;
+    @Builder.Default
     protected Set<ApplicationVersionView> appVersions = new HashSet<>();
+    @Builder.Default
     protected Set<String> tags = new HashSet<>();
 
 }

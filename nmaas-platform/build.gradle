@@ -1,15 +1,18 @@
-repositories {
-	mavenCentral()
+plugins {
+    id 'java'
+    id 'idea'
+    id 'jacoco'
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id "com.gorylenko.gradle-git-properties" version "2.2.3"
+    id "org.sonarqube" version "3.0"
+    id 'com.google.protobuf' version "0.8.13"
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'jacoco'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.gorylenko.gradle-git-properties'
-apply plugin: 'org.sonarqube'
-apply plugin: 'com.google.protobuf'
+repositories {
+    mavenCentral()
+}
+
 
 version = '1.3.6'
 group = 'net.geant.nmaas'
@@ -17,242 +20,243 @@ group = 'net.geant.nmaas'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-buildscript {
-	repositories {
-		mavenCentral()
-		maven{
-			url "https://plugins.gradle.org/m2/"
-		}
-	}
-	dependencies {
-		classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.15.RELEASE'
-		classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1'
-		classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2'
-		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
-	}
-}
-
 gitProperties {
-	gitPropertiesDir = "src/main/resources"
+    gitPropertiesDir = "src/main/resources"
 }
 
 protobuf {
-	protoc {
-		artifact = "com.google.protobuf:protoc:3.4.0"
-	}
-	plugins {
-		grpc {
-			artifact = 'io.grpc:protoc-gen-grpc-java:1.17.1'
-		}
-	}
-	generateProtoTasks {
-		all()*.plugins {
-			grpc {}
-		}
-	}
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.13.0"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.31.1'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
 }
 
 bootJar {
-	mainClassName = 'net.geant.nmaas.MainConfig'
+    mainClassName = 'net.geant.nmaas.MainConfig'
+}
+
+springBoot {
+    buildInfo()
 }
 
 sourceSets {
-	integrationTest {
-		java {
-			compileClasspath += main.output + test.output
-			runtimeClasspath += main.output + test.output
-			srcDir file('src/integration-test/java')
-		}
-		resources.srcDir file('src/integration-test/resources')
-	}
+    integrationTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
 }
 
 configurations {
-	integrationTestCompile.extendsFrom testCompile
-	integrationTestRuntime.extendsFrom testRuntime
-	all {
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-		exclude group: 'ch.qos.logback', module: 'logback-classic'
-	}
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestRuntimeOnly.extendsFrom runtimeOnly
+
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+    }
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('org.springframework.boot:spring-boot-starter-mail')
-	compile('org.springframework.boot:spring-boot-starter-security')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-devtools')
-	compile('org.springframework.boot:spring-boot-starter-quartz')
-	compile('org.springframework.boot:spring-boot-starter-log4j2')
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	compile('org.modelmapper:modelmapper:2.2.0')
-	compile('org.modelmapper.extensions:modelmapper-spring:2.2.0')
-	compile('org.apache.commons:commons-lang3:3.9')
-	compile('commons-io:commons-io:2.6')
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
-	runtime('com.h2database:h2')
-	runtime('org.postgresql:postgresql')
+    integrationTestCompileOnly 'org.projectlombok:lombok'
+    integrationTestAnnotationProcessor 'org.projectlombok:lombok'
 
-	compile('org.hibernate:hibernate-envers')
-	compile('io.jsonwebtoken:jjwt:0.7.0')
-	compile('org.freemarker:freemarker:2.3.30')
-	compile('com.hierynomus:sshj:0.21.1')
-	compile('org.gitlab4j:gitlab4j-api:4.14.27')
-	compile('com.google.guava:guava:23.0')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-mail')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-devtools')
+    implementation('org.springframework.boot:spring-boot-starter-quartz')
+    implementation('org.springframework.boot:spring-boot-starter-log4j2')
+    implementation('org.springframework.boot:spring-boot-starter-validation')
 
-	compile('io.springfox:springfox-swagger2:2.8.0')
-	compile('io.springfox:springfox-swagger-ui:2.8.0')
-	compile('org.projectlombok:lombok:1.18.2')
-	compile('org.flywaydb:flyway-core:5.2.0')
-	compile('com.google.protobuf:protobuf-java:3.6.0')
-	compile('io.grpc:grpc-netty-shaded:1.17.1')
-	compile('io.grpc:grpc-protobuf:1.17.1')
-	compile('io.grpc:grpc-stub:1.17.1')
-	compile('io.fabric8:kubernetes-client:4.10.2')
+    implementation('org.modelmapper:modelmapper:2.3.8')
+    implementation('org.modelmapper.extensions:modelmapper-spring:2.3.8')
+    implementation('org.apache.commons:commons-lang3:3.9')
+    implementation('commons-io:commons-io:2.6')
 
-	testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.0')
-	testCompile('org.junit.jupiter:junit-jupiter-params:5.4.0')
-	testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
-	testRuntime('org.junit.jupiter:junit-jupiter-migrationsupport:5.4.0')
-	testCompile('org.junit.platform:junit-platform-commons:1.4.0')
-	testCompile("org.mockito:mockito-core:2.24.5")
-	testCompile('org.mockito:mockito-junit-jupiter:2.24.5')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.security:spring-security-test')
-	// https://mvnrepository.com/artifact/io.fabric8/kubernetes-server-mock
-	testCompile group: 'io.fabric8', name: 'kubernetes-server-mock', version: '4.10.2'
-	// https://mvnrepository.com/artifact/io.fabric8/servicecatalog-server-mock
-	testCompile group: 'io.fabric8', name: 'servicecatalog-server-mock', version: '4.10.2'
+    runtimeOnly('com.h2database:h2')
+    runtimeOnly('org.postgresql:postgresql')
+
+    implementation('org.hibernate:hibernate-envers')
+    implementation('org.flywaydb:flyway-core:5.2.0')
+
+    implementation('io.jsonwebtoken:jjwt:0.9.1')
+    implementation('com.hierynomus:sshj:0.21.1')
+    implementation('org.gitlab4j:gitlab4j-api:4.14.27')
+    implementation('com.google.guava:guava:24.1-jre')
+    implementation('org.freemarker:freemarker:2.3.30')
+
+    implementation('io.springfox:springfox-swagger2:2.8.0')
+    implementation('io.springfox:springfox-swagger-ui:2.8.0')
+
+    implementation('com.google.protobuf:protobuf-java:3.13.0')
+    implementation('io.grpc:grpc-netty-shaded:1.31.1')
+    implementation('io.grpc:grpc-protobuf:1.31.1')
+    implementation('io.grpc:grpc-stub:1.31.1')
+
+    implementation('io.fabric8:kubernetes-client:4.11.1')
 
 
-	integrationTestImplementation('org.junit.jupiter:junit-jupiter-api:5.4.0')
-	integrationTestCompile('org.junit.jupiter:junit-jupiter-params:5.4.0')
-	integrationTestRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
-	integrationTestRuntime('org.junit.jupiter:junit-jupiter-migrationsupport:5.4.0')
-	integrationTestCompile('org.junit.platform:junit-platform-commons:1.4.0')
-	integrationTestCompile("org.mockito:mockito-core:2.24.5")
-	integrationTestCompile('org.mockito:mockito-junit-jupiter:2.24.5')
-	integrationTestCompile('org.springframework.security:spring-security-test')
-	// https://mvnrepository.com/artifact/io.fabric8/kubernetes-server-mock
-	integrationTestCompile group: 'io.fabric8', name: 'kubernetes-server-mock', version: '4.10.2'
-	// https://mvnrepository.com/artifact/io.fabric8/servicecatalog-server-mock
-	integrationTestCompile group: 'io.fabric8', name: 'servicecatalog-server-mock', version: '4.10.2'
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
+    integrationTestImplementation('org.springframework.security:spring-security-test')
 
 }
 
 test {
-	useJUnitPlatform()
-	systemProperties 'property': 'value'
-	ignoreFailures = true
-	afterTest { desc, result ->
-		println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
-	}
-	jacoco {
-		append = true
-		destinationFile = file("$buildDir/jacoco/test.exec")
-	}
-}
-
-task integrationTest(type: Test) {
-	useJUnitPlatform()
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
-	outputs.upToDateWhen { false }
-	afterTest { desc, result ->
-		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
-	}
-	dependsOn(test)
+    useJUnitPlatform()
+    systemProperties 'property': 'value'
+    ignoreFailures = true
+    afterTest { desc, result ->
+        println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+    }
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/test.exec")
+        excludes = [
+                '**/inventory/janitor/**',
+                '**/exception/**',
+                '**/exceptions/**'
+        ]
+    }
 }
 
 task integrationTestOnly(type: Test) {
-	useJUnitPlatform()
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
-	outputs.upToDateWhen { false }
-	afterTest { desc, result ->
-		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
-	}
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+    afterTest { desc, result ->
+        println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
+    }
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/integrationTest.exec")
+        excludes = [
+                '**/inventory/janitor/**',
+                '**/exception/**',
+                '**/exceptions/**'
+        ]
+    }
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+    afterTest { desc, result ->
+        println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
+    }
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/integrationTest.exec")
+        excludes = [
+                '**/inventory/janitor/**',
+                '**/exception/**',
+                '**/exceptions/**'
+        ]
+    }
+    dependsOn(test)
 }
 
 jacoco {
-	toolVersion = "0.8.4"
-	reportsDir = file("$buildDir/jacoco")
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/jacoco")
 }
 
 jacocoTestReport {
-	reports {
-		xml.enabled false
-		csv.enabled false
-		html.destination file("${buildDir}/jacocoHtml")
-	}
-	executionData(test, integrationTest)
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+    executionData(test, integrationTest)
+    // exclude generated protobuf rpc
+    // https://stackoverflow.com/a/54213986
+    // https://github.com/grpc/grpc-java/pull/7382
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['**/inventory/janitor/**',])
+        }))
+    }
 
-	afterEvaluate {
-		classDirectories = files(classDirectories.files.collect {
-			fileTree(dir: it,
-					excludes: [
-							'**/inventory/janitor/**'
-					])
-		})
-	}
 }
 
 jacocoTestCoverageVerification {
-	afterEvaluate {
-		classDirectories = files(classDirectories.files.collect {
-			fileTree(dir: it,
-					excludes: [
-							'**/inventory/janitor/**',
-							'**/exception/**',
-							'**/exceptions/**'
-					])
-		})
-	}
-	executionData(test, integrationTest)
-	violationRules {
-		rule {
-			limit {
-				counter = 'INSTRUCTION'
-				value = 'COVEREDRATIO'
-				minimum = 0.6
-			}
-		}
-		rule {
-			element = 'PACKAGE'
-			includes = [
-			        'net.geant.nmaas.portal.**'
-			]
-			excludes = [
-					'**.model*'
-			]
-			limit {
-				counter = 'INSTRUCTION'
-				value = 'COVEREDRATIO'
-				minimum = 0.5
-			}
-		}
-		rule {
-			element = 'PACKAGE'
-			includes = [
-			        'net.geant.nmaas.orchestration.**'
-			]
-			excludes = [
-					'**.model*'
-			]
-			limit {
-				counter = 'INSTRUCTION'
-				value = 'COVEREDRATIO'
-				minimum = 0.3
-			}
-		}
-	}
+    executionData(test, integrationTest)
+    // exclude generated protobuf rpc
+    // https://stackoverflow.com/a/54213986
+    // https://github.com/grpc/grpc-java/pull/7382
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['**/inventory/janitor/**',])
+        }))
+    }
+    violationRules {
+        rule {
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = 0.6
+            }
+        }
+        rule {
+            element = 'PACKAGE'
+            includes = [
+                    'net.geant.nmaas.portal.**'
+            ]
+            excludes = [
+                    '**.model*',
+                    '**.exceptions**',
+                    '**.exception**'
+            ]
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = 0.5
+            }
+        }
+        rule {
+            element = 'PACKAGE'
+            includes = [
+                    'net.geant.nmaas.orchestration.**'
+            ]
+            excludes = [
+                    '**.model*',
+                    '**.exceptions**'
+            ]
+            limit {
+                counter = 'INSTRUCTION'
+                value = 'COVEREDRATIO'
+                minimum = 0.3
+            }
+        }
+    }
 }
 
 integrationTest.finalizedBy(jacocoTestCoverageVerification)
 
 sonarqube {
-	properties {
-		property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
-	}
+    properties {
+        property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
+    }
 }
