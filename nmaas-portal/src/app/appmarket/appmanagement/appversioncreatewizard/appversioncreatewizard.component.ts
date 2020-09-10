@@ -45,7 +45,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     @ViewChild(ModalComponent, { static: true })
     public modal: ModalComponent;
 
-    @ViewChild('tagsMultiSelect', { static: false })
+    @ViewChild('tagsMultiSelect')
     public tagsMultiSelect: MultiSelect;
 
     public app: Application;

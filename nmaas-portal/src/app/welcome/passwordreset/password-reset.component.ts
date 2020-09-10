@@ -22,7 +22,7 @@ export class PasswordResetComponent implements OnInit {
 
   public token:string;
 
-  @ViewChild(PasswordStrengthMeterComponent, { static: false })
+  @ViewChild(PasswordStrengthMeterComponent)
   passwordMeter: PasswordStrengthMeterComponent;
 
   public form: FormGroup;

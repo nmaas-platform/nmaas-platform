@@ -40,25 +40,25 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
     public AppInstanceState = AppInstanceState;
 
-    @ViewChild(AppInstanceProgressComponent, { static: false })
+    @ViewChild(AppInstanceProgressComponent)
     public appInstanceProgress: AppInstanceProgressComponent;
 
-    @ViewChild(AppRestartModalComponent, { static: false })
+    @ViewChild(AppRestartModalComponent)
     public appRestartModal: AppRestartModalComponent;
 
-    @ViewChild(ModalComponent, { static: false })
+    @ViewChild(ModalComponent)
     public undeployModal: ModalComponent;
 
-    @ViewChild(AppAbortModalComponent, { static: false })
+    @ViewChild(AppAbortModalComponent)
     public appAbortModal: AppAbortModalComponent;
 
-    @ViewChild('updateConfig', { static: false })
+    @ViewChild('updateConfig')
     public updateConfigModal: ModalComponent;
 
-    @ViewChild(AccessMethodsModalComponent, { static: false })
+    @ViewChild(AccessMethodsModalComponent)
     public accessMethodsModal: AccessMethodsModalComponent;
 
-    @ViewChild(RateComponent, { static: false })
+    @ViewChild(RateComponent)
     public readonly appRate: RateComponent;
 
     app: Application;

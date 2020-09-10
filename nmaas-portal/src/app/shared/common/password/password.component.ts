@@ -1,10 +1,11 @@
-import {Component, OnInit, Input, Output, EventEmitter, ViewChild} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, Injectable } from '@angular/core';
 import {AbstractControl, Validator, Validators, FormBuilder, FormGroup} from '@angular/forms';
 import {UserService} from "../../../service";
 import {Password} from "../../../model";
 import {ModalComponent} from "../../modal";
 import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
 
+@Injectable()
 export class PasswordValidator implements Validator {
 
   validate(ac: AbstractControl): {[key: string]: any} {

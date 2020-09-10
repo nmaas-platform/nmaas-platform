@@ -42,7 +42,7 @@ export class AppElementComponent implements OnInit, OnChanges {
   @Input()
   public domain: Domain;
 
-  @ViewChild(AppInstallModalComponent, { static: false })
+  @ViewChild(AppInstallModalComponent)
   public readonly modal: AppInstallModalComponent;
 
   constructor(public appImagesService: AppImagesService,
