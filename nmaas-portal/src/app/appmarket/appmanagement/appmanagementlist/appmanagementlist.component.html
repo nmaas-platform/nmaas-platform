@@ -51,7 +51,7 @@
             </a>
             <ul class="dropdown-menu pull-right-drop">
               <li>
-                <a (click)="showModal(app, version)" *ngIf="getStateAsString(version?.state) !== 'DELETED'">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</a>
+                <a (click)="showModal($event, app, version)" *ngIf="getStateAsString(version?.state) !== 'DELETED'">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</a>
                 <a [routerLink]="['/admin/apps/edit/version', version?.appVersionId]">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</a>
               </li>
             </ul>

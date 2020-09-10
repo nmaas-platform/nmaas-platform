@@ -51,10 +51,11 @@ export class AppManagementListComponent implements OnInit {
     }
 
     public getStateAsString(state: any): string {
-        return typeof state === "string" && isNaN(Number(state.toString())) ? state : ApplicationState[state];
+        return typeof state === 'string' && isNaN(Number(state.toString())) ? state : ApplicationState[state];
     }
 
-    public showModal(app: Application, appVersion: ApplicationVersion): void {
+    public showModal(event, app: Application, appVersion: ApplicationVersion): void {
+        event.stopPropagation()
         this.selectedAppName = app.name;
         this.selectedVersion = appVersion;
         this.modal.show();
