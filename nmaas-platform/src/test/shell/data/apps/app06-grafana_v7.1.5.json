@@ -1,38 +1,6 @@
 {
     "name": "Grafana",
-    "version": "6.5.2",
-    "license": "Apache 2.0",
-    "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-    "tags": [
-        "monitoring",
-        "visualization"
-    ],
-    "descriptions": [
-        {
-            "language": "en",
-            "briefDescription": "Open source analytics & monitoring solution for every database",
-            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
-        },
-        {
-            "language": "de",
-            "briefDescription": "Open source analytics & monitoring solution for every database",
-            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
-        },
-        {
-            "language": "fr",
-            "briefDescription": "Open source analytics & monitoring solution for every database",
-            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
-        },
-        {
-            "language": "pl",
-            "briefDescription": "Rozwiązanie open source do analizy i wizualizacji danych",
-            "fullDescription": "Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data driven culture."
-        }
-    ],
-    "wwwUrl": "https://grafana.com/",
-    "sourceUrl": "https://github.com/grafana/grafana",
-    "issuesUrl": "https://github.com/grafana/grafana/issues",
-    "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Grafana",
+    "version": "7.1.5",
     "appDeploymentSpec": {
         "supportedDeploymentEnvironments": [
             "KUBERNETES"
@@ -55,6 +23,9 @@
                 }
             }
         ],
+        "globalDeployParameters": {
+            "image.tag": "7.1.5"
+        },
         "exposesWebUI": true,
         "accessMethods":  [
             {
