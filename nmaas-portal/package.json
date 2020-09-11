@@ -28,7 +28,7 @@
     "@ngx-translate/http-loader": "^5.0.0",
     "@types/zxcvbn": "^4.4.0",
     "ajv": "^6.12.4",
-    "angular-formio": "^4.5.10",
+    "angular-formio": "^4.9.6",
     "angular-password-strength-meter": "2.0.0",
     "bootstrap": "^3.4.1",
     "document-register-element": "^1.7.2",
