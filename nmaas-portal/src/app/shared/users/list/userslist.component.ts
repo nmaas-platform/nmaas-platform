@@ -1,8 +1,8 @@
 import {Domain} from '../../../model/domain';
-import {User} from '../../../model/user';
-import {CacheService} from '../../../service/cache.service';
-import {DomainService} from '../../../service/domain.service';
-import {UserService} from '../../../service/user.service';
+import {User} from '../../../model';
+import {CacheService} from '../../../service';
+import {DomainService} from '../../../service';
+import {UserService} from '../../../service';
 import {BaseComponent} from '../../common/basecomponent/base.component';
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Observable, of} from 'rxjs';
@@ -66,6 +66,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   ngOnChanges(changes: SimpleChanges): void {
     this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
+
   public getDomainName(domainId: number): Observable<string> {
     if (this.domainCache.hasData(domainId)) {
       return of(this.domainCache.getData(domainId).name);

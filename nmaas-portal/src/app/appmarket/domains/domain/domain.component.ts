@@ -34,12 +34,12 @@ import {MaxLengthDirective} from '../../../directive/max-length.directive';
 
 export class DomainComponent extends BaseComponent implements OnInit {
 
-    private domainId: number;
+    public domainId: number;
     public domain: Domain;
     public dcnUpdated = false;
-    private domainUsers: User[];
+    public domainUsers: User[];
     protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
-    private keys: any = Object.keys(DcnDeploymentType).filter((type) => {
+    public keys: any = Object.keys(DcnDeploymentType).filter((type) => {
         return isNaN(Number(type));
     });
 
@@ -51,7 +51,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
                 private router: Router,
                 private route: ActivatedRoute,
                 private location: Location,
-                private authService: AuthService,
+                public authService: AuthService,
                 protected appsService: AppsService) {
         super();
     }
@@ -89,7 +89,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
         });
     }
 
-    protected submit(): void {
+    public submit(): void {
         if (!isUndefined(this.domainId)) {
             this.updateExistingDomain();
         } else {
@@ -123,7 +123,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
         this.dcnUpdated = !this.dcnUpdated;
     }
 
-    protected getDomainRoleNames(roles: UserRole[]): UserRole[] {
+    public getDomainRoleNames(roles: UserRole[]): UserRole[] {
         const domainRoles: UserRole[] = [];
         roles.forEach((value => {
             if (value.domainId === this.domainId) {
@@ -133,7 +133,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
         return domainRoles;
     }
 
-    protected getDomainName(domainId: number): Observable<string> {
+    public getDomainName(domainId: number): Observable<string> {
         if (this.domainCache.hasData(domainId)) {
             return of(this.domainCache.getData(domainId).codename);
         } else {
@@ -147,7 +147,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
         }
     }
 
-    protected filterDomainNames(user: User): UserRole[] {
+    public filterDomainNames(user: User): UserRole[] {
         return user.roles.filter(role => role.domainId !== this.domainService.getGlobalDomainId() || role.role.toString() !== 'ROLE_GUEST');
     }
 
