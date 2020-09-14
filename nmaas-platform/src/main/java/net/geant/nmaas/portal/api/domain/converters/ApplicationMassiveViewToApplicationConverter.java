@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ApplicationViewToApplicationConverter extends AbstractConverter<ApplicationMassiveView, Application> {
+public class ApplicationMassiveViewToApplicationConverter extends AbstractConverter<ApplicationMassiveView, Application> {
 
     @Override
     protected Application convert(ApplicationMassiveView source) {

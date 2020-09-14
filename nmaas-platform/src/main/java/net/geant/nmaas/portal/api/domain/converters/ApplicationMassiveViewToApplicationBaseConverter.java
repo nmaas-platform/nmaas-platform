@@ -15,7 +15,7 @@ import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.AbstractConverter;
 
 @AllArgsConstructor
-public class ApplicationViewToApplicationBaseConverter extends AbstractConverter<ApplicationMassiveView, ApplicationBase> {
+public class ApplicationMassiveViewToApplicationBaseConverter extends AbstractConverter<ApplicationMassiveView, ApplicationBase> {
 
     private TagRepository tagRepo;
 
@@ -29,15 +29,15 @@ public class ApplicationViewToApplicationBaseConverter extends AbstractConverter
         applicationBase.setWwwUrl(source.getWwwUrl());
         applicationBase.setSourceUrl(source.getSourceUrl());
         applicationBase.setIssuesUrl(source.getIssuesUrl());
-        applicationBase.setTags(getTags(source));
-        applicationBase.setDescriptions(getDescriptions(source));
-        applicationBase.setVersions(getAppVersions(source));
         applicationBase.setNmaasDocumentationUrl(source.getNmaasDocumentationUrl());
+        applicationBase.setDescriptions(getDescriptions(source));
+        applicationBase.setTags(getTags(source));
+        applicationBase.setVersions(getAppVersions(source));
         return applicationBase;
     }
 
     private Set<ApplicationVersion> getAppVersions(ApplicationMassiveView source){
-        return Optional.ofNullable(source.getAppVersions()).orElse(Collections.emptySet()).stream()
+        return Optional.ofNullable(source.getVersions()).orElse(Collections.emptySet()).stream()
                 .map(version -> new ApplicationVersion(version.getVersion(), version.getState(), version.getAppVersionId()))
                 .collect(Collectors.toSet());
     }

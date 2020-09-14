@@ -29,9 +29,18 @@ public class ApplicationBaseToApplicationBaseViewConverter extends AbstractConve
             adv.setBriefDescription(ad.getBriefDescription());
             return adv;
         }).collect(Collectors.toList()));
+        abv.setLicense(source.getLicense());
+        abv.setLicenseUrl(source.getLicenseUrl());
+        abv.setWwwUrl(source.getWwwUrl());
+        abv.setSourceUrl(source.getSourceUrl());
+        abv.setIssuesUrl(source.getIssuesUrl());
+        abv.setNmaasDocumentationUrl(source.getNmaasDocumentationUrl());
+
         Integer[] rateList = ratingRepository.getApplicationRating(source.getId());
         abv.setRate(new AppRateView(getAverageRate(rateList), getRatingMap(rateList)));
-        abv.setAppVersions(getAppVersions(source));
+
+        abv.setVersions(getAppVersions(source));
+
         abv.setTags(getTags(source));
         return abv;
     }

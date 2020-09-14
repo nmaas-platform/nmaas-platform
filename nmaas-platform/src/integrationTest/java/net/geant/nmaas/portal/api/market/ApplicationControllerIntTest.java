@@ -76,7 +76,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetApplications() throws Exception {
-        MvcResult result = mvc.perform(get("/api/apps")
+        MvcResult result = mvc.perform(get("/api/apps/base")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -87,7 +87,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetAllApplications() throws Exception {
-        MvcResult result = mvc.perform(get("/api/apps/all")
+        MvcResult result = mvc.perform(get("/api/apps/base/all")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class ApplicationToApplicationViewConverter extends AbstractConverter<Application, ApplicationMassiveView> {
+public class ApplicationToApplicationMassiveViewConverter extends AbstractConverter<Application, ApplicationMassiveView> {
 
     private ApplicationBaseRepository appBaseRepository;
 

@@ -31,24 +31,46 @@ import javax.validation.Valid;
 @Log4j2
 public class ApplicationController extends AppBaseController {
 
-	private ApplicationEventPublisher eventPublisher;
+	private final ApplicationEventPublisher eventPublisher;
 
-	@GetMapping
+	/*
+	 * Application Base Part
+	 */
+
+	@GetMapping("/base")
 	@Transactional
-	public List<ApplicationBaseView> getApplications() {
+	public List<ApplicationBaseView> getAllActiveOrDisabledApplicationBase() {
 		return appBaseService.findAllActiveOrDisabledApps().stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.collect(Collectors.toList());
 	}
 
-	@GetMapping("/all")
+	@GetMapping("/base/all")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public List<ApplicationBaseView> getAllApplications(){
+	public List<ApplicationBaseView> getAllApplicationBase(){
 		return appBaseService.findAll().stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.collect(Collectors.toList());
 	}
+
+	@GetMapping(value = "/base/{appId}")
+	@Transactional
+	public ApplicationBaseView getBaseApplication(@PathVariable(value = "appId") Long id) {
+		ApplicationBase app = appBaseService.getBaseApp(id);
+		return modelMapper.map(app, ApplicationBaseView.class);
+	}
+
+	@PatchMapping(value = "/base")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void updateApplicationBase(@RequestBody ApplicationBaseView appRequest){
+		appBaseService.updateApplicationBase(appRequest);
+	}
+
+	/*
+	 * Application part
+	 */
 	
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
@@ -69,30 +91,6 @@ public class ApplicationController extends AppBaseController {
 		applications.update(modelMapper.map(appRequest, Application.class));
 	}
 
-	@PatchMapping(value = "/base")
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-	@Transactional
-	public void updateApplicationBase(@RequestBody ApplicationMassiveView appRequest){
-		appBaseService.updateApplicationBase(appRequest);
-	}
-
-	@DeleteMapping(value="/{appId}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @Transactional
-    public void deleteApplication(@PathVariable(value = "appId") long appId){
-	    Application app = getApp(appId);
-		applications.delete(appId);
-		appBaseService.updateApplicationVersionState(app.getName(), app.getOwner(), ApplicationState.DELETED);
-    }
-
-    @GetMapping(value = "/base/{appId}")
-//	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
-	@Transactional
-	public ApplicationBaseView getBaseApplication(@PathVariable(value = "appId") Long id) {
-		ApplicationBase app = appBaseService.getBaseApp(id);
-		return modelMapper.map(app, ApplicationBaseView.class);
-	}
-
 	@GetMapping(value = "/{appName}/latest")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
@@ -101,33 +99,10 @@ public class ApplicationController extends AppBaseController {
 	}
 
 	@GetMapping(value="/{appId}")
-//	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
 	public ApplicationMassiveView getApplication(@PathVariable(value = "appId") Long id) {
 		Application app = getApp(id);
 		return modelMapper.map(app, ApplicationMassiveView.class);
-	}
-
-	@PatchMapping(value = "/state/{appId}")
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	@Transactional
-	public void changeApplicationState(@PathVariable(value = "appId") long appId, @RequestBody ApplicationStateChangeRequest stateChangeRequest){
-		Application app = getApp(appId);
-		applications.changeApplicationState(app, stateChangeRequest.getState());
-		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
-		this.sendMail(app, stateChangeRequest);
-	}
-
-	private void sendMail(Application app, ApplicationStateChangeRequest stateChangeRequest){
-		MailAttributes mailAttributes = MailAttributes.builder()
-				.mailType(stateChangeRequest.getState().getMailType())
-				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason() == null? "": stateChangeRequest.getReason()))
-				.build();
-		if(!stateChangeRequest.getState().equals(ApplicationState.NEW)){
-			UserView owner = modelMapper.map(users.findByUsername(app.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
-			mailAttributes.setAddressees(Collections.singletonList(owner));
-		}
-		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 
 	/**
@@ -136,7 +111,7 @@ public class ApplicationController extends AppBaseController {
 	 * @param principal - security object (used to retrieve creator)
 	 */
 	@PostMapping(value = "/version")
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@ResponseStatus(HttpStatus.CREATED)
 	@Transactional
 	public void addApplicationVersion(@RequestBody @Valid ApplicationView view, Principal principal) {
@@ -168,6 +143,54 @@ public class ApplicationController extends AppBaseController {
 		ApplicationVersion version = new ApplicationVersion(application.getVersion(), ApplicationState.NEW, appId);
 		base.getVersions().add(version);
 		appBaseService.updateApplicationBase(base);
+	}
+
+	/*
+	 * both
+	 */
+
+	/**
+	 *
+	 * @param appId application id (not an ApplicationBase or ApplicationVersion id)
+	 * @param stateChangeRequest request object
+	 */
+	@PatchMapping(value = "/state/{appId}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	@Transactional
+	public void changeApplicationState(@PathVariable(value = "appId") long appId, @RequestBody ApplicationStateChangeRequest stateChangeRequest){
+		Application app = getApp(appId);
+		applications.changeApplicationState(app, stateChangeRequest.getState());
+		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
+		this.sendMail(app, stateChangeRequest);
+	}
+
+	/**
+	 * Deletes application entity, labels application version as deleted
+	 * @param appId application id (not an ApplicationBase or ApplicationVersion id)
+	 */
+	@DeleteMapping(value="/{appId}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void deleteApplication(@PathVariable(value = "appId") long appId){
+		Application app = getApp(appId);
+		applications.delete(appId);
+		appBaseService.updateApplicationVersionState(app.getName(), app.getOwner(), ApplicationState.DELETED);
+	}
+
+	/*
+	 * Utilities
+	 */
+
+	private void sendMail(Application app, ApplicationStateChangeRequest stateChangeRequest){
+		MailAttributes mailAttributes = MailAttributes.builder()
+				.mailType(stateChangeRequest.getState().getMailType())
+				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason() == null? "": stateChangeRequest.getReason()))
+				.build();
+		if(!stateChangeRequest.getState().equals(ApplicationState.NEW)){
+			UserView owner = modelMapper.map(users.findByUsername(app.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
+			mailAttributes.setAddressees(Collections.singletonList(owner));
+		}
+		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 
 }

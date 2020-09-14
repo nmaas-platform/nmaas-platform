@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -64,7 +65,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
-    public void updateApplicationBase(ApplicationMassiveView application) {
+    public void updateApplicationBase(ApplicationBaseView application) {
         this.setMissingDescriptions(application);
         ApplicationBase appBase = modelMapper.map(application, ApplicationBase.class);
         updateApplicationBase(appBase);
@@ -120,7 +121,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return appBaseRepository.findByName(name).orElseThrow(() -> new MissingElementException(name + " app base not found"));
     }
 
-    private void setMissingDescriptions(ApplicationMassiveView app){
+    private void setMissingDescriptions(ApplicationBaseView app){
         AppDescriptionView appDescription = app.getDescriptions().stream()
                 .filter(description -> description.getLanguage().equals("en"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));

@@ -128,7 +128,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public void setMissingProperties(ApplicationMassiveView app, Long appId){
-		setMissingTemplatesId(app, appId);
+		this.setMissingTemplatesId(app, appId);
 	}
 
 	private void checkParam(ApplicationMassiveView request, String owner) {

@@ -32,6 +32,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -76,14 +77,14 @@ public class ConvertersIntTest {
     }
 
     @Test
-    public void testConvertAppBaseToAppBriefView(){
+    public void testConvertAppBaseToAppBaseView(){
         ApplicationBase appBase = getDefaultAppBase();
         ApplicationBaseView applicationBaseView = modelMapper.map(appBase, ApplicationBaseView.class);
         assertEquals(appBase.getName(), applicationBaseView.getName());
         assertNotNull(applicationBaseView.getTags());
-        assertEquals(1, applicationBaseView.getAppVersions().size());
-        assertTrue(applicationBaseView.getAppVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
-        assertTrue(applicationBaseView.getAppVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
+        assertEquals(1, applicationBaseView.getVersions().size());
+        assertTrue(applicationBaseView.getVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
+        assertTrue(applicationBaseView.getVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
     }
 
     @Test
@@ -98,7 +99,7 @@ public class ConvertersIntTest {
     }
 
 	@Test
-	public void testConvertAppBriefViewToAppBase() {
+	public void testConvertAppBaseViewToAppBase() {
         tagRepo.save(new Tag("network"));
 
         ApplicationBaseView appDto = new ApplicationBaseView();
@@ -193,6 +194,7 @@ public class ConvertersIntTest {
         appBase.setWwwUrl("default-website.com");
         appBase.setSourceUrl("default-website.com");
         appBase.setIssuesUrl("default-website.com");
+        appBase.setDescriptions(new ArrayList<>());
         appBase.setLogo(new FileInfo("logo", "png"));
         appBase.setVersions(Sets.newHashSet(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
         return appBase;

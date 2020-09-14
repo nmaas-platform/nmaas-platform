@@ -8,7 +8,7 @@ import java.util.Optional;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationVersionView;
 import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
-import net.geant.nmaas.portal.api.domain.converters.ApplicationViewToApplicationBaseConverter;
+import net.geant.nmaas.portal.api.domain.converters.ApplicationMassiveViewToApplicationBaseConverter;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -66,7 +66,7 @@ public class ApplicationBaseServiceTest {
 
     @Test
     public void shouldAddNewVersion(){
-        this.apps.get(0).setAppVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L)));
+        this.apps.get(0).setVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L)));
         when(appBaseRepo.existsByName(this.apps.get(0).getName())).thenReturn(true);
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(modelMapper.map(this.apps.get(0), ApplicationBase.class)));
         when(appBaseRepo.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -79,7 +79,7 @@ public class ApplicationBaseServiceTest {
 
     @Test
     public void shouldNotAddSameVersion(){
-        this.apps.get(0).setAppVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L)));
+        this.apps.get(0).setVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L)));
         when(appBaseRepo.existsByName(this.apps.get(0).getName())).thenReturn(true);
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(modelMapper.map(this.apps.get(0), ApplicationBase.class)));
         when(appBaseRepo.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -120,7 +120,7 @@ public class ApplicationBaseServiceTest {
 
     @Test
     public void shouldUpdateApplicationVersionState(){
-        this.apps.get(0).setAppVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L)));
+        this.apps.get(0).setVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L)));
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(modelMapper.map(this.apps.get(0), ApplicationBase.class)));
         this.appBaseService.updateApplicationVersionState(this.apps.get(0).getName(), this.apps.get(0).getVersion(), ApplicationState.DELETED);
         verify(appBaseRepo, times(1)).save(any());
@@ -134,7 +134,7 @@ public class ApplicationBaseServiceTest {
 
     @Test
     public void shouldGetActiveAndDisabledApps(){
-        this.apps.get(0).setAppVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L), new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.DISABLED, 2L)));
+        this.apps.get(0).setVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L), new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.DISABLED, 2L)));
         when(appBaseRepo.findAll()).thenReturn(Collections.singletonList(modelMapper.map(this.apps.get(0), ApplicationBase.class)));
         assertEquals(1, appBaseService.findAllActiveOrDisabledApps().size());
     }
@@ -156,7 +156,7 @@ public class ApplicationBaseServiceTest {
 
     @Test
     public void shouldReturnAppActive(){
-        this.apps.get(0).setAppVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L), new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.DISABLED, 2L)));
+        this.apps.get(0).setVersions(Sets.newHashSet(new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.ACTIVE, 1L), new ApplicationVersionView(this.apps.get(0).getVersion(), ApplicationState.DISABLED, 2L)));
         assertTrue(appBaseService.isAppActive(modelMapper.map(this.apps.get(0), ApplicationBase.class)));
     }
 
@@ -188,7 +188,7 @@ public class ApplicationBaseServiceTest {
     private ModelMapper getMapper(){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
-        modelMapper.addConverter(new ApplicationViewToApplicationBaseConverter(tagRepo));
+        modelMapper.addConverter(new ApplicationMassiveViewToApplicationBaseConverter(tagRepo));
         return modelMapper;
     }
 
