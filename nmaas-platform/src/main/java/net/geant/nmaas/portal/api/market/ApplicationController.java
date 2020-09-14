@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -100,9 +103,16 @@ public class ApplicationController extends AppBaseController {
 
 	@GetMapping(value="/{appId}")
 	@Transactional
-	public ApplicationMassiveView getApplication(@PathVariable(value = "appId") Long id) {
+	public ApplicationMassiveView getApplicationMassive(@PathVariable(value = "appId") Long id) {
 		Application app = getApp(id);
 		return modelMapper.map(app, ApplicationMassiveView.class);
+	}
+
+	@GetMapping(value="/version/{appId}")
+	@Transactional
+	public ApplicationView getApplication(@PathVariable(value = "appId") Long id) {
+		Application app = getApp(id);
+		return modelMapper.map(app, ApplicationView.class);
 	}
 
 	/**
@@ -143,6 +153,33 @@ public class ApplicationController extends AppBaseController {
 		ApplicationVersion version = new ApplicationVersion(application.getVersion(), ApplicationState.NEW, appId);
 		base.getVersions().add(version);
 		appBaseService.updateApplicationBase(base);
+	}
+
+	@PatchMapping(value = "/version")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void updateApplicationVersion(@RequestBody @Valid ApplicationView view){
+		// application base with given name must exist
+		ApplicationBase base = appBaseService.findByName(view.getName());
+
+		// application specified name and version must not exist
+		Optional<Application> opt = applications.findApplication(view.getId());
+
+		if(!opt.isPresent() || view.getId() == null) {
+			throw new MissingElementException("Application does not exist");
+		}
+
+		// you cannot really change version label
+		Optional<ApplicationVersion> version = base.getVersions().stream().filter(v -> v.getVersion().equals(view.getVersion()) && v.getAppVersionId().equals(view.getId())).findFirst();
+		if (!version.isPresent()) {
+			log.error("Application version cannot be updated (no matching versions available in ApplicationBase)");
+			throw new ProcessingException("Cannot update application version");
+		}
+
+		Application application = modelMapper.map(view, Application.class);
+		// rewrite creation date
+		application.setCreationDate(opt.get().getCreationDate());
+		applications.update(application);
 	}
 
 	/*

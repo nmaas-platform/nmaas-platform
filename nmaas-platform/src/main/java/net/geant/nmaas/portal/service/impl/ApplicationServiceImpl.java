@@ -5,6 +5,7 @@ import freemarker.template.Template;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -131,6 +132,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 		this.setMissingTemplatesId(app, appId);
 	}
 
+	@Override
+	public void setMissingProperties(ApplicationView app, Long appId){
+		this.setMissingTemplatesId(app, appId);
+	}
+
 	private void checkParam(ApplicationMassiveView request, String owner) {
 		if(request == null)
 			throw new IllegalArgumentException("Request cannot be null");
@@ -170,6 +176,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	private void setMissingTemplatesId(ApplicationMassiveView app, Long appId){
+		app.getAppConfigurationSpec().getTemplates()
+				.forEach(template -> template.setApplicationId(appId));
+	}
+
+	private void setMissingTemplatesId(ApplicationView app, Long appId){
 		app.getAppConfigurationSpec().getTemplates()
 				.forEach(template -> template.setApplicationId(appId));
 	}
