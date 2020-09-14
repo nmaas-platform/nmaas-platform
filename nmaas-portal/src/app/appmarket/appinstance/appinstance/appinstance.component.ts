@@ -10,7 +10,7 @@ import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppAbortModalComponent} from '../modals/app-abort-modal';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {RateComponent} from '../../../shared/rate';
-import {AppConfiguration} from '../../../model/appconfiguration';
+import {AppConfiguration} from '../../../model/app-configuration';
 import {isNullOrUndefined} from 'util';
 import {LOCAL_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ModalComponent} from '../../../shared/modal';

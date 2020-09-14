@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
-import {AppDeploymentSpec} from '../../../model/appdeploymentspec';
+import {AppDeploymentSpec} from '../../../model/app-deployment-spec';
 import {FormControl, ValidatorFn} from '@angular/forms';
 
 /**

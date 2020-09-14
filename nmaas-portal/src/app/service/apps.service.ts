@@ -2,16 +2,13 @@ import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Id } from '../model/id';
-import { Application } from '../model/application';
-import { Rate } from '../model/rate';
-import { Comment } from '../model/comment';
-import { FileInfo } from '../model/fileinfo';
-import { AppConfigService } from '../service/appconfig.service';
+import { Id, Application, Rate, Comment, FileInfo } from '../model';
+import { AppConfigService } from './appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
 import {AppStateChange} from '../model/appstatechange';
 import {isNullOrUndefined} from 'util';
+import {ApplicationBase} from '../model/application-base';
 
 @Injectable()
 export class AppsService extends GenericDataService {
@@ -21,20 +18,20 @@ export class AppsService extends GenericDataService {
     }
 
 
-    public getApps(): Observable<Application[]> {
-        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps');
+    public getApps(): Observable<ApplicationBase[]> {
+        return this.get<ApplicationBase[]>(this.appConfig.getApiUrl() + '/apps/base');
     }
 
-    public getAllApps(): Observable<Application[]> {
-        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps/all');
+    public getAllApps(): Observable<ApplicationBase[]> {
+        return this.get<ApplicationBase[]>(this.appConfig.getApiUrl() + '/apps/base/all');
     }
 
     public getApp(id: number): Observable<Application> {
         return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id);
     }
 
-    public getBaseApp(id: number): Observable<Application> {
-        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/base/' + id);
+    public getBaseApp(id: number): Observable<ApplicationBase> {
+        return this.get<ApplicationBase>(this.appConfig.getApiUrl() + '/apps/base/' + id);
     }
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
@@ -85,7 +82,7 @@ export class AppsService extends GenericDataService {
         return this.patch(this.appConfig.getApiUrl() + '/apps', app);
     }
 
-    public updateBaseApp(app: Application): Observable<any> {
+    public updateBaseApp(app: ApplicationBase): Observable<any> {
         return this.patch(this.appConfig.getApiUrl() + '/apps/base', app);
     }
 

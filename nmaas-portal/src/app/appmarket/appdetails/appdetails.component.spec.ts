@@ -14,8 +14,8 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ActivatedRoute} from "@angular/router";
 import {of} from "rxjs";
 import {Application} from "../../model";
-import {AppDeploymentSpec} from "../../model/appdeploymentspec";
-import {AppConfigurationSpec} from "../../model/appconfigurationspec";
+import {AppDeploymentSpec} from "../../model/app-deployment-spec";
+import {AppConfigurationSpec} from "../../model/app-configuration-spec";
 import {ApplicationState} from "../../model/applicationstate";
 
 @Pipe({
@@ -107,7 +107,7 @@ describe('Component: AppDetails', () => {
     owner: "admin",
     descriptions: [],
     tags: ['tag1', 'tag2'],
-    appVersions: [],
+    versions: [],
     configWizardTemplate: null,
     configUpdateWizardTemplate: null,
     appDeploymentSpec: new AppDeploymentSpec(),

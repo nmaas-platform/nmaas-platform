@@ -83,7 +83,7 @@ export class AppDetailsComponent implements OnInit {
             this.appsService.getBaseApp(this.appId).subscribe(
                 application => {
                     this.app = application;
-                    this.active = application.appVersions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
+                    this.active = application.versions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
                     // required for the tooltip to appear correctly
                     this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
                 },

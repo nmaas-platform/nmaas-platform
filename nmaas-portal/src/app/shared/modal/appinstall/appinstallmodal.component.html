@@ -7,7 +7,7 @@
 			<div *ngIf="app">
 				<label for="selectedVersion" class="control-label">{{'INSTALL_MODAL.SELECT_VERSION' | translate}}</label>
 				<select class="form-control" name="selectedVersion" id="selectedVersion" [(ngModel)]="selectedAppVersion" required>
-					<option *ngFor="let appVersion of app?.appVersions" [value]="appVersion.appVersionId">{{appVersion.version}}</option>
+					<option *ngFor="let appVersion of app?.versions" [value]="appVersion.appVersionId">{{appVersion.version}}</option>
 				</select>
 			</div>
 			<div *ngIf="instance_name.invalid && (instance_name.dirty || instance_name.touched)"

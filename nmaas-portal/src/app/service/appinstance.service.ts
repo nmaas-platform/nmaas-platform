@@ -12,7 +12,7 @@ import {GenericDataService} from './genericdata.service';
 import {Observable} from 'rxjs';
 
 import {AppInstanceStateHistory} from '../model/appinstancestatehistory';
-import {AppConfiguration} from '../model/appconfiguration';
+import {AppConfiguration} from '../model/app-configuration';
 import {map} from 'rxjs/operators';
 import {AppInstanceExtended} from '../model/appinstanceextended';
 

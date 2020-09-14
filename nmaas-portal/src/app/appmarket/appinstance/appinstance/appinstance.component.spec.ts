@@ -21,8 +21,8 @@ import {StorageServiceModule} from 'ngx-webstorage-service';
 import {AppInstanceState, Application, User} from '../../../model';
 import {Role} from '../../../model/userrole';
 import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
-import {AppDeploymentSpec} from '../../../model/appdeploymentspec';
-import {AppConfigurationSpec} from '../../../model/appconfigurationspec';
+import {AppDeploymentSpec} from '../../../model/app-deployment-spec';
+import {AppConfigurationSpec} from '../../../model/app-configuration-spec';
 import {ApplicationState} from '../../../model/applicationstate';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {Component, Directive, Input, Pipe, PipeTransform} from '@angular/core';
@@ -128,7 +128,7 @@ describe('Component: AppInstance', () => {
         owner: 'admin',
         descriptions: [],
         tags: ['tag1', 'tag2'],
-        appVersions: [{
+        versions: [{
             version: '0.12',
             state: ApplicationState.ACTIVE,
             appVersionId: 1,
