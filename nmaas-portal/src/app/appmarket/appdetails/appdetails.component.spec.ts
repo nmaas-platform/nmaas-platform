@@ -117,8 +117,8 @@ describe('Component: AppDetails', () => {
   };
 
   beforeEach(async(() => {
-    const appsServiceSpy = jasmine.createSpyObj('AppsService', ['getBaseApp']);
-    appsServiceSpy.getBaseApp.and.returnValue(of(application));
+    const appsServiceSpy = jasmine.createSpyObj('AppsService', ['getApplicationBase']);
+    appsServiceSpy.getApplicationBase.and.returnValue(of(application));
     const appSubsServiceSpy = jasmine.createSpyObj('AppSubscriptionService', ['getAllByApplication', 'getSubscription', 'unsubscribe']);
     appSubsServiceSpy.getAllByApplication.and.returnValue(of([]));
     const appImagesServiceSpy = jasmine.createSpyObj('AppImagesService', ['getAppLogoUrl']);
