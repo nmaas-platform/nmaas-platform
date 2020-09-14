@@ -1,4 +1,4 @@
-import { Application } from '../model/application';
+import { ApplicationMassive } from '../model/application-massive';
 import { AppSubscription } from '../model/appsubscription';
 import { AppConfigService } from './appconfig.service';
 import { GenericDataService } from './genericdata.service';
@@ -42,8 +42,8 @@ export class AppSubscriptionsService extends GenericDataService {
     return this.get<AppSubscription>(this.getSubscriptionUrl(applicationId, domainId));
   }
     
-  public getSubscribedApplications(domainId?: number): Observable<Application[]> {
-      return this.get<Application[]>(
+  public getSubscribedApplications(domainId?: number): Observable<ApplicationMassive[]> {
+      return this.get<ApplicationMassive[]>(
                       (isUndefined(domainId) ? this.getSubscriptionsUrl() : this.getDomainSubscriptionsUrl(domainId)) + '/apps');
   }
   

@@ -17,12 +17,12 @@ import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppAbortModalComponent} from '../modals/app-abort-modal';
 import {RouterTestingModule} from '@angular/router/testing';
 import {StorageServiceModule} from 'ngx-webstorage-service';
-import {AppInstanceState, Application, User} from '../../../model';
+import {AppInstanceState, ApplicationMassive, User} from '../../../model';
 import {Role} from '../../../model/userrole';
-import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {ServiceAccessMethodType} from '../../../model/service-access-method';
 import {AppDeploymentSpec} from '../../../model/app-deployment-spec';
 import {AppConfigurationSpec} from '../../../model/app-configuration-spec';
-import {ApplicationState} from '../../../model/applicationstate';
+import {ApplicationState} from '../../../model/application-state';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {Component, Directive, Input, Pipe, PipeTransform} from '@angular/core';
 import {Domain} from '../../../model/domain';
@@ -113,7 +113,7 @@ describe('Component: AppInstance', () => {
     let appImageService: AppImagesService;
     let domainService: DomainService;
 
-    const application: Application = {
+    const application: ApplicationMassive = {
         id: 2,
         appVersionId: 1,
         name: 'Oxidized',
@@ -137,7 +137,6 @@ describe('Component: AppInstance', () => {
         appDeploymentSpec: new AppDeploymentSpec(),
         appConfigurationSpec: new AppConfigurationSpec(),
         state: ApplicationState.ACTIVE,
-        rowWithVersionVisible: false,
         rate: null,
     };
     application.appDeploymentSpec.exposesWebUI = true;
@@ -283,7 +282,7 @@ describe('Component: AppInstance', () => {
         appImageService = fixture.debugElement.injector.get(AppImagesService);
         domainService = fixture.debugElement.injector.get(DomainService);
 
-        spyOn(appsService, 'getApp').and.returnValue(of(application));
+        spyOn(appsService, 'getApplicationMassive').and.returnValue(of(application));
         spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(of([]));
         spyOn(appInstanceService, 'getAppInstance').and.returnValue(of(appInstance));
         spyOn(appInstanceService, 'getAppInstanceHistory').and.returnValue(of(appInstanceHistory));

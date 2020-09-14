@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
-import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, ApplicationMassive} from '../../../model';
 import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../modals/apprestart';
@@ -18,8 +18,8 @@ import {interval} from 'rxjs/internal/observable/interval';
 import {TranslateService} from '@ngx-translate/core';
 import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
-import {ApplicationState} from '../../../model/applicationstate';
-import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {ApplicationState} from '../../../model/application-state';
+import {ServiceAccessMethodType} from '../../../model/service-access-method';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 import {ShellClientService} from '../../../service/shell-client.service';
 import {PodInfo} from '../../../model/podinfo';
@@ -61,7 +61,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     @ViewChild(RateComponent)
     public readonly appRate: RateComponent;
 
-    app: Application;
+    app: ApplicationMassive;
 
 
     public p_first = 'p_first';

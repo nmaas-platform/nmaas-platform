@@ -2,7 +2,7 @@ export * from './appinstance';
 export * from './appinstanceprogressstage';
 export * from './appinstancestatus';
 export * from './appsubscription';
-export * from './application';
+export * from './application-massive';
 export * from './authority';
 export * from './comment';
 export * from './configwizardtemplate';

@@ -1,7 +1,7 @@
 import {User} from './user';
 import {AppInstanceState} from './appinstancestatus';
 import {ConfigWizardTemplate} from './configwizardtemplate';
-import {ServiceAccessMethod} from './serviceaccessmethod';
+import {ServiceAccessMethod} from './service-access-method';
 import {AppConfigRepositoryAccessDetails} from './app-config-repository-access-details';
 
 export class AppInstanceRequest {

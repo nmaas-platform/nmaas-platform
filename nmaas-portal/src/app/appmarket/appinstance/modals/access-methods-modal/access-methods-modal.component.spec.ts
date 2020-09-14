@@ -3,7 +3,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {AccessMethodsModalComponent} from './access-methods-modal.component';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {SharedModule} from '../../../../shared';
-import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../../model/serviceaccessmethod';
+import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../../model/service-access-method';
 
 describe('AccessMethodsModalComponent', () => {
   let component: AccessMethodsModalComponent;

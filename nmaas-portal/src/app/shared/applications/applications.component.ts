@@ -1,4 +1,4 @@
-import {Application} from '../../model';
+import {ApplicationMassive} from '../../model';
 import {AppSubscription} from '../../model';
 import {AppConfigService, DomainService} from '../../service';
 import {AppsService} from '../../service';
@@ -11,6 +11,7 @@ import {Observable, of} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {Domain} from '../../model/domain';
 import {map} from 'rxjs/operators';
+import {ApplicationBase} from '../../model/application-base';
 
 @Component({
     selector: 'nmaas-applications-view',
@@ -32,8 +33,8 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
     @Input()
     public domainId: number;
 
-    public applications: Observable<Application[]>;
-    protected copy_applications: Observable<Application[]>;
+    public applications: Observable<ApplicationBase[]>;
+    protected copy_applications: Observable<ApplicationBase[]>;
     public selected: Observable<Set<number>>;
     public domain: Observable<Domain>;
 
@@ -59,7 +60,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
 
     protected updateDomain(): void {
         let domainId: number;
-        let applications: Observable<Application[]>;
+        let applications: Observable<ApplicationBase[]>;
 
         if (isUndefined(this.domainId) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
             domainId = undefined;
@@ -69,7 +70,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
 
         switch (+this.appView) {
             case AppViewType.APPLICATION:
-                applications = this.appsService.getApps();
+                applications = this.appsService.getAllActiveApplicationBase();
                 console.log('get apps update domain')
                 this.updateSelected();
                 // applications.subscribe((apps) => this.updateSelected(apps));
@@ -78,7 +79,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
                 applications = this.appSubsService.getSubscribedApplications(domainId);
                 break;
             default:
-                applications = of<Application[]>([]);
+                applications = of<ApplicationMassive[]>([]);
                 break;
         }
 
@@ -120,7 +121,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
         this.applications = this.applications.pipe(
             map(apps => {
                     console.log(apps);
-                    let res: Application[] = []
+                    let res: ApplicationBase[]
                     if (tag === 'all') { // if all tags than return all
                         res = apps;
                     } else { // filter by tag

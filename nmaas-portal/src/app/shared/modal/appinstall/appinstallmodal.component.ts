@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 
-import {Application} from '../../../model';
+import {ApplicationMassive} from '../../../model';
 import {ModalComponent} from '..';
 import {AppInstanceService, DomainService} from '../../../service';
 import { UserDataService } from '../../../service/userdata.service';
@@ -20,7 +20,7 @@ export class AppInstallModalComponent implements OnInit {
   public readonly modal: ModalComponent;
 
   @Input()
-  app: Application;
+  app: ApplicationMassive;
 
   @Input()
   domain: Domain;

@@ -2,27 +2,27 @@
 
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import { AppDetailsComponent } from './appdetails.component';
-import {RouterTestingModule} from "@angular/router/testing";
-import {AppConfigService, AppImagesService, AppInstanceService, AppsService, DomainService} from "../../service";
-import {Component, Input, Pipe, PipeTransform} from "@angular/core";
-import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
-import {AppSubscriptionsService} from "../../service/appsubscriptions.service";
-import {UserDataService} from "../../service/userdata.service";
-import {AuthService} from "../../auth/auth.service";
-import {TooltipModule} from "ng2-tooltip-directive";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {ActivatedRoute} from "@angular/router";
-import {of} from "rxjs";
-import {Application} from "../../model";
-import {AppDeploymentSpec} from "../../model/app-deployment-spec";
-import {AppConfigurationSpec} from "../../model/app-configuration-spec";
-import {ApplicationState} from "../../model/applicationstate";
+import {RouterTestingModule} from '@angular/router/testing';
+import {AppConfigService, AppImagesService, AppInstanceService, AppsService, DomainService} from '../../service';
+import {Component, Input, Pipe, PipeTransform} from '@angular/core';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
+import {UserDataService} from '../../service/userdata.service';
+import {AuthService} from '../../auth/auth.service';
+import {TooltipModule} from 'ng2-tooltip-directive';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {ActivatedRoute} from '@angular/router';
+import {of} from 'rxjs';
+import {ApplicationMassive} from '../../model';
+import {AppDeploymentSpec} from '../../model/app-deployment-spec';
+import {AppConfigurationSpec} from '../../model/app-configuration-spec';
+import {ApplicationState} from '../../model/application-state';
 
 @Pipe({
-  name: "secure"
+  name: 'secure'
 })
 class SecurePipeMock implements PipeTransform {
-  public name: string = "secure";
+  public name = 'secure';
 
   public transform(query: string, ...args: any[]): any {
     return query;
@@ -35,28 +35,28 @@ class SecurePipeMock implements PipeTransform {
 })
 class RateComponentMock {
   @Input()
-  private pathUrl:string;
+  private pathUrl: string;
   @Input()
-  editable: boolean = false;
+  editable = false;
   @Input()
-  short: boolean = false;
+  short = false;
   @Input()
-  showVotes: boolean = false;
+  showVotes = false;
 }
 
 @Component({
   selector: 'rating-extended',
   template: '<p>Rate Extended mock</p>'
 })
-class RateExtendedMock{
+class RateExtendedMock {
   @Input()
-  private pathUrl:string;
+  private pathUrl: string;
   @Input()
-  editable: boolean = false;
+  editable = false;
   @Input()
-  short: boolean = false;
+  short = false;
   @Input()
-  showVotes: boolean = false;
+  showVotes = false;
 }
 
 @Component({
@@ -84,7 +84,7 @@ class NmassModalAppInstallMock {
   selector: 'screenshots',
   template: '<p>Screenchots Mock</p>'
 })
-class ScreenshotsMock{
+class ScreenshotsMock {
   @Input()
   pathUrl: string;
 }
@@ -93,18 +93,18 @@ describe('Component: AppDetails', () => {
   let component: AppDetailsComponent;
   let fixture: ComponentFixture<AppDetailsComponent>;
 
-  let application: Application = {
+  const application: ApplicationMassive = {
     id: 2,
     appVersionId: 1,
-    name: "Oxidized",
-    version: "1.0.0",
+    name: 'Oxidized',
+    version: '1.0.0',
     license: null,
     licenseUrl: null,
     wwwUrl: null,
     sourceUrl: null,
     issuesUrl: null,
     nmaasDocumentationUrl: null,
-    owner: "admin",
+    owner: 'admin',
     descriptions: [],
     tags: ['tag1', 'tag2'],
     versions: [],
@@ -113,24 +113,23 @@ describe('Component: AppDetails', () => {
     appDeploymentSpec: new AppDeploymentSpec(),
     appConfigurationSpec: new AppConfigurationSpec(),
     state: ApplicationState.ACTIVE,
-    rowWithVersionVisible: false,
     rate: null,
   };
 
   beforeEach(async(() => {
-    let appsServiceSpy = jasmine.createSpyObj('AppsService',['getBaseApp']);
+    const appsServiceSpy = jasmine.createSpyObj('AppsService', ['getBaseApp']);
     appsServiceSpy.getBaseApp.and.returnValue(of(application));
-    let appSubsServiceSpy = jasmine.createSpyObj('AppSubscriptionService', ['getAllByApplication', 'getSubscription', 'unsubscribe']);
+    const appSubsServiceSpy = jasmine.createSpyObj('AppSubscriptionService', ['getAllByApplication', 'getSubscription', 'unsubscribe']);
     appSubsServiceSpy.getAllByApplication.and.returnValue(of([]));
-    let appImagesServiceSpy = jasmine.createSpyObj('AppImagesService', ['getAppLogoUrl']);
+    const appImagesServiceSpy = jasmine.createSpyObj('AppImagesService', ['getAppLogoUrl']);
     // let appInstanceServiceSpy = jasmine.createSpyObj('AppInstanceService', []);
     let userDataServiceSpy;
-    let appConfigSpy = jasmine.createSpyObj('AppConfigService',['getNmaasGlobalDomainId', 'getApiUrl', 'getHttpTimeout']);
-    appConfigSpy.getApiUrl.and.returnValue("http://localhost:9000/");
+    const appConfigSpy = jasmine.createSpyObj('AppConfigService', ['getNmaasGlobalDomainId', 'getApiUrl', 'getHttpTimeout']);
+    appConfigSpy.getApiUrl.and.returnValue('http://localhost:9000/');
     appConfigSpy.getNmaasGlobalDomainId.and.returnValue(1);
     appConfigSpy.getHttpTimeout.and.returnValue(10000);
-    let authServiceSpy = jasmine.createSpyObj('AuthService', ['hasRole', 'hasDomainRole']);
-    let domainServiceSpy = jasmine.createSpyObj('DomainService', ['getOne']);
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['hasRole', 'hasDomainRole']);
+    const domainServiceSpy = jasmine.createSpyObj('DomainService', ['getOne']);
 
     TestBed.configureTestingModule({
       declarations: [
@@ -175,7 +174,7 @@ describe('Component: AppDetails', () => {
 
   it('should create app', () => {
     expect(component).toBeDefined();
-    let app = fixture.debugElement.componentInstance;
+    const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   })
 

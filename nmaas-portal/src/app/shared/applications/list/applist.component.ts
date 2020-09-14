@@ -1,4 +1,4 @@
-import {Application} from '../../../model';
+import {ApplicationMassive} from '../../../model';
 import {AppConfigService} from '../../../service';
 import {AppSubscriptionsService} from '../../../service/appsubscriptions.service';
 import {CacheService} from '../../../service';
@@ -9,7 +9,7 @@ import {Component, OnInit, Input, ViewEncapsulation, OnDestroy} from '@angular/c
 import {Observable} from 'rxjs';
 import {isUndefined} from 'util';
 import {TranslateService} from '@ngx-translate/core';
-import {AppDescription} from '../../../model/appdescription';
+import {AppDescription} from '../../../model/app-description';
 import {Domain} from '../../../model/domain';
 
 @Component({
@@ -33,7 +33,7 @@ export class AppListComponent implements OnInit {
   public listType: ListType;
 
   @Input()
-  public applications: Observable<Application[]>;
+  public applications: Observable<ApplicationMassive[]>;
 
   @Input()
   public selected: Observable<Set<number>>;
@@ -65,7 +65,7 @@ export class AppListComponent implements OnInit {
     });
   }
 
-  public getDescription(app: Application): AppDescription {
+  public getDescription(app: ApplicationMassive): AppDescription {
     return app.descriptions.find(val => val.language === this.translate.currentLang);
   }
 

@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation, Input, ViewChild, OnChanges, SimpleChanges} from '@angular/core';
-import {Application} from '../../../../model';
+import {ApplicationMassive} from '../../../../model';
 import {AppImagesService} from '../../../../service';
 import {RateComponent} from '../../../rate';
 import {DefaultLogo} from '../../../../directive/defaultlogo.directive';
@@ -11,7 +11,7 @@ import {AppInstallModalComponent} from '../../../modal/appinstall';
 import {AppConfigService} from '../../../../service';
 import {AuthService} from '../../../../auth/auth.service';
 import {TranslateService} from '@ngx-translate/core';
-import {AppDescription} from '../../../../model/appdescription';
+import {AppDescription} from '../../../../model/app-description';
 import {Domain} from '../../../../model/domain';
 
 @Component({
@@ -31,7 +31,7 @@ export class AppElementComponent implements OnInit, OnChanges {
   };
 
   @Input()
-  public app: Application;
+  public app: ApplicationMassive;
 
   @Input()
   public selected: boolean;
