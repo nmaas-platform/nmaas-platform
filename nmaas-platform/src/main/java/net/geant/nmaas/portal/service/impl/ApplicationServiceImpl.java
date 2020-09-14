@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
+import net.geant.nmaas.portal.api.domain.ApplicationEntityView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -174,6 +175,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 				.forEach(template -> template.setApplicationId(appId));
 	}
 
+	private void setMissingTemplatesId(Application app, Long appId){
+		app.getAppConfigurationSpec().getTemplates()
+				.forEach(template -> template.setApplicationId(appId));
+	}
+
 	private void clearIds(ApplicationView app) {
 		app.getConfigWizardTemplate().setId(null);
 		if(app.getConfigUpdateWizardTemplate() != null) {
@@ -188,5 +194,19 @@ public class ApplicationServiceImpl implements ApplicationService {
 		app.getAppDeploymentSpec().getStorageVolumes().forEach(a -> a.setId(null));
 		app.getAppDeploymentSpec().getKubernetesTemplate().setId(null);
 		app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setId(null);
+	}
+
+	@Override
+	public boolean exists(String name, String version) {
+		return appRepo.existsByNameAndVersion(name, version);
+	}
+
+	@Override
+	public Long createOrUpdate(Application application) {
+		if(application.getId() != null) {
+			this.setMissingTemplatesId(application, application.getId());
+		}
+		Application app = this.appRepo.save(application);
+		return app.getId();
 	}
 }

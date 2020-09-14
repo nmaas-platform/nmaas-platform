@@ -18,6 +18,8 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 public class ApplicationBriefView extends ApplicationBaseView {
+
+	// application base properties
 	
 	String license;
 	String licenseUrl;
@@ -26,6 +28,8 @@ public class ApplicationBriefView extends ApplicationBaseView {
 	String sourceUrl;
 	String issuesUrl;
 	String nmaasDocumentationUrl;
+
+	// application properties
 
 	String owner;
 

@@ -26,4 +26,8 @@ public interface ApplicationService {
 
 	void setMissingProperties(ApplicationView app, Long appId);
 
+	boolean exists(String name, String version);
+
+	Long createOrUpdate(Application application);
+
 }

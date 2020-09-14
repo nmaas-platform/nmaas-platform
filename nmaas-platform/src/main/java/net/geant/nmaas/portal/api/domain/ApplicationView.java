@@ -17,7 +17,9 @@ import javax.validation.constraints.NotNull;
 @SuperBuilder
 public class ApplicationView extends ApplicationBriefView {
 
-	Long appVersionId;
+	Long appVersionId; // application version property - id of Application entity
+
+	// application properties
 	String version;
 	ConfigWizardTemplateView configWizardTemplate;
 	ConfigWizardTemplateView configUpdateWizardTemplate;
