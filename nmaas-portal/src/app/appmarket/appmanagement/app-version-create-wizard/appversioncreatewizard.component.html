@@ -203,6 +203,7 @@
     <button type="button" class="btn btn-success pull-right" [disabled]="appConfigForm.invalid"  (click)="nextStep()" [display]="appConfigForm.invalid" tooltip="{{'APPS_WIZARD.DISABLED_NEXT_BUTTON_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}} </button>
   </div>
 </div>
+
 <div *ngIf="activeStepIndex === 4">
   <app-apppreview [app]="app" [logo]="logo[0]" [screenshots]="screenshots"></app-apppreview>
   <div class="alert alert-danger" *ngIf="errorMessage">

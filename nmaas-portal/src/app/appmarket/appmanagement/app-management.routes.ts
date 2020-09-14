@@ -1,11 +1,11 @@
 import {Route} from "@angular/router";
 import {AuthGuard} from "../../auth/auth.guard";
 import {RoleGuard} from "../../auth/role.guard";
-import {AppManagementListComponent} from "./appmanagementlist/appmanagementlist.component";
-import {AppCreateWizardComponent} from "./appcreatewizard/appcreatewizard.component";
+import {AppManagementListComponent} from "./app-management-list/appmanagementlist.component";
+import {AppCreateWizardComponent} from "./app-create-wizard/appcreatewizard.component";
 import {ComponentMode} from "../../shared";
-import {AppPreviewComponent} from "./apppreview/apppreview.component";
-import {AppVersionCreateWizardComponent} from "./appversioncreatewizard/appversioncreatewizard.component";
+import {AppPreviewComponent} from "./app-preview/apppreview.component";
+import {AppVersionCreateWizardComponent} from "./app-version-create-wizard/appversioncreatewizard.component";
 
 export const AppManagementRoutes: Route[] = [
     { path: 'admin/apps', component: AppManagementListComponent, canActivate: [AuthGuard, RoleGuard], data: {roles: ['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']}},

@@ -2,7 +2,7 @@
 
 /*import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppCreateWizardComponent } from './appcreatewizard.component';
+import { AppCreateWizardComponent } from './app-create-wizard.component';
 
 describe('AppCreateWizardComponent', () => {
   let component: AppCreateWizardComponent;

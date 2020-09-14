@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {ModalComponent} from '../../../shared/modal';
-import {Application, ConfigWizardTemplate} from '../../../model';
+import {ApplicationMassive, ConfigWizardTemplate} from '../../../model';
 import {ConfigFileTemplate} from '../../../model/configfiletemplate';
 import {AppImagesService, AppsService} from '../../../service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -11,12 +11,12 @@ import {ParameterType} from '../../../model/parametertype';
 import {KubernetesTemplate} from '../../../model/kubernetestemplate';
 import {TranslateService} from '@ngx-translate/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {ApplicationState} from '../../../model/applicationstate';
+import {ApplicationState} from '../../../model/application-state';
 import {KubernetesChart} from '../../../model/kuberneteschart';
 import {AppStorageVolume} from '../../../model/app-storage-volume';
-import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/servicestoragevolume';
+import {parseServiceStorageVolumeType, ServiceStorageVolumeType} from '../../../model/service-storage-volume';
 import {AppAccessMethod} from '../../../model/app-access-method';
-import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {parseServiceAccessMethodType, ServiceAccessMethodType} from '../../../model/service-access-method';
 import {AbstractControl, ValidatorFn} from '@angular/forms';
 import {MultiSelect} from 'primeng/multiselect';
 import {MenuItem, SelectItem} from 'primeng/api';
@@ -49,7 +49,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     @ViewChild('tagsMultiSelect')
     public tagsMultiSelect: MultiSelect;
 
-    public app: Application;
+    public app: ApplicationMassive;
     public appName: string;
     public steps: MenuItem[];
     public activeStepIndex = 0;
@@ -109,7 +109,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
                         }
                     });
             } else if (!isNullOrUndefined(params['id'])) {
-                this.appsService.getApp(params['id']).subscribe(result => {
+                this.appsService.getApplicationMassive(params['id']).subscribe(result => {
                         this.app = result;
                         this.appName = result.name;
                         this.fillWizardWithData(result);
@@ -126,7 +126,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
         });
     }
 
-    public fillWizardWithData(appToEdit: Application): void {
+    public fillWizardWithData(appToEdit: ApplicationMassive): void {
 
         console.log(appToEdit);
 
@@ -175,7 +175,17 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
         if (!this.isChartValid()) {
             this.app.appDeploymentSpec.kubernetesTemplate.chart = undefined;
         }
-        this.appsService.addApp(this.app).subscribe(() => {
+        this.appsService.createApplication({
+            id: null,
+            name: this.app.name,
+            version: this.app.version,
+            configWizardTemplate: this.app.configWizardTemplate,
+            configUpdateWizardTemplate: this.app.configUpdateWizardTemplate,
+            appConfigurationSpec: this.app.appConfigurationSpec,
+            appDeploymentSpec: this.app.appDeploymentSpec,
+            owner: this.app.owner,
+            state: this.app.state,
+        }).subscribe(() => {
             this.errorMessage = undefined;
             this.modal.show();
         }, error => this.errorMessage = error.message);
@@ -188,7 +198,17 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
         if (!this.isChartValid()) {
             this.app.appDeploymentSpec.kubernetesTemplate.chart = undefined;
         }
-        this.appsService.updateApp(this.app).subscribe(() => {
+        this.appsService.updateApplication({
+            id: this.app.appVersionId,
+            name: this.app.name,
+            version: this.app.version,
+            configWizardTemplate: this.app.configWizardTemplate,
+            configUpdateWizardTemplate: this.app.configUpdateWizardTemplate,
+            appConfigurationSpec: this.app.appConfigurationSpec,
+            appDeploymentSpec: this.app.appDeploymentSpec,
+            owner: this.app.owner,
+            state: this.app.state,
+        }).subscribe(() => {
             this.errorMessage = undefined;
             this.modal.show();
         }, error => this.errorMessage = error.message);
@@ -260,9 +280,9 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
             return false;
         }
         const config: string = JSON.stringify(this.app.configWizardTemplate.template);
-        return config.search(/accessCredentials/g) != -1 &&
-            config.search(/accessUsername/g) != -1 &&
-            config.search(/accessPassword/g) != -1;
+        return config.search(/accessCredentials/g) !== -1 &&
+            config.search(/accessUsername/g) !== -1 &&
+            config.search(/accessPassword/g) !== -1;
     }
 
     public handleBasicAuth() {
@@ -295,7 +315,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
             const index = config.findIndex(val => val.key === 'accessCredentials');
             config.splice(index, 1);
         }
-        this.app.configUpdateWizardTemplate.template.components = this.app.configUpdateWizardTemplate.template.components.filter(val => val.key != 'accessCredentials');
+        this.app.configUpdateWizardTemplate.template.components = this.app.configUpdateWizardTemplate.template.components.filter(val => val.key !== 'accessCredentials');
         this.removeEmptyUpdateConfig();
     }
 
@@ -376,7 +396,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     public getLogo(id: number): void {
         this.appImagesService.getLogoFile(id).subscribe(file => {
             this.logo.push(this.convertToProperImageFile(file));
-        }, err => console.debug(err.message));
+        }, err => console.error(err.message));
     }
 
 
@@ -385,9 +405,9 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
             fileInfo.forEach(val => {
                 this.appImagesService.getAppScreenshotFile(id, val.id).subscribe(img => {
                     this.screenshots.push(this.convertToProperImageFile(img));
-                }, err => console.debug(err.message));
+                }, err => console.error(err.message));
             });
-        }, err => console.debug(err.message));
+        }, err => console.error(err.message));
     }
 
     private convertToProperImageFile(file: any) {
@@ -403,7 +423,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     public accessMethodTypeOptions(): string[] {
         const keys: Set<string> = new Set(Object.keys(ServiceAccessMethodType));
         if (this.app.appDeploymentSpec.accessMethods.
-        find(p => ServiceAccessMethod.getServiceAccessMethodTypeAsEnum(p.type) === ServiceAccessMethodType.DEFAULT)) {
+        find(p => parseServiceAccessMethodType(p.type) === ServiceAccessMethodType.DEFAULT)) {
             keys.delete(ServiceAccessMethodType[ServiceAccessMethodType.DEFAULT]);
         }
         return Array.from(keys);
@@ -420,7 +440,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     public storageVolumeTypeOptions(): string[] {
         const keys: Set<string> = new Set(Object.keys(ServiceStorageVolumeType));
         if (this.app.appDeploymentSpec.storageVolumes.
-        find(p => ServiceStorageVolume.getServiceStorageVolumeTypeAsEnum(p.type) === ServiceStorageVolumeType.MAIN)) {
+        find(p => parseServiceStorageVolumeType(p.type) === ServiceStorageVolumeType.MAIN)) {
             keys.delete(ServiceStorageVolumeType[ServiceStorageVolumeType.MAIN]);
         }
         return Array.from(keys);

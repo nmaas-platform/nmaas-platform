@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Application} from "../../../model";
+import {ApplicationMassive} from "../../../model";
 import {ActivatedRoute, Router} from "@angular/router";
 import {isNullOrUndefined} from "util";
 import {AppImagesService, AppsService} from "../../../service";
-import {AppDescription} from "../../../model/appdescription";
+import {AppDescription} from "../../../model/app-description";
 import {TranslateService} from "@ngx-translate/core";
 import {DomSanitizer} from "@angular/platform-browser";
 
@@ -15,7 +15,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 export class AppPreviewComponent implements OnInit {
 
     @Input()
-    public app: Application;
+    public app: ApplicationMassive;
 
     @Input()
     public logo: any;
@@ -33,7 +33,7 @@ export class AppPreviewComponent implements OnInit {
         if (!this.app) {
             this.route.params.subscribe(params => {
                 if (!isNullOrUndefined(params['id'])) {
-                    this.appService.getApp(params['id']).subscribe(result => {
+                    this.appService.getApplicationMassive(params['id']).subscribe(result => {
                             this.app = result;
                             this.getLogo(result.id);
                         },

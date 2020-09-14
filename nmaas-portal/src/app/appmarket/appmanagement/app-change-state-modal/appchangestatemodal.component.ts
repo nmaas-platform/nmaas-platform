@@ -1,9 +1,9 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
-import {ModalComponent} from "../../../shared/modal";
-import {ApplicationState} from "../../../model/applicationstate";
-import {AppsService} from "../../../service";
-import {AppStateChange} from "../../../model/appstatechange";
-import {ApplicationVersion} from "../../../model/applicationversion";
+import {ModalComponent} from '../../../shared/modal';
+import {ApplicationState} from '../../../model/application-state';
+import {AppsService} from '../../../service';
+import {AppStateChange} from '../../../model/appstatechange';
+import {ApplicationVersion} from '../../../model/application-version';
 
 @Component({
   selector: 'app-appchangestatemodal',
@@ -39,8 +39,8 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
     this.stateChange.state = this.stateList[0];
   }
 
-  private filterStates() : void {
-    switch(this.getStateAsString(this.app.state)){
+  private filterStates(): void {
+    switch (this.getStateAsString(this.app.state)) {
       case this.getStateAsString(ApplicationState.NEW):
         this.stateList = [ApplicationState.ACTIVE, ApplicationState.REJECTED];
         break;
@@ -59,13 +59,13 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
     }
   }
 
-  public getStateAsString(state: any): string {
-    return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
+  public getStateAsString(state: string | ApplicationState): string {
+    return typeof state === 'string' && isNaN(Number(state.toString())) ? state : ApplicationState[state];
   }
 
   public submit(): void {
-    this.appsService.changeApplicationState(this.app.appVersionId, this.stateChange).subscribe(()=>{
-      console.debug("Application state changed");
+    this.appsService.changeApplicationState(this.app.appVersionId, this.stateChange).subscribe(() => {
+      console.debug('Application state changed');
       this.errorMessage = undefined;
       this.app.state = this.stateChange.state;
       this.stateChange.state = undefined;

@@ -15,9 +15,9 @@
 
     <tbody>
     <ng-template ngFor let-app [ngForOf]="apps" let-i="index">
-      <tr class="table-row" (click)="clickTableRow(app)">
-        <td *ngIf="!app.rowWithVersionVisible"><span class="glyphicon glyphicon-chevron-right"></span></td>
-        <td *ngIf="app.rowWithVersionVisible"><span class="glyphicon glyphicon-chevron-down"></span></td>
+      <tr class="table-row" (click)="clickTableRow(i)">
+        <td *ngIf="!versionRowVisible[i]"><span class="glyphicon glyphicon-chevron-right"></span></td>
+        <td *ngIf="versionRowVisible[i]"><span class="glyphicon glyphicon-chevron-down"></span></td>
         <td>{{app?.name}}</td>
         <td></td>
         <td></td>
@@ -36,7 +36,7 @@
         </td>
       </tr>
       <ng-template ngFor let-version [ngForOf]="app.versions">
-        <tr *ngIf="app.rowWithVersionVisible" class="table-row" [routerLink]="['/admin/apps/edit/version', version?.appVersionId]">
+        <tr *ngIf="versionRowVisible[i]" class="table-row" [routerLink]="['/admin/apps/edit/version', version?.appVersionId]">
           <td></td>
           <td style="width: 10%"></td>
           <td>{{version.version}}</td>

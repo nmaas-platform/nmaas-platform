@@ -1,16 +1,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppManagementListComponent } from './appmanagementlist.component';
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {AppConfigService, AppsService} from "../../../service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {RouterTestingModule} from "@angular/router/testing";
-import {AuthService} from "../../../auth/auth.service";
-import {AppChangeStateModalComponent} from "../appchangestatemodal/appchangestatemodal.component";
-import {ModalComponent} from "../../../shared/modal";
-import {FormsModule} from "@angular/forms";
-import {BrowserModule} from "@angular/platform-browser";
-import {MockAuthService} from "../../appmarket.component.spec";
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {AppConfigService, AppsService} from '../../../service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {RouterTestingModule} from '@angular/router/testing';
+import {AuthService} from '../../../auth/auth.service';
+import {AppChangeStateModalComponent} from '../app-change-state-modal/appchangestatemodal.component';
+import {ModalComponent} from '../../../shared/modal';
+import {FormsModule} from '@angular/forms';
+import {BrowserModule} from '@angular/platform-browser';
+import {MockAuthService} from '../../appmarket.component.spec';
 
 describe('AppManagementListComponent', () => {
   let component: AppManagementListComponent;
@@ -23,12 +23,12 @@ describe('AppManagementListComponent', () => {
           AppChangeStateModalComponent,
           ModalComponent
       ],
-      providers:[
+      providers: [
           AppsService,
           AppConfigService,
           {provide: AuthService, useClass: MockAuthService}
         ],
-      imports:[
+      imports: [
         BrowserModule,
         FormsModule,
         HttpClientTestingModule,
