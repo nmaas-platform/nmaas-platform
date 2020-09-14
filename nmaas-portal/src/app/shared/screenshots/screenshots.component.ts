@@ -26,7 +26,7 @@ export class ScreenshotsComponent implements OnInit {
     public customModalVisible = false;
     public customModalVisibleAnimate = false;
 
-    constructor(private appsService: AppsService) {
+    constructor(public appsService: AppsService) {
     }
 
     ngOnInit() {

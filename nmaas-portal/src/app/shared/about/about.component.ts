@@ -22,7 +22,7 @@ export class AboutComponent implements OnInit {
 
   public errorMessage: any;
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal: ModalComponent;
 
   constructor(private changelogService:ChangelogService, private appConfigService:AppConfigService, private recaptchaV3Service: ReCaptchaV3Service,

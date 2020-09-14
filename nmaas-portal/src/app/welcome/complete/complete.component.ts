@@ -33,13 +33,13 @@ export class CompleteComponent extends BaseComponent implements OnInit {
 
     public languages: string[];
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public readonly modal: ModalComponent;
 
-    @ViewChild(ModalInfoTermsComponent)
+    @ViewChild(ModalInfoTermsComponent, { static: true })
     public readonly modalInfoTerms: ModalInfoTermsComponent;
 
-    @ViewChild(ModalInfoPolicyComponent)
+    @ViewChild(ModalInfoPolicyComponent, { static: true })
     public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
     constructor(private fb: FormBuilder,

@@ -10,7 +10,7 @@ import {isNullOrUndefined} from 'util';
 })
 export class AccessMethodsModalComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal: ModalComponent;
 
   @Input()

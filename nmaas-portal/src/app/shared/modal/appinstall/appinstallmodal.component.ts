@@ -16,7 +16,7 @@ import {Domain} from '../../../model/domain';
 })
 export class AppInstallModalComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal: ModalComponent;
 
   @Input()

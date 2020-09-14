@@ -168,18 +168,18 @@
         <hr>
         <div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
             <nmaas-appinstanceprogress [stages]='getStages()'
-                                       [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
+                                       [activeState]="getStateAsEnum(appInstanceStatus?.state)"></nmaas-appinstanceprogress>
         </div>
         <div id="app-progress-info" class="col-xs-12">
             <div id="app-progress-info-sub alert"
                  [ngClass]="{
-				 'alert-danger': appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE] || appInstanceStatus?.state === AppInstanceState[AppInstanceState.UNKNOWN],
-				 'other-states': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN] }"
+				 'alert-danger': getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE || getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.UNKNOWN,
+				 'other-states': getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN }"
                  class="col-xs-offset-1 col-xs-10">
-				<span *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+				<span *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
 					{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
 				</span>
-                <span *ngIf="appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN]">
+                <span *ngIf="getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN">
 					{{  'APP_INSTANCE.USER_FRIENDLY.' + getStateAsString(appInstanceStatus?.state) | translate }}
 				</span>
             </div>
@@ -187,10 +187,12 @@
     </div>
 
     <!-- Apply configuration -->
-    <div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString())
-			|| AppInstanceState[appInstanceStatus?.state] === undefined
-			|| AppInstanceState[appInstanceStatus?.state].toString() == AppInstanceState.REMOVED.toString()
-			|| AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}">
+    <div class="row" [ngClass]="{
+            'collapse': storage.has('appConfig_' + appInstanceId.toString())
+			|| getStateAsEnum(appInstanceStatus?.state) === undefined
+			|| getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.REMOVED
+			|| getStateAsEnum(appInstanceStatus?.state) > AppInstanceState.CONFIGURATION_AWAITING
+			}">
         <div class="col-xs-12">
             <h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
             <p *ngIf="appInstance !== undefined && configurationTemplate !== undefined && app?.nmaasDocumentationUrl">

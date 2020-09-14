@@ -4,8 +4,8 @@ COPY nmaas-portal /build/nmaas-portal
 WORKDIR /build/nmaas-portal
 
 RUN apk add nodejs nodejs-npm
-RUN npm install -g @angular/cli@^7.2.1
-RUN npm install
+RUN npm install -g @angular/cli@9
+RUN npm ci
 RUN ng build --base-href / --deploy-url / --prod
 
 

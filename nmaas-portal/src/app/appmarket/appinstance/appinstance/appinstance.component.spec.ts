@@ -3,7 +3,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {AppInstanceComponent} from './appinstance.component';
 import {FormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
 import {JwtModule} from '@auth0/angular-jwt';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
 import {AppConfigService, AppImagesService, AppInstanceService, AppsService, DomainService} from '../../../service';
@@ -32,7 +31,7 @@ import {ModalComponent} from '../../../shared/modal';
 import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {ActivatedRoute} from '@angular/router';
 import {ShellClientService} from '../../../service/shell-client.service';
-import anything = jasmine.anything;
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 @Pipe({
     name: 'secure'
@@ -87,7 +86,7 @@ class AppInstanceProgressMock {
     selector: 'nmaas-modal',
     template: '<p>Nmaas Modal Mock</p>'
 })
-class NmaasModalMock extends ModalComponent {
+class MockNmaasModalComponent extends ModalComponent {
 }
 
 @Directive({
@@ -163,7 +162,10 @@ describe('Component: AppInstance', () => {
     const appInstance: AppInstanceExtended = {
         applicationId: 2,
         applicationName: 'Oxidized',
-        configWizardTemplate: {id: 1, template: '{"template":"xD"}'},
+        configWizardTemplate: {
+            id: 1,
+            template: JSON.parse('{"title": "My Test Form","components": [{"type": "textfield", "input": true, "tableView": true, "inputType": "text", "inputMask": "", "label": "First Name", "key": "firstName", "placeholder": "Enter your first name", "prefix": "", "suffix": "", "multiple": false,"defaultValue": "","protected": false,"unique": false,"persistent": true,"validate": {"required": true,"minLength": 2,"maxLength": 10,"pattern": "","custom": "","customPrivate": false},"conditional": {"show": "","when": null,"eq": ""}},{"type": "textfield","input": true,"tableView": true,"inputType": "text","inputMask": "","label": "Last Name","key": "lastName","placeholder": "Enter your last name","prefix": "","suffix": "","multiple": false,"defaultValue": "","protected": false,"unique": false,"persistent": true,"validate": {"required": true, "minLength": 2, "maxLength": 10, "pattern": "", "custom": "", "customPrivate": false}, "conditional": {"show": "", "when": null, "eq": ""}}, {"input": true, "label": "Submit", "tableView": false, "key": "submit", "size": "md", "leftIcon": "", "rightIcon": "", "block": false, "action": "submit", "disableOnInvalid": true, "theme": "primary", "type": "button"}]}')
+        },
         configUpdateWizardTemplate: {id: 2, template: '{"template":"xD"}'},
         configuration: '{"oxidizedUsername":"oxidized","oxidizedPassword":"oxi@PLLAB","targets":[{"ipAddress":"10.0.0.1"},{"ipAddress":"10.0.0.2"},{"ipAddress":"10.0.0.3"},{"ipAddress":"10.0.0.4"},{"ipAddress":"10.0.0.5"},{"ipAddress":"10.0.0.6"},{"ipAddress":"10.0.0.7"},{"ipAddress":"10.0.0.8"},{"ipAddress":"10.0.0.9"},{"ipAddress":"10.0.0.10"},{"ipAddress":"10.0.0.11"},{"ipAddress":"10.0.0.12"},{"ipAddress":"10.0.0.13"},{"ipAddress":"10.0.0.14"},{"ipAddress":"10.0.0.15"},{"ipAddress":"10.0.0.16"}]}',
         createdAt: new Date(),
@@ -231,14 +233,14 @@ describe('Component: AppInstance', () => {
                 SecurePipeMock,
                 RateComponentMock,
                 AppInstanceProgressMock,
-                NmaasModalMock,
+                MockNmaasModalComponent,
                 AccessMethodsModalComponent,
                 MockRolesDirective,
                 SshShellMockComponent,
             ],
             imports: [
                 FormsModule,
-                HttpClientModule,
+                HttpClientTestingModule,
                 TooltipModule,
                 NgxPaginationModule,
                 PipesModule,
@@ -272,7 +274,7 @@ describe('Component: AppInstance', () => {
         fixture = TestBed.createComponent(AppInstanceComponent);
         component = fixture.componentInstance;
         component.appInstanceProgress = TestBed.createComponent(AppInstanceProgressMock).componentInstance as AppInstanceProgressComponent;
-        component.undeployModal = TestBed.createComponent(NmaasModalMock).componentInstance as ModalComponent;
+        component.undeployModal = TestBed.createComponent(MockNmaasModalComponent).componentInstance as ModalComponent;
 
         appConfigService = fixture.debugElement.injector.get(AppConfigService);
         appsService = fixture.debugElement.injector.get(AppsService);

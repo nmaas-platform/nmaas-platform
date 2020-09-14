@@ -49,7 +49,7 @@ export class AppDetailsComponent implements OnInit {
     @ViewChild(AppInstallModalComponent)
     public readonly appInstallModal: AppInstallModalComponent;
 
-    @ViewChild(CommentsComponent)
+    @ViewChild(CommentsComponent, { static: true })
     public readonly comments: CommentsComponent;
 
     @ViewChild(RateComponent)
@@ -65,7 +65,7 @@ export class AppDetailsComponent implements OnInit {
 
     constructor(private appsService: AppsService,
                 private appSubsService: AppSubscriptionsService,
-                private appImagesService: AppImagesService,
+                public appImagesService: AppImagesService,
                 // private appInstanceService: AppInstanceService,
                 private userDataService: UserDataService,
                 private appConfig: AppConfigService,
@@ -125,14 +125,14 @@ export class AppDetailsComponent implements OnInit {
         }
     }
 
-    protected subscribe(): void {
+    public subscribe(): void {
         if (this.isSubscriptionAllowed()) {
             console.info('Subscribe appId=' + this.appId + ' to domainId=' + this.domainId);
             this.appSubsService.subscribe(this.domainId, this.appId).subscribe(() => this.subscribed = true);
         }
     }
 
-    protected unsubscribe(): void {
+    public unsubscribe(): void {
         if (this.isSubscriptionAllowed()) {
             console.info('Unsubscribe appId=' + this.appId + ' from domainId=' + this.domainId);
             this.appSubsService.unsubscribe(this.domainId, this.appId).subscribe(() => this.subscribed = false);

@@ -21,3 +21,13 @@ export class AppInstanceStatus {
   public userFriendlyDetails: string = undefined;
   public userFriendlyState: string = undefined;
 }
+
+export function parseAppInstanceState(state: string | AppInstanceState): AppInstanceState {
+  switch (typeof state) {
+    case 'string':
+      return AppInstanceState[state]
+    default:
+      return state;
+  }
+}
+

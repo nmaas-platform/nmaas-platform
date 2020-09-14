@@ -11,8 +11,8 @@ import {RouterTestingModule} from "@angular/router/testing";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {of} from "rxjs";
 import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
-import {RecaptchaFormsModule} from 'ng-recaptcha/forms';
 import {InternationalizationService} from "../../service/internationalization.service";
+import {RecaptchaFormsModule} from 'ng-recaptcha';
 
 describe('Password reset component', () =>{
    let component: PasswordResetComponent;

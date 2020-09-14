@@ -1,6 +1,6 @@
 import {Component, Output} from "@angular/core";
 import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
-import {OnInit} from "@angular/core/public_api";
+import {OnInit} from "@angular/core";
 import {Cluster} from "../../../../model/cluster";
 import {ClusterService} from "../../../../service/cluster.service";
 import {ActivatedRoute, Router} from "@angular/router";

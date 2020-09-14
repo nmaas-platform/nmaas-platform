@@ -1,10 +1,11 @@
-import {Component, OnInit, Input, Output, EventEmitter, ViewChild} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, Injectable } from '@angular/core';
 import {AbstractControl, Validator, Validators, FormBuilder, FormGroup} from '@angular/forms';
 import {UserService} from "../../../service";
 import {Password} from "../../../model";
 import {ModalComponent} from "../../modal";
 import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
 
+@Injectable()
 export class PasswordValidator implements Validator {
 
   validate(ac: AbstractControl): {[key: string]: any} {
@@ -31,10 +32,10 @@ export class PasswordValidator implements Validator {
 })
 export class PasswordComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal:ModalComponent;
 
-  @ViewChild(PasswordStrengthMeterComponent)
+  @ViewChild(PasswordStrengthMeterComponent, { static: true })
   passwordMeter: PasswordStrengthMeterComponent;
 
   public passwordForm: FormGroup;

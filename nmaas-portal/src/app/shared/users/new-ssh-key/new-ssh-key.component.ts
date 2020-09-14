@@ -11,7 +11,7 @@ import {ModalComponent} from '../../modal';
 })
 export class NewSshKeyComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal: ModalComponent;
 
   @Output()

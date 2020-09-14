@@ -1,14 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LanguageDetailsComponent } from './languagedetails.component';
-import {TranslateModule} from "@ngx-translate/core";
-import {InputSwitchModule} from "primeng/primeng";
-import {FormsModule} from "@angular/forms";
-import {CommonModule} from "@angular/common";
-import {InternationalizationService} from "../../../../service/internationalization.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {AppConfigService} from "../../../../service";
-import {RouterTestingModule} from "@angular/router/testing";
+import {TranslateModule} from '@ngx-translate/core';
+import {InputSwitchModule} from 'primeng/inputswitch';
+import {FormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {InternationalizationService} from '../../../../service/internationalization.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {AppConfigService} from '../../../../service';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('LanguageDetailsComponent', () => {
   let component: LanguageDetailsComponent;
