@@ -1,5 +1,5 @@
-import {AppDescription} from './appdescription';
-import {ApplicationVersion} from './applicationversion';
+import {AppDescription} from './app-description';
+import {ApplicationVersion} from './application-version';
 import {Rate} from './rate';
 
 export class ApplicationBase {
