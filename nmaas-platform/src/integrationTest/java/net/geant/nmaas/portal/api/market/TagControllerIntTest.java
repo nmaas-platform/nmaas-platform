@@ -1,14 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
-import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
@@ -24,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,8 +51,8 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     public void setup(){
         this.mvc = createMVC();
 
-        ApplicationView app1Request = getDefaultApp("disabledAPP", ApplicationState.DISABLED);
-        ApplicationView app2Request = getDefaultApp("deletedAPP", ApplicationState.DELETED);
+        ApplicationMassiveView app1Request = getDefaultApp("disabledAPP", ApplicationState.DISABLED);
+        ApplicationMassiveView app2Request = getDefaultApp("deletedAPP", ApplicationState.DELETED);
         Application app = this.appService.create(app1Request, "admin");
         Application app2 = this.appService.create(app2Request, "admin");
         app1Request.setId(app.getId());
@@ -79,7 +75,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<String> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), Set.class);
+        Set<String> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<String>>(){});
         assertTrue(resultSet.contains("tag1"));
     }
 
@@ -89,7 +85,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<ApplicationBriefView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), Set.class);
+        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>(){});
         assertEquals(2, resultSet.size());
     }
 
@@ -99,14 +95,14 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<ApplicationBriefView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), Set.class);
+        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>(){});
         assertTrue(resultSet.isEmpty());
     }
 
-    private ApplicationView getDefaultApp(String name, ApplicationState state){
-        ApplicationView app = new ApplicationView();
+    private ApplicationMassiveView getDefaultApp(String name, ApplicationState state){
+        ApplicationMassiveView app = new ApplicationMassiveView();
         app.setName(name);
-        app.setDescriptions(Arrays.asList(new AppDescriptionView("en", "description", "fullDescription")));
+        app.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "description", "fullDescription")));
         app.setVersion("1.1.0");
         app.setTags(ImmutableSet.of("tag1", "tag2"));
         app.setAppConfigurationSpec(new AppConfigurationSpecView());

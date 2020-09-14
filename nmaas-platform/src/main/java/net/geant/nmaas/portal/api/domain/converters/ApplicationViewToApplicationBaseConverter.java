@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.persistent.entity.AppDescription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
@@ -15,12 +15,12 @@ import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.AbstractConverter;
 
 @AllArgsConstructor
-public class ApplicationViewToApplicationBaseConverter extends AbstractConverter<ApplicationView, ApplicationBase> {
+public class ApplicationViewToApplicationBaseConverter extends AbstractConverter<ApplicationMassiveView, ApplicationBase> {
 
     private TagRepository tagRepo;
 
     @Override
-    protected ApplicationBase convert(ApplicationView source) {
+    protected ApplicationBase convert(ApplicationMassiveView source) {
         ApplicationBase applicationBase = new ApplicationBase();
         applicationBase.setId(source.getId());
         applicationBase.setName(source.getName());
@@ -36,19 +36,19 @@ public class ApplicationViewToApplicationBaseConverter extends AbstractConverter
         return applicationBase;
     }
 
-    private Set<ApplicationVersion> getAppVersions(ApplicationView source){
+    private Set<ApplicationVersion> getAppVersions(ApplicationMassiveView source){
         return Optional.ofNullable(source.getAppVersions()).orElse(Collections.emptySet()).stream()
                 .map(version -> new ApplicationVersion(version.getVersion(), version.getState(), version.getAppVersionId()))
                 .collect(Collectors.toSet());
     }
 
-    private List<AppDescription> getDescriptions(ApplicationView source){
+    private List<AppDescription> getDescriptions(ApplicationMassiveView source){
         return Optional.ofNullable(source.getDescriptions()).orElse(Collections.emptyList()).stream()
                 .map(description -> new AppDescription(null, description.getLanguage(), description.getBriefDescription(), description.getFullDescription()))
                 .collect(Collectors.toList());
     }
 
-    private Set<Tag> getTags(ApplicationView source){
+    private Set<Tag> getTags(ApplicationMassiveView source){
         return Optional.ofNullable(source.getTags()).orElse(Collections.emptySet()).stream()
                 .map(tag -> tagRepo.findByName(tag).orElse(new Tag(tag)))
                 .collect(Collectors.toSet());

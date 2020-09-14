@@ -316,7 +316,7 @@ public class AppInstanceControllerTest {
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain.getId(), appInstanceView.getDomainId());
         DomainBase dv = appInstanceView.getDomain();
-        ApplicationBriefView av = appInstanceView.getApplication();
+        ApplicationMassiveView av = appInstanceView.getApplication();
         assertEquals(application.getId(), av.getId());
         assertEquals(application.getName(), av.getName());
         assertEquals(domain.getId(), dv.getId());

@@ -6,7 +6,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ap
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -120,7 +119,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .content(objectMapper.writeValueAsString(getDefaultAppView("updateApp")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        ApplicationView app = modelMapper.map(appRepo.findByName("updateApp").get(0), ApplicationView.class);
+        ApplicationMassiveView app = modelMapper.map(appRepo.findByName("updateApp").get(0), ApplicationMassiveView.class);
 
         // simulate bug from NMAAS-844
         app.getAppDeploymentSpec().getAccessMethods().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
@@ -153,7 +152,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .content(objectMapper.writeValueAsString(getDefaultAppView("updateApp")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        ApplicationView app = modelMapper.map(appRepo.findByName("updateApp").get(0), ApplicationView.class);
+        ApplicationMassiveView app = modelMapper.map(appRepo.findByName("updateApp").get(0), ApplicationMassiveView.class);
         mvc.perform(patch("/api/apps/base")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -180,7 +179,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBriefView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBriefView.class);
+        ApplicationBaseView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseView.class);
         assertEquals(DEFAULT_APP_NAME, app.getName());
     }
 
@@ -191,7 +190,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationView.class);
+        ApplicationMassiveView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationMassiveView.class);
         assertEquals(DEFAULT_APP_NAME, app.getName());
         assertEquals("1.1.0", app.getVersion());
 
@@ -205,7 +204,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationView.class);
+        ApplicationMassiveView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationMassiveView.class);
         assertEquals(DEFAULT_APP_NAME, app.getName());
         assertEquals("1.1.0", app.getVersion());
 
@@ -248,7 +247,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         AppConfigurationSpecView appConfigurationSpec = new AppConfigurationSpecView();
         appConfigurationSpec.getTemplates().add(new ConfigFileTemplateView(null, null, "name", "dir", "content"));
 
-        ApplicationEntityView view = ApplicationEntityView.builder()
+        ApplicationView view = ApplicationView.builder()
                 .name(DEFAULT_APP_NAME)
                 .version("3.0.0")
                 .appConfigurationSpec(appConfigurationSpec)
@@ -268,20 +267,20 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     private void createDefaultApp(){
-        ApplicationView app1Request = getDefaultAppView(DEFAULT_APP_NAME);
+        ApplicationMassiveView app1Request = getDefaultAppView(DEFAULT_APP_NAME);
         Application app = this.appService.create(app1Request, "admin");
         app1Request.setId(app.getId());
         appBaseService.createApplicationOrAddNewVersion(app1Request);
     }
 
-    private ApplicationView getDefaultAppView(String name){
+    private ApplicationMassiveView getDefaultAppView(String name){
         List<AppStorageVolumeView> svList = new ArrayList<>();
         svList.add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         List<AppAccessMethodView> mvList = new ArrayList<>();
         mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
         mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
         mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
-        ApplicationView applicationView = new ApplicationView();
+        ApplicationMassiveView applicationView = new ApplicationMassiveView();
         applicationView.setName(name);
         applicationView.setVersion("1.1.0");
         applicationView.setOwner("admin");

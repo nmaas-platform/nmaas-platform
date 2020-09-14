@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -46,16 +44,16 @@ public class ApplicationController extends AppBaseController {
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public List<ApplicationBriefView> getAllApplications(){
+	public List<ApplicationBaseView> getAllApplications(){
 		return appBaseService.findAll().stream()
-				.map(app -> modelMapper.map(app, ApplicationBriefView.class))
+				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.collect(Collectors.toList());
 	}
 	
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public Id addApplication(@RequestBody @Valid ApplicationView appRequest, Principal principal) {
+	public Id addApplication(@RequestBody @Valid ApplicationMassiveView appRequest, Principal principal) {
 		Application app = applications.create(appRequest, principal.getName());
 		appRequest.setId(app.getId());
 		ApplicationBase appBase = appBaseService.createApplicationOrAddNewVersion(appRequest);
@@ -66,7 +64,7 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void updateApplication(@RequestBody ApplicationView appRequest){
+	public void updateApplication(@RequestBody ApplicationMassiveView appRequest){
 		applications.setMissingProperties(appRequest, appRequest.getId());
 		applications.update(modelMapper.map(appRequest, Application.class));
 	}
@@ -74,7 +72,7 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping(value = "/base")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void updateApplicationBase(@RequestBody ApplicationView appRequest){
+	public void updateApplicationBase(@RequestBody ApplicationMassiveView appRequest){
 		appBaseService.updateApplicationBase(appRequest);
 	}
 
@@ -90,24 +88,24 @@ public class ApplicationController extends AppBaseController {
     @GetMapping(value = "/base/{appId}")
 //	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
-	public ApplicationBriefView getBaseApplication(@PathVariable(value = "appId") Long id) {
+	public ApplicationBaseView getBaseApplication(@PathVariable(value = "appId") Long id) {
 		ApplicationBase app = appBaseService.getBaseApp(id);
-		return modelMapper.map(app, ApplicationBriefView.class);
+		return modelMapper.map(app, ApplicationBaseView.class);
 	}
 
 	@GetMapping(value = "/{appName}/latest")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public ApplicationView getLatestAppVersion(@PathVariable String appName){
-		return modelMapper.map(applications.findApplicationLatestVersion(appName), ApplicationView.class);
+	public ApplicationMassiveView getLatestAppVersion(@PathVariable String appName){
+		return modelMapper.map(applications.findApplicationLatestVersion(appName), ApplicationMassiveView.class);
 	}
 
 	@GetMapping(value="/{appId}")
 //	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
-	public ApplicationView getApplication(@PathVariable(value = "appId") Long id) {
+	public ApplicationMassiveView getApplication(@PathVariable(value = "appId") Long id) {
 		Application app = getApp(id);
-		return modelMapper.map(app, ApplicationView.class);
+		return modelMapper.map(app, ApplicationMassiveView.class);
 	}
 
 	@PatchMapping(value = "/state/{appId}")
@@ -141,7 +139,7 @@ public class ApplicationController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.CREATED)
 	@Transactional
-	public void addApplicationVersion(@RequestBody @Valid ApplicationEntityView view, Principal principal) {
+	public void addApplicationVersion(@RequestBody @Valid ApplicationView view, Principal principal) {
 
 		// validate
 		// application base with given name must exist

@@ -15,7 +15,7 @@ import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -69,7 +69,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToIncorrectName(){
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             applicationView.setName("");
             applicationService.create(applicationView, "admin");
         });
@@ -78,7 +78,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToIncorrectVersion(){
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             applicationView.setVersion("");
             applicationService.create(applicationView, "admin");
         });
@@ -87,7 +87,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToIncorrectOwner(){
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             applicationService.create(applicationView, null);
         });
     }
@@ -95,7 +95,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToIncorrectNameAndVersion(){
         assertThrows(IllegalStateException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             when(applicationRepository.existsByNameAndVersion(applicationView.getName(), applicationView.getVersion())).thenReturn(true);
             applicationService.create(applicationView, "admin");
         });
@@ -104,7 +104,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToAppDeploymentSpec(){
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             applicationView.setAppDeploymentSpec(null);
 //            Application app = modelMapper.map(applicationView, Application.class);
 //            app.setId(1L);
@@ -116,7 +116,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToIncorrectConfigTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             applicationView.setConfigWizardTemplate(null);
 //            Application app = modelMapper.map(applicationView, Application.class);
 //            app.setId(1L);
@@ -129,7 +129,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToIncorrectDescriptions(){
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             applicationView.setDescriptions(null);
             applicationService.create(applicationView, "admin");
         });
@@ -138,7 +138,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void shouldThrowExceptionDueToEmptyDescriptions(){
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationView applicationView = getDefaultAppView();
+            ApplicationMassiveView applicationView = getDefaultAppView();
             applicationView.setDescriptions(Collections.emptyList());
             applicationService.create(applicationView, "admin");
         });
@@ -148,7 +148,7 @@ public class ApplicationServiceImplTest {
     public void createMethodShouldReturnApplicationObject(){
         Application application = new Application("test","testversion","owner");
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
-        ApplicationView applicationView = getDefaultAppView();
+        ApplicationMassiveView applicationView = getDefaultAppView();
         Application result = applicationService.create(applicationView,"owner");
         assertNotNull(result);
         assertEquals("test", result.getName());
@@ -316,8 +316,8 @@ public class ApplicationServiceImplTest {
         });
     }
 
-    private ApplicationView getDefaultAppView(){
-        ApplicationView applicationView = new ApplicationView();
+    private ApplicationMassiveView getDefaultAppView(){
+        ApplicationMassiveView applicationView = new ApplicationMassiveView();
         applicationView.setName("test");
         applicationView.setVersion("testversion");
         applicationView.setOwner("owner");

@@ -7,15 +7,12 @@ import java.util.List;
 import java.util.Optional;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationVersionView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.converters.ApplicationBaseToAppBriefViewConverter;
+import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.domain.converters.ApplicationViewToApplicationBaseConverter;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +44,7 @@ public class ApplicationBaseServiceTest {
 
     private ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
 
-    private List<ApplicationView> apps;
+    private List<ApplicationMassiveView> apps;
 
     @BeforeEach
     public void setup(){
@@ -178,8 +175,8 @@ public class ApplicationBaseServiceTest {
         });
     }
 
-    private ApplicationView getDefaultAppView(Long id, String version){
-        return ApplicationView.builder()
+    private ApplicationMassiveView getDefaultAppView(Long id, String version){
+        return ApplicationMassiveView.builder()
                 .id(id)
                 .name("defaultApp")
                 .version(version)
@@ -192,7 +189,6 @@ public class ApplicationBaseServiceTest {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         modelMapper.addConverter(new ApplicationViewToApplicationBaseConverter(tagRepo));
-        modelMapper.addConverter(new ApplicationBaseToAppBriefViewConverter());
         return modelMapper;
     }
 

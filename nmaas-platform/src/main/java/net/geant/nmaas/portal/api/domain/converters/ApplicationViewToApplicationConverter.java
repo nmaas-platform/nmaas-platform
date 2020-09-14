@@ -11,7 +11,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
 import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
@@ -25,10 +25,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ApplicationViewToApplicationConverter extends AbstractConverter<ApplicationView, Application> {
+public class ApplicationViewToApplicationConverter extends AbstractConverter<ApplicationMassiveView, Application> {
 
     @Override
-    protected Application convert(ApplicationView source) {
+    protected Application convert(ApplicationMassiveView source) {
         Application app = new Application(source.getAppVersionId(), source.getName(), source.getVersion(), source.getOwner());
         app.setState(source.getState());
         app.setConfigWizardTemplate(getConfigWizardTemplate(source.getConfigWizardTemplate()));
@@ -38,7 +38,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         return app;
     }
 
-    private AppConfigurationSpec getAppConfigurationSpec(ApplicationView source) {
+    private AppConfigurationSpec getAppConfigurationSpec(ApplicationMassiveView source) {
         return new AppConfigurationSpec(
                 source.getAppConfigurationSpec().getId(),
                 source.getAppConfigurationSpec().isConfigFileRepositoryRequired(),
@@ -47,7 +47,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
         );
     }
 
-    private List<ConfigFileTemplate> getConfigFileTemplates(ApplicationView source) {
+    private List<ConfigFileTemplate> getConfigFileTemplates(ApplicationMassiveView source) {
         return Optional.ofNullable(source.getAppConfigurationSpec().getTemplates()).orElse(Collections.emptyList()).stream()
                 .map(template ->
                         new ConfigFileTemplate(
@@ -61,7 +61,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
                 .collect(Collectors.toList());
     }
 
-    private AppDeploymentSpec getAppDeploymentSpec(ApplicationView source) {
+    private AppDeploymentSpec getAppDeploymentSpec(ApplicationMassiveView source) {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setId(source.getAppDeploymentSpec().getId());
         appDeploymentSpec.setSupportedDeploymentEnvironments(source.getAppDeploymentSpec().getSupportedDeploymentEnvironments());

@@ -4,8 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
-import net.geant.nmaas.portal.api.domain.ApplicationEntityView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -33,7 +32,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	@Transactional
-	public Application create(ApplicationView request, String owner) {
+	public Application create(ApplicationMassiveView request, String owner) {
 		checkParam(request, owner);
 		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
 		this.setMissingProperties(request, app.getId());
@@ -128,11 +127,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public void setMissingProperties(ApplicationView app, Long appId){
+	public void setMissingProperties(ApplicationMassiveView app, Long appId){
 		setMissingTemplatesId(app, appId);
 	}
 
-	private void checkParam(ApplicationView request, String owner) {
+	private void checkParam(ApplicationMassiveView request, String owner) {
 		if(request == null)
 			throw new IllegalArgumentException("Request cannot be null");
 		if(StringUtils.isEmpty(request.getName()))
@@ -170,7 +169,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		app.validate();
 	}
 
-	private void setMissingTemplatesId(ApplicationView app, Long appId){
+	private void setMissingTemplatesId(ApplicationMassiveView app, Long appId){
 		app.getAppConfigurationSpec().getTemplates()
 				.forEach(template -> template.setApplicationId(appId));
 	}
@@ -180,7 +179,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 				.forEach(template -> template.setApplicationId(appId));
 	}
 
-	private void clearIds(ApplicationView app) {
+	private void clearIds(ApplicationMassiveView app) {
 		app.getConfigWizardTemplate().setId(null);
 		if(app.getConfigUpdateWizardTemplate() != null) {
 			app.getConfigUpdateWizardTemplate().setId(null);

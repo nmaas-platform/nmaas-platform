@@ -1,31 +1,43 @@
 package net.geant.nmaas.portal.api.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 
 /**
- * full Application & ApplicationBase DTO
+ * DTO for {@link net.geant.nmaas.portal.persistent.entity.Application}
  */
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
-public class ApplicationView extends ApplicationBriefView {
+@Builder
+public class ApplicationView {
 
-	Long appVersionId; // application version property - id of Application entity
+    private Long id;
 
-	// application properties
-	String version;
-	ConfigWizardTemplateView configWizardTemplate;
-	ConfigWizardTemplateView configUpdateWizardTemplate;
-	@Valid
-	AppDeploymentSpecView appDeploymentSpec;
-	@Valid
-	AppConfigurationSpecView appConfigurationSpec;
-	
+    @Pattern(regexp = "^[a-zA-Z0-9- ]+$")
+    private String name;
+    @NotNull
+    @NotEmpty
+    private String version;
+    @Valid
+    @NotNull
+    private ConfigWizardTemplateView configWizardTemplate;
+    private ConfigWizardTemplateView configUpdateWizardTemplate;
+    @Valid
+    @NotNull
+    private AppDeploymentSpecView appDeploymentSpec;
+    @Valid
+    @NotNull
+    private AppConfigurationSpecView appConfigurationSpec;
+
+    private String owner;
+    private ApplicationState state;
+    private LocalDateTime creationDate;
 }

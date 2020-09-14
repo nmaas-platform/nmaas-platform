@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -31,21 +31,21 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     @Transactional
-    public ApplicationBase createApplicationOrAddNewVersion(ApplicationView application) {
+    public ApplicationBase createApplicationOrAddNewVersion(ApplicationMassiveView application) {
         if(appBaseRepository.existsByName(application.getName())){
             return addNewAppVersion(application);
         }
         return createAppBase(application);
     }
 
-    private ApplicationBase addNewAppVersion(ApplicationView application){
+    private ApplicationBase addNewAppVersion(ApplicationMassiveView application){
         ApplicationBase applicationBase = this.findByName(application.getName());
         applicationBase.getVersions().add(createAppVersion(application));
         applicationBase.validate();
         return appBaseRepository.save(applicationBase);
     }
 
-    private ApplicationVersion createAppVersion(ApplicationView app){
+    private ApplicationVersion createAppVersion(ApplicationMassiveView app){
         return ApplicationVersion.builder()
                 .appVersionId(app.getId())
                 .state(app.getState())
@@ -53,7 +53,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .build();
     }
 
-    private ApplicationBase createAppBase(ApplicationView application){
+    private ApplicationBase createAppBase(ApplicationMassiveView application){
         this.setMissingDescriptions(application);
         ApplicationBase appBase = modelMapper.map(application, ApplicationBase.class);
         appBase.validate();
@@ -64,7 +64,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
-    public void updateApplicationBase(ApplicationView application) {
+    public void updateApplicationBase(ApplicationMassiveView application) {
         this.setMissingDescriptions(application);
         ApplicationBase appBase = modelMapper.map(application, ApplicationBase.class);
         updateApplicationBase(appBase);
@@ -120,7 +120,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return appBaseRepository.findByName(name).orElseThrow(() -> new MissingElementException(name + " app base not found"));
     }
 
-    private void setMissingDescriptions(ApplicationView app){
+    private void setMissingDescriptions(ApplicationMassiveView app){
         AppDescriptionView appDescription = app.getDescriptions().stream()
                 .filter(description -> description.getLanguage().equals("en"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));

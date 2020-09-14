@@ -20,10 +20,20 @@ public class ApplicationBaseView {
     protected Long id;
     protected String name;
     protected List<AppDescriptionView> descriptions;
-    protected AppRateView rate;
     @Builder.Default
     protected Set<ApplicationVersionView> appVersions = new HashSet<>();
     @Builder.Default
     protected Set<String> tags = new HashSet<>();
+
+    protected String license;
+    protected String licenseUrl;
+
+    protected String wwwUrl;
+    protected String sourceUrl;
+    protected String issuesUrl;
+    protected String nmaasDocumentationUrl;
+
+    // add rating info
+    protected AppRateView rate;
 
 }

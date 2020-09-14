@@ -59,7 +59,7 @@ public class ConvertersIntTest {
     public void testConvertAppToAppView(){
         ApplicationBase defaultAppBase = getDefaultAppBase();
         appBaseRepo.save(defaultAppBase);
-        ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
+        ApplicationMassiveView appView = modelMapper.map(getDefaultApp(), ApplicationMassiveView.class);
         assertNotNull(appView.getConfigWizardTemplate());
         assertNull(appView.getConfigUpdateWizardTemplate());
         assertEquals(defaultAppBase.getIssuesUrl(), appView.getIssuesUrl());
@@ -68,7 +68,7 @@ public class ConvertersIntTest {
 
     @Test
     public void testConvertAppViewToAppBase(){
-        ApplicationView appView = getDefaultAppView();
+        ApplicationMassiveView appView = getDefaultAppView();
         ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
         assertEquals(appView.getId(), appBase.getId());
         assertEquals(appView.getName(), appBase.getName());
@@ -78,17 +78,17 @@ public class ConvertersIntTest {
     @Test
     public void testConvertAppBaseToAppBriefView(){
         ApplicationBase appBase = getDefaultAppBase();
-        ApplicationBriefView appBriefView = modelMapper.map(appBase, ApplicationBriefView.class);
-        assertEquals(appBase.getName(), appBriefView.getName());
-        assertNotNull(appBriefView.getTags());
-        assertEquals(1, appBriefView.getAppVersions().size());
-        assertTrue(appBriefView.getAppVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
-        assertTrue(appBriefView.getAppVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
+        ApplicationBaseView applicationBaseView = modelMapper.map(appBase, ApplicationBaseView.class);
+        assertEquals(appBase.getName(), applicationBaseView.getName());
+        assertNotNull(applicationBaseView.getTags());
+        assertEquals(1, applicationBaseView.getAppVersions().size());
+        assertTrue(applicationBaseView.getAppVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
+        assertTrue(applicationBaseView.getAppVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
     }
 
     @Test
     public void testConvertAppViewToApp(){
-        ApplicationView appView = getDefaultAppView();
+        ApplicationMassiveView appView = getDefaultAppView();
         Application app = modelMapper.map(appView, Application.class);
         assertEquals(appView.getState(), app.getState());
         assertNotNull(app.getConfigWizardTemplate());
@@ -100,8 +100,8 @@ public class ConvertersIntTest {
 	@Test
 	public void testConvertAppBriefViewToAppBase() {
         tagRepo.save(new Tag("network"));
-		
-		ApplicationBriefView appDto = new ApplicationBriefView();
+
+        ApplicationBaseView appDto = new ApplicationBaseView();
         appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setLicense("GNL");
@@ -122,7 +122,7 @@ public class ConvertersIntTest {
         assertNull( (((Tag) tags[0]).getName().equals("monitoring") ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
         assertNotNull((((Tag) tags[1]).getName().equals("network") ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
 
-        appDto = modelMapper.map(appEntity, ApplicationBriefView.class);
+        appDto = modelMapper.map(appEntity, ApplicationBaseView.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
         assertTrue(appDto.getTags().contains("network"));
@@ -166,8 +166,8 @@ public class ConvertersIntTest {
         assertEquals(Role.ROLE_SYSTEM_ADMIN, role);
     }
 
-	private ApplicationView getDefaultAppView(){
-        ApplicationView appView = new ApplicationView();
+	private ApplicationMassiveView getDefaultAppView(){
+        ApplicationMassiveView appView = new ApplicationMassiveView();
         appView.setName("testApp");
         appView.setLicense("MIT");
         appView.setLicenseUrl("MIT.org");

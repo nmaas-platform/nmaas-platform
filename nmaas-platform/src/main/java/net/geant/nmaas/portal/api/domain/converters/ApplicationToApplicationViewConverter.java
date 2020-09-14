@@ -12,7 +12,7 @@ import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -32,14 +32,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class ApplicationToApplicationViewConverter extends AbstractConverter<Application, ApplicationView> {
+public class ApplicationToApplicationViewConverter extends AbstractConverter<Application, ApplicationMassiveView> {
 
     private ApplicationBaseRepository appBaseRepository;
 
     @Override
-    protected ApplicationView convert(Application source) {
+    protected ApplicationMassiveView convert(Application source) {
         ApplicationBase appBase = getAppBase(source.getName());
-        return ApplicationView.builder()
+        return ApplicationMassiveView.builder()
                 .id(appBase.getId())
                 .appVersionId(source.getId())
                 .name(source.getName())

@@ -38,11 +38,9 @@ public class ConvertersConfig {
 	    modelMapper.addConverter(new InetAddressInverseConverter());
 	    modelMapper.addConverter(new ApplicationSubscriptionConverter());
 	    modelMapper.addConverter(new UserConverter());
-	    modelMapper.addConverter(new ApplicationBaseToAppBriefViewConverter());
 	    modelMapper.addConverter(new ApplicationToApplicationViewConverter(appBaseRepository));
 	    modelMapper.addConverter(new ApplicationViewToApplicationBaseConverter(tagRepo));
 	    modelMapper.addConverter(new ApplicationViewToApplicationConverter());
-	    modelMapper.addConverter(new ApplicationToApplicationBriefViewConverter(appBaseRepository));
 	    modelMapper.addConverter(new ApplicationBaseToApplicationBaseViewConverter(ratingRepository));
 	    return modelMapper;
 	}
