@@ -14,12 +14,16 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 public interface ApplicationService {
 	
 	Application create(ApplicationMassiveView request, String owner);
-	Application update(Application app);
+
+	Application create(Application application);
+	Application update(Application application);
+
 	void delete(Long id);
 
 	void changeApplicationState(Application app, ApplicationState state);
 	
-	Optional<Application> findApplication(Long applicationId);
+	Optional<Application> findApplication(Long id);
+	Optional<Application> findApplication(String name, String version);
 	Application findApplicationLatestVersion(String name);
 
 	Page<Application> findAll(Pageable pageable);
@@ -27,9 +31,8 @@ public interface ApplicationService {
 
 	void setMissingProperties(ApplicationMassiveView app, Long appId);
 	void setMissingProperties(ApplicationView app, Long appId);
+	void setMissingProperties(Application app, Long appId);
 
 	boolean exists(String name, String version);
-
-	Long createOrUpdate(Application application);
 
 }

@@ -7,6 +7,7 @@ import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
@@ -46,9 +47,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public Application update(Application app) {
-		checkApp(app);
-		return appRepo.save(app);
+	public Application update(Application application) {
+		checkApp(application);
+		return appRepo.save(application);
 	}
 
 	@Override
@@ -63,11 +64,16 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public Optional<Application> findApplication(Long applicationId) {
-		if (applicationId != null)
-			return appRepo.findById(applicationId);
+	public Optional<Application> findApplication(Long id) {
+		if (id != null)
+			return appRepo.findById(id);
 		else
 			throw new IllegalArgumentException("applicationId is null");
+	}
+
+	@Override
+	public Optional<Application> findApplication(String name, String version) {
+		return this.appRepo.findByNameAndVersion(name, version);
 	}
 
 	@Override
@@ -134,6 +140,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public void setMissingProperties(ApplicationView app, Long appId){
+		this.setMissingTemplatesId(app, appId);
+	}
+
+	@Override
+	public void setMissingProperties(Application app, Long appId) {
 		this.setMissingTemplatesId(app, appId);
 	}
 
@@ -212,11 +223,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public Long createOrUpdate(Application application) {
+	public Application create(Application application) {
 		if(application.getId() != null) {
-			this.setMissingTemplatesId(application, application.getId());
+			throw new ProcessingException("While creating id must be null");
 		}
-		Application app = this.appRepo.save(application);
-		return app.getId();
+		return this.appRepo.save(application);
 	}
 }
