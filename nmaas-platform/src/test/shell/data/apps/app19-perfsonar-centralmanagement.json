@@ -1,0 +1,237 @@
+{
+	"name":"Central Management",
+	"version":"4.2.2",
+	"license":"",
+	"licenseUrl": "",
+	"tags": [ "database", "archive", "visualization", "dashboard", "management", "configuration" ],
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "perfSONAR Central Management",
+			"fullDescription": "A set of perfSONAR central management components comprising psConfig Web Admin, MaDDash and Esmond."
+		},
+		{
+			"language": "de",
+			"briefDescription": "perfSONAR Central Management",
+			"fullDescription": "A set of perfSONAR central management components comprising psConfig Web Admin, MaDDash and Esmond."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "perfSONAR Central Management",
+			"fullDescription": "A set of perfSONAR central management components comprising psConfig Web Admin, MaDDash and Esmond."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "perfSONAR Central Management",
+			"fullDescription": "A set of perfSONAR central management components comprising psConfig Web Admin, MaDDash and Esmond."
+		}
+	],
+	"wwwUrl": "https://docs.perfsonar.net",
+	"sourceUrl": "https://github.com/perfsonar",
+	"issuesUrl": "https://github.com/perfsonar",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"KUBERNETES"
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-perfsonar-centralmanagement",
+				"version": "1.0.0"
+			},
+			"mainDeploymentName": "pwa-admin"
+		},
+		"deployParameters": {
+			"RELEASE_NAME_PWA_SCA_AUTH_PV_NAME": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-sca-auth.persistence.name=%VALUE%-pwa",
+			"RELEASE_NAME_PWA_NGINX_PV_NAME": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-nginx.persistence.name=%VALUE%-pwa",
+			"RELEASE_NAME_PWA_ADMIN_PV_NAME": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-pwa-admin.persistence.name=%VALUE%-pwa",
+			"RELEASE_NAME_PWA_PUB_AUTH_PV_NAME": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-pwa-pub.persistence.name=%VALUE%-pwa",
+			"RELEASE_NAME_ESMOND_PV_NAME": "nmaas-perfsonar-esmond.persistence.name=%VALUE%-esmond",
+			"RELEASE_NAME_MADDASH_PV_NAME": "nmaas-perfsonar-maddash.persistence.name=%VALUE%-maddash",
+			"RELEASE_NAME_ESMOND_SERVICE_ACCOUNT_NAME": "nmaas-perfsonar-esmond.serviceAccount.name=%VALUE%-esmond",
+			"RELEASE_NAME_MADDASH_SERVICE_ACCOUNT_NAME": "nmaas-perfsonar-maddash.serviceAccount.name=%VALUE%-maddash"
+		},
+		"globalDeployParameters": {
+			"nmaas-perfsonar-pwa.mongodb.nameOverride": "mongodb"
+		},
+		"storageVolumes": [],
+		"exposesWebUI": true,
+		"allowSshAccess": true,
+		"accessMethods":  [
+			{
+				"type": "EXTERNAL",
+				"name": "PWA",
+				"tag": "pwa",
+				"deployParameters": {
+					"INGRESS_ENABLED": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-nginx.ingress.enabled",
+					"INGRESS_HOSTS": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-nginx.ingress.hosts",
+					"INGRESS_TLS_ENABLED": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-nginx.ingress.tls.enabled",
+					"INGRESS_CLASS": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-nginx.ingress.class",
+					"INGRESS_LETSENCRYPT": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-nginx.ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "nmaas-perfsonar-pwa.nmaas-perfsonar-centralmanagement-nginx.ingress.tls.certOrIssuer"
+				}
+			},
+			{
+				"type": "EXTERNAL",
+				"name": "MaDDash",
+				"tag": "maddash",
+				"deployParameters": {
+					"INGRESS_ENABLED": "nmaas-perfsonar-maddash.ingress.enabled",
+					"INGRESS_HOSTS": "nmaas-perfsonar-maddash.ingress.hosts",
+					"INGRESS_TLS_ENABLED": "nmaas-perfsonar-maddash.ingress.tls.enabled",
+					"INGRESS_CLASS": "nmaas-perfsonar-maddash.ingress.class",
+					"INGRESS_LETSENCRYPT": "nmaas-perfsonar-maddash.ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "nmaas-perfsonar-maddash.ingress.tls.certOrIssuer"
+				}
+			},
+			{
+				"type": "EXTERNAL",
+				"name": "Esmond",
+				"tag": "esmond",
+				"deployParameters": {
+					"INGRESS_ENABLED": "nmaas-perfsonar-esmond.ingress.enabled",
+					"INGRESS_HOSTS": "nmaas-perfsonar-esmond.ingress.hosts",
+					"INGRESS_TLS_ENABLED": "nmaas-perfsonar-esmond.ingress.tls.enabled",
+					"INGRESS_CLASS": "nmaas-perfsonar-esmond.ingress.class",
+					"INGRESS_LETSENCRYPT": "nmaas-perfsonar-esmond.ingress.tls.acme",
+					"INGRESS_WILDCARD_OR_ISSUER": "nmaas-perfsonar-esmond.ingress.tls.certOrIssuer"
+				}
+			}
+		]
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired": false
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "psConfig Web Admin: Default username",
+											"type": "textfield",
+											"input": true,
+											"key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#env#username",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "psConfig Web Admin: Default password",
+											"type": "password",
+											"input": true,
+											"key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#env#password",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "psConfig Web Admin: Default email",
+											"type": "email",
+											"input": true,
+											"key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#env#email",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "psConfig Web Admin: Storage space (GB)",
+											"type": "textfield",
+											"input": true,
+											"key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#persistence#size",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain",
+											"defaultValue": "1Gi",
+											"placeholder": "Default value: 1Gi"
+										},
+										{
+											"label": "MaDDash: Default username",
+											"type": "textfield",
+											"input": true,
+											"key": "nmaas-perfsonar-maddash#env#MADDASH_USERNAME",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "MaDDash: Default password",
+											"type": "password",
+											"input": true,
+											"key": "nmaas-perfsonar-maddash#env#MADDASH_PASSWORD",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "MaDDash: Storage space (GB)",
+											"type": "textfield",
+											"input": true,
+											"key": "nmaas-perfsonar-maddash#persistence#size",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain",
+											"defaultValue": "5Gi",
+											"placeholder": "Default value: 5Gi"
+										},
+										{
+											"label": "Esmond: Storage space (GB)",
+											"type": "textfield",
+											"input": true,
+											"key": "nmaas-perfsonar-esmond#persistence#size",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain",
+											"defaultValue": "10Gi",
+											"placeholder": "Default value: 10Gi"
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	}
+}

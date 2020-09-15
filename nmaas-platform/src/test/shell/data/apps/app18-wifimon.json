@@ -38,7 +38,7 @@
 				"name": "nmaas-wifimon",
 				"version": "0.1.1"
 			},
-			"mainDeploymentName":  "ui"
+			"mainDeploymentName": "ui"
 		},
 		"deployParameters": {
 			"DOMAIN_CODENAME_ELASTICSEARCH": "elastic-stack.elasticsearch.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
