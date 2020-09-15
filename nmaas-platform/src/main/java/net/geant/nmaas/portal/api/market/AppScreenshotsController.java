@@ -64,12 +64,12 @@ public class AppScreenshotsController extends AppBaseController {
 		if(app.getLogo() != null) {
 			fileStorage.remove(app.getLogo());
 			app.setLogo(null);
-			appBaseService.updateApplicationBase(app);
+			appBaseService.update(app);
 		}
 		
 		FileInfo fileInfo = fileStorage.store(file);
 		app.setLogo(fileInfo);
-		appBaseService.updateApplicationBase(app);
+		appBaseService.update(app);
 		
 		return modelMapper.map(fileInfo, FileInfoView.class);
 	}
@@ -83,7 +83,7 @@ public class AppScreenshotsController extends AppBaseController {
 		if(app.getLogo() != null) {
 			fileStorage.remove(app.getLogo());
 			app.setLogo(null);
-			appBaseService.updateApplicationBase(app);
+			appBaseService.update(app);
 		}
 	}
 	
@@ -105,7 +105,7 @@ public class AppScreenshotsController extends AppBaseController {
 		
 		FileInfo fileInfo = fileStorage.store(file);
 		app.getScreenshots().add(fileInfo);
-		appBaseService.updateApplicationBase(app);
+		appBaseService.update(app);
 		
 		return modelMapper.map(fileInfo, FileInfoView.class);
 	}
@@ -132,7 +132,7 @@ public class AppScreenshotsController extends AppBaseController {
 		
 		fileStorage.remove(screenshotInfo);
 		app.getScreenshots().remove(screenshotInfo);
-		appBaseService.updateApplicationBase(app);
+		appBaseService.update(app);
 	}
 
 	@DeleteMapping(value="/screenshots/all")
@@ -142,7 +142,7 @@ public class AppScreenshotsController extends AppBaseController {
 		ApplicationBase app = getBaseApp(appId);
 		app.getScreenshots().forEach(fileInfo -> fileStorage.remove(fileInfo));
 		app.getScreenshots().clear();
-		appBaseService.updateApplicationBase(app);
+		appBaseService.update(app);
 	}
 	
 	private ResponseEntity<InputStreamResource> getFile(FileInfo imageFile)
