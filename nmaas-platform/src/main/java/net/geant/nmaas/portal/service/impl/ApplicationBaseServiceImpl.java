@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.AppDescription;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     private final ApplicationBaseRepository appBaseRepository;
@@ -34,14 +36,17 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     @Transactional
     public ApplicationBase create(ApplicationBase applicationBase) {
         if (applicationBase.getId() != null) {
+            log.error("Cannot add ApplicationBase - id not null");
             throw new ProcessingException("Created application id must be null");
         }
         if(appBaseRepository.existsByName(applicationBase.getName())) {
+            log.error("Cannot add ApplicationBase - application already exists");
             throw new ProcessingException("Application base with given name must not exist");
         }
         this.setMissingDescriptions(applicationBase);
         applicationBase.validate();
         this.handleTags(applicationBase);
+        log.info(applicationBase.getDescriptions().get(0).getFullDescription());
         ApplicationBase created = this.appBaseRepository.save(applicationBase);
         applicationStatePerDomainService.updateAllDomainsWithNewApplicationBase(created);
         return created;
@@ -55,6 +60,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
+    @Transactional
     public ApplicationBase update(ApplicationBase applicationBase){
         if(applicationBase.getId() == null) {
             throw new ProcessingException("Updated entity id must not be null");
