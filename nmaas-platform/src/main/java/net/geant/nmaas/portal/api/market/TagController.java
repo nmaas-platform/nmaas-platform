@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,12 @@ public class TagController {
 	@GetMapping
 	public Set<String> getAll() {
 		return tagRepo.findAll().stream()
-				.filter(tag -> tag.getApplications().stream().anyMatch(app -> app.getVersions().stream().anyMatch(version -> Arrays.asList(ApplicationState.ACTIVE, ApplicationState.DISABLED).contains(version.getState()))))
-				.map(tag -> modelMapper.map(tag, String.class))
+				.filter(tag -> tag.getApplications().stream()
+						.anyMatch(app -> app.getVersions().stream()
+								.anyMatch(version -> Arrays.asList(ApplicationState.ACTIVE, ApplicationState.DISABLED).contains(version.getState()))
+						)
+				)
+				.map(Tag::getName)
 				.collect(Collectors.toSet());
 	}
 	

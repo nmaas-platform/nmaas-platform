@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class ApplicationBaseView {
 
     protected Long id;
+    @NotEmpty
     protected String name;
 
     protected String license;
@@ -35,7 +37,7 @@ public class ApplicationBaseView {
     @Builder.Default
     protected List<AppDescriptionView> descriptions = new ArrayList<>();
     @Builder.Default
-    protected Set<String> tags = new HashSet<>();
+    protected Set<TagView> tags = new HashSet<>();
 
     //comments
 

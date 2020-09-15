@@ -106,8 +106,8 @@ public class ConvertersIntTest {
         appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setLicense("GNL");
-        appDto.getTags().add("monitoring");
-        appDto.getTags().add("network");
+        appDto.getTags().add(new TagView("monitoring"));
+        appDto.getTags().add(new TagView("network"));
 
         ApplicationBase appEntity = modelMapper.map(appDto, ApplicationBase.class);
 
@@ -118,16 +118,11 @@ public class ConvertersIntTest {
         assertEquals(appDto.getTags().size(), appEntity.getTags().size());
         assertTrue((appEntity.getTags().toArray()[0]) instanceof Tag);
 
-        Object[] tags = appEntity.getTags().toArray();
-
-        assertNull( (((Tag) tags[0]).getName().equals("monitoring") ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
-        assertNotNull((((Tag) tags[1]).getName().equals("network") ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
-
         appDto = modelMapper.map(appEntity, ApplicationBaseView.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
-        assertTrue(appDto.getTags().contains("network"));
-        assertTrue(appDto.getTags().contains("monitoring"));
+        assertTrue(appDto.getTags().contains(new TagView("network")));
+        assertTrue(appDto.getTags().contains(new TagView("monitoring")));
 	}
 
 	@Test

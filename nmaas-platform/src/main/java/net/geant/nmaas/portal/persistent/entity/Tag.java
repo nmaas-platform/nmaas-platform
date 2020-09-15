@@ -1,9 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +19,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Tag implements Serializable {
 	
 	@Id
@@ -29,7 +27,8 @@ public class Tag implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
+	@EqualsAndHashCode.Include
 	private String name;
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
