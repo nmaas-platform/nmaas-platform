@@ -98,7 +98,7 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstanceBase> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
+        User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, pageable).getContent().stream()
                 .map(this::mapAppInstanceBase)
                 .collect(Collectors.toList());
@@ -111,7 +111,7 @@ public class AppInstanceController extends AppBaseController {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
-        User user = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         // system admin on global view has an overall view over all instances
         if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
@@ -131,7 +131,7 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
         Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        User owner = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
         return getAllRunningInstancesByOwnerAndDomain(owner, domain);
     }
 
@@ -148,7 +148,7 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        User user = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             return instances.findAllByOwner(user, pageable).getContent().stream()
@@ -171,7 +171,7 @@ public class AppInstanceController extends AppBaseController {
     private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username, Pageable pageable) {
         Domain domain = domains.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
-        User user = users.findByUsername(username)
+        User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, domain, pageable).getContent().stream()
                 .map(this::mapAppInstanceBase)

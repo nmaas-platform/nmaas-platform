@@ -8,7 +8,6 @@ import net.geant.nmaas.portal.persistent.entity.FileInfo;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.FileStorageService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.InputStreamResource;
@@ -91,7 +90,7 @@ public class AppScreenshotsControllerTest {
         FileInfoView fiv = this.appScreenshotsController.uploadLogo(appWithLogo.getId(), mf);
 
         assertEquals(newLogo.getFilename(), fiv.getFilename());
-        verify(applicationBaseService, times(2)).updateApplicationBase(any(ApplicationBase.class));
+        verify(applicationBaseService, times(2)).update(any(ApplicationBase.class));
         verify(fileStorageService, times(1)).remove(any(FileInfo.class));
     }
 
@@ -104,7 +103,7 @@ public class AppScreenshotsControllerTest {
         FileInfoView fiv = this.appScreenshotsController.uploadLogo(app.getId(), mf);
 
         assertEquals(newLogo.getFilename(), fiv.getFilename());
-        verify(applicationBaseService, times(1)).updateApplicationBase(any(ApplicationBase.class));
+        verify(applicationBaseService, times(1)).update(any(ApplicationBase.class));
     }
 
     @Test
@@ -113,7 +112,7 @@ public class AppScreenshotsControllerTest {
         this.appScreenshotsController.deleteLogo(appWithLogo.getId());
 
         verify(fileStorageService, times(1)).remove(any(FileInfo.class));
-        verify(applicationBaseService, times(1)).updateApplicationBase(any(ApplicationBase.class));
+        verify(applicationBaseService, times(1)).update(any(ApplicationBase.class));
     }
 
     @Test
@@ -121,7 +120,7 @@ public class AppScreenshotsControllerTest {
         this.appScreenshotsController.deleteLogo(app.getId());
 
         verify(fileStorageService, times(0)).remove(any(FileInfo.class));
-        verify(applicationBaseService, times(0)).updateApplicationBase(any(ApplicationBase.class));
+        verify(applicationBaseService, times(0)).update(any(ApplicationBase.class));
     }
 
     @Test
@@ -139,7 +138,7 @@ public class AppScreenshotsControllerTest {
         FileInfoView fiv = this.appScreenshotsController.uploadScreenshot(app.getId(), mf);
 
         assertEquals(newScreenshot.getFilename(), fiv.getFilename());
-        verify(applicationBaseService, times(1)).updateApplicationBase(any(ApplicationBase.class));
+        verify(applicationBaseService, times(1)).update(any(ApplicationBase.class));
     }
 
     @Test
@@ -155,7 +154,7 @@ public class AppScreenshotsControllerTest {
         this.appScreenshotsController.deleteScreenshot(appWithLogo.getId(), 1L);
 
         verify(fileStorageService, times(1)).remove(any(FileInfo.class));
-        verify(applicationBaseService, times(1)).updateApplicationBase(any(ApplicationBase.class));
+        verify(applicationBaseService, times(1)).update(any(ApplicationBase.class));
         assertEquals(1, appWithLogo.getScreenshots().size());
     }
 
