@@ -50,7 +50,7 @@ public class ApplicationMassiveViewToApplicationBaseConverter extends AbstractCo
 
     private Set<Tag> getTags(ApplicationMassiveView source){
         return Optional.ofNullable(source.getTags()).orElse(Collections.emptySet()).stream()
-                .map(tag -> tagRepo.findByName(tag).orElse(new Tag(tag)))
+                .map(tag -> tagRepo.findByName(tag.getName()).orElse(new Tag(tag.getName())))
                 .collect(Collectors.toSet());
     }
 }

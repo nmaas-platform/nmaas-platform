@@ -1,10 +1,7 @@
 package net.geant.nmaas.portal.api.domain.converters;
 
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
-import net.geant.nmaas.portal.api.domain.AppRateView;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.api.domain.ApplicationVersionView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
@@ -62,9 +59,9 @@ public class ApplicationBaseToApplicationBaseViewConverter extends AbstractConve
                 .collect(Collectors.toSet());
     }
 
-    private Set<String> getTags(ApplicationBase source){
+    private Set<TagView> getTags(ApplicationBase source){
         return Optional.ofNullable(source.getTags()).orElse(Collections.emptySet()).stream()
-                .map(Tag::getName)
+                .map(tag -> new TagView(tag.getId(), tag.getName()))
                 .collect(Collectors.toSet());
     }
 }

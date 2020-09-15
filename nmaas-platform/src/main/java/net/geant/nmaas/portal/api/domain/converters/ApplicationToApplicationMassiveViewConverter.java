@@ -7,19 +7,11 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
-import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
-import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
-import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
-import net.geant.nmaas.portal.api.domain.ApplicationMassiveView;
-import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
-import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
@@ -141,9 +133,9 @@ public class ApplicationToApplicationMassiveViewConverter extends AbstractConver
                 .collect(Collectors.toList());
     }
 
-    private Set<String> getTags(ApplicationBase source){
+    private Set<TagView> getTags(ApplicationBase source){
         return Optional.ofNullable(source.getTags()).orElse(Collections.emptySet()).stream()
-                .map(Tag::getName)
+                .map(tag -> new TagView(tag.getId(), tag.getName()))
                 .collect(Collectors.toSet());
     }
 
