@@ -9,20 +9,15 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 
 public interface ApplicationBaseService {
 
-    ApplicationBase createApplicationOrAddNewVersion(ApplicationMassiveView application);
-
-    void updateApplicationBase(ApplicationBaseView application);
-
-    void updateApplicationBase(ApplicationBase application);
+    ApplicationBase create(ApplicationBase applicationBase);
+    ApplicationBase update(ApplicationBase applicationBase);
 
     void updateApplicationVersionState(String name, String version, ApplicationState state);
 
     List<ApplicationBase> findAll();
-
     List<ApplicationBase> findAllActiveOrDisabledApps();
 
     ApplicationBase getBaseApp(Long id);
-
     ApplicationBase findByName(String name);
 
     boolean isAppActive(ApplicationBase application);
