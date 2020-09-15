@@ -2,15 +2,19 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.*;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -24,54 +28,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Transactional
 @Log4j2
 class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
-    private ApplicationBaseRepository appBaseRepo;
+    private ApplicationBaseRepository applicationBaseRepository;
 
     @Autowired
-    private ApplicationRepository appRepo;
+    private ApplicationRepository applicationRepository;
 
     @Autowired
-    private ApplicationService appService;
+    private ApplicationService applicationService;
 
     @Autowired
-    private ApplicationBaseService appBaseService;
+    private ApplicationBaseService applicationBaseService;
 
     private ObjectMapper objectMapper;
 
     @Autowired
     private ModelMapper modelMapper;
 
-    private final static String DEFAULT_APP_NAME = "defApp";
+    private final static String DEFAULT_APP_NAME = "test";
+
+    private ApplicationBase defaultAppBase;
+    private Application defaultApplication;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         this.mvc = createMVC();
         this.objectMapper = new ObjectMapper();
-        createDefaultApp();
+
+        this.defaultAppBase = this.applicationBaseService.create(getDefaultApplicationBase());
+        this.defaultApplication = this.applicationService.create(getDefaultApplication());
+        this.defaultAppBase.getVersions().add(
+                new ApplicationVersion(this.defaultApplication.getVersion(), this.defaultApplication.getState(), this.defaultApplication.getId())
+        );
+        this.defaultAppBase = this.applicationBaseService.update(this.defaultAppBase);
     }
 
     @AfterEach
-    void tearDown(){
-        this.appRepo.deleteAll();
-        this.appBaseRepo.deleteAll();
+    void tearDown() {
+        this.applicationRepository.deleteAll();
+        this.applicationBaseRepository.deleteAll();
     }
 
     @Test
@@ -98,10 +105,20 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldAddApplication() throws Exception {
+        ApplicationBase newApplicationBase = new ApplicationBase(null, "new");
+        newApplicationBase.setDescriptions(Collections.singletonList(
+                new AppDescription(null, "en", "Description", "Full description")
+        ));
+
         MvcResult result = mvc.perform(post("/api/apps")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getDefaultAppView("new App")))
+                .content(objectMapper.writeValueAsString(
+                        new ApplicationController.ApplicationDTO(
+                                modelMapper.map(newApplicationBase, ApplicationBaseView.class),
+                                modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationView.class)
+                        )
+                ))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -111,69 +128,73 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    @Transactional
-    public void shouldUpdateApplication() throws Exception {
-        mvc.perform(post("/api/apps")
+    public void shouldUpdateApplicationVersion() throws Exception {
+        ApplicationView applicationView = modelMapper.map(this.defaultApplication, ApplicationView.class);
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(null, "{}"));
+
+        mvc.perform(patch("/api/apps/version")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getDefaultAppView("updateApp")))
+                .content(objectMapper.writeValueAsString(
+                        modelMapper.map(this.defaultApplication, ApplicationView.class)
+                ))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        ApplicationMassiveView app = modelMapper.map(appRepo.findByName("updateApp").get(0), ApplicationMassiveView.class);
 
         // simulate bug from NMAAS-844
-        app.getAppDeploymentSpec().getAccessMethods().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
-        app.getAppDeploymentSpec().getStorageVolumes().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
+        applicationView.getAppDeploymentSpec().getAccessMethods().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
+        applicationView.getAppDeploymentSpec().getStorageVolumes().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
 
-        app.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name4", "tag4", new HashMap<>()));
-        app.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name5", "tag5", new HashMap<>()));
-        app.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
-        app.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
+        applicationView.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name4", "tag4", new HashMap<>()));
+        applicationView.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name5", "tag5", new HashMap<>()));
+        applicationView.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
+        applicationView.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
 
-        mvc.perform(patch("/api/apps")
+        mvc.perform(patch("/api/apps/version")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(app))
+                .content(objectMapper.writeValueAsString(applicationView))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Application test = appRepo.findByName(app.getName()).get(0);
+//        Application test = applicationRepository.findByName(applicationView.getName()).get(0);
 
-        assertEquals(app.getAppDeploymentSpec().getStorageVolumes().size(), test.getAppDeploymentSpec().getStorageVolumes().size());
-        assertEquals(app.getAppDeploymentSpec().getAccessMethods().size(), test.getAppDeploymentSpec().getAccessMethods().size());
+        MvcResult result = mvc.perform(get("/api/apps/version/" + applicationView.getId())
+                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        ApplicationView test = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
+
+        assertEquals(applicationView.getAppDeploymentSpec().getStorageVolumes().size(), test.getAppDeploymentSpec().getStorageVolumes().size());
+        assertEquals(applicationView.getAppDeploymentSpec().getAccessMethods().size(), test.getAppDeploymentSpec().getAccessMethods().size());
     }
 
     @Test
-    @Transactional
     public void shouldUpdateAppBase() throws Exception {
-        mvc.perform(post("/api/apps")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getDefaultAppView("updateApp")))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        ApplicationMassiveView app = modelMapper.map(appRepo.findByName("updateApp").get(0), ApplicationMassiveView.class);
         mvc.perform(patch("/api/apps/base")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(app))
+                .content(objectMapper.writeValueAsString(
+                        modelMapper.map(defaultAppBase, ApplicationBase.class)
+                ))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void shouldDeleteApplication() throws Exception {
-        long id = appRepo.findAll().get(0).getId();
+        long id = this.defaultApplication.getId();
         mvc.perform(delete("/api/apps/" + id)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        assertEquals(ApplicationState.DELETED, appRepo.findAll().get(0).getState());
+        assertEquals(ApplicationState.DELETED, applicationRepository.findAll().get(0).getState());
     }
 
     @Test
     void shouldGetAppBase() throws Exception {
-        long id = appBaseRepo.findAll().get(0).getId();
+        long id = this.defaultAppBase.getId();
         MvcResult result = mvc.perform(get("/api/apps/base/" + id)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
@@ -190,25 +211,25 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationMassiveView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationMassiveView.class);
-        assertEquals(DEFAULT_APP_NAME, app.getName());
-        assertEquals("1.1.0", app.getVersion());
+        ApplicationController.ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationDTO.class);
+        assertEquals(DEFAULT_APP_NAME, app.getApplicationBase().getName());
+        assertEquals("1.1.0", app.getApplication().getVersion());
 
     }
 
     @Test
     void shouldGetApp() throws Exception {
-        long id = appRepo.findAll().get(0).getId();
+        long id = applicationRepository.findAll().get(0).getId();
         MvcResult result = mvc.perform(get("/api/apps/" + id)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationMassiveView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationMassiveView.class);
-        assertEquals(DEFAULT_APP_NAME, app.getName());
-        assertEquals("1.1.0", app.getVersion());
+        ApplicationController.ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationDTO.class);
+        assertEquals(DEFAULT_APP_NAME, app.getApplicationBase().getName());
+        assertEquals("1.1.0", app.getApplication().getVersion());
 
-        assertEquals(3, app.getAppDeploymentSpec().getAccessMethods().size());
+        assertEquals(3, app.getApplication().getAppDeploymentSpec().getAccessMethods().size());
 
         assertTrue(result.getResponse().getContentAsString().contains("name1"));
         assertTrue(result.getResponse().getContentAsString().contains("name2"));
@@ -219,20 +240,26 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    @Transactional
     public void shouldChangeAppState() throws Exception {
-        long id = appRepo.findAll().get(0).getId();
+        long id = this.defaultApplication.getId();
         mvc.perform(patch("/api/apps/state/" + id)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.DISABLED, "reason")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        assertEquals(ApplicationState.DISABLED, appRepo.getOne(id).getState());
+
+        MvcResult result = mvc.perform(get("/api/apps/version/" + id)
+                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        ApplicationView applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
+        assertEquals(ApplicationState.DISABLED, applicationView.getState());
+
     }
 
     @Test
-    @Transactional
     public void shouldAddNewVersion() throws Exception {
 
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
@@ -266,34 +293,67 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isCreated());
     }
 
-    private void createDefaultApp(){
-        ApplicationMassiveView app1Request = getDefaultAppView(DEFAULT_APP_NAME);
-        Application app = this.appService.create(app1Request, "admin");
-        app1Request.setId(app.getId());
-        appBaseService.createApplicationOrAddNewVersion(app1Request);
+    private ApplicationBase getDefaultApplicationBase() {
+        ApplicationBase applicationBase = new ApplicationBase(null, "test");
+        applicationBase.setLicense("");
+        applicationBase.setLicenseUrl("");
+        applicationBase.setSourceUrl("");
+        applicationBase.setIssuesUrl("");
+        applicationBase.setNmaasDocumentationUrl("");
+        applicationBase.setWwwUrl("");
+        applicationBase.setDescriptions(Collections.singletonList(
+                new AppDescription(null, "en", "Description", "Full description")
+        ));
+        applicationBase.setVersions(new HashSet<>());
+        applicationBase.setComments(new ArrayList<>());
+        applicationBase.setScreenshots(new ArrayList<>());
+        applicationBase.setLogo(null);
+        applicationBase.setTags(new HashSet<>());
+        return applicationBase;
     }
 
-    private ApplicationMassiveView getDefaultAppView(String name){
-        List<AppStorageVolumeView> svList = new ArrayList<>();
-        svList.add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
-        List<AppAccessMethodView> mvList = new ArrayList<>();
-        mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
-        mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
-        mvList.add(new AppAccessMethodView(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
-        ApplicationMassiveView applicationView = new ApplicationMassiveView();
-        applicationView.setName(name);
-        applicationView.setVersion("1.1.0");
-        applicationView.setOwner("admin");
-        applicationView.setState(ApplicationState.ACTIVE);
-        applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
-        AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(null, new KubernetesChartView(null, "name", "version"), "archive", null));
-        appDeploymentSpec.setStorageVolumes(svList);
-        appDeploymentSpec.setAccessMethods(mvList);
-        applicationView.setAppDeploymentSpec(appDeploymentSpec);
-        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(null, "{}"));
-        applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
-        applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
-        return applicationView;
+    private Application getNewApplication(String name, String version) {
+        List<AppStorageVolume> svList = new ArrayList<>();
+        svList.add(new AppStorageVolume(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
+        List<AppAccessMethod> mvList = new ArrayList<>();
+        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
+        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
+        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        Application application = new Application();
+        application.setName(name);
+        application.setVersion(version);
+        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(null, new KubernetesChart(null, "name", "version"), "archive", null));
+        appDeploymentSpec.setStorageVolumes(new HashSet<>(svList));
+        appDeploymentSpec.setAccessMethods(new HashSet<>(mvList));
+        application.setAppDeploymentSpec(appDeploymentSpec);
+        application.setConfigWizardTemplate(new ConfigWizardTemplate(null, "{}"));
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
+        application.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
+        return application;
+    }
+
+    private Application getDefaultApplication() {
+        List<AppStorageVolume> svList = new ArrayList<>();
+        svList.add(new AppStorageVolume(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
+        List<AppAccessMethod> mvList = new ArrayList<>();
+        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
+        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
+        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        Application application = new Application();
+        application.setName("test");
+        application.setVersion("1.1.0");
+        application.setOwner("admin");
+        application.setState(ApplicationState.ACTIVE);
+        application.setCreationDate(LocalDateTime.now());
+        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(null, new KubernetesChart(null, "name", "version"), "archive", null));
+        appDeploymentSpec.setStorageVolumes(new HashSet<>(svList));
+        appDeploymentSpec.setAccessMethods(new HashSet<>(mvList));
+        application.setAppDeploymentSpec(appDeploymentSpec);
+        application.setConfigWizardTemplate(new ConfigWizardTemplate(null, "{}"));
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
+        application.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
+        return application;
     }
 }

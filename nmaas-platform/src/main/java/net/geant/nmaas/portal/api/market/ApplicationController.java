@@ -94,6 +94,7 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public Id addApplication(@RequestBody @Valid ApplicationDTO request, Principal principal) {
 		ApplicationBase base = this.appBaseService.create(modelMapper.map(request.getApplicationBase(), ApplicationBase.class));
+		log.info(base.getDescriptions().get(0).getFullDescription());
 		this.addApplicationVersion(request.getApplication(), principal);
 		return new Id(base.getId());
 	}
@@ -147,6 +148,7 @@ public class ApplicationController extends AppBaseController {
 		// application specified name and version must not exist
 		boolean exists = applicationService.exists(view.getName(), view.getVersion());
 		if(hasVersion || exists) {
+			log.error("Cannot add application version, object already exists");
 			throw new ObjectAlreadyExistsException("App version already exists");
 		}
 

@@ -24,6 +24,7 @@ public class ApplicationBaseToApplicationBaseViewConverter extends AbstractConve
             AppDescriptionView adv = new AppDescriptionView();
             adv.setLanguage(ad.getLanguage());
             adv.setBriefDescription(ad.getBriefDescription());
+            adv.setFullDescription(ad.getFullDescription());
             return adv;
         }).collect(Collectors.toList()));
         abv.setLicense(source.getLicense());

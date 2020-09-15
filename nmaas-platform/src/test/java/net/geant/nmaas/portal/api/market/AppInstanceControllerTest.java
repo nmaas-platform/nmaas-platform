@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.*;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -85,7 +84,7 @@ public class AppInstanceControllerTest {
                 domainService,
                 appDeploymentRepositoryManager);
         appInstanceController.modelMapper = new ModelMapper();
-        appInstanceController.users = userService;
+        appInstanceController.userService = userService;
 
         when(pageable.getOffset()).thenReturn(0L);
         when(pageable.getPageNumber()).thenReturn(0);
