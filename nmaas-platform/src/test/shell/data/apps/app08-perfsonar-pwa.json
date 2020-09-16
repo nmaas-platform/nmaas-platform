@@ -142,8 +142,8 @@
             ],
             "kubernetesTemplate": {
                 "chart": {
-                    "name": "nmaas-perfsonar-centralmanagement",
-                    "version": "0.1.1"
+                    "name": "nmaas-perfsonar-pwa",
+                    "version": "1.0.0"
                 },
                 "mainDeploymentName": "pwa-admin"
             },
@@ -182,10 +182,10 @@
                     "type": "SHARED",
                     "defaultStorageSpace": 1,
                     "deployParameters": {
-                      "PERSISTENCE_ENABLED": "nmaas-perfsonar-centralmanagement-nginx.persistence.enabled",
-                      "PERSISTENCE_NAME": "nmaas-perfsonar-centralmanagement-nginx.persistence.name",
-                      "PERSISTENCE_STORAGE_CLASS": "nmaas-perfsonar-centralmanagement-nginx.persistence.storageClass",
-                      "PERSISTENCE_STORAGE_SPACE": "nmaas-perfsonar-centralmanagement-nginx.persistence.size"
+                        "PERSISTENCE_ENABLED": "nmaas-perfsonar-centralmanagement-nginx.persistence.enabled",
+                        "PERSISTENCE_NAME": "nmaas-perfsonar-centralmanagement-nginx.persistence.name",
+                        "PERSISTENCE_STORAGE_CLASS": "nmaas-perfsonar-centralmanagement-nginx.persistence.storageClass",
+                        "PERSISTENCE_STORAGE_SPACE": "nmaas-perfsonar-centralmanagement-nginx.persistence.size"
                     }
                 }
             ],
