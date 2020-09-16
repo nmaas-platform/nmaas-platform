@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.market;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,9 +12,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.*;
-import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.portal.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -30,26 +28,28 @@ import java.util.stream.Stream;
 
 public class AppInstanceControllerTest {
 
-    private AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
-    private AppDeploymentMonitor appDeploymentMonitor = mock(AppDeploymentMonitor.class);
-    private DomainService domainService = mock(DomainService.class);
-    private ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
-    private UserService userService = mock(UserService.class);
+    private final AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
+    private final AppDeploymentMonitor appDeploymentMonitor = mock(AppDeploymentMonitor.class);
+    private final DomainService domainService = mock(DomainService.class);
+    private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
+    private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
+    private final UserService userService = mock(UserService.class);
+    private final ApplicationService applicationService = mock(ApplicationService.class);
+    private final ApplicationBaseService applicationBaseService = mock(ApplicationBaseService.class);
 
     private AppInstanceController appInstanceController;
 
     private Application application;
     private Domain domain;
     private Domain global;
-    private String name = "app1";
+    private final String name = "app1";
     private String templateString = "{\"template\":\"xD\"}";
     private String identifierValue = "id12";
     private User owner;
     private User admin;
 
-    private Pageable pageable = mock(Pageable.class);
-    private Pageable pageableInvalid = mock(Pageable.class);
+    private final Pageable pageable = mock(Pageable.class);
+    private final Pageable pageableInvalid = mock(Pageable.class);
 
     @BeforeEach
     public void setup() {
@@ -78,6 +78,10 @@ public class AppInstanceControllerTest {
         application.setConfigWizardTemplate(configWizardTemplate);
 
         appInstanceController = new AppInstanceController(
+                new ModelMapper(),
+                applicationService,
+                applicationBaseService,
+                userService,
                 appLifecycleManager,
                 appDeploymentMonitor,
                 applicationInstanceService,
@@ -280,6 +284,7 @@ public class AppInstanceControllerTest {
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
+        when(applicationBaseService.findByName(anyString())).thenReturn(new ApplicationBase(name));
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
@@ -312,16 +317,21 @@ public class AppInstanceControllerTest {
         ModelMapper modelMapper = new ModelMapper();
         AppInstance appInstance = new AppInstance(application, name, domain, owner);
         AppInstanceViewExtended appInstanceView = modelMapper.map(appInstance, AppInstanceViewExtended.class);
+
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain.getId(), appInstanceView.getDomainId());
+
+        ApplicationDTO av = appInstanceView.getApplication();
+        assertEquals(application.getId(), av.getApplication().getId());
+        assertEquals(application.getName(), av.getApplication().getName());
+
         DomainBase dv = appInstanceView.getDomain();
-        // TODO rename test
-//        ApplicationMassiveView av = appInstanceView.getApplication();
-//        assertEquals(application.getId(), av.getId());
-//        assertEquals(application.getName(), av.getName());
         assertEquals(domain.getId(), dv.getId());
         assertEquals(domain.getName(), dv.getName());
         assertEquals(domain.getCodename(), dv.getCodename());
+
+        // application base is null after model mapping!
+        assertNull(av.getApplicationBase());
     }
 
     @Test

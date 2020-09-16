@@ -12,25 +12,14 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.AppInstanceBase;
-import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.api.domain.AppInstanceState;
-import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.service.*;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,15 +52,33 @@ public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_USER_MESSAGE = "User not found";
 
-    private AppLifecycleManager appLifecycleManager;
+    private final AppLifecycleManager appLifecycleManager;
 
-    private AppDeploymentMonitor appDeploymentMonitor;
+    private final AppDeploymentMonitor appDeploymentMonitor;
 
-    private ApplicationInstanceService instances;
+    private final ApplicationInstanceService instanceService;
 
-    private DomainService domains;
+    private final DomainService domainService;
 
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+
+    @Autowired
+    public AppInstanceController(ModelMapper modelMapper,
+                                 ApplicationService applicationService,
+                                 ApplicationBaseService appBaseService,
+                                 UserService userService,
+                                 AppLifecycleManager appLifecycleManager,
+                                 AppDeploymentMonitor appDeploymentMonitor,
+                                 ApplicationInstanceService instanceService,
+                                 DomainService domainService,
+                                 AppDeploymentRepositoryManager appDeploymentRepositoryManager) {
+        super(modelMapper, applicationService, appBaseService, userService);
+        this.appLifecycleManager = appLifecycleManager;
+        this.appDeploymentMonitor = appDeploymentMonitor;
+        this.instanceService = instanceService;
+        this.domainService = domainService;
+        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
+    }
 
     /*
     NOTICE:
@@ -87,7 +94,7 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstanceBase> getAllInstances(Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        List<AppInstance> source = pageable == null ?instances.findAll() : instances.findAll(pageable).getContent();
+        List<AppInstance> source = pageable == null ? instanceService.findAll() : instanceService.findAll(pageable).getContent();
         return source.stream()
                 .map(this::mapAppInstanceBase)
                 .collect(Collectors.toList());
@@ -99,7 +106,7 @@ public class AppInstanceController extends AppBaseController {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instances.findAllByOwner(user, pageable).getContent().stream()
+        return instanceService.findAllByOwner(user, pageable).getContent().stream()
                 .map(this::mapAppInstanceBase)
                 .collect(Collectors.toList());
     }
@@ -110,17 +117,17 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstanceBase> getAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+        Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         // system admin on global view has an overall view over all instances
         if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            List<AppInstance> source = pageable == null ?instances.findAll() : instances.findAll(pageable).getContent();
+            List<AppInstance> source = pageable == null ? instanceService.findAll() : instanceService.findAll(pageable).getContent();
             return source.stream()
                     .map(this::mapAppInstanceBase)
                     .collect(Collectors.toList());
         } else {
-            return instances.findAllByDomain(domain, pageable).getContent().stream()
+            return instanceService.findAllByDomain(domain, pageable).getContent().stream()
                     .map(this::mapAppInstanceBase)
                     .collect(Collectors.toList());
         }
@@ -130,13 +137,13 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
-        Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
+        Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         User owner = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
         return getAllRunningInstancesByOwnerAndDomain(owner, domain);
     }
 
     private List<AppInstanceBase> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
-        return this.instances.findAllByOwnerAndDomain(owner, domain).stream()
+        return this.instanceService.findAllByOwnerAndDomain(owner, domain).stream()
                 .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
                 .map(this::mapAppInstanceBase)
                 .collect(Collectors.toList());
@@ -151,7 +158,7 @@ public class AppInstanceController extends AppBaseController {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            return instances.findAllByOwner(user, pageable).getContent().stream()
+            return instanceService.findAllByOwner(user, pageable).getContent().stream()
                     .map(this::mapAppInstanceBase)
                     .collect(Collectors.toList());
         } else {
@@ -169,11 +176,11 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username, Pageable pageable) {
-        Domain domain = domains.findDomain(domainId)
+        Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instances.findAllByOwner(user, domain, pageable).getContent().stream()
+        return instanceService.findAllByOwner(user, domain, pageable).getContent().stream()
                 .map(this::mapAppInstanceBase)
                 .collect(Collectors.toList());
     }
@@ -183,7 +190,7 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public AppInstanceViewExtended getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                                   @NotNull Principal principal) {
-        AppInstance appInstance = instances.find(appInstanceId)
+        AppInstance appInstance = instanceService.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
         return mapAppInstanceExtended(appInstance);
     }
@@ -194,14 +201,14 @@ public class AppInstanceController extends AppBaseController {
     public Id createAppInstance(@RequestBody AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal, @PathVariable Long domainId) {
         Application app = getApp(appInstanceRequest.getApplicationId());
-        Domain domain = domains.findDomain(domainId)
+        Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
         AppInstance appInstance;
         /*
         check name uniqueness
         forbidden names - names of all app instances in domain, where state is different than done
          */
-        Set<String> forbiddenNames = instances.findAllByDomain(domain).stream() // get all app instances in domain
+        Set<String> forbiddenNames = instanceService.findAllByDomain(domain).stream() // get all app instances in domain
                 .filter(appInst -> {
                     AppInstanceState state = mapAppInstanceState(appDeploymentMonitor.state(appInst.getInternalId())); // map their internal state to app instance state
                     return !(state.equals(AppInstanceState.DONE) || state.equals(AppInstanceState.REMOVED)); // check if it does not equal 'DONE' or 'REMOVED'
@@ -213,7 +220,7 @@ public class AppInstanceController extends AppBaseController {
         }
 
         try {
-            appInstance = instances.create(domain, app, appInstanceRequest.getName());
+            appInstance = instanceService.create(domain, app, appInstanceRequest.getName());
         } catch (ApplicationSubscriptionNotActiveException e) {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
@@ -233,7 +240,7 @@ public class AppInstanceController extends AppBaseController {
         Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
         appInstance.setInternalId(internalId);
 
-        instances.update(appInstance);
+        instanceService.update(appInstance);
 
         return new Id(appInstance.getId());
     }
@@ -423,7 +430,7 @@ public class AppInstanceController extends AppBaseController {
     private AppInstance getAppInstance(Long appInstanceId) {
         if (appInstanceId == null)
             throw new MissingElementException("Missing app instance id.");
-        return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
+        return instanceService.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
     }
 
     private AppInstanceView mapAppInstance(AppInstance appInstance) {
@@ -438,6 +445,10 @@ public class AppInstanceController extends AppBaseController {
         if (appInstance == null)
             return null;
         AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
+
+        // explicitly set application base
+        ApplicationBase applicationBase = this.appBaseService.findByName(appInstance.getApplication().getName());
+        ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseView.class));
 
         return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
     }
@@ -468,7 +479,7 @@ public class AppInstanceController extends AppBaseController {
 
     private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
 
-        addAppInstanceBaseProperties(ai, appInstance);
+        this.addAppInstanceBaseProperties(ai, appInstance);
 
         Identifier identifier = appInstance.getInternalId();
         try {
@@ -533,7 +544,7 @@ public class AppInstanceController extends AppBaseController {
             isSystemAdmin = true;
         }
 
-        if(domainId.equals(domains.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
+        if(domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
             isDomainGlobal =true;
         }
 

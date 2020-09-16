@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * DTO object for providing application and corresponding application base
+ */
 @Getter
 @Setter
 @NoArgsConstructor
