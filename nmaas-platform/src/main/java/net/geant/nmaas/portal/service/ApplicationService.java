@@ -11,8 +11,6 @@ import java.util.Optional;
 public interface ApplicationService {
 
 	Application create(Application application);
-
-	Application create(Application application);
 	Application update(Application application);
 	void delete(Long id);
 
@@ -25,7 +23,6 @@ public interface ApplicationService {
 	Page<Application> findAll(Pageable pageable);
 	List<Application> findAll();
 
-	void setMissingProperties(Application app, Long appId);
 	void setMissingProperties(Application app, Long appId);
 
 	boolean exists(String name, String version);
