@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,7 +76,10 @@ public class KubernetesConnectorHelperTest {
         ObjectMeta pod0Meta = mock(ObjectMeta.class);
         when(pod0.getMetadata()).thenReturn(pod0Meta);
         when(pod0Meta.getName()).thenReturn("good-prefix-name-with-hash");
-        when(pod0Meta.getLabels()).thenReturn(Collections.singletonMap("app", "good-prefix-name"));
+        Map<String, String> pod0labels = new HashMap<>();
+        pod0labels.put("app", "good-prefix-name");
+        pod0labels.put("shell-access-enabled", "true");
+        when(pod0Meta.getLabels()).thenReturn(pod0labels);
 
         Pod pod1 = mock(Pod.class);
         ObjectMeta pod1Meta = mock(ObjectMeta.class);
@@ -87,9 +90,29 @@ public class KubernetesConnectorHelperTest {
         ObjectMeta pod2Meta = mock(ObjectMeta.class);
         when(pod2.getMetadata()).thenReturn(pod2Meta);
         when(pod2Meta.getName()).thenReturn("good-prefix-name-2-with-hash");
-        when(pod2Meta.getLabels()).thenReturn(Collections.singletonMap("not-app-label", "good-prefix-name"));
+        Map<String, String> pod2labels = new HashMap<>();
+        pod2labels.put("not-app-label", "good-prefix-name");
+        pod2labels.put("shell-access-enabled", "true");
+        when(pod2Meta.getLabels()).thenReturn(pod2labels);
 
-        List<Pod> items = Arrays.asList(pod0, pod1, pod2);
+        Pod pod3 = mock(Pod.class);
+        ObjectMeta pod3Meta = mock(ObjectMeta.class);
+        when(pod3.getMetadata()).thenReturn(pod3Meta);
+        when(pod3Meta.getName()).thenReturn("good-prefix-name-3-with-hash");
+        Map<String, String> pod3labels = new HashMap<>();
+        pod3labels.put("not-app-label", "good-prefix-name");
+        pod3labels.put("shell-access-enabled", "false");
+        when(pod3Meta.getLabels()).thenReturn(pod3labels);
+
+        Pod pod4 = mock(Pod.class);
+        ObjectMeta pod4Meta = mock(ObjectMeta.class);
+        when(pod4.getMetadata()).thenReturn(pod4Meta);
+        when(pod4Meta.getName()).thenReturn("good-prefix-name-3-with-hash");
+        Map<String, String> pod4labels = new HashMap<>();
+        pod4labels.put("not-app-label", "good-prefix-name");
+        when(pod4Meta.getLabels()).thenReturn(pod4labels);
+
+        List<Pod> items = Arrays.asList(pod0, pod1, pod2, pod3, pod4);
         when(podList.getItems()).thenReturn(items);
     }
 
