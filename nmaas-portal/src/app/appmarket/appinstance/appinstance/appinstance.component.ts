@@ -387,7 +387,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         return this.appInstanceService.getProgressStages();
     }
 
-    protected getTemplate(template: string): any {
+    protected getTemplate(template: any): any {
         return template;
     }
 

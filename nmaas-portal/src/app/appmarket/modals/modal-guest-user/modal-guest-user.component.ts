@@ -8,7 +8,7 @@ import {ModalComponent} from "../../../shared/modal";
 })
 export class ModalGuestUserComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal: ModalComponent;
 
   constructor() { }

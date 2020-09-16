@@ -22,11 +22,11 @@ export class UsersListComponent implements OnInit {
 
   private domainId: number;
 
-  private allUsers: User[] = [];
-  private usersToAdd: User[] = [];
+  public allUsers: User[] = [];
+  public usersToAdd: User[] = [];
   //  private domainUsers: Map<number, User[]> = new Map<number, User[]>();
 
-  private isInAddToDomainMode = false;
+  public isInAddToDomainMode = false;
 
   constructor(protected authService: AuthService,
     protected userService: UserService,

@@ -13,7 +13,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private line = '';
 
-    @ViewChild('disconnectModal')
+    @ViewChild('disconnectModal', { static: true })
     public disconnectModal: ModalComponent;
 
   @Input()
@@ -26,7 +26,7 @@ export class SshShellComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private minPosition = 0;
 
-  @ViewChild('term') child: NgTerminal; // for Angular 7
+  @ViewChild('term', { static: true }) child: NgTerminal; // for Angular 7
   // @ViewChild('term', { static: true }) child: NgTerminal; // for Angular 8
 
   constructor(private shellClientService: ShellClientService) { }

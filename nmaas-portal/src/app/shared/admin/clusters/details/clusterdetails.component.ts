@@ -18,13 +18,13 @@ import {Router} from '@angular/router';
 })
 export class ClusterDetailsComponent extends BaseComponent implements OnInit {
 
-    controllerConfigOption:Map<string,IngressControllerConfigOption> = new Map<string, IngressControllerConfigOption>();
+    controllerConfigOption: Map<string, IngressControllerConfigOption> = new Map<string, IngressControllerConfigOption>();
 
-    resourceConfigOption:Map<string, IngressResourceConfigOption> = new Map<string, IngressResourceConfigOption>();
+    resourceConfigOption: Map<string, IngressResourceConfigOption> = new Map<string, IngressResourceConfigOption>();
 
-    namespaceConfigOption:Map<string,NamespaceConfigOption> = new Map<string, NamespaceConfigOption>();
+    namespaceConfigOption: Map<string, NamespaceConfigOption> = new Map<string, NamespaceConfigOption>();
 
-    certificateConfigOption:Map<string,IngressCertificateConfigOption> = new Map<string, IngressCertificateConfigOption>();
+    certificateConfigOption: Map<string, IngressCertificateConfigOption> = new Map<string, IngressCertificateConfigOption>();
 
     @Input()
     public cluster: Cluster = new Cluster();

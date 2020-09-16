@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import {AuthService} from '../../../auth/auth.service';
 import {PasswordComponent} from '../../common/password/password.component';
+import {Role} from '../../../model/userrole';
 
 @Component({
   selector: 'nmaas-userdetails',
@@ -18,7 +19,9 @@ import {PasswordComponent} from '../../common/password/password.component';
 })
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
-  @ViewChild(PasswordComponent)
+    public Role = Role;
+
+  @ViewChild(PasswordComponent, { static: true })
   public readonly passwordModal: PasswordComponent;
 
   @Input()
@@ -58,7 +61,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   }
 
 
-  constructor(private authService: AuthService) {
+  constructor(public authService: AuthService) {
     super();
   }
 

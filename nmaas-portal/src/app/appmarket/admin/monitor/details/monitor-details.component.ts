@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {MonitorService} from "../../../../service/monitor.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {MonitorEntry, ServiceType, TimeFormat} from "../../../../model/monitorentry";
-import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
-import {isNullOrUndefined} from "util";
+import {MonitorService} from '../../../../service/monitor.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MonitorEntry, ServiceType, TimeFormat} from '../../../../model/monitorentry';
+import {BaseComponent} from '../../../../shared/common/basecomponent/base.component';
+import {isNullOrUndefined} from 'util';
 
 @Component({
     selector: 'nmaas-monitordetails',
@@ -14,13 +14,13 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
 
     private keys: any = Object.keys;
 
-    private services: typeof ServiceType = ServiceType;
+    public services: typeof ServiceType = ServiceType;
 
-    private formats: typeof TimeFormat = TimeFormat;
+    public formats: typeof TimeFormat = TimeFormat;
 
     public monitorEntry: MonitorEntry;
 
-    private errMsg: string;
+    public errMsg: string;
 
     constructor(private monitorService: MonitorService, private router: Router, private route: ActivatedRoute) {
         super();
@@ -41,7 +41,12 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
                     },
                     err => {
                         console.error(err);
-                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403 || err.statusCode === 500)) {
+                        if (err.statusCode &&
+                            (err.statusCode === 404
+                                || err.statusCode === 401
+                                || err.statusCode === 403
+                                || err.statusCode === 500)
+                        ) {
                             this.router.navigateByUrl('/notfound');
                         }
                     });
@@ -52,11 +57,14 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
     }
 
     public getTimeFormatAsString(timeFormat: any): string {
-        return typeof timeFormat === "string" && isNaN(Number(timeFormat.toString())) ? timeFormat : TimeFormat[timeFormat];
+        return typeof timeFormat === 'string' && isNaN(Number(timeFormat.toString())) ? timeFormat : TimeFormat[timeFormat];
     }
 
     public submit(): void {
-        this.monitorService.updateMonitorEntryAndJob(this.monitorEntry).subscribe(() => this.router.navigate(["/admin/monitor"]), err => this.errMsg = err.message);
+        this.monitorService.updateMonitorEntryAndJob(this.monitorEntry).subscribe(
+            () => this.router.navigate(['/admin/monitor']),
+            err => this.errMsg = err.message
+        );
     }
 
 }

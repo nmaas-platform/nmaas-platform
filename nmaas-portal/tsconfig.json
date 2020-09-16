@@ -1,0 +1,27 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "declaration": false,
+    "downlevelIteration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "dom",
+      "es6"
+    ],
+    "mapRoot": "./",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "outDir": "./build",
+    "sourceMap": true,
+    "target": "es2015",
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
+
+}

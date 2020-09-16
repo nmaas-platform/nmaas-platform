@@ -36,6 +36,8 @@ class ClusterIngress {
     public certificateConfigOption: string;
     public issuerOrWildcardName: string;
     public ingressPerDomain: boolean = false;
+    public publicIngressClass: string;
+    public publicServiceDomain: string;
 }
 
 export class Cluster {

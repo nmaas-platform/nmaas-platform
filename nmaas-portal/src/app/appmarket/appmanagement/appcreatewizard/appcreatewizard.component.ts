@@ -13,8 +13,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ComponentMode} from '../../../shared';
-import {MultiSelect} from 'primeng/primeng';
-import {KubernetesTemplate} from '../../../model/kubernetestemplate';
+import {MultiSelect} from 'primeng/multiselect';
 import {ConfigFileTemplate} from '../../../model/configfiletemplate';
 import {AppStorageVolume} from '../../../model/app-storage-volume';
 import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/servicestoragevolume';
@@ -32,7 +31,7 @@ import {noParameterTypeInControlValueValidator} from '../appversioncreatewizard/
 
 export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public modal: ModalComponent;
 
     @ViewChild('tagsMultiSelect')

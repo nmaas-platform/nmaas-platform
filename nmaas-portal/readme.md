@@ -1,17 +1,19 @@
 # NMaaS Portal (GUI)
 
-#### Web-based GUI for browsing, subscription and deployment of network management applications offered by the NMaaS system
+### Web-based GUI for browsing, subscription and deployment of network management applications offered by the NMaaS system
 
-#### Technologies
+### Issues
 ---
- * Angular 7 (7.2.x)
- * Bootstrap 3
- * JWT authentication
- * Form.io 3.10
+As of Angular 9, there is an issue with ```ivy``` and ```ngcc```, regarding ```angular-formio```, however everything seems to be working fine.  
+See [Github Issue](https://github.com/formio/angular-formio/issues/485)
 
-#### Prerequisites
+### Technologies
 ---
- + Install npm (>=6.0) and NodeJS (>=8.0)
+see package.json
+
+### Prerequisites
+---
+ + Install node and npm
  + Install git
  + (running on server) Install http server with *npm install -g angular-http-server*
  + (running tests) Install all required libraries as listed in *https://docs.browserless.io/blog/2018/04/25/chrome-linux.html*

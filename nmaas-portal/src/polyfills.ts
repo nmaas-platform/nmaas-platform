@@ -85,3 +85,4 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
  */
 //Fixes Angular 6 compatibility with libraries using global variables
 (window as any).global = window;
+import 'document-register-element';

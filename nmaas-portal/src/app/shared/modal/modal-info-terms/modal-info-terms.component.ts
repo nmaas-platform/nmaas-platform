@@ -12,7 +12,7 @@ import {isNullOrUndefined} from "util";
 })
 export class ModalInfoTermsComponent implements OnInit {
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public readonly modal: ModalComponent;
 
     public content: Content;

@@ -12,7 +12,7 @@ import {ApplicationVersion} from "../../../model/applicationversion";
 })
 export class AppChangeStateModalComponent implements OnInit, OnChanges {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public readonly modal: ModalComponent;
 
   @Input()

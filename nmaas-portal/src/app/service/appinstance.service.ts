@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
-import {AppConfigService} from '../service/appconfig.service';
+import {AppConfigService} from './appconfig.service';
 
-import {Id} from '../model/id';
-import {AppInstanceState, AppInstanceStatus} from '../model/appinstancestatus';
-import {AppInstance, AppInstanceRequest} from '../model/appinstance';
-import {AppInstanceProgressStage} from '../model/appinstanceprogressstage';
+import {Id} from '../model';
+import {AppInstanceState, AppInstanceStatus} from '../model';
+import {AppInstance, AppInstanceRequest} from '../model';
+import {AppInstanceProgressStage} from '../model';
 import {GenericDataService} from './genericdata.service';
 
 import {Observable} from 'rxjs';
@@ -15,6 +15,17 @@ import {AppInstanceStateHistory} from '../model/appinstancestatehistory';
 import {AppConfiguration} from '../model/appconfiguration';
 import {map} from 'rxjs/operators';
 import {AppInstanceExtended} from '../model/appinstanceextended';
+
+function appInstanceSort(data: AppInstance[], sortColumn: string, sortDirection: string): AppInstance[] {
+  data.sort((a, b) => {
+    if (sortDirection === 'desc') {
+      return a[sortColumn] < b[sortColumn] ? -1 : 1;
+    } else {
+      return a[sortColumn] > b[sortColumn] ? -1 : 1;
+    }
+  });
+  return data;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -25,37 +36,21 @@ export class AppInstanceService extends GenericDataService {
     super(http, appConfig);
   }
 
-  public getSortedAllAppInstances(domainId: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
-    return this.get<AppInstance[]>(this.getUrl() + "domain/" + domainId  + '?sort='+criteria.sortColumn+','+criteria.sortDirection).pipe(
+  public getSortedAllAppInstances(domainId: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
+    const options = {params: new HttpParams().set('sort', criteria.sortColumn + ',' + criteria.sortDirection)}
+    return this.http.get<AppInstance[]>(this.getUrl() + 'domain/' + domainId, options).pipe(
         map(
-      (data) => {
-        data.sort((a, b) => {
-          if(criteria.sortDirection === 'desc'){
-            return a[criteria.sortColumn] < b[criteria.sortColumn] ? -1 : 1;
-          }
-          else {
-            return a[criteria.sortColumn] > b[criteria.sortColumn] ? -1 : 1;
-          }
-        });
-        return data;
-      })
+            (data) => appInstanceSort(data, criteria.sortColumn, criteria.sortDirection)
+        )
     )
   }
 
   public getSortedMyAppInstances(domainId: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl() + 'domain/' + domainId + '/my' + '?sort='+criteria.sortColumn+','+criteria.sortDirection).pipe(
+    const options = {params: new HttpParams().set('sort', criteria.sortColumn + ',' + criteria.sortDirection)}
+    return this.http.get<AppInstance[]>(this.getUrl() + 'domain/' + domainId + '/my', options).pipe(
         map(
-      (data) => {
-        data.sort((a, b) => {
-          if(criteria.sortDirection === 'desc'){
-            return a[criteria.sortColumn] < b[criteria.sortColumn] ? -1 : 1;
-          }
-          else {
-            return a[criteria.sortColumn] > b[criteria.sortColumn] ? -1 : 1;
-          }
-        });
-        return data;
-      })
+            (data) => appInstanceSort(data, criteria.sortColumn, criteria.sortDirection)
+      )
     )
   }
 
@@ -63,12 +58,12 @@ export class AppInstanceService extends GenericDataService {
     return this.get<AppInstanceStatus>(this.getUrl() + id + '/state');
   }
 
-  public getAppInstanceHistory(id:number): Observable<AppInstanceStateHistory[]>{
-    return this.get<AppInstanceStateHistory[]>(this.getUrl()+id+ '/state/history');
+  public getAppInstanceHistory(id: number): Observable<AppInstanceStateHistory[]> {
+    return this.get<AppInstanceStateHistory[]>(this.getUrl() + id + '/state/history');
   }
 
   public createAppInstance(domainId: number, appId: number, name: string): Observable<Id> {
-    return this.post<AppInstanceRequest, Id>(this.getUrl() + "domain/" + domainId, new AppInstanceRequest(appId, name));
+    return this.post<AppInstanceRequest, Id>(this.getUrl() + 'domain/' + domainId, new AppInstanceRequest(appId, name));
   }
 
   public removeAppInstance(appInstanceId: number): Observable<any> {
@@ -92,7 +87,7 @@ export class AppInstanceService extends GenericDataService {
   }
 
   public removeFailedInstance(appInstanceId: number): Observable<any> {
-    return this.delete<any>(this.getUrl() + "failed/" + appInstanceId);
+    return this.delete<any>(this.getUrl() + 'failed/' + appInstanceId);
   }
 
   public getConfiguration(appInstanceId: number): Observable<any> {

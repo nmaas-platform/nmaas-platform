@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {ModalComponent} from '../../../shared/modal';
-import {MenuItem, MultiSelect, SelectItem} from 'primeng/primeng';
 import {Application, ConfigWizardTemplate} from '../../../model';
 import {ConfigFileTemplate} from '../../../model/configfiletemplate';
 import {AppImagesService, AppsService} from '../../../service';
@@ -19,6 +18,8 @@ import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/ser
 import {AppAccessMethod} from '../../../model/app-access-method';
 import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
 import {AbstractControl, ValidatorFn} from '@angular/forms';
+import {MultiSelect} from 'primeng/multiselect';
+import {MenuItem, SelectItem} from 'primeng/api';
 
 export function noParameterTypeInControlValueValidator(): ValidatorFn {
 
@@ -42,7 +43,7 @@ export function noParameterTypeInControlValueValidator(): ValidatorFn {
 export class AppVersionCreateWizardComponent extends BaseComponent implements OnInit {
 
 
-    @ViewChild(ModalComponent)
+    @ViewChild(ModalComponent, { static: true })
     public modal: ModalComponent;
 
     @ViewChild('tagsMultiSelect')

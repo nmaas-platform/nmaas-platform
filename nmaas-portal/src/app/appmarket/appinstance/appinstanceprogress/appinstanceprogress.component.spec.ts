@@ -19,7 +19,7 @@ class TranslatePipeMock implements PipeTransform {
 
 class MockTranslateService {
   public instant(key: string): string {
-    return '';
+    return key;
   }
 }
 
@@ -53,16 +53,22 @@ describe('AppInstanceProgressComponent', () => {
   });
 
   it('translate tag function should return', () => {
-    expect(component.getTranslateTag('some text')).toEqual('');
+    const key = 'TEXT';
+    expect(component.getTranslateTag(key)).toEqual('APP_INSTANCE.PROGRESS.' + key);
   });
 
   it('should display with given stages', () => {
     const stages = new Array<AppInstanceProgressStage>();
-    stages.push(new AppInstanceProgressStage('Stage1', AppInstanceState.RUNNING));
+    stages.push(new AppInstanceProgressStage('Stage0', AppInstanceState.PREPARATION));
+    stages.push(new AppInstanceProgressStage('Stage1', AppInstanceState.CONFIGURATION_AWAITING));
+    stages.push(new AppInstanceProgressStage('Stage2', AppInstanceState.DEPLOYING));
+    stages.push(new AppInstanceProgressStage('Stage3', AppInstanceState.RUNNING));
+    stages.push(new AppInstanceProgressStage('Stage4', AppInstanceState.DONE));
     component.stages = stages;
     component.activeState = AppInstanceState.RUNNING;
-    component.previousState = AppInstanceState.PREPARATION;
-    expect(component.stages.length).toEqual(1);
+    component.previousState = AppInstanceState.DEPLOYING;
+    expect(component.stages.length).toEqual(5);
+    fixture.detectChanges()
     // TODO finish
   });
 });

@@ -11,7 +11,7 @@ import {ModalComponent} from "../../../../shared/modal";
 })
 export class LanguageListComponent implements OnInit {
 
-  @ViewChild(ModalComponent)
+  @ViewChild(ModalComponent, { static: true })
   public modal:ModalComponent;
 
   public languages: Language[] = [];

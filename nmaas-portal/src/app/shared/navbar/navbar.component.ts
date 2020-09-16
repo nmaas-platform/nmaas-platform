@@ -14,7 +14,7 @@ import {ModalNotificationSendComponent} from '../modal/modal-notification-send/m
 })
 export class NavbarComponent implements OnInit, OnChanges {
 
-    @ViewChild(ModalNotificationSendComponent)
+    @ViewChild(ModalNotificationSendComponent, { static: true })
     public notificationModal;
 
     public languages: string[];
