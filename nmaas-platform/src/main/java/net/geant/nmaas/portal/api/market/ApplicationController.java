@@ -113,7 +113,6 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public Id addApplication(@RequestBody @Valid ApplicationDTO request, Principal principal) {
 		ApplicationBase base = this.appBaseService.create(modelMapper.map(request.getApplicationBase(), ApplicationBase.class));
-		log.info(base.getDescriptions().get(0).getFullDescription());
 		this.addApplicationVersion(request.getApplication(), principal);
 		return new Id(base.getId());
 	}
