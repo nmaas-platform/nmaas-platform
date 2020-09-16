@@ -1,145 +1,154 @@
 {
-	"name":"Bastion",
-	"version":"0.3",
-	"license":"Ubuntu",
-	"licenseUrl": "",
-	"tags": [ "management" ],
-	"descriptions": [
-		{
-			"language": "en",
-			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
-		},
-		{
-			"language": "de",
-			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
-		},
-		{
-			"language": "fr",
-			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
-		},
-		{
-			"language": "pl",
-			"briefDescription": "Bastion server based on Ubuntu OS",
-			"fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
-		}
-	],
-	"wwwUrl": "https://ubuntu.com",
-	"sourceUrl": "https://ubuntu.com",
-	"issuesUrl": "https://ubuntu.com",
-	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Bastion",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "nmaas-bastion",
-				"version": "0.1.0"
-			}
-		},
-		"storageVolumes": [
-			{
-				"type": "MAIN",
-				"defaultStorageSpace": 5,
-				"deployParameters": {
-					"PERSISTENCE_ENABLED": "persistence.enabled",
-					"PERSISTENCE_NAME": "persistence.name",
-					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
-					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
-				}
-			}
-		],
-		"deployParameters": {
-			"DOMAIN_CODENAME": "metallb.subnet_name"
-		},
-		"exposesWebUI": false,
-		"accessMethods":  [
-			{
-				"type": "INTERNAL",
-				"name": "SSH",
-				"tag": "bastion"
-			}
-		]
-	},
-	"appConfigurationSpec": {
-		"configFileRepositoryRequired": false
-	},
-	"state": "ACTIVE",
-	"configWizardTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Tabs",
-					"components": [
-						{
-							"label": "Base",
-							"key": "configTab",
-							"components": [
-								{
-									"label": "Mandatory parameters",
-									"hideLabel": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "mandatoryParameters",
-									"components": [
-										{
-											"label": "SSH keys (comma separated)",
-											"type": "textfield",
-											"input": true,
-											"key": "env#ssh_keys",
-											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											},
-											"tab": 0
-										}
-									]
-								}
-							]
-						},
-						{
-							"label": "Advanced",
-							"key": "advancedTab",
-							"components": [
-								{
-									"label": "Advanced",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 1,
-									"key": "advanced",
-									"components": [
-										{
-											"label": "Storage space (GB):",
-											"type": "number",
-											"input": true,
-											"key": "storageSpace",
-											"placeholder": "Default value: 5GB",
-											"tab": 1
-										}
-									]
-								}
-							]
-						}
-					],
-					"type": "tabs",
-					"input": false,
-					"key": "tabs"
-				},
-				{
-					"type": "button",
-					"label": "Apply configuration",
-					"disableOnInvalid": true,
-					"theme": "primary",
-					"input": false,
-					"tableView": true
-				}
-			]
-		}
-	}
+    "applicationBase": {
+        "id": null,
+        "name": "Bastion",
+        "license": "Ubuntu",
+        "licenseUrl": "",
+        "wwwUrl": "https://ubuntu.com",
+        "sourceUrl": "https://ubuntu.com",
+        "issuesUrl": "https://ubuntu.com",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Bastion",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Bastion server based on Ubuntu OS",
+                "fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Bastion server based on Ubuntu OS",
+                "fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Bastion server based on Ubuntu OS",
+                "fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Bastion server based on Ubuntu OS",
+                "fullDescription": "The Ubuntu-based bastion server deployed in a domain has VPN access to all the monitored devices. It is accessible through SSH. <br>Some packages have been pre-installed: git, ansible, tmux, mc, vim, emacs-nox, python2 and python3."
+            }
+        ],
+        "tags": [
+            "management"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Bastion",
+        "version": "0.3",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "SSH keys (comma separated)",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "env#ssh_keys",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "tab": 0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Advanced",
+                                "key": "advancedTab",
+                                "components": [
+                                    {
+                                        "label": "Advanced",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 1,
+                                        "key": "advanced",
+                                        "components": [
+                                            {
+                                                "label": "Storage space (GB):",
+                                                "type": "number",
+                                                "input": true,
+                                                "key": "storageSpace",
+                                                "placeholder": "Default value: 5GB",
+                                                "tab": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-bastion",
+                    "version": "0.1.0"
+                }
+            },
+            "storageVolumes": [
+                {
+                    "type": "MAIN",
+                    "defaultStorageSpace": 5,
+                    "deployParameters": {
+                        "PERSISTENCE_ENABLED": "persistence.enabled",
+                        "PERSISTENCE_NAME": "persistence.name",
+                        "PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+                        "PERSISTENCE_STORAGE_SPACE": "persistence.size"
+                    }
+                }
+            ],
+            "deployParameters": {
+                "DOMAIN_CODENAME": "metallb.subnet_name"
+            },
+            "exposesWebUI": false,
+            "accessMethods": [
+                {
+                    "type": "INTERNAL",
+                    "name": "SSH",
+                    "tag": "bastion"
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false
+        }
+    }
 }

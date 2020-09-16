@@ -1,274 +1,284 @@
 {
-	"name":"WiFiMon",
-	"version":"0.1.1",
-	"license":"",
-	"licenseUrl": "",
-	"tags": [ "monitoring" ],
-	"descriptions": [
-		{
-			"language": "en",
-			"briefDescription": "WiFiMon",
-			"fullDescription": ""
-		},
-		{
-			"language": "de",
-			"briefDescription": "WiFiMon",
-			"fullDescription": ""
-		},
-		{
-			"language": "fr",
-			"briefDescription": "WiFiMon",
-			"fullDescription": ""
-		},
-		{
-			"language": "pl",
-			"briefDescription": "WiFiMon",
-			"fullDescription": ""
-		}
-	],
-	"wwwUrl": "",
-	"sourceUrl": "",
-	"issuesUrl": "",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "nmaas-wifimon",
-				"version": "0.1.1"
-			},
-			"mainDeploymentName":  "ui"
-		},
-		"deployParameters": {
-			"DOMAIN_CODENAME_ELASTICSEARCH": "elastic-stack.elasticsearch.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
-			"DOMAIN_CODENAME_LOGSTASH": "elastic-stack.logstash.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
-			"RELEASE_NAME_ELASTICSEARCH_CLUSTER_NAME": "elastic-stack.elasticsearch.clusterName",
-			"RELEASE_NAME_KIBANA": "elastic-stack.kibana.elasticsearchHosts=http://%VALUE%-pllabprod:9200",
-			"RELEASE_NAME_ELASTICSEARCH_MASTER_SERVICE": "elastic-stack.elasticsearch.masterService=%VALUE%-pllabprod"
-		},
-		"globalDeployParameters": {
-			"elastic-stack.elasticsearch.nodeGroup": "pllabprod",
-			"elastic-stack.elasticsearch.imageTag": "7.7.1",
-			"elastic-stack.logstash.imageTag": "7.7.1",
-			"elastic-stack.kibana.imageTag": "7.7.1",
-			"elastic-stack.elasticsearch.clusterHealthCheckParams": "\"wait_for_status=yellow&timeout=1s\"",
-			"sp.encryptionString": "%RANDOM_STRING_32%"
-		},
-		"exposesWebUI": true,
-		"allowSshAccess": false,
-		"accessMethods":  [
-			{
-				"type": "EXTERNAL",
-				"name": "WiFiMon UI",
-				"tag": "ui",
-				"deployParameters": {
-					"INGRESS_ENABLED": "ui.ingress.enabled",
-					"INGRESS_HOSTS": "ui.ingress.hosts",
-					"INGRESS_TLS_ENABLED": "ui.ingress.tls.enabled",
-					"INGRESS_CLASS": "ui.ingress.class",
-					"INGRESS_LETSENCRYPT": "ui.ingress.tls.acme",
-					"INGRESS_WILDCARD_OR_ISSUER": "ui.ingress.tls.certOrIssuer"
-				}
-			},
-			{
-				"type": "PUBLIC",
-				"name": "WiFiMon SP",
-				"tag": "sp",
-				"deployParameters": {
-					"INGRESS_ENABLED": "sp.ingress.enabled",
-					"INGRESS_HOSTS": "sp.ingress.hosts",
-					"INGRESS_TLS_ENABLED": "sp.ingress.tls.enabled",
-					"INGRESS_CLASS": "sp.ingress.class",
-					"INGRESS_LETSENCRYPT": "sp.ingress.tls.acme",
-					"INGRESS_WILDCARD_OR_ISSUER": "sp.ingress.tls.certOrIssuer"
-				}
-			},
-			{
-				"type": "EXTERNAL",
-				"name": "Elasticsearch",
-				"tag": "elasticsearch",
-				"deployParameters": {
-					"INGRESS_ENABLED": "elastic-stack.elasticsearch.ingress.enabled",
-					"INGRESS_HOSTS": "elastic-stack.elasticsearch.ingress.hosts",
-					"INGRESS_CLASS": "elastic-stack.elasticsearch.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
-					"INGRESS_TLS_HOSTS": "elastic-stack.elasticsearch.ingress.tls[0].hosts"
-				}
-			},
-			{
-				"type": "EXTERNAL",
-				"name": "Kibana",
-				"tag": "kibana",
-				"deployParameters": {
-					"INGRESS_ENABLED": "elastic-stack.kibana.ingress.enabled",
-					"INGRESS_HOSTS": "elastic-stack.kibana.ingress.hosts",
-					"INGRESS_CLASS": "elastic-stack.kibana.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
-					"INGRESS_TLS_HOSTS": "elastic-stack.kibana.ingress.tls[0].hosts"
-				}
-			},
-			{
-				"type": "INTERNAL",
-				"name": "DATA",
-				"tag": "logstash",
-				"deployParameters": {
-					"K8S_SERVICE_SUFFIX": "logstash"
-				}
-			},
-			{
-				"type": "INTERNAL",
-				"name": "DATA",
-				"tag": "elasticsearch",
-				"deployParameters": {
-					"K8S_SERVICE_SUFFIX": "pllabprod"
-				}
-			}
-		],
-		"storageVolumes": []
-	},
-	"appConfigurationSpec": {
-		"configFileRepositoryRequired": true,
-		"configUpdateEnabled": false,
-		"templates": [
-			{
-				"configFileName": "init.sql",
-				"configFileDirectory": "ui-init",
-				"configFileTemplateContent": "CREATE TABLE subnets (\nsubnet text,\nsubnet_id serial PRIMARY KEY );\nCREATE TABLE users (\nid serial PRIMARY KEY,\nemail text NOT NULL,\npassword_hash text NOT NULL,\nrole text NOT NULL);\nCREATE TABLE accesspoints (\napid serial PRIMARY KEY,\nmac text NOT NULL,\nlatitude text,\nlongitude text,\nbuilding text,\nfloor text,\nnotes text);\nCREATE TABLE options (\noptionsid serial PRIMARY KEY,\nuserdata text NOT NULL,\nuservisualoption text NOT NULL,\ncorrelationmethod text NOT NULL\n);\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT CONNECT ON DATABASE wifimon_database to wifimon_user;\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT SELECT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT INSERT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT DELETE ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT UPDATE ON accesspoints, options TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE subnets_subnet_id_seq TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE users_id_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE options_optionsid_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE accesspoints_apid_seq TO wifimon_user;\nINSERT INTO users VALUES ('1', '${defaultEmailAddress}', '${helper.encode(defaultAccessPassword)}', 'ADMIN');"
-			},
-			{
-				"configFileName": "kibana.yml",
-				"configFileDirectory": "kibana",
-				"configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\""
-			},
-			{
-				"configFileName": "elasticsearch.yml",
-				"configFileDirectory": "es-config",
-				"configFileTemplateContent": "cluster.name: \"${RELEASE_NAME}\"\nnetwork.host: 0.0.0.0\nxpack.security.enabled: true\nxpack.monitoring.enabled: true\nxpack.monitoring.collection.enabled: true\nxpack.security.transport.ssl.enabled: true"
-			},
-			{
-				"configFileName": "uptime.conf",
-				"configFileDirectory": "pipelines",
-				"configFileTemplateContent": "input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://${RELEASE_NAME}-pllabprod:9200\"] index => \"logstash\" } }"
-			}
-		]
-	},
-	"state": "ACTIVE",
-	"configWizardTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Tabs",
-					"components": [
-						{
-							"label": "Base",
-							"key": "configTab",
-							"components": [
-								{
-									"label": "Configuration",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "configuration",
-									"components": [
-										{
-											"label": "WiFiMon UI default user email address",
-											"type": "email",
-											"input": true,
-											"key": "defaultEmailAddress",
-											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											},
-											"tab": 0
-										},
-										{
-											"label": "WiFiMon UI default access password",
-											"type": "password",
-											"input": true,
-											"key": "defaultAccessPassword",
-											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											},
-											"tab": 0
-										}
-									]
-								},
-								{
-									"label": "Mandatory parameters",
-									"hideLabel": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "mandatoryParameters",
-									"components": [
-										{
-											"label": "WiFiMon UI storage space (GB):",
-											"type": "textfield",
-											"input": true,
-											"key": "ui#persistence#size",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain",
-											"defaultValue": "1Gi"
-										},
-										{
-											"label": "WiFiMon SP storage space (GB):",
-											"type": "textfield",
-											"input": true,
-											"key": "sp#persistence#size",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain",
-											"defaultValue": "1Gi"
-										},
-										{
-											"label": "Elasticsearch storage space (GB):",
-											"type": "textfield",
-											"input": true,
-											"key": "elastic-stack#elasticsearch#volumeClaimTemplate#resources#requests#storage",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain",
-											"defaultValue": "10Gi"
-										},
-										{
-											"label": "Logstash storage space (GB):",
-											"type": "textfield",
-											"input": true,
-											"key": "elastic-stack#logstash#volumeClaimTemplate#resources#requests#storage",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain",
-											"defaultValue": "5Gi"
-										}
-									]
-								}
-							]
-						}
-					],
-					"type": "tabs",
-					"input": false,
-					"key": "tabs"
-				},
-				{
-					"type": "button",
-					"label": "Apply configuration",
-					"disableOnInvalid": true,
-					"theme": "primary",
-					"input": false,
-					"tableView": true
-				}
-			]
-		}
-	}
+    "applicationBase": {
+        "id": null,
+        "name": "WiFiMon",
+        "license": "",
+        "licenseUrl": "",
+        "wwwUrl": "",
+        "sourceUrl": "",
+        "issuesUrl": "",
+        "nmaasDocumentationUrl": null,
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "WiFiMon",
+                "fullDescription": ""
+            },
+            {
+                "language": "de",
+                "briefDescription": "WiFiMon",
+                "fullDescription": ""
+            },
+            {
+                "language": "fr",
+                "briefDescription": "WiFiMon",
+                "fullDescription": ""
+            },
+            {
+                "language": "pl",
+                "briefDescription": "WiFiMon",
+                "fullDescription": ""
+            }
+        ],
+        "tags": [
+            "monitoring"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "WiFiMon",
+        "version": "0.1.1",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Configuration",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "configuration",
+                                        "components": [
+                                            {
+                                                "label": "WiFiMon UI default user email address",
+                                                "type": "email",
+                                                "input": true,
+                                                "key": "defaultEmailAddress",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "tab": 0
+                                            },
+                                            {
+                                                "label": "WiFiMon UI default access password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "defaultAccessPassword",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "tab": 0
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "WiFiMon UI storage space (GB):",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "ui#persistence#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain",
+                                                "defaultValue": "1Gi"
+                                            },
+                                            {
+                                                "label": "WiFiMon SP storage space (GB):",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "sp#persistence#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain",
+                                                "defaultValue": "1Gi"
+                                            },
+                                            {
+                                                "label": "Elasticsearch storage space (GB):",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "elastic-stack#elasticsearch#volumeClaimTemplate#resources#requests#storage",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain",
+                                                "defaultValue": "10Gi"
+                                            },
+                                            {
+                                                "label": "Logstash storage space (GB):",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "elastic-stack#logstash#volumeClaimTemplate#resources#requests#storage",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain",
+                                                "defaultValue": "5Gi"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-wifimon",
+                    "version": "0.1.1"
+                },
+                "mainDeploymentName": "ui"
+            },
+            "deployParameters": {
+                "DOMAIN_CODENAME_ELASTICSEARCH": "elastic-stack.elasticsearch.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
+                "DOMAIN_CODENAME_LOGSTASH": "elastic-stack.logstash.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%",
+                "RELEASE_NAME_ELASTICSEARCH_CLUSTER_NAME": "elastic-stack.elasticsearch.clusterName",
+                "RELEASE_NAME_KIBANA": "elastic-stack.kibana.elasticsearchHosts=http://%VALUE%-pllabprod:9200",
+                "RELEASE_NAME_ELASTICSEARCH_MASTER_SERVICE": "elastic-stack.elasticsearch.masterService=%VALUE%-pllabprod"
+            },
+            "globalDeployParameters": {
+                "elastic-stack.elasticsearch.nodeGroup": "pllabprod",
+                "elastic-stack.elasticsearch.imageTag": "7.7.1",
+                "elastic-stack.logstash.imageTag": "7.7.1",
+                "elastic-stack.kibana.imageTag": "7.7.1",
+                "elastic-stack.elasticsearch.clusterHealthCheckParams": "\"wait_for_status=yellow&timeout=1s\"",
+                "sp.encryptionString": "%RANDOM_STRING_32%"
+            },
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "EXTERNAL",
+                    "name": "WiFiMon UI",
+                    "tag": "ui",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "ui.ingress.enabled",
+                        "INGRESS_HOSTS": "ui.ingress.hosts",
+                        "INGRESS_TLS_ENABLED": "ui.ingress.tls.enabled",
+                        "INGRESS_CLASS": "ui.ingress.class",
+                        "INGRESS_LETSENCRYPT": "ui.ingress.tls.acme",
+                        "INGRESS_WILDCARD_OR_ISSUER": "ui.ingress.tls.certOrIssuer"
+                    }
+                },
+                {
+                    "type": "PUBLIC",
+                    "name": "WiFiMon SP",
+                    "tag": "sp",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "sp.ingress.enabled",
+                        "INGRESS_HOSTS": "sp.ingress.hosts",
+                        "INGRESS_TLS_ENABLED": "sp.ingress.tls.enabled",
+                        "INGRESS_CLASS": "sp.ingress.class",
+                        "INGRESS_LETSENCRYPT": "sp.ingress.tls.acme",
+                        "INGRESS_WILDCARD_OR_ISSUER": "sp.ingress.tls.certOrIssuer"
+                    }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "Elasticsearch",
+                    "tag": "elasticsearch",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "elastic-stack.elasticsearch.ingress.enabled",
+                        "INGRESS_HOSTS": "elastic-stack.elasticsearch.ingress.hosts",
+                        "INGRESS_CLASS": "elastic-stack.elasticsearch.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "elastic-stack.elasticsearch.ingress.tls[0].hosts"
+                    }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "Kibana",
+                    "tag": "kibana",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "elastic-stack.kibana.ingress.enabled",
+                        "INGRESS_HOSTS": "elastic-stack.kibana.ingress.hosts",
+                        "INGRESS_CLASS": "elastic-stack.kibana.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "elastic-stack.kibana.ingress.tls[0].hosts"
+                    }
+                },
+                {
+                    "type": "INTERNAL",
+                    "name": "DATA",
+                    "tag": "logstash",
+                    "deployParameters": {
+                        "K8S_SERVICE_SUFFIX": "logstash"
+                    }
+                },
+                {
+                    "type": "INTERNAL",
+                    "name": "DATA",
+                    "tag": "elasticsearch",
+                    "deployParameters": {
+                        "K8S_SERVICE_SUFFIX": "pllabprod"
+                    }
+                }
+            ],
+            "storageVolumes": []
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": true,
+            "configUpdateEnabled": false,
+            "templates": [
+                {
+                    "configFileName": "init.sql",
+                    "configFileDirectory": "ui-init",
+                    "configFileTemplateContent": "CREATE TABLE subnets (\nsubnet text,\nsubnet_id serial PRIMARY KEY );\nCREATE TABLE users (\nid serial PRIMARY KEY,\nemail text NOT NULL,\npassword_hash text NOT NULL,\nrole text NOT NULL);\nCREATE TABLE accesspoints (\napid serial PRIMARY KEY,\nmac text NOT NULL,\nlatitude text,\nlongitude text,\nbuilding text,\nfloor text,\nnotes text);\nCREATE TABLE options (\noptionsid serial PRIMARY KEY,\nuserdata text NOT NULL,\nuservisualoption text NOT NULL,\ncorrelationmethod text NOT NULL\n);\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT CONNECT ON DATABASE wifimon_database to wifimon_user;\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT SELECT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT INSERT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT DELETE ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT UPDATE ON accesspoints, options TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE subnets_subnet_id_seq TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE users_id_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE options_optionsid_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE accesspoints_apid_seq TO wifimon_user;\nINSERT INTO users VALUES ('1', '${defaultEmailAddress}', '${helper.encode(defaultAccessPassword)}', 'ADMIN');"
+                },
+                {
+                    "configFileName": "kibana.yml",
+                    "configFileDirectory": "kibana",
+                    "configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\""
+                },
+                {
+                    "configFileName": "elasticsearch.yml",
+                    "configFileDirectory": "es-config",
+                    "configFileTemplateContent": "cluster.name: \"${RELEASE_NAME}\"\nnetwork.host: 0.0.0.0\nxpack.security.enabled: true\nxpack.monitoring.enabled: true\nxpack.monitoring.collection.enabled: true\nxpack.security.transport.ssl.enabled: true"
+                },
+                {
+                    "configFileName": "uptime.conf",
+                    "configFileDirectory": "pipelines",
+                    "configFileTemplateContent": "input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://${RELEASE_NAME}-pllabprod:9200\"] index => \"logstash\" } }"
+                }
+            ]
+        }
+    }
 }

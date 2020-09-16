@@ -1,161 +1,171 @@
 {
-	"name":"Statping",
-	"version":"0.90.17",
-	"license":"GPL 3.0",
-	"licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
-	"tags": [
-		"monitoring",
-		"visualization"
-	],
-	"descriptions": [
-		{
-			"language": "en",
-			"briefDescription": "Status Page & Monitoring Server",
-			"fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."
-		},
-		{
-			"language": "de",
-			"briefDescription": "Status Page & Monitoring Server",
-			"fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."		},
-		{
-			"language": "fr",
-			"briefDescription": "Status Page & Monitoring Server",
-			"fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."		},
-		{
-			"language": "pl",
-			"briefDescription": "Status Page & Monitoring Server",
-			"fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."		}
-	],
-	"wwwUrl": "https://statping.com",
-	"sourceUrl": "https://github.com/statping/statping",
-	"issuesUrl": "https://github.com/statping/statping/issues",
-	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Statping",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "nmaas-statping",
-				"version": "0.1.1"
-			}
-		},
-		"storageVolumes": [
-			{
-				"type": "MAIN",
-				"defaultStorageSpace": 2,
-				"deployParameters": {
-					"PERSISTENCE_ENABLED": "persistence.enabled",
-					"PERSISTENCE_NAME": "persistence.name",
-					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
-					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
-				}
-			}
-		],
-		"exposesWebUI": true,
-		"accessMethods":  [
-			{
-				"type": "DEFAULT",
-				"name": "Statping",
-				"tag": "statping",
-				"deployParameters": {
-					"INGRESS_ENABLED": "ingress.enabled",
-					"INGRESS_HOSTS": "ingress.hosts",
-					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
-					"INGRESS_CLASS": "ingress.class",
-					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
-					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
-				}
-			}
-		]
-	},
-	"appConfigurationSpec": {
-		"configFileRepositoryRequired": false
-	},
-	"state": "ACTIVE",
-	"configWizardTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Tabs",
-					"components": [
-						{
-							"label": "Base",
-							"key": "configTab",
-							"components": [
-								{
-									"label": "Mandatory parameters",
-									"hideLabel": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "mandatoryParameters",
-									"components": [
-										{
-											"label": "Statping admin username",
-											"type": "textfield",
-											"input": true,
-											"key": "properties#statping#user",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain"
-										},
-										{
-											"label": "Statping admin password",
-											"type": "password",
-											"input": true,
-											"key": "properties#statping#password",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain"
-										}
-									]
-								}
-							]
-						},
-						{
-							"label": "Advanced",
-							"key": "advancedTab",
-							"components": [
-								{
-									"label": "Advanced",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 1,
-									"key": "advanced",
-									"components": [
-										{
-											"label": "Storage space (GB):",
-											"type": "number",
-											"input": true,
-											"key": "storageSpace",
-											"placeholder": "Default value: 2GB",
-											"tab": 1
-										}
-									]
-								}
-							]
-						}
-					],
-					"type": "tabs",
-					"input": false,
-					"key": "tabs"
-				},
-				{
-					"type": "button",
-					"label": "Apply configuration",
-					"disableOnInvalid": true,
-					"theme": "primary",
-					"input": false,
-					"tableView": true
-				}
-			]
-		}
-	}
+    "applicationBase": {
+        "id": null,
+        "name": "Statping",
+        "license": "GPL 3.0",
+        "licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "wwwUrl": "https://statping.com",
+        "sourceUrl": "https://github.com/statping/statping",
+        "issuesUrl": "https://github.com/statping/statping/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Statping",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Status Page & Monitoring Server",
+                "fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Status Page & Monitoring Server",
+                "fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Status Page & Monitoring Server",
+                "fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Status Page & Monitoring Server",
+                "fullDescription": "An easy to use Status Page for your websites and applications. Statping will automatically fetch the application and render a beautiful status page with tons of features for you to build an even better status page. This Status Page generator allows you to use MySQL, Postgres, or SQLite on multiple operating systems."
+            }
+        ],
+        "tags": [
+            "monitoring",
+            "visualization"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Statping",
+        "version": "0.90.17",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "Statping admin username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "properties#statping#user",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Statping admin password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "properties#statping#password",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Advanced",
+                                "key": "advancedTab",
+                                "components": [
+                                    {
+                                        "label": "Advanced",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 1,
+                                        "key": "advanced",
+                                        "components": [
+                                            {
+                                                "label": "Storage space (GB):",
+                                                "type": "number",
+                                                "input": true,
+                                                "key": "storageSpace",
+                                                "placeholder": "Default value: 2GB",
+                                                "tab": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-statping",
+                    "version": "0.1.1"
+                }
+            },
+            "storageVolumes": [
+                {
+                    "type": "MAIN",
+                    "defaultStorageSpace": 2,
+                    "deployParameters": {
+                        "PERSISTENCE_ENABLED": "persistence.enabled",
+                        "PERSISTENCE_NAME": "persistence.name",
+                        "PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+                        "PERSISTENCE_STORAGE_SPACE": "persistence.size"
+                    }
+                }
+            ],
+            "exposesWebUI": true,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "Statping",
+                    "tag": "statping",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "ingress.enabled",
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+                        "INGRESS_CLASS": "ingress.class",
+                        "INGRESS_LETSENCRYPT": "ingress.tls.acme",
+                        "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false
+        }
+    }
 }
