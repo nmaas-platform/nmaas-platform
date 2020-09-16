@@ -60,16 +60,15 @@ public class ConvertersIntTest {
     public void testConvertAppToAppView(){
         ApplicationBase defaultAppBase = getDefaultAppBase();
         appBaseRepo.save(defaultAppBase);
-        ApplicationMassiveView appView = modelMapper.map(getDefaultApp(), ApplicationMassiveView.class);
+        ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
         assertNotNull(appView.getConfigWizardTemplate());
         assertNull(appView.getConfigUpdateWizardTemplate());
-        assertEquals(defaultAppBase.getIssuesUrl(), appView.getIssuesUrl());
         assertEquals(getDefaultApp().getAppDeploymentSpec().isExposesWebUI(), appView.getAppDeploymentSpec().isExposesWebUI());
     }
 
     @Test
     public void testConvertAppViewToAppBase(){
-        ApplicationMassiveView appView = getDefaultAppView();
+        ApplicationBaseView appView = getDefaultAppBaseView();
         ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
         assertEquals(appView.getId(), appBase.getId());
         assertEquals(appView.getName(), appBase.getName());
@@ -89,7 +88,7 @@ public class ConvertersIntTest {
 
     @Test
     public void testConvertAppViewToApp(){
-        ApplicationMassiveView appView = getDefaultAppView();
+        ApplicationView appView = getDefaultAppView();
         Application app = modelMapper.map(appView, Application.class);
         assertEquals(appView.getState(), app.getState());
         assertNotNull(app.getConfigWizardTemplate());
@@ -162,8 +161,8 @@ public class ConvertersIntTest {
         assertEquals(Role.ROLE_SYSTEM_ADMIN, role);
     }
 
-	private ApplicationMassiveView getDefaultAppView(){
-        ApplicationMassiveView appView = new ApplicationMassiveView();
+	private ApplicationBaseView getDefaultAppBaseView(){
+        ApplicationBaseView appView = new ApplicationBaseView();
         appView.setName("testApp");
         appView.setLicense("MIT");
         appView.setLicenseUrl("MIT.org");
@@ -171,14 +170,21 @@ public class ConvertersIntTest {
         appView.setSourceUrl("default-website.com");
         appView.setIssuesUrl("default-website.com");
         appView.setId(1L);
-        appView.setVersion("0.0.1");
-        appView.setConfigWizardTemplate(new ConfigWizardTemplateView(45L, "template"));
-        appView.setAppConfigurationSpec(new AppConfigurationSpecView());
-        appView.setAppDeploymentSpec(new AppDeploymentSpecView());
-        appView.getAppDeploymentSpec().setExposesWebUI(true);
-        appView.setState(ApplicationState.ACTIVE);
-        appView.setOwner("admin");
         return appView;
+    }
+
+    private ApplicationView getDefaultAppView() {
+        ApplicationView app = new ApplicationView();
+        app.setId(1L);
+        app.setName("testApp");
+        app.setVersion("0.0.1");
+        app.setConfigWizardTemplate(new ConfigWizardTemplateView(2L,"template"));
+        app.setAppConfigurationSpec(new AppConfigurationSpecView());
+        app.setAppDeploymentSpec(new AppDeploymentSpecView());
+        app.getAppDeploymentSpec().setExposesWebUI(true);
+        app.setState(ApplicationState.ACTIVE);
+        app.setOwner("admin");
+        return app;
     }
 
 	private ApplicationBase getDefaultAppBase(){

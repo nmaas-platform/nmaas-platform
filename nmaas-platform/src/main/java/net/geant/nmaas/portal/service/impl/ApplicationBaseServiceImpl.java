@@ -46,7 +46,6 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         this.setMissingDescriptions(applicationBase);
         applicationBase.validate();
         this.handleTags(applicationBase);
-        log.info(applicationBase.getDescriptions().get(0).getFullDescription());
         ApplicationBase created = this.appBaseRepository.save(applicationBase);
         applicationStatePerDomainService.updateAllDomainsWithNewApplicationBase(created);
         return created;

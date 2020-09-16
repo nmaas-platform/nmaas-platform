@@ -114,7 +114,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
-                        new ApplicationController.ApplicationDTO(
+                        new ApplicationDTO(
                                 modelMapper.map(newApplicationBase, ApplicationBaseView.class),
                                 modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationView.class)
                         )
@@ -211,7 +211,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationController.ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationDTO.class);
+        ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
         assertEquals(DEFAULT_APP_NAME, app.getApplicationBase().getName());
         assertEquals("1.1.0", app.getApplication().getVersion());
 
@@ -225,7 +225,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationController.ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationController.ApplicationDTO.class);
+        ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
         assertEquals(DEFAULT_APP_NAME, app.getApplicationBase().getName());
         assertEquals("1.1.0", app.getApplication().getVersion());
 

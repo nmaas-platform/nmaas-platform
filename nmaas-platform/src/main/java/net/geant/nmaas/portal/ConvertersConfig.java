@@ -14,16 +14,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConvertersConfig {
 	
-	private TagRepository tagRepo;
+	private final TagRepository tagRepo;
 
-	private ApplicationBaseRepository appBaseRepository;
 
-	private RatingRepository ratingRepository;
+	private final RatingRepository ratingRepository;
 
 	@Autowired
-	public ConvertersConfig(TagRepository tagRepo, ApplicationBaseRepository appBaseRepository, RatingRepository ratingRepository){
+	public ConvertersConfig(TagRepository tagRepo, RatingRepository ratingRepository){
 		this.tagRepo = tagRepo;
-		this.appBaseRepository = appBaseRepository;
 		this.ratingRepository = ratingRepository;
 	}
 	
@@ -38,9 +36,6 @@ public class ConvertersConfig {
 	    modelMapper.addConverter(new InetAddressInverseConverter());
 	    modelMapper.addConverter(new ApplicationSubscriptionConverter());
 	    modelMapper.addConverter(new UserConverter());
-	    modelMapper.addConverter(new ApplicationToApplicationMassiveViewConverter(appBaseRepository));
-	    modelMapper.addConverter(new ApplicationMassiveViewToApplicationBaseConverter(tagRepo));
-	    modelMapper.addConverter(new ApplicationMassiveViewToApplicationConverter());
 	    modelMapper.addConverter(new ApplicationBaseToApplicationBaseViewConverter(ratingRepository));
 	    return modelMapper;
 	}

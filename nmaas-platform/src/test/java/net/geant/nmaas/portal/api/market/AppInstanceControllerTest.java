@@ -288,7 +288,7 @@ public class AppInstanceControllerTest {
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
         assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
-        assertEquals(application.getId(), appInstanceView.getApplication().getId());
+//        assertEquals(application.getId(), appInstanceView.getApplication().getId());
         assertEquals(domain.getId(), appInstanceView.getDomain().getId());
 
         MissingElementException me = assertThrows(MissingElementException.class,
@@ -315,9 +315,10 @@ public class AppInstanceControllerTest {
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain.getId(), appInstanceView.getDomainId());
         DomainBase dv = appInstanceView.getDomain();
-        ApplicationMassiveView av = appInstanceView.getApplication();
-        assertEquals(application.getId(), av.getId());
-        assertEquals(application.getName(), av.getName());
+        // TODO rename test
+//        ApplicationMassiveView av = appInstanceView.getApplication();
+//        assertEquals(application.getId(), av.getId());
+//        assertEquals(application.getName(), av.getName());
         assertEquals(domain.getId(), dv.getId());
         assertEquals(domain.getName(), dv.getName());
         assertEquals(domain.getCodename(), dv.getCodename());
