@@ -177,6 +177,16 @@
                         "PERSISTENCE_STORAGE_CLASS": "nmaas-perfsonar-centralmanagement-pwa-admin.persistence.storageClass",
                         "PERSISTENCE_STORAGE_SPACE": "nmaas-perfsonar-centralmanagement-pwa-admin.persistence.size"
                     }
+                },
+                {
+                    "type": "SHARED",
+                    "defaultStorageSpace": 1,
+                    "deployParameters": {
+                      "PERSISTENCE_ENABLED": "nmaas-perfsonar-centralmanagement-nginx.persistence.enabled",
+                      "PERSISTENCE_NAME": "nmaas-perfsonar-centralmanagement-nginx.persistence.name",
+                      "PERSISTENCE_STORAGE_CLASS": "nmaas-perfsonar-centralmanagement-nginx.persistence.storageClass",
+                      "PERSISTENCE_STORAGE_SPACE": "nmaas-perfsonar-centralmanagement-nginx.persistence.size"
+                    }
                 }
             ],
             "exposesWebUI": true,
