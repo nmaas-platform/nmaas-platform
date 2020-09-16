@@ -165,7 +165,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-wifimon",
-                    "version": "0.1.1"
+                    "version": "1.0.0"
                 },
                 "mainDeploymentName": "ui"
             },
@@ -182,7 +182,8 @@
                 "elastic-stack.logstash.imageTag": "7.7.1",
                 "elastic-stack.kibana.imageTag": "7.7.1",
                 "elastic-stack.elasticsearch.clusterHealthCheckParams": "\"wait_for_status=yellow&timeout=1s\"",
-                "sp.encryptionString": "%RANDOM_STRING_32%"
+                "elastic-stack.logstash.extraEnvs[0].name": "ENCRYPTION_STRING",
+                "elastic-stack.logstash.extraEnvs[0].value": "%RANDOM_STRING_32%"
             },
             "exposesWebUI": true,
             "allowSshAccess": false,
@@ -264,19 +265,24 @@
                     "configFileTemplateContent": "CREATE TABLE subnets (\nsubnet text,\nsubnet_id serial PRIMARY KEY );\nCREATE TABLE users (\nid serial PRIMARY KEY,\nemail text NOT NULL,\npassword_hash text NOT NULL,\nrole text NOT NULL);\nCREATE TABLE accesspoints (\napid serial PRIMARY KEY,\nmac text NOT NULL,\nlatitude text,\nlongitude text,\nbuilding text,\nfloor text,\nnotes text);\nCREATE TABLE options (\noptionsid serial PRIMARY KEY,\nuserdata text NOT NULL,\nuservisualoption text NOT NULL,\ncorrelationmethod text NOT NULL\n);\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT CONNECT ON DATABASE wifimon_database to wifimon_user;\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT SELECT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT INSERT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT DELETE ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT UPDATE ON accesspoints, options TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE subnets_subnet_id_seq TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE users_id_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE options_optionsid_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE accesspoints_apid_seq TO wifimon_user;\nINSERT INTO users VALUES ('1', '${defaultEmailAddress}', '${helper.encode(defaultAccessPassword)}', 'ADMIN');"
                 },
                 {
-                    "configFileName": "kibana.yml",
-                    "configFileDirectory": "kibana",
-                    "configFileTemplateContent": "server.name: kibana\nserver.host: \"0\"\nelasticsearch.hosts: [ \"http://elasticsearch:9200\" ]\nmonitoring.ui.container.elasticsearch.enabled: true\nelasticsearch.username: \"kibana\"\nelasticsearch.password: \"pristap\"  \nxpack.security.encryptionKey: \"${helper.randomString(32)}\"\nxpack.encryptedSavedObjects.encryptionKey: \"${helper.randomString(32)}\""
-                },
-                {
-                    "configFileName": "elasticsearch.yml",
-                    "configFileDirectory": "es-config",
-                    "configFileTemplateContent": "cluster.name: \"${RELEASE_NAME}\"\nnetwork.host: 0.0.0.0\nxpack.security.enabled: true\nxpack.monitoring.enabled: true\nxpack.monitoring.collection.enabled: true\nxpack.security.transport.ssl.enabled: true"
-                },
-                {
                     "configFileName": "uptime.conf",
                     "configFileDirectory": "pipelines",
                     "configFileTemplateContent": "input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://${RELEASE_NAME}-pllabprod:9200\"] index => \"logstash\" } }"
+                },
+                {
+                    "configFileName": "beats-pipeline.yml",
+                    "configFileDirectory": "pipelines",
+                    "configFileTemplateContent": "input {\n    beats {\n        port => 5044\n    }\n}\n\noutput {\n    if ([logtype] == \"radius\") {\n        pipeline { send_to => radiuslogs }\n    } else { \n        pipeline { send_to => dhcplogs }\n    }\n}\n"
+                },
+                {
+                    "configFileName": "dhcp-pipeline.yml",
+                    "configFileDirectory": "pipelines",
+                    "configFileTemplateContent": "input {\n    pipeline { address => dhcplogs }\n}\n\nfilter {\n    dissect {\n        mapping => {\n            \"message\" => \"%{} DHCPACK on %{ip} to %{mac} %{}\"\n        }\n\n        remove_field => [\n            \"logtype\",\n            \"message\",\n            \"@version\"\n        ]\n    }\n\n    if \"beats_input_codec_plain_applied\" in [tags] {\n        mutate { remove_tag => [\"beats_input_codec_plain_applied\"] }\n    }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"ip\"\n        target => \"ip\"\n    }\n\n    fingerprint {\n        key => \"encryption-key-goes-here\"\n        method => \"SHA512\"\n        source => \"mac\"\n        target => \"mac\"\n    }\n}\n\noutput {\n    elasticsearch {\n        hosts => [\"http://localhost\"]\n        index => \"dhcplogs\"\n    }\n}\n"
+                },
+                {
+                    "configFileName": "radius-pipeline.yml",
+                    "configFileDirectory": "pipelines",
+                    "configFileTemplateContent": "input {\n    pipeline { address => radiuslogs }\n}\n\nfilter {\n    mutate { gsub => [ \"message\", \"[\\n\\t]+\", \" \" ] }\n\n    kv {\n        allow_duplicate_values => false\n\n        include_keys => [\n            \"Calling-Station-Id\",\n            \"Framed-IP-Address\",\n            \"Timestamp\",\n            \"Called-Station-Id\",\n            \"NAS-IP-Address\",\n            \"Acct-Status-Type\"\n        ]\n\n        remove_field => [\n            \"logtype\",\n            \"message\",\n            \"@version\"\n        ]\n    }\n\n    if \"beats_input_codec_plain_applied\" in [tags] {\n        mutate { remove_tag => [\"beats_input_codec_plain_applied\"] }\n    }\n\n    geoip { source => \"NAS-IP-Address\" }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"Calling-Station-Id\"\n        target => \"Calling-Station-Id\"\n    }\n\n    fingerprint {\n        key => \"encryption-key-goes-here\"\n        method => \"SHA512\"\n        source => \"Framed-IP-Address\"\n        target => \"Framed-IP-Address\"\n    }\n}\n\noutput {\n    elasticsearch {\n        hosts => [\"http://localhost\"]\n        index => \"radiuslogs\"\n    }\n}\n"
                 }
             ]
         }
