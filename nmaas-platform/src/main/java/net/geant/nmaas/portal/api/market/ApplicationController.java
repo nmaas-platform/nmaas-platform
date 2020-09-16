@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -35,6 +38,17 @@ import javax.validation.Valid;
 @RequestMapping("/api/apps")
 @Log4j2
 public class ApplicationController extends AppBaseController {
+
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	@Setter
+	public static class ApplicationDTO {
+		@Valid
+		private ApplicationBaseView applicationBase;
+		@Valid
+		private ApplicationView application;
+	}
 
 	private final ApplicationEventPublisher eventPublisher;
 
