@@ -1,5 +1,4 @@
 import {Component, OnInit, ViewEncapsulation, Input, ViewChild, OnChanges, SimpleChanges} from '@angular/core';
-import {ApplicationMassive} from '../../../../model';
 import {AppImagesService} from '../../../../service';
 import {RateComponent} from '../../../rate';
 import {DefaultLogo} from '../../../../directive/defaultlogo.directive';
@@ -13,6 +12,7 @@ import {AuthService} from '../../../../auth/auth.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AppDescription} from '../../../../model/app-description';
 import {Domain} from '../../../../model/domain';
+import {ApplicationBase} from '../../../../model/application-base';
 
 @Component({
   selector: 'nmaas-applist-element',
@@ -31,7 +31,7 @@ export class AppElementComponent implements OnInit, OnChanges {
   };
 
   @Input()
-  public app: ApplicationMassive;
+  public app: ApplicationBase;
 
   @Input()
   public selected: boolean;

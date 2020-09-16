@@ -2,7 +2,7 @@ import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Id, ApplicationMassive, Rate, Comment, FileInfo } from '../model';
+import { Id, Rate, Comment, FileInfo } from '../model';
 import { AppConfigService } from './appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
@@ -10,6 +10,7 @@ import {AppStateChange} from '../model/appstatechange';
 import {isNullOrUndefined} from 'util';
 import {ApplicationBase} from '../model/application-base';
 import {Application} from '../model/application';
+import {ApplicationDTO} from '../model/application-dto';
 
 @Injectable()
 export class AppsService extends GenericDataService {
@@ -36,21 +37,21 @@ export class AppsService extends GenericDataService {
         return this.patch(this.appConfig.getApiUrl() + '/apps/base', app);
     }
 
-    // application massive
+    // application dto
 
-    public getApplicationMassive(id: number): Observable<ApplicationMassive> {
-        return this.get<ApplicationMassive>(this.appConfig.getApiUrl() + '/apps/' + id);
+    public getApplicationDTO(id: number): Observable<ApplicationDTO> {
+        return this.get<ApplicationDTO>(this.appConfig.getApiUrl() + '/apps/' + id);
     }
 
-    public getLatestVersion(appName: string): Observable<ApplicationMassive> {
-        return this.get<ApplicationMassive>(this.appConfig.getApiUrl() + '/apps/' + appName + '/latest');
+    public getLatestVersion(appName: string): Observable<ApplicationDTO> {
+        return this.get<ApplicationDTO>(this.appConfig.getApiUrl() + '/apps/' + appName + '/latest');
     }
 
-    public createApplicationMassive(app: ApplicationMassive): Observable<any> {
+    public createApplicationDTO(app: ApplicationDTO): Observable<any> {
         return this.post(this.appConfig.getApiUrl() + '/apps', app);
     }
 
-    public updateApplicationMassive(app: ApplicationMassive): Observable<any> {
+    public updateApplicationDTO(app: ApplicationDTO): Observable<any> {
         return this.patch(this.appConfig.getApiUrl() + '/apps', app);
     }
 

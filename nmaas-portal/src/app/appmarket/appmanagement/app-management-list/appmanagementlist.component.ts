@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AppsService} from '../../../service';
-import {ApplicationMassive} from '../../../model';
 import {Router} from '@angular/router';
 import {ApplicationState, parseApplicationState} from '../../../model/application-state';
 import {AuthService} from '../../../auth/auth.service';

@@ -1,16 +1,15 @@
-import {ApplicationMassive} from '../../../model';
 import {AppConfigService} from '../../../service';
 import {AppSubscriptionsService} from '../../../service/appsubscriptions.service';
 import {CacheService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
 import {ListType} from '../../common/listtype';
 import {AppViewType} from '../../common/viewtype';
-import {Component, OnInit, Input, ViewEncapsulation, OnDestroy} from '@angular/core';
+import {Component, OnInit, Input, ViewEncapsulation} from '@angular/core';
 import {Observable} from 'rxjs';
-import {isUndefined} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {AppDescription} from '../../../model/app-description';
 import {Domain} from '../../../model/domain';
+import {ApplicationBase} from '../../../model/application-base';
 
 @Component({
   selector: 'nmaas-applist',
@@ -33,7 +32,7 @@ export class AppListComponent implements OnInit {
   public listType: ListType;
 
   @Input()
-  public applications: Observable<ApplicationMassive[]>;
+  public applications: Observable<ApplicationBase[]>;
 
   @Input()
   public selected: Observable<Set<number>>;
@@ -51,10 +50,10 @@ export class AppListComponent implements OnInit {
               private userDataService: UserDataService,
               private appConfig: AppConfigService,
               private translate: TranslateService) {
-    if (isUndefined(this.listType)) {
+    if (this.listType === undefined) {
       this.listType = ListType.GRID;
     }
-    if (isUndefined(this.appView)) {
+    if (this.appView === undefined) {
       this.appView = AppViewType.APPLICATION;
     }
   }
@@ -65,7 +64,7 @@ export class AppListComponent implements OnInit {
     });
   }
 
-  public getDescription(app: ApplicationMassive): AppDescription {
+  public getDescription(app: ApplicationBase): AppDescription {
     return app.descriptions.find(val => val.language === this.translate.currentLang);
   }
 

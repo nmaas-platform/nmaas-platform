@@ -1,12 +1,11 @@
 import {Component, OnInit, Input, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 
-import {ApplicationMassive} from '../../../model';
 import {ModalComponent} from '..';
 import {AppInstanceService, DomainService} from '../../../service';
 import { UserDataService } from '../../../service/userdata.service';
-import { isUndefined } from 'util';
 import {Domain} from '../../../model/domain';
+import {ApplicationBase} from '../../../model/application-base';
 
 @Component({
   selector: 'nmaas-modal-app-install',
@@ -20,7 +19,7 @@ export class AppInstallModalComponent implements OnInit {
   public readonly modal: ModalComponent;
 
   @Input()
-  app: ApplicationMassive;
+  app: ApplicationBase;
 
   @Input()
   domain: Domain;

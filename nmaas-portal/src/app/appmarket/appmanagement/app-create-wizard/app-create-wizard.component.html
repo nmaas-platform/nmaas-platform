@@ -23,7 +23,7 @@
     <div class="bs-callout bs-callout-primary">
         {{'APPS_WIZARD.BASIC_APP_INFO_STEP_INFO' | translate }}
     </div>
-    <div *ngIf="app">
+    <div *ngIf="applicationDTO">
         <div class="panel">
             <form class="form-horizontal" #basicInfoForm="ngForm">
                 <div class="form-group form-group-sm"
@@ -31,7 +31,7 @@
  			    		 	'has-success': appName.valid && (appName.dirty || appName.touched)}">
                     <label for="appName" class="control-label">{{'APPS_WIZARD.NAME_LABEL' | translate}} *</label>
                     <br>
-                    <input type="text" id="appName" class="form-control" required [(ngModel)]="app.name"
+                    <input type="text" id="appName" class="form-control" required [(ngModel)]="applicationDTO.applicationBase.name"
                            [maxLength]="30" pattern="^[a-zA-Z0-9- ]+$" name="appName" #appName="ngModel"
                            tooltip="{{'APPS_WIZARD.NAME_TOOLTIP' | translate}}" [display]="true"
                            [options]="defaultTooltipOptions">
@@ -41,7 +41,7 @@
  			    		 	'has-success': version.valid && (version.dirty || version.touched)}">
                     <label for="appVersion" class="control-label">{{'APPS_WIZARD.VERSION_LABEL' | translate}} *</label>
                     <br>
-                    <input type="text" id="appVersion" class="form-control" required [(ngModel)]="app.version"
+                    <input type="text" id="appVersion" class="form-control" required [(ngModel)]="applicationDTO.application.version"
                            name="version" #version="ngModel" tooltip="{{'APPS_WIZARD.VERSION_TOOLTIP' | translate}}"
                            [display]="true" [options]="defaultTooltipOptions">
                 </div>
@@ -50,7 +50,7 @@
  			    		 	'has-success': license.valid && (license.dirty || license.touched)}">
                     <label for="appLicense" class="control-label">{{'APPS_WIZARD.LICENSE_LABEL' | translate}}</label>
                     <br>
-                    <input type="text" id="appLicense" class="form-control" [(ngModel)]="app.license" name="license"
+                    <input type="text" id="appLicense" class="form-control" [(ngModel)]="applicationDTO.applicationBase.license" name="license"
                            #license="ngModel" tooltip="{{'APPS_WIZARD.LICENSE_TOOLTIP' | translate}}" [display]="true"
                            [options]="defaultTooltipOptions">
                 </div>
@@ -61,7 +61,7 @@
                            class="control-label">{{'APPS_WIZARD.LICENSE_URL_LABEL' | translate}}</label>
                     <br>
                     <input type="url" id="appLicenseUrl" class="form-control" [pattern]="urlPattern"
-                           [(ngModel)]="app.licenseUrl" name="licenseUrl" #licenseUrl="ngModel"
+                           [(ngModel)]="applicationDTO.applicationBase.licenseUrl" name="licenseUrl" #licenseUrl="ngModel"
                            tooltip="{{'APPS_WIZARD.LICENSE_URL_TOOLTIP' | translate}}" [display]="true"
                            [options]="defaultTooltipOptions" placeholder="e.g. https://opensource.org/licenses/MIT">
                 </div>
@@ -73,7 +73,7 @@
                     <br>
                     <input type="url" id="wwwUrl" class="form-control" [pattern]="urlPattern" name="wwwUrl"
                            #wwwUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_WEBSITE_TOOLTIP' | translate}}"
-                           [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.wwwUrl">
+                           [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="applicationDTO.applicationBase.wwwUrl">
                 </div>
                 <div class="form-group form-group-sm"
                      [ngClass]="{'has-error':  sourceUrl.invalid && (sourceUrl.dirty || sourceUrl.touched),
@@ -82,7 +82,7 @@
                     <br>
                     <input type="url" id="sourceUrl" class="form-control" [pattern]="urlPattern" name="sourceUrl"
                            #sourceUrl="ngModel" tooltip="{{'APPS_WIZARD.SOURCE_CODE_TOOLTIP' | translate}}"
-                           [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.sourceUrl">
+                           [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="applicationDTO.applicationBase.sourceUrl">
                 </div>
                 <div class="form-group form-group-sm"
                      [ngClass]="{'has-error':  issuesUrl.invalid && (issuesUrl.dirty || issuesUrl.touched),
@@ -92,7 +92,7 @@
                     <br>
                     <input type="url" id="issuesUrl" class="form-control" [pattern]="urlPattern" name="issuesUrl"
                            #issuesUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_ISSUES_TOOLTIP' | translate}}"
-                           [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.issuesUrl">
+                           [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="applicationDTO.applicationBase.issuesUrl">
                 </div>
                 <div class="form-group form-group-sm"
                      [ngClass]="{'has-error':  nmaasDocumentationUrl.invalid && (nmaasDocumentationUrl.dirty || nmaasDocumentationUrl.touched),
@@ -103,13 +103,13 @@
                     <input type="url" id="nmaasDocumentationUrl" class="form-control" [pattern]="urlPattern"
                            name="nmaasDocumentationUrl" #nmaasDocumentationUrl="ngModel"
                            tooltip="{{'APPS_WIZARD.PROJECT_NMAAS_DOCUMENTATION_TOOLTIP' | translate}}" [display]="true"
-                           [options]="defaultTooltipOptions" [(ngModel)]="app.nmaasDocumentationUrl">
+                           [options]="defaultTooltipOptions" [(ngModel)]="applicationDTO.applicationBase.nmaasDocumentationUrl">
                 </div>
                 <div class="form-group form-group-sm">
                     <label for="tags" class="control-label">{{'APPS_WIZARD.TAGS_LABEL' | translate}} * </label>
                     <br>
                     <p-multiSelect #tagsMultiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags"
-                                   [(ngModel)]="app.tags" name="tags"
+                                   [(ngModel)]="applicationDTO.applicationBase.tags" name="tags"
                                    tooltip="{{'APPS_WIZARD.TAGS_TOOLTIP' | translate}}" placement="bottom"
                                    show-delay="50" theme="dark" [display]="true"
                                    [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
@@ -169,7 +169,7 @@
     <div class="bs-callout bs-callout-primary">
         {{'APPS_WIZARD.APP_DESCRIPTIONS_STEP_INFO' | translate }}
     </div>
-    <div *ngIf="app">
+    <div *ngIf="applicationDTO">
         <form class="form-horizontal" #descriptionForm="ngForm">
             <div class="panel">
                 <div class="panel-heading">{{'APPS_WIZARD.APP_REQUIRED_DESCRIPTIONS_HEADER' | translate }}</div>
@@ -275,7 +275,7 @@
                     <br>
                     <input type="text" class="form-control" id="kubernetesTemplateChartName"
                            name="kubernetesTemplateChartName" #kubernetesTemplateChartName="ngModel"
-                           [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" required
+                           [(ngModel)]="applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart.name" required
                            tooltip="{{'APPS_WIZARD.CHART_NAME_TOOLTIP' | translate}}" [display]="true"
                            [options]="defaultTooltipOptions">
                 </div>
@@ -285,7 +285,7 @@
                     <br>
                     <input type="text" class="form-control" id="kubernetesTemplateChartVersion"
                            name="kubernetesTemplateChartVersion"
-                           [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version" required
+                           [(ngModel)]="applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart.version" required
                            tooltip="{{'APPS_WIZARD.CHART_VERSION_TOOLTIP' | translate}}" [display]="true"
                            [options]="defaultTooltipOptions">
                 </div>
@@ -295,7 +295,7 @@
                     <br>
                     <input type="text" class="form-control" id="kubernetesTemplateMainDeploymentName"
                            name="kubernetesTemplateMainDeploymentName"
-                           [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.mainDeploymentName"
+                           [(ngModel)]="applicationDTO.application.appDeploymentSpec.kubernetesTemplate.mainDeploymentName"
                            tooltip="{{'APPS_WIZARD.MAIN_DEPLOYMENT_NAME_TOOLTIP' | translate}}" [display]="true"
                            [options]="defaultTooltipOptions">
                 </div>
@@ -304,7 +304,7 @@
                            class="col-sm-2 control-label">{{'APPS_WIZARD.EXPOSE_WEB_UI' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="exposesWebUI" name="exposesWebUI" [defaultChecked]="false"
-                               [(ngModel)]="app.appDeploymentSpec.exposesWebUI"
+                               [(ngModel)]="applicationDTO.application.appDeploymentSpec.exposesWebUI"
                                tooltip="{{'APPS_WIZARD.EXPOSE_WEB_UI_TOOLTIP' | translate}}" [display]="true"
                                [options]="defaultTooltipOptions">
                     </div>
@@ -315,7 +315,7 @@
                            class="col-sm-2 control-label">{{'APPS_WIZARD.ALLOW_SSH_ACCESS' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="allowSshAccess" name="allowSshAccess" [defaultChecked]="false"
-                               [(ngModel)]="app.appDeploymentSpec.allowSshAccess"
+                               [(ngModel)]="applicationDTO.application.appDeploymentSpec.allowSshAccess"
                                tooltip="{{'APPS_WIZARD.ALLOW_SSH_ACCESS_TOOLTIP' | translate}}" [display]="true"
                                [options]="defaultTooltipOptions">
                     </div>
@@ -324,7 +324,7 @@
                 <div class="form-group form-group-sm">
                     <h4>{{'APPS_WIZARD.DEPLOY_PARAMETERS' | translate}}</h4>
                     <app-static-global-deploy-parameters-edit
-                            [appDeploymentSpec]="app.appDeploymentSpec"
+                            [appDeploymentSpec]="applicationDTO.application.appDeploymentSpec"
                             [propertyName]="'deployParameters'"
                             [keyValidator]="deployParamKeyValidator"
                             [keyValidatorMessage]="keyValidatorMessage"
@@ -336,7 +336,7 @@
                 <div class="form-group form-group-sm">
                     <h4>{{'APPS_WIZARD.STATIC_GLOBAL_DEPLOY_PARAMETERS' | translate}}</h4>
                     <app-static-global-deploy-parameters-edit
-                            [appDeploymentSpec]="app.appDeploymentSpec"
+                            [appDeploymentSpec]="applicationDTO.application.appDeploymentSpec"
                             [propertyName]="'globalDeployParameters'">
 
                     </app-static-global-deploy-parameters-edit>
@@ -344,8 +344,8 @@
 
                 <div class="form-group form-group-sm">
                     <h4>{{'APPS_WIZARD.STORAGE_VOLUMES' | translate}}</h4>
-                    <ul *ngIf="app.appDeploymentSpec.storageVolumes">
-                        <li *ngFor="let s of app.appDeploymentSpec.storageVolumes; let i=index" class="no-bullet-list">
+                    <ul *ngIf="applicationDTO.application.appDeploymentSpec.storageVolumes">
+                        <li *ngFor="let s of applicationDTO.application.appDeploymentSpec.storageVolumes; let i=index" class="no-bullet-list">
                             <app-storage-volume-edit [storageVolume]="s" [id]="i"
                                                      [storageVolumeTypes]="storageVolumeTypeOptions()"
                                                      (output)="removeStorageVolume($event)"></app-storage-volume-edit>
@@ -357,8 +357,8 @@
 
                 <div class="form-group form-group-sm">
                     <h4>{{'APPS_WIZARD.ACCESS_METHODS' | translate}}</h4>
-                    <ul *ngIf="app.appDeploymentSpec.accessMethods">
-                        <li *ngFor="let a of app.appDeploymentSpec.accessMethods; let i=index" class="no-bullet-list">
+                    <ul *ngIf="applicationDTO.application.appDeploymentSpec.accessMethods">
+                        <li *ngFor="let a of applicationDTO.application.appDeploymentSpec.accessMethods; let i=index" class="no-bullet-list">
                             <app-access-method-edit [accessMethod]="a" [id]="i"
                                                     [accessMethodTypes]="accessMethodTypeOptions()"
                                                     (output)="removeAccessMethod($event)"></app-access-method-edit>
@@ -380,7 +380,7 @@
     <div class="bs-callout bs-callout-primary">
         {{'APPS_WIZARD.CONFIG_TEMPLATES_STEP_INFO' | translate }}
     </div>
-    <div *ngIf="app">
+    <div *ngIf="applicationDTO">
         <div class="panel">
             <div class="panel-heading">{{'APPS_WIZARD.APP_CONFIG_TEMPLATES_HEADER' | translate}}</div>
             <form class="form-horizontal" #appConfigForm="ngForm">
@@ -392,7 +392,7 @@
                             <input type="checkbox" id="configFileRepositoryRequired" name="configFileRepositoryRequired"
                                    (change)="changeDefaultElementInForms()"
                                    [defaultChecked]="false"
-                                   [(ngModel)]="app.appConfigurationSpec.configFileRepositoryRequired"
+                                   [(ngModel)]="applicationDTO.application.appConfigurationSpec.configFileRepositoryRequired"
                                    tooltip="{{'APPS_WIZARD.REPOSITORY_REQUIRED_TOOLTIP' | translate}}" [display]="true"
                                    [options]="defaultTooltipOptions">
                         </div>
@@ -402,7 +402,7 @@
                                class="col-sm-2 control-label">{{'APPS_WIZARD.CONFIG_UPDATE_ENABLED' | translate}}</label>
                         <div class="col-sm-10">
                             <input type="checkbox" id="configUpdateEnabled" name="configUpdateEnabled"
-                                   [(ngModel)]="app.appConfigurationSpec.configUpdateEnabled">
+                                   [(ngModel)]="applicationDTO.application.appConfigurationSpec.configUpdateEnabled">
                         </div>
                     </div>
                     <div class="form-group form-group-sm">
@@ -415,7 +415,7 @@
                                    [options]="defaultTooltipOptions">
                         </div>
                     </div>
-                    <div *ngIf="app.appConfigurationSpec.configFileRepositoryRequired">
+                    <div *ngIf="applicationDTO.application.appConfigurationSpec.configFileRepositoryRequired">
                         <div *ngFor="let configTemplate of configFileTemplates; let i=index">
                             <div class="form-group form-group-sm" [ngClass]="{'has-error':  configFileName.invalid && (configFileName.dirty || configFileName.touched),
  			    		 	        'has-success': configFileName.valid && (configFileName.dirty || configFileName.touched)}">
@@ -475,8 +475,8 @@
             <div class="panel">
                 <div class="panel-heading">{{'APPS_WIZARD.CONFIG_WIZARD_TEMPLATE_LABEL' | translate}}</div>
                 <div class="panel-body">
-                    <form-builder *ngIf="formDisplayChange && app.configWizardTemplate.template"
-                                  [form]="app.configWizardTemplate.template"
+                    <form-builder *ngIf="formDisplayChange && applicationDTO.application.configWizardTemplate.template"
+                                  [form]="applicationDTO.application.configWizardTemplate.template"
                                   (change)="setConfigTemplate($event)"></form-builder>
                 </div>
             </div>
@@ -488,7 +488,7 @@
 </div>
 
 <div *ngIf="(isInMode(ComponentMode.CREATE) && activeStepIndex === 6) || (isInMode(ComponentMode.EDIT) && activeStepIndex === 4)">
-    <app-apppreview [app]="app" [logo]="logo[0]" [screenshots]="screenshots"></app-apppreview>
+    <app-apppreview [app]="applicationDTO" [logo]="logo[0]" [screenshots]="screenshots"></app-apppreview>
     <div class="alert alert-danger" *ngIf="errorMessage">
         {{errorMessage}}
     </div>

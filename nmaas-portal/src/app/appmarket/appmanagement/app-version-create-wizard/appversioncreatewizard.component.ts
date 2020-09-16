@@ -1,12 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {ModalComponent} from '../../../shared/modal';
-import {ApplicationMassive, ConfigWizardTemplate} from '../../../model';
+import {ConfigWizardTemplate} from '../../../model';
 import {ConfigFileTemplate} from '../../../model/configfiletemplate';
 import {AppImagesService, AppsService} from '../../../service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ConfigTemplateService} from '../../../service/configtemplate.service';
-import {isNullOrUndefined} from 'util';
 import {ParameterType} from '../../../model/parametertype';
 import {KubernetesTemplate} from '../../../model/kubernetestemplate';
 import {TranslateService} from '@ngx-translate/core';
@@ -20,12 +19,13 @@ import {parseServiceAccessMethodType, ServiceAccessMethodType} from '../../../mo
 import {AbstractControl, ValidatorFn} from '@angular/forms';
 import {MultiSelect} from 'primeng/multiselect';
 import {MenuItem, SelectItem} from 'primeng/api';
+import {ApplicationDTO} from '../../../model/application-dto';
 
 export function noParameterTypeInControlValueValidator(): ValidatorFn {
 
     const labels = Object.keys(ParameterType).map(key => ParameterType[key]).filter(value => typeof value === 'string') as string[];
 
-    return (control: AbstractControl): {[key: string]: any} | null => {
+    return (control: AbstractControl): { [key: string]: any } | null => {
         if (!(typeof control.value === 'string')) {
             return null;
         }
@@ -43,13 +43,13 @@ export function noParameterTypeInControlValueValidator(): ValidatorFn {
 export class AppVersionCreateWizardComponent extends BaseComponent implements OnInit {
 
 
-    @ViewChild(ModalComponent, { static: true })
+    @ViewChild(ModalComponent, {static: true})
     public modal: ModalComponent;
 
     @ViewChild('tagsMultiSelect')
     public tagsMultiSelect: MultiSelect;
 
-    public app: ApplicationMassive;
+    public applicationDTO: ApplicationDTO;
     public appName: string;
     public steps: MenuItem[];
     public activeStepIndex = 0;
@@ -94,69 +94,73 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
             {label: this.translate.instant('APPS_WIZARD.SHORT_REVIEW_STEP')}
         ];
         this.route.params.subscribe(params => {
-            if (!isNullOrUndefined(params['name'])) {
-                this.appsService.getLatestVersion(params['name']).subscribe(result => {
-                        result.version = undefined;
-                        result.state = ApplicationState.NEW;
-                        this.app = result;
-                        this.appName = result.name;
+            const appName = params['name']
+            const appId = params['id']
+            if (appName != null) {
+                this.appsService.getLatestVersion(params['name']).subscribe(
+                    (result: ApplicationDTO) => {
+                        this.applicationDTO = result;
+                        this.applicationDTO.application.version = undefined;
+                        this.applicationDTO.application.state = ApplicationState.NEW;
+                        this.appName = appName;
                         this.fillWizardWithData(result);
                     },
-                    err => {
-                        console.error(err);
-                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
-                            this.router.navigateByUrl('/notfound');
-                        }
-                    });
-            } else if (!isNullOrUndefined(params['id'])) {
-                this.appsService.getApplicationMassive(params['id']).subscribe(result => {
-                        this.app = result;
-                        this.appName = result.name;
+                    err => this.handleError(err)
+                );
+            } else if (appId != null) {
+                this.appsService.getApplicationDTO(appId).subscribe(
+                    (result: ApplicationDTO) => {
+                        this.applicationDTO = result;
+                        this.appName = result.application.name;
                         this.fillWizardWithData(result);
                     },
-                    err => {
-                        console.error(err);
-                        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
-                            this.router.navigateByUrl('/notfound');
-                        }
-                    });
+                    err => this.handleError(err)
+                );
                 this.rulesAccepted = true;
                 this.activeStepIndex = 1;
             }
         });
     }
 
-    public fillWizardWithData(appToEdit: ApplicationMassive): void {
+    public handleError(err: any): void {
+        console.error(err);
+        if (err.statusCode && (err.statusCode === 404 || err.statusCode === 401 || err.statusCode === 403)) {
+            this.router.navigateByUrl('/notfound');
+        }
+    }
+
+    public fillWizardWithData(appToEdit: ApplicationDTO): void {
 
         console.log(appToEdit);
 
         const temp: Map<ParameterType, string> = new Map();
-        Object.keys(appToEdit.appDeploymentSpec.deployParameters).forEach(key => {
-            temp.set(ParameterType[key], appToEdit.appDeploymentSpec.deployParameters[key]);
+        Object.keys(appToEdit.application.appDeploymentSpec.deployParameters).forEach(key => {
+            temp.set(ParameterType[key], appToEdit.application.appDeploymentSpec.deployParameters[key]);
             this.selectedDeployParameters.push(key);
         });
         // do not override current type (object) to map, because JS map cannot be serialized to JSON
         // this.app.appDeploymentSpec.deployParameters = temp;
 
-        if (isNullOrUndefined(this.app.configWizardTemplate)) {
-            this.app.configWizardTemplate = new ConfigWizardTemplate();
-            this.app.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
+        if (this.applicationDTO.application.configWizardTemplate == null) {
+            this.applicationDTO.application.configWizardTemplate = new ConfigWizardTemplate();
+            this.applicationDTO.application.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
         }
-        this.getLogo(appToEdit.id);
-        this.getScreenshots(appToEdit.id);
-        if (isNullOrUndefined(appToEdit.appDeploymentSpec.kubernetesTemplate)) {
-            this.app.appDeploymentSpec.kubernetesTemplate = new KubernetesTemplate();
+        this.getLogo(appToEdit.applicationBase.id);
+        this.getScreenshots(appToEdit.applicationBase.id);
+
+        if (appToEdit.application.appDeploymentSpec.kubernetesTemplate == null) {
+            this.applicationDTO.application.appDeploymentSpec.kubernetesTemplate = new KubernetesTemplate();
         }
-        if (isNullOrUndefined(appToEdit.appDeploymentSpec.kubernetesTemplate.chart)) {
-            this.app.appDeploymentSpec.kubernetesTemplate.chart = new KubernetesChart();
+        if (appToEdit.application.appDeploymentSpec.kubernetesTemplate.chart == null) {
+            this.applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart = new KubernetesChart();
         }
-        if (this.app.appConfigurationSpec.templates.length > 0) {
-            this.configFileTemplates = this.app.appConfigurationSpec.templates;
+        if (this.applicationDTO.application.appConfigurationSpec.templates.length > 0) {
+            this.configFileTemplates = this.applicationDTO.application.appConfigurationSpec.templates;
         } else {
             this.configFileTemplates.push(new ConfigFileTemplate());
         }
         this.basicAuth = this.hasAlreadyBasicAuth();
-        this.addConfigUpdate = !isNullOrUndefined(this.app.configUpdateWizardTemplate);
+        this.addConfigUpdate = (this.applicationDTO.application.configUpdateWizardTemplate != null);
     }
 
     public nextStep(): void {
@@ -170,59 +174,49 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
 
     public addApplication(): void {
         if (this.templateHasContent()) {
-            this.app.appConfigurationSpec.templates = this.configFileTemplates;
+            this.applicationDTO.application.appConfigurationSpec.templates = this.configFileTemplates;
         }
         if (!this.isChartValid()) {
-            this.app.appDeploymentSpec.kubernetesTemplate.chart = undefined;
+            this.applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart = undefined;
         }
-        this.appsService.createApplication({
-            id: null,
-            name: this.app.name,
-            version: this.app.version,
-            configWizardTemplate: this.app.configWizardTemplate,
-            configUpdateWizardTemplate: this.app.configUpdateWizardTemplate,
-            appConfigurationSpec: this.app.appConfigurationSpec,
-            appDeploymentSpec: this.app.appDeploymentSpec,
-            owner: this.app.owner,
-            state: this.app.state,
-        }).subscribe(() => {
-            this.errorMessage = undefined;
-            this.modal.show();
-        }, error => this.errorMessage = error.message);
+        const app = this.applicationDTO.application;
+        app.id = null
+        this.appsService.createApplication(app).subscribe(
+            () => {
+                this.errorMessage = undefined;
+                this.modal.show();
+            },
+            error => this.errorMessage = error.message
+        );
     }
 
     public updateApplication(): void {
         if (this.templateHasContent()) {
-            this.app.appConfigurationSpec.templates = this.configFileTemplates;
+            this.applicationDTO.application.appConfigurationSpec.templates = this.configFileTemplates;
         }
         if (!this.isChartValid()) {
-            this.app.appDeploymentSpec.kubernetesTemplate.chart = undefined;
+            this.applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart = undefined;
         }
-        this.appsService.updateApplication({
-            id: this.app.appVersionId,
-            name: this.app.name,
-            version: this.app.version,
-            configWizardTemplate: this.app.configWizardTemplate,
-            configUpdateWizardTemplate: this.app.configUpdateWizardTemplate,
-            appConfigurationSpec: this.app.appConfigurationSpec,
-            appDeploymentSpec: this.app.appDeploymentSpec,
-            owner: this.app.owner,
-            state: this.app.state,
-        }).subscribe(() => {
-            this.errorMessage = undefined;
-            this.modal.show();
-        }, error => this.errorMessage = error.message);
+        const app = this.applicationDTO.application;
+        this.appsService.updateApplication(app).subscribe(
+            () => {
+                this.errorMessage = undefined;
+                this.modal.show();
+            },
+            error => this.errorMessage = error.message
+        );
     }
 
     public templateHasContent(): boolean {
-        return this.configFileTemplates.length > 0 && !isNullOrUndefined(this.configFileTemplates[0].configFileName) &&
-            !isNullOrUndefined(this.configFileTemplates[0].configFileTemplateContent);
+        return this.configFileTemplates.length > 0 &&
+            (this.configFileTemplates[0].configFileName != null) &&
+            (this.configFileTemplates[0].configFileTemplateContent != null);
     }
 
     public isChartValid(): boolean {
-        return !isNullOrUndefined(this.app.appDeploymentSpec.kubernetesTemplate.chart)
-            && this.app.appDeploymentSpec.kubernetesTemplate.chart.name !== ''
-            && this.app.appDeploymentSpec.kubernetesTemplate.chart.version !== '';
+        return (this.applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart != null)
+            && this.applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart.name !== ''
+            && this.applicationDTO.application.appDeploymentSpec.kubernetesTemplate.chart.version !== '';
     }
 
     public changeRulesAcceptedFlag(): void {
@@ -230,17 +224,17 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public setConfigTemplate(event): void {
-        if (!this.app.configWizardTemplate) {
-            this.app.configWizardTemplate = new ConfigWizardTemplate();
+        if (!this.applicationDTO.application.configWizardTemplate) {
+            this.applicationDTO.application.configWizardTemplate = new ConfigWizardTemplate();
         }
-        this.app.configWizardTemplate.template = event.form;
+        this.applicationDTO.application.configWizardTemplate.template = event.form;
     }
 
     public setUpdateConfigTemplate(event): void {
-        if (!this.app.configUpdateWizardTemplate) {
-            this.app.configUpdateWizardTemplate = new ConfigWizardTemplate();
+        if (!this.applicationDTO.application.configUpdateWizardTemplate) {
+            this.applicationDTO.application.configUpdateWizardTemplate = new ConfigWizardTemplate();
         }
-        this.app.configUpdateWizardTemplate.template = event.form;
+        this.applicationDTO.application.configUpdateWizardTemplate.template = event.form;
     }
 
     // deploy params selection types methods
@@ -250,16 +244,16 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public addToDeployParametersMap(key: string, event) {
-        this.app.appDeploymentSpec.deployParameters[key] = event.target.value;
+        this.applicationDTO.application.appDeploymentSpec.deployParameters[key] = event.target.value;
     }
 
     public getDeployParameterValue(key: string): string {
-        return this.app.appDeploymentSpec.deployParameters[key] || '';
+        return this.applicationDTO.application.appDeploymentSpec.deployParameters[key] || '';
     }
 
     public removeDeployParameterFromMap(event) {
         if (!event.value.some(val => val === event.itemValue)) {
-            delete this.app.appDeploymentSpec.deployParameters[event.itemValue as string];
+            delete this.applicationDTO.application.appDeploymentSpec.deployParameters[event.itemValue as string];
         }
     }
 
@@ -267,7 +261,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
 
     public addConfig() {
         const newTemplate = new ConfigFileTemplate();
-        newTemplate.applicationId = this.app.id;
+        newTemplate.applicationId = this.applicationDTO.application.id;
         this.configFileTemplates.push(newTemplate);
     }
 
@@ -276,19 +270,21 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public hasAlreadyBasicAuth(): boolean {
-        if (isNullOrUndefined(this.app.configWizardTemplate)) {
+        if (this.applicationDTO.application.configWizardTemplate == null) {
             return false;
         }
-        const config: string = JSON.stringify(this.app.configWizardTemplate.template);
+        const config: string = JSON.stringify(this.applicationDTO.application.configWizardTemplate.template);
         return config.search(/accessCredentials/g) !== -1 &&
             config.search(/accessUsername/g) !== -1 &&
             config.search(/accessPassword/g) !== -1;
     }
 
     public handleBasicAuth() {
-        if (!this.app.appConfigurationSpec.configFileRepositoryRequired && isNullOrUndefined(this.app.configWizardTemplate)) {
-            this.app.configWizardTemplate = new ConfigWizardTemplate();
-            this.app.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
+        if (!this.applicationDTO.application.appConfigurationSpec.configFileRepositoryRequired
+            && (this.applicationDTO.application.configWizardTemplate == null)
+        ) {
+            this.applicationDTO.application.configWizardTemplate = new ConfigWizardTemplate();
+            this.applicationDTO.application.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
         }
         if (this.basicAuth) {
             this.addBasicAuth();
@@ -298,42 +294,53 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public addBasicAuth(): any {
-        const config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
-        if (!isNullOrUndefined(config)) {
-            config.unshift(this.configTemplateService.getBasicAuth(this.app.name));
+        const config = this.getNestedObject(
+            this.applicationDTO.application.configWizardTemplate.template,
+            ['components', 0, 'components', 0, 'components']
+        );
+        if (config != null) {
+            config.unshift(this.configTemplateService.getBasicAuth(this.applicationDTO.application.name));
         }
-        if (isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
-            this.app.configUpdateWizardTemplate = new ConfigWizardTemplate();
-            this.app.configUpdateWizardTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
+        if (this.applicationDTO.application.configUpdateWizardTemplate == null) {
+            this.applicationDTO.application.configUpdateWizardTemplate = new ConfigWizardTemplate();
+            this.applicationDTO.application.configUpdateWizardTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
         }
-        this.app.configUpdateWizardTemplate.template.components.unshift(this.configTemplateService.getBasicAuth(this.app.name));
+        this.applicationDTO.application.configUpdateWizardTemplate.template.components
+            .unshift(this.configTemplateService.getBasicAuth(this.applicationDTO.application.name));
     }
 
     public removeBasicAuth(): any {
-        const config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
-        if (!isNullOrUndefined(config)) {
+        const config = this.getNestedObject(
+            this.applicationDTO.application.configWizardTemplate.template,
+            ['components', 0, 'components', 0, 'components']
+        );
+        if (config != null) {
             const index = config.findIndex(val => val.key === 'accessCredentials');
             config.splice(index, 1);
         }
-        this.app.configUpdateWizardTemplate.template.components = this.app.configUpdateWizardTemplate.template.components.filter(val => val.key !== 'accessCredentials');
+        this.applicationDTO.application.configUpdateWizardTemplate.template.components =
+            this.applicationDTO.application.configUpdateWizardTemplate.template.components.filter(val => val.key !== 'accessCredentials');
         this.removeEmptyUpdateConfig();
     }
 
     public removeEmptyUpdateConfig(): void {
-        const updateConfig = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ['components', 0, 'components']);
-        if (isNullOrUndefined(updateConfig) || updateConfig.length === 0) {
-            this.app.configUpdateWizardTemplate = undefined;
+        const updateConfig = this.getNestedObject(
+            this.applicationDTO.application.configUpdateWizardTemplate.template,
+            ['components', 0, 'components']
+        );
+        if ((updateConfig == null) || updateConfig.length === 0) {
+            this.applicationDTO.application.configUpdateWizardTemplate = undefined;
             this.addConfigUpdate = false;
         }
     }
 
     public handleConfigTemplate(): any {
-        if (this.addConfigUpdate && isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
-            this.app.configUpdateWizardTemplate = new ConfigWizardTemplate();
-            this.app.configUpdateWizardTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
+        if (this.addConfigUpdate && (this.applicationDTO.application.configUpdateWizardTemplate == null)) {
+            this.applicationDTO.application.configUpdateWizardTemplate = new ConfigWizardTemplate();
+            this.applicationDTO.application.configUpdateWizardTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
         }
         if (!this.addConfigUpdate && !this.hasAlreadyBasicAuth()) {
-            this.app.configUpdateWizardTemplate = undefined;
+            this.applicationDTO.application.configUpdateWizardTemplate = undefined;
         }
     }
 
@@ -354,7 +361,7 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public handleDefaultElement() {
-        if (this.app.appConfigurationSpec.configFileRepositoryRequired) {
+        if (this.applicationDTO.application.appConfigurationSpec.configFileRepositoryRequired) {
             this.removeDefaultElement();
         } else {
             this.addDefaultElement();
@@ -363,8 +370,11 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public addDefaultElement(): void {
-        let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
-        if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
+        let config = this.getNestedObject(
+            this.applicationDTO.application.configWizardTemplate.template,
+            ['components', 0, 'components', 0, 'components']
+        );
+        if ((config != null) && (config.find(val => val.key === 'configuration') != null)) {
             config = config.find(val => val.key === 'configuration');
             config.components.length = 0;
             config.components.push(this.configTemplateService.getDefaultElement());
@@ -372,16 +382,19 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public removeDefaultElement(): void {
-        const config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, 'components', 0, 'components']);
-        if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
+        const config = this.getNestedObject(
+            this.applicationDTO.application.configWizardTemplate.template,
+            ['components', 0, 'components', 0, 'components']
+        );
+        if ((config != null) && (config.find(val => val.key === 'configuration') != null)) {
             config.find(val => val.key === 'configuration').components.length = 0;
         }
     }
 
     public removeElementsFromUpdateConfig(): void {
-        if (!isNullOrUndefined(this.app.configUpdateWizardTemplate)) {
-            const config = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ['components']);
-            if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
+        if (this.applicationDTO.application.configUpdateWizardTemplate != null) {
+            const config = this.getNestedObject(this.applicationDTO.application.configUpdateWizardTemplate.template, ['components']);
+            if ((config != null) && (config.find(val => val.key === 'configuration') != null)) {
                 config.find(val => val.key === 'configuration').components.length = 0;
             }
             this.removeEmptyUpdateConfig();
@@ -417,37 +430,38 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     }
 
     public addNewAccessMethod(): void {
-        this.app.appDeploymentSpec.accessMethods.push(new AppAccessMethod())
+        this.applicationDTO.application.appDeploymentSpec.accessMethods.push(new AppAccessMethod())
     }
 
     public accessMethodTypeOptions(): string[] {
         const keys: Set<string> = new Set(Object.keys(ServiceAccessMethodType));
-        if (this.app.appDeploymentSpec.accessMethods.
-        find(p => parseServiceAccessMethodType(p.type) === ServiceAccessMethodType.DEFAULT)) {
+        if (this.applicationDTO.application.appDeploymentSpec.accessMethods
+            .find(p => parseServiceAccessMethodType(p.type) === ServiceAccessMethodType.DEFAULT)) {
             keys.delete(ServiceAccessMethodType[ServiceAccessMethodType.DEFAULT]);
         }
         return Array.from(keys);
     }
 
     public removeAccessMethod(event): void {
-        this.app.appDeploymentSpec.accessMethods.splice(event, 1);
+        this.applicationDTO.application.appDeploymentSpec.accessMethods.splice(event, 1);
     }
 
     public addNewStorageVolume(): void {
-        this.app.appDeploymentSpec.storageVolumes.push(new AppStorageVolume())
+        this.applicationDTO.application.appDeploymentSpec.storageVolumes.push(new AppStorageVolume())
     }
 
     public storageVolumeTypeOptions(): string[] {
         const keys: Set<string> = new Set(Object.keys(ServiceStorageVolumeType));
-        if (this.app.appDeploymentSpec.storageVolumes.
-        find(p => parseServiceStorageVolumeType(p.type) === ServiceStorageVolumeType.MAIN)) {
+        if (this.applicationDTO.application.appDeploymentSpec.storageVolumes
+            .find(p => parseServiceStorageVolumeType(p.type) === ServiceStorageVolumeType.MAIN)
+        ) {
             keys.delete(ServiceStorageVolumeType[ServiceStorageVolumeType.MAIN]);
         }
         return Array.from(keys);
     }
 
     public removeStorageVolume(event): void {
-        this.app.appDeploymentSpec.storageVolumes.splice(event, 1);
+        this.applicationDTO.application.appDeploymentSpec.storageVolumes.splice(event, 1);
     }
 
 }

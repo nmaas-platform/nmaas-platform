@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
-import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, ApplicationMassive} from '../../../model';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus} from '../../../model';
 import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../modals/apprestart';
@@ -23,12 +23,21 @@ import {ServiceAccessMethodType} from '../../../model/service-access-method';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 import {ShellClientService} from '../../../service/shell-client.service';
 import {PodInfo} from '../../../model/podinfo';
+import {ApplicationDTO} from '../../../model/application-dto';
 
 @Component({
     selector: 'nmaas-appinstance',
     templateUrl: './appinstance.component.html',
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-    providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, AppAbortModalComponent, LocalDatePipe]
+    providers: [
+        AppsService,
+        AppImagesService,
+        AppInstanceService,
+        SecurePipe,
+        AppRestartModalComponent,
+        AppAbortModalComponent,
+        LocalDatePipe
+    ]
 })
 export class AppInstanceComponent implements OnInit, OnDestroy {
 
@@ -61,7 +70,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     @ViewChild(RateComponent)
     public readonly appRate: RateComponent;
 
-    app: ApplicationMassive;
+    app: ApplicationDTO;
 
 
     public p_first = 'p_first';
@@ -274,9 +283,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                     if (!this.appInstance || !this.appInstance.serviceAccessMethods) {
                         this.updateAppInstance();
                     }
-                    console.log('is ssh access allowed: ' + this.appInstance.application.appDeploymentSpec.allowSshAccess);
+                    console.log('is ssh access allowed: ' + this.appInstance.application.application.appDeploymentSpec.allowSshAccess);
                     console.log('array of pods has length: ' + this.podNames.length);
-                    if (this.appInstance.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
+                    if (this.appInstance.application.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
                         this.updateAppInstancePodNames();
                     }
                 }

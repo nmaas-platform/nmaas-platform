@@ -1,6 +1,7 @@
 import {AppDescription} from './app-description';
 import {ApplicationVersion} from './application-version';
 import {Rate} from './rate';
+import {Tag} from './tag';
 
 export class ApplicationBase {
     public id: number = undefined;
@@ -15,7 +16,7 @@ export class ApplicationBase {
     public nmaasDocumentationUrl: string = undefined;
 
     public descriptions: AppDescription[] = [];
-    public tags: string[] = [];
+    public tags: Tag[] = [];
     public versions: ApplicationVersion[] = [];
 
     public rate: Rate = undefined;

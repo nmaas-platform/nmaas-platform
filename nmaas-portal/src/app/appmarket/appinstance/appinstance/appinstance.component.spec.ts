@@ -17,7 +17,7 @@ import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppAbortModalComponent} from '../modals/app-abort-modal';
 import {RouterTestingModule} from '@angular/router/testing';
 import {StorageServiceModule} from 'ngx-webstorage-service';
-import {AppInstanceState, ApplicationMassive, User} from '../../../model';
+import {AppInstanceState, User} from '../../../model';
 import {Role} from '../../../model/userrole';
 import {ServiceAccessMethodType} from '../../../model/service-access-method';
 import {AppDeploymentSpec} from '../../../model/app-deployment-spec';
@@ -32,6 +32,9 @@ import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {ActivatedRoute} from '@angular/router';
 import {ShellClientService} from '../../../service/shell-client.service';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {ApplicationBase} from '../../../model/application-base';
+import {Application} from '../../../model/application';
+import {ApplicationDTO} from '../../../model/application-dto';
 
 @Pipe({
     name: 'secure'
@@ -113,33 +116,44 @@ describe('Component: AppInstance', () => {
     let appImageService: AppImagesService;
     let domainService: DomainService;
 
-    const application: ApplicationMassive = {
+    const applicationBase: ApplicationBase = {
         id: 2,
-        appVersionId: 1,
         name: 'Oxidized',
-        version: '1.0.0',
         license: null,
         licenseUrl: null,
         wwwUrl: null,
         sourceUrl: null,
         issuesUrl: null,
         nmaasDocumentationUrl: null,
-        owner: 'admin',
         descriptions: [],
-        tags: ['tag1', 'tag2'],
+        tags: [
+            {id: null, name: 'tag1'}, {id: null, name: 'tag2'}
+            ],
         versions: [{
+            id: null,
             version: '0.12',
             state: ApplicationState.ACTIVE,
             appVersionId: 1,
         }],
+        rate: null,
+    };
+
+    const application: Application = {
+        id: 1,
+        name: 'Oxidized',
+        version: '1.0.0',
+        owner: 'admin',
         configWizardTemplate: null,
         configUpdateWizardTemplate: null,
         appDeploymentSpec: new AppDeploymentSpec(),
         appConfigurationSpec: new AppConfigurationSpec(),
         state: ApplicationState.ACTIVE,
-        rate: null,
-    };
+    }
     application.appDeploymentSpec.exposesWebUI = true;
+
+    const dto: ApplicationDTO = {
+        applicationBase, application
+    }
 
     const domain: Domain = {
         id: 4,
@@ -187,7 +201,7 @@ describe('Component: AppInstance', () => {
             {type: ServiceAccessMethodType.INTERNAL, name: 'Internal', protocol: 'SSH', url: 'internal'}
         ],
         userFriendlyState: 'Application instance is running',
-        application: application,
+        application: dto,
         domain: domain,
         appConfigRepositoryAccessDetails: {
             cloneUrl: 'http://clone.me'
@@ -282,7 +296,7 @@ describe('Component: AppInstance', () => {
         appImageService = fixture.debugElement.injector.get(AppImagesService);
         domainService = fixture.debugElement.injector.get(DomainService);
 
-        spyOn(appsService, 'getApplicationMassive').and.returnValue(of(application));
+        spyOn(appsService, 'getApplicationDTO').and.returnValue(of(application));
         spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(of([]));
         spyOn(appInstanceService, 'getAppInstance').and.returnValue(of(appInstance));
         spyOn(appInstanceService, 'getAppInstanceHistory').and.returnValue(of(appInstanceHistory));

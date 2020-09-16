@@ -10,7 +10,7 @@ import {AppsService, TagService} from '../../service';
 import {AppManagementListComponent} from './app-management-list/appmanagementlist.component';
 import {StepsModule} from 'primeng/steps';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {AppCreateWizardComponent} from './app-create-wizard/appcreatewizard.component';
+import {AppCreateWizardComponent} from './app-create-wizard/app-create-wizard.component';
 import {InternationalizationService} from '../../service/internationalization.service';
 import {FormioModule} from 'angular-formio';
 import {ConfigTemplateService} from '../../service/configtemplate.service';
