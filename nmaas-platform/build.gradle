@@ -185,7 +185,7 @@ jacoco {
 
 jacocoTestReport {
     reports {
-        xml.enabled false
+        xml.enabled true
         csv.enabled false
         html.destination file("${buildDir}/jacocoHtml")
     }
@@ -254,9 +254,11 @@ jacocoTestCoverageVerification {
 }
 
 integrationTest.finalizedBy(jacocoTestCoverageVerification)
+jacocoTestCoverageVerification.finalizedBy(jacocoTestReport)
 
-sonarqube {
-    properties {
-        property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
-    }
-}
+// TODO to be removed if redundant
+//sonarqube {
+//    properties {
+//        property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
+//    }
+//}
