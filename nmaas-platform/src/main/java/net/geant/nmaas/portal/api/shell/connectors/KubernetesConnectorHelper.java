@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @Log4j2
 public class KubernetesConnectorHelper {
 
+    private static final String SHELL_ACCESS_ENABLED_POD_LABEL = "shell-access-enabled";
+
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     private final KubernetesClientConfigFactory configFactory;
@@ -65,6 +67,7 @@ public class KubernetesConnectorHelper {
         PodList podList = client.pods().inNamespace(namespace).list();
 
         return podList.getItems().stream()
+                .filter(pod -> Boolean.parseBoolean(pod.getMetadata().getLabels().getOrDefault(SHELL_ACCESS_ENABLED_POD_LABEL, "false")))
                 .map(pod -> new SimpleEntry<>(
                         pod.getMetadata().getName(),
                         pod.getMetadata().getLabels().getOrDefault("app", pod.getMetadata().getName()))
