@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.market;
 import com.google.common.collect.ImmutableMap;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +38,8 @@ public class ApplicationController extends AppBaseController {
 
 	private final ApplicationEventPublisher eventPublisher;
 
+	private final RatingRepository ratingRepository;
+
 	/*
 	 * Application Base Part
 	 */
@@ -45,6 +49,7 @@ public class ApplicationController extends AppBaseController {
 	public List<ApplicationBaseView> getAllActiveOrDisabledApplicationBase() {
 		return appBaseService.findAllActiveOrDisabledApps().stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
+				.map(this::setAppRating)
 				.collect(Collectors.toList());
 	}
 
@@ -54,14 +59,28 @@ public class ApplicationController extends AppBaseController {
 	public List<ApplicationBaseView> getAllApplicationBase(){
 		return appBaseService.findAll().stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
+				.map(this::setAppRating)
 				.collect(Collectors.toList());
+	}
+
+	private ApplicationBaseView setAppRating(ApplicationBaseView baseView) {
+		Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
+		baseView.setRate(this.createAppRateView(rating));
+		return baseView;
+	}
+
+	private AppRateView createAppRateView(Integer[] rating) {
+		return new AppRateView(
+				Arrays.stream(rating).mapToInt(Integer::intValue).average().orElse(0.0),
+				Arrays.stream(rating).collect(Collectors.groupingBy(s -> s, Collectors.counting()))
+		);
 	}
 
 	@GetMapping(value = "/base/{id}")
 	@Transactional
 	public ApplicationBaseView getApplicationBase(@PathVariable Long id) {
-		ApplicationBase app = appBaseService.getBaseApp(id);
-		return modelMapper.map(app, ApplicationBaseView.class);
+		ApplicationBaseView app = modelMapper.map(appBaseService.getBaseApp(id), ApplicationBaseView.class);
+		return this.setAppRating(app);
 	}
 
 	@PatchMapping(value = "/base")

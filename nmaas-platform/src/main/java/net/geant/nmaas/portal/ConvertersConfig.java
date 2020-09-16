@@ -1,8 +1,6 @@
 package net.geant.nmaas.portal;
 
 import net.geant.nmaas.portal.api.domain.converters.*;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 
 import org.modelmapper.Conditions;
@@ -16,13 +14,9 @@ public class ConvertersConfig {
 	
 	private final TagRepository tagRepo;
 
-
-	private final RatingRepository ratingRepository;
-
 	@Autowired
-	public ConvertersConfig(TagRepository tagRepo, RatingRepository ratingRepository){
+	public ConvertersConfig(TagRepository tagRepo){
 		this.tagRepo = tagRepo;
-		this.ratingRepository = ratingRepository;
 	}
 	
 	@Bean
@@ -36,7 +30,6 @@ public class ConvertersConfig {
 	    modelMapper.addConverter(new InetAddressInverseConverter());
 	    modelMapper.addConverter(new ApplicationSubscriptionConverter());
 	    modelMapper.addConverter(new UserConverter());
-	    modelMapper.addConverter(new ApplicationBaseToApplicationBaseViewConverter(ratingRepository));
 	    return modelMapper;
 	}
 	
