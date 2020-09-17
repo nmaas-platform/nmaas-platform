@@ -256,9 +256,9 @@ jacocoTestCoverageVerification {
 integrationTest.finalizedBy(jacocoTestCoverageVerification)
 jacocoTestCoverageVerification.finalizedBy(jacocoTestReport)
 
-// TODO to be removed if redundant
-//sonarqube {
-//    properties {
-//        property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
-//    }
-//}
+sonarqube {
+    properties {
+        property "sonar.coverage.exclusions", ["**/inventory/janitor/**","**/exception/**","**/exceptions/**"]
+        properties["sonar.tests"] += sourceSets.integrationTest.allSource.srcDirs
+    }
+}
