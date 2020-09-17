@@ -95,7 +95,8 @@
                 "chart": {
                     "name": "nmaas-perfsonar-esmond",
                     "version": "1.0.0"
-                }
+                },
+                "mainDeploymentName": "esmond"
             },
             "storageVolumes": [
                 {

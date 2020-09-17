@@ -132,7 +132,8 @@
                 "chart": {
                     "name": "nmaas-perfsonar-maddash",
                     "version": "1.0.1"
-                }
+                },
+                "mainDeploymentName": "maddash"
             },
             "storageVolumes": [
                 {
