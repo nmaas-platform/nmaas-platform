@@ -13,8 +13,8 @@
 					<h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
 					<rate [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(appId)"></rate>
 					<div class="text-muted" style="font-size: small;">
-						<span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="linksTooltipOptions" [display]="app?.appVersions.length == 0">
-							<a class="{{app?.appVersions.length > 0 ? '' : 'disabled-url'}}" style="cursor: pointer;" (click)="showVersions()">{{'APP_INSTANCE.SHOW_VERSIONS_LABEL' | translate }}</a>
+						<span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="linksTooltipOptions" [display]="app?.versions.length == 0">
+							<a class="{{app?.versions.length > 0 ? '' : 'disabled-url'}}" style="cursor: pointer;" (click)="showVersions()">{{'APP_INSTANCE.SHOW_VERSIONS_LABEL' | translate }}</a>
 						</span>
 						|
 						<span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="linksTooltipOptions" [display]="!app?.licenseUrl">
@@ -41,8 +41,8 @@
 				</div>
 			</div>
 			<div class="row" *ngIf="versionVisible">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.appVersions">
-					<a *ngFor="let version of app.appVersions" class="tag-button">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.versions">
+					<a *ngFor="let version of app.versions" class="tag-button">
 						v.{{version.version}}
 					</a>
 				</div>
@@ -51,7 +51,7 @@
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
 					<a *ngFor="let tag of app.tags" class="tag-button">
-						{{tag | titlecase}}
+						{{tag.name | titlecase}}
 					</a>
 				</div>
 			</div>

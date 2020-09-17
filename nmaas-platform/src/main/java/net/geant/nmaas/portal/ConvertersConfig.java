@@ -1,8 +1,6 @@
 package net.geant.nmaas.portal;
 
 import net.geant.nmaas.portal.api.domain.converters.*;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 
 import org.modelmapper.Conditions;
@@ -14,17 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConvertersConfig {
 	
-	private TagRepository tagRepo;
-
-	private ApplicationBaseRepository appBaseRepository;
-
-	private RatingRepository ratingRepository;
+	private final TagRepository tagRepo;
 
 	@Autowired
-	public ConvertersConfig(TagRepository tagRepo, ApplicationBaseRepository appBaseRepository, RatingRepository ratingRepository){
+	public ConvertersConfig(TagRepository tagRepo){
 		this.tagRepo = tagRepo;
-		this.appBaseRepository = appBaseRepository;
-		this.ratingRepository = ratingRepository;
 	}
 	
 	@Bean
@@ -38,12 +30,6 @@ public class ConvertersConfig {
 	    modelMapper.addConverter(new InetAddressInverseConverter());
 	    modelMapper.addConverter(new ApplicationSubscriptionConverter());
 	    modelMapper.addConverter(new UserConverter());
-	    modelMapper.addConverter(new ApplicationBaseToAppBriefViewConverter());
-	    modelMapper.addConverter(new ApplicationToApplicationViewConverter(appBaseRepository));
-	    modelMapper.addConverter(new ApplicationViewToApplicationBaseConverter(tagRepo));
-	    modelMapper.addConverter(new ApplicationViewToApplicationConverter());
-	    modelMapper.addConverter(new ApplicationToApplicationBriefViewConverter(appBaseRepository));
-	    modelMapper.addConverter(new ApplicationBaseToApplicationBaseViewConverter(ratingRepository));
 	    return modelMapper;
 	}
 	

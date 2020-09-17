@@ -1,26 +1,25 @@
 // angular
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Location} from '@angular/common';
-import {forkJoin, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 // pipes/components
-import {SecurePipe} from '../../pipe';
 import {RateComponent} from '../../shared/rate';
 import {CommentsComponent} from '../../shared/comments';
 import {AppInstallModalComponent} from '../../shared/modal/appinstall';
 // services
-import {AppConfigService, AppImagesService, AppInstanceService, AppsService, DomainService} from '../../service';
+import {AppConfigService, AppImagesService, AppsService, DomainService} from '../../service';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {AuthService} from '../../auth/auth.service';
 // model
-import {Application, AppSubscription} from '../../model';
+import {AppSubscription} from '../../model';
 import {Role} from '../../model/userrole';
-import {ApplicationState} from '../../model/applicationstate';
+import {ApplicationState} from '../../model/application-state';
 import {Domain} from '../../model/domain';
-import {AppDescription} from '../../model/appdescription';
+import {AppDescription} from '../../model/app-description';
+import {ApplicationBase} from '../../model/application-base';
 
 
 @Component({
@@ -56,7 +55,7 @@ export class AppDetailsComponent implements OnInit {
     public readonly appRate: RateComponent;
 
     public appId: number;
-    public app: Application;
+    public app: ApplicationBase;
     public subscribed: boolean;
     public domainId: number;
     public active = false;
@@ -66,24 +65,22 @@ export class AppDetailsComponent implements OnInit {
     constructor(private appsService: AppsService,
                 private appSubsService: AppSubscriptionsService,
                 public appImagesService: AppImagesService,
-                // private appInstanceService: AppInstanceService,
                 private userDataService: UserDataService,
                 private appConfig: AppConfigService,
                 private authService: AuthService,
                 private translate: TranslateService,
                 private domainService: DomainService,
                 private router: Router,
-                private route: ActivatedRoute,
-                private location: Location) {
+                private route: ActivatedRoute) {
     }
 
     ngOnInit() {
         this.route.params.subscribe(params => {
             this.appId = +params['id'];
-            this.appsService.getBaseApp(this.appId).subscribe(
+            this.appsService.getApplicationBase(this.appId).subscribe(
                 application => {
                     this.app = application;
-                    this.active = application.appVersions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
+                    this.active = application.versions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
                     // required for the tooltip to appear correctly
                     this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
                 },
@@ -108,7 +105,7 @@ export class AppDetailsComponent implements OnInit {
             return;
         }
 
-        let result: Observable<any> = null;
+        let result: Observable<any>;
         if (isUndefined(domainId) || domainId === 0 || this.appConfig.getNmaasGlobalDomainId() === domainId) {
             result = this.appSubsService.getAllByApplication(this.appId);
             result.subscribe(() => this.subscribed = false);

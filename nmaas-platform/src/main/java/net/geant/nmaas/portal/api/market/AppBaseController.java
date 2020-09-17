@@ -20,19 +20,19 @@ public class AppBaseController {
 	protected ModelMapper modelMapper;
 
 	@Autowired
-	protected ApplicationService applications;
+	protected ApplicationService applicationService;
 
 	@Autowired
 	protected ApplicationBaseService appBaseService;
 
 	@Autowired
-	protected UserService users;
+	protected UserService userService;
 
     protected Application getApp(Long appId) {
 		if(appId == null)
 			throw new MissingElementException("Missing application id.");
 		
-		return applications.findApplication(appId).orElseThrow(() -> new MissingElementException("Application id=" + appId + " not found."));
+		return applicationService.findApplication(appId).orElseThrow(() -> new MissingElementException("Application id=" + appId + " not found."));
 	}
 
 	protected ApplicationBase getBaseApp(Long appBaseId){
@@ -45,14 +45,14 @@ public class AppBaseController {
 		if(username == null)
 			throw new MissingElementException("Missing username.");
 		
-		return users.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
+		return userService.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
 	}
 
 	protected User getUser(Long userId) {
 		if(userId == null)
 			throw new MissingElementException("Missing username.");
 		
-		return users.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
+		return userService.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
 	}
 
 }

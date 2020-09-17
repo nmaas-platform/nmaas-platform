@@ -1,192 +1,199 @@
 {
-	"name": "Jenkins",
-	"version": "latest",
-	"license": "MIT",
-	"licenseUrl": "https://github.com/jenkinsci/jenkins/blob/master/LICENSE.txt",
-	"tags": [
-		"ci"
-	],
-	"descriptions": [
-		{
-			"language": "en",
-			"briefDescription": "Leading open-source automation server",
-			"fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
-		},
-		{
-			"language": "de",
-			"briefDescription": "Leading open-source automation server",
-			"fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
-		},
-		{
-			"language": "fr",
-			"briefDescription": "Leading open-source automation server",
-			"fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
-		},
-		{
-			"language": "pl",
-			"briefDescription": "Leading open-source automation server",
-			"fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
-		}
-	],
-	"wwwUrl": "https://www.jenkins.io",
-	"sourceUrl": "https://github.com/jenkinsci/jenkins",
-	"issuesUrl": "",
-	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Jenkins",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "stable/jenkins",
-				"version": "1.21.3"
-			}
-		},
-		"storageVolumes": [
-			{
-				"type": "MAIN",
-				"defaultStorageSpace": 8,
-				"deployParameters": {
-					"PERSISTENCE_ENABLED": "persistence.enabled",
-					"PERSISTENCE_NAME": "persistence.name",
-					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
-					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
-				}
-			}
-		],
-		"deployParameters": {
-			"DOMAIN_CODENAME": "master.slaveKubernetesNamespace"
-		},
-		"globalDeployParameters": {
-			"clusterZone": "geant.local",
-			"agent.image": "artifactory.software.geant.org/nmaas-docker-local/nmaas-jenkins-slave",
-			"agent.tag": "1.0",
-			"master.installPlugins[0]": "kubernetes:1.25.3",
-			"master.installPlugins[1]": "workflow-job:2.38",
-			"master.installPlugins[2]": "workflow-aggregator:2.6",
-			"master.installPlugins[3]": "credentials-binding:1.21",
-			"master.installPlugins[4]": "git:4.2.2",
-			"master.installPlugins[5]": "configuration-as-code:1.39",
-			"master.installPlugins[6]": "locale:1.4",
-			"master.installPlugins[7]": "ssh:2.6.1",
-			"master.installPlugins[8]": "ansible:1.0",
-			"runAsUser": "1000",
-			"fsGroup": "1000",
-			"useSecurity": "true"
-		},
-		"exposesWebUI": true,
-		"accessMethods":  [
-			{
-				"type": "DEFAULT",
-				"name": "Jenkins",
-				"tag": "jenkins",
-				"deployParameters": {
-					"INGRESS_ENABLED": "master.ingress.enabled",
-					"INGRESS_HOSTS": "master.ingress.hostName=%VALUE%",
-					"INGRESS_CLASS": "master.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
-					"INGRESS_TLS_HOSTS": "master.ingress.tls[0].hosts"
-				}
-			}
-		]
-	},
-	"appConfigurationSpec": {
-		"configFileRepositoryRequired": false
-	},
-	"state": "DISABLED",
-	"configWizardTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Tabs",
-					"components": [
-						{
-							"label": "Base",
-							"key": "configTab",
-							"components": [
-								{
-									"label": "Mandatory parameters",
-									"hideLabel": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "mandatoryParameters",
-									"components": [
-										{
-											"label": "Jenkins admin username",
-											"type": "textfield",
-											"input": true,
-											"key": "master#adminUser",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain"
-										},
-										{
-											"label": "Jenkins admin password",
-											"type": "password",
-											"input": true,
-											"key": "master#adminPassword",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain"
-										},
-										{
-											"label": "Administrator email address",
-											"type": "email",
-											"input": true,
-											"key": "master#jenkinsAdminEmail",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain"
-										}
-									]
-								}
-							]
-						},
-						{
-							"label": "Advanced",
-							"key": "advancedTab",
-							"components": [
-								{
-									"label": "Advanced",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 1,
-									"key": "advanced",
-									"components": [
-										{
-											"label": "Storage space (GB):",
-											"type": "number",
-											"input": true,
-											"key": "storageSpace",
-											"placeholder": "Default value: 8GB",
-											"tab": 1
-										}
-									]
-								}
-							]
-						}
-					],
-					"type": "tabs",
-					"input": false,
-					"key": "tabs"
-				},
-				{
-					"type": "button",
-					"label": "Apply configuration",
-					"disableOnInvalid": true,
-					"theme": "primary",
-					"input": false,
-					"tableView": true
-				}
-			]
-		}
-	}
+    "applicationBase": {
+        "id": null,
+        "name": "Jenkins",
+        "license": "MIT",
+        "licenseUrl": "https://github.com/jenkinsci/jenkins/blob/master/LICENSE.txt",
+        "wwwUrl": "https://www.jenkins.io",
+        "sourceUrl": "https://github.com/jenkinsci/jenkins",
+        "issuesUrl": "",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Jenkins",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Leading open-source automation server",
+                "fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Leading open-source automation server",
+                "fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Leading open-source automation server",
+                "fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Leading open-source automation server",
+                "fullDescription": "Jenkins is a self-contained, open source automation server which can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software."
+            }
+        ],
+        "tags": [
+            "ci"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Jenkins",
+        "version": "latest",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "Jenkins admin username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "master#adminUser",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Jenkins admin password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "master#adminPassword",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Administrator email address",
+                                                "type": "email",
+                                                "input": true,
+                                                "key": "master#jenkinsAdminEmail",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Advanced",
+                                "key": "advancedTab",
+                                "components": [
+                                    {
+                                        "label": "Advanced",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 1,
+                                        "key": "advanced",
+                                        "components": [
+                                            {
+                                                "label": "Storage space (GB):",
+                                                "type": "number",
+                                                "input": true,
+                                                "key": "storageSpace",
+                                                "placeholder": "Default value: 8GB",
+                                                "tab": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "stable/jenkins",
+                    "version": "1.21.3"
+                }
+            },
+            "storageVolumes": [
+                {
+                    "type": "MAIN",
+                    "defaultStorageSpace": 8,
+                    "deployParameters": {
+                        "PERSISTENCE_ENABLED": "persistence.enabled",
+                        "PERSISTENCE_NAME": "persistence.name",
+                        "PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+                        "PERSISTENCE_STORAGE_SPACE": "persistence.size"
+                    }
+                }
+            ],
+            "deployParameters": {
+                "DOMAIN_CODENAME": "master.slaveKubernetesNamespace"
+            },
+            "globalDeployParameters": {
+                "clusterZone": "geant.local",
+                "agent.image": "artifactory.software.geant.org/nmaas-docker-local/nmaas-jenkins-slave",
+                "agent.tag": "1.0",
+                "master.installPlugins[0]": "kubernetes:1.25.3",
+                "master.installPlugins[1]": "workflow-job:2.38",
+                "master.installPlugins[2]": "workflow-aggregator:2.6",
+                "master.installPlugins[3]": "credentials-binding:1.21",
+                "master.installPlugins[4]": "git:4.2.2",
+                "master.installPlugins[5]": "configuration-as-code:1.39",
+                "master.installPlugins[6]": "locale:1.4",
+                "master.installPlugins[7]": "ssh:2.6.1",
+                "master.installPlugins[8]": "ansible:1.0",
+                "runAsUser": "1000",
+                "fsGroup": "1000",
+                "useSecurity": "true"
+            },
+            "exposesWebUI": true,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "Jenkins",
+                    "tag": "jenkins",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "master.ingress.enabled",
+                        "INGRESS_HOSTS": "master.ingress.hostName=%VALUE%",
+                        "INGRESS_CLASS": "master.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "master.ingress.tls[0].hosts"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false
+        }
+    }
 }

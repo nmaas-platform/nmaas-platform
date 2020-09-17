@@ -1,276 +1,288 @@
 {
-	"name":"OpenNTI",
-	"version":"0.1",
-	"license":"Apache 2.0",
-	"licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-	"tags": [ "management", "monitoring", "telemetry"],
-	"descriptions": [
-		{
-			"language": "en",
-			"briefDescription": "Open Network Telemetry Collector built with open source tools.",
-			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
-		},
-		{
-			"language": "de",
-			"briefDescription": "Open Network Telemetry Collector built with open source tools.",
-			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
-		},
-		{
-			"language": "fr",
-			"briefDescription": "Open Network Telemetry Collector built with open source tools.",
-			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
-		},
-		{
-			"language": "pl",
-			"briefDescription": "Open Network Telemetry Collector napisany za pomocą narzędzi open source.",
-			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
-		}
-	],
-	"wwwUrl" : "http://open-nti.readthedocs.io/en/latest",
-	"sourceUrl" : "https://github.com/Juniper/open-nti",
-	"issuesUrl": "https://github.com/Juniper/open-nti/issues",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "nmaas-opennti",
-				"version": "0.0.2-alfa"
-			}
-		},
-		"defaultStorageSpace":20,
-		"exposesWebUI": true
-	},
-	"appConfigurationSpec": {
-		"configFileRepositoryRequired":true,
-		"templates": [
-			{
-				"configFileName":"hosts.yaml",
-				"configFileTemplateContent":"<#list targets as target>\n${target.ipAddress}: generic\n</#list>"
-			}
-		]
-	},
-	"state": "ACTIVE",
-	"configWizardTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Tabs",
-					"components": [
-						{
-							"label": "Base",
-							"key": "configTab",
-							"components": [
-								{
-									"label": "Mandatory parameters",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "mandatoryParameters",
-									"components": [
-										{
-											"label": "Default user username",
-											"type": "textfield",
-											"key": "openntiUsername",
-											"input": true,
-											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											}
-										},
-										{
-											"label": "Default user password",
-											"type": "password",
-											"key": "openntiPassword",
-											"input": true,
-											"inputFormat": "plain",
-											"validate": {
-												"required": true
-											}
-										}
-									]
-								},
-								{
-									"label": "Configuration",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "configuration",
-									"components": [
-										{
-											"label": "Targets",
-											"hideLabel": true,
-											"tab": 0,
-											"disableAddingRemovingRows": false,
-											"addAnother": "Add device",
-											"addAnotherPosition": "bottom",
-											"multiple": true,
-											"tableView": true,
-											"type": "datagrid",
-											"input": true,
-											"key": "inputs#snmp",
-											"validate": {
-												"required": true
-											},
-											"components": [
-												{
-													"label": "Agent (IP address)",
-													"hideLabel": true,
-													"tableView": true,
-													"type": "textfield",
-													"input": true,
-													"tab": 0,
-													"key": "agents",
-													"placeholder": "127.0.0.1",
-													"defaultValue": "",
-													"validate": {
-														"required": true,
-														"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-														"unique": false,
-														"customMessage": "",
-														"json": ""
-													},
-													"inputFormat": "plain"
-												},
-												{
-													"label": "SNMP community",
-													"type": "textfield",
-													"input": true,
-													"key": "community",
-													"tab": 0,
-													"validate": {
-														"required": true
-													},
-													"inputFormat": "plain"
-												},
-												{
-													"label": "SNMP version",
-													"placeholder": "Select SNMP version",
-													"tableView": true,
-													"type": "select",
-													"input": true,
-													"key": "version",
-													"defaultValue": "",
-													"validate": {
-														"required": true
-													},
-													"data": {
-														"values": [
-															{
-																"label": "1",
-																"value": "1"
-															},
-															{
-																"label": "2c",
-																"value": "2c"
-															},
-															{
-																"label": "3",
-																"value": "3"
-															}
-														]
-													},
-													"valueProperty": "value",
-													"tab": 0
-												},
-												{
-													"label": "SNMP name",
-													"placeholder": "Select SNMP name",
-													"tableView": true,
-													"type": "textfield",
-													"input": true,
-													"key": "name",
-													"defaultValue": "",
-													"validate": {
-														"required": true
-													}
-												},
-												{
-													"label": "Fields",
-													"hideLabel": false,
-													"disableAddingRemovingRows": false,
-													"addAnother": "Add field",
-													"addAnotherPosition": "bottom",
-													"multiple": true,
-													"tableView": true,
-													"alwaysEnabled": false,
-													"type": "datagrid",
-													"input": true,
-													"key": "field",
-													"defaultValue": [],
-													"components": [
-														{
-															"label": "Field name",
-															"type": "textfield",
-															"input": true,
-															"inputFormat": "plain",
-															"key": "name",
-															"row": "0-4"
-														},
-														{
-															"label": "Field oid",
-															"type": "textfield",
-															"input": true,
-															"inputFormat": "plain",
-															"key": "oid",
-															"validate": {
-																"pattern": "^.[0-9][0-9.]*[0-9]"
-															},
-															"row": "0-0"
-														}
-													],
-													"row": "0-5"
-												}
-											]
-										}
-									]
-								}
-							]
-						},
-                      {
-                        "label": "Advanced",
-                        "key": "advancedTab",
+    "applicationBase": {
+        "id": null,
+        "name": "OpenNTI",
+        "license": "Apache 2.0",
+        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+        "wwwUrl": "http://open-nti.readthedocs.io/en/latest",
+        "sourceUrl": "https://github.com/Juniper/open-nti",
+        "issuesUrl": "https://github.com/Juniper/open-nti/issues",
+        "nmaasDocumentationUrl": null,
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Open Network Telemetry Collector built with open source tools.",
+                "fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+            },
+            {
+                "language": "de",
+                "briefDescription": "Open Network Telemetry Collector built with open source tools.",
+                "fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Open Network Telemetry Collector built with open source tools.",
+                "fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Open Network Telemetry Collector napisany za pomoc\u00c4\u2026 narz\u00c4\u2122dzi open source.",
+                "fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+            }
+        ],
+        "tags": [
+            "management",
+            "monitoring",
+            "telemetry"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "OpenNTI",
+        "version": "0.1",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
                         "components": [
-                          {
-                            "label": "Advanced",
-                            "hideLabel": true,
-                            "tableView": true,
-                            "type": "container",
-                            "input": true,
-                            "tab": 1,
-                            "key": "advanced",
-                            "components": [
-                              {
-                                "label": "Storage space (GB):",
-                                "type": "number",
-                                "input": true,
-                                "key": "storageSpace",
-                                "placeholder": "Default value: 20GB",
-                                "tab": 1
-                              }
-                            ]
-                          }
-                        ]
-                      }
-					],
-					"type": "tabs",
-					"input": false,
-					"key": "tabs"
-				},
-				{
-					"type": "button",
-					"label": "Apply configuration",
-					"disableOnInvalid": true,
-					"theme": "primary",
-					"input": false,
-					"tableView": true
-				}
-			]
-		}
-	}
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "Default user username",
+                                                "type": "textfield",
+                                                "key": "openntiUsername",
+                                                "input": true,
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Default user password",
+                                                "type": "password",
+                                                "key": "openntiPassword",
+                                                "input": true,
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "label": "Configuration",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "configuration",
+                                        "components": [
+                                            {
+                                                "label": "Targets",
+                                                "hideLabel": true,
+                                                "tab": 0,
+                                                "disableAddingRemovingRows": false,
+                                                "addAnother": "Add device",
+                                                "addAnotherPosition": "bottom",
+                                                "multiple": true,
+                                                "tableView": true,
+                                                "type": "datagrid",
+                                                "input": true,
+                                                "key": "inputs#snmp",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "components": [
+                                                    {
+                                                        "label": "Agent (IP address)",
+                                                        "hideLabel": true,
+                                                        "tableView": true,
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "tab": 0,
+                                                        "key": "agents",
+                                                        "placeholder": "127.0.0.1",
+                                                        "defaultValue": "",
+                                                        "validate": {
+                                                            "required": true,
+                                                            "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+                                                            "unique": false,
+                                                            "customMessage": "",
+                                                            "json": ""
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "SNMP community",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "community",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "SNMP version",
+                                                        "placeholder": "Select SNMP version",
+                                                        "tableView": true,
+                                                        "type": "select",
+                                                        "input": true,
+                                                        "key": "version",
+                                                        "defaultValue": "",
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "data": {
+                                                            "values": [
+                                                                {
+                                                                    "label": "1",
+                                                                    "value": "1"
+                                                                },
+                                                                {
+                                                                    "label": "2c",
+                                                                    "value": "2c"
+                                                                },
+                                                                {
+                                                                    "label": "3",
+                                                                    "value": "3"
+                                                                }
+                                                            ]
+                                                        },
+                                                        "valueProperty": "value",
+                                                        "tab": 0
+                                                    },
+                                                    {
+                                                        "label": "SNMP name",
+                                                        "placeholder": "Select SNMP name",
+                                                        "tableView": true,
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "name",
+                                                        "defaultValue": "",
+                                                        "validate": {
+                                                            "required": true
+                                                        }
+                                                    },
+                                                    {
+                                                        "label": "Fields",
+                                                        "hideLabel": false,
+                                                        "disableAddingRemovingRows": false,
+                                                        "addAnother": "Add field",
+                                                        "addAnotherPosition": "bottom",
+                                                        "multiple": true,
+                                                        "tableView": true,
+                                                        "alwaysEnabled": false,
+                                                        "type": "datagrid",
+                                                        "input": true,
+                                                        "key": "field",
+                                                        "defaultValue": [],
+                                                        "components": [
+                                                            {
+                                                                "label": "Field name",
+                                                                "type": "textfield",
+                                                                "input": true,
+                                                                "inputFormat": "plain",
+                                                                "key": "name",
+                                                                "row": "0-4"
+                                                            },
+                                                            {
+                                                                "label": "Field oid",
+                                                                "type": "textfield",
+                                                                "input": true,
+                                                                "inputFormat": "plain",
+                                                                "key": "oid",
+                                                                "validate": {
+                                                                    "pattern": "^.[0-9][0-9.]*[0-9]"
+                                                                },
+                                                                "row": "0-0"
+                                                            }
+                                                        ],
+                                                        "row": "0-5"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Advanced",
+                                "key": "advancedTab",
+                                "components": [
+                                    {
+                                        "label": "Advanced",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 1,
+                                        "key": "advanced",
+                                        "components": [
+                                            {
+                                                "label": "Storage space (GB):",
+                                                "type": "number",
+                                                "input": true,
+                                                "key": "storageSpace",
+                                                "placeholder": "Default value: 20GB",
+                                                "tab": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-opennti",
+                    "version": "0.0.2-alfa"
+                }
+            },
+            "defaultStorageSpace": 20,
+            "exposesWebUI": true
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": true,
+            "templates": [
+                {
+                    "configFileName": "hosts.yaml",
+                    "configFileTemplateContent": "<#list targets as target>\n${target.ipAddress}: generic\n</#list>"
+                }
+            ]
+        }
+    }
 }

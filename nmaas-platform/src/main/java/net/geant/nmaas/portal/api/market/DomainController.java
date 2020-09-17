@@ -44,8 +44,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
-	private UserService userService;
-	
 	private DomainService domainService;
 
 	private ApplicationEventPublisher eventPublisher;

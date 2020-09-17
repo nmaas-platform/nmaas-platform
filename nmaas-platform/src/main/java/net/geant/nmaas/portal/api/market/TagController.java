@@ -1,8 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.util.Arrays;
-import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
+
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +35,21 @@ public class TagController {
 	@GetMapping
 	public Set<String> getAll() {
 		return tagRepo.findAll().stream()
-				.filter(tag -> tag.getApplications().stream().anyMatch(app -> app.getVersions().stream().anyMatch(version -> Arrays.asList(ApplicationState.ACTIVE, ApplicationState.DISABLED).contains(version.getState()))))
-				.map(tag -> modelMapper.map(tag, String.class))
+				.filter(tag -> tag.getApplications().stream()
+						.anyMatch(app -> app.getVersions().stream()
+								.anyMatch(version -> Arrays.asList(ApplicationState.ACTIVE, ApplicationState.DISABLED).contains(version.getState()))
+						)
+				)
+				.map(Tag::getName)
 				.collect(Collectors.toSet());
 	}
 	
 	@GetMapping(value="/{tagName}")
 	@Transactional
-	public Set<ApplicationBriefView> getByTag(@PathVariable("tagName") String tagName) {
+	public Set<ApplicationBaseView> getByTag(@PathVariable("tagName") String tagName) {
 		return tagRepo.findByName(tagName)
 				.map(value -> value.getApplications().stream()
-						.map(app -> modelMapper.map(app, ApplicationBriefView.class))
+						.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 						.collect(Collectors.toSet()))
 				.orElse(Collections.emptySet());
 	}

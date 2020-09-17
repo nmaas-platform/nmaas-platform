@@ -1,4 +1,3 @@
-import {Application} from '../../model';
 import {AppSubscription} from '../../model';
 import {AppConfigService, DomainService} from '../../service';
 import {AppsService} from '../../service';
@@ -8,9 +7,9 @@ import {ListType} from '../common/listtype';
 import {AppViewType} from '../common/viewtype';
 import {Component, OnInit, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {isNullOrUndefined, isUndefined} from 'util';
 import {Domain} from '../../model/domain';
 import {map} from 'rxjs/operators';
+import {ApplicationBase} from '../../model/application-base';
 
 @Component({
     selector: 'nmaas-applications-view',
@@ -32,8 +31,8 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
     @Input()
     public domainId: number;
 
-    public applications: Observable<Application[]>;
-    protected copy_applications: Observable<Application[]>;
+    public applications: Observable<ApplicationBase[]>;
+    protected copy_applications: Observable<ApplicationBase[]>;
     public selected: Observable<Set<number>>;
     public domain: Observable<Domain>;
 
@@ -59,9 +58,9 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
 
     protected updateDomain(): void {
         let domainId: number;
-        let applications: Observable<Application[]>;
+        let applications: Observable<ApplicationBase[]>;
 
-        if (isUndefined(this.domainId) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
+        if ((this.domainId === undefined) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
             domainId = undefined;
         } else {
             domainId = this.domainId;
@@ -69,7 +68,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
 
         switch (+this.appView) {
             case AppViewType.APPLICATION:
-                applications = this.appsService.getApps();
+                applications = this.appsService.getAllActiveApplicationBase();
                 console.log('get apps update domain')
                 this.updateSelected();
                 // applications.subscribe((apps) => this.updateSelected(apps));
@@ -78,7 +77,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
                 applications = this.appSubsService.getSubscribedApplications(domainId);
                 break;
             default:
-                applications = of<Application[]>([]);
+                applications = of<ApplicationBase[]>([]);
                 break;
         }
 
@@ -89,11 +88,11 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
     protected updateSelected() {
 
         let subscriptions: Observable<AppSubscription[]>;
-        if (!(isUndefined(this.domainId) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId())) {
+        if (!(this.domainId === undefined || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId())) {
             subscriptions = this.appSubsService.getAllByDomain(this.domainId);
         }
 
-        if (!isNullOrUndefined(subscriptions)) {
+        if (subscriptions != null) {
             subscriptions.subscribe((appSubs) => {
 
                 const selected: Set<number> = new Set<number>();
@@ -119,12 +118,12 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
         const typed = this.searchedAppName.toLocaleLowerCase();
         this.applications = this.applications.pipe(
             map(apps => {
-                    console.log(apps);
-                    let res: Application[] = []
+                    // console.log(apps);
+                    let res: ApplicationBase[]
                     if (tag === 'all') { // if all tags than return all
                         res = apps;
                     } else { // filter by tag
-                        res = apps.filter(a => a.tags.map(t => t.toLocaleLowerCase()).find(t => t.includes(tag)).length > 0)
+                        res = apps.filter(a => a.tags.map(t => t.name.toLocaleLowerCase()).find(t => t.includes(tag)) != null)
                     } // filter by name
                     return res.filter(a => a.name.toLocaleLowerCase().includes(typed));
                 }

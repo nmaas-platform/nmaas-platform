@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../../model/serviceaccessmethod';
+import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../../model/service-access-method';
 import {ModalComponent} from '../../../../shared/modal';
 import {isNullOrUndefined} from 'util';
 

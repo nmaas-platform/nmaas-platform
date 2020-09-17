@@ -2,11 +2,15 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.e
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class ServiceAccessMethodView {
 

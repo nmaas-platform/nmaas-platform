@@ -12,7 +12,7 @@ import {ClustersRoutes} from "./admin/clusters/clusters.routes";
 import {GitlabRoutes} from "./admin/gitlab/gitlab.routes";
 import {ConfigurationRoutes} from "./admin/configuration/configuration.routes";
 import {MonitorRoutes} from "./admin/monitor/monitor.routes";
-import {AppManagementRoutes} from "./appmanagement/appmanagement.routes";
+import {AppManagementRoutes} from "./appmanagement/app-management.routes";
 import {LanguageManagementRoutes} from "./admin/languagemanagement/languagemanagement.routes";
 
 export const AppMarketRoutes: Route[] = [

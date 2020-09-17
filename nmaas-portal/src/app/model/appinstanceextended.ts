@@ -1,8 +1,8 @@
 import {AppInstance} from './appinstance';
-import {Application} from './application';
 import {Domain} from './domain';
+import {ApplicationDTO} from './application-dto';
 
 export class AppInstanceExtended extends AppInstance {
-    public application: Application;
+    public application: ApplicationDTO;
     public domain: Domain;
 }

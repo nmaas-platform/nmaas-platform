@@ -1,4 +1,4 @@
-import {ServiceAccessMethod, ServiceAccessMethodType} from "./serviceaccessmethod";
+import {ServiceAccessMethod, ServiceAccessMethodType} from "./service-access-method";
 
 export class AppAccessMethod {
     public id: number;

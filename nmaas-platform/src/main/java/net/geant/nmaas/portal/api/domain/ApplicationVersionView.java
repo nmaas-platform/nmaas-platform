@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 @Setter
 @Getter
 public class ApplicationVersionView {
+    private String id;
     private String version;
     private ApplicationState state;
     private Long appVersionId;

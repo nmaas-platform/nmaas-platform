@@ -3,14 +3,14 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
-import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus} from '../../../model';
 import {AppInstanceExtended} from '../../../model/appinstanceextended';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppAbortModalComponent} from '../modals/app-abort-modal';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {RateComponent} from '../../../shared/rate';
-import {AppConfiguration} from '../../../model/appconfiguration';
+import {AppConfiguration} from '../../../model/app-configuration';
 import {isNullOrUndefined} from 'util';
 import {LOCAL_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ModalComponent} from '../../../shared/modal';
@@ -18,17 +18,26 @@ import {interval} from 'rxjs/internal/observable/interval';
 import {TranslateService} from '@ngx-translate/core';
 import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
-import {ApplicationState} from '../../../model/applicationstate';
-import {ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {ApplicationState} from '../../../model/application-state';
+import {ServiceAccessMethodType} from '../../../model/service-access-method';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 import {ShellClientService} from '../../../service/shell-client.service';
 import {PodInfo} from '../../../model/podinfo';
+import {ApplicationDTO} from '../../../model/application-dto';
 
 @Component({
     selector: 'nmaas-appinstance',
     templateUrl: './appinstance.component.html',
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-    providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, AppAbortModalComponent, LocalDatePipe]
+    providers: [
+        AppsService,
+        AppImagesService,
+        AppInstanceService,
+        SecurePipe,
+        AppRestartModalComponent,
+        AppAbortModalComponent,
+        LocalDatePipe
+    ]
 })
 export class AppInstanceComponent implements OnInit, OnDestroy {
 
@@ -61,7 +70,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     @ViewChild(RateComponent)
     public readonly appRate: RateComponent;
 
-    app: Application;
+    app: ApplicationDTO;
 
 
     public p_first = 'p_first';
@@ -274,9 +283,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                     if (!this.appInstance || !this.appInstance.serviceAccessMethods) {
                         this.updateAppInstance();
                     }
-                    console.log('is ssh access allowed: ' + this.appInstance.application.appDeploymentSpec.allowSshAccess);
+                    console.log('is ssh access allowed: ' + this.appInstance.application.application.appDeploymentSpec.allowSshAccess);
                     console.log('array of pods has length: ' + this.podNames.length);
-                    if (this.appInstance.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
+                    if (this.appInstance.application.application.appDeploymentSpec.allowSshAccess && !this.podNames.length) {
                         this.updateAppInstancePodNames();
                     }
                 }

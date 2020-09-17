@@ -1,4 +1,4 @@
-import {ServiceStorageVolumeType} from "./servicestoragevolume";
+import {ServiceStorageVolumeType} from "./service-storage-volume";
 
 export class AppStorageVolume {
     public id: number;

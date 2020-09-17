@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AppStorageVolume} from '../../../model/app-storage-volume';
-import {ServiceStorageVolume, ServiceStorageVolumeType} from '../../../model/servicestoragevolume';
+import {parseServiceStorageVolumeType, ServiceStorageVolumeType} from '../../../model/service-storage-volume';
 
 @Component({
   selector: 'app-storage-volume-edit',
@@ -65,7 +65,7 @@ export class AppStorageVolumeEditComponent implements OnInit {
   }
 
   public isMain(): boolean {
-    return ServiceStorageVolumeType.MAIN === ServiceStorageVolume.getServiceStorageVolumeTypeAsEnum(this.storageVolume.type);
+    return ServiceStorageVolumeType.MAIN === parseServiceStorageVolumeType(this.storageVolume.type);
   }
 
   public remove(): void {

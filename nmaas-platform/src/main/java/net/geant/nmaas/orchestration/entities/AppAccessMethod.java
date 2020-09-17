@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity

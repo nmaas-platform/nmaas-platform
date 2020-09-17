@@ -32,6 +32,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -62,13 +63,12 @@ public class ConvertersIntTest {
         ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
         assertNotNull(appView.getConfigWizardTemplate());
         assertNull(appView.getConfigUpdateWizardTemplate());
-        assertEquals(defaultAppBase.getIssuesUrl(), appView.getIssuesUrl());
         assertEquals(getDefaultApp().getAppDeploymentSpec().isExposesWebUI(), appView.getAppDeploymentSpec().isExposesWebUI());
     }
 
     @Test
     public void testConvertAppViewToAppBase(){
-        ApplicationView appView = getDefaultAppView();
+        ApplicationBaseView appView = getDefaultAppBaseView();
         ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
         assertEquals(appView.getId(), appBase.getId());
         assertEquals(appView.getName(), appBase.getName());
@@ -76,14 +76,14 @@ public class ConvertersIntTest {
     }
 
     @Test
-    public void testConvertAppBaseToAppBriefView(){
+    public void testConvertAppBaseToAppBaseView(){
         ApplicationBase appBase = getDefaultAppBase();
-        ApplicationBriefView appBriefView = modelMapper.map(appBase, ApplicationBriefView.class);
-        assertEquals(appBase.getName(), appBriefView.getName());
-        assertNotNull(appBriefView.getTags());
-        assertEquals(1, appBriefView.getAppVersions().size());
-        assertTrue(appBriefView.getAppVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
-        assertTrue(appBriefView.getAppVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
+        ApplicationBaseView applicationBaseView = modelMapper.map(appBase, ApplicationBaseView.class);
+        assertEquals(appBase.getName(), applicationBaseView.getName());
+        assertNotNull(applicationBaseView.getTags());
+        assertEquals(1, applicationBaseView.getVersions().size());
+        assertTrue(applicationBaseView.getVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
+        assertTrue(applicationBaseView.getVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
     }
 
     @Test
@@ -98,15 +98,15 @@ public class ConvertersIntTest {
     }
 
 	@Test
-	public void testConvertAppBriefViewToAppBase() {
+	public void testConvertAppBaseViewToAppBase() {
         tagRepo.save(new Tag("network"));
-		
-		ApplicationBriefView appDto = new ApplicationBriefView();
+
+        ApplicationBaseView appDto = new ApplicationBaseView();
         appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setLicense("GNL");
-        appDto.getTags().add("monitoring");
-        appDto.getTags().add("network");
+        appDto.getTags().add(new TagView("monitoring"));
+        appDto.getTags().add(new TagView("network"));
 
         ApplicationBase appEntity = modelMapper.map(appDto, ApplicationBase.class);
 
@@ -117,16 +117,11 @@ public class ConvertersIntTest {
         assertEquals(appDto.getTags().size(), appEntity.getTags().size());
         assertTrue((appEntity.getTags().toArray()[0]) instanceof Tag);
 
-        Object[] tags = appEntity.getTags().toArray();
-
-        assertNull( (((Tag) tags[0]).getName().equals("monitoring") ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
-        assertNotNull((((Tag) tags[1]).getName().equals("network") ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
-
-        appDto = modelMapper.map(appEntity, ApplicationBriefView.class);
+        appDto = modelMapper.map(appEntity, ApplicationBaseView.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
-        assertTrue(appDto.getTags().contains("network"));
-        assertTrue(appDto.getTags().contains("monitoring"));
+        assertTrue(appDto.getTags().contains(new TagView("network")));
+        assertTrue(appDto.getTags().contains(new TagView("monitoring")));
 	}
 
 	@Test
@@ -166,8 +161,8 @@ public class ConvertersIntTest {
         assertEquals(Role.ROLE_SYSTEM_ADMIN, role);
     }
 
-	private ApplicationView getDefaultAppView(){
-        ApplicationView appView = new ApplicationView();
+	private ApplicationBaseView getDefaultAppBaseView(){
+        ApplicationBaseView appView = new ApplicationBaseView();
         appView.setName("testApp");
         appView.setLicense("MIT");
         appView.setLicenseUrl("MIT.org");
@@ -175,14 +170,21 @@ public class ConvertersIntTest {
         appView.setSourceUrl("default-website.com");
         appView.setIssuesUrl("default-website.com");
         appView.setId(1L);
-        appView.setVersion("0.0.1");
-        appView.setConfigWizardTemplate(new ConfigWizardTemplateView(45L, "template"));
-        appView.setAppConfigurationSpec(new AppConfigurationSpecView());
-        appView.setAppDeploymentSpec(new AppDeploymentSpecView());
-        appView.getAppDeploymentSpec().setExposesWebUI(true);
-        appView.setState(ApplicationState.ACTIVE);
-        appView.setOwner("admin");
         return appView;
+    }
+
+    private ApplicationView getDefaultAppView() {
+        ApplicationView app = new ApplicationView();
+        app.setId(1L);
+        app.setName("testApp");
+        app.setVersion("0.0.1");
+        app.setConfigWizardTemplate(new ConfigWizardTemplateView(2L,"template"));
+        app.setAppConfigurationSpec(new AppConfigurationSpecView());
+        app.setAppDeploymentSpec(new AppDeploymentSpecView());
+        app.getAppDeploymentSpec().setExposesWebUI(true);
+        app.setState(ApplicationState.ACTIVE);
+        app.setOwner("admin");
+        return app;
     }
 
 	private ApplicationBase getDefaultAppBase(){
@@ -193,6 +195,7 @@ public class ConvertersIntTest {
         appBase.setWwwUrl("default-website.com");
         appBase.setSourceUrl("default-website.com");
         appBase.setIssuesUrl("default-website.com");
+        appBase.setDescriptions(new ArrayList<>());
         appBase.setLogo(new FileInfo("logo", "png"));
         appBase.setVersions(Sets.newHashSet(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
         return appBase;

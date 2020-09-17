@@ -1,122 +1,133 @@
 {
-	"name":"esmond",
-	"version":"1.16.0",
-	"license":"",
-	"licenseUrl": "",
-	"tags": [ "database", "archive" ],
-	"descriptions": [
-		{
-			"language": "en",
-			"briefDescription": "Central Measurement Archive",
-			"fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
-		},
-		{
-			"language": "de",
-			"briefDescription": "Central Measurement Archive",
-			"fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
-		},
-		{
-			"language": "fr",
-			"briefDescription": "Central Measurement Archive",
-			"fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
-		},
-		{
-			"language": "pl",
-			"briefDescription": "Central Measurement Archive",
-			"fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
-		}
-	],
-	"wwwUrl": "https://docs.perfsonar.net/multi_ma_install.html",
-	"sourceUrl": "https://github.com/perfsonar/esmond",
-	"issuesUrl": "https://github.com/perfsonar/esmond/issues",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "nmaas-perfsonar-esmond",
-				"version": "1.0.0"
-			}
-		},
-		"storageVolumes": [
-			{
-				"type": "MAIN",
-				"defaultStorageSpace": 10,
-				"deployParameters": {
-					"PERSISTENCE_ENABLED": "persistence.enabled",
-					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
-					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
-				}
-			}
-		],
-		"exposesWebUI": true,
-		"allowSshAccess": true,
-		"accessMethods":  [
-			{
-				"type": "DEFAULT",
-				"name": "esmond",
-				"tag": "esmond",
-				"deployParameters": {
-					"INGRESS_ENABLED": "ingress.enabled",
-					"INGRESS_HOSTS": "ingress.hosts",
-					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
-					"INGRESS_CLASS": "ingress.class",
-					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
-					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
-				}
-			}
-		]
-	},
-	"appConfigurationSpec": {
-		"configFileRepositoryRequired": false
-	},
-	"state": "ACTIVE",
-	"configWizardTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Tabs",
-					"components": [
-						{
-							"label": "Advanced",
-							"key": "advancedTab",
-							"components": [
-								{
-									"label": "Advanced",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 1,
-									"key": "advanced",
-									"components": [
-										{
-											"label": "Storage space (GB):",
-											"type": "number",
-											"input": true,
-											"key": "storageSpace",
-											"placeholder": "Default value: 10GB",
-											"tab": 1
-										}
-									]
-								}
-							]
-						}
-					],
-					"type": "tabs",
-					"input": false,
-					"key": "tabs"
-				},
-				{
-					"type": "button",
-					"label": "Apply configuration",
-					"disableOnInvalid": true,
-					"theme": "primary",
-					"input": false,
-					"tableView": true
-				}
-			]
-		}
-	}
+    "applicationBase": {
+        "id": null,
+        "name": "esmond",
+        "license": "",
+        "licenseUrl": "",
+        "wwwUrl": "https://docs.perfsonar.net/multi_ma_install.html",
+        "sourceUrl": "https://github.com/perfsonar/esmond",
+        "issuesUrl": "https://github.com/perfsonar/esmond/issues",
+        "nmaasDocumentationUrl": null,
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Central Measurement Archive",
+                "fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Central Measurement Archive",
+                "fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Central Measurement Archive",
+                "fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Central Measurement Archive",
+                "fullDescription": "esmond is a system for collecting, storing, visualizing and analysing large sets of timeseries data. esmond has a RESTful API which allows easy access to the data which is collected. The original focus was on collecting SNMP timeseries data which is still the system's forte, but there is support for generalized timeseries data. The perfSONAR project has begun using esmond to store timeseries of network measurements.\nesmond uses a hybrid model for storing data. Timeseries data such as interface counters is stored using Cassandra. esmond will save the raw data, and create summarizations similar to RRD. However, the system never discards data through summarization, which distinguishes it from RRD (and whisper/ceres). Metadata (such as interface description and interface types from SNMP) are stored in an SQL database. Storing this data in an SQL database allows us to use the full expressiveness of SQL to query this data. Data can be visualized using Graphite or through custom visualizations which can query the RESTful API."
+            }
+        ],
+        "tags": [
+            "database",
+            "archive"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "esmond",
+        "version": "1.16.0",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Advanced",
+                                "key": "advancedTab",
+                                "components": [
+                                    {
+                                        "label": "Advanced",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 1,
+                                        "key": "advanced",
+                                        "components": [
+                                            {
+                                                "label": "Storage space (GB):",
+                                                "type": "number",
+                                                "input": true,
+                                                "key": "storageSpace",
+                                                "placeholder": "Default value: 10GB",
+                                                "tab": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-perfsonar-esmond",
+                    "version": "1.0.0"
+                }
+            },
+            "storageVolumes": [
+                {
+                    "type": "MAIN",
+                    "defaultStorageSpace": 10,
+                    "deployParameters": {
+                        "PERSISTENCE_ENABLED": "persistence.enabled",
+                        "PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+                        "PERSISTENCE_STORAGE_SPACE": "persistence.size"
+                    }
+                }
+            ],
+            "exposesWebUI": true,
+            "allowSshAccess": true,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "esmond",
+                    "tag": "esmond",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "ingress.enabled",
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+                        "INGRESS_CLASS": "ingress.class",
+                        "INGRESS_LETSENCRYPT": "ingress.tls.acme",
+                        "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false
+        }
+    }
 }

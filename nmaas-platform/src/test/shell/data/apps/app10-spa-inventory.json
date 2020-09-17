@@ -1,161 +1,170 @@
 {
-	"name":"SPA Inventory",
-	"version":"1.2",
-	"license":"",
-	"licenseUrl": "",
-	"tags": [ "management" ],
-	"descriptions": [
-		{
-			"language": "en",
-			"briefDescription": "Topology database with TMF-compliant API",
-			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
-		},
-		{
-			"language": "de",
-			"briefDescription": "Topology database with TMF-compliant API",
-			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
-		},
-		{
-			"language": "fr",
-			"briefDescription": "Topology database with TMF-compliant API",
-			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
-		},
-		{
-			"language": "pl",
-			"briefDescription": "Topology database with TMF-compliant API",
-			"fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
-		}
-	],
-	"wwwUrl": "",
-	"sourceUrl": "",
-	"issuesUrl": "",
-	"nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-SPAInventory",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "nmaas-spa-inventory",
-				"version": "0.1.3"
-			}
-		},
-		"storageVolumes": [
-			{
-				"type": "MAIN",
-				"defaultStorageSpace": 1,
-				"deployParameters": {
-					"PERSISTENCE_ENABLED": "persistence.enabled",
-					"PERSISTENCE_NAME": "persistence.name",
-					"PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
-					"PERSISTENCE_STORAGE_SPACE": "persistence.size"
-				}
-			}
-		],
-		"exposesWebUI": true,
-		"accessMethods":  [
-			{
-				"type": "DEFAULT",
-				"name": "SPA Inventory",
-				"tag": "spa",
-				"deployParameters": {
-					"INGRESS_ENABLED": "ingress.enabled",
-					"INGRESS_HOSTS": "ingress.hosts",
-					"INGRESS_TLS_ENABLED": "ingress.tls.enabled",
-					"INGRESS_CLASS": "ingress.class",
-					"INGRESS_LETSENCRYPT": "ingress.tls.acme",
-					"INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
-				}
-			}
-		]
-	},
-	"appConfigurationSpec": {
-		"configFileRepositoryRequired": false
-	},
-	"state": "ACTIVE",
-	"configWizardTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Tabs",
-					"components": [
-						{
-							"label": "Base",
-							"key": "configTab",
-							"components": [
-								{
-									"label": "Mandatory parameters",
-									"hideLabel": true,
-									"type": "container",
-									"input": true,
-									"tab": 0,
-									"key": "mandatoryParameters",
-									"components": [
-										{
-											"label": "Inventory access username",
-											"type": "textfield",
-											"input": true,
-											"key": "properties#inventory#user",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain"
-										},
-										{
-											"label": "Inventory access password",
-											"type": "password",
-											"input": true,
-											"key": "properties#inventory#password",
-											"tab": 0,
-											"validate": {
-												"required": true
-											},
-											"inputFormat": "plain"
-										}
-									]
-								}
-							]
-						},
-						{
-							"label": "Advanced",
-							"key": "advancedTab",
-							"components": [
-								{
-									"label": "Advanced",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 1,
-									"key": "advanced",
-									"components": [
-										{
-											"label": "Storage space (GB):",
-											"type": "number",
-											"input": true,
-											"key": "storageSpace",
-											"placeholder": "Default value: 1GB",
-											"tab": 1
-										}
-									]
-								}
-							]
-						}
-					],
-					"type": "tabs",
-					"input": false,
-					"key": "tabs"
-				},
-				{
-					"type": "button",
-					"label": "Apply configuration",
-					"disableOnInvalid": true,
-					"theme": "primary",
-					"input": false,
-					"tableView": true
-				}
-			]
-		}
-	}
+    "applicationBase": {
+        "id": null,
+        "name": "SPA Inventory",
+        "license": "",
+        "licenseUrl": "",
+        "wwwUrl": "",
+        "sourceUrl": "",
+        "issuesUrl": "",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-SPAInventory",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Topology database with TMF-compliant API",
+                "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Topology database with TMF-compliant API",
+                "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Topology database with TMF-compliant API",
+                "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Topology database with TMF-compliant API",
+                "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
+            }
+        ],
+        "tags": [
+            "management"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "SPA Inventory",
+        "version": "1.2",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "Inventory access username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "properties#inventory#user",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Inventory access password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "properties#inventory#password",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Advanced",
+                                "key": "advancedTab",
+                                "components": [
+                                    {
+                                        "label": "Advanced",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 1,
+                                        "key": "advanced",
+                                        "components": [
+                                            {
+                                                "label": "Storage space (GB):",
+                                                "type": "number",
+                                                "input": true,
+                                                "key": "storageSpace",
+                                                "placeholder": "Default value: 1GB",
+                                                "tab": 1
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-spa-inventory",
+                    "version": "0.1.3"
+                }
+            },
+            "storageVolumes": [
+                {
+                    "type": "MAIN",
+                    "defaultStorageSpace": 1,
+                    "deployParameters": {
+                        "PERSISTENCE_ENABLED": "persistence.enabled",
+                        "PERSISTENCE_NAME": "persistence.name",
+                        "PERSISTENCE_STORAGE_CLASS": "persistence.storageClass",
+                        "PERSISTENCE_STORAGE_SPACE": "persistence.size"
+                    }
+                }
+            ],
+            "exposesWebUI": true,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "SPA Inventory",
+                    "tag": "spa",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "ingress.enabled",
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+                        "INGRESS_CLASS": "ingress.class",
+                        "INGRESS_LETSENCRYPT": "ingress.tls.acme",
+                        "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false
+        }
+    }
 }

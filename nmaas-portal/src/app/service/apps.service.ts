@@ -2,16 +2,15 @@ import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Id } from '../model/id';
-import { Application } from '../model/application';
-import { Rate } from '../model/rate';
-import { Comment } from '../model/comment';
-import { FileInfo } from '../model/fileinfo';
-import { AppConfigService } from '../service/appconfig.service';
+import { Id, Rate, Comment, FileInfo } from '../model';
+import { AppConfigService } from './appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
 import {AppStateChange} from '../model/appstatechange';
 import {isNullOrUndefined} from 'util';
+import {ApplicationBase} from '../model/application-base';
+import {Application} from '../model/application';
+import {ApplicationDTO} from '../model/application-dto';
 
 @Injectable()
 export class AppsService extends GenericDataService {
@@ -20,22 +19,65 @@ export class AppsService extends GenericDataService {
       super(http, appConfig);
     }
 
+    // application base
 
-    public getApps(): Observable<Application[]> {
-        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps');
+    public getAllActiveApplicationBase(): Observable<ApplicationBase[]> {
+        return this.get<ApplicationBase[]>(this.appConfig.getApiUrl() + '/apps/base');
     }
 
-    public getAllApps(): Observable<Application[]> {
-        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps/all');
+    public getAllApplicationBase(): Observable<ApplicationBase[]> {
+        return this.get<ApplicationBase[]>(this.appConfig.getApiUrl() + '/apps/base/all');
     }
 
-    public getApp(id: number): Observable<Application> {
-        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id);
+    public getApplicationBase(id: number): Observable<ApplicationBase> {
+        return this.get<ApplicationBase>(this.appConfig.getApiUrl() + '/apps/base/' + id);
     }
 
-    public getBaseApp(id: number): Observable<Application> {
-        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/base/' + id);
+    public updateApplicationBase(app: ApplicationBase): Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + '/apps/base', app);
     }
+
+    // application dto
+
+    public getApplicationDTO(id: number): Observable<ApplicationDTO> {
+        return this.get<ApplicationDTO>(this.appConfig.getApiUrl() + '/apps/' + id);
+    }
+
+    public getLatestVersion(appName: string): Observable<ApplicationDTO> {
+        return this.get<ApplicationDTO>(this.appConfig.getApiUrl() + '/apps/' + appName + '/latest');
+    }
+
+    public createApplicationDTO(app: ApplicationDTO): Observable<any> {
+        return this.post(this.appConfig.getApiUrl() + '/apps', app);
+    }
+
+    public updateApplicationDTO(app: ApplicationDTO): Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + '/apps', app);
+    }
+
+    // application
+
+    public createApplication(appVersion: Application): Observable<any> {
+        return this.http.post(this.appConfig.getApiUrl() + '/apps/version', appVersion)
+    }
+
+    public updateApplication(appVersion: Application): Observable<any> {
+        return this.http.patch(this.appConfig.getApiUrl() + '/apps/version', appVersion)
+    }
+
+    public getApplication(id: number): Observable<Application> {
+        return this.http.get<Application>(this.appConfig.getApiUrl() + `/apps/version/${id}`)
+    }
+
+    public deleteApplication(appId: number): Observable<any> {
+        return this.delete(this.appConfig.getApiUrl() + '/apps/' + appId);
+    }
+
+    public changeApplicationState(id: number, appStateChange: AppStateChange): Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + '/apps/state/' + id, appStateChange);
+    }
+
+    // rate
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
         if (!isNullOrUndefined(urlPath) && urlPath !== '') {
@@ -48,6 +90,8 @@ export class AppsService extends GenericDataService {
             debounceTime(10000),
             catchError((error: any) => observableThrowError((typeof error.json === 'function' ? error.json().message : 'Server error'))));
     }
+
+    // comments
 
     public getAppCommentsByUrl(urlPath: string): Observable<Comment[]> {
         return this.getByUrl(urlPath);
@@ -65,6 +109,8 @@ export class AppsService extends GenericDataService {
             catchError((error: any) => observableThrowError((typeof error.json === 'function' ? error.json().message : 'Server error'))));
     }
 
+    // screenshots
+
     public getAppScreenshotsByUrl(urlPath: string): Observable<FileInfo[]> {
         return this.getByUrl(urlPath);
     }
@@ -73,25 +119,13 @@ export class AppsService extends GenericDataService {
         return this.appConfig.getApiUrl() + urlPath;
     }
 
-    public deleteApp(appId: number): Observable<any> {
-        return this.delete(this.appConfig.getApiUrl() + '/apps/' + appId);
+    public uploadScreenshot(id: number, file: any): Observable<FileInfo> {
+        const fd: FormData = new FormData();
+        fd.append('file', file);
+        return this.post(this.appConfig.getApiUrl() + '/apps/' + id + '/screenshots', fd);
     }
 
-    public addApp(app: Application): Observable<any> {
-        return this.post(this.appConfig.getApiUrl() + '/apps', app);
-    }
-
-    public updateApp(app: Application): Observable<any> {
-        return this.patch(this.appConfig.getApiUrl() + '/apps', app);
-    }
-
-    public updateBaseApp(app: Application): Observable<any> {
-        return this.patch(this.appConfig.getApiUrl() + '/apps/base', app);
-    }
-
-    public getLatestVersion(appName: string): Observable<any> {
-        return this.get(this.appConfig.getApiUrl() + '/apps/' + appName + '/latest');
-    }
+    // logo
 
     public uploadAppLogo(id: number, file: any): Observable<FileInfo> {
         const fd: FormData = new FormData();
@@ -99,15 +133,7 @@ export class AppsService extends GenericDataService {
         return this.post(this.appConfig.getApiUrl() + '/apps/' + id + '/logo', fd);
     }
 
-    public uploadScreenshot(id: number, file: any): Observable<FileInfo> {
-        const fd: FormData = new FormData();
-        fd.append('file', file);
-        return this.post(this.appConfig.getApiUrl() + '/apps/' + id + '/screenshots', fd);
-    }
-
-    public changeApplicationState(id: number, appStateChange: AppStateChange): Observable<any> {
-        return this.patch(this.appConfig.getApiUrl() + '/apps/state/' + id, appStateChange);
-    }
+    // misc
 
     private getByUrl(urlPath: string): Observable<any> {
         return this.http.get(this.appConfig.getApiUrl() + urlPath).pipe(

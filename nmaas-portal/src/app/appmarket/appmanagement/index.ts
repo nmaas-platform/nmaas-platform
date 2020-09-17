@@ -1,2 +1,2 @@
-export * from "./appmanagementlist/appmanagementlist.component";
-export * from "./appcreatewizard/appcreatewizard.component";
+export * from './app-management-list/appmanagementlist.component';
+export * from './app-create-wizard/app-create-wizard.component';

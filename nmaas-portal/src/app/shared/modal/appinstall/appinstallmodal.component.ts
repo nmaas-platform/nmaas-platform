@@ -1,12 +1,11 @@
 import {Component, OnInit, Input, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 
-import {Application} from '../../../model';
 import {ModalComponent} from '..';
 import {AppInstanceService, DomainService} from '../../../service';
 import { UserDataService } from '../../../service/userdata.service';
-import { isUndefined } from 'util';
 import {Domain} from '../../../model/domain';
+import {ApplicationBase} from '../../../model/application-base';
 
 @Component({
   selector: 'nmaas-modal-app-install',
@@ -20,7 +19,7 @@ export class AppInstallModalComponent implements OnInit {
   public readonly modal: ModalComponent;
 
   @Input()
-  app: Application;
+  app: ApplicationBase;
 
   @Input()
   domain: Domain;
@@ -38,8 +37,8 @@ export class AppInstallModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.app.appVersions.sort((a, b) => a.version === b.version ? 0 : a.version < b.version ? -1 : 1).reverse();
-    this.selectedAppVersion = this.app.appVersions[0].appVersionId;
+    this.app.versions.sort((a, b) => a.version === b.version ? 0 : a.version < b.version ? -1 : 1).reverse();
+    this.selectedAppVersion = this.app.versions[0].appVersionId;
     this.domainId = this.domain.id;
     this.domainName = this.domain.name;
   }

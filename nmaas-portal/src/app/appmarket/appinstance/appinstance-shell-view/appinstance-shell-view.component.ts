@@ -28,7 +28,7 @@ export class AppInstanceShellViewComponent implements OnInit {
                 this.podName = params['podname'];
                 this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(
                     data => {
-                        if (!data.application.appDeploymentSpec.allowSshAccess) {
+                        if (!data.application.application.appDeploymentSpec.allowSshAccess) {
                             this.notFound();
                         } else {
                             this.ready = true;

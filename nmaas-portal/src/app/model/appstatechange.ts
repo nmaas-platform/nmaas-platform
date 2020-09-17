@@ -1,4 +1,4 @@
-import {ApplicationState} from "./applicationstate";
+import {ApplicationState} from "./application-state";
 
 export class AppStateChange{
     public state: ApplicationState;

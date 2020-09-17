@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AppAccessMethod} from '../../../model/app-access-method';
-import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/serviceaccessmethod';
+import {parseServiceAccessMethodType, ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/service-access-method';
 
 @Component({
   selector: 'app-access-method-edit',
@@ -65,7 +65,7 @@ export class AppAccessMethodEditComponent implements OnInit {
   }
 
   public isDefault(): boolean {
-    return ServiceAccessMethodType.DEFAULT === ServiceAccessMethod.getServiceAccessMethodTypeAsEnum(this.accessMethod.type);
+    return ServiceAccessMethodType.DEFAULT === parseServiceAccessMethodType(this.accessMethod.type);
   }
 
   public remove(): void {

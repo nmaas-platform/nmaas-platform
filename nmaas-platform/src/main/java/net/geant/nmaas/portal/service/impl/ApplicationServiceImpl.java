@@ -4,13 +4,12 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,47 +25,38 @@ import java.util.Optional;
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
 
-	private ApplicationRepository appRepo;
-
-	private ModelMapper modelMapper;
+	private final ApplicationRepository applicationRepository;
 
 	@Override
 	@Transactional
-	public Application create(ApplicationView request, String owner) {
-		checkParam(request, owner);
-		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
-		this.setMissingProperties(request, app.getId());
-		request.setAppVersionId(app.getId());
-		request.setOwner(owner);
-		clearIds(request);
-		app = modelMapper.map(request, Application.class);
-		checkParam(app);
-		return appRepo.save(app);
-	}
-
-	@Override
-	public Application update(Application app) {
-		checkApp(app);
-		return appRepo.save(app);
+	public Application update(Application application) {
+		// TODO checks
+		checkApp(application);
+		return applicationRepository.save(application);
 	}
 
 	@Override
 	public void delete(Long id) {
 		checkParam(id);
-		appRepo.findById(id).ifPresent(app -> {
+		applicationRepository.findById(id).ifPresent(app -> {
 			if(app.getState().isChangeAllowed(ApplicationState.DELETED)){
 				app.setState(ApplicationState.DELETED);
-				appRepo.save(app);
+				applicationRepository.save(app);
 			}
 		});
 	}
 
 	@Override
-	public Optional<Application> findApplication(Long applicationId) {
-		if (applicationId != null)
-			return appRepo.findById(applicationId);
+	public Optional<Application> findApplication(Long id) {
+		if (id != null)
+			return applicationRepository.findById(id);
 		else
 			throw new IllegalArgumentException("applicationId is null");
+	}
+
+	@Override
+	public Optional<Application> findApplication(String name, String version) {
+		return this.applicationRepository.findByNameAndVersion(name, version);
 	}
 
 	@Override
@@ -74,19 +64,19 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if(StringUtils.isEmpty(name)){
 			throw new IllegalArgumentException("Application name cannot be null or empty");
 		}
-		return appRepo.findByName(name).stream()
+		return applicationRepository.findByName(name).stream()
 				.max(Comparator.comparing(Application::getCreationDate))
 				.orElseThrow(() -> new MissingElementException("Application " + name + " cannot be found"));
 	}
 
 	@Override
 	public Page<Application> findAll(Pageable pageable) {
-		return appRepo.findAll(pageable);
+		return applicationRepository.findAll(pageable);
 	}
 
 	@Override
 	public List<Application> findAll() {
-		return appRepo.findAll();
+		return applicationRepository.findAll();
 	}
 
 	@Override
@@ -99,7 +89,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			checkTemplates(app);
 		}
 		app.setState(state);
-		appRepo.save(app);
+		applicationRepository.save(app);
 	}
 
 	private void checkApp(Application app){
@@ -127,66 +117,51 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public void setMissingProperties(ApplicationView app, Long appId){
-		setMissingTemplatesId(app, appId);
+	public void setMissingProperties(Application app, Long appId) {
+		this.setMissingTemplatesId(app, appId);
 	}
 
-	private void checkParam(ApplicationView request, String owner) {
-		if(request == null)
-			throw new IllegalArgumentException("Request cannot be null");
-		if(StringUtils.isEmpty(request.getName()))
-			throw new IllegalArgumentException("name is null");
-		if(!request.getName().matches("^[a-zA-Z0-9- ]+$"))
-			throw new IllegalArgumentException("Name contains illegal arguments");
-		if(StringUtils.isEmpty(request.getVersion()))
-		    throw new IllegalArgumentException("version is null");
-		if(StringUtils.isEmpty(owner))
-			throw new IllegalArgumentException("Owner is null");
-		if(request.getDescriptions() == null || request.getDescriptions().isEmpty()){
-			throw new IllegalArgumentException("Descriptions cannot be null");
-		}
-		if(request.getConfigWizardTemplate() == null) {
-			throw new IllegalArgumentException("ConfigTemplate must not be null");
-		}
-		if(request.getAppDeploymentSpec() == null) {
-			throw new IllegalArgumentException("AppDeploymentSpec must not be null");
-		}
-		if(request.getAppConfigurationSpec() == null) {
-			throw new IllegalArgumentException("AppConfigurationSpec must not be null");
-		}
-		if(appRepo.existsByNameAndVersion(request.getName(), request.getVersion()))
-		    throw new IllegalStateException("Application " + request.getName() + " in version " + request.getVersion() + " already exists.");
-	}
-	
 	private void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
-	
-	private void checkParam(Application app) {
-		if(app == null)
-			throw new IllegalArgumentException("app is null");
-		app.validate();
-	}
 
-	private void setMissingTemplatesId(ApplicationView app, Long appId){
+	private void setMissingTemplatesId(Application app, Long appId){
 		app.getAppConfigurationSpec().getTemplates()
 				.forEach(template -> template.setApplicationId(appId));
 	}
 
-	private void clearIds(ApplicationView app) {
-		app.getConfigWizardTemplate().setId(null);
+	private void clearIds(Application app) {
+		if(app.getConfigWizardTemplate() != null) {
+			app.getConfigWizardTemplate().setId(null);
+		}
 		if(app.getConfigUpdateWizardTemplate() != null) {
 			app.getConfigUpdateWizardTemplate().setId(null);
 		}
+		if(app.getAppConfigurationSpec() != null) {
+			app.getAppConfigurationSpec().setId(null);
+			app.getAppConfigurationSpec().getTemplates().forEach(a -> a.setId(null));
+		}
+		if(app.getAppDeploymentSpec() != null) {
+			app.getAppDeploymentSpec().setId(null);
+			app.getAppDeploymentSpec().getAccessMethods().forEach(a -> a.setId(null));
+			app.getAppDeploymentSpec().getStorageVolumes().forEach(a -> a.setId(null));
+			app.getAppDeploymentSpec().getKubernetesTemplate().setId(null);
+			app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setId(null);
+		}
+	}
 
-		app.getAppConfigurationSpec().setId(null);
-		app.getAppConfigurationSpec().getTemplates().forEach(a -> a.setId(null));
+	@Override
+	public boolean exists(String name, String version) {
+		return applicationRepository.existsByNameAndVersion(name, version);
+	}
 
-		app.getAppDeploymentSpec().setId(null);
-		app.getAppDeploymentSpec().getAccessMethods().forEach(a -> a.setId(null));
-		app.getAppDeploymentSpec().getStorageVolumes().forEach(a -> a.setId(null));
-		app.getAppDeploymentSpec().getKubernetesTemplate().setId(null);
-		app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setId(null);
+	@Override
+	public Application create(Application application) {
+		if(application.getId() != null) {
+			throw new ProcessingException("While creating id must be null");
+		}
+		this.clearIds(application);
+		return this.applicationRepository.save(application);
 	}
 }
