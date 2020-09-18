@@ -1,22 +1,32 @@
 {"versions" : [
   {
     "verNo" : "1.3.6",
-    "date" : "(2020/09/04)",
+    "date" : "(2020/09/21)",
     "topic" : [
       {
         "title" : "More user friendly interface",
         "tags" : "[Enhancement]",
-        "description" : "The application market and instances views were altered in order to improve the ease of use"
+        "description" : "The application market and instances views were altered in order to improve the ease of use."
       },
       {
-        "title" : "Minor improvements to enable WiFiMon support",
+        "title" : "Minor improvements to enable WiFiMon application support",
         "tags" : "[Enhancement]",
-        "description" : "Implemented support for passing auto-generated parameters during application deployment"
+        "description" : "Implemented support for passing auto-generated parameters during application deployment."
       },
       {
         "title" : "Janitor support for Kubernetes 1.16",
         "tags" : "[Enhancement]",
         "description" : "Implemented necessary changes in Janitor component to allow for use of newer versions of Kubernetes clusters."
+      },
+      {
+        "title" : "Added support for public services",
+        "tags" : "[New Feature]",
+        "description" : "Enabled particular services, if required by given application, to be reachable directly from public Internet (without any VPN)."
+      },
+      {
+        "title" : "Platform API redesign and third-party library upgrades",
+        "tags" : "[Enhancement]",
+        "description" : "Implemented several changes in order to improve maintainability and security of the software."
       }
     ]
   },

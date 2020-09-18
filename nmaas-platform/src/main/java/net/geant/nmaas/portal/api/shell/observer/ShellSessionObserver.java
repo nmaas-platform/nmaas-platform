@@ -60,6 +60,7 @@ public class ShellSessionObserver implements Observer {
             } catch (InterruptedException e) {
                 log.warn("Heartbeat thread was interrupted");
                 log.warn(e.getMessage());
+                Thread.currentThread().interrupt();
             }
         });
     }
