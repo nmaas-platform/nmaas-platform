@@ -4,10 +4,16 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -17,6 +23,7 @@ import java.util.Base64;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
+@Log4j2
 public class SSHKeyEntity {
 
     @Id
@@ -57,7 +64,8 @@ public class SSHKeyEntity {
             byte[] result = digest.digest(Base64.getDecoder().decode(temp));
             this.fingerprint = Base64.getEncoder().encodeToString(result);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            log.warn(String.format("Exception caught (%s)", e.getMessage()));
+            log.warn(e.getStackTrace());
         }
     }
 

@@ -1,18 +1,12 @@
 package net.geant.nmaas.monitor.scheduling;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
-import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
-import static org.quartz.JobKey.jobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
@@ -22,6 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.JobKey.jobKey;
 
 @Log4j2
 @Component
@@ -126,7 +127,8 @@ public class ScheduleManager {
         try {
             return scheduler.checkExists(jobKey(name));
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            log.warn(String.format("Exception caught (%s)", e.getMessage()));
+            log.warn(e.getStackTrace());
         }
         return false;
     }

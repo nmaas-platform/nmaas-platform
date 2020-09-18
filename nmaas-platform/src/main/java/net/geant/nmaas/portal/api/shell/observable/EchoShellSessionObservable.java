@@ -32,10 +32,10 @@ public class EchoShellSessionObservable extends GenericShellSessionObservable {
             this.setChanged();
             this.notifyObservers(result); // send update to observers
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.warn(String.format("Exception caught (%s)", e.getMessage()));
+            log.warn(e.getStackTrace());
             log.info("Failed to send command execution result");
         }
-
     }
 
     @Override
