@@ -283,12 +283,25 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         this.rulesAccepted = !this.rulesAccepted;
     }
 
+    public onSelectLogo(event): void {
+        this.logo.push(event.files)
+    }
+
     public clearLogo(event): void {
         this.logo = [];
     }
 
     public canAddLogo(): boolean {
         return this.logo.length > 0;
+    }
+
+    public onSelectScreenshots(event) {
+        this.screenshots.push(...event.files)
+    }
+
+    public onRemoveScreenshot(event) {
+        const index = this.screenshots.indexOf(event.file)
+        this.screenshots.splice(index, 1)
     }
 
     public isInvalidDescriptions(): boolean {
