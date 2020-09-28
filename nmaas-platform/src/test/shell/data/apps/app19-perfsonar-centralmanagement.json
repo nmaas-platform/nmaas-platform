@@ -117,7 +117,10 @@
                                                         "defaultValue": "1Gi",
                                                         "placeholder": "Default value: 1Gi"
                                                     }
-                                                ]
+                                                ],
+                                                "style": {
+                                                    "margin-bottom": "5px"
+                                                }
                                             },
                                             {
                                                 "title": "MaDDash",
@@ -164,7 +167,10 @@
                                                         "defaultValue": "5Gi",
                                                         "placeholder": "Default value: 5Gi"
                                                     }
-                                                ]
+                                                ],
+                                                "style": {
+                                                    "margin-bottom": "5px"
+                                                }
                                             },
                                             {
                                                 "title": "Esmond",
@@ -189,7 +195,10 @@
                                                         "defaultValue": "10Gi",
                                                         "placeholder": "Default value: 10Gi"
                                                     }
-                                                ]
+                                                ],
+                                                "style": {
+                                                    "margin-bottom": "5px"
+                                                }
                                             }
                                         ]
                                     }
