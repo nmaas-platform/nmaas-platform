@@ -37,7 +37,7 @@
     "application": {
         "id": null,
         "name": "MaDDash",
-        "version": "4.2.2",
+        "version": "4.2.3-1",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -131,7 +131,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-perfsonar-maddash",
-                    "version": "1.0.1"
+                    "version": "1.1.0"
                 },
                 "mainDeploymentName": "maddash"
             },

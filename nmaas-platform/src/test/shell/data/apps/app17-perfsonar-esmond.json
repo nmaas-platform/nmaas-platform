@@ -38,7 +38,7 @@
     "application": {
         "id": null,
         "name": "esmond",
-        "version": "1.16.0",
+        "version": "4.2.4-1",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -94,7 +94,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-perfsonar-esmond",
-                    "version": "1.0.0"
+                    "version": "1.1.0"
                 },
                 "mainDeploymentName": "esmond"
             },
