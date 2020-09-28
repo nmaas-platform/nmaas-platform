@@ -76,8 +76,13 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
         'theme': 'dark'
     };
 
-    constructor(public appsService: AppsService, public route: ActivatedRoute, public translate: TranslateService, public dom: DomSanitizer,
-                public configTemplateService: ConfigTemplateService, public router: Router, public appImagesService: AppImagesService) {
+    constructor(public appsService: AppsService,
+                public route: ActivatedRoute,
+                public translate: TranslateService,
+                public dom: DomSanitizer,
+                public configTemplateService: ConfigTemplateService,
+                public router: Router,
+                public appImagesService: AppImagesService) {
         super();
     }
 

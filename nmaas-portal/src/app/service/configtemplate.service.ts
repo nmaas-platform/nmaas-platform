@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class ConfigTemplateService {
@@ -12,7 +12,7 @@ export class ConfigTemplateService {
 
   public basicAuth: any;
 
-  constructor(public http:HttpClient) { }
+  constructor(public http: HttpClient) { }
 
   public loadConfigTemplate() {
     this.http.get('/assets/formio/config-template.json')
