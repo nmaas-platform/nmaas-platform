@@ -155,9 +155,13 @@
             {{'APPS_WIZARD.UPLOAD_SCREENSHOTS_LABEL' | translate}}
         </div>
         <div class="panel-body">
-            <p-fileUpload name="screenshots" customUpload="true" [multiple]="true" [files]="screenshots"
-                          accept="image/*" maxFileSize="2000000" [showUploadButton]="false" [showCancelButton]="false"
-                          [chooseLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')">
+            <p-fileUpload name="screenshots" customUpload="true"
+                          [multiple]="true" [files]="screenshots"
+                          accept="image/*" maxFileSize="2000000"
+                          [showUploadButton]="false" [showCancelButton]="false"
+                          [chooseLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"
+                          (onSelect)="onSelectScreenshots($event)"
+                          (onRemove)="onRemoveScreenshot($event)">
             </p-fileUpload>
         </div>
     </div>
