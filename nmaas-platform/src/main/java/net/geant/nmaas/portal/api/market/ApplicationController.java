@@ -25,6 +25,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
+import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -182,6 +183,7 @@ public class ApplicationController extends AppBaseController {
 		application.setState(ApplicationState.NEW);
 		application.setCreationDate(LocalDateTime.now());
 		this.applicationService.setMissingProperties(application, appId);
+		ApplicationServiceImpl.clearIds(application);
 		this.applicationService.update(application);
 
 		// create, add and persist new application version

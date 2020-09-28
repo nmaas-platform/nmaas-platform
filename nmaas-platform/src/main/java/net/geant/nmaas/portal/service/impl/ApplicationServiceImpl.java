@@ -131,7 +131,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 				.forEach(template -> template.setApplicationId(appId));
 	}
 
-	private void clearIds(Application app) {
+	public static void clearIds(Application app) {
 		if(app.getConfigWizardTemplate() != null) {
 			app.getConfigWizardTemplate().setId(null);
 		}
@@ -161,7 +161,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if(application.getId() != null) {
 			throw new ProcessingException("While creating id must be null");
 		}
-		this.clearIds(application);
+		clearIds(application);
 		return this.applicationRepository.save(application);
 	}
 }
