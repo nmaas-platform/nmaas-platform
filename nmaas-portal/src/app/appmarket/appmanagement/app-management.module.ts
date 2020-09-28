@@ -6,13 +6,13 @@ import {SharedModule} from '../../shared';
 import {AuthModule} from '../../auth/auth.module';
 import {PipesModule} from '../../pipe/pipes.module';
 import {TranslateModule} from '@ngx-translate/core';
-import {AppsService, TagService} from '../../service';
+import {AppConfigService, AppsService, TagService} from '../../service';
 import {AppManagementListComponent} from './app-management-list/appmanagementlist.component';
 import {StepsModule} from 'primeng/steps';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppCreateWizardComponent} from './app-create-wizard/app-create-wizard.component';
 import {InternationalizationService} from '../../service/internationalization.service';
-import {FormioModule} from 'angular-formio';
+import {FormioAppConfig, FormioModule} from 'angular-formio';
 import {ConfigTemplateService} from '../../service/configtemplate.service';
 import {AppChangeStateModalComponent} from './app-change-state-modal/appchangestatemodal.component';
 import {AppPreviewComponent} from './app-preview/apppreview.component';
@@ -28,6 +28,13 @@ import {ChipsModule} from 'primeng/chips';
 
 export function getJsonTemplates(config: ConfigTemplateService) {
     return () => config.loadConfigTemplate();
+}
+
+export function formioAppConfigFactory(appConfig: AppConfigService) {
+    return {
+        appUrl: appConfig.getApiUrl(),
+        apiUrl: appConfig.getApiUrl()
+    }
 }
 
 
@@ -71,6 +78,17 @@ export function getJsonTemplates(config: ConfigTemplateService) {
             useFactory: getJsonTemplates,
             deps: [ConfigTemplateService],
             multi: true
+        },
+        {
+            /*
+            provide formio config for form builder to work properly (event without formio backend)
+            ref:
+            https://help.form.io/intro/guide/#appconfig
+            https://github.com/formio/angular-formio/issues/456
+             */
+            provide: FormioAppConfig,
+            useFactory: formioAppConfigFactory,
+            deps: [AppConfigService]
         }
     ]
 })
