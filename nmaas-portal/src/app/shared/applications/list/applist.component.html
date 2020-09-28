@@ -25,7 +25,7 @@
 					<tr [class.subscribed]="(selected | async)?.has(app?.id)" class="clickable" [routerLink]="['/apps', app.id]">
 						<td>{{app?.name}}</td>
 						<td>{{getDescription(app)?.briefDescription}}</td>
-						<td>{{app?.tags.join(", ")}}</td>
+						<td>{{getAppTags(app)}}</td>
 						<td><rate [pathUrl]="'/apps/' + app?.id + '/rate'" [rate]="app?.rate"></rate></td>
 						<td></td>
 					</tr>

@@ -68,4 +68,8 @@ export class AppListComponent implements OnInit {
     return app.descriptions.find(val => val.language === this.translate.currentLang);
   }
 
+  public getAppTags(app: ApplicationBase): string {
+    return app.tags.map(t => t.name).join(', ')
+  }
+
 }
