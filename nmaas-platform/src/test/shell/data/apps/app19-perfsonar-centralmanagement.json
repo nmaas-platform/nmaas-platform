@@ -62,98 +62,143 @@
                                         "key": "mandatoryParameters",
                                         "components": [
                                             {
-                                                "label": "psConfig Web Admin: Default username",
-                                                "type": "textfield",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#env#username",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain"
+                                                "title": "pSConfig Web Admin",
+                                                "key": "nmaas-perfsonar-pwa",
+                                                "input": false,
+                                                "tableView": false,
+                                                "type": "panel",
+                                                "theme": "default",
+                                                "breadcrumb": "default",
+                                                "hideLabel": false,
+                                                "components": [
+                                                    {
+                                                        "label": "Default username",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-centralmanagement-sca-auth#env#username",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Default password",
+                                                        "type": "password",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-centralmanagement-sca-auth#env#password",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Default email",
+                                                        "type": "email",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-centralmanagement-sca-auth#env#email",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Allocated storage space (GB)",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-centralmanagement-sca-auth#persistence#size",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain",
+                                                        "defaultValue": "1Gi",
+                                                        "placeholder": "Default value: 1Gi"
+                                                    }
+                                                ],
+                                                "style": {
+                                                    "margin-bottom": "5px"
+                                                }
                                             },
                                             {
-                                                "label": "psConfig Web Admin: Default password",
-                                                "type": "password",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#env#password",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain"
+                                                "title": "MaDDash",
+                                                "key": "nmaas-perfsonar-maddash",
+                                                "input": false,
+                                                "tableView": false,
+                                                "type": "panel",
+                                                "theme": "default",
+                                                "breadcrumb": "default",
+                                                "hideLabel": false,
+                                                "components": [
+                                                    {
+                                                        "label": "Default admin username",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "env#MADDASH_USERNAME",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Default admin password",
+                                                        "type": "password",
+                                                        "input": true,
+                                                        "key": "env#MADDASH_PASSWORD",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Allocated storage space (GB)",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "persistence#size",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain",
+                                                        "defaultValue": "5Gi",
+                                                        "placeholder": "Default value: 5Gi"
+                                                    }
+                                                ],
+                                                "style": {
+                                                    "margin-bottom": "5px"
+                                                }
                                             },
                                             {
-                                                "label": "psConfig Web Admin: Default email",
-                                                "type": "email",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#env#email",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain"
-                                            },
-                                            {
-                                                "label": "psConfig Web Admin: Storage space (GB)",
-                                                "type": "textfield",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-pwa#nmaas-perfsonar-centralmanagement-sca-auth#persistence#size",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain",
-                                                "defaultValue": "1Gi",
-                                                "placeholder": "Default value: 1Gi"
-                                            },
-                                            {
-                                                "label": "MaDDash: Default username",
-                                                "type": "textfield",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-maddash#env#MADDASH_USERNAME",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain"
-                                            },
-                                            {
-                                                "label": "MaDDash: Default password",
-                                                "type": "password",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-maddash#env#MADDASH_PASSWORD",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain"
-                                            },
-                                            {
-                                                "label": "MaDDash: Storage space (GB)",
-                                                "type": "textfield",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-maddash#persistence#size",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain",
-                                                "defaultValue": "5Gi",
-                                                "placeholder": "Default value: 5Gi"
-                                            },
-                                            {
-                                                "label": "Esmond: Storage space (GB)",
-                                                "type": "textfield",
-                                                "input": true,
-                                                "key": "nmaas-perfsonar-esmond#persistence#size",
-                                                "tab": 0,
-                                                "validate": {
-                                                    "required": true
-                                                },
-                                                "inputFormat": "plain",
-                                                "defaultValue": "10Gi",
-                                                "placeholder": "Default value: 10Gi"
+                                                "title": "Esmond",
+                                                "key": "nmaas-perfsonar-esmond",
+                                                "input": false,
+                                                "tableView": false,
+                                                "type": "panel",
+                                                "theme": "default",
+                                                "breadcrumb": "default",
+                                                "hideLabel": false,
+                                                "components": [
+                                                    {
+                                                        "label": "Allocated storage space (GB)",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "persistence#size",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain",
+                                                        "defaultValue": "10Gi",
+                                                        "placeholder": "Default value: 10Gi"
+                                                    }
+                                                ],
+                                                "style": {
+                                                    "margin-bottom": "5px"
+                                                }
                                             }
                                         ]
                                     }
@@ -231,7 +276,7 @@
                     }
                 },
                 {
-                    "type": "EXTERNAL",
+                    "type": "PUBLIC",
                     "name": "Esmond",
                     "tag": "esmond",
                     "deployParameters": {
