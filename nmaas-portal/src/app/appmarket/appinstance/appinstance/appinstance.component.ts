@@ -266,8 +266,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                     }
                 }
 
-                this.appInstanceProgress.activeState = this.appInstanceStatus.state;
-                this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
+                this.appInstanceProgress.activeState = this.getStateAsEnum(this.appInstanceStatus.state);
+                this.appInstanceProgress.previousState = this.getStateAsEnum(this.appInstanceStatus.previousState);
 
                 if (appPropElement) {
                     document.getElementById('app-prop').scrollLeft =
