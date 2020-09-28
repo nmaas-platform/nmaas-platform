@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class DcnRepositoryManagerTest {
+public class DcnRepositoryManagerIntTest {
 
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;

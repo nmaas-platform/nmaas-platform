@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class NotificationsControllerIntegrationTest extends BaseControllerTestSetup {
+public class NotificationsControllerIntTest extends BaseControllerTestSetup {
 
     @BeforeEach
     public void setup() {
