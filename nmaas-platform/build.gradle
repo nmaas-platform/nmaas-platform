@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.sonarqube" version "3.0"
@@ -91,23 +91,23 @@ dependencies {
 
     implementation('org.modelmapper:modelmapper:2.3.8')
     implementation('org.modelmapper.extensions:modelmapper-spring:2.3.8')
-    implementation('org.apache.commons:commons-lang3:3.9')
-    implementation('commons-io:commons-io:2.6')
+    implementation('org.apache.commons:commons-lang3:3.11')
+    implementation('commons-io:commons-io:2.8.0')
 
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
 
     implementation('org.hibernate:hibernate-envers')
-    implementation('org.flywaydb:flyway-core:5.2.0')
+    implementation('org.flywaydb:flyway-core:5.2.4')
 
     implementation('io.jsonwebtoken:jjwt:0.9.1')
-    implementation('com.hierynomus:sshj:0.21.1')
+    implementation('com.hierynomus:sshj:0.30.0')
     implementation('org.gitlab4j:gitlab4j-api:4.14.27')
-    implementation('com.google.guava:guava:24.1-jre')
+    implementation('com.google.guava:guava:29.0-jre')
     implementation('org.freemarker:freemarker:2.3.30')
 
-    implementation('io.springfox:springfox-swagger2:2.8.0')
-    implementation('io.springfox:springfox-swagger-ui:2.8.0')
+    implementation('io.springfox:springfox-swagger2:3.0.0')
+    implementation('io.springfox:springfox-swagger-ui:3.0.0')
 
     implementation('com.google.protobuf:protobuf-java:3.13.0')
     implementation('io.grpc:grpc-netty-shaded:1.31.1')
@@ -115,7 +115,6 @@ dependencies {
     implementation('io.grpc:grpc-stub:1.31.1')
 
     implementation('io.fabric8:kubernetes-client:4.11.1')
-
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
