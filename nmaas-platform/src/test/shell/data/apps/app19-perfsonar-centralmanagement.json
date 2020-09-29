@@ -136,7 +136,7 @@
                                                         "label": "Default admin username",
                                                         "type": "textfield",
                                                         "input": true,
-                                                        "key": "env#MADDASH_USERNAME",
+                                                        "key": "nmaas-perfsonar-maddash#env#MADDASH_USERNAME",
                                                         "tab": 0,
                                                         "validate": {
                                                             "required": true
@@ -147,7 +147,7 @@
                                                         "label": "Default admin password",
                                                         "type": "password",
                                                         "input": true,
-                                                        "key": "env#MADDASH_PASSWORD",
+                                                        "key": "nmaas-perfsonar-maddash#env#MADDASH_PASSWORD",
                                                         "tab": 0,
                                                         "validate": {
                                                             "required": true
@@ -158,7 +158,7 @@
                                                         "label": "Allocated storage space (GB)",
                                                         "type": "textfield",
                                                         "input": true,
-                                                        "key": "persistence#size",
+                                                        "key": "nmaas-perfsonar-maddash#persistence#size",
                                                         "tab": 0,
                                                         "validate": {
                                                             "required": true
@@ -186,7 +186,7 @@
                                                         "label": "Allocated storage space (GB)",
                                                         "type": "textfield",
                                                         "input": true,
-                                                        "key": "persistence#size",
+                                                        "key": "nmaas-perfsonar-esmond#persistence#size",
                                                         "tab": 0,
                                                         "validate": {
                                                             "required": true
