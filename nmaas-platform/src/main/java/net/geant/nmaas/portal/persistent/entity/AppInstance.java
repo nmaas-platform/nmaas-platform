@@ -1,17 +1,10 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -55,6 +48,9 @@ public class AppInstance extends DomainAware implements Serializable {
 	
 	@Basic
 	Identifier internalId;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	private Set<User> members = new HashSet<>();
 	
 	public AppInstance(Application application, Domain domain, String name) {
 		this.application = application;
@@ -75,5 +71,13 @@ public class AppInstance extends DomainAware implements Serializable {
 	protected AppInstance(Long id, Application application, String name, Domain domain, User owner) {
 		this(application, name, domain, owner);
 		this.id = id;
+	}
+
+	public void addMember(User user) {
+		members.add(user);
+	}
+
+	public void removeMember(User user) {
+		members.remove(user);
 	}
 }
