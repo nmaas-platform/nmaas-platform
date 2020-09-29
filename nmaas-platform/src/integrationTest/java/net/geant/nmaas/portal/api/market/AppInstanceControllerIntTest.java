@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -11,6 +12,9 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
+import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.UserBase;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -39,9 +43,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -367,6 +373,50 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldSetApplicationInstanceMembersWhenAppInstanceOwner() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.ADMIN;
+
+        ApplicationBase applicationBase = testApplicationBase();
+        Application application = testApplication();
+        AppInstance appInstance = testAppInstance(domain, application);
+        mockAppInstanceGetProcess(domain, user, applicationBase, application, appInstance);
+
+        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+
+        List<UserBase> members = new ArrayList<>();
+        members.add(modelMapper.map(UsersHelper.DOMAIN1_ADMIN, UserBase.class));
+        members.add(modelMapper.map(UsersHelper.DOMAIN1_USER1, UserBase.class));
+        members.add(modelMapper.map(UsersHelper.DOMAIN2_USER1, UserBase.class));
+
+        when(userService.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userService.findById(UsersHelper.DOMAIN1_ADMIN.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1_ADMIN));
+        when(userService.findById(UsersHelper.DOMAIN1_USER1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1_USER1));
+        when(userService.findById(UsersHelper.DOMAIN2_USER1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN2_USER1));
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/members", 10L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(members))
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().is2xxSuccessful());
+
+        String data = mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        Set<UserBase> retrieved = objectMapper.readValue(data, AppInstanceViewExtended.class).getMembers();
+        assertEquals(2, retrieved.size());
+
     }
 
     private void mockAppInstanceGetProcess(Domain domain, User user, ApplicationBase applicationBase, Application application, AppInstance appInstance) {

@@ -11,7 +11,6 @@ import {AppAbortModalComponent} from '../modals/app-abort-modal';
 import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
 import {RateComponent} from '../../../shared/rate';
 import {AppConfiguration} from '../../../model/app-configuration';
-import {isNullOrUndefined} from 'util';
 import {LOCAL_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ModalComponent} from '../../../shared/modal';
 import {interval} from 'rxjs/internal/observable/interval';
@@ -24,6 +23,8 @@ import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access
 import {ShellClientService} from '../../../service/shell-client.service';
 import {PodInfo} from '../../../model/podinfo';
 import {ApplicationDTO} from '../../../model/application-dto';
+import {AddMembersModalComponent} from '../modals/add-members-modal/add-members-modal.component';
+import {AuthService} from '../../../auth/auth.service';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -70,6 +71,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     @ViewChild(RateComponent)
     public readonly appRate: RateComponent;
 
+    @ViewChild(AddMembersModalComponent)
+    public addMembersModal: AddMembersModalComponent;
+
     app: ApplicationDTO;
 
 
@@ -108,6 +112,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                 private translateService: TranslateService,
                 private sessionService: SessionService,
                 private shellClientService: ShellClientService,
+                private authService: AuthService,
                 @Inject(LOCAL_STORAGE) public storage: StorageService) {
     }
 
@@ -130,7 +135,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
                     this.submission.data.configuration = JSON.parse(appInstance.configuration);
 
-                    if (!isNullOrUndefined(this.appInstance.configUpdateWizardTemplate)) {
+                    if (this.appInstance.configUpdateWizardTemplate != null) {
                         this.configurationUpdateTemplate = this.getTemplate(this.appInstance.configUpdateWizardTemplate.template);
                     }
 
@@ -325,38 +330,38 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public changeAdditionalParameters(additionalParameters: any): void {
-        if (!isNullOrUndefined(additionalParameters)) {
+        if (additionalParameters != null) {
             this.appConfiguration.additionalParameters = additionalParameters;
         }
     }
 
     public changeMandatoryParameters(mandatoryParameters: any): void {
-        if (!isNullOrUndefined(mandatoryParameters)) {
+        if (mandatoryParameters != null) {
             this.appConfiguration.mandatoryParameters = mandatoryParameters;
         }
     }
 
     public changeAccessCredentials(accessCredentials: any): void {
-        if (!isNullOrUndefined(accessCredentials)) {
+        if (accessCredentials != null) {
             this.appConfiguration.accessCredentials = accessCredentials;
         }
     }
 
     public changeConfiguration(configuration: any): void {
-        if (!isNullOrUndefined(configuration)) {
+        if (configuration != null) {
             this.appConfiguration.jsonInput = configuration;
         }
     }
 
     public applyConfiguration(input: any): void {
-        if (!isNullOrUndefined(input['advanced'])) {
+        if (input['advanced'] != null) {
             this.appConfiguration.storageSpace = input['advanced'].storageSpace;
         }
         this.changeMandatoryParameters(input['mandatoryParameters']);
         this.changeAdditionalParameters(input['additionalParameters']);
         this.changeConfiguration(input['configuration']);
         this.changeAccessCredentials(input['accessCredentials']);
-        if (isNullOrUndefined(this.appConfiguration.jsonInput)) {
+        if (this.appConfiguration.jsonInput == null) {
             this.appConfiguration.jsonInput = {};
         }
         this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(
@@ -379,7 +384,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public changeConfigUpdate(input: any): void {
-        if (!isNullOrUndefined(input) && !isNullOrUndefined(input['data'])) {
+        if ((input != null) && (input['data'] != null)) {
             this.isUpdateFormValid = input['isValid'];
             this.changeConfiguration(input['data']['configuration']);
             this.changeAccessCredentials(input['data']['accessCredentials']);
@@ -405,7 +410,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public getPathUrl(id: number): string {
-        if (!isNullOrUndefined(id) && !isNaN(id)) {
+        if (id != null && !isNaN(id)) {
             return '/apps/' + id + '/rate/my';
         } else {
             return '';
@@ -425,7 +430,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
      * @param url
      */
     public validateURL(url: string): string {
-        if (isNullOrUndefined(url)) {
+        if (url == null) {
             return '';
         }
         if (url.startsWith('http://')) {
@@ -442,7 +447,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
      * @param a
      */
     public accessMethodTypeAsEnum(a: ServiceAccessMethodType | string): ServiceAccessMethodType {
-        if (typeof  a === 'string') {
+        if (typeof a === 'string') {
             return ServiceAccessMethodType[a];
         }
         return a;
@@ -498,6 +503,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                 console.error(error);
             }
         )
+    }
+
+    public canDisplayAddMembersModal(): boolean {
+        const username = this.authService.getUsername()
+        if (username === this.appInstance.owner.username) {
+            return true;
+        }
+        if (this.authService.hasRole('ROLE_SYSTEM_ADMIN')) {
+            return true;
+        }
+        if (this.authService.hasDomainRole(this.appInstance.domainId, 'ROLE_DOMAIN_ADMIN')) {
+            return true;
+        }
+
+        return false;
     }
 
 }

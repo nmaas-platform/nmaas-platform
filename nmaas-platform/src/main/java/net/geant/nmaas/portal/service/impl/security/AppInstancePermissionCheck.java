@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl.security;
 
-import java.util.EnumMap;
+import java.util.*;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -15,10 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -73,11 +69,19 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 					: domainService.getGlobalDomain().orElse(null));
 
 			for (UserRole role : user.getRoles()) {
+				if(role.getDomain() == null) {
+					continue;
+				}
 				if (role.getDomain().equals(domain)) {
 					resultPerms.addAll(Arrays.asList(permMatrix.get(role.getRole())));
 				} else if (role.getDomain().equals(domainService.getGlobalDomain().orElse(null))) {
 					resultPerms.addAll(Arrays.asList(globalPermMatrix.get(role.getRole())));
 				}
+			}
+
+			// explicitly add READ permission if user is member of the app instance
+			if(appInstance.get().getMembers().contains(user)) {
+				resultPerms.add(Permissions.READ);
 			}
 		}
 		return resultPerms;

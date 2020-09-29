@@ -62,6 +62,9 @@
                     <button class="btn btn-danger"
                             *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                             (click)="this.appAbortModal.show()">{{'APP_INSTANCE.ABORT_BUTTON' | translate}}</button>
+                    <button class="btn btn-default" (click)="this.addMembersModal.show()" *ngIf="canDisplayAddMembersModal()">
+                        {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
+                    </button>
                 </div>
 
                 <!-- if application is already running -->
@@ -98,6 +101,9 @@
                                 </li>
                             </ul>
                         </div>
+                        <button class="btn btn-default" (click)="this.addMembersModal.show()" *ngIf="canDisplayAddMembersModal()">
+                            {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
+                        </button>
                         <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
@@ -257,5 +263,8 @@
 
     <!-- App access methods modal -->
     <app-access-methods-modal *ngIf="appInstance?.serviceAccessMethods" [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
+
+    <!-- Add members modal -->
+    <app-add-members-modal *ngIf="appInstance" [appInstance]="appInstance"></app-add-members-modal>
 
 </div>

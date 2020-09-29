@@ -1,7 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ServiceAccessMethod, ServiceAccessMethodType} from '../../../../model/service-access-method';
 import {ModalComponent} from '../../../../shared/modal';
-import {isNullOrUndefined} from 'util';
 
 @Component({
   selector: 'app-access-methods-modal',
@@ -39,7 +38,7 @@ export class AccessMethodsModalComponent implements OnInit {
   }
 
   public validateURL(url: string): string {
-    if (isNullOrUndefined(url)) {
+    if (url == null) {
       return '';
     }
     if (url.startsWith('http://')) {

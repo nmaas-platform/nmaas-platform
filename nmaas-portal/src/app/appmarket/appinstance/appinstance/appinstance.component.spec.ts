@@ -111,7 +111,7 @@ describe('Component: AppInstance', () => {
     let fixture: ComponentFixture<AppInstanceComponent>;
     let appConfigService: AppConfigService;
     let appsService: AppsService;
-    // let authService: AuthService;
+    let authService: AuthService;
     let appInstanceService: AppInstanceService;
     let appImageService: AppImagesService;
     let domainService: DomainService;
@@ -205,7 +205,8 @@ describe('Component: AppInstance', () => {
         domain: domain,
         appConfigRepositoryAccessDetails: {
             cloneUrl: 'http://clone.me'
-        }
+        },
+        members: []
     };
 
     const appInstanceHistory: AppInstanceStateHistory[] = [
@@ -221,13 +222,6 @@ describe('Component: AppInstance', () => {
         },
     ];
 
-    // https://v7.angular.io/guide/testing#component-with-a-dependency
-    const appsServiceStub: Partial<AppsService> = {};
-    const authServiceStub: Partial<AuthService> = {};
-    const appInstanceServiceStub: Partial<AppInstanceService> = {};
-    const domainServiceStub: Partial<DomainService> = {};
-    const appImagesServiceStub: Partial<AppImagesService> = {};
-
     beforeEach(async(() => {
         const mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getApiUrl', 'getHttpTimeout']);
         mockAppConfigService.getApiUrl.and.returnValue('http://localhost/api');
@@ -236,7 +230,17 @@ describe('Component: AppInstance', () => {
         const mockShellClientService = jasmine.createSpyObj('ShellClientService', ['getPossiblePods']);
         mockShellClientService.getPossiblePods.and.returnValue(of([]))
 
-        // let authServiceSpy = jasmine.createSpyObj('AuthService', []);
+        // https://v7.angular.io/guide/testing#component-with-a-dependency
+        const appsServiceStub: Partial<AppsService> = {};
+        // const authServiceStub: Partial<AuthService> = {};
+        const appInstanceServiceStub: Partial<AppInstanceService> = {};
+        const domainServiceStub: Partial<DomainService> = {};
+        const appImagesServiceStub: Partial<AppImagesService> = {};
+
+        const authServiceSpy = jasmine.createSpyObj('AuthService', ['getUsername', 'hasRole', 'hasDomainRole']);
+        authServiceSpy.getUsername.and.returnValue('username');
+        authServiceSpy.hasRole.and.returnValue(false);
+        authServiceSpy.hasDomainRole.and.returnValue(false);
 
         TestBed.configureTestingModule({
             declarations: [
@@ -271,7 +275,7 @@ describe('Component: AppInstance', () => {
             providers: [
                 {provide: AppConfigService, useValue: mockAppConfigService},
                 {provide: AppsService, useValue: appsServiceStub},
-                // { provide: AuthService, useValue: authServiceStub },
+                { provide: AuthService, useValue: authServiceSpy },
                 {provide: AppInstanceService, useValue: appInstanceServiceStub},
                 {provide: DomainService, useValue: domainServiceStub},
                 {provide: AppImagesService, useValue: appImagesServiceStub},
@@ -291,7 +295,7 @@ describe('Component: AppInstance', () => {
 
         appConfigService = fixture.debugElement.injector.get(AppConfigService);
         appsService = fixture.debugElement.injector.get(AppsService);
-        // authService = fixture.debugElement.injector.get(AuthService);
+        authService = fixture.debugElement.injector.get(AuthService);
         appInstanceService = fixture.debugElement.injector.get(AppInstanceService);
         appImageService = fixture.debugElement.injector.get(AppImagesService);
         domainService = fixture.debugElement.injector.get(DomainService);
@@ -311,6 +315,7 @@ describe('Component: AppInstance', () => {
             }
         ));
         spyOn(appImageService, 'getAppLogoUrl').and.returnValue('');
+        // spyOn(authService, 'getUsername').and.returnValue('username');
 
         fixture.detectChanges();
     });

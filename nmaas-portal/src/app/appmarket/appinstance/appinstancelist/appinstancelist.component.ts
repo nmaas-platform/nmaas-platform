@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {isNullOrUndefined, isUndefined} from 'util';
-
-import {AppInstance, AppInstanceState} from '../../../model';
+import {AppInstance, AppInstanceState, parseAppInstanceState} from '../../../model';
 import {DomainService} from '../../../service';
 import {AppInstanceService, AppsService, CustomerSearchCriteria} from '../../../service';
 import {AuthService} from '../../../auth/auth.service';
@@ -17,179 +15,187 @@ import {SessionService} from '../../../service/session.service';
 import {Domain} from '../../../model/domain';
 
 export enum AppInstanceListSelection {
-  ALL, MY,
+    ALL, MY,
 }
 
 @Component({
-  selector: 'nmaas-appinstancelist',
-  templateUrl: './appinstancelist.component.html',
-  styleUrls: ['./appinstancelist.component.css'],
-  providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
+    selector: 'nmaas-appinstancelist',
+    templateUrl: './appinstancelist.component.html',
+    styleUrls: ['./appinstancelist.component.css'],
+    providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
 })
 export class AppInstanceListComponent implements OnInit {
 
-  public undeployedVisible = false;
+    public undeployedVisible = false;
 
-  private readonly item_number_key: string = 'item_number_per_page';
+    private readonly item_number_key: string = 'item_number_per_page';
 
-  public p_first: string = 'p_first';
-  public p_second: string = 'p_second';
+    public p_first = 'p_first';
+    public p_second = 'p_second';
 
-  public maxItemsOnPage: number = 10;
-  public maxItemsOnPageSec: number = 10;
+    public maxItemsOnPage = 10;
+    public maxItemsOnPageSec = 10;
 
-  public pageNumber: number = 1;
-  public secondPageNumber: number = 1;
+    public pageNumber = 1;
+    public secondPageNumber = 1;
 
-  public showFailed: boolean = true;
+    public showFailed = true;
 
-  public itemsPerPage: number[]  = [10, 15, 20, 25, 30, 50];
+    public itemsPerPage: number[] = [10, 15, 20, 25, 30, 50];
 
-  public AppInstanceState: typeof AppInstanceState = AppInstanceState;
-  public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
+    public AppInstanceState: typeof AppInstanceState = AppInstanceState;
+    public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
 
-  public appInstances: Observable<AppInstance[]>;
-  public appDeployedInstances: Observable<AppInstance[]>;
-  public appUndeployedInstances: Observable<AppInstance[]>;
+    public appInstances: Observable<AppInstance[]>;
+    public appDeployedInstances: Observable<AppInstance[]>;
+    public appUndeployedInstances: Observable<AppInstance[]>;
 
-  public listSelection: AppInstanceListSelection = AppInstanceListSelection.MY;
+    public listSelection: AppInstanceListSelection = AppInstanceListSelection.MY;
 
-  public selectedUsername: string;
-  public domainId: number = 0;
+    public selectedUsername: string;
+    public domainId = 0;
 
-  public domains: Domain[] = [];
+    public domains: Domain[] = [];
 
-  constructor(private appInstanceService: AppInstanceService,
-              public domainService: DomainService,
-              private userDataService: UserDataService,
-              public authService: AuthService,
-              private appConfig: AppConfigService,
-              private translateService: TranslateService,
-              private sessionService: SessionService,
-              public translateState: TranslateStateModule) {
-  }
-
-  ngOnInit() {
-    this.sessionService.registerCulture(this.translateService.currentLang);
-    this.domainService.getAll().subscribe(result => {
-      this.domains.push(...result);
-    });
-    const i = sessionStorage.getItem(this.item_number_key);
-    if (i) {
-      this.maxItemsOnPage = +i;
-      this.maxItemsOnPageSec = +i;
+    constructor(private appInstanceService: AppInstanceService,
+                public domainService: DomainService,
+                private userDataService: UserDataService,
+                public authService: AuthService,
+                private appConfig: AppConfigService,
+                private translateService: TranslateService,
+                private sessionService: SessionService,
+                public translateState: TranslateStateModule) {
     }
 
-    this.userDataService.selectedDomainId.subscribe(domainId => {
-      // adjust display for GUESTS and USERS (they cannot own any instance)
-      if (this.authService.hasDomainRole(domainId, 'ROLE_USER') ||
-          this.authService.hasDomainRole(domainId, 'ROLE_GUEST') ||
-          isNullOrUndefined(domainId)) {
-        this.listSelection = AppInstanceListSelection.ALL;
-      }
-
-      this.update(domainId)
-    });
-
-  }
-
-  public getDomainNameById(id: number): string {
-    if (this.domains === undefined) {
-      return 'none';
-    }
-    return this.domains.find(value => value.id === id).name;
-  }
-
-  public translateEnum(value: AppInstanceListSelection): string {
-    let outValue = '';
-    if (value.toString() === 'ALL') {
-      this.translateService.get('ENUM.ALL').subscribe((res: string) => {
-        outValue = res;
-      })
-    }
-    if (value.toString() === 'MY') {
-      this.translateService.get('ENUM.MY').subscribe((res: string) => {
-        outValue = res;
-      })
-    }
-    return outValue;
-  }
-
-  public update(domainId: number): void {
-    if (domainId !== this.domainId) {
-      this.undeployedVisible = false; // hide undeployed instances when domain is changed
-    }
-    if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
-      this.domainId = this.appConfig.getNmaasGlobalDomainId();
-      // get instances in global domain only for users who are not guests in global domain
-      if (!this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST')) {
-        this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
-      }
-    } else {
-      this.domainId = domainId;
-      this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
-    }
-  }
-
-  public checkPrivileges(app) {
-    return app.owner.username === this.authService.getUsername()
-        || this.authService.hasRole('ROLE_SYSTEM_ADMIN')
-        || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN')
-        || this.authService.hasDomainRole(app.domainId, 'ROLE_USER');
-  }
-
-  public onSelectionChange(event) {
-    this.update(this.domainId);
-  }
-
-  public setItems(item) {
-    sessionStorage.setItem(this.item_number_key, item);
-    this.maxItemsOnPage = item;
-    this.maxItemsOnPageSec = item;
-  }
-
-  onSorted($event) {
-    this.getInstances($event)
-  }
-
-  getInstances(criteria: CustomerSearchCriteria) {
-    console.debug('Crit: ', criteria);
-    this.appInstances = of<AppInstance[]>([]);
-    switch (+this.listSelection) {
-      case AppInstanceListSelection.ALL:
-        if (this.domainId) {
-          this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
+    ngOnInit() {
+        this.sessionService.registerCulture(this.translateService.currentLang);
+        this.domainService.getAll().subscribe(result => {
+            this.domains.push(...result);
+        });
+        const i = sessionStorage.getItem(this.item_number_key);
+        if (i) {
+            this.maxItemsOnPage = +i;
+            this.maxItemsOnPageSec = +i;
         }
-        break;
-      case AppInstanceListSelection.MY:
-        if (this.domainId) {
-          this.appInstances = this.appInstanceService.getSortedMyAppInstances(this.domainId, criteria);
-        }
-        break;
-      default:
-        break;
+
+        this.userDataService.selectedDomainId.subscribe(domainId => {
+            // adjust display for GUESTS and USERS (they cannot own any instance)
+            if (this.authService.hasDomainRole(domainId, 'ROLE_USER') ||
+                this.authService.hasDomainRole(domainId, 'ROLE_GUEST') ||
+                domainId == null) {
+                this.listSelection = AppInstanceListSelection.ALL;
+            }
+
+            this.update(domainId)
+        });
+
     }
-    this.appInstances = this.appInstances.pipe(
-        map( app => app.filter(
-            (appInst) => (this.domainId == this.appConfig.getNmaasGlobalDomainId() || this.domainId == appInst.domainId)
-        ))
-    );
-    // sort and filter deployed instances
-    this.appDeployedInstances = this.appInstances.pipe(
-        map(AppInstances => AppInstances.filter(
-        app => (AppInstanceState[app.state] != AppInstanceState.REMOVED.toString()
-          && AppInstanceState[app.state] != AppInstanceState.DONE.toString()
-      ))));
-    // sort and filter undeployed instances
-    this.appUndeployedInstances = this.appInstances.pipe(
-        map(AppInstances => AppInstances.filter(
-        app => (AppInstanceState[app.state] == AppInstanceState.REMOVED.toString()
-          || AppInstanceState[app.state] == AppInstanceState.DONE.toString()
-        ))));
-  }
+
+    public getDomainNameById(id: number): string {
+        if (this.domains === undefined) {
+            return 'none';
+        }
+        return this.domains.find(value => value.id === id).name;
+    }
+
+    public translateEnum(value: AppInstanceListSelection): string {
+        let outValue = '';
+        if (value.toString() === 'ALL') {
+            this.translateService.get('ENUM.ALL').subscribe((res: string) => {
+                outValue = res;
+            })
+        }
+        if (value.toString() === 'MY') {
+            this.translateService.get('ENUM.MY').subscribe((res: string) => {
+                outValue = res;
+            })
+        }
+        return outValue;
+    }
+
+    public update(domainId: number): void {
+        if (domainId !== this.domainId) {
+            this.undeployedVisible = false; // hide undeployed instances when domain is changed
+        }
+        if (domainId === undefined || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
+            this.domainId = this.appConfig.getNmaasGlobalDomainId();
+            // get instances in global domain only for users who are not guests in global domain
+            if (!this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST')) {
+                this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
+            }
+        } else {
+            this.domainId = domainId;
+            this.getInstances({sortColumn: 'createdAt', sortDirection: 'asc'});
+        }
+    }
+
+    public checkPrivileges(app) {
+        return app.owner.username === this.authService.getUsername()
+            || this.authService.hasRole('ROLE_SYSTEM_ADMIN')
+            || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN')
+            || this.authService.hasDomainRole(app.domainId, 'ROLE_USER');
+    }
+
+    public onSelectionChange(event) {
+        this.update(this.domainId);
+    }
+
+    public setItems(item) {
+        sessionStorage.setItem(this.item_number_key, item);
+        this.maxItemsOnPage = item;
+        this.maxItemsOnPageSec = item;
+    }
+
+    onSorted($event) {
+        this.getInstances($event)
+    }
+
+    getInstances(criteria: CustomerSearchCriteria) {
+        // console.log('Crit: ', criteria);
+        this.appInstances = of<AppInstance[]>([]);
+        switch (+this.listSelection) {
+            case AppInstanceListSelection.ALL:
+                if (this.domainId) {
+                    this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
+                }
+                break;
+            case AppInstanceListSelection.MY:
+                if (this.domainId) {
+                    this.appInstances = this.appInstanceService.getSortedMyAppInstances(this.domainId, criteria);
+                }
+                break;
+            default:
+                break;
+        }
+        this.appInstances = this.appInstances
+            .pipe(
+                map(app => app.filter(
+                    (appInst) => (this.domainId === this.appConfig.getNmaasGlobalDomainId() || this.domainId === appInst.domainId)
+                    )
+                )
+            );
+        // sort and filter deployed instances
+        this.appDeployedInstances = this.appInstances
+            .pipe(
+                map(instances => instances.filter(
+                    app => parseAppInstanceState(app.state) !== AppInstanceState.REMOVED
+                        && parseAppInstanceState(app.state) !== AppInstanceState.DONE
+                    )
+                )
+            );
+        // sort and filter undeployed instances
+        this.appUndeployedInstances = this.appInstances
+            .pipe(
+                map(instances => instances.filter(
+                    app => parseAppInstanceState(app.state) === AppInstanceState.REMOVED
+                        || parseAppInstanceState(app.state) === AppInstanceState.DONE
+                    )
+                )
+            );
+    }
 
 
-  public setShowFailedField(status: boolean) {
-    this.showFailed = status;
-  }
+    public setShowFailedField(status: boolean) {
+        this.showFailed = status;
+    }
 }
