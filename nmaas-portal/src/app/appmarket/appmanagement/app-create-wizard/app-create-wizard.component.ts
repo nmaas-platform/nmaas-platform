@@ -284,7 +284,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
 
     public onSelectLogo(event): void {
-        this.logo.push(event.files)
+        this.logo.push(...event.files)
     }
 
     public clearLogo(event): void {
