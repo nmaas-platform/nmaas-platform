@@ -23,6 +23,8 @@ import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access
 import {ShellClientService} from '../../../service/shell-client.service';
 import {PodInfo} from '../../../model/podinfo';
 import {ApplicationDTO} from '../../../model/application-dto';
+import {AddMembersModalComponent} from '../modals/add-members-modal/add-members-modal.component';
+import {AuthService} from '../../../auth/auth.service';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -69,6 +71,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     @ViewChild(RateComponent)
     public readonly appRate: RateComponent;
 
+    @ViewChild(AddMembersModalComponent)
+    public addMembersModal: AddMembersModalComponent;
+
     app: ApplicationDTO;
 
 
@@ -107,6 +112,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                 private translateService: TranslateService,
                 private sessionService: SessionService,
                 private shellClientService: ShellClientService,
+                private authService: AuthService,
                 @Inject(LOCAL_STORAGE) public storage: StorageService) {
     }
 
@@ -404,7 +410,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public getPathUrl(id: number): string {
-        if ((id != null) && !isNaN(id)) {
+        if (id != null && !isNaN(id)) {
             return '/apps/' + id + '/rate/my';
         } else {
             return '';
@@ -441,7 +447,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
      * @param a
      */
     public accessMethodTypeAsEnum(a: ServiceAccessMethodType | string): ServiceAccessMethodType {
-        if (typeof  a === 'string') {
+        if (typeof a === 'string') {
             return ServiceAccessMethodType[a];
         }
         return a;
@@ -497,6 +503,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                 console.error(error);
             }
         )
+    }
+
+    public canDisplayAddMembersModal(): boolean {
+        const username = this.authService.getUsername()
+        if (username === this.appInstance.owner.username) {
+            return true;
+        }
+        if (this.authService.hasRole('ROLE_SYSTEM_ADMIN')) {
+            return true;
+        }
+        if (this.authService.hasDomainRole(this.appInstance.domainId, 'ROLE_DOMAIN_ADMIN')) {
+            return true;
+        }
+
+        return false;
     }
 
 }
