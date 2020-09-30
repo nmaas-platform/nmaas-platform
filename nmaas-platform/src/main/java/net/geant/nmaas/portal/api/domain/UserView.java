@@ -22,6 +22,8 @@ public class UserView extends UserBase implements Serializable {
 	protected OffsetDateTime firstLoginDate;
 	
 	protected Set<UserRoleView> roles = new HashSet<>();
+
+	protected Set<SSHKeyView> sshKeys = new HashSet<>();
 	
 	protected UserView() {
 		super();
@@ -32,7 +34,7 @@ public class UserView extends UserBase implements Serializable {
 	}
 
 	@Builder
-	public UserView(Long id, String username, String firstname, String lastname, String email, boolean enabled, Set<UserRoleView> roles, boolean ssoUser, String selectedLanguage) {
+	public UserView(Long id, String username, String firstname, String lastname, String email, boolean enabled, Set<UserRoleView> roles, boolean ssoUser, String selectedLanguage, Set<SSHKeyView> sshKeys) {
 		this(id, username);
 		this.firstname = firstname;
 		this.lastname = lastname;
@@ -41,6 +43,7 @@ public class UserView extends UserBase implements Serializable {
 		this.roles = roles;
 		this.ssoUser = ssoUser;
 		this.selectedLanguage = selectedLanguage;
+		this.sshKeys = sshKeys;
 	}
 	
 }
