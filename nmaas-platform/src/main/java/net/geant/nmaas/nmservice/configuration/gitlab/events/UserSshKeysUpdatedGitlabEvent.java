@@ -20,12 +20,22 @@ public class UserSshKeysUpdatedGitlabEvent extends GitlabEvent {
     }
 
     private String userUsername;
+    private String userEmail = null;
+    private String userName = null;
     private List<String> userSshKeys;
 
     public UserSshKeysUpdatedGitlabEvent(Object source, String userUsername, List<String> userSshKeys) {
         super(source);
         this.userUsername = userUsername;
         this.userSshKeys = userSshKeys;
+    }
+
+    public UserSshKeysUpdatedGitlabEvent(Object source, String userUsername, String userEmail, String userName, List<String> userSshKeys) {
+        super(source);
+        this.userUsername = userUsername;
+        this.userSshKeys = userSshKeys;
+        this.userEmail = userEmail;
+        this.userName = userName;
     }
 
     @Override

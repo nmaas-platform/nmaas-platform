@@ -4,6 +4,7 @@ import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
+import net.geant.nmaas.nmservice.configuration.gitlab.events.UserSshKeysUpdatedGitlabEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,5 +60,18 @@ public class GitLabEventListenerTest {
         eventsListener.handleGitlabEvent(event);
 
         verify(gitConfigHandler, times(1)).removeMemberFromProject(anyInt(), anyString());
+    }
+
+    @Test
+    public void updateUserSshKeysGitlabEventShouldDelegateToGitConfigHandlerCreateUserMethod() {
+        UserSshKeysUpdatedGitlabEvent event = new UserSshKeysUpdatedGitlabEvent(
+                "source",
+                "username",
+                new ArrayList<>()
+        );
+
+        eventsListener.handleGitlabEvent(event);
+
+        verify(gitConfigHandler, times(1)).createUser(eq(event.getUserUsername()), eq(event.getUserEmail()), eq(event.getUserEmail()), anyList());
     }
 }

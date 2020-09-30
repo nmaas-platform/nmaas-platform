@@ -67,12 +67,14 @@ public class GitLabEventsListener {
     }
 
     /**
-     * TODO
+     * Listens to {@link UserSshKeysUpdatedGitlabEvent}
+     * After event is received, create user function is called
      * @param event - an event object
      */
     public void handleGitlabEvent(UserSshKeysUpdatedGitlabEvent event) {
         log.info(String.format("[UPDATE USER SSH KEYS GITLAB EVENT] [%s]", event.getUserUsername()));
-        // TODO
+        // create user method creates user only if user does not exist and replaces all ssh keys
+        this.gitConfigHandler.createUser(event.getUserUsername(), null, null, event.getUserSshKeys());
     }
 
     protected GitLabProject loadGitlabProject(Identifier deploymentId){
