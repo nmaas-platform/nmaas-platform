@@ -11,10 +11,7 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
-import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -400,6 +397,10 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         when(userService.findById(UsersHelper.DOMAIN1_USER1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1_USER1));
         when(userService.findById(UsersHelper.DOMAIN2_USER1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN2_USER1));
 
+        when(userService.findByUsername(UsersHelper.DOMAIN1_ADMIN.getUsername())).thenReturn(Optional.of(UsersHelper.DOMAIN1_ADMIN));
+        when(userService.findByUsername(UsersHelper.DOMAIN1_USER1.getUsername())).thenReturn(Optional.of(UsersHelper.DOMAIN1_USER1));
+        when(userService.findByUsername(UsersHelper.DOMAIN2_USER1.getUsername())).thenReturn(Optional.of(UsersHelper.DOMAIN2_USER1));
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         mvc.perform(post("/api/apps/instances/{appInstanceId}/members", 10L)
@@ -414,7 +415,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        Set<UserBase> retrieved = objectMapper.readValue(data, AppInstanceViewExtended.class).getMembers();
+        Set<UserViewMinimal> retrieved = objectMapper.readValue(data, AppInstanceViewExtended.class).getMembers();
         assertEquals(2, retrieved.size());
 
     }
