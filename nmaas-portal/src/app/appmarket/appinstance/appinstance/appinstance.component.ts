@@ -506,6 +506,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public canDisplayAddMembersModal(): boolean {
+        if (!this.appInstance.application.application.appConfigurationSpec.configFileRepositoryRequired) {
+            return false;
+        }
         const username = this.authService.getUsername()
         if (username === this.appInstance.owner.username) {
             return true;
