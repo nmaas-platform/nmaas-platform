@@ -19,6 +19,8 @@ export class AddMembersModalComponent implements OnInit {
 
     public users: User[] = [];
 
+    public selectItems: SelectItem[] = [];
+
     public members: User[] = [];
 
     constructor(public userService: UserService, public appInstanceService: AppInstanceService) {
@@ -32,6 +34,13 @@ export class AddMembersModalComponent implements OnInit {
                 const memberIds = this.members.map(m => m.id);
                 // rewrite members to get full users data instead of only firstname and lastname
                 this.members = this.users.filter(u => memberIds.includes(u.id));
+                this.selectItems = this.users.map(u => {
+                    return {
+                        value: u,
+                        label: (u.firstname !== '' && u.lastname !== '') ? u.firstname + ' ' + u.lastname : u.username,
+                        disabled: u.sshKeys == null || u.sshKeys.length === 0
+                    }
+                });
             },
             error => console.error(error),
             () => console.log('Domain Users list download completed')
