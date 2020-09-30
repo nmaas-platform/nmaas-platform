@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import net.geant.nmaas.portal.persistent.entity.AppRate;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import net.geant.nmaas.portal.api.domain.ApiResponse;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 
@@ -29,7 +29,7 @@ import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 @RequestMapping("/api/apps/{appId}/rate")
 public class RatingController extends AppBaseController {
 	
-	private RatingRepository ratingRepo;
+	private final RatingRepository ratingRepo;
 
 	@Autowired
 	public RatingController(RatingRepository ratingRepo){
@@ -38,7 +38,7 @@ public class RatingController extends AppBaseController {
 	
 	@GetMapping
 	public AppRateView getAppRating(@PathVariable("appId") Long appId) {
-		Application app = getApp(appId);
+		ApplicationBase app = getBaseApp(appId);
 		Integer[] rateList = ratingRepo.getApplicationRating(app.getId());
 		return new AppRateView(getAverageRate(rateList), getRatingMap(rateList));
 	}
@@ -53,7 +53,7 @@ public class RatingController extends AppBaseController {
 	@GetMapping(value="/user/{userId}")
 //	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	public AppRateView getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
-		Application app = getApp(appId);
+		ApplicationBase app = getBaseApp(appId);
 		User user = getUser(userId);
 		
 		AppRate.AppRateId appRateId = new AppRate.AppRateId(app.getId(), user.getId());
@@ -66,7 +66,7 @@ public class RatingController extends AppBaseController {
 //	@PreAuthorize("hasPermission(#appId, 'application', 'WRITE')")
 	@Transactional
 	public ApiResponse setUserAppRating(@PathVariable("appId") Long appId, @PathVariable("rate") Integer rate, @NotNull Principal principal) {
-		Application app = getApp(appId);
+		ApplicationBase app = getBaseApp(appId);
 		User user = getUser(principal.getName());
 		
 		AppRate.AppRateId appRatingId = new AppRate.AppRateId(app.getId(), user.getId());

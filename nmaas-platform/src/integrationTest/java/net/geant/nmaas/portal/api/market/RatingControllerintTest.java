@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RatingControllerintTest extends BaseControllerTestSetup {
 
     @Autowired
-    private ApplicationRepository appRepo;
+    private ApplicationBaseRepository applicationBaseRepository;
 
     @Autowired
     private UserRepository userRepo;
@@ -38,18 +40,18 @@ public class RatingControllerintTest extends BaseControllerTestSetup {
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-        this.appRepo.save(new Application("testAPP", "1.1.0", "admin"));
+        this.applicationBaseRepository.save(new ApplicationBase("testAPP"));
     }
 
     @AfterEach
     public void teardown(){
         this.ratingRepo.deleteAll();
-        this.appRepo.deleteAll();
+        this.applicationBaseRepository.deleteAll();
     }
 
     @Test
     public void shouldSetUserAppRating() throws Exception {
-        long appId = this.appRepo.findAll().get(0).getId();
+        long appId = this.applicationBaseRepository.findAll().get(0).getId();
         MvcResult mvcResult = mvc.perform(post("/api/apps/"+appId+"/rate/my/4")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -60,7 +62,7 @@ public class RatingControllerintTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldNormalizeNegativeUserAppRating() throws Exception {
-        long appId = this.appRepo.findAll().get(0).getId();
+        long appId = this.applicationBaseRepository.findAll().get(0).getId();
         MvcResult mvcResult = mvc.perform(post("/api/apps/"+appId+"/rate/my/-1")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -71,7 +73,7 @@ public class RatingControllerintTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldNormalizeUserAppRatingOverMax() throws Exception {
-        long appId = this.appRepo.findAll().get(0).getId();
+        long appId = this.applicationBaseRepository.findAll().get(0).getId();
         MvcResult mvcResult = mvc.perform(post("/api/apps/"+appId+"/rate/my/25")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -82,7 +84,7 @@ public class RatingControllerintTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldGetUserAppRating() throws Exception {
-        long appId = this.appRepo.findAll().get(0).getId();
+        long appId = this.applicationBaseRepository.findAll().get(0).getId();
         mvc.perform(post("/api/apps/"+appId+"/rate/my/4")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -100,7 +102,7 @@ public class RatingControllerintTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldGetMyAppRating() throws Exception {
-        long appId = this.appRepo.findAll().get(0).getId();
+        long appId = this.applicationBaseRepository.findAll().get(0).getId();
         mvc.perform(post("/api/apps/"+appId+"/rate/my/4")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -117,7 +119,7 @@ public class RatingControllerintTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldGetAppRating() throws Exception {
-        long appId = this.appRepo.findAll().get(0).getId();
+        long appId = this.applicationBaseRepository.findAll().get(0).getId();
         mvc.perform(post("/api/apps/"+appId+"/rate/my/5")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON))
