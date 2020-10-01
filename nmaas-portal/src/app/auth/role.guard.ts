@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {CanActivate, CanActivateChild, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
 import {AuthService} from './auth.service';
 import {Observable} from 'rxjs';
-import {isArray, isUndefined, isString} from 'util';
+import {isArray, isUndefined} from 'util';
 
 @Injectable()
 export class RoleGuard implements CanActivate, CanActivateChild {
@@ -46,7 +46,7 @@ export class RoleGuard implements CanActivate, CanActivateChild {
         console.debug('ROLEGUARD: role: ' + route.data.roles[i]);
         roles.push(Role[(<string>route.data.roles[i])]);
       }
-    } else if (isString(route.data.roles)) {
+    } else if (typeof route.data.roles === 'string') {
       roles.push(Role[route.data.roles]);
     }
 
