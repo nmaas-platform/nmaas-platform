@@ -74,7 +74,7 @@
                 </td>
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
                 <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
-                <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
+                <td class="col-lg-3 col-md-3 text-center">{{ translateState(appInstance?.state) }}</td>
             </tr>
         </ng-template>
         </tbody>
@@ -116,7 +116,7 @@
                     *ngIf="domainId === undefined">{{getDomainNameById(appInstance?.domainId)}}</td>
                 <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
                 <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
-                <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
+                <td class="col-lg-3 col-md-3 text-center">{{ translateState(appInstance?.state) }}</td>
             </tr>
         </ng-template>
         </tbody>

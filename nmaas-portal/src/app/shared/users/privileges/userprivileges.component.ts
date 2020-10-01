@@ -10,7 +10,6 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Observable, of} from 'rxjs';
 import {CacheService} from '../../../service/cache.service';
 import {UserDataService} from '../../../service/userdata.service';
-import {isNullOrUndefined} from 'util';
 import {map, shareReplay, take} from 'rxjs/operators';
 
 @Component({
@@ -89,7 +88,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
      */
     private filterRoles(roles: Role[], domainId: number): Role[] {
         const role = this.user.roles.find(value => value.domainId == domainId);
-        if (isNullOrUndefined(role)) {
+        if (role == null) {
             return roles;
         }
         return roles.filter(value => Role[value] != role.role.toString());

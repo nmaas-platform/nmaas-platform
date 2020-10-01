@@ -3,9 +3,8 @@ import {UserService} from '../../../service/user.service';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {isUndefined} from 'util';
-import {AuthService} from "../../../auth/auth.service";
-import {ComponentMode} from "../../../shared";
+import {AuthService} from '../../../auth/auth.service';
+import {ComponentMode} from '../../../shared';
 
 @Component({
     selector: 'app-userdetails',
@@ -27,7 +26,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     ngOnInit() {
         this.route.params.subscribe(params => {
-            if (!isUndefined(params['id'])) {
+            if (params['id'] !== undefined) {
                 this.userId = +params['id'];
                 this.userService.getOne(this.userId).subscribe(
                     (user) => this.user = user,
