@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NavigationEnd, Router, RouterEvent} from "@angular/router";
-import {filter} from "rxjs/operators";
-import {Observable, Subscription} from "rxjs";
+import {NavigationEnd, Router, RouterEvent} from '@angular/router';
+import {filter} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-page-not-found',

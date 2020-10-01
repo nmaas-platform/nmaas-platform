@@ -1,7 +1,7 @@
 import { DefaultLogo } from '../directive/defaultlogo.directive';
 import { RolesDirective } from '../directive/roles.directive';
 import { NgModule } from '@angular/core';
-import {FormsModule, MaxLengthValidator, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { CommentsComponent } from './comments/index';
@@ -39,7 +39,7 @@ import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
 import { AboutComponent } from './about/about.component';
 import {ChangelogComponent} from './changelog/changelog.component';
 import {NotificationService} from '../service/notification.service';
-import {RECAPTCHA_LANGUAGE, RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
+import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha';
 import { SingleCommentComponent } from './comments/single-comment/single-comment.component';
 import {TranslateStateModule} from './translate-state/translate-state.module';
 import {MinLengthDirective} from '../directive/min-length.directive';

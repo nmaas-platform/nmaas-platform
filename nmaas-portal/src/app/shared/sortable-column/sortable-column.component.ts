@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, HostListener, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { SortService } from '../../service/sort.service';
@@ -9,15 +9,15 @@ import { SortService } from '../../service/sort.service';
 })
 export class SortableColumnComponent implements OnInit, OnDestroy {
 
-  constructor(private sortService: SortService) { }
-
   @Input('sortable-column')
   columnName: string;
 
   @Input('sort-direction')
-  sortDirection: string = '';
+  sortDirection = '';
 
   private columnSortedSubscription: Subscription;
+
+  constructor(private sortService: SortService) { }
 
   @HostListener('click')
   sort() {

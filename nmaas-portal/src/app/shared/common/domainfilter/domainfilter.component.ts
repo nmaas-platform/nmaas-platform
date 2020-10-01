@@ -5,7 +5,6 @@ import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit} from '@angular/core';
 import { Subscription ,  Observable } from 'rxjs';
 
-import { isUndefined, isNullOrUndefined } from 'util';
 import {map} from 'rxjs/operators';
 import {interval} from 'rxjs/internal/observable/interval';
 
@@ -53,7 +52,7 @@ export class DomainFilterComponent implements OnInit {
     } else {
       this.domains = this.domainService.getMyDomains();
       const globalDomainId = this.appConfig.getNmaasGlobalDomainId();
-      if (!isUndefined(this.domains)
+      if (this.domains !== undefined
           && !this.authService.hasDomainRole(globalDomainId, 'ROLE_TOOL_MANAGER')
           && !this.authService.hasDomainRole(globalDomainId, 'ROLE_OPERATOR')) {
            this.domains = this.domains.pipe(
