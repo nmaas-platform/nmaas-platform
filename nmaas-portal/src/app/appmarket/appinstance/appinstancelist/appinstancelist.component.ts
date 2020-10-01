@@ -24,7 +24,6 @@ export enum AppInstanceListSelection {
   selector: 'nmaas-appinstancelist',
   templateUrl: './appinstancelist.component.html',
   styleUrls: ['./appinstancelist.component.css'],
-  providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
 })
 export class AppInstanceListComponent implements OnInit {
 
@@ -66,8 +65,7 @@ export class AppInstanceListComponent implements OnInit {
               public authService: AuthService,
               private appConfig: AppConfigService,
               private translateService: TranslateService,
-              private sessionService: SessionService,
-              public translateState: TranslateStateModule) {
+              private sessionService: SessionService) {
   }
 
   ngOnInit() {
@@ -199,5 +197,14 @@ export class AppInstanceListComponent implements OnInit {
 
   public setShowFailedField(status: boolean) {
     this.showFailed = status;
+  }
+
+  public translateState(appState): string {
+    let outputString = '';
+    console.debug('CHECKING ENUM: ' + 'ENUM.' + appState.toString());
+    this.translateService.get('ENUM.' + appState.toString()).subscribe((res: string) => {
+      outputString = res;
+    });
+    return outputString;
   }
 }
