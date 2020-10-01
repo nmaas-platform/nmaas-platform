@@ -1,7 +1,7 @@
 import {Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {SSHKeyService} from '../../../service/sshkey.service';
 import {SSHKeyRequest} from '../../../model/sshkey-request';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ModalComponent} from '../../modal';
 
 @Component({
@@ -17,7 +17,7 @@ export class NewSshKeyComponent implements OnInit {
   @Output()
   public out: EventEmitter<any> = new EventEmitter<any>();
 
-  public error: String = undefined;
+  public error: string = undefined;
 
   public requestForm: FormGroup = undefined;
 

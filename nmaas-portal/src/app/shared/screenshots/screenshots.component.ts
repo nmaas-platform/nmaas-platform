@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation} from '@angular/core';
 
-import { ModalComponent } from '../modal/index';
+import { ModalComponent } from '../modal';
 
-import { AppsService, AppImagesService } from '../../service/index';
-import { FileInfo } from '../../model/fileinfo';
-import { GroupPipe, SecurePipe } from '../../pipe/index';
+import { AppsService, AppImagesService } from '../../service';
+import { FileInfo } from '../../model';
+import { GroupPipe, SecurePipe } from '../../pipe';
 
 
 @Component({

@@ -5,10 +5,9 @@ import {BaseComponent} from '../../shared/common/basecomponent/base.component';
 import {TranslateService} from '@ngx-translate/core';
 import {ContentDisplayService} from '../../service/content-display.service';
 import {InternationalizationService} from '../../service/internationalization.service';
-import {DomainService, UserService} from '../../service';
+import {UserService} from '../../service';
 import {Router} from '@angular/router';
 import {ComponentMode} from '../../shared';
-import {Role} from '../../model/userrole';
 
 @Component({
   selector: 'app-profile',
@@ -41,11 +40,11 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   }
 
   getPathToCurrent() {
-    return "assets/images/country/" + this.user.selectedLanguage + "_circle.png";
+    return 'assets/images/country/' + this.user.selectedLanguage + '_circle.png';
   }
 
   public getSupportedLanguages() {
-    this.languageService.getEnabledLanguages().subscribe(langs =>{
+    this.languageService.getEnabledLanguages().subscribe(langs => {
       this.translate.addLangs(langs);
       this.languages = langs;
     });

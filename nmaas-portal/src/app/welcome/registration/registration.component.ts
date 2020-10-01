@@ -3,18 +3,17 @@ import {Domain} from '../../model/domain';
 import {Registration} from '../../model/registration';
 import {AppConfigService} from '../../service/appconfig.service';
 import {PasswordValidator} from '../../shared/common/password/password.component';
-import {AfterContentInit, AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
-import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
-import {ModalComponent} from "../../shared/modal";
+import {ModalInfoTermsComponent} from '../../shared/modal/modal-info-terms/modal-info-terms.component';
+import {ModalInfoPolicyComponent} from '../../shared/modal/modal-info-policy/modal-info-policy.component';
+import {ModalComponent} from '../../shared/modal';
 
-import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from 'angular-password-strength-meter';
+import {PasswordStrengthMeterComponent} from 'angular-password-strength-meter';
 import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
-import {isNullOrUndefined} from "util";
-import {OnExecuteData, ReCaptchaV3Service} from "ng-recaptcha";
+import {ReCaptchaV3Service} from 'ng-recaptcha';
 
 @Component({
   selector: 'nmaas-registration',
@@ -25,10 +24,10 @@ import {OnExecuteData, ReCaptchaV3Service} from "ng-recaptcha";
 export class RegistrationComponent implements OnInit {
 
 
-  public sending: boolean = false;
-  public submitted: boolean = false;
-  public success: boolean = false;
-  public errorMessage: string = '';
+  public sending = false;
+  public submitted = false;
+  public success = false;
+  public errorMessage = '';
 
   @ViewChild(PasswordStrengthMeterComponent, { static: true })
   passwordMeter: PasswordStrengthMeterComponent;
@@ -71,14 +70,15 @@ export class RegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.modal.setModalType("info");
+    this.modal.setModalType('info');
     this.domains = this.registrationService.getDomains().pipe(
         map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId())));
   }
 
   public onSubmit(): void {
-      this.recaptchaV3Service.execute('registration').subscribe((captchaToken)=> {
-          if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value) {
+      this.recaptchaV3Service.execute('registration').subscribe((captchaToken) => {
+          if (!this.registrationForm.controls['termsOfUseAccepted'].value
+              || !this.registrationForm.controls['privacyPolicyAccepted'].value) {
               this.sending = false;
               this.submitted = true;
               this.success = false;
@@ -130,6 +130,6 @@ export class RegistrationComponent implements OnInit {
   }
 
   private getMessage(err: any): string {
-      return err['message'] === 'Domain not found' ? "REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE" : err['message'] === 'Captcha validation has failed'? 'GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE' : err['message'] === 'User already exists'? 'REGISTRATION.USER_ALREADY_EXISTS_MESSAGE' : err['status'] === 406 ? 'REGISTRATION.INVALID_INPUT_DATA' : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+      return err['message'] === 'Domain not found' ? 'REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE' : err['message'] === 'Captcha validation has failed' ? 'GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE' : err['message'] === 'User already exists' ? 'REGISTRATION.USER_ALREADY_EXISTS_MESSAGE' : err['status'] === 406 ? 'REGISTRATION.INVALID_INPUT_DATA' : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
 }

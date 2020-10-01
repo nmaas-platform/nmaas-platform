@@ -1,8 +1,7 @@
-import {Component, OnInit, Input, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ModalComponent} from '../index';
-import {Content} from "../../../model/content";
-import {ContentDisplayService} from "../../../service/content-display.service";
-import {isNullOrUndefined} from "util";
+import {Content} from '../../../model/content';
+import {ContentDisplayService} from '../../../service/content-display.service';
 
 @Component({
     selector: 'modal-info-terms',
@@ -21,14 +20,14 @@ export class ModalInfoTermsComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.modal.setModalType("info");
+        this.modal.setModalType('info');
         this.modal.setStatusOfIcons(true);
         this.getContent();
     }
 
-    getContent(): void{
-        this.contentDisplayService.getContent("tos").subscribe(content=> this.content = content);
-        if(isNullOrUndefined(this.content)){
+    getContent(): void {
+        this.contentDisplayService.getContent('tos').subscribe(content => this.content = content);
+        if (this.content == null) {
             this.modal.hide();
         }
     }

@@ -1,4 +1,4 @@
-import {AfterContentChecked, AfterViewChecked, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterContentChecked, AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {ServiceUnavailableService} from '../service-unavailable/service-unavailable.service';
 import {Router} from '@angular/router';
 import {AppConfigService, ConfigurationService} from '../service';

@@ -18,7 +18,6 @@ import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
 import {TranslateModule, TranslateLoader, MissingTranslationHandler} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {TranslateService} from '@ngx-translate/core';
 import {CustomMissingTranslationService} from './i18n/custommissingtranslation.service';

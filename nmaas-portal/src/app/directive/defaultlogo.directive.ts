@@ -1,4 +1,4 @@
-import {Directive, Input, Output, EventEmitter, SimpleChange, ElementRef, NgZone} from '@angular/core';
+import {Directive, Input, ElementRef, NgZone} from '@angular/core';
 
 @Directive({
   selector: 'img[defaultLogo]',

@@ -1,13 +1,12 @@
 <div style="margin-bottom: 120px;" class="panel panel-default">
     <div class="panel-heading">{{'SSH_KEYS.HEADER' | translate}}</div>
     <div class="panel-body">
-        <table class="table table-hover">
+        <table class="table table-hover" aria-describedby="User ssh keys table">
             <thead>
             <tr>
-                <th>{{'SSH_KEYS.TABLE.NAME' | translate}}</th>
-                <!--      <th>Expiration data</th>-->
-                <th>{{'SSH_KEYS.TABLE.FINGERPRINT' | translate}}</th>
-                <th>{{'SSH_KEYS.TABLE.ACTIONS' | translate}}</th>
+                <th scope="col">{{'SSH_KEYS.TABLE.NAME' | translate}}</th>
+                <th scope="col">{{'SSH_KEYS.TABLE.FINGERPRINT' | translate}}</th>
+                <th scope="col">{{'SSH_KEYS.TABLE.ACTIONS' | translate}}</th>
             </tr>
             </thead>
             <tbody>

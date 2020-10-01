@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AppAccessMethod} from '../../../model/app-access-method';
-import {parseServiceAccessMethodType, ServiceAccessMethod, ServiceAccessMethodType} from '../../../model/service-access-method';
+import {parseServiceAccessMethodType, ServiceAccessMethodType} from '../../../model/service-access-method';
 
 @Component({
   selector: 'app-access-method-edit',
