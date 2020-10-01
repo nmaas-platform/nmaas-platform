@@ -63,6 +63,7 @@ sonarqube {
 			property "sonar.tests", "src"
 			property "sonar.test.inclusions", "**/*.spec.ts"
 			property "sonar.typescript.lcov.reportPaths", "coverage/lcov.info"
+			property "sonar.projectVersion", "${version}"
 		}
 }
 
