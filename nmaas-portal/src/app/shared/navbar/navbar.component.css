@@ -28,10 +28,6 @@
 }
 
 @media (max-width: 1199px) {
-  .drop-domain{
-
-  }
-
   .navbar-collapse .nav > .divider-vertical {
     display: none !important;
   }

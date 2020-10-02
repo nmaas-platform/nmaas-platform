@@ -1,9 +1,7 @@
 import {AfterContentChecked, AfterViewChecked, Component, OnInit} from '@angular/core';
-import {AppConfigService} from "../../service";
-import {isNullOrUndefined} from "util";
-import {ContentDisplayService} from "../../service/content-display.service";
-import {Content} from "../../model/content";
-import {TranslateService} from "@ngx-translate/core";
+import {ContentDisplayService} from '../../service/content-display.service';
+import {Content} from '../../model/content';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-privacy-policy-subpage',

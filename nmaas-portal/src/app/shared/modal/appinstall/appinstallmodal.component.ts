@@ -37,7 +37,8 @@ export class AppInstallModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.app.versions.sort((a, b) => a.version === b.version ? 0 : a.version < b.version ? -1 : 1).reverse();
+    this.app.versions.sort((a, b) => a.version === b.version ? 0 : a.version < b.version ? -1 : 1);
+    this.app.versions.reverse();
     this.selectedAppVersion = this.app.versions[0].appVersionId;
     this.domainId = this.domain.id;
     this.domainName = this.domain.name;

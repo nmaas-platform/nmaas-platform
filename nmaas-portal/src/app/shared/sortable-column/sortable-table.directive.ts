@@ -1,4 +1,4 @@
-import { Directive, OnInit, EventEmitter, Output, OnDestroy, Input } from '@angular/core';
+import { Directive, OnInit, EventEmitter, Output, OnDestroy} from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { SortService } from '../../service/sort.service';
@@ -8,12 +8,12 @@ import { SortService } from '../../service/sort.service';
 })
 export class SortableTableDirective implements OnInit, OnDestroy {
 
-    constructor(private sortService: SortService) {}
-
     @Output()
     sorted = new EventEmitter();
 
     private columnSortedSubscription: Subscription;
+
+    constructor(private sortService: SortService) {}
 
     ngOnInit() {
         this.columnSortedSubscription = this.sortService.columnSorted$.subscribe(event => {

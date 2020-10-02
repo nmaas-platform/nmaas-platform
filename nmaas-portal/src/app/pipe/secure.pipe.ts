@@ -2,24 +2,15 @@
 import {throwError as observableThrowError, Subscription, Subscriber, Observable, BehaviorSubject} from 'rxjs';
 import {Pipe, PipeTransform, OnDestroy, WrappedValue, ChangeDetectorRef, Injectable} from '@angular/core';
 
-import {HttpClient, HttpParams} from '@angular/common/http';
-
-
-
-
-
-
-
-import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {HttpClient} from '@angular/common/http';
+import {DomSanitizer} from '@angular/platform-browser';
 import {catchError} from 'rxjs/operators';
 
 
 @Injectable()
 export class AuthHttpWrapper {
   constructor(private http: HttpClient) {
-
   }
-
 
   public get(url: string): Observable<any> {
     console.debug('Get secured url ' + url);
@@ -33,7 +24,7 @@ export class AuthHttpWrapper {
       this.http
         .get(url, {responseType: 'blob'}).pipe(
             catchError((error: Response | any) => {
-              var errMsg: string = 'Unable to get ' + url;
+              const errMsg: string = 'Unable to get ' + url;
               console.debug(errMsg);
               return observableThrowError(errMsg);
             }))

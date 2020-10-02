@@ -2,7 +2,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import {isNullOrUndefined, isUndefined} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 // pipes/components
 import {RateComponent} from '../../shared/rate';
@@ -48,7 +47,7 @@ export class AppDetailsComponent implements OnInit {
     @ViewChild(AppInstallModalComponent)
     public readonly appInstallModal: AppInstallModalComponent;
 
-    @ViewChild(CommentsComponent, { static: true })
+    @ViewChild(CommentsComponent, {static: true})
     public readonly comments: CommentsComponent;
 
     @ViewChild(RateComponent)
@@ -101,19 +100,22 @@ export class AppDetailsComponent implements OnInit {
         console.log('selected domainId:' + domainId);
         this.domainId = domainId;
 
-        if (isUndefined(this.appId)) {
+        if (this.appId === undefined) {
             return;
         }
 
         let result: Observable<any>;
-        if (isUndefined(domainId) || domainId === 0 || this.appConfig.getNmaasGlobalDomainId() === domainId) {
+        if (domainId === undefined || domainId === 0 || this.appConfig.getNmaasGlobalDomainId() === domainId) {
             result = this.appSubsService.getAllByApplication(this.appId);
             result.subscribe(() => this.subscribed = false);
 
             this.domain = undefined;
         } else {
             result = this.appSubsService.getSubscription(this.appId, domainId);
-            result.subscribe((appSub: AppSubscription) => this.subscribed = appSub.active, error => this.subscribed = false);
+            result.subscribe(
+                (appSub: AppSubscription) => this.subscribed = appSub.active,
+                error => this.subscribed = false
+            );
 
             this.domainService.getOne(this.domainId).subscribe(d => {
                 this.domain = d;
@@ -124,20 +126,20 @@ export class AppDetailsComponent implements OnInit {
 
     public subscribe(): void {
         if (this.isSubscriptionAllowed()) {
-            console.info('Subscribe appId=' + this.appId + ' to domainId=' + this.domainId);
+            console.log('Subscribe appId=' + this.appId + ' to domainId=' + this.domainId);
             this.appSubsService.subscribe(this.domainId, this.appId).subscribe(() => this.subscribed = true);
         }
     }
 
     public unsubscribe(): void {
         if (this.isSubscriptionAllowed()) {
-            console.info('Unsubscribe appId=' + this.appId + ' from domainId=' + this.domainId);
+            console.log('Unsubscribe appId=' + this.appId + ' from domainId=' + this.domainId);
             this.appSubsService.unsubscribe(this.domainId, this.appId).subscribe(() => this.subscribed = false);
         }
     }
 
     public isSubscriptionAllowed(): boolean {
-        if (isUndefined(this.domainId) || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
+        if (this.domainId === undefined || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
             return false;
         }
 
@@ -146,7 +148,7 @@ export class AppDetailsComponent implements OnInit {
     }
 
     public isDeploymentAllowed(): boolean {
-        if (isUndefined(this.domainId) || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
+        if (this.domainId === undefined || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
             return false;
         }
 
@@ -165,19 +167,15 @@ export class AppDetailsComponent implements OnInit {
         return appStatus.enabled;
     }
 
-    protected refresh(): void {
-        this.state += Math.random() * 123456;
-    }
-
     public getDescription(): AppDescription {
-        if (isNullOrUndefined(this.app)) {
+        if (this.app === undefined) {
             return;
         }
         return this.app.descriptions.find(val => val.language === this.translate.currentLang);
     }
 
     public getPathUrl(id: number): string {
-        if (!isNullOrUndefined(id) && !isNaN(id)) {
+        if (id != null && !isNaN(id)) {
             return '/apps/' + id + '/rate/my';
         } else {
             return '';
@@ -189,7 +187,7 @@ export class AppDetailsComponent implements OnInit {
     }
 
     public getValidLink(url: string): string {
-        if (isNullOrUndefined(url)) {
+        if (url == null) {
             return;
         }
         if (!url.startsWith('http://') && !url.startsWith('https://')) {

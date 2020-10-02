@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr'
-import localeFrExtra from '@angular/common/locales/extra/fr'
 import localeDe from '@angular/common/locales/de'
-import localeDeExtra from '@angular/common/locales/extra/de'
 import localePl from '@angular/common/locales/pl'
-import localePlExtra from '@angular/common/locales/extra/pl'
 import localeEn from '@angular/common/locales/en-GB'
-import localEnExtra from '@angular/common/locales/extra/en-GB'
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {

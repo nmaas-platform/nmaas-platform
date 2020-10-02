@@ -26,7 +26,7 @@ export function noParameterTypeInControlValueValidator(): ValidatorFn {
     const labels = Object.keys(ParameterType).map(key => ParameterType[key]).filter(value => typeof value === 'string') as string[];
 
     return (control: AbstractControl): { [key: string]: any } | null => {
-        if (!(typeof control.value === 'string')) {
+        if (typeof control.value !== 'string') {
             return null;
         }
         const notValid = labels.filter(val => control.value.includes(val)).length === 0;
@@ -55,7 +55,6 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     public activeStepIndex = 0;
     public rulesAccepted = false;
     public deployParameter: SelectItem[] = [];
-    public selectedDeployParameters: string[] = [];
     public errorMessage: string = undefined;
     public configFileTemplates: ConfigFileTemplate[] = [];
     public addConfigUpdate = false;
@@ -137,14 +136,6 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     public fillWizardWithData(appToEdit: ApplicationDTO): void {
 
         console.log(appToEdit);
-
-        const temp: Map<ParameterType, string> = new Map();
-        Object.keys(appToEdit.application.appDeploymentSpec.deployParameters).forEach(key => {
-            temp.set(ParameterType[key], appToEdit.application.appDeploymentSpec.deployParameters[key]);
-            this.selectedDeployParameters.push(key);
-        });
-        // do not override current type (object) to map, because JS map cannot be serialized to JSON
-        // this.app.appDeploymentSpec.deployParameters = temp;
 
         if (this.applicationDTO.application.configWizardTemplate == null) {
             this.applicationDTO.application.configWizardTemplate = new ConfigWizardTemplate();

@@ -5,7 +5,7 @@ import {GenericDataService} from './genericdata.service';
 import {HttpClient} from '@angular/common/http'
 import {AppConfigService} from './appconfig.service';
 
-import {ClusterInfo, Cluster} from '../model/cluster';
+import {Cluster} from '../model/cluster';
 
 @Injectable()
 export class ClusterService extends GenericDataService {

@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,9 +63,11 @@ public class DcnAdminControllerSecTest extends BaseControllerTestSetup {
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/api/management/dcns")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isUnauthorized());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/management/dcns")
+                    .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
 }

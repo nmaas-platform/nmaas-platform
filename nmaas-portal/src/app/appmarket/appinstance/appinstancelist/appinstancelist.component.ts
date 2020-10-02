@@ -24,13 +24,13 @@ export enum AppInstanceListSelection {
   selector: 'nmaas-appinstancelist',
   templateUrl: './appinstancelist.component.html',
   styleUrls: ['./appinstancelist.component.css'],
-  providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
 })
 export class AppInstanceListComponent implements OnInit {
 
   public undeployedVisible = false;
 
   private readonly item_number_key: string = 'item_number_per_page';
+  private readonly list_selection_key: string = 'list_selection';
 
   public p_first: string = 'p_first';
   public p_second: string = 'p_second';
@@ -65,8 +65,7 @@ export class AppInstanceListComponent implements OnInit {
               public authService: AuthService,
               private appConfig: AppConfigService,
               private translateService: TranslateService,
-              private sessionService: SessionService,
-              public translateState: TranslateStateModule) {
+              private sessionService: SessionService) {
   }
 
   ngOnInit() {
@@ -79,6 +78,12 @@ export class AppInstanceListComponent implements OnInit {
       this.maxItemsOnPage = +i;
       this.maxItemsOnPageSec = +i;
     }
+
+    const ls = AppInstanceListSelection[sessionStorage.getItem(this.list_selection_key)];
+    if (ls !== undefined) {
+      this.listSelection = ls;
+    }
+    console.log(this.listSelection)
 
     this.userDataService.selectedDomainId.subscribe(domainId => {
       // adjust display for GUESTS and USERS (they cannot own any instance)
@@ -139,6 +144,7 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public onSelectionChange(event) {
+    sessionStorage.setItem(this.list_selection_key, AppInstanceListSelection[this.listSelection])
     this.update(this.domainId);
   }
 
@@ -191,5 +197,14 @@ export class AppInstanceListComponent implements OnInit {
 
   public setShowFailedField(status: boolean) {
     this.showFailed = status;
+  }
+
+  public translateState(appState): string {
+    let outputString = '';
+    console.debug('CHECKING ENUM: ' + 'ENUM.' + appState.toString());
+    this.translateService.get('ENUM.' + appState.toString()).subscribe((res: string) => {
+      outputString = res;
+    });
+    return outputString;
   }
 }
