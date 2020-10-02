@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,12 +98,14 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         DomainRequest domainRequest = getDefaultDomainRequest("test");
         domainRequest.setCodename("GLOBAL");
         domainRequest.setName("GLOBAL");
-        mvc.perform(post("/api/domains")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(domainRequest))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/domains")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(domainRequest))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotAcceptable());
+        });
     }
 
     @Test
@@ -135,15 +138,17 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotUpdateDomainWhenIdIsIncorrect() throws Exception {
+    public void shouldNotUpdateDomainWhenIdIsIncorrect() {
         DomainView request = modelMapper.map(getDefaultDomainRequest("test"), DomainView.class);
         request.setId(999L);
-        mvc.perform(put("/api/domains/" + DEF_DOM_ID)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable());
+        assertDoesNotThrow(() -> {
+            mvc.perform(put("/api/domains/" + DEF_DOM_ID)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotAcceptable());
+        });
     }
 
     @Test
@@ -194,26 +199,30 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotUpdateTechDetailsWithCorruptedId() throws Exception {
+    public void shouldNotUpdateTechDetailsWithCorruptedId() {
         Domain domain = getDefaultDomain();
         domain.setApplicationStatePerDomain(new ArrayList<>());
         DomainView request = modelMapper.map(domain, DomainView.class);
         long id = request.getId();
         request.setId(123L);
-        mvc.perform(patch("/api/domains/" + id)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable());
+        assertDoesNotThrow(() -> {
+            mvc.perform(patch("/api/domains/" + id)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotAcceptable());
+        });
     }
 
     @Test
-    public void shouldChangeDomainState() throws Exception {
-        mvc.perform(patch("/api/domains/" + DEF_DOM_ID + "/state?active=false")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    public void shouldChangeDomainState() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(patch("/api/domains/" + DEF_DOM_ID + "/state?active=false")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
@@ -241,20 +250,24 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldDeleteDomain() throws Exception {
+    public void shouldDeleteDomain() {
         when(domainService.removeDomain(DEF_DOM_ID)).thenReturn(true);
-        mvc.perform(delete("/api/domains/" + DEF_DOM_ID)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(delete("/api/domains/" + DEF_DOM_ID)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
-    public void shouldNotDeleteDomain() throws Exception {
-        mvc.perform(delete("/api/domains/" + 1234)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+    public void shouldNotDeleteDomain() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(delete("/api/domains/" + 1234)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+        });
     }
 
     @Test
@@ -271,10 +284,12 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void shouldNotGetDomain() throws Exception {
         when(domainService.findDomain(2345L)).thenReturn(Optional.empty());
-        mvc.perform(get("/api/domains/{domainId}", 2345)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/domains/{domainId}", 2345)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isInternalServerError());
+        });
     }
 
     @Test

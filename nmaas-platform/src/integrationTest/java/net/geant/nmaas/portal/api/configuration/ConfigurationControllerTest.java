@@ -93,4 +93,5 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
                 .andReturn();
         assertThat(mvcResult.getResponse().getContentAsString(), containsString("\"maintenance\":true"));
     }
+
 }
