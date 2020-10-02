@@ -31,10 +31,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -126,33 +125,39 @@ public class KubernetesClusterControllerIntTest {
     }
 
     @Test
-    public void shouldAddNewKubernetesClusterFromJson() throws Exception {
-        mvc.perform(post(URL_PREFIX)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(KUBERNETES_CLUSTER_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+    public void shouldAddNewKubernetesClusterFromJson() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post(URL_PREFIX)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(KUBERNETES_CLUSTER_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isCreated());
+        });
     }
 
     @Test
-    public void shouldNotAddExistingKubernetesCluster() throws Exception {
-        mvc.perform(post(URL_PREFIX)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-        mvc.perform(post(URL_PREFIX)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable());
+    public void shouldNotAddExistingKubernetesCluster() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post(URL_PREFIX)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isCreated());
+            mvc.perform(post(URL_PREFIX)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotAcceptable());
+        });
     }
 
     @Test
-    public void shouldNotRemoveNotExistingKubernetesCluster() throws Exception {
-        mvc.perform(delete(URL_PREFIX + "/{id}", -1))
-                .andExpect(status().isNotFound())
-                .andReturn();
+    public void shouldNotRemoveNotExistingKubernetesCluster() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(delete(URL_PREFIX + "/{id}", -1))
+                    .andExpect(status().isNotFound())
+                    .andReturn();
+        });
     }
 
     @Test
@@ -175,16 +180,18 @@ public class KubernetesClusterControllerIntTest {
         MvcResult result = mvc.perform(get(URL_PREFIX, clusterId))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString("updated-chart-name"));
+        assertTrue(result.getResponse().getContentAsString().contains("updated-chart-name"));
     }
 
     @Test
-    public void shouldNotUpdateNotExistingKubernetesCluster() throws Exception {
-        mvc.perform(put(URL_PREFIX + "/{id}", -1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+    public void shouldNotUpdateNotExistingKubernetesCluster() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(put(URL_PREFIX + "/{id}", -1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+        });
     }
 
     @Test
@@ -206,16 +213,18 @@ public class KubernetesClusterControllerIntTest {
     }
 
     @Test
-    public void shouldNotFetchNotExistingKubernetesCluster() throws Exception {
-        mvc.perform(get(URL_PREFIX, -1))
-                .andExpect(status().isNotFound());
+    public void shouldNotFetchNotExistingKubernetesCluster() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(get(URL_PREFIX, -1))
+                    .andExpect(status().isNotFound());
+        });
     }
 
     @Test
     public void shouldMapKubernetesClusterToKubernetesClusterView() throws UnknownHostException {
         KCluster source = initNewKubernetesCluster();
         KClusterView output = modelMapper.map(source, KClusterView.class);
-        assertThat(output.getId(), equalTo(source.getId()));
+        assertEquals(output.getId(), source.getId());
     }
 
     private KCluster initNewKubernetesCluster() throws UnknownHostException {

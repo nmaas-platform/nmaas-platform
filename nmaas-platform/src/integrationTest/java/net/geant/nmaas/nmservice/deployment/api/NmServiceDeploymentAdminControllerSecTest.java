@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,17 +26,21 @@ public class NmServiceDeploymentAdminControllerSecTest extends BaseControllerTes
     @Test
     public void shouldAuthAndCallSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
-        mvc.perform(get("/api/management/services")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/management/services")
+                    .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/api/management/services")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isUnauthorized());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/management/services")
+                    .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
 }

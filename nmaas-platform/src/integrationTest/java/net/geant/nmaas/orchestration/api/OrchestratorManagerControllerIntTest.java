@@ -3,10 +3,10 @@ package net.geant.nmaas.orchestration.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
@@ -30,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -78,18 +79,20 @@ public class OrchestratorManagerControllerIntTest {
     }
 
     @Test
-    public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() throws Exception {
+    public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() {
         when(lifecycleManager.deployApplication(any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("domain", DOMAIN);
         params.set("applicationid", applicationId.getValue());
         params.set("deploymentname", DEPLOYMENT_NAME);
-        mvc.perform(post("/api/orchestration/deployments")
-                .params(params)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(content().json(mapper.writeValueAsString(deploymentId)));
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/orchestration/deployments")
+                    .params(params)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isCreated())
+                    .andExpect(content().json(mapper.writeValueAsString(deploymentId)));
+        });
     }
 
     @Test
@@ -130,11 +133,13 @@ public class OrchestratorManagerControllerIntTest {
     @Test
     public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
         doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
-        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(CONFIGURATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(CONFIGURATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+        });
     }
 
 }
