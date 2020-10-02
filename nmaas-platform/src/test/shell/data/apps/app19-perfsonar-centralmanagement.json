@@ -183,6 +183,30 @@
                                                 "hideLabel": false,
                                                 "components": [
                                                     {
+                                                        "label": "Access options",
+                                                        "type": "radio",
+                                                        "input": true,
+                                                        "tableView": true,
+                                                        "inputType": "radio",
+                                                        "key": "accessmethods.public.Esmond",
+                                                        "values": [
+                                                            {
+                                                                "value": "yes",
+                                                                "label": "Public"
+                                                            },
+                                                            {
+                                                                "value": "no",
+                                                                "label": "VPN"
+                                                            }
+                                                        ],
+                                                        "defaultValue": "yes",
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "labelPosition": "top",
+                                                        "optionsLabelPosition": "right"
+                                                    },
+                                                    {
                                                         "label": "Allocated storage space (GB)",
                                                         "type": "textfield",
                                                         "input": true,

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -117,11 +118,13 @@ public class OrchestratorMonitorControllerIntTest {
     }
 
     @Test
-    public void shouldTryToRetrieveNotExistingDeployment() throws Exception {
+    public void shouldTryToRetrieveNotExistingDeployment() {
         Identifier invalidDeploymentID = Identifier.newInstance("invalidValue");
         when(deploymentMonitor.state(invalidDeploymentID)).thenThrow(InvalidDeploymentIdException.class);
-        mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", invalidDeploymentID.toString()))
-                .andExpect(status().isNotFound());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", invalidDeploymentID.toString()))
+                    .andExpect(status().isNotFound());
+        });
     }
 
     @Test
@@ -135,10 +138,12 @@ public class OrchestratorMonitorControllerIntTest {
     }
 
     @Test
-    public void shouldTryToRetrieveDeploymentAccessDetailsInWrongState() throws Exception {
+    public void shouldTryToRetrieveDeploymentAccessDetailsInWrongState() {
         when(deploymentMonitor.userAccessDetails(deploymentId)).thenThrow(new InvalidAppStateException(""));
-        mvc.perform(get("/api/orchestration/deployments/{deploymentId}/access", deploymentId.toString()))
-                .andExpect(status().isConflict());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/orchestration/deployments/{deploymentId}/access", deploymentId.toString()))
+                    .andExpect(status().isConflict());
+        });
     }
 
     @Test
