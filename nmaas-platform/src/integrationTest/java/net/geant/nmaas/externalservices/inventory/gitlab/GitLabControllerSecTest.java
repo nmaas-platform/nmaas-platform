@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,16 +24,20 @@ public class GitLabControllerSecTest extends BaseControllerTestSetup {
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception{
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
-        mvc.perform(get("/api/management/gitlab")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/management/gitlab")
+                    .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
     public void shouldRejectNonAdminProperUser() throws Exception{
         String token = getValidUserTokenFor(Role.ROLE_DOMAIN_ADMIN);
-        mvc.perform(get("/api/management/gitlab")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isUnauthorized());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/management/gitlab")
+                    .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 }
