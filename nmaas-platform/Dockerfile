@@ -7,7 +7,7 @@ WORKDIR /build/nmaas-platform/
 RUN ./gradlew build -x test -x integrationTest
 
 FROM openjdk:8-jre-alpine
-MAINTAINER Michał Bień
+MAINTAINER nmaas@lists.geant.org
 
 VOLUME /tmp
 

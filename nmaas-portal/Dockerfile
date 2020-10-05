@@ -10,7 +10,7 @@ RUN ng build --base-href / --deploy-url / --prod
 
 
 FROM nginx:alpine
-MAINTAINER Michał Bień
+MAINTAINER nmaas@lists.geant.org
 
 ARG webdir=/usr/share/nginx/html
 
