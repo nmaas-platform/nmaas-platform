@@ -1,24 +1,23 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ProfileService} from "../../service/profile.service";
-import {User} from "../../model";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Observable} from "rxjs";
-import {Domain} from "../../model/domain";
-import {BaseComponent} from "../../shared/common/basecomponent/base.component";
-import {Router} from "@angular/router";
-import {AuthService} from "../../auth/auth.service";
-import {ModalComponent} from "../../shared/modal";
-import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
-import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
-import {TranslateService} from "@ngx-translate/core";
-import {UserService} from "../../service";
-import {InternationalizationService} from "../../service/internationalization.service";
+import {ProfileService} from '../../service/profile.service';
+import {User} from '../../model';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Observable} from 'rxjs';
+import {Domain} from '../../model/domain';
+import {BaseComponent} from '../../shared/common/basecomponent/base.component';
+import {Router} from '@angular/router';
+import {AuthService} from '../../auth/auth.service';
+import {ModalComponent} from '../../shared/modal';
+import {ModalInfoTermsComponent} from '../../shared/modal/modal-info-terms/modal-info-terms.component';
+import {ModalInfoPolicyComponent} from '../../shared/modal/modal-info-policy/modal-info-policy.component';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../service';
+import {InternationalizationService} from '../../service/internationalization.service';
 
 @Component({
     selector: 'app-complete',
     templateUrl: './complete.component.html',
     styleUrls: ['./complete.component.css'],
-    providers:[ProfileService, UserService, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
 
 export class CompleteComponent extends BaseComponent implements OnInit {
@@ -26,20 +25,20 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     public user: User;
     public registrationForm: FormGroup;
     public domains: Observable<Domain[]>;
-    public errorMessage: string = '';
-    public sending: boolean = false;
-    public submitted: boolean = false;
-    public success: boolean = false;
+    public errorMessage = '';
+    public sending = false;
+    public submitted = false;
+    public success = false;
 
     public languages: string[];
 
-    @ViewChild(ModalComponent, { static: true })
+    @ViewChild(ModalComponent, {static: true})
     public readonly modal: ModalComponent;
 
-    @ViewChild(ModalInfoTermsComponent, { static: true })
+    @ViewChild(ModalInfoTermsComponent, {static: true})
     public readonly modalInfoTerms: ModalInfoTermsComponent;
 
-    @ViewChild(ModalInfoPolicyComponent, { static: true })
+    @ViewChild(ModalInfoPolicyComponent, {static: true})
     public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
     constructor(private fb: FormBuilder,
@@ -65,7 +64,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
         this.languageService.getEnabledLanguages().subscribe(langs => this.languages = langs);
         this.profileService.getOne().subscribe((user) => this.user = user);
         this.modal.setStatusOfIcons(false);
-        this.modal.setModalType("success");
+        this.modal.setModalType('success');
     }
 
     public onSubmit(): void {
@@ -113,22 +112,22 @@ export class CompleteComponent extends BaseComponent implements OnInit {
         this.translate.use(language);
     }
 
-    getCurrent(){
+    getCurrent() {
         return this.translate.currentLang;
     }
 
-    getPathToCurrent(){
-        return "assets/images/country/" + this.getCurrent() + "_circle.png";
+    getPathToCurrent() {
+        return 'assets/images/country/' + this.getCurrent() + '_circle.png';
     }
 
-    public getSupportedLanguages(){
-        this.languageService.getEnabledLanguages().subscribe(langs =>{
+    public getSupportedLanguages() {
+        this.languageService.getEnabledLanguages().subscribe(langs => {
             this.translate.addLangs(langs);
             this.languages = langs;
         });
     }
 
-    public hide(): void{
+    public hide(): void {
         this.router.navigate(['/']);
     }
 
