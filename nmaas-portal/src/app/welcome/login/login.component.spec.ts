@@ -1,44 +1,48 @@
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
-import { LoginComponent } from './login.component';
+import {LoginComponent} from './login.component';
 
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {RouterTestingModule} from "@angular/router/testing";
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {ModalComponent} from "../../shared/modal";
-import {AuthService} from "../../auth/auth.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {AppConfigService, ConfigurationService, DomainService, UserService} from "../../service";
-import {ShibbolethService} from "../../service/shibboleth.service";
-import {JwtModule} from "@auth0/angular-jwt";
-
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {RouterTestingModule} from '@angular/router/testing';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {ModalComponent} from '../../shared/modal';
+import {AuthService} from '../../auth/auth.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {ConfigurationService, UserService} from '../../service';
+import {ShibbolethService} from '../../service/shibboleth.service';
+import createSpyObj = jasmine.createSpyObj;
+import {of} from 'rxjs';
 
 
 describe('Component: Login', () => {
-    let component:LoginComponent;
-    let fixture:ComponentFixture<LoginComponent>;
+    let component: LoginComponent;
+    let fixture: ComponentFixture<LoginComponent>;
 
-    beforeEach(async(()=>{
+    beforeEach(async(() => {
+        const configServiceSpy = createSpyObj('ConfigurationService', ['getConfiguration'])
+        configServiceSpy.getConfiguration.and.returnValue(of({
+            ssoLoginAllowed: false
+        }))
+
         TestBed.configureTestingModule({
-            declarations: [ LoginComponent, ModalComponent ],
-            providers: [AuthService, AppConfigService, ShibbolethService, UserService, ConfigurationService, DomainService],
+            declarations: [LoginComponent, ModalComponent],
             imports: [
                 HttpClientTestingModule,
                 FormsModule,
                 ReactiveFormsModule,
-                JwtModule.forRoot(
-                    {
-                        config: {
-                            tokenGetter: () => {
-                                return '';
-                            }
-                        }}),
                 RouterTestingModule,
                 TranslateModule.forRoot({
                     loader: {
                         provide: TranslateLoader,
                         useClass: TranslateFakeLoader
                     }
-                })]
+                })
+            ],
+            providers: [
+                {provide: AuthService, useValue: {}},
+                {provide: ConfigurationService, useValue: configServiceSpy},
+                {provide: ShibbolethService, useValue: {}},
+                {provide: UserService, useValue: {}},
+            ],
         }).compileComponents();
     }));
 
@@ -48,9 +52,8 @@ describe('Component: Login', () => {
         fixture.detectChanges();
     });
 
-    it('should create component', () => {
-        let app = fixture.debugElement.componentInstance;
-        expect(app).toBeTruthy();
+    it('should create', () => {
+        expect(component).toBeTruthy()
     });
 
 });

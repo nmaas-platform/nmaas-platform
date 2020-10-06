@@ -2,12 +2,12 @@ import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import {ConfigurationService, UserService} from "../../service";
-import {Configuration} from "../../model/configuration";
-import {ShibbolethService} from "../../service/shibboleth.service";
-import {ShibbolethConfig} from "../../model/shibboleth";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ModalComponent} from "../../shared/modal";
+import {ConfigurationService, UserService} from '../../service';
+import {Configuration} from '../../model/configuration';
+import {ShibbolethService} from '../../service/shibboleth.service';
+import {ShibbolethConfig} from '../../model/shibboleth';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ModalComponent} from '../../shared/modal';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
@@ -18,17 +18,17 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class LoginComponent implements OnInit {
     model: any = {};
-    loading: boolean = false;
-    error:string = '';
-    configuration:Configuration;
-    shibboleth:ShibbolethConfig;
-    resetPassword:boolean = false;
-    resetPasswordForm:FormGroup;
+    loading = false;
+    error = '';
+    configuration: Configuration;
+    shibboleth: ShibbolethConfig;
+    resetPassword = false;
+    resetPasswordForm: FormGroup;
 
     @ViewChild(ModalComponent, { static: true })
     public modal: ModalComponent;
-    ssoLoading: boolean = false;
-    ssoError: string = '';
+    ssoLoading = false;
+    ssoError = '';
 
     constructor(private router: Router,
                 private auth: AuthService,
@@ -43,9 +43,9 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.configService.getConfiguration().subscribe(config=>{
+        this.configService.getConfiguration().subscribe(config => {
             this.configuration = config;
-            if(config.ssoLoginAllowed){
+            if (config.ssoLoginAllowed) {
                 this.shibbolethService.getOne().subscribe(shibboleth => {
                     this.shibboleth = shibboleth;
                     this.checkSSO();
@@ -71,9 +71,9 @@ export class LoginComponent implements OnInit {
 
 
     public checkSSO() {
-     let params = this.router.parseUrl(this.router.url).queryParams;
+     const params = this.router.parseUrl(this.router.url).queryParams;
 
-      if('ssoUserId' in params) {
+      if ('ssoUserId' in params) {
         // Got auth data, send to api
         this.ssoLoading = true;
         this.ssoError = '';
@@ -97,15 +97,15 @@ export class LoginComponent implements OnInit {
     }
 
   public triggerSSO() {
-        let url = window.location.href.replace(/ssoUserId=.+/, '');
+        const url = window.location.href.replace(/ssoUserId=.+/, '');
         window.location.href = this.shibboleth.loginUrl + '?return=' + url;
   }
 
-  public sendResetNotification(){
-      if(this.resetPasswordForm.valid){
+  public sendResetNotification() {
+      if (this.resetPasswordForm.valid) {
           this.userService.resetPasswordNotification(this.resetPasswordForm.controls['email'].value).subscribe(() => {
               this.modal.show();
-          }, () =>{
+          }, () => {
               this.modal.show();
           });
       }
