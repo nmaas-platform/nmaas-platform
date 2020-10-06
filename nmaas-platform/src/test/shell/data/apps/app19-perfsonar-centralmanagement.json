@@ -188,7 +188,7 @@
                                                         "input": true,
                                                         "tableView": true,
                                                         "inputType": "radio",
-                                                        "key": "accessmethods.public.Esmond",
+                                                        "key": "accessmethods#public#esmond",
                                                         "values": [
                                                             {
                                                                 "value": "yes",
