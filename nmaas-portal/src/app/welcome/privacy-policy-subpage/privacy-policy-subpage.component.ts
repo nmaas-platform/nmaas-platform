@@ -8,7 +8,7 @@ import {TranslateService} from '@ngx-translate/core';
   templateUrl: './privacy-policy-subpage.component.html',
   styleUrls: ['./privacy-policy-subpage.component.css'],
 })
-export class PrivacyPolicySubpageComponent implements OnInit, AfterViewChecked, AfterContentChecked{
+export class PrivacyPolicySubpageComponent implements OnInit, AfterViewChecked, AfterContentChecked {
 
   private height = 0;
 
@@ -22,21 +22,22 @@ export class PrivacyPolicySubpageComponent implements OnInit, AfterViewChecked, 
     this.getContent();
   }
 
-  ngAfterContentChecked(){
+  ngAfterContentChecked() {
     this.onResize();
   }
 
-  ngAfterViewChecked(){
+  ngAfterViewChecked() {
     this.onResize();
   }
 
-  getContent(): void{
-    this.contentDisplayService.getContent("pp").subscribe(content=> this.content = content);
+  getContent(): void {
+    this.contentDisplayService.getContent('pp').subscribe(content => this.content = content);
   }
 
   onResize() {
-    this.height = document.getElementById("global-footer").offsetHeight;
-    document.getElementById("welcome-container").style.marginBottom = `${this.height * 9/10 +5}px`;
+    // TODO rewrite this component not to use 'document' - use css instead
+    this.height = document.getElementById('global-footer').offsetHeight;
+    document.getElementById('welcome-container').style.marginBottom = `${this.height * 9 / 10 + 5}px`;
   }
 
 }

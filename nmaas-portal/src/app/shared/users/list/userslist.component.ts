@@ -7,7 +7,6 @@ import {BaseComponent} from '../../common/basecomponent/base.component';
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Observable, of} from 'rxjs';
 
-import {isUndefined} from 'util';
 import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from '../../../service/userdata.service';
 import {AuthService} from '../../../auth/auth.service';
@@ -92,7 +91,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   public getUserDomainIds(user: User): number[] {
-    if (!isUndefined(user)) {
+    if (user !== undefined) {
       return user.getDomainIds();
     } else {
       return [];

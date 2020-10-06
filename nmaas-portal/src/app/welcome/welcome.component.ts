@@ -39,6 +39,8 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
   }
 
   onResize() {
+      // TODO
+      // rewrite this code, use css instead of js for better performance
       this.height = document.getElementById('global-footer').offsetHeight;
       const navHeight = document.getElementById('navbar').offsetHeight;
       // document.getElementById("welcome-container").style.marginBottom = `${this.height}px`;

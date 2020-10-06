@@ -1,15 +1,8 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {PageNotFoundComponent} from './page-not-found.component';
-import {RouterTestingModule} from "@angular/router/testing";
-import {Component} from "@angular/core";
-
-@Component({
-    selector: 'app-navbar',
-    template: '<p>Mock Navbar</p>'
-})
-class MockNavbar {
-}
+import {RouterTestingModule} from '@angular/router/testing';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 
 describe('PageNotFoundComponent', () => {
     let component: PageNotFoundComponent;
@@ -19,10 +12,15 @@ describe('PageNotFoundComponent', () => {
         TestBed.configureTestingModule({
             declarations: [
                 PageNotFoundComponent,
-                MockNavbar
             ],
             imports: [
                 RouterTestingModule,
+                TranslateModule.forRoot({
+                    loader: {
+                        provide: TranslateLoader,
+                        useClass: TranslateFakeLoader
+                    }
+                }),
             ]
         }).compileComponents();
     }));

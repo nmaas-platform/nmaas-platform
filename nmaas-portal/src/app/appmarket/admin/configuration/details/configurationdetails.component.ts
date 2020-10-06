@@ -3,8 +3,8 @@ import {BaseComponent} from '../../../../shared/common/basecomponent/base.compon
 import {Router} from '@angular/router';
 import {ConfigurationService} from '../../../../service';
 import {Configuration} from '../../../../model/configuration';
-import {InternationalizationService} from "../../../../service/internationalization.service";
-import {Language} from "../../../../model/language";
+import {InternationalizationService} from '../../../../service/internationalization.service';
+import {Language} from '../../../../model/language';
 
 @Component({
   selector: 'app-configurationdetails',
@@ -17,7 +17,9 @@ export class ConfigurationDetailsComponent extends BaseComponent implements OnIn
   public configuration: Configuration;
   public languages: Language[];
 
-  constructor(private router: Router, private configurationService: ConfigurationService, private languageService:InternationalizationService) {
+  constructor(private router: Router,
+              private configurationService: ConfigurationService,
+              private languageService: InternationalizationService) {
     super();
   }
 
@@ -26,11 +28,11 @@ export class ConfigurationDetailsComponent extends BaseComponent implements OnIn
       this.languageService.getAllSupportedLanguages().subscribe(langs => this.languages = langs);
   }
 
-  public update(): void{
+  public update(): void {
       this.configurationService.getConfiguration().subscribe(value => this.configuration = value, err => this.errorMsg = err.message);
   }
 
-  public save(): void{
+  public save(): void {
       this.configurationService.updateConfiguration(this.configuration).subscribe(() => this.update(), err => this.errorMsg = err.message);
   }
 

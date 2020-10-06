@@ -29,7 +29,6 @@ export class PasswordValidator implements Validator {
     selector: 'nmaas-password',
     templateUrl: './password.component.html',
     styleUrls: ['./password.component.css'],
-    providers: [ModalComponent]
 })
 export class PasswordComponent implements OnInit {
 
