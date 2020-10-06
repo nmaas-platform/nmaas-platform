@@ -1,10 +1,8 @@
 import { Component, OnInit, Input, ViewEncapsulation} from '@angular/core';
 
-import { ModalComponent } from '../modal';
 
-import { AppsService, AppImagesService } from '../../service';
+import { AppsService } from '../../service';
 import { FileInfo } from '../../model';
-import { GroupPipe, SecurePipe } from '../../pipe';
 
 
 @Component({
@@ -12,7 +10,6 @@ import { GroupPipe, SecurePipe } from '../../pipe';
     templateUrl: './screenshots.component.html',
     styleUrls: ['./screenshots.component.css'],
     encapsulation: ViewEncapsulation.None,
-    providers: [ModalComponent, AppsService, AppImagesService, GroupPipe, SecurePipe ]
 })
 export class ScreenshotsComponent implements OnInit {
 

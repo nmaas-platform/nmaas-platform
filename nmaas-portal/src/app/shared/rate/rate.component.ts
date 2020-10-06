@@ -9,7 +9,6 @@ import {isNullOrUndefined} from 'util';
     templateUrl: './rate.component.html',
     styleUrls: ['./rate.component.css', '../rating-extended/rating-extended.component.css'],
     encapsulation: ViewEncapsulation.None,
-    providers: [AppsService]
 })
 export class RateComponent implements OnInit, OnChanges {
 

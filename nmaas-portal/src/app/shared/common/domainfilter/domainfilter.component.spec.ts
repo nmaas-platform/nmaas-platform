@@ -8,10 +8,21 @@ import {AppConfigService, DomainService} from '../../../service';
 import {AuthService} from '../../../auth/auth.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {of} from 'rxjs';
+import {Domain} from '../../../model/domain';
 
 describe('DomainFilterComponent', () => {
     let component: DomainFilterComponent;
     let fixture: ComponentFixture<DomainFilterComponent>;
+
+    const domain: Domain = {
+        id: 1,
+        name: 'domain one',
+        codename: 'dom-1',
+        active: true,
+        domainDcnDetails: undefined,
+        domainTechDetails: undefined,
+        applicationStatePerDomain: []
+    }
 
     beforeEach(async(() => {
         const authServiceSpy = createSpyObj('AuthService', ['hasRole']);
@@ -19,8 +30,8 @@ describe('DomainFilterComponent', () => {
 
         const domainServiceSpy = createSpyObj('DomainService', ['getGlobalDomainId', 'getAll', 'getMyDomains'])
         domainServiceSpy.getGlobalDomainId.and.returnValue(1)
-        domainServiceSpy.getAll.and.returnValue(of([]))
-        domainServiceSpy.getMyDomains.and.returnValue(of([]))
+        domainServiceSpy.getAll.and.returnValue(of([domain]))
+        domainServiceSpy.getMyDomains.and.returnValue(of([domain]))
 
         TestBed.configureTestingModule({
             declarations: [DomainFilterComponent],
@@ -38,7 +49,8 @@ describe('DomainFilterComponent', () => {
                 {provide: AuthService, useValue: authServiceSpy},
                 {
                     provide: UserDataService, useValue: {
-                        selectedDomainId: of(1)
+                        selectedDomainId: of(1),
+                        selectDomainId: function(data) {console.log('selectDomainId fake', data)},
                     }
                 },
                 {provide: AppConfigService, useValue: {}},

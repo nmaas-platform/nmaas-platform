@@ -11,7 +11,6 @@ import {ApplicationBase} from '../../../model/application-base';
   selector: 'nmaas-modal-app-install',
   templateUrl: './appinstallmodal.component.html',
   styleUrls: ['./appinstallmodal.component.css'],
-  providers: [AppInstanceService, DomainService, ModalComponent]
 })
 export class AppInstallModalComponent implements OnInit {
 
