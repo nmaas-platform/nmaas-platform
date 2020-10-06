@@ -10,7 +10,7 @@ import {AuthService} from '../../auth/auth.service';
 import {InternationalizationService} from '../../service/internationalization.service';
 import {of} from 'rxjs';
 import createSpyObj = jasmine.createSpyObj;
-import {SharedModule} from '../../shared';
+import {ModalComponent} from '../../shared/modal';
 
 describe('CompleteComponent', () => {
     let component: CompleteComponent;
@@ -27,11 +27,13 @@ describe('CompleteComponent', () => {
         profileServiceSpy.getOne.and.returnValue(of())
 
         TestBed.configureTestingModule({
-            declarations: [ CompleteComponent ],
+            declarations: [
+                CompleteComponent,
+                ModalComponent,
+            ],
             imports: [
                 ReactiveFormsModule,
                 RouterTestingModule,
-                SharedModule,
                 TranslateModule.forRoot({
                     loader: {
                         provide: TranslateLoader,

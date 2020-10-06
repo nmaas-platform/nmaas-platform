@@ -6,7 +6,6 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {ModalComponent} from '../../shared/modal';
 import {AuthService} from '../../auth/auth.service';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ConfigurationService, UserService} from '../../service';
 import {ShibbolethService} from '../../service/shibboleth.service';
 import createSpyObj = jasmine.createSpyObj;
@@ -26,7 +25,6 @@ describe('Component: Login', () => {
         TestBed.configureTestingModule({
             declarations: [LoginComponent, ModalComponent],
             imports: [
-                HttpClientTestingModule,
                 FormsModule,
                 ReactiveFormsModule,
                 RouterTestingModule,
