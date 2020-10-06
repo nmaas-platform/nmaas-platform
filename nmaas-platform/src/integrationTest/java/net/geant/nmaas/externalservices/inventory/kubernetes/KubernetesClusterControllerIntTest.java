@@ -117,11 +117,13 @@ public class KubernetesClusterControllerIntTest {
 
         Long newId = Long.parseLong(result.getResponse().getContentAsString());
 
-        mvc.perform(get(URL_PREFIX))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get(URL_PREFIX))
+                    .andExpect(status().isOk());
 
-        mvc.perform(delete(URL_PREFIX + "/{id}", newId))
-                .andExpect(status().isNoContent());
+            mvc.perform(delete(URL_PREFIX + "/{id}", newId))
+                    .andExpect(status().isNoContent());
+        });
     }
 
     @Test

@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
@@ -19,12 +18,10 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.utils.captcha.CaptchaValidator;
-import static org.junit.Assert.assertFalse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,6 +36,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -53,9 +51,11 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -223,16 +223,18 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void shouldUpdateUserOwnData(){
         when(principal.getName()).thenReturn(user3.getUsername());
-        String newEmail = "admin@test.com";
-        UserRequest userRequest = new UserRequest(null, user3.getUsername(), user3.getPassword());
-        userRequest.setEmail(newEmail);
-        userController.updateUser(user3.getId(), userRequest, principal);
+        assertDoesNotThrow(() -> {
+            String newEmail = "admin@test.com";
+            UserRequest userRequest = new UserRequest(null, user3.getUsername(), user3.getPassword());
+            userRequest.setEmail(newEmail);
+            userController.updateUser(user3.getId(), userRequest, principal);
+        });
     }
 
     @Test
     public void shouldNotUpdateOtherUserDataWithoutAdminRole(){
         when(principal.getName()).thenReturn(user3.getUsername());
-        assertThrows(ProcessingException.class, () ->{
+        assertThrows(ProcessingException.class, () -> {
             String newEmail = "stub@nottakenmail.com";
             UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
             userRequest.setEmail(newEmail);
@@ -243,7 +245,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void shouldNotUpdateUserWithoutDomainAdminRoleInUserDomain(){
         when(principal.getName()).thenReturn("domAdmin");
-        assertThrows(ProcessingException.class, () ->{
+        assertThrows(ProcessingException.class, () -> {
             String newEmail = "stub@nottakenmail.com";
             UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
             userRequest.setEmail(newEmail);
@@ -253,13 +255,9 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void testDeleteUser() {
-        //TODO: Update test when user delete is supported
-        try {
-            userController.deleteUser(userEntity.getId());
-            fail();
-        } catch(Exception ex) {
-
-        }
+        assertThrows(ProcessingException.class, () ->
+            userController.deleteUser(userEntity.getId())
+        );
     }
 
     @Test
@@ -379,35 +377,41 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotValidateResetRequest() throws Exception {
-        mvc.perform(post("/api/users/reset/validate")
-                .content(jwtTokenService.getResetToken("notexisting@email.co.uk"))
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable());
+    public void shouldNotValidateResetRequest() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/users/reset/validate")
+                    .content(jwtTokenService.getResetToken("notexisting@email.co.uk"))
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotAcceptable());
+        });
     }
 
     @Test
-    public void shouldResetPassword() throws Exception {
+    public void shouldResetPassword() {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken(user3.getEmail()), "test");
-        mvc.perform(post("/api/users/reset?token=test-token")
-                .content(new ObjectMapper().writeValueAsString(passwordReset))
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/users/reset?token=test-token")
+                    .content(new ObjectMapper().writeValueAsString(passwordReset))
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isAccepted());
+        });
     }
 
     @Test
-    public void shouldNotResetPassword() throws Exception {
+    public void shouldNotResetPassword() {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
-        mvc.perform(post("/api/users/reset?token=test-token")
-                .content(new ObjectMapper().writeValueAsString(passwordReset))
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/users/reset?token=test-token")
+                    .content(new ObjectMapper().writeValueAsString(passwordReset))
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotAcceptable());
+        });
     }
 
     @AfterEach

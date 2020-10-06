@@ -103,7 +103,7 @@ public class JanitorService {
 
     private void throwExceptionIfExecutionFailed(JanitorManager.ServiceResponse response) {
         if (response.getStatus() != JanitorManager.Status.OK) {
-            throw new JanitorResponseException("JANITOR: " + response.getMessage());
+            throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
         }
     }
 
@@ -124,7 +124,7 @@ public class JanitorService {
             case FAILED:
             case UNRECOGNIZED:
             default:
-                throw new JanitorResponseException("JANITOR: " + response.getMessage());
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
         }
     }
 
@@ -137,7 +137,11 @@ public class JanitorService {
                 return response.getInfo();
             case FAILED:
             default:
-                throw new JanitorResponseException("JANITOR: " + response.getMessage());
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
         }
+    }
+
+    private static String janitorExceptionMessage(String message) {
+        return "JANITOR: " + message;
     }
 }
