@@ -7,7 +7,9 @@ import { AppConfigService } from '../service/appconfig.service';
 import {catchError, debounceTime} from 'rxjs/operators';
 import {GenericDataService} from './genericdata.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class AppImagesService extends GenericDataService {
 
     constructor(public http: HttpClient, public appConfig: AppConfigService) {

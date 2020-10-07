@@ -24,8 +24,12 @@ export class AppPreviewComponent implements OnInit {
 
     public versionVisible = false;
 
-    constructor(public route: ActivatedRoute, public appService: AppsService, public translate: TranslateService,
-                public appImagesService: AppImagesService, public dom: DomSanitizer, private router: Router) {
+    constructor(public route: ActivatedRoute,
+                public appService: AppsService,
+                public translate: TranslateService,
+                public appImagesService: AppImagesService,
+                public dom: DomSanitizer,
+                private router: Router) {
     }
 
     ngOnInit() {

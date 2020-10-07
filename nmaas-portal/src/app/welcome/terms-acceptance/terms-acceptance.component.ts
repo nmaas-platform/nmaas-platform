@@ -16,7 +16,6 @@ import {Observable} from 'rxjs/internal/Observable';
   selector: 'app-terms-acceptance',
   templateUrl: './terms-acceptance.component.html',
   styleUrls: ['./terms-acceptance.component.css'],
-    providers: [ModalInfoPolicyComponent, ModalInfoTermsComponent, ModalComponent]
 })
 export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
 

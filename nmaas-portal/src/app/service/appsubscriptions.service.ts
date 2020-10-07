@@ -6,7 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {ApplicationBase} from '../model/application-base';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppSubscriptionsService extends GenericDataService {
 
   constructor(http: HttpClient, appConfig: AppConfigService) {

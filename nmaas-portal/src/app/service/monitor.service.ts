@@ -5,7 +5,9 @@ import {HttpClient} from '@angular/common/http';
 import {MonitorEntry} from '../model/monitorentry';
 import {Observable} from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class MonitorService extends GenericDataService {
 
   private readonly url: string;

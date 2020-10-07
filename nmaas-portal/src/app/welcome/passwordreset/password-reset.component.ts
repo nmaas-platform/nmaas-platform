@@ -12,7 +12,6 @@ import {ReCaptchaV3Service} from 'ng-recaptcha';
     selector: 'app-passwordreset',
     templateUrl: './password-reset.component.html',
     styleUrls: ['./password-reset.component.css'],
-    providers: [UserService]
 })
 export class PasswordResetComponent implements OnInit {
 
