@@ -71,24 +71,21 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   public onSave($event) {
     const user: User = $event;
 
-    if (!user) {
-      return;
-    }
-
-    if (user.id) {
-      return this.updateUser(user.id, user);
+    if (!!user && user.id) {
+      this.updateUser(user.id, user);
     }
   }
 
-  async updateUser(userId: number, user: User) {
-    return await Promise.resolve(this.userService.updateUser(userId, user).toPromise()
-        .then(() => {
+  public updateUser(userId: number, user: User): void {
+    this.userService.updateUser(userId, user).subscribe(
+        result => {
           this.userDetailsMode = ComponentMode.VIEW;
           this.errorMessage = undefined;
-        })
-        .catch(err => {
+        },
+        error => {
           this.userDetailsMode = ComponentMode.EDIT;
-          this.errorMessage = err.message;
-        }));
+          this.errorMessage = error.message;
+        }
+    )
   }
 }
