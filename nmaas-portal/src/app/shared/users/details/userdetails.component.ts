@@ -1,4 +1,4 @@
-import {User} from '../../../model';
+import {User} from '../../../model/user';
 import {BaseComponent} from '../../common/basecomponent/base.component';
 import {
     Component,
@@ -9,7 +9,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {AuthService} from '../../../auth/auth.service';
-import {PasswordComponent} from '../..';
+import {PasswordComponent} from '../../common/password/password.component';
 import {Role} from '../../../model/userrole';
 
 @Component({
