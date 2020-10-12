@@ -114,6 +114,24 @@
                                                 "defaultValue": "1Gi"
                                             },
                                             {
+                                                "label": "WiFiMon SP number of instances:",
+                                                "type": "number",
+                                                "input": true,
+                                                "key": "sp#replicas",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true,
+                                                    "min": 1,
+                                                    "max": 8,
+                                                    "step": "any",
+                                                    "integer": "",
+                                                    "multiple": "",
+                                                    "custom": ""
+                                                },
+                                                "inputFormat": "number",
+                                                "defaultValue": 1
+                                            },
+                                            {
                                                 "label": "Elasticsearch storage space (GB):",
                                                 "type": "textfield",
                                                 "input": true,
@@ -165,7 +183,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-wifimon",
-                    "version": "1.0.0"
+                    "version": "1.1.0"
                 },
                 "mainDeploymentName": "ui"
             },
@@ -277,12 +295,12 @@
                 {
                     "configFileName": "dhcp-pipeline.yml",
                     "configFileDirectory": "pipelines",
-                    "configFileTemplateContent": "input {\n    pipeline { address => dhcplogs }\n}\n\nfilter {\n    dissect {\n        mapping => {\n            \"message\" => \"%{} DHCPACK on %{ip} to %{mac} %{}\"\n        }\n\n        remove_field => [\n            \"logtype\",\n            \"message\",\n            \"@version\"\n        ]\n    }\n\n    if \"beats_input_codec_plain_applied\" in [tags] {\n        mutate { remove_tag => [\"beats_input_codec_plain_applied\"] }\n    }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"ip\"\n        target => \"ip\"\n    }\n\n    fingerprint {\n        key => \"encryption-key-goes-here\"\n        method => \"SHA512\"\n        source => \"mac\"\n        target => \"mac\"\n    }\n}\n\noutput {\n    elasticsearch {\n        hosts => [\"http://localhost\"]\n        index => \"dhcplogs\"\n    }\n}\n"
+                    "configFileTemplateContent": "input {\n    pipeline { address => dhcplogs }\n}\n\nfilter {\n    dissect {\n        mapping => {\n            \"message\" => \"%{} DHCPACK on %{ip} to %{mac} %{}\"\n        }\n\n        remove_field => [\n            \"logtype\",\n            \"message\",\n            \"@version\"\n        ]\n    }\n\n    if \"beats_input_codec_plain_applied\" in [tags] {\n        mutate { remove_tag => [\"beats_input_codec_plain_applied\"] }\n    }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"ip\"\n        target => \"ip\"\n    }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"mac\"\n        target => \"mac\"\n    }\n}\n\noutput {\n    elasticsearch {\n        hosts => [\"http://${RELEASE_NAME}-pllabprod:9200\"]\n        index => \"dhcplogs\"\n    }\n}\n"
                 },
                 {
                     "configFileName": "radius-pipeline.yml",
                     "configFileDirectory": "pipelines",
-                    "configFileTemplateContent": "input {\n    pipeline { address => radiuslogs }\n}\n\nfilter {\n    mutate { gsub => [ \"message\", \"[\\n\\t]+\", \" \" ] }\n\n    kv {\n        allow_duplicate_values => false\n\n        include_keys => [\n            \"Calling-Station-Id\",\n            \"Framed-IP-Address\",\n            \"Timestamp\",\n            \"Called-Station-Id\",\n            \"NAS-IP-Address\",\n            \"Acct-Status-Type\"\n        ]\n\n        remove_field => [\n            \"logtype\",\n            \"message\",\n            \"@version\"\n        ]\n    }\n\n    if \"beats_input_codec_plain_applied\" in [tags] {\n        mutate { remove_tag => [\"beats_input_codec_plain_applied\"] }\n    }\n\n    geoip { source => \"NAS-IP-Address\" }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"Calling-Station-Id\"\n        target => \"Calling-Station-Id\"\n    }\n\n    fingerprint {\n        key => \"encryption-key-goes-here\"\n        method => \"SHA512\"\n        source => \"Framed-IP-Address\"\n        target => \"Framed-IP-Address\"\n    }\n}\n\noutput {\n    elasticsearch {\n        hosts => [\"http://localhost\"]\n        index => \"radiuslogs\"\n    }\n}\n"
+                    "configFileTemplateContent": "input {\n    pipeline { address => radiuslogs }\n}\n\nfilter {\n    mutate { gsub => [ \"message\", \"[\\n\\t]+\", \" \" ] }\n\n    kv {\n        allow_duplicate_values => false\n\n        include_keys => [\n            \"Calling-Station-Id\",\n            \"Framed-IP-Address\",\n            \"Timestamp\",\n            \"Called-Station-Id\",\n            \"NAS-IP-Address\",\n            \"Acct-Status-Type\"\n        ]\n\n        remove_field => [\n            \"logtype\",\n            \"message\",\n            \"@version\"\n        ]\n    }\n\n    if \"beats_input_codec_plain_applied\" in [tags] {\n        mutate { remove_tag => [\"beats_input_codec_plain_applied\"] }\n    }\n\n    geoip { source => \"NAS-IP-Address\" }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"Calling-Station-Id\"\n        target => \"Calling-Station-Id\"\n    }\n\n    fingerprint {\n        key => \"${r\"${ENCRYPTION_STRING}\"}\"\n        method => \"SHA512\"\n        source => \"Framed-IP-Address\"\n        target => \"Framed-IP-Address\"\n    }\n}\n\noutput {\n    elasticsearch {\n        hosts => [\"http://${RELEASE_NAME}-pllabprod:9200\"]\n        index => \"radiuslogs\"\n    }\n}\n"
                 }
             ]
         }

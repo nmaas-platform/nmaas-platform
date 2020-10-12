@@ -31,6 +31,7 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,14 +53,14 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
     private UserRepository userRepo;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         this.mvc = createMVC();
         this.addLanguage();
         this.changeConfigToDefault();
     }
 
     @AfterEach
-    public void teardown(){
+    public void teardown() {
         this.userRepo.findAll().stream()
                 .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                 .forEach(user -> userRepo.delete(user));
@@ -80,69 +81,79 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void shouldNotLoginWhenSSOIsDisabled() throws Exception {
+    public void shouldNotLoginWhenSSOIsDisabled() {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setSsoLoginAllowed(false);
         config.setDefaultLanguage("en");
-        this.configManager.updateConfiguration(config.getId(), config);
-        this.mvc.perform(post("/api/auth/sso/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", getValidToken()))))
-                .andExpect(status().isConflict());
+        assertDoesNotThrow(() -> {
+            this.configManager.updateConfiguration(config.getId(), config);
+            this.mvc.perform(post("/api/auth/sso/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", getValidToken()))))
+                    .andExpect(status().isConflict());
+        });
     }
 
     @Test
     @Transactional
-    public void shouldNotLoginWhenUsernameIsEmpty() throws Exception {
+    public void shouldNotLoginWhenUsernameIsEmpty() {
         String[] token = getValidToken().split("\\|");
-        this.mvc.perform(post("/api/auth/sso/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", token[1] + token[2]))))
-                .andExpect(status().isBadRequest());
+        assertDoesNotThrow(() -> {
+            this.mvc.perform(post("/api/auth/sso/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", token[1] + token[2]))))
+                    .andExpect(status().isBadRequest());
+        });
     }
 
     @Test
     @Transactional
-    public void shouldNotLoginWithInvalidSignature() throws Exception {
+    public void shouldNotLoginWithInvalidSignature() {
         String[] token = getValidToken().split("\\|");
         token[2] = "invalidSignature";
-        this.mvc.perform(post("/api/auth/sso/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", Arrays.toString(token)))))
-                .andExpect(status().isBadRequest());
+        assertDoesNotThrow(() -> {
+            this.mvc.perform(post("/api/auth/sso/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", Arrays.toString(token)))))
+                    .andExpect(status().isBadRequest());
+        });
     }
 
     @Test
     @Transactional
-    public void shouldNotLoginWithExpiredToken() throws Exception {
+    public void shouldNotLoginWithExpiredToken() {
         String[] token = getValidToken().split("\\|");
         token[1] = Long.toString((new Date().getTime() /1000) - 10000);
-        this.mvc.perform(post("/api/auth/sso/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", Arrays.toString(token)))))
-                .andExpect(status().isBadRequest());
+        assertDoesNotThrow(() -> {
+            this.mvc.perform(post("/api/auth/sso/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", Arrays.toString(token)))))
+                    .andExpect(status().isBadRequest());
+        });
     }
 
     @Test
     @Transactional
-    public void shouldNotLoginWithPortalMaintenance() throws Exception {
+    public void shouldNotLoginWithPortalMaintenance() {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setMaintenance(true);
         config.setDefaultLanguage("en");
-        this.configManager.updateConfiguration(config.getId(), config);
-        this.mvc.perform(post("/api/auth/sso/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", getValidToken()))))
-                .andExpect(status().isNotAcceptable());
+        assertDoesNotThrow(() -> {
+            this.configManager.updateConfiguration(config.getId(), config);
+            this.mvc.perform(post("/api/auth/sso/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", getValidToken()))))
+                    .andExpect(status().isNotAcceptable());
+        });
     }
 
     private void addLanguage(){
-        if(!intService.getEnabledLanguages().contains("en")){
+        if(!intService.getEnabledLanguages().contains("en")) {
             intService.addNewLanguage(new InternationalizationView("en", true, "{\"content\":\"content\"}"));
         }
     }
 
-    private void changeConfigToDefault(){
+    private void changeConfigToDefault() {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setSsoLoginAllowed(true);
         config.setMaintenance(false);
@@ -150,7 +161,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
         this.configManager.updateConfiguration(config.getId(), config);
     }
 
-    private String getValidToken(){
+    private String getValidToken() {
         String signed = TextCodec.BASE64.encode("admin") + '|' + (new Date().getTime() / 1000) + 10000;
         byte[] keyBytes = shibbolethConfigManager.getKey().getBytes(StandardCharsets.US_ASCII);
         Key keyspec = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());

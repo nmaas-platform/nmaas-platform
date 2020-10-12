@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,30 +34,38 @@ public class GitLabWebhookControllerSecTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotAuthorizeWithoutToken() throws Exception {
-        mvc.perform(post("/api/gitlab/webhooks/1"))
-                .andExpect(status().isUnauthorized());
+    public void shouldNotAuthorizeWithoutToken() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/gitlab/webhooks/1"))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
     @Test
-    public void shouldNotAuthorizeWithIncorrectToken() throws Exception {
-        mvc.perform(post("/api/gitlab/webhooks/1")
-                .header("X-Gitlab-Token", "incorrect-token"))
-                .andExpect(status().isUnauthorized());
+    public void shouldNotAuthorizeWithIncorrectToken() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/gitlab/webhooks/1")
+                    .header("X-Gitlab-Token", "incorrect-token"))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
     @Test
-    public void shouldNotAuthorizeOnMissingProject() throws Exception {
-        mvc.perform(post("/api/gitlab/webhooks/incorrectProjectId")
-                .header("X-Gitlab-Token", "correct-token"))
-                .andExpect(status().isUnauthorized());
+    public void shouldNotAuthorizeOnMissingProject() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/gitlab/webhooks/incorrectProjectId")
+                    .header("X-Gitlab-Token", "correct-token"))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
     @Test
-    public void shouldAuthorizeWithGitlabCorrectHeader() throws Exception {
-        mvc.perform(post("/api/gitlab/webhooks/1")
-            .header("X-Gitlab-Token", "correct-token"))
-                .andExpect(status().isNotFound());
+    public void shouldAuthorizeWithGitlabCorrectHeader() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/gitlab/webhooks/1")
+                    .header("X-Gitlab-Token", "correct-token"))
+                    .andExpect(status().isNotFound());
+        });
     }
 
 }

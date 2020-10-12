@@ -217,7 +217,8 @@ public class KubernetesManager implements ContainerOrchestrator {
                     ingressManager.getIngressPerDomain());
             String serviceBasePublicUrl = ingressManager.getPublicServiceDomain();
 
-            Set<ServiceAccessMethod> accessMethods = populateAccessMethodsWithUrl(service, serviceExternalUrl, serviceBasePublicUrl);
+            Set<ServiceAccessMethod> accessMethods = retrieveAccessMethods(service);
+            accessMethods = populateAccessMethodsWithUrl(accessMethods, serviceExternalUrl, serviceBasePublicUrl);
             repositoryManager.updateKServiceAccessMethods(accessMethods);
             serviceLifecycleManager.deployService(deploymentId);
         } catch (InvalidDeploymentIdException | InvalidConfigurationException ex) {
@@ -227,20 +228,34 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(KubernetesNmServiceInfo service, String serviceExternalUrl, String serviceBasePublicUrl) {
-        Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
+    private Set<ServiceAccessMethod> retrieveAccessMethods(KubernetesNmServiceInfo service) {
+        return service.getAccessMethods().stream().map(am -> {
+            if (am.isOfType(PUBLIC)) {
+                boolean shouldRemainPublic = service.getAdditionalParameters().getOrDefault("accessmethods.public." + am.getName(), "yes").equals("yes");
+                if (!shouldRemainPublic) {
+                    log.info(String.format("%s access will remain public: no", am.getName()));
+                    return new ServiceAccessMethod(am.getId(), EXTERNAL, am.getName(), am.getUrl(), am.getProtocol(), am.getDeployParameters());
+                }
+                log.info(String.format("%s access will remain public: yes", am.getName()));
+            }
+            return am;
+        }).collect(Collectors.toSet());
+    }
+
+    private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(Set<ServiceAccessMethod> inputAccessMethods, String serviceExternalUrl, String serviceBasePublicUrl) {
+        Set<ServiceAccessMethod> accessMethods = inputAccessMethods.stream()
                 .filter(m -> m.isOfType(INTERNAL))
                 .collect(Collectors.toSet());
-        accessMethods.addAll(service.getAccessMethods().stream()
+        accessMethods.addAll(inputAccessMethods.stream()
                 .filter(m -> m.isOfType(DEFAULT))
                 .peek(m -> m.setUrl(serviceExternalUrl))
                 .collect(Collectors.toSet()));
-        accessMethods.addAll(service.getAccessMethods().stream()
+        accessMethods.addAll(inputAccessMethods.stream()
                 .filter(m -> m.isOfType(EXTERNAL))
                 .peek(m -> m.setUrl(m.getName().toLowerCase() + "-" + serviceExternalUrl))
                 .collect(Collectors.toSet()));
         if (serviceBasePublicUrl != null) {
-            accessMethods.addAll(service.getAccessMethods().stream()
+            accessMethods.addAll(inputAccessMethods.stream()
                     .filter(m -> m.isOfType(PUBLIC))
                     .peek(m -> m.setUrl(UUID.randomUUID().toString() + "." + serviceBasePublicUrl))
                     .collect(Collectors.toSet()));

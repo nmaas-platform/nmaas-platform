@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,23 +44,27 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldSaveNewLanguage() throws Exception{
-        mvc.perform(post("/api/i18n/de?enabled=true")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString("{\"test\":\"newtest\"}"))
-        ).andExpect(status().isAccepted());
+    public void shouldSaveNewLanguage() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/i18n/de?enabled=true")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString("{\"test\":\"newtest\"}"))
+            ).andExpect(status().isAccepted());
+        });
     }
 
     @Test
-    public void shouldUpdateLanguage() throws Exception {
-        mvc.perform(patch("/api/i18n/pl")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString("{\"test\":\"newtest\"}"))
-        ).andExpect(status().isAccepted());
+    public void shouldUpdateLanguage() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(patch("/api/i18n/pl")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString("{\"test\":\"newtest\"}"))
+            ).andExpect(status().isAccepted());
+        });
     }
 
     @Test
@@ -84,14 +89,16 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldDisableLanguage() throws Exception {
-        mvc.perform(put("/api/i18n/state")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(new InternationalizationBriefView(false, "pl")))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andReturn();
+    public void shouldDisableLanguage() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(put("/api/i18n/state")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(new InternationalizationBriefView(false, "pl")))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNoContent())
+                    .andReturn();
+        });
     }
 
     @Test
@@ -113,4 +120,5 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
     }
+
 }

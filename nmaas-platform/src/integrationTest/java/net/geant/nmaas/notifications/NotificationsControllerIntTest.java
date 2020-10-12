@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -23,41 +23,49 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void sendValidContactMail() throws Exception {
-        mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"mailType\": \"CONTACT_FORM\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    public void sendValidContactMail() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"mailType\": \"CONTACT_FORM\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
-    public void sendInvalidContactMail() throws Exception {
-        mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+    public void sendInvalidContactMail() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
     @Test
-    public void sendValidAdminNotification() throws Exception {
+    public void sendValidAdminNotification() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
-        mvc.perform(post("/api/mail/admin")
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/mail/admin")
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isAccepted());
+        });
     }
 
     @Test
-    public void unauthorizedAdminNotificationShouldFail() throws Exception {
-        mvc.perform(post("/api/mail/admin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+    public void unauthorizedAdminNotificationShouldFail() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/mail/admin")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
 }

@@ -50,12 +50,46 @@
                                 "key": "advancedTab",
                                 "components": [
                                     {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "Access options",
+                                                "type": "radio",
+                                                "input": true,
+                                                "tableView": true,
+                                                "inputType": "radio",
+                                                "key": "accessmethods#public#esmond",
+                                                "values": [
+                                                    {
+                                                        "value": "yes",
+                                                        "label": "Public"
+                                                    },
+                                                    {
+                                                        "value": "no",
+                                                        "label": "VPN"
+                                                    }
+                                                ],
+                                                "defaultValue": "yes",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "labelPosition": "top",
+                                                "optionsLabelPosition": "right"
+                                            }
+                                        ]
+                                    },
+                                    {
                                         "label": "Advanced",
                                         "hideLabel": true,
                                         "tableView": true,
                                         "type": "container",
                                         "input": true,
-                                        "tab": 1,
+                                        "tab": 0,
                                         "key": "advanced",
                                         "components": [
                                             {
@@ -113,7 +147,7 @@
             "allowSshAccess": true,
             "accessMethods": [
                 {
-                    "type": "DEFAULT",
+                    "type": "PUBLIC",
                     "name": "esmond",
                     "tag": "esmond",
                     "deployParameters": {

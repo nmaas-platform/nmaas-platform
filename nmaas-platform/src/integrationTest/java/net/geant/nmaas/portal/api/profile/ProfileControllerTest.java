@@ -6,6 +6,8 @@ import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,10 +20,13 @@ class ProfileControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetUserProfile() throws Exception{
+    void shouldGetUserProfile() {
         User user = UsersHelper.ADMIN;
-        mvc.perform(get("/api/profile/user")
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/profile/user")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isOk());
+        });
     }
+
 }

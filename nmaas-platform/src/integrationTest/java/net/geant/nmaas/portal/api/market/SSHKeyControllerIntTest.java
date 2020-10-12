@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,26 +26,28 @@ public class SSHKeyControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldAddValidKey() throws Exception {
+    public void shouldAddValidKey() {
         SSHKeyRequest req = new SSHKeyRequest("longName", VALID_KEY);
-        MvcResult mvcResult = mvc.perform(put("/api/user/keys")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(req))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+        assertDoesNotThrow(() -> {
+            mvc.perform(put("/api/user/keys")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(req))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
-    public void shouldReturnErrorWhenKeyIsNotValid() throws Exception {
+    public void shouldReturnErrorWhenKeyIsNotValid() {
         SSHKeyRequest req = new SSHKeyRequest("longName", "some random text which by definition is not valid ssh key");
-        MvcResult mvcResult = mvc.perform(put("/api/user/keys")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(req))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andReturn();
+        assertDoesNotThrow(() -> {
+            mvc.perform(put("/api/user/keys")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(req))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+        });
     }
 }

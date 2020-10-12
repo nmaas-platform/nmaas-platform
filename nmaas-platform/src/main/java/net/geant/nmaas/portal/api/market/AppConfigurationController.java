@@ -20,8 +20,6 @@ import java.security.Principal;
 @RequestMapping(value = "/api/apps/instances")
 public class AppConfigurationController {
 
-    private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
-
     private static final String INSTANCE_NOT_FOUND_MESSAGE = "App instance not found";
 
     private ApplicationInstanceService instances;
@@ -73,7 +71,7 @@ public class AppConfigurationController {
         try {
             appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
         } catch (Throwable e) {
-            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+            throw new ProcessingException(e.getMessage());
         }
     }
 
@@ -97,7 +95,7 @@ public class AppConfigurationController {
         try {
             appLifecycleManager.updateConfiguration(appInstance.getInternalId(), configuration);
         } catch (Exception e) {
-            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+            throw new ProcessingException(e.getMessage());
         }
     }
 
