@@ -81,7 +81,8 @@
     "LOGIN_WITH": "Zaloguj się u dostawcy tożsamości",
     "LOGIN_FAILURE_MESSAGE": "Nieprawidłowe dane logowania",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Błąd logowania do systemu"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Błąd logowania do systemu",
+    "USER_DISABLED_MESSAGE": "Użytkownik jest nieaktywny"
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instancja testowa NMaaS",

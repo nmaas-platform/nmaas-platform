@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 
-import { Router } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
+import {Router} from '@angular/router';
+import {AuthService} from '../../auth/auth.service';
 import {ConfigurationService, UserService} from '../../service';
 import {Configuration} from '../../model/configuration';
 import {ShibbolethService} from '../../service/shibboleth.service';
@@ -11,10 +11,10 @@ import {ModalComponent} from '../../shared/modal';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
-  selector: 'nmaas-login',
-  templateUrl: './login.component.html',
-  styleUrls: [ './login.component.css' ],
-  encapsulation: ViewEncapsulation.Emulated
+    selector: 'nmaas-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    encapsulation: ViewEncapsulation.Emulated
 })
 export class LoginComponent implements OnInit {
     model: any = {};
@@ -25,8 +25,9 @@ export class LoginComponent implements OnInit {
     resetPassword = false;
     resetPasswordForm: FormGroup;
 
-    @ViewChild(ModalComponent, { static: true })
+    @ViewChild(ModalComponent, {static: true})
     public modal: ModalComponent;
+
     ssoLoading = false;
     ssoError = '';
 
@@ -55,63 +56,76 @@ export class LoginComponent implements OnInit {
     }
 
     public login(): void {
-      this.loading = true;
-      this.error = '';
-      this.auth.login(this.model.username, this.model.password)
-        .subscribe(() => {
-          this.loading = false;
-          this.translate.setDefaultLang(this.auth.getSelectedLanguage());
-          this.translate.use(this.auth.getSelectedLanguage());
-          this.router.navigate(['/']);
-        }, err => {
-          this.loading = false;
-          this.error = this.translate.instant(this.getMessage(err));
-        });
+        this.loading = true;
+        this.error = '';
+        this.auth.login(this.model.username, this.model.password).subscribe(
+            () => {
+                this.loading = false;
+                this.translate.setDefaultLang(this.auth.getSelectedLanguage());
+                this.translate.use(this.auth.getSelectedLanguage());
+                this.router.navigate(['/']);
+            }, err => {
+                this.error = this.translate.instant(this.getMessage(err));
+                this.loading = false;
+            }
+        );
     }
 
 
     public checkSSO() {
-     const params = this.router.parseUrl(this.router.url).queryParams;
+        const params = this.router.parseUrl(this.router.url).queryParams;
 
-      if ('ssoUserId' in params) {
-        // Got auth data, send to api
-        this.ssoLoading = true;
-        this.ssoError = '';
-        this.auth.propagateSSOLogin(params.ssoUserId)
-            .subscribe(result => {
-                if (result === true) {
-                    this.ssoLoading = false;
-                    this.translate.setDefaultLang(this.auth.getSelectedLanguage());
-                    this.translate.use(this.auth.getSelectedLanguage());
-                    this.router.navigate(['/']);
-                } else {
-                    this.ssoError = 'Failed to propagate SSO user id';
+        if ('ssoUserId' in params) {
+            // Got auth data, send to api
+            this.ssoLoading = true;
+            this.ssoError = '';
+            this.auth.propagateSSOLogin(params.ssoUserId).subscribe(
+                result => {
+                    if (result === true) {
+                        this.ssoLoading = false;
+                        this.translate.setDefaultLang(this.auth.getSelectedLanguage());
+                        this.translate.use(this.auth.getSelectedLanguage());
+                        this.router.navigate(['/']);
+                    } else {
+                        this.ssoError = 'Failed to propagate SSO user id';
+                        this.ssoLoading = false;
+                    }
+                },
+                err => {
+                    this.ssoError = this.translate.instant(this.getMessage(err));
                     this.ssoLoading = false;
                 }
-            },
-                err => {
-                    this.ssoLoading = false;
-                    this.ssoError = err.message;
-                });
-      }
+            );
+        }
     }
 
-  public triggerSSO() {
+    public triggerSSO() {
         const url = window.location.href.replace(/ssoUserId=.+/, '');
         window.location.href = this.shibboleth.loginUrl + '?return=' + url;
-  }
+    }
 
-  public sendResetNotification() {
-      if (this.resetPasswordForm.valid) {
-          this.userService.resetPasswordNotification(this.resetPasswordForm.controls['email'].value).subscribe(() => {
-              this.modal.show();
-          }, () => {
-              this.modal.show();
-          });
-      }
-  }
+    public sendResetNotification() {
+        if (this.resetPasswordForm.valid) {
+            this.userService.resetPasswordNotification(this.resetPasswordForm.controls['email'].value).subscribe(
+                () => {
+                    this.modal.show();
+                }, () => {
+                    this.modal.show();
+                }
+            );
+        }
+    }
 
-  private getMessage(err: any): string {
-    return err['status'] === 401 ? 'LOGIN.LOGIN_FAILURE_MESSAGE' : err['status'] === 406 ? 'LOGIN.APPLICATION_UNDER_MAINTENANCE_MESSAGE' : err['status'] === 409 ? err['message'] : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
-  }
+    private getMessage(err: any): string {
+        switch (err['status']) {
+            case 401:
+                return this.ssoLoading ? 'LOGIN.USER_DISABLED_MESSAGE' : 'LOGIN.LOGIN_FAILURE_MESSAGE';
+            case 406:
+                return 'LOGIN.APPLICATION_UNDER_MAINTENANCE_MESSAGE';
+            case 409:
+                return 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+            default:
+                return 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+        }
+    }
 }
