@@ -192,7 +192,7 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\grafana\grafana3.png;type=image/png" %API_URL%/apps/6/screenshots
 echo.
 echo App6 v2
-curl -X POST %API_URL%/apps/version --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app06-grafana_v7.1.5.json
+curl -X POST %API_URL%/apps/version --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app06-grafana_v7.2.0.json
 echo.
 
 echo.
@@ -373,6 +373,27 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 
 echo.
+echo App20
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app20-icinga.json
+echo.
+echo App20 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\icinga.svg;type=image/svg+xml" %API_URL%/apps/20/logo
+echo.
+echo App20 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga1.png;type=image/png" %API_URL%/apps/20/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga2.png;type=image/png" %API_URL%/apps/20/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga3.png;type=image/png" %API_URL%/apps/20/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga4.png;type=image/png" %API_URL%/apps/20/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga5.png;type=image/png" %API_URL%/apps/20/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga6.png;type=image/png" %API_URL%/apps/20/screenshots
+echo.
+
+echo.
 echo ---------------------
 echo Activate apps
 curl -X PATCH %API_URL%/apps/state/1 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
@@ -394,6 +415,7 @@ curl -X PATCH %API_URL%/apps/state/17 --header "Authorization: Bearer %token%" -
 curl -X PATCH %API_URL%/apps/state/18 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/19 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/20 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
+curl -X PATCH %API_URL%/apps/state/21 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 echo.
 
 echo.

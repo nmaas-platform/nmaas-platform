@@ -2,36 +2,36 @@
     "applicationBase": {
         "id": null,
         "name": "WiFiMon",
-        "license": "",
-        "licenseUrl": "",
-        "wwwUrl": "",
-        "sourceUrl": "",
-        "issuesUrl": "",
-        "nmaasDocumentationUrl": null,
+        "license": "GÉANT Standard Open Source Software Outward Licence",
+        "licenseUrl": "https://geant3plus.archive.geant.net/About/Documents/GN3_10_325GEANTIPRPolicyv1.2_30SEP11.pdf",
+        "wwwUrl": "https://www.geant.org/wifimon",
+        "sourceUrl": "https://bitbucket.software.geant.org/projects/WFMON/repos/agent/browse",
+        "issuesUrl": "https://jira.software.geant.org/projects/WIFIM",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Wifimon",
         "descriptions": [
             {
                 "language": "en",
-                "briefDescription": "WiFiMon",
-                "fullDescription": ""
+                "briefDescription": "Wireless Crowdsourced Performance Monitoring and Verification",
+                "fullDescription": "WiFiMon is a WiFi network monitoring and performance verification system. It is capable of detecting  performance issues, to visualise the workload of the network, and to provide technical information about the WiFi network (e.g. signal strength, link quality, bit rate, etc.)."
             },
             {
                 "language": "de",
-                "briefDescription": "WiFiMon",
-                "fullDescription": ""
+                "briefDescription": "Wireless Crowdsourced Performance Monitoring and Verification",
+                "fullDescription": "WiFiMon is a WiFi network monitoring and performance verification system. It is capable of detecting  performance issues, to visualise the workload of the network, and to provide technical information about the WiFi network (e.g. signal strength, link quality, bit rate, etc.)."
             },
             {
                 "language": "fr",
-                "briefDescription": "WiFiMon",
-                "fullDescription": ""
+                "briefDescription": "Wireless Crowdsourced Performance Monitoring and Verification",
+                "fullDescription": "WiFiMon is a WiFi network monitoring and performance verification system. It is capable of detecting  performance issues, to visualise the workload of the network, and to provide technical information about the WiFi network (e.g. signal strength, link quality, bit rate, etc.)."
             },
             {
                 "language": "pl",
-                "briefDescription": "WiFiMon",
-                "fullDescription": ""
+                "briefDescription": "Wireless Crowdsourced Performance Monitoring and Verification",
+                "fullDescription": "WiFiMon is a WiFi network monitoring and performance verification system. It is capable of detecting  performance issues, to visualise the workload of the network, and to provide technical information about the WiFi network (e.g. signal strength, link quality, bit rate, etc.)."
             }
         ],
         "tags": [
-            "monitoring"
+            "monitoring", "wifi"
         ]
     },
     "application": {
