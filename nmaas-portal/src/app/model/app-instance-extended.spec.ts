@@ -1,4 +1,4 @@
-import { AppInstanceExtended } from './appinstanceextended';
+import { AppInstanceExtended } from './app-instance-extended';
 
 describe('AppInstanceExtended', () => {
   it('should create an instance', () => {

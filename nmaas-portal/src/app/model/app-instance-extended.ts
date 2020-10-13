@@ -1,4 +1,4 @@
-import {AppInstance} from './appinstance';
+import {AppInstance} from './app-instance';
 import {Domain} from './domain';
 import {ApplicationDTO} from './application-dto';
 
