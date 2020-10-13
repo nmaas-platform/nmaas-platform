@@ -12,7 +12,9 @@ import {ApplicationBase} from '../model/application-base';
 import {Application} from '../model/application';
 import {ApplicationDTO} from '../model/application-dto';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class AppsService extends GenericDataService {
 
     constructor(http: HttpClient, appConfig: AppConfigService) {

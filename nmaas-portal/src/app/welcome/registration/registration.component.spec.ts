@@ -1,27 +1,50 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RegistrationComponent } from './registration.component';
-import {RecaptchaFormsModule} from 'ng-recaptcha';
+import {RegistrationComponent} from './registration.component';
+import {ReCaptchaV3Service} from 'ng-recaptcha';
+import {ReactiveFormsModule} from '@angular/forms';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {RegistrationService} from '../../auth/registration.service';
+import {AppConfigService} from '../../service';
+import {ModalComponent} from '../../shared/modal';
+import createSpyObj = jasmine.createSpyObj;
+import {of} from 'rxjs';
 
 describe('RegistrationComponent', () => {
-  let component: RegistrationComponent;
-  let fixture: ComponentFixture<RegistrationComponent>;
+    let component: RegistrationComponent;
+    let fixture: ComponentFixture<RegistrationComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ RegistrationComponent ],
-      imports: [RecaptchaFormsModule]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        const registrationServiceSpy = createSpyObj('RegistrationService', ['getDomains']);
+        registrationServiceSpy.getDomains.and.returnValue(of([]));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RegistrationComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        TestBed.configureTestingModule({
+            declarations: [RegistrationComponent, ModalComponent],
+            imports: [
+                ReactiveFormsModule,
+                TranslateModule.forRoot({
+                    loader: {
+                        provide: TranslateLoader,
+                        useClass: TranslateFakeLoader
+                    }
+                }),
+            ],
+            providers: [
+                {provide: RegistrationService, useValue: registrationServiceSpy},
+                {provide: AppConfigService, useValue: {}},
+                {provide: ReCaptchaV3Service, useValue: {}},
+            ]
+        })
+            .compileComponents();
+    }));
 
-  //it('should create', () => {
-  //  expect(component).toBeTruthy();
- // });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RegistrationComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

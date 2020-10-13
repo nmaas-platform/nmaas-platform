@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {InternationalizationService} from "../../../../service/internationalization.service";
-import {Language} from "../../../../model/language";
-import {TranslateService} from "@ngx-translate/core";
-import {ModalComponent} from "../../../../shared/modal";
+import {InternationalizationService} from '../../../../service/internationalization.service';
+import {Language} from '../../../../model/language';
+import {TranslateService} from '@ngx-translate/core';
+import {ModalComponent} from '../../../../shared/modal';
 
 @Component({
   selector: 'app-languagelist',
@@ -12,11 +12,12 @@ import {ModalComponent} from "../../../../shared/modal";
 export class LanguageListComponent implements OnInit {
 
   @ViewChild(ModalComponent, { static: true })
-  public modal:ModalComponent;
+  public modal: ModalComponent;
 
   public languages: Language[] = [];
 
-  constructor(public languageService:InternationalizationService, public translate: TranslateService) { }
+  constructor(public languageService: InternationalizationService,
+              public translate: TranslateService) { }
 
   ngOnInit() {
     this.modal.setModalType('error');
@@ -25,9 +26,9 @@ export class LanguageListComponent implements OnInit {
   }
 
   public changeLanguageState(language: Language) {
-    if(language.language !== this.translate.currentLang && language.language !== this.translate.getDefaultLang()){
+    if (language.language !== this.translate.currentLang && language.language !== this.translate.getDefaultLang()) {
       language.enabled = !language.enabled;
-      this.languageService.changeSupportedLanguageState(language).subscribe(()=>{
+      this.languageService.changeSupportedLanguageState(language).subscribe(() => {
         this.languageService.setUpdateRequiredFlag(true);
       }, () => this.modal.show())
     } else {

@@ -6,7 +6,9 @@ import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 import {catchError, debounceTime} from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class GenericDataService {
 
   constructor(protected http: HttpClient, protected appConfig: AppConfigService) {}

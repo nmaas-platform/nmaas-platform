@@ -7,7 +7,9 @@ import {AppConfigService} from './appconfig.service';
 
 import {Cluster} from '../model/cluster';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class ClusterService extends GenericDataService {
 
     protected url: string;
