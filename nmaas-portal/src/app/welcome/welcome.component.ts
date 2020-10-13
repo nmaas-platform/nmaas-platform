@@ -17,7 +17,8 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   private height = 0;
 
-  constructor(private appConfig: AppConfigService, private router: Router,
+  constructor(private appConfig: AppConfigService,
+              public router: Router,
               private serviceHealth: ServiceUnavailableService) {
   }
 

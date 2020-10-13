@@ -135,14 +135,15 @@
                     </div>
                 </div>
 			</div>
-			<div id="login-register-panel" class="col-lg-3 col-md-5 col-sm-6 col-xs-12 collapse pull-right login-vertical-offset"
-				 style="z-index: 800; position: fixed; right: 1px; margin-top: -15px; max-height: 50vh; font-size: 14px		;">
+			<div id="login-register-panel" class="col-lg-3 col-md-5 col-sm-6 col-xs-12 pull-right login-vertical-offset"
+				 [ngClass]="router.url.startsWith('/welcome/login?ssoUserId=') ? '' : 'collapse'"
+				 style="z-index: 800; position: fixed; right: 1px; margin-top: -15px; max-height: 50vh; font-size: 14px;">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 					</div>
 					<div class="panel-body" id="login-out" style="overflow-y: auto;">
 						<ul class="nav nav-tabs nav-justified">
-							<li role="login" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['login']">{{ 'WELCOME.LOGIN' | translate }}</a></li>
+							<li role="login" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:false}"><a [routerLink]="['login']">{{ 'WELCOME.LOGIN' | translate }}</a></li>
 							<li role="registration" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['registration']">{{ 'WELCOME.REGISTER' | translate }}</a></li>
 						</ul>
 						<router-outlet></router-outlet>

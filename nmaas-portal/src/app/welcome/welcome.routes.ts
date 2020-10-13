@@ -3,14 +3,14 @@ import {LogoutComponent} from './logout/logout.component';
 import {RegistrationComponent} from './registration/registration.component';
 import {Routes} from '@angular/router';
 import {WelcomeComponent} from './welcome.component';
-import {ProfileComponent} from "./profile/profile.component";
-import {AuthGuard} from "../auth/auth.guard";
-import {ComponentMode} from "../shared";
-import {CompleteComponent} from "./complete/complete.component";
-import {TermsAcceptanceComponent} from "./terms-acceptance/terms-acceptance.component";
-import {PasswordResetComponent} from "./passwordreset/password-reset.component";
-import {PrivacyPolicySubpageComponent} from "./privacy-policy-subpage/privacy-policy-subpage.component";
-import {AboutComponent} from "../shared/about/about.component";
+import {ProfileComponent} from './profile/profile.component';
+import {AuthGuard} from '../auth/auth.guard';
+import {ComponentMode} from '../shared';
+import {CompleteComponent} from './complete/complete.component';
+import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
+import {PasswordResetComponent} from './passwordreset/password-reset.component';
+import {PrivacyPolicySubpageComponent} from './privacy-policy-subpage/privacy-policy-subpage.component';
+import {AboutComponent} from '../shared/about/about.component';
 
 export const WelcomeRoutes: Routes = [
     {
