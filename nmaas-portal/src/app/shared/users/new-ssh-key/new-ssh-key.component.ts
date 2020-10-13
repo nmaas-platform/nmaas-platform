@@ -29,15 +29,15 @@ export class NewSshKeyComponent implements OnInit {
 
     this.requestForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(16)]],
-      key: ['', [Validators.required, Validators.pattern('^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+/]+[=]{0,3}( .*)?$')]],
+      key: ['', [Validators.required, Validators.pattern(/^(ssh-rsa AAAAB3NzaC1yc2|ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNT|ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzOD|ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1Mj|ssh-ed25519 AAAAC3NzaC1lZDI1NTE5|ssh-dss AAAAB3NzaC1kc3)[0-9A-Za-z+/]+[=]{0,3}( .*)?\s*$/)]],
     })
   }
 
   public create() {
     const request = new SSHKeyRequest();
     console.log(this.requestForm);
-    request.name = this.requestForm.value.name;
-    request.key = this.requestForm.value.key;
+    request.name = this.requestForm.value.name.trim();
+    request.key = this.requestForm.value.key.trim();
     this.keyService.createKey(request).subscribe(
         data => {
           this.error = undefined;
