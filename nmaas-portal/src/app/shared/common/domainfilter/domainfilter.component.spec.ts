@@ -4,7 +4,7 @@ import {DomainFilterComponent} from './domainfilter.component';
 import {RouterTestingModule} from '@angular/router/testing';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import createSpyObj = jasmine.createSpyObj;
-import {AppConfigService, DomainService} from '../../../service';
+import {DomainService} from '../../../service';
 import {AuthService} from '../../../auth/auth.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {of} from 'rxjs';
@@ -14,15 +14,35 @@ describe('DomainFilterComponent', () => {
     let component: DomainFilterComponent;
     let fixture: ComponentFixture<DomainFilterComponent>;
 
-    const domain: Domain = {
+    const domainG: Domain = {
         id: 1,
+        name: 'global',
+        codename: 'global',
+        active: true,
+        domainDcnDetails: undefined,
+        domainTechDetails: undefined,
+        applicationStatePerDomain: []
+    }
+
+    const domain1: Domain = {
+        id: 2,
         name: 'domain one',
         codename: 'dom-1',
         active: true,
         domainDcnDetails: undefined,
         domainTechDetails: undefined,
         applicationStatePerDomain: []
-    }
+    };
+
+    const domain2: Domain = {
+        id: 3,
+        name: 'domain two',
+        codename: 'dom-2',
+        active: true,
+        domainDcnDetails: undefined,
+        domainTechDetails: undefined,
+        applicationStatePerDomain: []
+    };
 
     beforeEach(async(() => {
         const authServiceSpy = createSpyObj('AuthService', ['hasRole']);
@@ -30,8 +50,8 @@ describe('DomainFilterComponent', () => {
 
         const domainServiceSpy = createSpyObj('DomainService', ['getGlobalDomainId', 'getAll', 'getMyDomains'])
         domainServiceSpy.getGlobalDomainId.and.returnValue(1)
-        domainServiceSpy.getAll.and.returnValue(of([domain]))
-        domainServiceSpy.getMyDomains.and.returnValue(of([domain]))
+        domainServiceSpy.getAll.and.returnValue(of([domainG, domain1, domain2]))
+        domainServiceSpy.getMyDomains.and.returnValue(of([domain1, domain2]))
 
         TestBed.configureTestingModule({
             declarations: [DomainFilterComponent],
@@ -53,7 +73,6 @@ describe('DomainFilterComponent', () => {
                         selectDomainId: function(data) {console.log('selectDomainId fake', data)},
                     }
                 },
-                {provide: AppConfigService, useValue: {}},
             ]
         })
             .compileComponents();
