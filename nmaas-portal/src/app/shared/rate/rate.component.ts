@@ -2,7 +2,6 @@ import {Component, EventEmitter, OnInit, Input, Output, ViewEncapsulation, OnCha
 
 import {AppsService} from '../../service';
 import {Rate} from '../../model';
-import {isNullOrUndefined} from 'util';
 
 @Component({
     selector: 'rate',
@@ -68,7 +67,7 @@ export class RateComponent implements OnInit, OnChanges {
 
     public countVotes(): void {
         let oneStarCount, twoStarCount, threeStarCount, fourStarCount, fiveStarCount;
-        if (!isNullOrUndefined(this.rate.rating)) {
+        if (this.rate.rating != null) {
             oneStarCount = (this.rate.rating.hasOwnProperty(1) ? this.rate.rating[1] : 0);
             twoStarCount = (this.rate.rating.hasOwnProperty(2) ? this.rate.rating[2] : 0);
             threeStarCount = (this.rate.rating.hasOwnProperty(3) ? this.rate.rating[3] : 0);

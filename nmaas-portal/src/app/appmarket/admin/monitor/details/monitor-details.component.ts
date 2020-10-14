@@ -3,7 +3,6 @@ import {MonitorService} from '../../../../service/monitor.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MonitorEntry, ServiceType, TimeFormat} from '../../../../model/monitorentry';
 import {BaseComponent} from '../../../../shared/common/basecomponent/base.component';
-import {isNullOrUndefined} from 'util';
 
 @Component({
     selector: 'nmaas-monitordetails',
@@ -29,7 +28,7 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
     ngOnInit() {
         this.mode = this.getMode(this.route);
         this.route.params.subscribe(params => {
-            if (!isNullOrUndefined(params['name'])) {
+            if (params['name'] != null) {
                 this.monitorService.getOneMonitorEntry(params['name']).subscribe(
                     entry => {
                         this.monitorEntry = entry;

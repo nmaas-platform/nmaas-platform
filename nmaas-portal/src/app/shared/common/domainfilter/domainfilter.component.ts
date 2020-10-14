@@ -3,10 +3,9 @@ import {Domain} from '../../../model/domain';
 import {DomainService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit} from '@angular/core';
-import {Subscription, Observable, of} from 'rxjs';
+import {Subscription, Observable, of, interval} from 'rxjs';
 
 import {map} from 'rxjs/operators';
-import {interval} from 'rxjs/internal/observable/interval';
 
 @Component({
     selector: 'nmaas-domain-filter',

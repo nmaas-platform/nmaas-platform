@@ -5,7 +5,6 @@ import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {isNullOrUndefined} from 'util';
 import {Authority} from '../model/authority';
 import {catchError, debounceTime} from 'rxjs/operators';
 
@@ -47,10 +46,10 @@ export class AuthService {
   }
 
   public getSelectedLanguage(): string {
-    if (!isNullOrUndefined(localStorage.getItem('lang'))) {
+    if (localStorage.getItem('lang') != null) {
       return localStorage.getItem('lang')
     }
-    return !isNullOrUndefined(this.getToken()) ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
+    return this.getToken() != null ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
   }
 
   public getUsername(): string {

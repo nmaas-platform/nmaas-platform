@@ -4,7 +4,6 @@ import {Router} from '@angular/router';
 import {CanActivate, CanActivateChild, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
 import {AuthService} from './auth.service';
 import {Observable} from 'rxjs';
-import {isArray, isUndefined} from 'util';
 
 @Injectable()
 export class RoleGuard implements CanActivate, CanActivateChild {
@@ -34,13 +33,13 @@ export class RoleGuard implements CanActivate, CanActivateChild {
   protected getAllowedRoles(route: ActivatedRouteSnapshot): Role[] {
     const roles: Role[] = [];
 
-    if (isUndefined(route) || isUndefined(route.data) || isUndefined(route.data.roles)) {
+    if (route === undefined || route.data === undefined || route.data.roles === undefined) {
       throw new Error('Missing allowed roles');
     }
 
     console.debug('ROLEGUARD: roles ' + route.data.roles);
 
-    if (isArray(route.data.roles)) {
+    if (Array.isArray(route.data.roles)) {
       console.debug('ROLEGUARD: roles length: ' + route.data.roles.length);
       for (let i = 0; i < route.data.roles.length; i++) {
         console.debug('ROLEGUARD: role: ' + route.data.roles[i]);

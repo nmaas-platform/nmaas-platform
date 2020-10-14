@@ -9,7 +9,6 @@ import {ComponentMode} from '../../../shared/common/componentmode';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {Observable, of} from 'rxjs';
-import {isNullOrUndefined} from 'util';
 
 @Component({
   selector: 'app-userslist',
@@ -43,7 +42,7 @@ export class UsersListComponent implements OnInit {
 
   public update(domainId: number): void {
     console.log('Update users for domainId=' + domainId);
-    if (isNullOrUndefined(domainId) || domainId === 0) {
+    if (domainId == null || domainId === 0) {
       this.domainId = undefined;
     } else {
       this.domainId = domainId;
@@ -53,7 +52,7 @@ export class UsersListComponent implements OnInit {
 
     if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])) {
       users = this.userService.getAll(this.domainId);
-    } else if (!isNullOrUndefined(this.domainId) && this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
+    } else if (this.domainId != null && this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
       users = this.userService.getAll(this.domainId);
     } else {
       users = of<User[]>([]);
