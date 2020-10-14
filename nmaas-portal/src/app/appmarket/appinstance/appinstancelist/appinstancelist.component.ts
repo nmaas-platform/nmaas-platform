@@ -203,4 +203,8 @@ export class AppInstanceListComponent implements OnInit {
     });
     return outputString;
   }
+
+  public userHasGuestRoleInCurrentDomain(): boolean {
+    return this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
+  }
 }
