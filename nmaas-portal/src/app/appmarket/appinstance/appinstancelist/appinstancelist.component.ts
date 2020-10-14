@@ -1,18 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 
-import {isNullOrUndefined, isUndefined} from 'util';
-
 import {AppInstance, AppInstanceState} from '../../../model';
 import {DomainService} from '../../../service';
-import {AppInstanceService, AppsService, CustomerSearchCriteria} from '../../../service';
+import {AppInstanceService, CustomerSearchCriteria} from '../../../service';
 import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable, of} from 'rxjs';
-import {NgxPaginationModule} from 'ngx-pagination';
 import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
-import {TranslateStateModule} from '../../../shared/translate-state/translate-state.module';
 import {SessionService} from '../../../service/session.service';
 import {Domain} from '../../../model/domain';
 
@@ -89,7 +85,7 @@ export class AppInstanceListComponent implements OnInit {
       // adjust display for GUESTS and USERS (they cannot own any instance)
       if (this.authService.hasDomainRole(domainId, 'ROLE_USER') ||
           this.authService.hasDomainRole(domainId, 'ROLE_GUEST') ||
-          isNullOrUndefined(domainId)) {
+          domainId == null) {
         this.listSelection = AppInstanceListSelection.ALL;
       }
 
@@ -124,7 +120,7 @@ export class AppInstanceListComponent implements OnInit {
     if (domainId !== this.domainId) {
       this.undeployedVisible = false; // hide undeployed instances when domain is changed
     }
-    if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
+    if (domainId === undefined || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
       this.domainId = this.appConfig.getNmaasGlobalDomainId();
       // get instances in global domain only for users who are not guests in global domain
       if (!this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST')) {

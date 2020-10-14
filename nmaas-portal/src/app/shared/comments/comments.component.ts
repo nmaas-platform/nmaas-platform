@@ -2,8 +2,7 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation} f
 
 import {AppsService} from '../../service/index';
 import {Comment, Id} from '../../model/index';
-import {isNullOrUndefined} from "util";
-import {AuthService} from "../../auth/auth.service";
+import {AuthService} from '../../auth/auth.service';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
@@ -28,7 +27,7 @@ export class CommentsComponent implements OnInit, OnChanges {
 
     subComment: boolean;
 
-    active:boolean = false;
+    active = false;
 
     replyErrorMsg: string;
 
@@ -43,79 +42,79 @@ export class CommentsComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        //this.refresh();
+        // this.refresh();
     }
 
     ngOnInit() {
         this.refresh();
     }
 
-    public loadMoreComments(total: number, id: string){
+    public loadMoreComments(total: number, id: string) {
         document.getElementById(id).hidden = true;
-        if(this.showMainCommentsList + 5 >= total){
+        if (this.showMainCommentsList + 5 >= total) {
             this.showMainCommentsList = total;
-        }else{
+        } else {
             this.showMainCommentsList = this.showMainCommentsList + 5;
         }
     }
 
-    public loadMore(total: number, id: string, parent: number): void{
+    public loadMore(total: number, id: string, parent: number): void {
         document.getElementById(id).hidden = true;
-        if(this.show[parent] + 3 >= total){
+        if (this.show[parent] + 3 >= total) {
             this.show[parent] = total;
-        }else{
+        } else {
             this.show[parent] = this.show[parent] + 3;
         }
     }
 
     public refresh(): void {
-        this.appsService.getAppCommentsByUrl(this.pathUrl).subscribe(comments =>{
+        this.appsService.getAppCommentsByUrl(this.pathUrl).subscribe(comments => {
             this.comments = comments;
-            for(let comm of comments){
-                if(this.show[comm.id] == null || isNullOrUndefined(this.show[comm.id])) {
+            for (const comm of comments) {
+                if (this.show[comm.id] == null || this.show[comm.id] == null) {
                     this.show[comm.id] = 3;
                 }
             }
         });
     }
 
-    public debugLog(i: number): void{
-        console.debug("Iterator i: ", i);
+    public debugLog(i: number): void {
+        console.debug('Iterator i: ', i);
     }
 
     public addComment(): void {
-        console.debug("Add init");
-        if(isNullOrUndefined(this.newComment.comment) || this.newComment.comment === ''){
+        console.debug('Add init');
+        if (this.newComment.comment == null || this.newComment.comment === '') {
             this.commentErrorMsg = this.translate.instant('SUBSCRIPTION.COMMENTS_NOT_EMPTY_MESSAGE');
-        } else{
+        } else {
             this.appsService.addAppCommentByUrl(this.pathUrl, this.newComment)
                 .subscribe(id => {
-                    console.debug("Add successfully: ", this.newComment.comment, " ", this.newComment.parentId);
+                    console.debug('Add successfully: ', this.newComment.comment, ' ', this.newComment.parentId);
                     this.newComment = new Comment();
                     this.commentErrorMsg = undefined;
                     this.refresh();
-                }, err=> this.commentErrorMsg = err.message);
+                }, err => this.commentErrorMsg = err.message);
         }
     }
 
-    public addReply(parentId:number):void{
-        if(isNullOrUndefined(this.newReply.comment) || this.newReply.comment === '') {
+    public addReply(parentId: number): void {
+        if (this.newReply.comment == null || this.newReply.comment === '') {
             this.replyErrorMsg = this.translate.instant('SUBSCRIPTION.COMMENTS_NOT_EMPTY_MESSAGE');
-        } else{
+        } else {
             this.newReply.parentId = parentId;
             this.appsService.addAppCommentByUrl(this.pathUrl, this.newReply)
                 .subscribe(id => {
                     this.newReply = new Comment();
                     this.refresh();
                     this.active = false;
-                }, err=> this.replyErrorMsg = err.message);
+                }, err => this.replyErrorMsg = err.message);
         }
     }
 
-    private addReplyBasedOnEvent(parentId: number, text: string){
-        if(isNullOrUndefined(text) || text === ''){
+    private addReplyBasedOnEvent(parentId: number, text: string) {
+        if (text == null || text === '') {
             this.commentErrorMsg = this.translate.instant('SUBSCRIPTION.COMMENTS_NOT_EMPTY_MESSAGE');
-        } else{
+        } else {
             this.newComment = new Comment();
             this.newComment.comment = text;
             this.newComment.parentId = parentId;
@@ -124,7 +123,7 @@ export class CommentsComponent implements OnInit, OnChanges {
                   this.newComment = new Comment();
                   this.commentErrorMsg = undefined;
                   this.refresh();
-              }, err=> this.commentErrorMsg = err.message);
+              }, err => this.commentErrorMsg = err.message);
         }
     }
 
@@ -134,18 +133,18 @@ export class CommentsComponent implements OnInit, OnChanges {
             );
     }
 
-    OnRemove($event){
+    OnRemove($event) {
         this.deleteComment($event);
     }
 
-    onAddReply($event){
+    onAddReply($event) {
         this.addReplyBasedOnEvent($event['id'], $event['text']);
     }
 
-    public setCommentNumberOnClick(commentId:number, subComment:boolean){
+    public setCommentNumberOnClick(commentId: number, subComment: boolean) {
         this.commentId = commentId;
         this.subComment = subComment;
-        this.newReply.comment = "";
+        this.newReply.comment = '';
         this.active = true;
         this.replyErrorMsg = undefined;
     }

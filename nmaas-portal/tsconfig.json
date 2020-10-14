@@ -10,7 +10,7 @@
       "es6"
     ],
     "mapRoot": "./",
-    "module": "esnext",
+    "module": "es2020",
     "moduleResolution": "node",
     "outDir": "./build",
     "sourceMap": true,

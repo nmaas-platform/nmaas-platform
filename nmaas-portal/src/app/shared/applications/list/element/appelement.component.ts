@@ -3,7 +3,6 @@ import {AppImagesService} from '../../../../service';
 import {RateComponent} from '../../../rate';
 import {DefaultLogo} from '../../../../directive/defaultlogo.directive';
 
-import {isUndefined} from 'util';
 import {SecurePipe} from '../../../../pipe';
 import {Router} from '@angular/router';
 import {AppInstallModalComponent} from '../../../modal/appinstall';
@@ -53,7 +52,7 @@ export class AppElementComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    if (isUndefined(this.selected)) {
+    if (this.selected === undefined) {
       this.selected = false;
     }
   }

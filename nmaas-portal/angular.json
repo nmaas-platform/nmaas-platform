@@ -11,6 +11,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "lodash", "formiojs"
+            ],
             "aot": true,
             "outputPath": "build/app",
             "index": "src/index.html",
