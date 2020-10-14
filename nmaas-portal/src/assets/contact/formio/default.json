@@ -1,0 +1,58 @@
+{
+  "display": "form",
+  "components": [
+    {
+      "label": "Email",
+      "placeholder": "Your email",
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "required": true
+      },
+      "key": "email",
+      "type": "email",
+      "input": true
+    },
+    {
+      "label": "Name",
+      "placeholder": "Your name",
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 30
+      },
+      "key": "name",
+      "type": "textfield",
+      "input": true
+    },
+    {
+      "label": "Message",
+      "placeholder": "Please type your message here",
+      "autoExpand": false,
+      "showCharCount": true,
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "required": true,
+        "minLength": 0,
+        "maxLength": 600
+      },
+      "key": "message",
+      "type": "textarea",
+      "rows": 5,
+      "input": true
+    },
+    {
+      "label": "Submit",
+      "showValidations": false,
+      "block": true,
+      "disableOnInvalid": true,
+      "tableView": false,
+      "key": "submit",
+      "type": "button",
+      "input": true
+    }
+  ]
+}

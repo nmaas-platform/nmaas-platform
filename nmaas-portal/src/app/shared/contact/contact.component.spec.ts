@@ -2,14 +2,14 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ContactComponent} from './contact.component';
 import {ModalComponent} from '../modal';
-import {RouterTestingModule} from '@angular/router/testing';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
 import createSpyObj = jasmine.createSpyObj;
 import {of} from 'rxjs';
-import {TooltipModule} from 'ng2-tooltip-directive';
+import {FormioModule} from 'angular-formio';
+import {ContactFormService} from '../../service/contact-form.service';
+import {EventEmitter} from '@angular/core';
 
 describe('ContactComponent', () => {
     let component: ContactComponent;
@@ -21,14 +21,14 @@ describe('ContactComponent', () => {
     const notificationServiceSpy = createSpyObj('NotificationService', ['sendMail'])
     notificationServiceSpy.sendMail.and.returnValue(of({}))
 
+    const contactFormServiceSpy = createSpyObj('ContactFormService', ['getForm'])
+    contactFormServiceSpy.getForm.and.returnValue(of({}))
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ContactComponent, ModalComponent],
             imports: [
-                RouterTestingModule,
-                ReactiveFormsModule,
-                FormsModule,
-                TooltipModule,
+                FormioModule,
                 TranslateModule.forRoot({
                     loader: {
                         provide: TranslateLoader,
@@ -39,6 +39,7 @@ describe('ContactComponent', () => {
             providers: [
                 {provide: ReCaptchaV3Service, useValue: recaptchaSpy},
                 {provide: NotificationService, useValue: notificationServiceSpy},
+                {provide: ContactFormService, useValue: contactFormServiceSpy},
             ]
         }).compileComponents();
     });
@@ -54,11 +55,18 @@ describe('ContactComponent', () => {
     });
 
     it('should send mail when valid', () => {
-        component.mailForm.get('email').setValue('mail@man.poznan.pl')
-        component.mailForm.get('name').setValue('Mail')
-        component.mailForm.get('message').setValue('TEST')
 
-        component.sendMail();
+        component.ready({
+            'formio': new EventEmitter<any>()
+        });
+
+        const data = {
+            'email': 'mail@user.com',
+            'name': 'TEST',
+            'message': 'TEST',
+        }
+
+        component.onSubmit(data);
 
         expect(notificationServiceSpy.sendMail).toHaveBeenCalledTimes(1);
     })

@@ -1,38 +1,6 @@
-<form (ngSubmit)="sendMail()" [formGroup]="mailForm">
-    <div class="form-group form-group-sm col-md-11 col-lg-9" [ngClass]="{'has-error':  mailForm.controls.email.invalid && mailForm.controls.email.dirty,
-                                'has-success': mailForm.controls.email.valid && mailForm.controls.email.dirty}">
-        <label for="email" class="control-label">{{'CONTACT_FORM.EMAIL' | translate}}:</label>
-        <input id="email" class="form-control short-input"
-               placeholder="{{'CONTACT_FORM.EMAIL' | translate}}" formControlName="email">
-    </div>
-    <div class="col-md-1 col-lg-3"></div>
-    <div class="form-group form-group-sm col-md-11 col-lg-9" [ngClass]="{'has-error':  mailForm.controls.name.invalid && mailForm.controls.name.dirty,
-                                 'has-success': mailForm.controls.name.valid && mailForm.controls.name.dirty}">
-        <label for="name" class="control-label">{{'CONTACT_FORM.NAME' | translate}}:</label>
-        <input id="name" class="form-control  short-input"
-               placeholder="{{'CONTACT_FORM.NAME' | translate}}" formControlName="name">
-    </div>
-    <div class="col-md-1 col-lg-3"></div>
-    <div class="form-group form-group-sm col-md-11 col-lg-9" [ngClass]="{'has-error':  mailForm.controls.message.invalid && mailForm.controls.message.dirty,
-                                 'has-success': mailForm.controls.message.valid && mailForm.controls.message.dirty}">
-        <label for="message" class="control-label">{{'CONTACT_FORM.MESSAGE' | translate}}:</label>
-        <textarea id="message" class="form-control textarea-contact"
-                  placeholder="{{'CONTACT_FORM.MESSAGE_PLACEHOLDER' | translate}}"
-                  formControlName="message"></textarea>
-    </div>
-    <div class="row" style="padding-left: 15px; padding-right: 15px;">
-        <div class="form-group form-group-sm col-md-11 col-lg-9">
-            <button class="btn btn-primary btn-block"
-                    [tooltip]="'To send a message you have to provide all above information and confirm that you are not a robot!'"
-                    [disabled]="!mailForm.valid" type="submit" validate>
-                {{'CONTACT_FORM.SUBMIT_BUTTON' | translate}}
-            </button>
-            <div *ngIf="errorMessage" class="alert alert-danger text-center">
-                {{errorMessage}}
-            </div>
-        </div>
-    </div>
-</form>
+<formio *ngIf="currentFormTemplate" [form]="currentFormTemplate"
+        (ready)="ready($event)"
+        (submit)="onSubmit($event.data)"></formio>
 
 <nmaas-modal (click)="modal.hide()">
     <div class="nmaas-modal-header">{{'CONTACT_FORM.MODAL.TITLE' | translate}}</div>
