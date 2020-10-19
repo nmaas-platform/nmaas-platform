@@ -4,6 +4,7 @@ import {Mail} from '../../model/mail';
 import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
 import {ContactFormService} from '../../service/contact-form.service';
+import {ContactFormType} from '../../model/contact-form-type';
 
 @Component({
     selector: 'app-contact',
@@ -20,6 +21,9 @@ export class ContactComponent implements OnInit {
     public currentForm: any;
     public currentFormTemplate: any;
 
+    public selectedFormKey = 'CONTACT';
+    public formTypes: Map<string, ContactFormType> = new Map();
+
     constructor(private recaptchaV3Service: ReCaptchaV3Service,
                 private notificationService: NotificationService,
                 private contactFormProvider: ContactFormService) {
@@ -30,6 +34,9 @@ export class ContactComponent implements OnInit {
         this.modal.setModalType('info');
         this.contactFormProvider.getForm('default').subscribe(
             form => this.currentFormTemplate = form
+        );
+        this.contactFormProvider.getAllFormTypesAsMap().subscribe(
+            data => this.formTypes = data
         );
     }
 
@@ -56,6 +63,10 @@ export class ContactComponent implements OnInit {
         this.currentForm.emit('submitDone');
         // TODO find proper way to reset form
         setTimeout(this.currentForm.emit('reset'), 5000)
+    }
+
+    public getFormOptions(): string[] {
+        return Array.from(this.formTypes.keys());
     }
 
 }

@@ -30,4 +30,12 @@ describe('ContactFormService', () => {
         data => expect(data).toBeTruthy()
     );
   });
+
+  it('should return predefined list of contact types as map', () => {
+    service.getAllFormTypesAsMap().subscribe(
+        data => {
+          expect(data).toBeTruthy();
+        }
+    )
+  })
 });

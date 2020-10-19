@@ -10,6 +10,7 @@ import {of} from 'rxjs';
 import {FormioModule} from 'angular-formio';
 import {ContactFormService} from '../../service/contact-form.service';
 import {EventEmitter} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 describe('ContactComponent', () => {
     let component: ContactComponent;
@@ -21,14 +22,19 @@ describe('ContactComponent', () => {
     const notificationServiceSpy = createSpyObj('NotificationService', ['sendMail'])
     notificationServiceSpy.sendMail.and.returnValue(of({}))
 
-    const contactFormServiceSpy = createSpyObj('ContactFormService', ['getForm'])
+    const contactFormServiceSpy = createSpyObj('ContactFormService', ['getForm', 'getAllFormTypesAsMap'])
     contactFormServiceSpy.getForm.and.returnValue(of({}))
+    contactFormServiceSpy.getAllFormTypesAsMap.and.returnValue(of(new Map([
+        ['CONTACT', null],
+        ['ISSUES', null]
+    ])));
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [ContactComponent, ModalComponent],
             imports: [
                 FormioModule,
+                FormsModule,
                 TranslateModule.forRoot({
                     loader: {
                         provide: TranslateLoader,

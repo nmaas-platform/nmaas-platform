@@ -1,3 +1,10 @@
+<div>
+    <label for="selectedFormKey">Select category:</label>
+    <select id="selectedFormKey" [(ngModel)]="selectedFormKey" name="selectedFormKey">
+        <option *ngFor="let k of getFormOptions()" [value]="k">{{k | translate}}</option>
+    </select>
+</div>
+
 <formio *ngIf="currentFormTemplate" [form]="currentFormTemplate"
         (ready)="ready($event)"
         (submit)="onSubmit($event.data)"></formio>
