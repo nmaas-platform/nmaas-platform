@@ -30,7 +30,7 @@ spring.http.encoding.force=true
 
 #Prometheus metrics
 nmaas.metrics.enabled=${METRICS_ENABLED}
-management.endpoints.web.exposure.include=prometheus
+management.endpoints.web.exposure.include=health,prometheus
 
 # ---------------- #
 # Database         #
