@@ -10,7 +10,9 @@ import {of} from 'rxjs';
 import {FormioModule} from 'angular-formio';
 import {ContactFormService} from '../../service/contact-form.service';
 import {EventEmitter} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AuthService} from '../../auth/auth.service';
+import {AccessModifier} from '../../model/contact-form-type';
 
 describe('ContactComponent', () => {
     let component: ContactComponent;
@@ -25,8 +27,8 @@ describe('ContactComponent', () => {
     const contactFormServiceSpy = createSpyObj('ContactFormService', ['getForm', 'getAllFormTypesAsMap'])
     contactFormServiceSpy.getForm.and.returnValue(of({}))
     contactFormServiceSpy.getAllFormTypesAsMap.and.returnValue(of(new Map([
-        ['CONTACT', null],
-        ['ISSUES', null]
+        ['CONTACT', {key: 'CONTACT', access: AccessModifier.ALL, templateName: 'default'}],
+        ['ISSUES', {key: 'ISSUES', access: AccessModifier.ALL, templateName: 'default'}]
     ])));
 
     beforeEach(async () => {
@@ -35,6 +37,7 @@ describe('ContactComponent', () => {
             imports: [
                 FormioModule,
                 FormsModule,
+                ReactiveFormsModule,
                 TranslateModule.forRoot({
                     loader: {
                         provide: TranslateLoader,
@@ -46,6 +49,7 @@ describe('ContactComponent', () => {
                 {provide: ReCaptchaV3Service, useValue: recaptchaSpy},
                 {provide: NotificationService, useValue: notificationServiceSpy},
                 {provide: ContactFormService, useValue: contactFormServiceSpy},
+                {provide: AuthService, useValue: {}},
             ]
         }).compileComponents();
     });
@@ -74,6 +78,7 @@ describe('ContactComponent', () => {
 
         component.onSubmit(data);
 
+        expect(recaptchaSpy.execute).toHaveBeenCalledTimes(1);
         expect(notificationServiceSpy.sendMail).toHaveBeenCalledTimes(1);
     })
 });

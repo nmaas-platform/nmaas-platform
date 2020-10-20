@@ -1,11 +1,17 @@
-<div>
-    <label for="selectedFormKey">Select category:</label>
-    <select id="selectedFormKey" [(ngModel)]="selectedFormKey" name="selectedFormKey">
-        <option *ngFor="let k of getFormOptions()" [value]="k">{{k | translate}}</option>
-    </select>
-</div>
+<form [formGroup]="selectForm">
+    <div class="form-group">
+        <label for="selectedFormKey">Select category:</label>
+        <select id="selectedFormKey" [formControlName]="'formKey'" name="selectedFormKey" class="form-control">
+            <option *ngFor="let k of getFormOptions()" [value]="k">{{k | translate}}</option>
+        </select>
+    </div>
+</form>
 
-<formio *ngIf="currentFormTemplate" [form]="currentFormTemplate"
+<hr/>
+
+<formio *ngIf="currentFormioTemplate" [form]="currentFormioTemplate"
+        [success]="successEmitter"
+        [refresh]="refreshForm"
         (ready)="ready($event)"
         (submit)="onSubmit($event.data)"></formio>
 

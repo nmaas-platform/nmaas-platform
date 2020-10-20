@@ -1,0 +1,6 @@
+[
+  {"key": "CONTACT", "access": "ALL", "templateName": "default"},
+  {"key": "ISSUE", "access": "ALL", "templateName": "default"},
+  {"key": "FEATURE_REQUEST", "access": "ALL", "templateName": "default"},
+  {"key": "ACCESS_REQUEST", "access": "ONLY_NOT_LOGGED_IN", "templateName": "default"}
+]

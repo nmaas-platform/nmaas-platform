@@ -9,37 +9,35 @@ import {AccessModifier, ContactFormType} from '../model/contact-form-type';
 })
 export class ContactFormService {
 
-    private readonly formsPath = 'assets/contact/formio/'
+    private readonly formsPath = 'assets/contact/'
     private readonly default = 'default';
-
-    /**
-     * provide default static list of possible contact forms to be selected
-     * consider loading it from static json instead of hard coding into function code
-     * for static serving purposes
-     */
-    private readonly formTypes: ContactFormType[] = [
-        {key: 'CONTACT', access: AccessModifier.ALL, templateName: this.default},
-        {key: 'ISSUE', access: AccessModifier.ALL, templateName: this.default},
-        {key: 'FEATURE_REQUEST', access: AccessModifier.ALL, templateName: this.default},
-        {key: 'ACCESS_REQUEST', access: AccessModifier.ONLY_NOT_LOGGED_IN, templateName: this.default}
-    ]
 
     constructor(private http: HttpClient) {
     }
 
     public getForm(name: string): Observable<any> {
-        return this.http.get(this.formsPath + name + '.json').pipe(
+        return this.http.get(this.formsPath + 'formio/' + name + '.json').pipe(
             catchError(
                 err => {
                     console.error('ERROR getting contact form template', err)
-                    return this.http.get(this.formsPath + this.default + '.json')
+                    return this.http.get(this.formsPath + 'formio/' + this.default + '.json')
                 }
             )
         )
     }
 
     public getAllFormTypes(): Observable<ContactFormType[]> {
-        return of(this.formTypes)
+        return this.http.get<ContactFormType[]>(this.formsPath + 'types.json').pipe(
+            catchError(
+                err => {
+                    console.error('ERROR getting contact types list', err);
+                    // return default form type
+                    return of([
+                        {key: 'CONTACT', access: AccessModifier.ALL, templateName: this.default}
+                    ])
+                }
+            )
+        )
     }
 
     public getAllFormTypesAsMap(): Observable<Map<string, ContactFormType>> {
