@@ -36,6 +36,7 @@ describe('ContactFormService', () => {
         service.getAllFormTypesAsMap().subscribe(
             data => {
                 expect(data).toBeTruthy();
+                expect(data.keys()).toBeDefined();
             }
         )
     });

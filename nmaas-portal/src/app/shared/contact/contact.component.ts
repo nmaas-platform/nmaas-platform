@@ -4,7 +4,7 @@ import {Mail} from '../../model/mail';
 import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
 import {ContactFormService} from '../../service/contact-form.service';
-import {ContactFormType} from '../../model/contact-form-type';
+import {AccessModifier, ContactFormType, parseAccessModifier} from '../../model/contact-form-type';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs';
@@ -43,6 +43,7 @@ export class ContactComponent implements OnInit {
 
     ngOnInit(): void {
         this.modal.setModalType('info');
+        // download types map, set default form values
         this.contactFormProvider.getAllFormTypesAsMap().pipe(
             tap(typesMap => {this.formTypesMap = typesMap; this.formType = this.formTypesMap.get(this.DEFAULT_FORM_KEY)}),
             switchMap(typesMap => this.contactFormProvider.getForm(typesMap.get(this.DEFAULT_FORM_KEY).templateName))
@@ -50,13 +51,14 @@ export class ContactComponent implements OnInit {
             form => this.currentFormioTemplate = form
         );
 
+        // subscribe to form changes
         this.selectForm.valueChanges.pipe(
             tap(result => console.log(result)),
-            map(result => result.formKey),
-            map(formTypeKey => this.formTypesMap.get(formTypeKey)),
-            tap( formType => this.formType = formType),
-            map(formType => formType.templateName),
-            switchMap(formTemplateName => this.contactFormProvider.getForm(formTemplateName))
+            map(result => result.formKey), // retrieve form key
+            map(formTypeKey => this.formTypesMap.get(formTypeKey)), // retrieve related formType object
+            tap( formType => this.formType = formType), // set most recent formType
+            map(formType => formType.templateName), // retrieve template name
+            switchMap(formTemplateName => this.contactFormProvider.getForm(formTemplateName)) // retrieve form value
         ).subscribe(
             form => this.currentFormioTemplate = form
         )
@@ -68,10 +70,11 @@ export class ContactComponent implements OnInit {
     }
 
     private sendMail(data: any): Observable<void> {
+        // submit captcha request
         return this.recaptchaV3Service.execute('contactForm').pipe(
             map((token) => {
-                const result = {token, mail: new Mail()}
-                result.mail.otherAttributes = data;
+                const result = {token, mail: new Mail()} // create mail object
+                result.mail.otherAttributes = data; // set properties and mail attributes
                 result.mail.otherAttributes.subject = this.formType.emailSubject;
                 result.mail.otherAttributes.subType = this.formType.key;
                 result.mail.mailType = 'CONTACT_FORM';
@@ -99,7 +102,22 @@ export class ContactComponent implements OnInit {
     }
 
     public getFormOptions(): string[] {
-        return Array.from(this.formTypesMap.keys());
+        return Array.from(this.formTypesMap.keys()).filter(key => this.shouldDisplayFormType(key));
+    }
+
+    public shouldDisplayFormType(value: string): boolean {
+        const access: AccessModifier = parseAccessModifier(this.formTypesMap.get(value).access);
+        switch (access) {
+            case AccessModifier.ALL:
+                return true;
+            case AccessModifier.ONLY_LOGGED_IN:
+                return this.authService.isLogged();
+            case AccessModifier.ONLY_NOT_LOGGED_IN:
+                return !this.authService.isLogged();
+            default:
+                console.log('Something went wrong')
+                return false;
+        }
     }
 
 }

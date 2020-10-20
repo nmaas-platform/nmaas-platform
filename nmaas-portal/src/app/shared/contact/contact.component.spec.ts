@@ -5,7 +5,6 @@ import {ModalComponent} from '../modal';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
-import createSpyObj = jasmine.createSpyObj;
 import {of} from 'rxjs';
 import {FormioModule} from 'angular-formio';
 import {ContactFormService} from '../../service/contact-form.service';
@@ -13,6 +12,7 @@ import {EventEmitter} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AuthService} from '../../auth/auth.service';
 import {AccessModifier} from '../../model/contact-form-type';
+import createSpyObj = jasmine.createSpyObj;
 
 describe('ContactComponent', () => {
     let component: ContactComponent;
@@ -28,8 +28,13 @@ describe('ContactComponent', () => {
     contactFormServiceSpy.getForm.and.returnValue(of({}))
     contactFormServiceSpy.getAllFormTypesAsMap.and.returnValue(of(new Map([
         ['CONTACT', {key: 'CONTACT', access: AccessModifier.ALL, templateName: 'default'}],
-        ['ISSUES', {key: 'ISSUES', access: AccessModifier.ALL, templateName: 'default'}]
+        ['ISSUES', {key: 'ISSUES', access: AccessModifier.ONLY_LOGGED_IN, templateName: 'issues'}],
+        ['ACCESS_REQUEST', {key: 'ACCESS_REQUEST', access: AccessModifier.ONLY_NOT_LOGGED_IN, templateName: 'default'}],
+        ['ERROR', {key: 'ERROR', access: null}],
     ])));
+
+    const authServiceSpy = createSpyObj('AuthService', ['isLogged']);
+    authServiceSpy.isLogged.and.returnValue('false');
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -49,7 +54,7 @@ describe('ContactComponent', () => {
                 {provide: ReCaptchaV3Service, useValue: recaptchaSpy},
                 {provide: NotificationService, useValue: notificationServiceSpy},
                 {provide: ContactFormService, useValue: contactFormServiceSpy},
-                {provide: AuthService, useValue: {}},
+                {provide: AuthService, useValue: authServiceSpy},
             ]
         }).compileComponents();
     });
@@ -80,5 +85,11 @@ describe('ContactComponent', () => {
 
         expect(recaptchaSpy.execute).toHaveBeenCalledTimes(1);
         expect(notificationServiceSpy.sendMail).toHaveBeenCalledTimes(1);
-    })
+    });
+
+    it('should update formio form after selectForm is updated', () => {
+        component.selectForm.get('formKey').setValue('ISSUES')
+
+        expect(contactFormServiceSpy.getForm).toHaveBeenCalledWith('issues');
+    });
 });
