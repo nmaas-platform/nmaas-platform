@@ -764,11 +764,15 @@
   },
   "CONTACT_FORM": {
     "TITLE": "Kontaktformular",
-    "EMAIL": "Ihre E-Mail",
-    "NAME": "Ihr Name",
-    "MESSAGE": "Ihre Nachricht",
-    "MESSAGE_PLACEHOLDER": "Bitte schreiben Sie hier Ihre Nachricht",
-    "SUBMIT_BUTTON": "Senden",
+    "FORMIO": {
+      "EMAIL": "E-Mail",
+      "EMAIL_PLACEHOLDER": "Ihre E-Mail",
+      "NAME": "Name",
+      "NAME_PLACEHOLDER": "Ihr Name",
+      "MESSAGE": "Ihre Nachricht",
+      "MESSAGE_PLACEHOLDER": "Bitte schreiben Sie hier Ihre Nachricht",
+      "Submit": "Senden"
+    },
     "MODAL": {
       "TITLE": "Mail wurde versendet",
       "MESSAGE": "Das NMaaS Team wird bald antworten.",
