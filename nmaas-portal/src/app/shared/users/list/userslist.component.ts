@@ -12,6 +12,7 @@ import {UserDataService} from '../../../service/userdata.service';
 import {AuthService} from '../../../auth/auth.service';
 import {map, shareReplay, take} from 'rxjs/operators';
 import {CustomerSearchCriteria} from '../../../service';
+import {strict} from 'assert';
 
 @Component({
   selector: 'nmaas-userslist',
@@ -137,7 +138,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     this.users.sort(
         (a: User, b: User) => {
           const direction = criteria.sortDirection === 'asc' ? 1 : -1;
-          let result = 0;
+          let result: number;
+
+          let p1: any, p2: any;
 
           // sorting rules for custom columns
           if (criteria.sortColumn === 'domains') {
@@ -147,18 +150,27 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
             if (!bd) { console.log(bd); }
             const ar = ad.length > 0 ? ad[0].domainId : 0;
             const br = bd.length > 0 ? bd[0].domainId : 0;
-            result = baseSortFunc(ar, br);
+            p1 = ar; p2 = br;
           } else if (criteria.sortColumn === 'globalRole') {
-            result = baseSortFunc(this.getGlobalRole(a) , this.getGlobalRole(b))
+            p1 = this.getGlobalRole(a);
+            p2 = this.getGlobalRole(b);
           } else if (criteria.sortColumn === 'roles') {
             const ad = this.getOnlyDomainRoles(a);
             const bd = this.getOnlyDomainRoles(b);
             const ar = ad.length > 0 ? ad[0].role.toString() : '';
             const br = bd.length > 0 ? bd[0].role.toString() : '';
-            result = baseSortFunc(ar, br);
+            p1 = ar; p2 = br;
           } else {
-            result = baseSortFunc(a[criteria.sortColumn], b[criteria.sortColumn]);
+            p1 = a[criteria.sortColumn];
+            p2 = b[criteria.sortColumn];
           }
+
+          if (typeof p1 === 'string' && typeof p2 === 'string') {
+            p1 = p1.toLowerCase();
+            p2 = p2.toLowerCase();
+          }
+
+          result = baseSortFunc(p1, p2);
 
           return result * direction;
         }
