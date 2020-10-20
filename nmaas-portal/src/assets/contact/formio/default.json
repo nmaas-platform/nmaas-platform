@@ -2,8 +2,8 @@
   "display": "form",
   "components": [
     {
-      "label": "Email",
-      "placeholder": "Your email",
+      "label": "EMAIL",
+      "placeholder": "EMAIL_PLACEHOLDER",
       "tableView": true,
       "persistent": false,
       "validate": {
@@ -14,8 +14,8 @@
       "input": true
     },
     {
-      "label": "Name",
-      "placeholder": "Your name",
+      "label": "NAME",
+      "placeholder": "NAME_PLACEHOLDER",
       "tableView": true,
       "persistent": false,
       "validate": {
@@ -28,8 +28,8 @@
       "input": true
     },
     {
-      "label": "Message",
-      "placeholder": "Please type your message here",
+      "label": "MESSAGE",
+      "placeholder": "MESSAGE_PLACEHOLDER",
       "autoExpand": false,
       "showCharCount": true,
       "tableView": true,

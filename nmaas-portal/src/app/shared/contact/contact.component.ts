@@ -7,8 +7,10 @@ import {ContactFormService} from '../../service/contact-form.service';
 import {AccessModifier, ContactFormType, parseAccessModifier} from '../../model/contact-form-type';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {AuthService} from '../../auth/auth.service';
+import {InternationalizationService} from '../../service/internationalization.service';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-contact',
@@ -24,6 +26,7 @@ export class ContactComponent implements OnInit {
     public currentFormioTemplate: any;
     public successEmitter: EventEmitter<any> = new EventEmitter<any>();
     public refreshForm: EventEmitter<any> = new EventEmitter<any>();
+    public langChangeEventEmitter: EventEmitter<string> = new EventEmitter<string>()
 
     public selectForm: FormGroup;
 
@@ -31,11 +34,16 @@ export class ContactComponent implements OnInit {
     private formTypesMap: Map<string, ContactFormType> = new Map();
     public formType: ContactFormType;
 
+    // dummy translation file
+    public i18n: any = undefined;
+
     constructor(private recaptchaV3Service: ReCaptchaV3Service,
                 private notificationService: NotificationService,
                 private contactFormProvider: ContactFormService,
                 private fb: FormBuilder,
-                private authService: AuthService) {
+                private authService: AuthService,
+                private langService: InternationalizationService,
+                private translateService: TranslateService) {
         this.selectForm = this.fb.group({
             formKey: [this.DEFAULT_FORM_KEY]
         })
@@ -45,7 +53,10 @@ export class ContactComponent implements OnInit {
         this.modal.setModalType('info');
         // download types map, set default form values
         this.contactFormProvider.getAllFormTypesAsMap().pipe(
-            tap(typesMap => {this.formTypesMap = typesMap; this.formType = this.formTypesMap.get(this.DEFAULT_FORM_KEY)}),
+            tap(typesMap => {
+                this.formTypesMap = typesMap;
+                this.formType = this.formTypesMap.get(this.DEFAULT_FORM_KEY)
+            }),
             switchMap(typesMap => this.contactFormProvider.getForm(typesMap.get(this.DEFAULT_FORM_KEY).templateName))
         ).subscribe(
             form => this.currentFormioTemplate = form
@@ -56,11 +67,34 @@ export class ContactComponent implements OnInit {
             tap(result => console.log(result)),
             map(result => result.formKey), // retrieve form key
             map(formTypeKey => this.formTypesMap.get(formTypeKey)), // retrieve related formType object
-            tap( formType => this.formType = formType), // set most recent formType
+            tap(formType => this.formType = formType), // set most recent formType
             map(formType => formType.templateName), // retrieve template name
             switchMap(formTemplateName => this.contactFormProvider.getForm(formTemplateName)) // retrieve form value
         ).subscribe(
             form => this.currentFormioTemplate = form
+        );
+
+        this.translateService.onLangChange.pipe(
+            map(event => event.lang)
+        ).subscribe(this.langChangeEventEmitter);
+
+        this.langService.getEnabledLanguages().pipe(
+            map((langs: string[]) => langs.map(lang => {
+                const t = {};
+                t[lang] = this.translateService.getTranslation(lang)
+                return t;
+            })),
+            map((langs: string[]) => langs.reduce((r, c) => Object.assign(r, c), {})),
+            switchMap((langs: any) => forkJoin(langs)),
+            map(value => {
+                Object.keys(value).forEach(k => {
+                    value[k] = value[k]['CONTACT_FORM']['FORMIO']
+                })
+                return value;
+            }),
+            tap(value => console.log(value))
+        ).subscribe(
+            value => this.i18n = value
         )
     }
 
@@ -118,6 +152,10 @@ export class ContactComponent implements OnInit {
                 console.log('Something went wrong')
                 return false;
         }
+    }
+
+    public getCurrentLang(): string {
+        return this.translateService.currentLang;
     }
 
 }

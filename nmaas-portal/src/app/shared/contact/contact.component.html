@@ -9,9 +9,14 @@
 
 <hr/>
 
-<formio *ngIf="currentFormioTemplate" [form]="currentFormioTemplate"
+<formio *ngIf="currentFormioTemplate && i18n" [form]="currentFormioTemplate"
         [success]="successEmitter"
         [refresh]="refreshForm"
+        [language]="langChangeEventEmitter"
+        [renderOptions]="{
+        language: getCurrentLang(),
+        i18n: i18n
+        }"
         (ready)="ready($event)"
         (submit)="onSubmit($event.data)"></formio>
 
