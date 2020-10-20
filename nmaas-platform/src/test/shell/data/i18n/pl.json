@@ -774,6 +774,13 @@
       "TITLE": "Mail został wysłany",
       "MESSAGE": "NMaaS Team wyśle odpowiedź niedługo.",
       "CLOSE_BUTTON": "Zamknij"
+    },
+    "SELECT_CATEGORY": "Wybierz kategorię",
+    "TYPES": {
+      "CONTACT": "Kontakt",
+      "ISSUE": "Zgłoś błąd",
+      "FEATURE_REQUEST": "Zgłoś pomysł na nową funkcjonalność",
+      "ACCESS_REQUEST": "Prośba o dostęp"
     }
   },
   "LANGUAGE": {

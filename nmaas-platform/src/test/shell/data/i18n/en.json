@@ -774,6 +774,13 @@
       "TITLE": "Mail has been sent",
       "MESSAGE": "NMaaS Team will reply soon.",
       "CLOSE_BUTTON": "Close"
+    },
+    "SELECT_CATEGORY": "Select category",
+    "TYPES": {
+      "CONTACT": "Contact",
+      "ISSUE": "Report issue",
+      "FEATURE_REQUEST": "Feature request",
+      "ACCESS_REQUEST": "Access request"
     }
   },
   "LANGUAGE": {
