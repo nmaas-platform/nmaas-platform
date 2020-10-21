@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ContactComponent} from './contact.component';
 import {ModalComponent} from '../modal';
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
 import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
 import {of} from 'rxjs';
@@ -13,6 +13,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AuthService} from '../../auth/auth.service';
 import {AccessModifier} from '../../model/contact-form-type';
 import createSpyObj = jasmine.createSpyObj;
+import {InternationalizationService} from '../../service/internationalization.service';
 
 describe('ContactComponent', () => {
     let component: ContactComponent;
@@ -36,7 +37,12 @@ describe('ContactComponent', () => {
     const authServiceSpy = createSpyObj('AuthService', ['isLogged']);
     authServiceSpy.isLogged.and.returnValue('false');
 
+    const langServiceSpy = createSpyObj('InternationalizationService', ['getEnabledLanguages', 'getLanguageContent'])
+    langServiceSpy.getEnabledLanguages.and.returnValue(of(['en', 'fr', 'ge', 'pl']))
+    langServiceSpy.getLanguageContent.and.returnValue(of({CONTACT_FORM: {FORMIO: {MESSAGE: 'Message'}}}))
+
     beforeEach(async () => {
+
         await TestBed.configureTestingModule({
             declarations: [ContactComponent, ModalComponent],
             imports: [
@@ -55,6 +61,7 @@ describe('ContactComponent', () => {
                 {provide: NotificationService, useValue: notificationServiceSpy},
                 {provide: ContactFormService, useValue: contactFormServiceSpy},
                 {provide: AuthService, useValue: authServiceSpy},
+                {provide: InternationalizationService, useValue: langServiceSpy},
             ]
         }).compileComponents();
     });

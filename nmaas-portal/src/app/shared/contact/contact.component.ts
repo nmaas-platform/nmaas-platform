@@ -5,9 +5,9 @@ import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
 import {ContactFormService} from '../../service/contact-form.service';
 import {AccessModifier, ContactFormType, parseAccessModifier} from '../../model/contact-form-type';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {forkJoin, Observable} from 'rxjs';
+import {forkJoin, Observable, of, zip} from 'rxjs';
 import {AuthService} from '../../auth/auth.service';
 import {InternationalizationService} from '../../service/internationalization.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -79,18 +79,25 @@ export class ContactComponent implements OnInit {
         ).subscribe(this.langChangeEventEmitter);
 
         this.langService.getEnabledLanguages().pipe(
-            map((langs: string[]) => langs.map(lang => {
-                const t = {};
-                t[lang] = this.translateService.getTranslation(lang)
-                return t;
-            })),
-            map((langs: string[]) => langs.reduce((r, c) => Object.assign(r, c), {})),
-            switchMap((langs: any) => forkJoin(langs)),
-            map(value => {
-                Object.keys(value).forEach(k => {
-                    value[k] = value[k]['CONTACT_FORM']['FORMIO']
-                })
+            // get observable for each language content
+            map((langs: string[]) => ({langs: langs, obs: langs.map(lang => this.langService.getLanguageContent(lang))})),
+            // convert list of observables to actual objects
+            switchMap((arg: any) => zip(of(arg.langs), forkJoin(arg.obs))),
+            tap(value => console.log(value)),
+            // parse result to final form {<langKey>: <formioObj>}
+            map(([langs, contents]) => {
+                const value = {}
+                // traditional
+                // langs and contents are arrays, expected to have the same length
+                // TODO find more civilised option
+                for (let i = 0; i < langs.length; i++) {
+                    value[langs[i]] = contents[i]['CONTACT_FORM']['FORMIO']
+                }
                 return value;
+            }),
+            catchError(err => {
+                console.error('Error occurred while reading formio translations', err)
+                return of({error: 'Missing valid translations'})
             }),
             tap(value => console.log(value))
         ).subscribe(
