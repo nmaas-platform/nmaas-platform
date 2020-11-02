@@ -62,9 +62,6 @@
                     <button class="btn btn-danger"
                             *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                             (click)="this.appAbortModal.show()">{{'APP_INSTANCE.ABORT_BUTTON' | translate}}</button>
-                    <button class="btn btn-default" (click)="this.addMembersModal.show()" *ngIf="canDisplayAddMembersModal()">
-                        {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
-                    </button>
                 </div>
 
                 <!-- if application is already running -->

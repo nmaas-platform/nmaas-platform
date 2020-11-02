@@ -5,12 +5,12 @@
     <div class="nmaas-modal-body" style="min-height: 200px; width: 100%">
         <div class="col-sm-4">
             <h5>{{'ADD_MEMBERS_MODAL.SELECT_USERS' | translate}}</h5>
-            <p-multiSelect [options]="users" [(ngModel)]="members" filterBy="username" optionLabel="username"
+            <p-multiSelect [options]="selectItems" [(ngModel)]="members" filterBy="username"
                            [filterPlaceHolder]="'ADD_MEMBERS_MODAL.FILTER_PLACEHOLDER' | translate" [panelStyle]="{minWidth:'25em'}"
                            [overlayVisible]="true">
-                <ng-template let-m pTemplate="item">
-                    <span>{{(m.value.firstname != '' && m.value.lastname != '') ? m.value.firstname + ' ' + m.value.lastname : m.value.username}}</span>
-                </ng-template>
+<!--                <ng-template let-m pTemplate="item">-->
+<!--                    <span>{{(m.value.firstname != '' && m.value.lastname != '') ? m.value.firstname + ' ' + m.value.lastname : m.value.username}}</span>-->
+<!--                </ng-template>-->
             </p-multiSelect>
         </div>
 

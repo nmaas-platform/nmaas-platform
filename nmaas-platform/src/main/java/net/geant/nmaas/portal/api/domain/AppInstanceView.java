@@ -27,5 +27,5 @@ public class AppInstanceView extends AppInstanceBase {
 
 	private AppConfigRepositoryAccessDetails appConfigRepositoryAccessDetails;
 
-	private Set<UserBase> members;
+	private Set<UserViewMinimal> members;
 }

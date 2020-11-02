@@ -194,12 +194,35 @@ public class GitLabConfigHandler implements GitConfigHandler {
         return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
     }
 
-    private void addMemberToProject(Integer gitLabProjectId, Integer gitLabUserId) {
+    @Override
+    public void addMemberToProject(Integer gitLabProjectId, Integer gitLabUserId) {
         try {
             gitLabManager.projects().addMember(gitLabProjectId, gitLabUserId, fullAccessCode());
         } catch (GitLabApiException e) {
             throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
         }
+    }
+
+    @Override
+    public void addMemberToProject(Integer gitLabProjectId, String username) {
+        Integer userId = getUserId(username);
+        this.addMemberToProject(gitLabProjectId, userId);
+    }
+
+    @Override
+    public void removeMemberFromProject(Integer gitLabProjectId, Integer gitLabUserId) {
+        try {
+            gitLabManager.projects().removeMember(gitLabProjectId, gitLabUserId);
+        } catch (GitLabApiException e) {
+            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
+        }
+    }
+
+    @Override
+    public void removeMemberFromProject(Integer gitLabProjectId, String username) {
+        Integer userId = getUserId(username);
+        this.removeMemberFromProject(gitLabProjectId, userId);
+
     }
 
     private void addWebhookToProject(Integer gitLabProjectId, String webhookId, String webhookToken) {
