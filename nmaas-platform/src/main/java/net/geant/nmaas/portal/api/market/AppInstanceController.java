@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.security.Principal;
@@ -331,6 +332,18 @@ public class AppInstanceController extends AppBaseController {
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
+    }
+
+    @PostMapping("/{appInstanceId}/members")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public void updateMembers(@PathVariable(value = "appInstanceId") Long appInstanceId, @RequestBody @Valid List<UserBase> members) {
+        AppInstance appInstance = getAppInstance(appInstanceId);
+        List<User> users = members.stream()
+                .map(m -> getUser(m.getId()))
+                .filter(u -> u.getRoles().stream().anyMatch(r -> r.getDomain().getId().equals(appInstance.getDomain().getId())))
+                .collect(Collectors.toList());
+        appInstance.setMembers(new HashSet<>(users));
+        this.instanceService.update(appInstance);
     }
 
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {

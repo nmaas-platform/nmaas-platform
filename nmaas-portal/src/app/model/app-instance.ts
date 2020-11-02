@@ -34,4 +34,5 @@ export class AppInstance {
   public configUpdateWizardTemplate: ConfigWizardTemplate = undefined;
   public descriptiveDeploymentId: string = undefined;
   public appConfigRepositoryAccessDetails: AppConfigRepositoryAccessDetails = undefined;
+  public members: User[] = []
 }

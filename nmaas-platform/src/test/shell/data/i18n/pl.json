@@ -406,6 +406,20 @@
     "USE_DEFAULT_VERSION": "Użyj domyślnej wersji",
     "SELECT_VERSION": "Wybierz wersje"
   },
+  "ADD_MEMBERS_MODAL": {
+    "HEADER": "Add members",
+    "SELECT_USERS": "Choose users",
+    "FILTER_PLACEHOLDER": "Filter users",
+    "MEMBERS_LIST": "Selected members",
+    "TABLE": {
+      "USERNAME": "Username",
+      "FIRSTNAME": "First name",
+      "LASTNAME": "Last name",
+      "EMAIL": "Email"
+    },
+    "SUBMIT_BUTTON": "Submit",
+    "HIDE_BUTTON": "Cancel"
+  },
   "APP_INSTANCE": {
     "SOURCE": "Źródło",
     "ISSUES": "Problemy",
@@ -423,6 +437,7 @@
     "REDEPLOY_BUTTON": "Uruchom ponownie",
     "ABORT_BUTTON": "Przerwij",
     "UPDATE_CONFIG_BUTTON": "Aktualizacja konfiguracji",
+    "ADD_MEMBERS_BUTTON": "Add members",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",

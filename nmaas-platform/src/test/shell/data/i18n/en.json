@@ -406,6 +406,20 @@
     "USE_DEFAULT_VERSION": "Use default version",
     "SELECT_VERSION": "Select version"
   },
+  "ADD_MEMBERS_MODAL": {
+    "HEADER": "Add members",
+    "SELECT_USERS": "Choose users",
+    "FILTER_PLACEHOLDER": "Filter users",
+    "MEMBERS_LIST": "Selected members",
+    "TABLE": {
+      "USERNAME": "Username",
+      "FIRSTNAME": "First name",
+      "LASTNAME": "Last name",
+      "EMAIL": "Email"
+    },
+    "SUBMIT_BUTTON": "Submit",
+    "HIDE_BUTTON": "Cancel"
+  },
   "APP_INSTANCE": {
     "SOURCE": "Source",
     "ISSUES": "Issues",
@@ -422,6 +436,7 @@
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Redeploy",
     "ABORT_BUTTON": "Abort",
+    "ADD_MEMBERS_BUTTON": "Add members",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
     "INSTALLATION_PROGRESS": {

@@ -1,0 +1,42 @@
+<nmaas-modal [styleModal]="'info'">
+    <div class="nmaas-modal-header">
+        {{'ADD_MEMBERS_MODAL.HEADER' | translate}}
+    </div>
+    <div class="nmaas-modal-body" style="min-height: 200px; width: 100%">
+        <div class="col-sm-4">
+            <h5>{{'ADD_MEMBERS_MODAL.SELECT_USERS' | translate}}</h5>
+            <p-multiSelect [options]="users" [(ngModel)]="members" filterBy="username" optionLabel="username"
+                           [filterPlaceHolder]="'ADD_MEMBERS_MODAL.FILTER_PLACEHOLDER' | translate" [panelStyle]="{minWidth:'25em'}"
+                           [overlayVisible]="true">
+                <ng-template let-m pTemplate="item">
+                    <span>{{(m.value.firstname != '' && m.value.lastname != '') ? m.value.firstname + ' ' + m.value.lastname : m.value.username}}</span>
+                </ng-template>
+            </p-multiSelect>
+        </div>
+
+        <div class="col-sm-8">
+            <h5>{{'ADD_MEMBERS_MODAL.MEMBERS_LIST' | translate}}</h5>
+            <table class="table table-condensed">
+                <tr>
+                    <th>{{'ADD_MEMBERS_MODAL.TABLE.USERNAME' | translate}}</th>
+                    <th>{{'ADD_MEMBERS_MODAL.TABLE.FIRSTNAME' | translate}}</th>
+                    <th>{{'ADD_MEMBERS_MODAL.TABLE.LASTNAME' | translate}}</th>
+                    <th>{{'ADD_MEMBERS_MODAL.TABLE.EMAIL' | translate}}</th>
+                </tr>
+                <tr *ngFor="let u of members">
+                    <td>{{u.username}}</td>
+                    <td>{{u.firstname}}</td>
+                    <td>{{u.lastname}}</td>
+                    <td>{{u.email}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="nmaas-modal-footer">
+        <button type="button" class="btn btn-success" (click)="submit()">
+            {{'ADD_MEMBERS_MODAL.SUBMIT_BUTTON' | translate}}
+        </button>
+        <button type="button" class="btn btn-primary"
+                (click)="modal.hide()">{{'ADD_MEMBERS_MODAL.HIDE_BUTTON' | translate}}</button>
+    </div>
+</nmaas-modal>
