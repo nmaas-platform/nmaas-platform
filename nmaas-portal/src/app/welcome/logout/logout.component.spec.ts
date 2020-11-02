@@ -1,28 +1,47 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LogoutComponent } from './logout.component';
+import {LogoutComponent} from './logout.component';
+import {RouterTestingModule} from '@angular/router/testing';
+import createSpyObj = jasmine.createSpyObj;
+import {of} from 'rxjs';
+import {AuthService} from '../../auth/auth.service';
+import {ConfigurationService} from '../../service';
+import {ShibbolethService} from '../../service/shibboleth.service';
 
 describe('LogoutComponent', () => {
-  let component: LogoutComponent;
-  let fixture: ComponentFixture<LogoutComponent>;
+    let component: LogoutComponent;
+    let fixture: ComponentFixture<LogoutComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ LogoutComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        const authServiceSpy = createSpyObj('AuthService', ['logout'])
+        const configServiceSpy = createSpyObj('ConfigurationService', ['getConfiguration'])
+        configServiceSpy.getConfiguration.and.returnValue(of({
+            ssoLoginAllowed: false
+        }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LogoutComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        TestBed.configureTestingModule({
+            declarations: [LogoutComponent],
+            imports: [
+                RouterTestingModule.withRoutes(
+                    [{path: 'welcome', redirectTo: ''}]
+                )
+            ],
+            providers: [
+                {provide: AuthService, useValue: authServiceSpy},
+                {provide: ConfigurationService, useValue: configServiceSpy},
+                {provide: ShibbolethService, useValue: {}}
+            ]
+        })
+            .compileComponents();
+    }));
 
-  //it('should create', () => {
-  //  expect(component).toBeTruthy();
-  //});
+    beforeEach(() => {
+        fixture = TestBed.createComponent(LogoutComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

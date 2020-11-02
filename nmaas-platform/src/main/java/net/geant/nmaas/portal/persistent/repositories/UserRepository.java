@@ -32,4 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update User u set u.privacyPolicyAccepted = ?2 where u.id = ?1")
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
+
+    @Query("SELECT count(distinct u.id) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id != 1")
+    int countWithoutDomain();
+
 }

@@ -17,7 +17,8 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   private height = 0;
 
-  constructor(private appConfig: AppConfigService, private router: Router,
+  constructor(private appConfig: AppConfigService,
+              public router: Router,
               private serviceHealth: ServiceUnavailableService) {
   }
 
@@ -39,6 +40,8 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
   }
 
   onResize() {
+      // TODO
+      // rewrite this code, use css instead of js for better performance
       this.height = document.getElementById('global-footer').offsetHeight;
       const navHeight = document.getElementById('navbar').offsetHeight;
       // document.getElementById("welcome-container").style.marginBottom = `${this.height}px`;

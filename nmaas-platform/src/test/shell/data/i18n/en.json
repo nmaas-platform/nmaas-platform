@@ -81,7 +81,8 @@
     "LOGIN_WITH": "Federated login",
     "LOGIN_FAILURE_MESSAGE": "Invalid Credentials",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed",
+    "USER_DISABLED_MESSAGE": "User is disabled"
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "NMaaS test instance",

@@ -5,10 +5,12 @@ import {DomainService} from '../../../service/domain.service';
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {TranslateService} from "@ngx-translate/core";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-domains-list', templateUrl: './domainslist.component.html', styleUrls: ['./domainslist.component.css']
+  selector: 'app-domains-list',
+  templateUrl: './domainslist.component.html',
+  styleUrls: ['./domainslist.component.css']
 })
 export class DomainsListComponent implements OnInit {
 

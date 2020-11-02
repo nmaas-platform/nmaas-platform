@@ -3,14 +3,14 @@ package net.geant.nmaas.portal.api.shell.observable;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
-import net.geant.nmaas.utils.ssh.SshSessionConnectorDefaultData;
 import net.geant.nmaas.utils.ssh.SshSessionConnector;
+import net.geant.nmaas.utils.ssh.SshSessionConnectorDefaultData;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +18,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Log4j2
 public class SshConnectionShellSessionObservableTest {
@@ -30,14 +33,12 @@ public class SshConnectionShellSessionObservableTest {
 
     @Test
     public void testPublicKeyConversion() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PublicKey publicKey = SshSessionConnectorDefaultData.getPublicKey(PUB_KEY);
-        System.out.println(publicKey);
+        assertNotNull(SshSessionConnectorDefaultData.getPublicKey(PUB_KEY));
     }
 
     @Test
     public void testPrivateKeyConversion() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PrivateKey privateKey = SshSessionConnectorDefaultData.getPrivateKey(PRIV_KEY);
-        System.out.println(privateKey);
+        assertNotNull(SshSessionConnectorDefaultData.getPrivateKey(PRIV_KEY));
     }
 
     @Getter

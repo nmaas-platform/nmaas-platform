@@ -5,16 +5,14 @@ import {BaseComponent} from '../../shared/common/basecomponent/base.component';
 import {TranslateService} from '@ngx-translate/core';
 import {ContentDisplayService} from '../../service/content-display.service';
 import {InternationalizationService} from '../../service/internationalization.service';
-import {DomainService, UserService} from '../../service';
+import {UserService} from '../../service';
 import {Router} from '@angular/router';
 import {ComponentMode} from '../../shared';
-import {Role} from '../../model/userrole';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-    providers: [ProfileService]
 })
 export class ProfileComponent extends BaseComponent implements OnInit {
 
@@ -41,11 +39,11 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   }
 
   getPathToCurrent() {
-    return "assets/images/country/" + this.user.selectedLanguage + "_circle.png";
+    return 'assets/images/country/' + this.user.selectedLanguage + '_circle.png';
   }
 
   public getSupportedLanguages() {
-    this.languageService.getEnabledLanguages().subscribe(langs =>{
+    this.languageService.getEnabledLanguages().subscribe(langs => {
       this.translate.addLangs(langs);
       this.languages = langs;
     });
@@ -73,24 +71,21 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   public onSave($event) {
     const user: User = $event;
 
-    if (!user) {
-      return;
-    }
-
-    if (user.id) {
-      return this.updateUser(user.id, user);
+    if (!!user && user.id) {
+      this.updateUser(user.id, user);
     }
   }
 
-  async updateUser(userId: number, user: User) {
-    return await Promise.resolve(this.userService.updateUser(userId, user).toPromise()
-        .then(() => {
+  public updateUser(userId: number, user: User): void {
+    this.userService.updateUser(userId, user).subscribe(
+        result => {
           this.userDetailsMode = ComponentMode.VIEW;
           this.errorMessage = undefined;
-        })
-        .catch(err => {
+        },
+        error => {
           this.userDetailsMode = ComponentMode.EDIT;
-          this.errorMessage = err.message;
-        }));
+          this.errorMessage = error.message;
+        }
+    )
   }
 }

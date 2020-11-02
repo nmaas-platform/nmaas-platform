@@ -1,50 +1,33 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage.component';
-import {NavbarComponent} from "../../shared/navbar";
-import {ContentDisplayService} from "../../service/content-display.service";
-import {FooterComponent, SharedModule} from "../../shared";
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {RouterTestingModule} from "@angular/router/testing";
-import {JwtModule} from "@auth0/angular-jwt";
-import {EMPTY, of} from "rxjs";
-import {AppConfigService, ChangelogService} from "../../service";
-import {InternationalizationService} from "../../service/internationalization.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {ContentDisplayService} from '../../service/content-display.service';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {RouterTestingModule} from '@angular/router/testing';
+import createSpyObj = jasmine.createSpyObj;
+import {of} from 'rxjs';
 
 describe('PrivacyPolicySubpageComponent', () => {
   let component: PrivacyPolicySubpageComponent;
   let fixture: ComponentFixture<PrivacyPolicySubpageComponent>;
-  let contentService: ContentDisplayService;
-  let languageService: InternationalizationService;
-  let changelogService: ChangelogService;
-  let navbar: NavbarComponent;
-  let footer: FooterComponent;
 
   beforeEach(async(() => {
+    const contentDisplayServiceSpy = createSpyObj('ContentDisplayService', ['getContent'])
+    contentDisplayServiceSpy.getContent.and.returnValue(of({}))
+
     TestBed.configureTestingModule({
       declarations: [ PrivacyPolicySubpageComponent ],
       imports: [
-          SharedModule,
           RouterTestingModule,
-          HttpClientTestingModule,
           TranslateModule.forRoot({
               loader: {
                   provide: TranslateLoader,
                   useClass: TranslateFakeLoader
               }
-          }),
-          JwtModule.forRoot({
-              config: {
-                  tokenGetter: () => {
-                      return '';
-                  }
-              }
           })
       ],
       providers: [
-          ContentDisplayService, ChangelogService, NavbarComponent, InternationalizationService, AppConfigService,
-          FooterComponent
+        {provide: ContentDisplayService, useValue: contentDisplayServiceSpy}
       ]
     })
     .compileComponents();
@@ -53,21 +36,11 @@ describe('PrivacyPolicySubpageComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PrivacyPolicySubpageComponent);
     component = fixture.componentInstance;
-    contentService = fixture.debugElement.injector.get(ContentDisplayService);
-    languageService = fixture.debugElement.injector.get(InternationalizationService);
-    changelogService = fixture.debugElement.injector.get(ChangelogService);
-    navbar = fixture.debugElement.injector.get(NavbarComponent);
-    footer = fixture.debugElement.injector.get(FooterComponent);
-    spyOn(contentService, 'getContent').and.returnValue(EMPTY);
-
-    spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
-    navbar.useLanguage("en");
-    spyOn(changelogService, 'getGitInfo').and.returnValue(EMPTY);
-    spyOn(changelogService, 'getChangelog').and.returnValue(EMPTY);
     fixture.detectChanges();
   });
 
-  //it('should create', () => {
+  // TODO mock 'document' object properly
+  // it('should create', () => {
   //  expect(component).toBeTruthy();
-  //});
+  // });
 });

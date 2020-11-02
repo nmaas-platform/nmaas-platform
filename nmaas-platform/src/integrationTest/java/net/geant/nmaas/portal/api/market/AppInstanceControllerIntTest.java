@@ -47,6 +47,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -132,11 +133,13 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.create(domain, application, appInstanceRequest.getName()))
                 .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName()));
         when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
-        mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(appInstanceRequest))
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
@@ -276,7 +279,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldNotRestartNorRedeployApplicationAsUserInDomain() throws Exception {
+    void shouldNotRestartNorRedeployApplicationAsUserInDomain() {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_USER1;
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
@@ -284,24 +287,28 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, user);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isUnauthorized());
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isUnauthorized());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isUnauthorized());
+            mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
     @Test
-    void shouldThrowAnExceptionWhenInputIsIncorrect() throws Exception {
+    void shouldThrowAnExceptionWhenInputIsIncorrect() {
         when(applicationInstanceService.find(0L)).thenReturn(Optional.empty());
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/restart",0L)
-                .header("Authorization","Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
-                .andExpect(status().is(404));
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 0L)
+                    .header("Authorization", "Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
+                    .andExpect(status().is(404));
+        });
     }
 
     @Test
-    void shouldGetRequestedAppInstanceAndCheckStatusSinceAdmin() throws Exception {
+    void shouldGetRequestedAppInstanceAndCheckStatusSinceAdmin() {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
 
@@ -311,17 +318,19 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         mockAppInstanceGetProcess(domain, user, applicationBase, application, appInstance);
 
-        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isOk());
+            mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
-    void shouldNotGetRequestedAppInstanceNorCheckStatusSinceGuestInDomain() throws Exception {
+    void shouldNotGetRequestedAppInstanceNorCheckStatusSinceGuestInDomain() {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_GUEST;
 
@@ -330,17 +339,19 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstance appInstance = testAppInstance(domain, application);
         mockAppInstanceGetProcess(domain, user, applicationBase, application, appInstance);
 
-        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isUnauthorized());
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isUnauthorized());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isUnauthorized());
+            mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
     @Test
-    void shouldGetRequestedAppInstanceButNotCheckStatusSinceUserInDomain() throws Exception {
+    void shouldGetRequestedAppInstanceButNotCheckStatusSinceUserInDomain() {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_USER1;
 
@@ -349,17 +360,19 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstance appInstance = testAppInstance(domain, application);
         mockAppInstanceGetProcess(domain, user, applicationBase, application, appInstance);
 
-        mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
-        mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isUnauthorized());
+        assertDoesNotThrow(() -> {
+            mvc.perform(get("/api/apps/instances/{appInstanceId}", 10L)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isOk());
+            mvc.perform(post("/api/apps/instances/{appInstanceId}/check", 10L)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isUnauthorized());
+        });
     }
 
     @Test
-    void shouldDeleteAppInstanceSinceAdminInDomain() throws Exception {
+    void shouldDeleteAppInstanceSinceAdminInDomain() {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_ADMIN;
 
@@ -369,10 +382,12 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         when(applicationInstanceService.find(10L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
 
-        mvc.perform(delete("/api/apps/instances/{appInstanceId}", 10L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
+        assertDoesNotThrow(() -> {
+            mvc.perform(delete("/api/apps/instances/{appInstanceId}", 10L)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test

@@ -11,10 +11,10 @@ import {GenericDataService} from './genericdata.service';
 
 import {Observable} from 'rxjs';
 
-import {AppInstanceStateHistory} from '../model/appinstancestatehistory';
+import {AppInstanceStateHistory} from '../model/app-instance-state-history';
 import {AppConfiguration} from '../model/app-configuration';
 import {map} from 'rxjs/operators';
-import {AppInstanceExtended} from '../model/appinstanceextended';
+import {AppInstanceExtended} from '../model/app-instance-extended';
 
 function appInstanceSort(data: AppInstance[], sortColumn: string, sortDirection: string): AppInstance[] {
   data.sort((a, b) => {

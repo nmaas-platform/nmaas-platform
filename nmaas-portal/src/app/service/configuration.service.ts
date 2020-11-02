@@ -5,7 +5,9 @@ import {AppConfigService} from './appconfig.service';
 import {Observable} from 'rxjs';
 import {Configuration} from '../model/configuration';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ConfigurationService extends GenericDataService{
 
   protected uri: string;

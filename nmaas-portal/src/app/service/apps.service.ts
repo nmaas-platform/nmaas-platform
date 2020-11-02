@@ -7,12 +7,13 @@ import { AppConfigService } from './appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
 import {AppStateChange} from '../model/appstatechange';
-import {isNullOrUndefined} from 'util';
 import {ApplicationBase} from '../model/application-base';
 import {Application} from '../model/application';
 import {ApplicationDTO} from '../model/application-dto';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class AppsService extends GenericDataService {
 
     constructor(http: HttpClient, appConfig: AppConfigService) {
@@ -80,7 +81,7 @@ export class AppsService extends GenericDataService {
     // rate
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
-        if (!isNullOrUndefined(urlPath) && urlPath !== '') {
+        if (urlPath != null && urlPath !== '') {
             return this.getByUrl(urlPath);
         }
     }

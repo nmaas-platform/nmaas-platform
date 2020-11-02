@@ -4,7 +4,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Domain} from '../../../model/domain';
 import {DomainService} from '../../../service';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
-import {isUndefined} from 'util';
 import {NG_VALIDATORS, PatternValidator} from '@angular/forms';
 import {User} from '../../../model';
 import {AppsService, UserService} from '../../../service';
@@ -61,7 +60,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
         this.modal.setStatusOfIcons(true);
         this.mode = this.getMode(this.route);
         this.route.params.subscribe(params => {
-            if (!isUndefined(params['id'])) {
+            if (params['id'] !== undefined) {
                 this.domainId = +params['id'];
                 this.domainService.getOne(this.domainId).subscribe(
                     (domain: Domain) => {
@@ -90,7 +89,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     }
 
     public submit(): void {
-        if (!isUndefined(this.domainId)) {
+        if (this.domainId !== undefined) {
             this.updateExistingDomain();
         } else {
             this.domainService.add(this.domain).subscribe(() => this.router.navigate(['admin/domains/']));

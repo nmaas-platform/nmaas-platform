@@ -1,53 +1,62 @@
-						<form role="form" (ngSubmit)="loginForm.form.valid && login()" #loginForm="ngForm" novalidate>
-							<fieldset>
-							<legend>Login</legend>
-							<div class="form-group form-group-sm" [ngClass]="{ 'has-error': loginForm.submitted && !username.valid }">
-								<label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
-								<input id="username" type="text" name="username" class="form-control" placeholder="{{ 'LOGIN.USERNAME' | translate }}" [(ngModel)]="model.username" #username="ngModel" required >
-								<div *ngIf="loginForm.submitted && !username.valid">{{ 'LOGIN.USERNAME_REQUIRED_MESSAGE' | translate }}</div>
-							</div>
-							<div class="form-group form-group-sm" [ngClass]="{ 'has-error': loginForm.submitted && !password.valid }">	
-								<label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
-								<input id="password" type="password" name="password" class="form-control" placeholder="{{ 'LOGIN.PASSWORD' | translate }}" [(ngModel)]="model.password" #password="ngModel" required >
-								<div *ngIf="loginForm.submitted && !password.valid">{{ 'LOGIN.PASSWORD_REQUIRED_MESSAGE' | translate }}</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<button type = "submit" class = "btn btn-primary btn-block" [disabled]="!loginForm.form.valid || loading" >
-									{{ 'LOGIN.LOGIN' | translate }}
-									<img alt="login" *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-								</button>
-							</div>
-							<div *ngIf="error" class="alert alert-danger">{{error}}</div>
-							</fieldset>
-						</form>
-						<div class="form-group">
-							<button type="submit" (click)="triggerSSO()" class="btn btn-primary btn-block" [disabled]="!this.configuration?.ssoLoginAllowed || loading || ssoLoading">
-								{{ 'LOGIN.LOGIN_WITH' | translate }}
-							</button>
-							<img alt="sso" *ngIf="ssoLoading" src="data:"/>
-							<div *ngIf="ssoError" class="alert alert-danger">{{ssoError}}</div>
-						</div>
-						<div class="form-group" style="text-align: center">
-							<a (click)="resetPassword = !resetPassword">{{ 'RESET_PASSWORD.FORGOT_PASSWORD_BUTTON' | translate }}</a>
-						</div>
-						<div class="form-group" *ngIf="resetPassword">
-							<p class="alert alert-info">{{'RESET_PASSWORD.TEXT' | translate }}</p>
-							<form (ngSubmit)="sendResetNotification()" [formGroup]="resetPasswordForm">
-								<div class="form-group form-group-sm" [ngClass]="{'has-error':  resetPasswordForm.controls.email.invalid && resetPasswordForm.controls.email.dirty,
+<form role="form" (ngSubmit)="loginForm.form.valid && login()" #loginForm="ngForm" novalidate>
+    <fieldset>
+        <legend>Login</legend>
+        <div class="form-group form-group-sm" [ngClass]="{ 'has-error': loginForm.submitted && !username.valid }">
+            <label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
+            <input id="username" type="text" name="username" class="form-control"
+                   placeholder="{{ 'LOGIN.USERNAME' | translate }}" [(ngModel)]="model.username" #username="ngModel"
+                   required>
+            <div *ngIf="loginForm.submitted && !username.valid">{{ 'LOGIN.USERNAME_REQUIRED_MESSAGE' | translate }}</div>
+        </div>
+        <div class="form-group form-group-sm" [ngClass]="{ 'has-error': loginForm.submitted && !password.valid }">
+            <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
+            <input id="password" type="password" name="password" class="form-control"
+                   placeholder="{{ 'LOGIN.PASSWORD' | translate }}" [(ngModel)]="model.password" #password="ngModel"
+                   required>
+            <div *ngIf="loginForm.submitted && !password.valid">{{ 'LOGIN.PASSWORD_REQUIRED_MESSAGE' | translate }}</div>
+        </div>
+        <div class="form-group form-group-sm">
+            <button type="submit" class="btn btn-primary btn-block" [disabled]="!loginForm.form.valid || loading">
+                {{ 'LOGIN.LOGIN' | translate }}
+                <img alt="login" *ngIf="loading"
+                     src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+            </button>
+        </div>
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+    </fieldset>
+</form>
+<div class="form-group">
+    <button type="submit" (click)="triggerSSO()" class="btn btn-primary btn-block"
+            [disabled]="!this.configuration?.ssoLoginAllowed || loading || ssoLoading">
+        {{ 'LOGIN.LOGIN_WITH' | translate }}
+    </button>
+    <img alt="sso" *ngIf="ssoLoading" src="data:"/>
+    <div *ngIf="ssoError" class="alert alert-danger">{{ssoError}}</div>
+</div>
+<div class="form-group" style="text-align: center">
+    <a (click)="resetPassword = !resetPassword">{{ 'RESET_PASSWORD.FORGOT_PASSWORD_BUTTON' | translate }}</a>
+</div>
+<div class="form-group" *ngIf="resetPassword">
+    <p class="alert alert-info">{{'RESET_PASSWORD.TEXT' | translate }}</p>
+    <form (ngSubmit)="sendResetNotification()" [formGroup]="resetPasswordForm">
+        <div class="form-group form-group-sm" [ngClass]="{'has-error':  resetPasswordForm.controls.email.invalid && resetPasswordForm.controls.email.dirty,
  					 				'has-success': resetPasswordForm.controls.email.valid && resetPasswordForm.controls.email.dirty}">
-									<label for="email" class="control-label">{{ 'RESET_PASSWORD.EMAIL' | translate }} *</label>
-									<input id="email" class="form-control" placeholder="{{ 'RESET_PASSWORD.EMAIL' | translate }}" formControlName="email">
-								</div>
-								<button type="submit" class="btn btn-primary" [disabled]="resetPasswordForm.invalid">{{'RESET_PASSWORD.SUBMIT_BUTTON' | translate }}</button>
-							</form>
-						</div>
+            <label for="email" class="control-label">{{ 'RESET_PASSWORD.EMAIL' | translate }} *</label>
+            <input id="email" class="form-control" placeholder="{{ 'RESET_PASSWORD.EMAIL' | translate }}"
+                   formControlName="email">
+        </div>
+        <button type="submit" class="btn btn-primary"
+                [disabled]="resetPasswordForm.invalid">{{'RESET_PASSWORD.SUBMIT_BUTTON' | translate }}</button>
+    </form>
+</div>
 
-						<nmaas-modal styleModal="info" (click)="modal.hide()">
-							<div class="nmaas-modal-header">{{'RESET_PASSWORD.MODAL.HEADER' | translate}}</div>
-							<div class="nmaas-modal-body">
-								{{'RESET_PASSWORD.MODAL.BODY' | translate}}
-							</div>
-							<div class="nmaas-modal-footer">
-								<button type="button" class="btn btn-default" routerLink="/welcome/login">{{'RESET_PASSWORD.MODAL.CLOSE_BUTTON' | translate}}</button>
-							</div>
-						</nmaas-modal>
+<nmaas-modal styleModal="info" (click)="modal.hide()">
+    <div class="nmaas-modal-header">{{'RESET_PASSWORD.MODAL.HEADER' | translate}}</div>
+    <div class="nmaas-modal-body">
+        {{'RESET_PASSWORD.MODAL.BODY' | translate}}
+    </div>
+    <div class="nmaas-modal-footer">
+        <button type="button" class="btn btn-default"
+                routerLink="/welcome/login">{{'RESET_PASSWORD.MODAL.CLOSE_BUTTON' | translate}}</button>
+    </div>
+</nmaas-modal>

@@ -81,7 +81,8 @@
     "LOGIN_WITH": "Einloggen mit Identitätsanbieter",
     "LOGIN_FAILURE_MESSAGE": "Ungültige Anmeldeinformationen",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Die Anwendung wird gerade gewartet. Bitte versuchen Sie es später erneut.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Systemkomponenten-Login kann nicht durchgeführt werden"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Systemkomponenten-Login kann nicht durchgeführt werden",
+    "USER_DISABLED_MESSAGE": "User is disabled"
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "NMaaS Testinstanz",

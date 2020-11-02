@@ -13,8 +13,24 @@ import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.*;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
+import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
+import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.ApplicationDTO;
+import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.persistent.entity.AppDescription;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -30,10 +46,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -171,15 +197,17 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateAppBase() throws Exception {
-        mvc.perform(patch("/api/apps/base")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                        modelMapper.map(defaultAppBase, ApplicationBase.class)
-                ))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    public void shouldUpdateAppBase() {
+        assertDoesNotThrow(() -> {
+            mvc.perform(patch("/api/apps/base")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(
+                            modelMapper.map(defaultAppBase, ApplicationBase.class)
+                    ))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        });
     }
 
     @Test
@@ -214,7 +242,6 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
         assertEquals(DEFAULT_APP_NAME, app.getApplicationBase().getName());
         assertEquals("1.1.0", app.getApplication().getVersion());
-
     }
 
     @Test
@@ -256,12 +283,10 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         ApplicationView applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
         assertEquals(ApplicationState.DISABLED, applicationView.getState());
-
     }
 
     @Test
-    public void shouldAddNewVersion() throws Exception {
-
+    public void shouldAddNewVersion() {
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(null, new KubernetesChartView(null, "name", "version"), "archive", null));
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());
@@ -283,14 +308,14 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .configUpdateWizardTemplate(null)
                 .build();
 
-        System.out.println(objectMapper.writeValueAsString(view));
-
-        mvc.perform(post("/api/apps/version")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(view))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+        assertDoesNotThrow(() -> {
+            mvc.perform(post("/api/apps/version")
+                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(view))
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isCreated());
+        });
     }
 
     private ApplicationBase getDefaultApplicationBase() {
@@ -356,4 +381,5 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         application.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
         return application;
     }
+
 }

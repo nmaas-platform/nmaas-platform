@@ -1,7 +1,6 @@
 import {ComponentMode} from '../componentmode';
 import {Component, Input} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { isUndefined } from 'util';
 
 @Component({
   selector: 'nmaas-base',
@@ -36,7 +35,7 @@ export class BaseComponent {
   }
 
   public getMode(route: ActivatedRoute): ComponentMode {
-    if (isUndefined(route) || isUndefined(route.snapshot.data) || isUndefined(route.snapshot.data.mode)) {
+    if (route === undefined || route.snapshot.data === undefined || route.snapshot.data.mode === undefined) {
       return ComponentMode.VIEW;
     } else {
       return route.snapshot.data.mode;

@@ -3,9 +3,8 @@ import {UserService} from '../../../service/user.service';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {isUndefined} from 'util';
-import {AuthService} from "../../../auth/auth.service";
-import {ComponentMode} from "../../../shared";
+import {AuthService} from '../../../auth/auth.service';
+import {ComponentMode} from '../../../shared';
 
 @Component({
     selector: 'app-userdetails',
@@ -27,7 +26,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     ngOnInit() {
         this.route.params.subscribe(params => {
-            if (!isUndefined(params['id'])) {
+            if (params['id'] !== undefined) {
                 this.userId = +params['id'];
                 this.userService.getOne(this.userId).subscribe(
                     (user) => this.user = user,
@@ -57,25 +56,22 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     public onSave($event) {
         const user: User = $event;
 
-        if (!user) {
-            return;
-        }
-
-        if (user.id) {
-            return this.updateUser(user.id, user);
+        if (!!user && user.id) {
+            this.updateUser(user.id, user)
         }
     }
 
-    async updateUser(userId: number, user: User) {
-        return await Promise.resolve(this.userService.updateUser(userId, user).toPromise()
-            .then(() => {
+    public updateUser(userId: number, user: User): void {
+        this.userService.updateUser(userId, user).subscribe(
+            result => {
                 this.userDetailsMode = ComponentMode.VIEW;
                 this.errorMessage = undefined;
-            })
-            .catch(err => {
+            },
+            error => {
                 this.userDetailsMode = ComponentMode.EDIT;
-                this.errorMessage = err.message;
-            }));
+                this.errorMessage = error.message;
+            }
+        )
     }
 
     public remove(userId: number) {

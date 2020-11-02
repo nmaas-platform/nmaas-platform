@@ -5,7 +5,6 @@ import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {isNullOrUndefined, isUndefined} from 'util';
 import {Authority} from '../model/authority';
 import {catchError, debounceTime} from 'rxjs/operators';
 
@@ -47,10 +46,10 @@ export class AuthService {
   }
 
   public getSelectedLanguage(): string {
-    if (!isNullOrUndefined(localStorage.getItem('lang'))) {
+    if (localStorage.getItem('lang') != null) {
       return localStorage.getItem('lang')
     }
-    return !isNullOrUndefined(this.getToken()) ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
+    return this.getToken() != null ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
   }
 
   public getUsername(): string {
@@ -94,7 +93,7 @@ export class AuthService {
     }
 
     for (let index = 0; index < authorities.length; index++) {
-      if (isUndefined(authorities[index].authority)) {
+      if (authorities[index].authority === undefined) {
         continue;
       }
 
@@ -102,7 +101,7 @@ export class AuthService {
       if (domainRole.length !== 2) {
         continue;
       }
-      const domainId: number = Number.parseInt(domainRole[0]);
+      const domainId: number = Number.parseInt(domainRole[0], 10);
       const role: string = domainRole[1];
 
       let dr: DomainRoles;
@@ -126,7 +125,7 @@ export class AuthService {
 
     const authorities: Authority[]  = this.jwtHelper.decodeToken(token).scopes;
     for (let index = 0; index < authorities.length; index++) {
-      if (isUndefined(authorities[index].authority)) {
+      if (authorities[index].authority === undefined) {
         continue;
       }
 
@@ -154,7 +153,7 @@ export class AuthService {
     const authorities: Authority[] = this.jwtHelper.decodeToken(token).scopes;
 
     for (let index = 0; index < authorities.length; index++) {
-      if (isUndefined(authorities[index].authority)) {
+      if (authorities[index].authority === undefined) {
         continue;
       }
 
@@ -162,7 +161,7 @@ export class AuthService {
       if (domainIdStr.length === 0) {
         continue;
       }
-      const domainId: number = Number.parseInt(domainIdStr[0]);
+      const domainId: number = Number.parseInt(domainIdStr[0], 10);
       if (domains.indexOf(domainId) === -1) {
         domains.push(domainId);
       }
@@ -254,7 +253,7 @@ export class AuthService {
         }
       }),
       catchError((error) => {
-          console.debug('SSO login error: ' + error.error['message']);
+          console.error('SSO login error: ' + error.error['message']);
           return observableThrowError(error);
       }));
   }

@@ -2,15 +2,13 @@ import {Component, OnInit} from '@angular/core';
 
 import {AppInstance, AppInstanceState, parseAppInstanceState} from '../../../model';
 import {DomainService} from '../../../service';
-import {AppInstanceService, AppsService, CustomerSearchCriteria} from '../../../service';
+import {AppInstanceService, CustomerSearchCriteria} from '../../../service';
 import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable, of} from 'rxjs';
-import {NgxPaginationModule} from 'ngx-pagination';
 import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
-import {TranslateStateModule} from '../../../shared/translate-state/translate-state.module';
 import {SessionService} from '../../../service/session.service';
 import {Domain} from '../../../model/domain';
 
@@ -22,13 +20,14 @@ export enum AppInstanceListSelection {
     selector: 'nmaas-appinstancelist',
     templateUrl: './appinstancelist.component.html',
     styleUrls: ['./appinstancelist.component.css'],
-    providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
+
 })
 export class AppInstanceListComponent implements OnInit {
 
     public undeployedVisible = false;
 
     private readonly item_number_key: string = 'item_number_per_page';
+  private readonly list_selection_key: string = 'list_selection';
 
     public p_first = 'p_first';
     public p_second = 'p_second';
@@ -63,8 +62,8 @@ export class AppInstanceListComponent implements OnInit {
                 public authService: AuthService,
                 private appConfig: AppConfigService,
                 private translateService: TranslateService,
-                private sessionService: SessionService,
-                public translateState: TranslateStateModule) {
+                private sessionService: SessionService) {
+
     }
 
     ngOnInit() {
@@ -78,7 +77,11 @@ export class AppInstanceListComponent implements OnInit {
             this.maxItemsOnPageSec = +i;
         }
 
-        this.userDataService.selectedDomainId.subscribe(domainId => {
+        const ls = AppInstanceListSelection[sessionStorage.getItem(this.list_selection_key)];
+    if (ls !== undefined) {
+      this.listSelection = ls;
+    }
+    console.log(this.listSelection)this.userDataService.selectedDomainId.subscribe(domainId => {
             // adjust display for GUESTS and USERS (they cannot own any instance)
             if (this.authService.hasDomainRole(domainId, 'ROLE_USER') ||
                 this.authService.hasDomainRole(domainId, 'ROLE_GUEST') ||
@@ -137,7 +140,7 @@ export class AppInstanceListComponent implements OnInit {
     }
 
     public onSelectionChange(event) {
-        this.update(this.domainId);
+        sessionStorage.setItem(this.list_selection_key, AppInstanceListSelection[this.listSelection])this.update(this.domainId);
     }
 
     public setItems(item) {
@@ -198,4 +201,17 @@ export class AppInstanceListComponent implements OnInit {
     public setShowFailedField(status: boolean) {
         this.showFailed = status;
     }
+
+  public translateState(appState): string {
+    let outputString = '';
+    console.debug('CHECKING ENUM: ' + 'ENUM.' + appState.toString());
+    this.translateService.get('ENUM.' + appState.toString()).subscribe((res: string) => {
+      outputString = res;
+    });
+    return outputString;
+  }
+
+  public userHasGuestRoleInCurrentDomain(): boolean {
+    return this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
+  }
 }

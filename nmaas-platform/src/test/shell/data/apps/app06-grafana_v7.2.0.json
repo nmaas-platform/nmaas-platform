@@ -1,7 +1,7 @@
 {
   "id": null,
   "name": "Grafana",
-  "version": "7.1.5",
+  "version": "7.2.0",
   "configWizardTemplate": {
     "template": {
       "components": [
@@ -228,7 +228,7 @@
       }
     ],
     "globalDeployParameters": {
-      "image.tag": "7.1.5"
+      "image.tag": "7.2.0"
     },
     "exposesWebUI": true,
     "accessMethods": [

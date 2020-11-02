@@ -28,6 +28,10 @@ spring.http.encoding.charset=UTF-8
 spring.http.encoding.enabled=true
 spring.http.encoding.force=true
 
+#Prometheus metrics
+nmaas.metrics.enabled=${METRICS_ENABLED}
+management.endpoints.web.exposure.include=health,prometheus
+
 # ---------------- #
 # Database         #
 # ---------------- #

@@ -2,35 +2,37 @@ import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import {FileInfo} from "../model";
+import {FileInfo} from '../model';
 import { AppConfigService } from '../service/appconfig.service';
-import {catchError, debounceTime, map} from 'rxjs/operators';
-import {GenericDataService} from "./genericdata.service";
+import {catchError, debounceTime} from 'rxjs/operators';
+import {GenericDataService} from './genericdata.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class AppImagesService extends GenericDataService {
 
     constructor(public http: HttpClient, public appConfig: AppConfigService) {
         super(http, appConfig);
     }
 
-    public getAppLogoUrl(id: number):string {
-        if(id == null){
-            return "";
+    public getAppLogoUrl(id: number): string {
+        if (id == null) {
+            return '';
         }
         return this.appConfig.getApiUrl() + '/apps/' + id + '/logo';
     }
 
     public getLogoFile(id: number): any {
-        return this.http.get(this.appConfig.getApiUrl() + '/apps/' + id + '/logo', {responseType: "blob"});
+        return this.http.get(this.appConfig.getApiUrl() + '/apps/' + id + '/logo', {responseType: 'blob'});
     }
 
     public getAppScreenshotUrl(appId: number, screenshotId: number) {
         return this.appConfig.getApiUrl() + '/apps/' + appId + '/screenshots/' + screenshotId;
     }
 
-    public getAppScreenshotFile(appId:number, id: number): any {
-        return this.http.get(this.appConfig.getApiUrl() + '/apps/' + appId + '/screenshots/' + id, {responseType: "blob"});
+    public getAppScreenshotFile(appId: number, id: number): any {
+        return this.http.get(this.appConfig.getApiUrl() + '/apps/' + appId + '/screenshots/' + id, {responseType: 'blob'});
     }
 
     public getAppScreenshotsUrls(id: number): Observable<FileInfo[]> {

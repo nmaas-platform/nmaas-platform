@@ -1,0 +1,164 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "Icinga2",
+        "license": "GPL 2.0",
+        "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt",
+        "wwwUrl": "https://icinga.com",
+        "sourceUrl": "https://github.com/Icinga/icinga2",
+        "issuesUrl": "https://github.com/Icinga/icinga2/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Icinga2",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Scalable and extensible monitoring system",
+                "fullDescription": "Icinga is a monitoring system which checks the availability of your network resources, notifies users of outages, and generates performance data for reporting. Scalable and extensible, Icinga can monitor large, complex environments across multiple locations. <br><br>Icinga 2 is the monitoring server and requires Icinga Web 2 on top in your Icinga Stack, which is already included as part of the NMaaS deployment. <br><br>The configuration can be easily managed with either the Icinga Director, config management tools or plain text within the Icinga DSL."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Scalable and extensible monitoring system",
+                "fullDescription": "Icinga is a monitoring system which checks the availability of your network resources, notifies users of outages, and generates performance data for reporting. Scalable and extensible, Icinga can monitor large, complex environments across multiple locations. <br><br>Icinga 2 is the monitoring server and requires Icinga Web 2 on top in your Icinga Stack, which is already included as part of the NMaaS deployment. <br><br>The configuration can be easily managed with either the Icinga Director, config management tools or plain text within the Icinga DSL."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Scalable and extensible monitoring system",
+                "fullDescription": "Icinga is a monitoring system which checks the availability of your network resources, notifies users of outages, and generates performance data for reporting. Scalable and extensible, Icinga can monitor large, complex environments across multiple locations. <br><br>Icinga 2 is the monitoring server and requires Icinga Web 2 on top in your Icinga Stack, which is already included as part of the NMaaS deployment. <br><br>The configuration can be easily managed with either the Icinga Director, config management tools or plain text within the Icinga DSL."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Scalable and extensible monitoring system",
+                "fullDescription": "Icinga is a monitoring system which checks the availability of your network resources, notifies users of outages, and generates performance data for reporting. Scalable and extensible, Icinga can monitor large, complex environments across multiple locations. <br><br>Icinga 2 is the monitoring server and requires Icinga Web 2 on top in your Icinga Stack, which is already included as part of the NMaaS deployment. <br><br>The configuration can be easily managed with either the Icinga Director, config management tools or plain text within the Icinga DSL."
+            }
+        ],
+        "tags": [
+            "monitoring",
+            "visualization",
+            "alerting"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Icinga2",
+        "version": "2.11.4",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Mandatory parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "mandatoryParameters",
+                                        "components": [
+                                            {
+                                                "label": "Default web admin user",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "env#ICINGAWEB2_ADMIN_USER",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Default web admin password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "env#ICINGAWEB2_ADMIN_PASS",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Allocated configuration directory storage (GB)",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "persistence#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "defaultValue": "1Gi",
+                                                "placeholder": "Default value: 1Gi",
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Allocated SQL database storage (GB)",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "mariadb#primary#persistence#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "defaultValue": "16Gi",
+                                                "placeholder": "Default value: 16Gi",
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-icinga2",
+                    "version": "1.0.0"
+                }
+            },
+            "deployParameters": {
+                "DOMAIN_CODENAME": "metallb.subnetName=%VALUE%"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "Icinga",
+                    "tag": "icinga",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "ingress.enabled",
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_CLASS": "ingress.class",
+                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false
+        }
+    }
+}

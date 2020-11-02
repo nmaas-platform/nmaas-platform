@@ -11,7 +11,6 @@ import {ApplicationBase} from '../../../model/application-base';
   selector: 'nmaas-modal-app-install',
   templateUrl: './appinstallmodal.component.html',
   styleUrls: ['./appinstallmodal.component.css'],
-  providers: [AppInstanceService, DomainService, ModalComponent]
 })
 export class AppInstallModalComponent implements OnInit {
 
@@ -37,7 +36,8 @@ export class AppInstallModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.app.versions.sort((a, b) => a.version === b.version ? 0 : a.version < b.version ? -1 : 1).reverse();
+    this.app.versions.sort((a, b) => a.version === b.version ? 0 : a.version < b.version ? -1 : 1);
+    this.app.versions.reverse();
     this.selectedAppVersion = this.app.versions[0].appVersionId;
     this.domainId = this.domain.id;
     this.domainName = this.domain.name;

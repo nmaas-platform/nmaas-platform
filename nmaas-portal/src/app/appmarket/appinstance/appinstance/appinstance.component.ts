@@ -4,16 +4,16 @@ import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service';
 import {AppInstanceProgressComponent} from '../appinstanceprogress';
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus} from '../../../model';
-import {AppInstanceExtended} from '../../../model/appinstanceextended';
+import {AppInstanceExtended} from '../../../model/app-instance-extended';
 import {SecurePipe} from '../../../pipe';
 import {AppRestartModalComponent} from '../modals/apprestart';
 import {AppAbortModalComponent} from '../modals/app-abort-modal';
-import {AppInstanceStateHistory} from '../../../model/appinstancestatehistory';
+import {AppInstanceStateHistory} from '../../../model/app-instance-state-history';
 import {RateComponent} from '../../../shared/rate';
 import {AppConfiguration} from '../../../model/app-configuration';
 import {LOCAL_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ModalComponent} from '../../../shared/modal';
-import {interval} from 'rxjs/internal/observable/interval';
+import {interval} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
 import {SessionService} from '../../../service/session.service';
 import {LocalDatePipe} from '../../../pipe/local-date.pipe';
@@ -384,7 +384,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public changeConfigUpdate(input: any): void {
-        if ((input != null) && (input['data'] != null)) {
+        if (input != null && input['data'] != null) {
             this.isUpdateFormValid = input['isValid'];
             this.changeConfiguration(input['data']['configuration']);
             this.changeAccessCredentials(input['data']['accessCredentials']);

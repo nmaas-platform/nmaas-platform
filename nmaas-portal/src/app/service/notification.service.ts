@@ -5,7 +5,9 @@ import {AppConfigService} from "./appconfig.service";
 import {Observable} from "rxjs";
 import {Mail} from "../model/mail";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class NotificationService extends GenericDataService{
 
   private readonly url:string;
