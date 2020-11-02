@@ -27,7 +27,7 @@ export class AppInstanceListComponent implements OnInit {
     public undeployedVisible = false;
 
     private readonly item_number_key: string = 'item_number_per_page';
-  private readonly list_selection_key: string = 'list_selection';
+    private readonly list_selection_key: string = 'list_selection';
 
     public p_first = 'p_first';
     public p_second = 'p_second';
@@ -78,10 +78,11 @@ export class AppInstanceListComponent implements OnInit {
         }
 
         const ls = AppInstanceListSelection[sessionStorage.getItem(this.list_selection_key)];
-    if (ls !== undefined) {
-      this.listSelection = ls;
-    }
-    console.log(this.listSelection)this.userDataService.selectedDomainId.subscribe(domainId => {
+        if (ls !== undefined) {
+            this.listSelection = ls;
+        }
+        console.log(this.listSelection);
+        this.userDataService.selectedDomainId.subscribe(domainId => {
             // adjust display for GUESTS and USERS (they cannot own any instance)
             if (this.authService.hasDomainRole(domainId, 'ROLE_USER') ||
                 this.authService.hasDomainRole(domainId, 'ROLE_GUEST') ||
@@ -140,7 +141,8 @@ export class AppInstanceListComponent implements OnInit {
     }
 
     public onSelectionChange(event) {
-        sessionStorage.setItem(this.list_selection_key, AppInstanceListSelection[this.listSelection])this.update(this.domainId);
+        sessionStorage.setItem(this.list_selection_key, AppInstanceListSelection[this.listSelection]);
+        this.update(this.domainId);
     }
 
     public setItems(item) {
@@ -202,16 +204,16 @@ export class AppInstanceListComponent implements OnInit {
         this.showFailed = status;
     }
 
-  public translateState(appState): string {
-    let outputString = '';
-    console.debug('CHECKING ENUM: ' + 'ENUM.' + appState.toString());
-    this.translateService.get('ENUM.' + appState.toString()).subscribe((res: string) => {
-      outputString = res;
-    });
-    return outputString;
-  }
+    public translateState(appState): string {
+        let outputString = '';
+        console.debug('CHECKING ENUM: ' + 'ENUM.' + appState.toString());
+        this.translateService.get('ENUM.' + appState.toString()).subscribe((res: string) => {
+            outputString = res;
+        });
+        return outputString;
+    }
 
-  public userHasGuestRoleInCurrentDomain(): boolean {
-    return this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
-  }
+    public userHasGuestRoleInCurrentDomain(): boolean {
+        return this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
+    }
 }
