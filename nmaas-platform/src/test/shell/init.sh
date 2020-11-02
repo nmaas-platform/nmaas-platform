@@ -325,6 +325,13 @@ echo
 echo App18 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/wifimon.png;type=image/png" $API_URL/apps/18/logo
 echo
+echo App18 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/wifimon/wifimon1.png;type=image/png" $API_URL/apps/18/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/wifimon/wifimon2.png;type=image/png" $API_URL/apps/18/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/wifimon/wifimon3.png;type=image/png" $API_URL/apps/18/screenshots
+echo
 
 echo
 echo App19
