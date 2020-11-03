@@ -1,6 +1,7 @@
 package net.geant.nmaas.notifications.types;
 
 import lombok.AllArgsConstructor;
+import net.geant.nmaas.notifications.types.model.FormTypeRequest;
 import net.geant.nmaas.notifications.types.model.FormTypeView;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class FormTypeController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody @Valid FormTypeView ftv) {
-        this.service.create(ftv);
+    public void create(@RequestBody @Valid FormTypeRequest request) {
+        this.service.create(request);
     }
 }

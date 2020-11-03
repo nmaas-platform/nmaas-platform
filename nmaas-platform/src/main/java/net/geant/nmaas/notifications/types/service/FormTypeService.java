@@ -1,6 +1,7 @@
 package net.geant.nmaas.notifications.types.service;
 
 import lombok.AllArgsConstructor;
+import net.geant.nmaas.notifications.types.model.FormTypeRequest;
 import net.geant.nmaas.notifications.types.model.FormTypeView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.persistence.repository.FormTypeRepository;
@@ -8,6 +9,7 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,8 +20,12 @@ public class FormTypeService {
 
     public List<FormTypeView> getAll() {
         return this.typeRepository.findAll().stream().map(
-                t -> new FormTypeView(t.getKey(), t.getAccess(), t.getTemplateName(), t.getEmailsList())
+                t -> new FormTypeView(t.getKey(), t.getAccess(), t.getTemplateName())
         ).collect(Collectors.toList());
+    }
+
+    public Optional<FormType> findOne(String key) {
+        return this.typeRepository.findById(key);
     }
 
     public void create(FormType ent) {
@@ -30,7 +36,7 @@ public class FormTypeService {
         }
     }
 
-    public void create(FormTypeView ftv) {
+    public void create(FormTypeRequest ftv) {
         this.create(new FormType(ftv.getKey(), ftv.getAccess(), ftv.getTemplateName(), ftv.getEmails()));
     }
 }
