@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.nmservice.configuration.gitlab.events.UserSshKeysUpdatedGitlabEvent;
 import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.api.domain.SSHKeyView;
 import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
@@ -7,6 +8,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +18,14 @@ import java.util.stream.Collectors;
 @Service
 public class SSHKeyServiceImpl implements SSHKeyService {
 
-    private SSHKeyRepository repository;
+    private final SSHKeyRepository repository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public SSHKeyServiceImpl(SSHKeyRepository repository) {
+    public SSHKeyServiceImpl(SSHKeyRepository repository, ApplicationEventPublisher eventPublisher) {
         this.repository = repository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -30,6 +35,15 @@ public class SSHKeyServiceImpl implements SSHKeyService {
             SSHKeyEntity key = optionalSSHKeyEntity.get();
             if(key.getOwner().getId().equals(owner.getId())) {
                 repository.deleteById(keyId);
+                // publish event after db state is changed
+                UserSshKeysUpdatedGitlabEvent event = new UserSshKeysUpdatedGitlabEvent(
+                        "SSHKeys Service - invalidate key",
+                        owner.getUsername(),
+                        owner.getEmail(),
+                        owner.getFirstname() + " " + owner.getLastname(),
+                        this.repository.findAllByOwner(owner).stream().map(SSHKeyEntity::getKey).collect(Collectors.toList())
+                );
+                this.eventPublisher.publishEvent(event);
             } else {
                 throw new IllegalArgumentException("Invalid key owner");
             }
@@ -45,6 +59,15 @@ public class SSHKeyServiceImpl implements SSHKeyService {
         }
         SSHKeyEntity newSSHKeyEntity = new SSHKeyEntity(owner, request.getName(), request.getKey());
         newSSHKeyEntity = this.repository.save(newSSHKeyEntity);
+        // publish event after db state is changed
+        UserSshKeysUpdatedGitlabEvent event = new UserSshKeysUpdatedGitlabEvent(
+                "SSHKeys Service - create key",
+                owner.getUsername(),
+                owner.getEmail(),
+                owner.getFirstname() + " " + owner.getLastname(),
+                this.repository.findAllByOwner(owner).stream().map(SSHKeyEntity::getKey).collect(Collectors.toList())
+        );
+        this.eventPublisher.publishEvent(event);
         return new SSHKeyView(newSSHKeyEntity.getId(), newSSHKeyEntity.getName(), newSSHKeyEntity.getFingerprint());
     }
 
