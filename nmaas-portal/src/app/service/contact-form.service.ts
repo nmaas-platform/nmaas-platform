@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {AccessModifier, ContactFormType} from '../model/contact-form-type';
+import {AppConfigService} from './appconfig.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,7 +13,7 @@ export class ContactFormService {
     private readonly formsPath = 'assets/contact/'
     private readonly default = 'default';
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private appConfig: AppConfigService) {
     }
 
     public getForm(name: string): Observable<any> {
@@ -27,7 +28,8 @@ export class ContactFormService {
     }
 
     public getAllFormTypes(): Observable<ContactFormType[]> {
-        return this.http.get<ContactFormType[]>(this.formsPath + 'types.json').pipe(
+        return this.http.get<ContactFormType[]>(this.appConfig.getApiUrl() + '/mail/type').pipe(
+            tap(data => console.log(data)),
             catchError(
                 err => {
                     console.error('ERROR getting contact types list', err);

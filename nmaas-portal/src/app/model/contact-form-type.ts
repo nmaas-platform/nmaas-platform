@@ -18,4 +18,5 @@ export interface ContactFormType {
     templateName: string, // name of the template to download
     template?: any, // actual formio template object
     dropdownTextKey?: string // translation key of dropdown text
+    emails?: string[]
 }
