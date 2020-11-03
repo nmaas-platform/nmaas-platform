@@ -13,10 +13,6 @@ export function parseAccessModifier(value: string|AccessModifier): AccessModifie
 
 export interface ContactFormType {
     key: string, // contact form subType
-    emailSubject?: string, // contact form email subject
     access: AccessModifier, // access modifier
     templateName: string, // name of the template to download
-    template?: any, // actual formio template object
-    dropdownTextKey?: string // translation key of dropdown text
-    emails?: string[]
 }

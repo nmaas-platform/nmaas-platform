@@ -116,7 +116,6 @@ export class ContactComponent implements OnInit {
             map((token) => {
                 const result = {token, mail: new Mail()} // create mail object
                 result.mail.otherAttributes = data; // set properties and mail attributes
-                result.mail.otherAttributes.subject = this.formType.emailSubject;
                 result.mail.otherAttributes.subType = this.formType.key;
                 result.mail.mailType = 'CONTACT_FORM';
                 return result;
