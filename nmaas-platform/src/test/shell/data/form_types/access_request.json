@@ -1,0 +1,6 @@
+{
+  "key": "ACCESS_REQUEST",
+  "access": "ONLY_NOT_LOGGED_IN",
+  "templateName": "default",
+  "emails": ["admin@nmaas.eu"]
+}

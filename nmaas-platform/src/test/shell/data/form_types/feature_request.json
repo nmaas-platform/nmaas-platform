@@ -1,0 +1,6 @@
+{
+  "key": "FEATURE_REQUEST",
+  "access": "ALL",
+  "templateName": "default",
+  "emails": ["admin@nmaas.eu"]
+}

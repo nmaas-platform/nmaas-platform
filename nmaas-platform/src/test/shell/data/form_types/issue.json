@@ -1,0 +1,6 @@
+{
+  "key": "ISSUE",
+  "access": "ALL",
+  "templateName": "default",
+  "emails": ["admin@nmaas.eu"]
+}

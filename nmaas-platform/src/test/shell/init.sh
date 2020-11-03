@@ -476,3 +476,18 @@ curl -X POST $API_URL/i18n/pl?enabled=true --header "Authorization: Bearer $TOKE
 echo
 echo Create german language content
 curl -X POST $API_URL/i18n/de?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
+
+
+echo
+echo ---------------------
+echo Create form type contact
+curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/contact.json
+echo
+echo Create form type issue
+curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/issue.json
+echo
+echo Create form type feature_request
+curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/feature_request.json
+echo
+echo Create form type access_request
+curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/access_request.json
