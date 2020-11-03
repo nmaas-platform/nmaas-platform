@@ -28,11 +28,15 @@ public class FormType {
     @Setter(value = AccessLevel.PROTECTED)
     private String emails;
 
-    public FormType(String key, String access, String templateName, List<String> emails) {
+    @Column(nullable = false)
+    private String subject;
+
+    public FormType(String key, String access, String templateName, List<String> emails, String subject) {
         this.key = key;
         this.access = access;
         this.templateName = templateName;
         this.setEmailsList(emails);
+        this.subject = subject;
     }
 
     public List<String> getEmailsList() {

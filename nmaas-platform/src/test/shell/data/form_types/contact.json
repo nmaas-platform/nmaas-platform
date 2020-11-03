@@ -2,5 +2,6 @@
   "key": "CONTACT",
   "access": "ALL",
   "templateName": "default",
-  "emails": ["admin@nmaas.eu"]
+  "emails": ["admin@nmaas.eu"],
+  "subject": "NMAAS: Contact"
 }

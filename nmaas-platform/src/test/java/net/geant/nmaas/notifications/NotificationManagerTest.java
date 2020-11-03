@@ -218,14 +218,14 @@ public class NotificationManagerTest {
 
         List<String> emails = new ArrayList<>();
         emails.add("email@man.poznan.pl");
-        FormType ft = new FormType("CONTACT", "", "", emails);
+        FormType ft = new FormType("CONTACT", "", "", emails, "Subject");
         when(formTypeService.findOne(anyString())).thenReturn(Optional.of(ft));
 
         notificationManager.prepareAndSendMail(ma);
 
         verify(notificationService,
                 times(adminUsers.size() + emails.size())
-        ).sendMail(any(String.class), eq("Default"), any(String.class));
+        ).sendMail(any(String.class), eq("Subject"), any(String.class));
 
     }
 

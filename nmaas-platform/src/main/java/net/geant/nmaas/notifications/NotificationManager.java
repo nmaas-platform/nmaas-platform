@@ -13,6 +13,7 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
+import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -170,6 +171,16 @@ public class NotificationManager {
     private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes) {
         if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
             mailContent.setSubject(mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
+        }
+        if(mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
+            Optional<String> contactFormKey = Optional.ofNullable(mailAttributes.getOtherAttributes().get("subType"));
+            Optional<FormType> formType =  this.formTypeService.findOne(
+                    contactFormKey.orElseThrow(() -> new ProcessingException("Contact form subType not found"))
+            );
+            mailContent.setSubject(
+                   formType.orElseThrow(() -> new MissingElementException(String.format("Contact form type: [%s] was not found", contactFormKey.get())))
+                           .getSubject()
+            );
         }
     }
 

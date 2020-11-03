@@ -28,4 +28,7 @@ public class FormTypeRequest {
 
     @NotEmpty
     private List<@Email String> emails;
+
+    @NotBlank
+    private String subject;
 }

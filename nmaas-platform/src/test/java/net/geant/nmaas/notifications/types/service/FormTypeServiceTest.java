@@ -28,7 +28,7 @@ public class FormTypeServiceTest {
     @Test
     public void createShouldPersistNewEntityIfKeyDoesNotExist() {
         when(repository.existsById(anyString())).thenReturn(false);
-        FormTypeRequest ftr = new FormTypeRequest("CONTACT", "", "", new ArrayList<>());
+        FormTypeRequest ftr = new FormTypeRequest("CONTACT", "", "", new ArrayList<>(), "");
         this.underTest.create(ftr);
 
         verify(repository, times(1)).save(any(FormType.class));
@@ -37,7 +37,7 @@ public class FormTypeServiceTest {
     @Test
     public void createShouldNotPersistIfKeyAlreadyExists() {
         when(repository.existsById(anyString())).thenReturn(true);
-        FormTypeRequest ftr = new FormTypeRequest("CONTACT", "", "", new ArrayList<>());
+        FormTypeRequest ftr = new FormTypeRequest("CONTACT", "", "", new ArrayList<>(), "");
 
         assertThrows(ProcessingException.class, () -> this.underTest.create(ftr));
 
@@ -48,8 +48,8 @@ public class FormTypeServiceTest {
     public void getAllShouldCallProperRepositoryMethod() {
         when(repository.findAll()).thenReturn(
                 Arrays.asList(
-                        new FormType("CONTACT", "", "", new ArrayList<>()),
-                        new FormType("ISSUE", "", "", new ArrayList<>())
+                        new FormType("CONTACT", "", "", new ArrayList<>(), ""),
+                        new FormType("ISSUE", "", "", new ArrayList<>(), "")
                 )
         );
 
@@ -60,7 +60,7 @@ public class FormTypeServiceTest {
 
     @Test
     public void findOneShouldCallProperRepositoryMethod() {
-        when(repository.findById(anyString())).thenReturn(Optional.of(new FormType("CONTACT", "", "", new ArrayList<>())));
+        when(repository.findById(anyString())).thenReturn(Optional.of(new FormType("CONTACT", "", "", new ArrayList<>(), "")));
 
         underTest.findOne("CONTACT");
 

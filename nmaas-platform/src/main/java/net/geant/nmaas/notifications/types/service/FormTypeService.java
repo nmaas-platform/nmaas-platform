@@ -37,6 +37,6 @@ public class FormTypeService {
     }
 
     public void create(FormTypeRequest ftv) {
-        this.create(new FormType(ftv.getKey(), ftv.getAccess(), ftv.getTemplateName(), ftv.getEmails()));
+        this.create(new FormType(ftv.getKey(), ftv.getAccess(), ftv.getTemplateName(), ftv.getEmails(), ftv.getSubject()));
     }
 }
