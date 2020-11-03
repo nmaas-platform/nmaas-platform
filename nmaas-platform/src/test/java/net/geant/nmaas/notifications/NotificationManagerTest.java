@@ -6,9 +6,10 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
+import net.geant.nmaas.notifications.types.persistence.entity.FormType;
+import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,11 +42,13 @@ public class NotificationManagerTest {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-    private NotificationTask notificationTask;
+    private FormTypeService formTypeService = mock(FormTypeService.class);
+
+    private NotificationEventListener notificationEventListener;
 
     @BeforeEach
     public void setup() throws IOException {
-        this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, modelMapper);
+        this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, modelMapper, formTypeService);
 
         when(userService.findAllUsersWithAdminRole()).thenReturn(
                 this.getAdminUserList().stream()
@@ -61,7 +64,7 @@ public class NotificationManagerTest {
 
         when(domainService.findUsersWithDomainAdminRole("domainName")).thenReturn(
                 this.getAdminUserList().stream()
-                        .map(u->this.modelMapper.map(u, UserView.class))
+                        .map(u -> this.modelMapper.map(u, UserView.class))
                         .collect(Collectors.toList())
         );
 
@@ -87,11 +90,11 @@ public class NotificationManagerTest {
     @Test
     public void notificationTaskShouldSendEmail() throws IOException, TemplateException {
         notificationManager = mock(NotificationManager.class);
-        notificationTask = new NotificationTask(notificationManager);
+        notificationEventListener = new NotificationEventListener(notificationManager);
         MailAttributes ma = new MailAttributes();
 
         NotificationEvent event = new NotificationEvent(this, ma);
-        notificationTask.trigger(event);
+        notificationEventListener.trigger(event);
 
         verify(notificationManager, times(1)).prepareAndSendMail(ma);
     }
@@ -99,11 +102,11 @@ public class NotificationManagerTest {
     @Test
     public void notificationTaskShouldNotSendMail() throws IOException, TemplateException {
         notificationManager = mock(NotificationManager.class);
-        notificationTask = new NotificationTask(notificationManager);
+        notificationEventListener = new NotificationEventListener(notificationManager);
 
         NotificationEvent event = new NotificationEvent(this, null);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-            notificationTask.trigger(event);
+            notificationEventListener.trigger(event);
         });
 
         assertEquals("Mail attributes cannot be null", ex.getMessage());
@@ -121,13 +124,9 @@ public class NotificationManagerTest {
             put("username", "MyUser");
         }});
 
-        try {
-            notificationManager.prepareAndSendMail(ma);
-        } catch (IOException ioe) {
-            fail("IO exception caught " + ioe.getMessage());
-        } catch (TemplateException te) {
-            fail("Template exception caught " + te.getMessage());
-        }
+
+        notificationManager.prepareAndSendMail(ma);
+
 
         verify(notificationService, times(2)).sendMail(any(String.class), eq("Some Title"), any(String.class));
 
@@ -142,13 +141,9 @@ public class NotificationManagerTest {
             put("username", "MyUser");
         }});
 
-        try {
-            notificationManager.prepareAndSendMail(ma);
-        } catch (IOException ioe) {
-            fail("IO exception caught " + ioe.getMessage());
-        } catch (TemplateException te) {
-            fail("Template exception caught " + te.getMessage());
-        }
+
+        notificationManager.prepareAndSendMail(ma);
+
 
         verify(notificationService, times(1)).sendMail(any(String.class), eq("Default"), any(String.class));
     }
@@ -161,16 +156,11 @@ public class NotificationManagerTest {
             put("text", "text");
             put("username", "MyUser");
             put("owner", "admin");
-            put("domainName","domainName");
+            put("domainName", "domainName");
         }});
 
-        try {
-            notificationManager.prepareAndSendMail(ma);
-        } catch (IOException ioe) {
-            fail("IO exception caught " + ioe.getMessage());
-        } catch (TemplateException te) {
-            fail("Template exception caught " + te.getMessage());
-        }
+
+        notificationManager.prepareAndSendMail(ma);
 
         verify(notificationService, times(1)).sendMail(any(String.class), eq("Default"), any(String.class));
     }
@@ -183,16 +173,12 @@ public class NotificationManagerTest {
             put("text", "text");
             put("username", "MyUser");
             put("owner", "ordinary");
-            put("domainName","domainName");
+            put("domainName", "domainName");
         }});
 
-        try {
-            notificationManager.prepareAndSendMail(ma);
-        } catch (IOException ioe) {
-            fail("IO exception caught " + ioe.getMessage());
-        } catch (TemplateException te) {
-            fail("Template exception caught " + te.getMessage());
-        }
+
+        notificationManager.prepareAndSendMail(ma);
+
 
         verify(notificationService, times(2)).sendMail(any(String.class), eq("Default"), any(String.class));
     }
@@ -216,6 +202,31 @@ public class NotificationManagerTest {
             notificationManager.prepareAndSendMail(ma);
         });
         assertEquals("Mail template in language fr cannot be found", ex.getMessage());
+    }
+
+    @Test
+    public void shouldSendContactForm() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.CONTACT_FORM);
+        ma.setOtherAttributes(new HashMap<String, String>() {{
+            put("text", "text");
+            put("subType", "CONTACT");
+        }});
+
+        List<User> adminUsers = this.getAdminUserList();
+        when(userService.findAllUsersWithAdminRole()).thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).collect(Collectors.toList()));
+
+        List<String> emails = new ArrayList<>();
+        emails.add("email@man.poznan.pl");
+        FormType ft = new FormType("CONTACT", "", "", emails);
+        when(formTypeService.findOne(anyString())).thenReturn(Optional.of(ft));
+
+        notificationManager.prepareAndSendMail(ma);
+
+        verify(notificationService,
+                times(adminUsers.size() + emails.size())
+        ).sendMail(any(String.class), eq("Default"), any(String.class));
+
     }
 
     private MailTemplateView getDefaultMailTemplateView() {

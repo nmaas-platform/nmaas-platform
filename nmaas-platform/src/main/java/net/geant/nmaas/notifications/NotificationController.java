@@ -28,6 +28,8 @@ public class NotificationController {
     @PostMapping
     @ValidateCaptcha
     public void sendMail(@RequestBody MailAttributes mailAttributes, @RequestParam String token){
+        // TODO verify if captcha token must be verified
+
         if(mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
             eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
         } else {
