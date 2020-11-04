@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -11,14 +10,11 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.*;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
@@ -46,12 +42,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -402,19 +394,24 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
 
+        User u1 = UsersHelper.DOMAIN1_ADMIN;
+        u1.getSshKeys().add(new SSHKeyEntity(u1, "test", "longlong"));
+        User u2 = UsersHelper.DOMAIN1_USER1;
+        User u3 = UsersHelper.DOMAIN2_USER1;
+
         List<UserBase> members = new ArrayList<>();
-        members.add(modelMapper.map(UsersHelper.DOMAIN1_ADMIN, UserBase.class));
-        members.add(modelMapper.map(UsersHelper.DOMAIN1_USER1, UserBase.class));
-        members.add(modelMapper.map(UsersHelper.DOMAIN2_USER1, UserBase.class));
+        members.add(modelMapper.map(u1, UserBase.class));
+        members.add(modelMapper.map(u2, UserBase.class));
+        members.add(modelMapper.map(u3, UserBase.class));
 
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
-        when(userService.findById(UsersHelper.DOMAIN1_ADMIN.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1_ADMIN));
-        when(userService.findById(UsersHelper.DOMAIN1_USER1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1_USER1));
-        when(userService.findById(UsersHelper.DOMAIN2_USER1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN2_USER1));
+        when(userService.findById(u1.getId())).thenReturn(Optional.of(u1));
+        when(userService.findById(u2.getId())).thenReturn(Optional.of(u2));
+        when(userService.findById(u3.getId())).thenReturn(Optional.of(u3));
 
-        when(userService.findByUsername(UsersHelper.DOMAIN1_ADMIN.getUsername())).thenReturn(Optional.of(UsersHelper.DOMAIN1_ADMIN));
-        when(userService.findByUsername(UsersHelper.DOMAIN1_USER1.getUsername())).thenReturn(Optional.of(UsersHelper.DOMAIN1_USER1));
-        when(userService.findByUsername(UsersHelper.DOMAIN2_USER1.getUsername())).thenReturn(Optional.of(UsersHelper.DOMAIN2_USER1));
+        when(userService.findByUsername(u1.getUsername())).thenReturn(Optional.of(u1));
+        when(userService.findByUsername(u2.getUsername())).thenReturn(Optional.of(u2));
+        when(userService.findByUsername(u3.getUsername())).thenReturn(Optional.of(u3));
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -431,7 +428,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         Set<UserViewMinimal> retrieved = objectMapper.readValue(data, AppInstanceViewExtended.class).getMembers();
-        assertEquals(2, retrieved.size());
+        assertEquals(1, retrieved.size());
 
     }
 
