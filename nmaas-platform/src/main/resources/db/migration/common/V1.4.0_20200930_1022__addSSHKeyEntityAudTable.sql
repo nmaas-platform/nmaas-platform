@@ -2,7 +2,7 @@ create table sshkey_entity_aud
 (
     id          bigint  not null,
     rev         integer not null,
-    revtype     tinyint,
+    revtype     smallint,
     fingerprint varchar(255),
     key         TEXT,
     name        varchar(255),
@@ -20,7 +20,7 @@ create table user_sshkey_entity_aud
     rev      integer not null,
     owner_id bigint  not null,
     id       bigint  not null,
-    revtype  tinyint,
+    revtype  smallint,
     primary key (rev, owner_id, id)
 );
 
