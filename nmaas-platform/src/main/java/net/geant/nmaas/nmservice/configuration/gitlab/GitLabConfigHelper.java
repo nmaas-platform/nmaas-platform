@@ -18,6 +18,9 @@ public class GitLabConfigHelper {
     private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
 
     static User createStandardUser(String username, String email, String name) {
+        if(name == null || name.isEmpty()) {
+            name = username;
+        }
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
