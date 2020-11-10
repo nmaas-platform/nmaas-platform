@@ -16,3 +16,9 @@ tr.clickable {
 .dropdown:hover .dropdown-menu {
     display: block;
 }
+
+.align-vertically {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
