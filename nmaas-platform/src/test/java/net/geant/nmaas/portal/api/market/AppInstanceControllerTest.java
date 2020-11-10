@@ -277,7 +277,7 @@ public class AppInstanceControllerTest {
 
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
 
-        List<AppInstanceBase> result = appInstanceController.getRunningAppInstances(domain1.getId(), principal);
+        List<AppInstanceView> result = appInstanceController.getRunningAppInstances(domain1.getId(), principal);
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.get(0);

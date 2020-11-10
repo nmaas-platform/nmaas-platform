@@ -141,16 +141,16 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/running/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
+    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
         Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         User owner = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
         return getAllRunningInstancesByOwnerAndDomain(owner, domain);
     }
 
-    private List<AppInstanceBase> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
+    private List<AppInstanceView> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
         return this.instanceService.findAllByOwnerAndDomain(owner, domain).stream()
                 .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
-                .map(this::mapAppInstanceBase)
+                .map(this::mapAppInstance)
                 .collect(Collectors.toList());
     }
 
