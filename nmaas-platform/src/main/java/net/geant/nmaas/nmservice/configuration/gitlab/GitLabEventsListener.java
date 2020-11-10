@@ -50,7 +50,7 @@ public class GitLabEventsListener {
         GitLabProject project = loadGitlabProject(event.getDeploymentId());
 
         this.gitConfigHandler.createUser(event.getUserUsername(), event.getUserEmail(), event.getUserName(), event.getUserSshKeys());
-        this.gitConfigHandler.addMemberToProject(project.getProjectId(), event.getUserName());
+        this.gitConfigHandler.addMemberToProject(project.getProjectId(), event.getUserUsername());
 
     }
 
