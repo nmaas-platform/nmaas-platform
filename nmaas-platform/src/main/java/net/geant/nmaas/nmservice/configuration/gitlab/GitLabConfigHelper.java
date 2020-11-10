@@ -18,7 +18,7 @@ public class GitLabConfigHelper {
     private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
 
     static User createStandardUser(String username, String email, String name) {
-        if(name == null || name.isEmpty()) {
+        if(name == null || name.isEmpty() || name.trim().isEmpty()) {
             name = username;
         }
         User user = new User();
@@ -27,7 +27,7 @@ public class GitLabConfigHelper {
         user.setName(name);
         user.setCanCreateGroup(false);
         user.setCanCreateProject(false);
-        log.info(String.format("Creating GitLab user (username: %s, email: %s, name: %s)", username, email, name));
+        log.info(String.format("Creating GitLab user (username: [%s], email: [%s], name: [%s])", username, email, name));
         return user;
     }
 

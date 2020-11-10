@@ -65,6 +65,11 @@ public class GitLabConfigHelperTest {
         assertEquals("email", result2.getEmail());
         assertEquals("username", result2.getName());
 
+        User result3 = GitLabConfigHelper.createStandardUser("username", "email", " ");
+        assertEquals("username", result3.getUsername());
+        assertEquals("email", result3.getEmail());
+        assertEquals("username", result3.getName());
+
     }
 
 }
