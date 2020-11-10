@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -143,8 +144,12 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Integer getUserId(String username) {
         try {
-            return gitLabManager.users().getUser(username).getId();
-        } catch (GitLabApiException e) {
+            return gitLabManager.users()
+                    .getOptionalUser(username)
+                    .orElseThrow(
+                            () -> new GitLabNotFoundException(String.format("User [%s] not found with gitlab", username))
+                    ).getId();
+        } catch (GitLabNotFoundException e) {
             throw new FileTransferException("GITLAB: " + e.getMessage());
         }
     }
