@@ -12,6 +12,14 @@ import {UserDataService} from '../../../service/userdata.service';
 import {AuthService} from '../../../auth/auth.service';
 import {map, shareReplay, take} from 'rxjs/operators';
 import {CustomerSearchCriteria} from '../../../service';
+import {FormControl} from '@angular/forms';
+
+function userMatches(u: User, term: string): boolean {
+  return u.username.toLowerCase().includes(term.toLowerCase()) ||
+      u.email.toLowerCase().includes(term.toLowerCase()) ||
+      (u.firstname || '').toLowerCase().includes(term.toLowerCase()) ||
+      (u.lastname || '').toLowerCase().includes(term.toLowerCase())
+}
 
 @Component({
   selector: 'nmaas-userslist',
@@ -23,7 +31,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   public users_item_number_key = 'NUMBER_OF_USERS_ITEM_KEY';
 
   @Input()
-  public users: User[] = [];
+  public users: User[] = []; // provided list of users
+
+  public displayUsers: User[] = []; // list of users after transformations
 
   public domainId: number;
 
@@ -48,6 +58,8 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   public itemsPerPage: number[]  = [15, 20, 25, 30, 50 ];
   public maxItemsOnPage = 15;
 
+  public searchText = new FormControl('');
+
   constructor(private userService: UserService,
               public domainService: DomainService,
               private userDataService: UserDataService,
@@ -60,10 +72,16 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     // set stored value of maxElementsPerPage
     const i = sessionStorage.getItem(this.users_item_number_key);
     if (i) { this.maxItemsOnPage = +i; }
+
+    this.searchText.valueChanges.subscribe(
+        term => this.onSearch(term)
+    )
+
+    this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
+    this.displayUsers = this.users;
   }
 
   public getDomainName(domainId: number): Observable<string> {
@@ -122,8 +140,23 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   onSorted($event) {
-    console.log($event);
+    console.log('onSort', $event);
+    this.displayUsers = this.users;
+    this.handleSearchEvent(this.searchText.value)
     this.handleSortEvent($event);
+  }
+
+  onSearch(term) {
+    console.log('onSearch', term)
+    this.displayUsers = this.users;
+    this.handleSearchEvent(term)
+    this.handleSortEvent(this.lastSearchCriteria);
+  }
+
+  handleSearchEvent(term: string) {
+    this.displayUsers = this.displayUsers.filter(
+        u => userMatches(u, term)
+    )
   }
 
   handleSortEvent(criteria: CustomerSearchCriteria) {
@@ -134,7 +167,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
       return 0;
     };
 
-    this.users.sort(
+    this.displayUsers.sort(
         (a: User, b: User) => {
           const direction = criteria.sortDirection === 'asc' ? 1 : -1;
           let result = 0;

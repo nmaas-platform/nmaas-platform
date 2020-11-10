@@ -5,7 +5,7 @@ import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-transl
 import {DomainService, UserService} from '../../../service';
 import {UserDataService} from '../../../service/userdata.service';
 import {AuthService} from '../../../auth/auth.service';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {JwtModule} from '@auth0/angular-jwt';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -44,7 +44,9 @@ describe('UserslistComponent', () => {
                 }),
                 FormsModule,
                 NgxPaginationModule,
-                RouterTestingModule
+                RouterTestingModule,
+                FormsModule,
+                ReactiveFormsModule
             ],
             providers: [
                 {provide: DomainService, useValue: domainServiceSpy},
