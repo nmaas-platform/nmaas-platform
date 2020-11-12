@@ -169,6 +169,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
     this.displayUsers.sort(
         (a: User, b: User) => {
+          if (!criteria) {
+            return 0;
+          }
           const direction = criteria.sortDirection === 'asc' ? 1 : -1;
           let result = 0;
 
