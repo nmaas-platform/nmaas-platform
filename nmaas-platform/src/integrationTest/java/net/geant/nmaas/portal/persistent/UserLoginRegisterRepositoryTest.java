@@ -112,6 +112,7 @@ public class UserLoginRegisterRepositoryTest {
 
     }
 
+    @Disabled
     @Test
     public void shouldReturnFirstAndLastLoginDates() {
         OffsetDateTime midLoginDate = OffsetDateTime.now();
@@ -153,6 +154,7 @@ public class UserLoginRegisterRepositoryTest {
         assertTrue(lst.get(1).getMaxLoginDate().isEqual(lastLoginDate));
     }
 
+    @Disabled
     @Test
     public void shouldReturnLastFailedLoginDates() {
         OffsetDateTime midLoginDate = OffsetDateTime.now();
