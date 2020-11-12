@@ -38,6 +38,12 @@ public class BasePermissionCheckTest {
 			public boolean supports(String targetType) {
 				return "supported".equalsIgnoreCase(targetType);
 			}
+
+			@Override
+			protected void setupMatrix() {
+
+			}
+
 			@Override
 			protected Set<Permissions> evaluatePermissions(User user, Serializable targetId, String targetType) {
 				return perms;
