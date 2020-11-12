@@ -100,9 +100,9 @@ public class AppDeploymentStateChangeManager {
     private MailAttributes getMailAttributes(AppDeployment appDeployment){
         return MailAttributes.builder()
                 .otherAttributes(ImmutableMap.of(
-                        "accessURL" ,deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
+                        "accessURL", deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
                                 .getServiceAccessMethods().stream()
-                                .filter(m -> m.getType().equals(ServiceAccessMethodType.DEFAULT))
+                                .filter(m -> !m.getType().equals(ServiceAccessMethodType.INTERNAL))
                                 .map(ServiceAccessMethodView::getUrl)
                                 .findFirst()
                                 .orElse(""),
