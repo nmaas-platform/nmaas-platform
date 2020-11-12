@@ -6,37 +6,27 @@ import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
 public class CommentPermissionCheckTest {
 
-	@InjectMocks
-	CommentPermissionCheck cpch = new CommentPermissionCheck();
+	private CommentPermissionCheck cpch;
+
+	private final CommentRepository comments = mock(CommentRepository.class);
 	
-	@Mock
-	CommentRepository comments;
-	
-	@Mock
-	DomainService domains;
+	private final DomainService domains = mock(DomainService.class);
 	
 	@BeforeEach
 	public void setUp() throws Exception {
+		this.cpch = new CommentPermissionCheck(comments);
+
 		when(comments.findById(UsersHelper.COMMENT1.getId())).thenReturn(Optional.of(UsersHelper.COMMENT1));
 		when(comments.findById(UsersHelper.COMMENT2.getId())).thenReturn(Optional.of(UsersHelper.COMMENT2));
 		when(comments.findById(UsersHelper.COMMENT3.getId())).thenReturn(Optional.of(UsersHelper.COMMENT3));

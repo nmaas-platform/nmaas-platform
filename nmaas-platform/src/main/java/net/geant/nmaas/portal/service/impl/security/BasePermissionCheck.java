@@ -13,6 +13,8 @@ public abstract class BasePermissionCheck implements PermissionCheck {
 		super();
 	}
 
+	protected abstract void setupMatrix();
+
 	protected boolean hasPermission(Set<Permissions> userPerms, Permissions perm) {
 		if(userPerms == null || userPerms.isEmpty())
 			return false;

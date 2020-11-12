@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl.security;
 
 import java.util.*;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -28,25 +29,31 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 	private final EnumMap<Role, Permissions[]> globalPermMatrix = new EnumMap<>(Role.class);
 	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 
-	@Autowired
-	private AppInstanceRepository appInstanceRepository;
+	private final AppInstanceRepository appInstanceRepository;
 
-	@Autowired
-	private DomainService domainService;
+	private final DomainService domainService;
 
-	public AppInstancePermissionCheck() {
+	public AppInstancePermissionCheck(AppInstanceRepository appInstanceRepository, DomainService domainService) {
+		super();
+		this.appInstanceRepository = appInstanceRepository;
+		this.domainService = domainService;
+		this.setupMatrix();
+	}
+
+	@Override
+	protected void setupMatrix() {
 		globalPermMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
 		globalPermMatrix.put(Role.ROLE_OPERATOR, new Permissions[] {Permissions.READ});
 		globalPermMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.READ});
 		globalPermMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {});
 		globalPermMatrix.put(Role.ROLE_USER, new Permissions[] {});
-		globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[] {});	
-		
+		globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
+
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.READ});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
 	}
-	
+
 	@Override
 	public boolean supports(String targetType) {		
 		return APPINSTANCE.equalsIgnoreCase(targetType);

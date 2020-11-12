@@ -1,32 +1,39 @@
 package net.geant.nmaas.portal.service.impl.security;
 
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
 import net.geant.nmaas.portal.service.AclService.Permissions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class CommentPermissionCheck extends BasePermissionCheck {
 	public static final String COMMENT = "comment";
 			
-	@Autowired
-	CommentRepository comments;
+	private final CommentRepository comments;
 	
 	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 	
 	private static final Permissions[] OWNER_DEFAULT_PERMS = new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER};
-	
-	public CommentPermissionCheck() {
+
+	public CommentPermissionCheck(CommentRepository comments) {
+		super();
+		this.comments = comments;
+		this.setupMatrix();
+	}
+
+
+	@Override
+	protected void setupMatrix() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.READ});
 		permMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.CREATE, Permissions.READ});
@@ -34,8 +41,8 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.CREATE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {Permissions.CREATE, Permissions.READ});
 	}
-	
-	
+
+
 	@Override
 	public boolean supports(String targetType) {		
 		return COMMENT.equalsIgnoreCase(targetType);

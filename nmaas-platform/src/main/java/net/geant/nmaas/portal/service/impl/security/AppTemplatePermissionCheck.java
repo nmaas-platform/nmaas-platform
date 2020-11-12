@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,20 +21,26 @@ public class AppTemplatePermissionCheck extends BasePermissionCheck {
 
 	public static final String APPTEMPLATE = "appTemplate";
 	
-	@Autowired
-	ApplicationRepository applications;
+	private final ApplicationRepository applications;
 	
 	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
-	
-	public AppTemplatePermissionCheck() {
+
+	public AppTemplatePermissionCheck(ApplicationRepository applications) {
+		super();
+		this.applications = applications;
+		this.setupMatrix();
+	}
+
+	@Override
+	protected void setupMatrix() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.READ});
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.READ});
 		permMatrix.put(Role.ROLE_USER, new Permissions[] { Permissions.READ});
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] { Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER });
-		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {Permissions.READ});	
+		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {Permissions.READ});
 	}
-	
+
 	@Override
 	public boolean supports(String targetType) {
 		return APPTEMPLATE.equalsIgnoreCase(targetType);

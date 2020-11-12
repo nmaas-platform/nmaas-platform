@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl.security;
 
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -20,19 +21,26 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
 
 	static final String DOMAIN = "domain";
 
-	@Autowired
-	private DomainService domains;
+	private final DomainService domains;
 
 	private final EnumMap<Role, Permissions[]> globalPermMatrix = new EnumMap<>(Role.class);
 	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 
-	public DomainObjectPermissionCheck() {
+	public DomainObjectPermissionCheck(DomainService domains) {
+		super();
+		this.domains = domains;
+		this.setupMatrix();
+	}
+
+
+	@Override
+	protected void setupMatrix() {
 		globalPermMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
 		globalPermMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.READ, Permissions.WRITE});
 		globalPermMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.READ });
 		globalPermMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.READ});
 		globalPermMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.READ});
-		globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[] {});		
+		globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
 
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
 		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[] {Permissions.READ, Permissions.WRITE});
