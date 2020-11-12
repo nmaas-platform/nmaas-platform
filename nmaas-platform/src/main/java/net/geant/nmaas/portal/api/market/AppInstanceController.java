@@ -143,12 +143,11 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
         Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        User owner = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-        return getAllRunningInstancesByOwnerAndDomain(owner, domain);
+        return getAllRunningByDomain(domain);
     }
 
-    private List<AppInstanceView> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
-        return this.instanceService.findAllByOwnerAndDomain(owner, domain).stream()
+    private List<AppInstanceView> getAllRunningByDomain(Domain domain) {
+        return this.instanceService.findAllByDomain(domain).stream()
                 .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());

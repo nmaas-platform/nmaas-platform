@@ -270,7 +270,7 @@ public class AppInstanceControllerTest {
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
 
-        when(applicationInstanceService.findAllByOwnerAndDomain(owner, domain1)).thenReturn(appInstanceList);
+        when(applicationInstanceService.findAllByDomain(domain1)).thenReturn(appInstanceList);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
