@@ -66,7 +66,7 @@ public class DomainServiceTest {
 
     @BeforeEach
     public void setup(){
-        validator = new DefaultCodenameValidator("[a-z-]{2,8}");
+        validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
@@ -108,7 +108,7 @@ public class DomainServiceTest {
     public void shouldNotCreateDomainWithInvalidCodename(){
         assertThrows(ProcessingException.class, () -> {
             String name = "testdomain";
-            String codename = "test-domain";
+            String codename = "test-domain-too-long";
             Domain domain = new Domain(name, codename);
             when(domainRepository.save(domain)).thenReturn(domain);
             this.domainService.createDomain(new DomainRequest(name, codename, true));
