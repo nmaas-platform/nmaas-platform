@@ -21,15 +21,11 @@ import net.geant.nmaas.utils.captcha.CaptchaValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
@@ -62,11 +58,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@EnableAutoConfiguration
 @Transactional(value=TxType.REQUIRES_NEW)
-@Rollback
 public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     final static String DOMAIN = "domtest";
@@ -416,11 +409,12 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @AfterEach
     public void tearUp(){
-        domains.getDomains().stream()
-                .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
-                .forEach(domain -> domains.removeDomain(domain.getId()));
         userRepo.findAll().stream()
                 .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                 .forEach(user -> userRepo.delete(user));
+        domains.getDomains().stream()
+                .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+                .forEach(domain -> domains.removeDomain(domain.getId()));
+
     }
 }
