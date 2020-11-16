@@ -309,7 +309,7 @@
         },
         "appConfigurationSpec": {
             "configFileRepositoryRequired": true,
-            "configUpdateEnabled": false,
+            "configUpdateEnabled": true,
             "templates": [
                 {
                     "configFileName": "prometheus.yml",
