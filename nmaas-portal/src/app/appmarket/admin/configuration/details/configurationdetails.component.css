@@ -1,0 +1,23 @@
+.display-emails {
+    display: flex;
+    flex-direction: column;
+}
+
+.pd-left-15 {
+    padding-left: 15px;
+}
+
+.pd-bottom-5 {
+    padding-bottom: 5px;
+}
+
+.email-input {
+    width: 70%;
+    margin: 0;
+}
+
+.email-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

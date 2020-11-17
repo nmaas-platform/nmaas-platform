@@ -49,6 +49,9 @@ public class AppDeploymentStateChangeManager {
             if(newDeploymentState.isInFailedState()){
                 log.warn("Application deployment failed state detected. Saving error message: " + event.getErrorMessage());
                 deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), event.getErrorMessage());
+                eventPublisher.publishEvent(
+                        new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()), event.getErrorMessage()))
+                );
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {
                 eventPublisher.publishEvent(
@@ -59,6 +62,10 @@ public class AppDeploymentStateChangeManager {
             log.warn("State notification failure -> " + e.getMessage());
             deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), e.getMessage());
             deploymentRepositoryManager.updateState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
+
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()), e.getMessage()))
+            );
             return null;
         }
     }
@@ -112,6 +119,19 @@ public class AppDeploymentStateChangeManager {
                         "appName",appDeployment.getAppName()
                 ))
                 .mailType(MailType.APP_DEPLOYED)
+                .build();
+    }
+
+    private MailAttributes getMailAttributes(AppDeployment appDeployment, String error) {
+        return MailAttributes.builder()
+                .otherAttributes(ImmutableMap.of(
+                        "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
+                        "owner", appDeployment.getOwner(),
+                        "appInstanceName",appDeployment.getDeploymentName(),
+                        "appName",appDeployment.getAppName(),
+                        "error", error
+                ))
+                .mailType(MailType.APP_DEPLOYMENT_FAILED)
                 .build();
     }
 

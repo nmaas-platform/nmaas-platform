@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/api/configuration")
 public class ConfigurationController {
@@ -27,14 +29,14 @@ public class ConfigurationController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addConfiguration(@RequestBody ConfigurationView configuration) {
+    public Long addConfiguration(@RequestBody @Valid ConfigurationView configuration) {
         return this.configurationManager.addConfiguration(configuration);
     }
 
     @PutMapping(value="/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody ConfigurationView configuration) {
+    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody @Valid ConfigurationView configuration) {
         this.configurationManager.updateConfiguration(id, configuration);
     }
 
