@@ -57,6 +57,8 @@ curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --h
 echo
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/broadcast.json
 echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeploymentFailedMail.json
+echo
 
 echo
 echo App1

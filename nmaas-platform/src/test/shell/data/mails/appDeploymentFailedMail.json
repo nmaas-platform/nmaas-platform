@@ -1,0 +1,55 @@
+{
+  "mailType": "APP_DEPLOYMENT_FAILED",
+  "globalInformation": {
+    "LOGO_LINK": "https://www.geant.org/Style%20Library/Geant/Images/logo.png",
+    "LOGO_ALT": "Geant logo",
+    "PORTAL_LOGO_ALT": "NMaaS logo",
+    "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
+  },
+  "templates": [
+    {
+      "language": "en",
+      "subject": "NMaaS: Application instance deployment failed",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "fr",
+      "subject": "NMaaS: Application instance deployment failed",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "de",
+      "subject": "NMaaS: Application instance deployment failed",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "pl",
+      "subject": "NMaaS: Instancja aplikacji jest już gotowa",
+      "template": {
+        "HEADER": "Drogi ${username},",
+        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} nie zostałą uruchomiona w wyniku błędu.",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
+        "SENDER_POLICY": ""
+      }
+    }
+  ]
+}
