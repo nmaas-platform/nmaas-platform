@@ -140,12 +140,15 @@
             "deployParameters": {
                 "DOMAIN_CODENAME": "metallb.subnetName=%VALUE%"
             },
+            "globalDeployParameters": {
+                "manualConfig": "true"
+            },
             "storageVolumes": [],
             "exposesWebUI": true,
             "allowSshAccess": false,
             "accessMethods": [
                 {
-                    "type": "EXTERNAL",
+                    "type": "DEFAULT",
                     "name": "Icinga",
                     "tag": "icinga",
                     "deployParameters": {
