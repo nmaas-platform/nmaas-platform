@@ -260,7 +260,9 @@
     "LANGUAGE_SUPPORT": "Langues supportées",
     "LANGUAGE_ENABLED": "Activé",
     "LANGUAGE_DISABLED": "Désactivé",
-    "TEST_INSTANCE": "Marquer comme instance de test NMaaS"
+    "TEST_INSTANCE": "Marquer comme instance de test NMaaS",
+    "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
