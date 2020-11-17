@@ -145,7 +145,7 @@
             "allowSshAccess": false,
             "accessMethods": [
                 {
-                    "type": "DEFAULT",
+                    "type": "EXTERNAL",
                     "name": "Icinga",
                     "tag": "icinga",
                     "deployParameters": {
@@ -154,12 +154,20 @@
                         "INGRESS_CLASS": "ingress.class",
                         "INGRESS_TLS_ENABLED": "ingress.tls.enabled"
                     }
+                },
+                {
+                    "type": "INTERNAL",
+                    "name": "API",
+                    "tag": "api",
+                    "deployParameters": {
+                        "K8S_SERVICE_SUFFIX": "api"
+                    }
                 }
             ]
         },
         "appConfigurationSpec": {
             "configFileRepositoryRequired": true,
-            "configUpdateEnabled": false,
+            "configUpdateEnabled": true,
             "templates": [
                 {
                     "configFileName": "app.conf",
