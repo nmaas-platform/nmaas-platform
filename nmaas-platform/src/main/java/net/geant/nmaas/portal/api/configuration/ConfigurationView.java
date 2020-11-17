@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -21,10 +25,16 @@ public class ConfigurationView {
 
     private boolean testInstance = false;
 
-    public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance){
+    private boolean sendAppInstanceFailureEmails = false;
+
+    private List<@Email String> appInstanceFailureEmailList = new ArrayList<>();
+
+    public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance, boolean sendAppInstanceFailureEmails, List<String> appInstanceFailureEmailList) {
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
         this.defaultLanguage = defaultLanguage;
         this.testInstance = testInstance;
+        this.sendAppInstanceFailureEmails = sendAppInstanceFailureEmails;
+        this.appInstanceFailureEmailList = appInstanceFailureEmailList;
     }
 }

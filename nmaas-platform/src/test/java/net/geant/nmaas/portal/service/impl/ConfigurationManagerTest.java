@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -42,9 +43,9 @@ public class ConfigurationManagerTest {
     @BeforeEach
     public void setup(){
         this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository);
-        this.config = new Configuration(1L, false, false, "en", false);
+        this.config = new Configuration(1L, false, false, "en", false, false, "");
         this.internationalization = new InternationalizationView("pl", true, "{\"test\":\"test\"}");
-        this.configView = new ConfigurationView(1L, false, false, "pl", false);
+        this.configView = new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>());
     }
 
     @Test
