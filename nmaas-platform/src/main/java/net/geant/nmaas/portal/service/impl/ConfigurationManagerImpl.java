@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @ApplicationScope
@@ -57,7 +58,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private Configuration loadSingleConfiguration(){
         if(repository.count() == 0){
-            addConfiguration(new ConfigurationView(false, true, "en", false));
+            addConfiguration(new ConfigurationView(false, true, "en", false, true, new ArrayList<>()));
         }
         else if(repository.count() > 1){
             throw new IllegalStateException("Found "+repository.count()+" configuration instead of one");

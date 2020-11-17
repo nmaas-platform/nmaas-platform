@@ -15,4 +15,5 @@ public enum MailType {
     APP_NOT_ACTIVE,
     NEW_SSO_LOGIN,
     BROADCAST,
+    APP_DEPLOYMENT_FAILED
 }

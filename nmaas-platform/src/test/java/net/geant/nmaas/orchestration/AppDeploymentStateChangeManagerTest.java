@@ -68,13 +68,16 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldNotTriggerAnyNewEventInFailedState() {
+    public void shouldTriggerNewEventInFailedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_CONFIGURATION_IN_PROGRESS);
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(event.getState()).thenReturn(NmServiceDeploymentState.CONFIGURATION_FAILED);
         when(event.getErrorMessage()).thenReturn("example error message");
+        when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
         ApplicationEvent newEvent = manager.notifyStateChange(event);
         assertThat(newEvent, is(nullValue()));
         verify(deployments, times(1)).updateErrorMessage(any(Identifier.class), any(String.class));
+        verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
     }
 
     @Test
