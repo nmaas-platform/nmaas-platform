@@ -11,8 +11,10 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -43,6 +45,8 @@ public class NotificationManager {
 
     private DomainService domainService;
 
+    private ConfigurationManager configurationManager;
+
     private ModelMapper modelMapper;
 
     @Autowired
@@ -50,11 +54,13 @@ public class NotificationManager {
                                NotificationService notificationService,
                                UserService userService,
                                DomainService domainService,
+                               ConfigurationManager configurationManager,
                                ModelMapper modelMapper){
         this.templateService = templateService;
         this.notificationService = notificationService;
         this.userService = userService;
         this.domainService = domainService;
+        this.configurationManager = configurationManager;
         this.modelMapper = modelMapper;
     }
 
@@ -90,6 +96,24 @@ public class NotificationManager {
      * @param mailAttributes
      */
     private void getAllAddressees(MailAttributes mailAttributes){
+        if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYMENT_FAILED)){
+            ConfigurationView configuration = this.configurationManager.getConfiguration();
+            if(configuration.isSendAppInstanceFailureEmails()) {
+                List<UserView> usrs = configuration.getAppInstanceFailureEmailList().stream()
+                        .map(email -> {
+                            try {
+                                return modelMapper.map(this.userService.findByEmail(email), UserView.class);
+                            } catch (IllegalArgumentException e) {
+                                UserView uv = new UserView(-1L, email);
+                                uv.setEmail(email);
+                                uv.setSelectedLanguage("en");
+                                return uv;
+                            }
+                        })
+                        .collect(Collectors.toList());
+                mailAttributes.setAddressees(usrs);
+            }
+        }
         if(mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)){
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
