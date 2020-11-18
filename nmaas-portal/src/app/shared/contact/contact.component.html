@@ -23,7 +23,7 @@
 <nmaas-modal (click)="modal.hide()">
     <div class="nmaas-modal-header">{{'CONTACT_FORM.MODAL.TITLE' | translate}}</div>
     <div class="nmaas-modal-body">
-        {{ (formType?.dropdownTextKey ? formType.dropdownTextKey : 'CONTACT_FORM.MODAL.MESSAGE') | translate }}
+        {{ 'CONTACT_FORM.MODAL.MESSAGE' | translate }}
     </div>
     <div class="nmaas-modal-footer">
         <button type="button" class="btn btn-default" (click)="modal.hide()">

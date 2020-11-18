@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GitlabDetailsComponent } from './gitlab-details.component';
-import {RouterTestingModule} from "@angular/router/testing";
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {FormsModule} from "@angular/forms";
-import {ComponentMode} from "../../..";
+import {RouterTestingModule} from '@angular/router/testing';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {FormsModule} from '@angular/forms';
+import {ComponentMode} from '../../..';
 
 describe('GitlabDetailsComponent', () => {
   let component: GitlabDetailsComponent;
@@ -33,11 +33,11 @@ describe('GitlabDetailsComponent', () => {
   });
 
   it('should create component', () => {
-    let app = fixture.debugElement.componentInstance;
+    const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it('should get mode VIEW', ()=>{
+  it('should get mode VIEW', () => {
     component.onModeChange();
     expect(component.getCurrentMode()).toBe(ComponentMode.VIEW);
   });

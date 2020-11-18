@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ContactComponent} from './contact.component';
 import {ModalComponent} from '../modal';
-import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
 import {of} from 'rxjs';
@@ -74,6 +74,7 @@ describe('ContactComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+        expect(component.i18n).toBeDefined();
     });
 
     it('should send mail when valid', () => {
