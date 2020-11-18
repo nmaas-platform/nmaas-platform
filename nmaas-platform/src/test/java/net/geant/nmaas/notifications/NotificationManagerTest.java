@@ -259,13 +259,7 @@ public class NotificationManagerTest {
 
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(true, true, "en", true, true, emails));
 
-        try {
-            notificationManager.prepareAndSendMail(ma);
-        } catch (IOException ioe) {
-            fail("IO exception caught " + ioe.getMessage());
-        } catch (TemplateException te) {
-            fail("Template exception caught " + te.getMessage());
-        }
+        notificationManager.prepareAndSendMail(ma);
 
         verify(notificationService, times(emails.size())).sendMail(any(String.class), eq("Default"), any(String.class));
 
