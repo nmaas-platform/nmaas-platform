@@ -11,7 +11,7 @@
       "language": "en",
       "subject": "NMaaS: Application instance deployment failed",
       "template": {
-        "HEADER": "Dear ${owner},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error ${error}.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
@@ -22,7 +22,7 @@
       "language": "fr",
       "subject": "NMaaS: Application instance deployment failed",
       "template": {
-        "HEADER": "Dear ${owner},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error ${error}.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
@@ -33,7 +33,7 @@
       "language": "de",
       "subject": "NMaaS: Application instance deployment failed",
       "template": {
-        "HEADER": "Dear ${owner},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error ${error}.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
@@ -44,7 +44,7 @@
       "language": "pl",
       "subject": "NMaaS: Instancja aplikacji jest już gotowa",
       "template": {
-        "HEADER": "Drogi ${owner},",
+        "HEADER": "Drogi ${username},",
         "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} nie zostałą uruchomiona w wyniku błędu ${error}.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
