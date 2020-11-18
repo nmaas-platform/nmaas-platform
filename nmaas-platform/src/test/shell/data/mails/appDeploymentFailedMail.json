@@ -12,7 +12,7 @@
       "subject": "NMaaS: Application instance deployment failed",
       "template": {
         "HEADER": "Dear ${owner},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error ${error}.",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error: ${error}.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -23,7 +23,7 @@
       "subject": "NMaaS: Application instance deployment failed",
       "template": {
         "HEADER": "Dear ${owner},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error ${error}.",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error: ${error}.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -34,7 +34,7 @@
       "subject": "NMaaS: Application instance deployment failed",
       "template": {
         "HEADER": "Dear ${owner},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error ${error}.",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is failed with error: ${error}.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -42,10 +42,10 @@
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Instancja aplikacji jest już gotowa",
+      "subject": "NMaaS: Instancja aplikacji nie powiodła się",
       "template": {
         "HEADER": "Drogi ${owner},",
-        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} nie zostałą uruchomiona w wyniku błędu ${error}.",
+        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} nie została uruchomiona w wyniku błędu: ${error}.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""

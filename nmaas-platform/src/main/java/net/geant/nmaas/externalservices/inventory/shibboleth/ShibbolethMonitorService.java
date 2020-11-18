@@ -33,14 +33,14 @@ public class ShibbolethMonitorService extends MonitorService {
             int responseCode = connection.getResponseCode();
             if(responseCode >= 200 && responseCode <= 399){
                 this.updateMonitorEntry(MonitorStatus.SUCCESS);
-                log.debug("Shibboleth instance is running");
+                log.trace("Shibboleth instance is running");
             } else{
                 this.updateMonitorEntry(MonitorStatus.FAILURE);
-                log.error("Shibboleth instance is not running");
+                log.warn("Shibboleth instance is not running");
             }
         } catch (IOException | IllegalStateException e){
             this.updateMonitorEntry(MonitorStatus.FAILURE);
-            log.error("Shibboleth instance is not running -> " + e.getMessage());
+            log.warn("Shibboleth instance is not running -> " + e.getMessage());
         }
     }
 

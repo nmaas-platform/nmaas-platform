@@ -110,7 +110,7 @@ public class GitLabManager {
         checkArgument(gitLabInstance.getToken() != null && !gitLabInstance.getToken().isEmpty(), "GitLab token is null or empty");
         try {
             api().getVersion();
-            log.debug("GitLab instance is running");
+            log.trace("GitLab instance is running");
         } catch (GitLabApiException e){
             throw new GitLabInvalidConfigurationException("GitLab instance is not running -> " + e.getMessage());
         }
