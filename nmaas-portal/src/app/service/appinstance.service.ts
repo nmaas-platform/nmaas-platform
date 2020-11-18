@@ -3,7 +3,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 
 import {AppConfigService} from './appconfig.service';
 
-import {Id} from '../model';
+import {Id, User} from '../model';
 import {AppInstanceState, AppInstanceStatus} from '../model';
 import {AppInstance, AppInstanceRequest} from '../model';
 import {AppInstanceProgressStage} from '../model';
@@ -121,6 +121,10 @@ export class AppInstanceService extends GenericDataService {
 
   public checkStatus(appInstanceId: number): Observable<any> {
     return this.post(this.getUrl() + appInstanceId + '/check', null);
+  }
+
+  public updateAppInstanceMembers(appInstanceId: number, members: User[]): Observable<void> {
+    return this.http.post<void>(this.getUrl() + appInstanceId + '/members', members)
   }
 
 }

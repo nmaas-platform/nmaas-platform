@@ -1,0 +1,321 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "Victoria Metrics",
+        "license": "Apache License 2.0",
+        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+        "wwwUrl": "https://victoriametrics.com/",
+        "sourceUrl": "https://github.com/VictoriaMetrics/VictoriaMetrics",
+        "issuesUrl": "https://github.com/VictoriaMetrics/VictoriaMetrics/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-VictoriaMetrics",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Scalable monitoring solution and time series database",
+                "fullDescription": "VictoriaMetrics is a highly scalable high-performance database that can be used as an external long-term storage for Prometheus metrics. <br><br>It can also completely replace Prometheus and perform the polling by itself, using a configuration format that is compatible with existing Prometheus deployments. <br>Apart from Prometheus, it can also substitute InfluxDB, OpenTSDB, and Graphite, as a result of providing compatible interfaces for these protocols. <br>Stored metrics can be easily visualized by Grafana, by adding the VictoriaMetrics instance as a Prometheus datastore. <br>No matter what protocol is used to store data in VictoriaMetrics, it is queried using the same web endpoint, and only a single datasource is required in Prometheus. <br>Another feature of VictoriaMetrics is to use advanced PromQL expressions, not available in the Prometheus implementation. <br><br>More details about this can be obtained from the <a href='https://github.com/VictoriaMetrics/VictoriaMetrics/wiki/MetricsQL'>official documentation page</a>."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Scalable monitoring solution and time series database",
+                "fullDescription": "VictoriaMetrics is a highly scalable high-performance database that can be used as an external long-term storage for Prometheus metrics. <br><br>It can also completely replace Prometheus and perform the polling by itself, using a configuration format that is compatible with existing Prometheus deployments. <br>Apart from Prometheus, it can also substitute InfluxDB, OpenTSDB, and Graphite, as a result of providing compatible interfaces for these protocols. <br>Stored metrics can be easily visualized by Grafana, by adding the VictoriaMetrics instance as a Prometheus datastore. <br>No matter what protocol is used to store data in VictoriaMetrics, it is queried using the same web endpoint, and only a single datasource is required in Prometheus. <br>Another feature of VictoriaMetrics is to use advanced PromQL expressions, not available in the Prometheus implementation. <br><br>More details about this can be obtained from the <a href='https://github.com/VictoriaMetrics/VictoriaMetrics/wiki/MetricsQL'>official documentation page</a>."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Scalable monitoring solution and time series database",
+                "fullDescription": "VictoriaMetrics is a highly scalable high-performance database that can be used as an external long-term storage for Prometheus metrics. <br><br>It can also completely replace Prometheus and perform the polling by itself, using a configuration format that is compatible with existing Prometheus deployments. <br>Apart from Prometheus, it can also substitute InfluxDB, OpenTSDB, and Graphite, as a result of providing compatible interfaces for these protocols. <br>Stored metrics can be easily visualized by Grafana, by adding the VictoriaMetrics instance as a Prometheus datastore. <br>No matter what protocol is used to store data in VictoriaMetrics, it is queried using the same web endpoint, and only a single datasource is required in Prometheus. <br>Another feature of VictoriaMetrics is to use advanced PromQL expressions, not available in the Prometheus implementation. <br><br>More details about this can be obtained from the <a href='https://github.com/VictoriaMetrics/VictoriaMetrics/wiki/MetricsQL'>official documentation page</a>."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Scalable monitoring solution and time series database",
+                "fullDescription": "VictoriaMetrics is a highly scalable high-performance database that can be used as an external long-term storage for Prometheus metrics. <br><br>It can also completely replace Prometheus and perform the polling by itself, using a configuration format that is compatible with existing Prometheus deployments. <br>Apart from Prometheus, it can also substitute InfluxDB, OpenTSDB, and Graphite, as a result of providing compatible interfaces for these protocols. <br>Stored metrics can be easily visualized by Grafana, by adding the VictoriaMetrics instance as a Prometheus datastore. <br>No matter what protocol is used to store data in VictoriaMetrics, it is queried using the same web endpoint, and only a single datasource is required in Prometheus. <br>Another feature of VictoriaMetrics is to use advanced PromQL expressions, not available in the Prometheus implementation. <br><br>More details about this can be obtained from the <a href='https://github.com/VictoriaMetrics/VictoriaMetrics/wiki/MetricsQL'>official documentation page</a>."
+            }
+        ],
+        "tags": [
+            "monitoring",
+            "timeseries",
+            "database"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Victoria Metrics",
+        "version": "1.46.0",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Configuration",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "configuration",
+                                        "components": [
+                                            {
+                                                "label": "Global configuration",
+                                                "hideLabel": true,
+                                                "type": "container",
+                                                "persistent": true,
+                                                "key": "global_config",
+                                                "components": [
+                                                    {
+                                                        "label": "Global scrape",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "inputFormat": "plain",
+                                                        "defaultValue": "15s",
+                                                        "key": "global_scrape"
+                                                    },
+                                                    {
+                                                        "label": "Global evaluation",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "inputFormat": "plain",
+                                                        "defaultValue": "30s",
+                                                        "key": "global_evaluation"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "Jobs",
+                                                "disableAddingRemovingRows": false,
+                                                "addAnother": "Add jobs",
+                                                "addAnotherPosition": "bottom",
+                                                "multiple": true,
+                                                "tableView": true,
+                                                "type": "datagrid",
+                                                "input": true,
+                                                "key": "targets",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "components": [
+                                                    {
+                                                        "label": "Job name",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "inputFormat": "plain",
+                                                        "key": "jobName",
+                                                        "validate": {
+                                                            "required": true,
+                                                            "minLength": 1
+                                                        },
+                                                        "row": "0-0"
+                                                    },
+                                                    {
+                                                        "label": "Scrape interval",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "defaultValue": "15s",
+                                                        "inputFormat": "plain",
+                                                        "key": "scrape_interval",
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "row": "0-1"
+                                                    },
+                                                    {
+                                                        "label": "Metrics path",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "defaultValue": "/metrics",
+                                                        "inputFormat": "plain",
+                                                        "key": "metrics_path",
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "row": "0-2"
+                                                    },
+                                                    {
+                                                        "label": "Targets",
+                                                        "hideLabel": false,
+                                                        "disableAddingRemovingRows": false,
+                                                        "addAnother": "Add address",
+                                                        "addAnotherPosition": "bottom",
+                                                        "multiple": true,
+                                                        "tableView": true,
+                                                        "alwaysEnabled": false,
+                                                        "type": "datagrid",
+                                                        "input": true,
+                                                        "key": "Addresses",
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "components": [
+                                                            {
+                                                                "label": "IP address and port",
+                                                                "hideLabel": false,
+                                                                "tableView": true,
+                                                                "type": "textfield",
+                                                                "input": true,
+                                                                "key": "ipAddress",
+                                                                "placeholder": "127.0.0.1:9001",
+                                                                "validate": {
+                                                                    "required": true,
+                                                                    "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
+                                                                },
+                                                                "inputFormat": "plain",
+                                                                "row": "0-0"
+                                                            }
+                                                        ],
+                                                        "row": "0-3"
+                                                    },
+                                                    {
+                                                        "label": "Labels",
+                                                        "hideLabel": false,
+                                                        "disableAddingRemovingRows": false,
+                                                        "addAnother": "Add label",
+                                                        "addAnotherPosition": "bottom",
+                                                        "multiple": true,
+                                                        "tableView": true,
+                                                        "alwaysEnabled": false,
+                                                        "type": "datagrid",
+                                                        "input": true,
+                                                        "key": "Labels",
+                                                        "components": [
+                                                            {
+                                                                "label": "Label name",
+                                                                "type": "textfield",
+                                                                "input": true,
+                                                                "inputFormat": "plain",
+                                                                "key": "label_name",
+                                                                "row": "0-4"
+                                                            },
+                                                            {
+                                                                "label": "Label value",
+                                                                "type": "textfield",
+                                                                "input": true,
+                                                                "inputFormat": "plain",
+                                                                "key": "label_value",
+                                                                "row": "0-0"
+                                                            }
+                                                        ],
+                                                        "row": "0-5"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Additional",
+                                "key": "additionalParametersTab",
+                                "components": [
+                                    {
+                                        "label": "additionalParameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 2,
+                                        "key": "additionalParameters",
+                                        "components": [
+                                            {
+                                                "label": "Retention period (in months)",
+                                                "placeholder": "1",
+                                                "defaultValue": "1",
+                                                "mask": false,
+                                                "spellcheck": true,
+                                                "delimiter": false,
+                                                "requireDecimal": false,
+                                                "inputFormat": "plain",
+                                                "key": "server#retentionPeriod",
+                                                "tab": 2,
+                                                "type": "number",
+                                                "input": true
+                                            },
+                                            {
+                                                "label": "Allocated storage space (in GB)",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "server#persistentVolume#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "defaultValue": "16Gi",
+                                                "placeholder": "Default value: 16Gi",
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-victoria",
+                    "version": "0.6.2"
+                },
+                "mainDeploymentName": "nmaas-victoria-server"
+            },
+            "deployParameters": {
+                "DOMAIN_CODENAME": "server.service.metallb.subnetName=%VALUE%"
+            },
+            "globalDeployParameters": {
+                "server.image.tag": "v1.46.0"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "EXTERNAL",
+                    "name": "Victoria",
+                    "tag": "victoria",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "server.ingress.enabled",
+                        "INGRESS_HOSTS": "server.ingress.host=%VALUE%",
+                        "INGRESS_CLASS": "server.ingress.class"
+                    }
+                },
+                {
+                    "type": "INTERNAL",
+                    "name": "DATA",
+                    "tag": "data",
+                    "deployParameters": {
+                        "K8S_SERVICE_SUFFIX": "nmaas-victoria-server"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": true,
+            "configUpdateEnabled": true,
+            "templates": [
+                {
+                    "configFileName": "prometheus.yml",
+                    "configFileTemplateContent": "global:\n  scrape_interval: ${global_config.global_scrape}\n  evaluation_interval: ${global_config.global_evaluation}\nalerting:\n  alertmanagers:\n    - static_configs:\n      - targets:\nrule_files:\nscrape_configs:\n<#list targets as target>\n  - job_name: '${target.jobName}'\n    metrics_path: ${target.metrics_path}\n    scrape_interval: ${target.scrape_interval}\n    static_configs:\n    - targets: [<#list target.Addresses as address>'${address.ipAddress}'<#sep>,</#list>]\n<#if target.Labels?has_content>\n      labels:\n<#list target.Labels as labels>\n<#if labels.label_name?has_content>\n        ${labels.label_name}: ${labels.label_value}\n</#if>\n</#list>\n</#if>\n<#sep>\n</#list>"
+                }
+            ]
+        }
+    }
+}

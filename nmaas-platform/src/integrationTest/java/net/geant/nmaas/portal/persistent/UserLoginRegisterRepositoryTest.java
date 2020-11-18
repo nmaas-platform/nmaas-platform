@@ -2,14 +2,8 @@ package net.geant.nmaas.portal.persistent;
 
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserLoginRegister;
-import net.geant.nmaas.portal.persistent.entity.UserLoginRegisterType;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserLoginRegisterRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -19,13 +13,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -34,12 +23,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ContextConfiguration(classes={PersistentConfig.class})
-@EnableAutoConfiguration
-@Transactional
-@Rollback
+@DataJpaTest
 @Log4j2
 public class UserLoginRegisterRepositoryTest {
 
@@ -52,20 +36,17 @@ public class UserLoginRegisterRepositoryTest {
     DomainRepository domainRepository;
 
     @Autowired
-    DomainService domains;
-
-    @Autowired
     UserLoginRegisterRepository userLoginRegisterRepository;
 
     @BeforeEach
     @Transactional
     public void setUp() {
-        domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
-        User tester = new User("tester", true, "test123", domains.findDomain(DOMAIN).get(), Role.ROLE_USER);
+        domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
+        User tester = new User("tester", true, "test123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
         tester.setEmail("test@test.com");
-        User admin = new User("testadmin", true, "testadmin123", domains.getGlobalDomain().orElseGet(() -> domains.createGlobalDomain()), Role.ROLE_SYSTEM_ADMIN);
+        User admin = new User("testadmin", true, "testadmin123", domainRepository.findByName(DOMAIN).get() , Role.ROLE_SYSTEM_ADMIN);
         admin.setEmail("admin@test.com");
-        admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
+        admin.getRoles().add(new UserRole(admin, domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER));
         userRepository.save(tester);
         userRepository.save(admin);
         this.userLoginRegisterRepository.deleteAll();
@@ -86,11 +67,9 @@ public class UserLoginRegisterRepositoryTest {
         this.userLoginRegisterRepository.deleteAll();
     }
 
-    // not deterministic behaviour dependent on the environment
-    @Disabled
     @Test
     public void shouldContainThreeUsers() {
-        assertEquals(3, userRepository.count());
+        assertEquals(2, userRepository.count());
     }
 
     @Test

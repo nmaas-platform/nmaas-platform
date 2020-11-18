@@ -24,6 +24,8 @@ import {AccessMethodsModalComponent} from './modals/access-methods-modal/access-
 import { SshShellComponent } from './ssh-shell/ssh-shell.component';
 import {NgTerminalModule} from 'ng-terminal';
 import { AppInstanceShellViewComponent } from './appinstance-shell-view/appinstance-shell-view.component';
+import { AddMembersModalComponent } from './modals/add-members-modal/add-members-modal.component';
+import {MultiSelectModule} from 'primeng/multiselect';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import { AppInstanceShellViewComponent } from './appinstance-shell-view/appinsta
       AppAbortModalComponent,
       AccessMethodsModalComponent,
       SshShellComponent,
-      AppInstanceShellViewComponent
+      AppInstanceShellViewComponent,
+      AddMembersModalComponent
   ],
     imports: [
         FormioModule,
@@ -49,6 +52,7 @@ import { AppInstanceShellViewComponent } from './appinstance-shell-view/appinsta
         TranslateModule.forChild(),
         TooltipModule,
         NgTerminalModule,
+        MultiSelectModule,
     ],
   exports: [
     AppInstanceComponent,

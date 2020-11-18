@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -143,8 +144,12 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Integer getUserId(String username) {
         try {
-            return gitLabManager.users().getUser(username).getId();
-        } catch (GitLabApiException e) {
+            return gitLabManager.users()
+                    .getOptionalUser(username)
+                    .orElseThrow(
+                            () -> new GitLabNotFoundException(String.format("User [%s] not found with gitlab", username))
+                    ).getId();
+        } catch (GitLabNotFoundException e) {
             throw new FileTransferException("GITLAB: " + e.getMessage());
         }
     }
@@ -194,12 +199,35 @@ public class GitLabConfigHandler implements GitConfigHandler {
         return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
     }
 
-    private void addMemberToProject(Integer gitLabProjectId, Integer gitLabUserId) {
+    @Override
+    public void addMemberToProject(Integer gitLabProjectId, Integer gitLabUserId) {
         try {
             gitLabManager.projects().addMember(gitLabProjectId, gitLabUserId, fullAccessCode());
         } catch (GitLabApiException e) {
             throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
         }
+    }
+
+    @Override
+    public void addMemberToProject(Integer gitLabProjectId, String username) {
+        Integer userId = getUserId(username);
+        this.addMemberToProject(gitLabProjectId, userId);
+    }
+
+    @Override
+    public void removeMemberFromProject(Integer gitLabProjectId, Integer gitLabUserId) {
+        try {
+            gitLabManager.projects().removeMember(gitLabProjectId, gitLabUserId);
+        } catch (GitLabApiException e) {
+            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
+        }
+    }
+
+    @Override
+    public void removeMemberFromProject(Integer gitLabProjectId, String username) {
+        Integer userId = getUserId(username);
+        this.removeMemberFromProject(gitLabProjectId, userId);
+
     }
 
     private void addWebhookToProject(Integer gitLabProjectId, String webhookId, String webhookToken) {

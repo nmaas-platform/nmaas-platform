@@ -191,7 +191,8 @@
                                                                 "key": "ipAddress",
                                                                 "placeholder": "127.0.0.1:9001",
                                                                 "validate": {
-                                                                    "required": true
+                                                                    "required": true,
+                                                                    "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
                                                                 },
                                                                 "inputFormat": "plain",
                                                                 "row": "0-0"

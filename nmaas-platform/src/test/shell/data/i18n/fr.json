@@ -260,7 +260,9 @@
     "LANGUAGE_SUPPORT": "Langues supportées",
     "LANGUAGE_ENABLED": "Activé",
     "LANGUAGE_DISABLED": "Désactivé",
-    "TEST_INSTANCE": "Marquer comme instance de test NMaaS"
+    "TEST_INSTANCE": "Marquer comme instance de test NMaaS",
+    "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
@@ -407,6 +409,20 @@
     "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
     "SELECT_VERSION": "Sélectionnez la version"
   },
+  "ADD_MEMBERS_MODAL": {
+    "HEADER": "Add members",
+    "SELECT_USERS": "Choose users",
+    "FILTER_PLACEHOLDER": "Filter users",
+    "MEMBERS_LIST": "Selected members",
+    "TABLE": {
+      "USERNAME": "Username",
+      "FIRSTNAME": "First name",
+      "LASTNAME": "Last name",
+      "EMAIL": "Email"
+    },
+    "SUBMIT_BUTTON": "Submit",
+    "HIDE_BUTTON": "Cancel"
+  },
   "APP_INSTANCE": {
     "SOURCE": "Source",
     "ISSUES": "Issues",
@@ -423,6 +439,7 @@
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Re-déployer",
     "ABORT_BUTTON": "Avorter",
+    "ADD_MEMBERS_BUTTON": "Add members",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {

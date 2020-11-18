@@ -7,7 +7,7 @@
         "wwwUrl": "https://docs.perfsonar.net",
         "sourceUrl": "https://github.com/perfsonar",
         "issuesUrl": "https://github.com/perfsonar",
-        "nmaasDocumentationUrl": null,
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-perfSONARCentralManagement",
         "descriptions": [
             {
                 "language": "en",

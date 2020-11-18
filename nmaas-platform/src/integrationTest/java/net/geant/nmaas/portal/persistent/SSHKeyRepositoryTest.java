@@ -1,34 +1,20 @@
 package net.geant.nmaas.portal.persistent;
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserLoginRegisterRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ContextConfiguration(classes={PersistentConfig.class})
-@EnableAutoConfiguration
-@Transactional
-@Rollback
+@DataJpaTest
 @Log4j2
 public class SSHKeyRepositoryTest {
 
@@ -42,16 +28,13 @@ public class SSHKeyRepositoryTest {
     DomainRepository domainRepository;
 
     @Autowired
-    DomainService domains;
-
-    @Autowired
     SSHKeyRepository repository;
 
     @BeforeEach
     @Transactional
     public void setUp() {
-        domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
-        User tester = new User("tester", true, "test123", domains.findDomain(DOMAIN).get(), Role.ROLE_USER);
+        domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
+        User tester = new User("tester", true, "test123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
         tester.setEmail("test@test.com");
         tester = userRepository.save(tester);
 
@@ -80,7 +63,7 @@ public class SSHKeyRepositoryTest {
         SSHKeyEntity key = repository.findAllByOwner(owner).get(0);
 
         repository.deleteById(key.getId());
-        assertEquals(2, userRepository.count()); // admin exists
+        assertEquals(1, userRepository.count());
         boolean exists = userRepository.existsByUsername("tester");
         assertTrue(exists);
     }

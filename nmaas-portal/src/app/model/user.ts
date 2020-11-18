@@ -1,4 +1,5 @@
 import {Role, UserRole} from './userrole';
+import {SSHKeyView} from './sshkey-view';
 
 export class User {
   public id: number  = undefined;
@@ -15,6 +16,8 @@ export class User {
 
   public lastSuccessfulLoginDate: Date = undefined;
   public firstLoginDate: Date = undefined;
+
+  public sshKeys: SSHKeyView[] = [];
 
   public getDomainIds(): number[] {
     return Array.from(new Set(this.roles.map(ur => ur.domainId)));

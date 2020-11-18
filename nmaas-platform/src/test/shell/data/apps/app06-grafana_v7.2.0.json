@@ -40,6 +40,30 @@
                       "validate": {
                         "required": true
                       }
+                    },
+                    {
+                      "label": "Access options",
+                      "type": "radio",
+                      "input": true,
+                      "tableView": true,
+                      "inputType": "radio",
+                      "key": "accessmethods#public#grafana",
+                      "values": [
+                        {
+                          "value": "yes",
+                          "label": "Public"
+                        },
+                        {
+                          "value": "no",
+                          "label": "VPN"
+                        }
+                      ],
+                      "defaultValue": "yes",
+                      "validate": {
+                        "required": true
+                      },
+                      "labelPosition": "top",
+                      "optionsLabelPosition": "right"
                     }
                   ]
                 },
@@ -233,7 +257,7 @@
     "exposesWebUI": true,
     "accessMethods": [
       {
-        "type": "DEFAULT",
+        "type": "PUBLIC",
         "name": "Grafana",
         "tag": "grafana",
         "deployParameters": {

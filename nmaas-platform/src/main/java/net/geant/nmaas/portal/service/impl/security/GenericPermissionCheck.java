@@ -5,6 +5,8 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import lombok.NoArgsConstructor;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -17,8 +19,14 @@ import java.io.Serializable;
 public class GenericPermissionCheck extends BasePermissionCheck {
 
 	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
-	
+
 	public GenericPermissionCheck() {
+		super();
+		this.setupMatrix();
+	}
+
+	@Override
+	protected void setupMatrix() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[] {});
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {});
@@ -26,7 +34,7 @@ public class GenericPermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
 	}
-	
+
 	@Override
 	public boolean supports(String targetType) {
 		return true;

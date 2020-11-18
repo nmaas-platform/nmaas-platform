@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.sonarqube" version "3.0"
@@ -89,6 +89,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-log4j2')
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
+    implementation('io.micrometer:micrometer-registry-prometheus:1.5.5')
+
     implementation('org.modelmapper:modelmapper:2.3.8')
     implementation('org.modelmapper.extensions:modelmapper-spring:2.3.8')
     implementation('org.apache.commons:commons-lang3:3.11')
@@ -113,14 +115,12 @@ dependencies {
     implementation('io.grpc:grpc-netty-shaded:1.31.1')
     implementation('io.grpc:grpc-protobuf:1.31.1')
     implementation('io.grpc:grpc-stub:1.31.1')
-
     implementation('io.fabric8:kubernetes-client:4.11.1')
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
     integrationTestImplementation('org.springframework.security:spring-security-test')
-
 }
 
 test {

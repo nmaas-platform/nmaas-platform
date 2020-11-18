@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.api.market;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
+import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -20,6 +22,7 @@ import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.service.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,13 +36,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -62,6 +63,8 @@ public class AppInstanceController extends AppBaseController {
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     @Autowired
     public AppInstanceController(ModelMapper modelMapper,
                                  ApplicationService applicationService,
@@ -71,13 +74,15 @@ public class AppInstanceController extends AppBaseController {
                                  AppDeploymentMonitor appDeploymentMonitor,
                                  ApplicationInstanceService instanceService,
                                  DomainService domainService,
-                                 AppDeploymentRepositoryManager appDeploymentRepositoryManager) {
+                                 AppDeploymentRepositoryManager appDeploymentRepositoryManager,
+                                 ApplicationEventPublisher eventPublisher) {
         super(modelMapper, applicationService, appBaseService, userService);
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instanceService = instanceService;
         this.domainService = domainService;
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
+        this.eventPublisher = eventPublisher;
     }
 
     /*
@@ -136,16 +141,15 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/running/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
+    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
         Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        User owner = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
-        return getAllRunningInstancesByOwnerAndDomain(owner, domain);
+        return getAllRunningByDomain(domain);
     }
 
-    private List<AppInstanceBase> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
-        return this.instanceService.findAllByOwnerAndDomain(owner, domain).stream()
+    private List<AppInstanceView> getAllRunningByDomain(Domain domain) {
+        return this.instanceService.findAllByDomain(domain).stream()
                 .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
-                .map(this::mapAppInstanceBase)
+                .map(this::mapAppInstance)
                 .collect(Collectors.toList());
     }
 
@@ -331,6 +335,62 @@ public class AppInstanceController extends AppBaseController {
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
+    }
+
+    @PostMapping("/{appInstanceId}/members")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public void updateMembers(@PathVariable(value = "appInstanceId") Long appInstanceId, @RequestBody @Valid List<UserBase> members) {
+        AppInstance appInstance = getAppInstance(appInstanceId);
+        Set<User> oldMembers = new HashSet<>(appInstance.getMembers()); // copy members set
+
+        Set<String> oldMemberUsernames = appInstance.getMembers().stream().map(User::getUsername).collect(Collectors.toSet());
+        Set<String> newMemberUsernames = members.stream().map(UserBase::getUsername).collect(Collectors.toSet());
+
+        Set<String> commonMemberUsernames = new HashSet<>(oldMemberUsernames);
+        commonMemberUsernames.retainAll(newMemberUsernames); // retrieve intersection of old and new members - these users won't be affected
+
+        Set<String> toRemoveMemberUsernames = new HashSet<>(oldMemberUsernames);
+        toRemoveMemberUsernames.removeAll(commonMemberUsernames); // get usernames to be removed from members list
+
+        Set<String> toAddMemberUsernames = new HashSet<>(newMemberUsernames);
+        toAddMemberUsernames.removeAll(commonMemberUsernames); // get usernames to be added to members list
+
+        List<User> usersToAdd = toAddMemberUsernames.stream()
+                .map(this::getUser)
+                .filter(u -> !u.getSshKeys().isEmpty()) // skip users with no ssh keys
+                .filter(u -> u.getRoles().stream().anyMatch(r -> r.getDomain().getId().equals(appInstance.getDomain().getId()))) // allow only users with role in app instance domain
+                .collect(Collectors.toList()); // retrieve users from usernames to be added to members
+
+        appInstance.getMembers().addAll(new HashSet<>(usersToAdd));
+        this.instanceService.update(appInstance);
+
+        // get user data to be removed from members
+        List<User> usersToRemove = oldMembers.stream().filter(m -> toRemoveMemberUsernames.contains(m.getUsername())).collect(Collectors.toList());
+
+        usersToRemove.forEach( r -> {
+            RemoveUserFromRepositoryGitlabEvent event = new RemoveUserFromRepositoryGitlabEvent(
+                    "AppInstance members list update",
+                    r.getUsername(),
+                    appInstance.getInternalId()
+            );
+            eventPublisher.publishEvent(event);
+        });
+
+        usersToAdd.forEach( a -> {
+            if(a.getSshKeys().isEmpty()) {
+                log.info(String.format("[ADD USER TO GITLAB REPO] User [%s] does not have any ssh keys, skipping", a.getUsername()));
+            } else {
+                AddUserToRepositoryGitlabEvent event = new AddUserToRepositoryGitlabEvent(
+                        "AppInstance members list update",
+                        a.getUsername(),
+                        a.getEmail(),
+                        a.getFirstname() + " " + a.getLastname(),
+                        a.getSshKeys().stream().map(SSHKeyEntity::getKey).collect(Collectors.toList()),
+                        appInstance.getInternalId()
+                );
+                eventPublisher.publishEvent(event);
+            }
+        });
     }
 
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {

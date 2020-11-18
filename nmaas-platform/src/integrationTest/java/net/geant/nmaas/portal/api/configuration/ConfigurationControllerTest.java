@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,7 +65,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     public void shouldAddNewConfiguration() throws Exception {
         repository.deleteAll();
-        ConfigurationView configuration = new ConfigurationView(true, false, "en", false);
+        ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>());
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
@@ -79,7 +81,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     public void shouldUpdateConfiguration() throws Exception {
         Long id = repository.findAll().get(0).getId();
-        ConfigurationView configuration = new ConfigurationView(true, false, "en", false);
+        ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>());
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX+"/{id}",id)
                 .contentType(MediaType.APPLICATION_JSON)

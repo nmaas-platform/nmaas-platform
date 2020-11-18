@@ -3,8 +3,6 @@ package net.geant.nmaas.portal.api.domain;
 import com.google.common.collect.Sets;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.ConvertersConfig;
-import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -24,12 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -41,10 +35,6 @@ import static org.junit.Assert.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ContextConfiguration(classes = {ConvertersConfig.class, PersistentConfig.class})
-@EnableAutoConfiguration
-@Transactional
-@Rollback
 public class ConvertersIntTest {
 
     @Autowired

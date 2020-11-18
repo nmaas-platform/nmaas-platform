@@ -15,6 +15,8 @@ import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationExcepti
 import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,9 +25,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+
 @RestControllerAdvice
 @Log4j2
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+
 	@ExceptionHandler(value = { AuthenticationException.class,
 								BasicAuthenticationException.class,
 								AuthenticationMethodNotSupportedException.class,
@@ -72,6 +78,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ApiError handleException(WebRequest req, Exception ex) {
 		return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(IOException.class)
+	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+	public ApiError exceptionHandler(IOException e, HttpServletRequest request) {
+		if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
+			log.debug("Detected `Broken pipe` IOException after executing: " + request.getRequestURL().toString());
+			return null;
+		} else {
+			return createApiError(e, HttpStatus.SERVICE_UNAVAILABLE);
+		}
 	}
 
 	private ApiError createApiErrorAndLogStacktrace(Exception ex, HttpStatus status) {

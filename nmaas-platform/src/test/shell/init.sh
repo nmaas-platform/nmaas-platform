@@ -57,6 +57,8 @@ curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --h
 echo
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/broadcast.json
 echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeploymentFailedMail.json
+echo
 
 echo
 echo App1
@@ -325,6 +327,16 @@ echo
 echo App18 logo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/wifimon.png;type=image/png" $API_URL/apps/18/logo
 echo
+echo App18 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/wifimon/wifimon1.png;type=image/png" $API_URL/apps/18/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/wifimon/wifimon2.png;type=image/png" $API_URL/apps/18/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/wifimon/wifimon3.png;type=image/png" $API_URL/apps/18/screenshots
+echo
+echo App18 v2
+curl -X POST $API_URL/apps/version --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app18-wifimon_v1.2.0.json
+echo
 
 echo
 echo App19
@@ -359,6 +371,21 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 echo
 
 echo
+echo App21
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app21-victoria-metrics.json
+echo
+echo App21 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/victoria-metrics.png;type=image/png" $API_URL/apps/21/logo
+echo
+echo App21 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/victoria-metrics/victoria-metrics1.png;type=image/png" $API_URL/apps/21/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/victoria-metrics/victoria-metrics2.png;type=image/png" $API_URL/apps/21/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/victoria-metrics/victoria-metrics3.png;type=image/png" $API_URL/apps/21/screenshots
+echo
+
+echo
 echo ---------------------
 echo Activate apps
 curl -X PATCH $API_URL/apps/state/1 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
@@ -382,6 +409,8 @@ curl -X PATCH $API_URL/apps/state/18 --header "Authorization: Bearer $TOKEN" --h
 curl -X PATCH $API_URL/apps/state/19 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
 curl -X PATCH $API_URL/apps/state/20 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
 curl -X PATCH $API_URL/apps/state/21 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
+curl -X PATCH $API_URL/apps/state/22 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
+curl -X PATCH $API_URL/apps/state/23 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
 echo
 
 echo

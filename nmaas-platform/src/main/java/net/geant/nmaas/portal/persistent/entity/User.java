@@ -10,18 +10,11 @@ import lombok.Setter;
 import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -66,6 +59,9 @@ public class User implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
 //	@Builder.Default
 	private List<UserRole> roles = new ArrayList<>();
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "owner")
+	private Set<SSHKeyEntity> sshKeys = new HashSet<>();
 	
 	public User(String username) {
 		this.username = username;

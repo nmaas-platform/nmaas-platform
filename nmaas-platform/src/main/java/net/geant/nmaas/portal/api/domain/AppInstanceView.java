@@ -26,4 +26,6 @@ public class AppInstanceView extends AppInstanceBase {
 	private String descriptiveDeploymentId;
 
 	private AppConfigRepositoryAccessDetails appConfigRepositoryAccessDetails;
+
+	private Set<UserViewMinimal> members;
 }

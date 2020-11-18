@@ -8,10 +8,14 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -40,6 +44,8 @@ public class NotificationManagerTest {
 
     private DomainService domainService = mock(DomainService.class);
 
+    private ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+
     private ModelMapper modelMapper = new ModelMapper();
 
     private FormTypeService formTypeService = mock(FormTypeService.class);
@@ -48,7 +54,7 @@ public class NotificationManagerTest {
 
     @BeforeEach
     public void setup() throws IOException {
-        this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, modelMapper, formTypeService);
+        this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, configurationManager, modelMapper, formTypeService);
 
         when(userService.findAllUsersWithAdminRole()).thenReturn(
                 this.getAdminUserList().stream()
@@ -226,6 +232,42 @@ public class NotificationManagerTest {
         verify(notificationService,
                 times(adminUsers.size() + emails.size())
         ).sendMail(any(String.class), eq("Subject"), any(String.class));
+
+    }
+
+    @Test
+    public void shouldSendAppDeploymentFailedEmail() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.APP_DEPLOYMENT_FAILED);
+        ma.setOtherAttributes(new HashMap<String, String>() {{
+            put("text", "text");
+            put("username", "MyUser");
+            put("owner", "ordinary");
+            put("domainName","domainName");
+        }});
+
+        String external = "external@email.com";
+
+        List<User> adminUsers = this.getAdminUserList();
+        List<String> emails = Lists.newArrayList(
+                adminUsers.get(0).getEmail(),
+                external
+        );
+
+        when(userService.findByEmail(adminUsers.get(0).getEmail())).thenReturn(adminUsers.get(0));
+        when(userService.findByEmail(external)).thenThrow(new IllegalArgumentException("test message"));
+
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(true, true, "en", true, true, emails));
+
+        try {
+            notificationManager.prepareAndSendMail(ma);
+        } catch (IOException ioe) {
+            fail("IO exception caught " + ioe.getMessage());
+        } catch (TemplateException te) {
+            fail("Template exception caught " + te.getMessage());
+        }
+
+        verify(notificationService, times(emails.size())).sendMail(any(String.class), eq("Default"), any(String.class));
 
     }
 

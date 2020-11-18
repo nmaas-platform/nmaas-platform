@@ -131,7 +131,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-spa-inventory",
-                    "version": "0.1.3"
+                    "version": "0.1.5"
                 }
             },
             "storageVolumes": [

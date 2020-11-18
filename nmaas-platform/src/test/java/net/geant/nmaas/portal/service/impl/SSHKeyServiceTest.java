@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,9 @@ import static org.mockito.Mockito.*;
 
 public class SSHKeyServiceTest {
 
-    private SSHKeyRepository repository = mock(SSHKeyRepository.class);
+    private final SSHKeyRepository repository = mock(SSHKeyRepository.class);
+
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
     private SSHKeyService sut;
 
@@ -37,7 +40,7 @@ public class SSHKeyServiceTest {
         when(repository.findAllByOwner(this.owner)).thenReturn(keys);
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
         when(repository.findById(1L)).thenReturn(Optional.of(key));
-        this.sut = new SSHKeyServiceImpl(this.repository);
+        this.sut = new SSHKeyServiceImpl(this.repository, this.eventPublisher);
     }
 
     @Test

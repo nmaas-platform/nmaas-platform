@@ -1,41 +1,88 @@
 <div class="panel panel-default">
-  <div class="panel-heading">{{ 'PORTAL_CONFIGURATION.TITLE' | translate }}</div>
-  <div class="panel-body">
-    <form (submit)="save()" class="form-horizontal" #configurationForm="ngForm" *ngIf="this.configuration">
-      <div class="form-group">
-        <label for="setMaintenance" class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.MAINTENANCE' | translate }}</label>
-        <div class = "col-sm-10">
-          <input type="checkbox" id="setMaintenance" name="setMaintenance"
-                 [(ngModel)]="this.configuration.maintenance" [checked]="this.configuration.maintenance === true">
-        </div>
-        </div>
-        <div class="form-group">
-            <label for="SSOLoginAllowed" class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.ALLOW_SSO_LOGIN' | translate }}</label>
-            <div class = "col-sm-10">
-                <input type="checkbox" id="SSOLoginAllowed" name="SSOLoginAllowed"
-                       [(ngModel)]="this.configuration.ssoLoginAllowed" [checked]="this.configuration.ssoLoginAllowed === true">
+    <div class="panel-heading">{{ 'PORTAL_CONFIGURATION.TITLE' | translate }}</div>
+    <div class="panel-body">
+        <form (submit)="save()" class="form-horizontal" #configurationForm="ngForm" *ngIf="this.configuration">
+            <div class="form-group">
+                <label for="setMaintenance"
+                       class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.MAINTENANCE' | translate }}</label>
+                <div class="col-sm-10">
+                    <input type="checkbox" id="setMaintenance" name="setMaintenance"
+                           [(ngModel)]="this.configuration.maintenance"
+                           [checked]="this.configuration.maintenance === true">
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label for="defaultLang" class="col-sm-2 control-label">{{'PORTAL_CONFIGURATION.DEFAULT_LANGUAGE' | translate}}</label>
-            <div class="col-sm-3">
-                <select id="defaultLang" #langSelect class="form-control" (change)="this.configuration.defaultLanguage = langSelect.value">
-                    <option *ngFor="let lang of languages" [value]="lang.language"
-                            [selected]="lang.language === configuration.defaultLanguage">{{'LANGUAGE.' + lang.language.toUpperCase() + '_LABEL' | translate}}</option>
-                </select>
+            <div class="form-group">
+                <label for="SSOLoginAllowed"
+                       class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.ALLOW_SSO_LOGIN' | translate }}</label>
+                <div class="col-sm-10">
+                    <input type="checkbox" id="SSOLoginAllowed" name="SSOLoginAllowed"
+                           [(ngModel)]="this.configuration.ssoLoginAllowed"
+                           [checked]="this.configuration.ssoLoginAllowed === true">
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label for="testInstance" class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.TEST_INSTANCE' | translate }}</label>
-            <div class = "col-sm-10">
-                <input type="checkbox" id="testInstance" name="testInstance"
-                       [(ngModel)]="this.configuration.testInstance" [checked]="this.configuration.testInstance === true">
+            <div class="form-group">
+                <label for="defaultLang"
+                       class="col-sm-2 control-label">{{'PORTAL_CONFIGURATION.DEFAULT_LANGUAGE' | translate}}</label>
+                <div class="col-sm-3">
+                    <select id="defaultLang" #langSelect class="form-control"
+                            (change)="this.configuration.defaultLanguage = langSelect.value">
+                        <option *ngFor="let lang of languages" [value]="lang.language"
+                                [selected]="lang.language === configuration.defaultLanguage">{{'LANGUAGE.' + lang.language.toUpperCase() + '_LABEL' | translate}}</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <button class="btn btn-primary" type="submit">{{ 'PORTAL_CONFIGURATION.SUBMIT_BUTTON' | translate }}</button>
-        <div class="alert alert-danger" style="margin-top: 5px" *ngIf="errorMsg">
-            {{errorMsg}}
-        </div>
-    </form>
-  </div>
+            <div class="form-group">
+                <label for="testInstance"
+                       class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.TEST_INSTANCE' | translate }}</label>
+                <div class="col-sm-10">
+                    <input type="checkbox" id="testInstance" name="testInstance"
+                           [(ngModel)]="this.configuration.testInstance"
+                           [checked]="this.configuration.testInstance === true">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="sendAppInstanceFailureEmails"
+                       class="col-sm-2 control-label">{{ 'PORTAL_CONFIGURATION.SEND_APP_INSTANCE_FAILURE_EMAILS' | translate }}</label>
+                <div class="col-sm-10">
+                    <input type="checkbox" id="sendAppInstanceFailureEmails" name="sendAppInstanceFailureEmails"
+                           [(ngModel)]="this.configuration.sendAppInstanceFailureEmails">
+                </div>
+            </div>
+            <div class="form-group">
+
+                <span class="control-label col-sm-2">
+                    <strong>
+                        {{ 'PORTAL_CONFIGURATION.SEND_APP_INSTANCE_FAILURE_EMAILS_LIST' | translate }}
+                    </strong>
+                </span>
+
+                <div class="col-sm-10 display-emails">
+                    <div *ngFor="let email of configuration.appInstanceFailureEmailList; let i=index; trackBy:trackByFn"
+                         class="col-lg-6 col-md-10 col-sm-12 pd-bottom-5 row email-row">
+                        <div class="email-input">
+                            <input class="form-control" type="text"
+                                   id="appInstanceFailureEmailList.{{i}}"
+                                   name="appInstanceFailureEmailList.{{i}}"
+                                   [(ngModel)]="configuration.appInstanceFailureEmailList[i]"/>
+                        </div>
+
+                        <button role="button" type="button" class="btn btn-default" (click)="removeEmailEntry(email)">
+                            Remove
+                        </button>
+                    </div>
+                    <div class="pd-left-15">
+                        <button role="button" type="button" class="btn btn-success" (click)="addEmailEntry()">Add
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+            <button class="btn btn-primary"
+                    type="submit">{{ 'PORTAL_CONFIGURATION.SUBMIT_BUTTON' | translate }}</button>
+            <div class="alert alert-danger" style="margin-top: 5px" *ngIf="errorMsg">
+                {{errorMsg}}
+            </div>
+        </form>
+    </div>
 </div>

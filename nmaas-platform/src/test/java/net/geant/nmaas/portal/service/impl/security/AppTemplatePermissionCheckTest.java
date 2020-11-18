@@ -4,37 +4,28 @@ import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.theInstance;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@EnableAutoConfiguration
 public class AppTemplatePermissionCheckTest {
 
-	@InjectMocks
-	AppTemplatePermissionCheck atpch = new AppTemplatePermissionCheck();
+	private AppTemplatePermissionCheck atpch;
 	
-	@Mock
-	ApplicationRepository applications;
+	private final ApplicationRepository applications = mock(ApplicationRepository.class);
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
+		this.atpch = new AppTemplatePermissionCheck(applications);
+
 		when(applications.findById(UsersHelper.APP1.getId())).thenReturn(Optional.of(UsersHelper.APP1));
 		when(applications.findById(UsersHelper.APP2.getId())).thenReturn(Optional.of(UsersHelper.APP2));
 		when(applications.findById(UsersHelper.APP3.getId())).thenReturn(Optional.of(UsersHelper.APP3));
@@ -42,6 +33,8 @@ public class AppTemplatePermissionCheckTest {
 
 	@Test
 	public final void testSupports() {
+		assertNotNull(theInstance(atpch));
+
 		assertTrue(atpch.supports("appTemplate"));
 		assertTrue(atpch.supports("apptemplate"));
 		assertTrue(atpch.supports("APPTEMPLATE"));

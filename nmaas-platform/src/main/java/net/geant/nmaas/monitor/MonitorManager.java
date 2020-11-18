@@ -56,7 +56,7 @@ public class MonitorManager {
         validateMonitorEntryUpdate(lastCheck, status);
         monitorEntry.setStatus(status);
         monitorEntry.setLastCheck(lastCheck);
-        log.debug("Updating monitor entry: " + lastCheck.toString() + ", " + serviceType.toString() + ", " + status.toString());
+        log.trace("Updating monitor entry: " + lastCheck.toString() + ", " + serviceType.toString() + ", " + status.toString());
         if(status.equals(MonitorStatus.SUCCESS))
             monitorEntry.setLastSuccess(lastCheck);
         else if(status.equals(MonitorStatus.FAILURE)){

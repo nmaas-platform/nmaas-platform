@@ -4,42 +4,29 @@ import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.DomainService;
-import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@EnableAutoConfiguration
 public class AppInstancePermissionCheckTest {
 
-	@InjectMocks
-	AppInstancePermissionCheck aipch = new AppInstancePermissionCheck();
-	
-	@Mock
-	AppInstanceRepository appInstances;
-	
-	@Mock
-	DomainService domains;
+	private AppInstancePermissionCheck aipch;
+
+	private final AppInstanceRepository appInstances = mock(AppInstanceRepository.class);
+
+	private final DomainService domains = mock(DomainService.class);
 	
 	@BeforeEach
 	public void setUp(){
+		this.aipch = new AppInstancePermissionCheck(appInstances, domains);
+
 		when(domains.getGlobalDomain()).thenReturn(Optional.of(UsersHelper.GLOBAL));
 		when(domains.findDomain(UsersHelper.GLOBAL.getId())).thenReturn(Optional.of(UsersHelper.GLOBAL));
 		when(domains.findDomain(UsersHelper.DOMAIN1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1));
