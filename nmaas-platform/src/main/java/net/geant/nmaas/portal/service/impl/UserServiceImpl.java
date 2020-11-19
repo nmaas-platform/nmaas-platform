@@ -187,7 +187,6 @@ public class UserServiceImpl implements UserService {
 		userRepo.delete(user);
 	}
 
-
 	@Override
 	@Transactional
 	public void setEnabledFlag(Long userId, boolean isEnabled) {
