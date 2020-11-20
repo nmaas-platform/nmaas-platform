@@ -29,17 +29,16 @@ public class UserView extends UserBase implements Serializable {
 		super();
 	}
 	
-	public UserView(Long id, String username) {
-		super(id, username);
+	public UserView(Long id, String username, boolean enabled) {
+		super(id, username, enabled);
 	}
 
 	@Builder
 	public UserView(Long id, String username, String firstname, String lastname, String email, boolean enabled, Set<UserRoleView> roles, boolean ssoUser, String selectedLanguage, Set<SSHKeyView> sshKeys) {
-		this(id, username);
+		this(id, username, enabled);
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.email = email;
-		this.enabled = enabled;
 		this.roles = roles;
 		this.ssoUser = ssoUser;
 		this.selectedLanguage = selectedLanguage;
