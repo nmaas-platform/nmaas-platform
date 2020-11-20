@@ -141,7 +141,7 @@
                 "DOMAIN_CODENAME": "metallb.subnetName=%VALUE%"
             },
             "globalDeployParameters": {
-                "manualConfig": "true"
+                "manualConfig": "false"
             },
             "storageVolumes": [],
             "exposesWebUI": true,
