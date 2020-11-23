@@ -28,8 +28,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -187,7 +187,6 @@ public class UserServiceImpl implements UserService {
 		userRepo.delete(user);
 	}
 
-
 	@Override
 	@Transactional
 	public void setEnabledFlag(Long userId, boolean isEnabled) {
@@ -240,6 +239,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public List<UserView> findAllUsersWithAdminRole(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
@@ -248,6 +248,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public List<UserView> findUsersWithRoleSystemAdminAndOperator(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name()) ))

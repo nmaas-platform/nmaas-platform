@@ -20,6 +20,8 @@ public class BasicApplicationMetricsService extends BaseMetricService {
     private static final String APPLICATION_SUBSCRIPTIONS_COUNT_METRIC_NAME = "nmaas_application_subscriptions_count";
     private static final String APPLICATION_SUBSCRIPTIONS_COUNT_METRIC_DESCRIPTION = "Total NMaaS application subscriptions";
 
+    private static final String BASE_UNIT_NUMBER = "number";
+
     @Autowired
     private ApplicationRepository applicationRepository;
 
@@ -33,15 +35,15 @@ public class BasicApplicationMetricsService extends BaseMetricService {
     public void registerMetric(MeterRegistry registry) {
         Gauge.builder(APPLICATION_COUNT_METRIC_NAME, applicationRepository, apps -> (double) apps.count())
                 .description(APPLICATION_COUNT_METRIC_DESCRIPTION)
-                .baseUnit("number")
+                .baseUnit(BASE_UNIT_NUMBER)
                 .register(registry);
         Gauge.builder(APPLICATION_INSTANCE_RUNNING_COUNT_METRIC_NAME, appInstanceRepository, instances -> (double) instances.countAllRunning())
                 .description(APPLICATION_INSTANCE_RUNNING_COUNT_METRIC_DESCRIPTION)
-                .baseUnit("number")
+                .baseUnit(BASE_UNIT_NUMBER)
                 .register(registry);
         Gauge.builder(APPLICATION_SUBSCRIPTIONS_COUNT_METRIC_NAME, applicationSubscriptionRepository, subscriptions -> (double) subscriptions.count())
                 .description(APPLICATION_SUBSCRIPTIONS_COUNT_METRIC_DESCRIPTION)
-                .baseUnit("number")
+                .baseUnit(BASE_UNIT_NUMBER)
                 .register(registry);
     }
 

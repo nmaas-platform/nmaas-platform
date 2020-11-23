@@ -9,10 +9,10 @@ import java.io.StringReader;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
-import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
+import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
+import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
@@ -27,12 +27,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 /**
  * This class handles notifications/emails sending logic
@@ -129,7 +131,7 @@ public class NotificationManager {
                             try {
                                 return modelMapper.map(this.userService.findByEmail(email), UserView.class);
                             } catch (IllegalArgumentException e) {
-                                UserView uv = new UserView(-1L, email);
+                                UserView uv = new UserView(-1L, email, false);
                                 uv.setEmail(email);
                                 uv.setSelectedLanguage("en");
                                 return uv;

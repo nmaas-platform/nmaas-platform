@@ -98,6 +98,7 @@ public class UsersController {
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@Transactional
 	public List<UserBase> getUsers(Pageable pageable, Principal principal) {
 
 		User owner = this.userService.findByUsername(principal.getName()).orElseThrow(

@@ -73,7 +73,7 @@ public class UsersControllerTest {
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
 		when(userService.findAllUsersWithAdminRole()).thenReturn(new ArrayList<UserView>() {{
-			add(new UserView(2L, "admin"));
+			add(new UserView(2L, "admin", true));
 		}});
 	}
 

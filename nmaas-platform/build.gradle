@@ -108,9 +108,6 @@ dependencies {
     implementation('com.google.guava:guava:29.0-jre')
     implementation('org.freemarker:freemarker:2.3.30')
 
-    implementation('io.springfox:springfox-swagger2:3.0.0')
-    implementation('io.springfox:springfox-swagger-ui:3.0.0')
-
     implementation('com.google.protobuf:protobuf-java:3.13.0')
     implementation('io.grpc:grpc-netty-shaded:1.31.1')
     implementation('io.grpc:grpc-protobuf:1.31.1')

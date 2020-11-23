@@ -29,7 +29,7 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class HelmChartVariables {
 
-    private static final Boolean PERSISTENCE_ENABLED_DEFAULT_VALUE = true;
+    private static final boolean PERSISTENCE_ENABLED_DEFAULT_VALUE = true;
 
     private static final String PAR_OPEN = "{";
     private static final String PAR_CLOSE = "}";

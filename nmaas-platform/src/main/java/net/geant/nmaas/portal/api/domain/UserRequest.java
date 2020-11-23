@@ -13,7 +13,7 @@ public class UserRequest extends UserView {
 	String password;
 
 	public UserRequest(Long id, String username, String password) {
-		super(id, username);
+		super(id, username, false);
 		this.password = password;
 	}
 

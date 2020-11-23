@@ -127,8 +127,8 @@ public class AppDeploymentStateChangeManager {
                 .otherAttributes(ImmutableMap.of(
                         "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                         "owner", appDeployment.getOwner(),
-                        "appInstanceName",appDeployment.getDeploymentName(),
-                        "appName",appDeployment.getAppName(),
+                        "appInstanceName", appDeployment.getDeploymentName(),
+                        "appName", appDeployment.getAppName(),
                         "error", error
                 ))
                 .mailType(MailType.APP_DEPLOYMENT_FAILED)
