@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/actuator/**",
             "/api/content/**",
             "/api/users/reset/**",
-            "/api/mail"
+            "/api/mail",
     };
 
     @Override
@@ -99,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/mail").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/mail/type").permitAll()
                 .antMatchers("/api/users/reset/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
                 .antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -125,7 +126,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                                 new AntPathRequestMatcher("/api/users/reset/**"),
                                                 new AntPathRequestMatcher("/api/mail"),
                                                 new AntPathRequestMatcher("/api/monitor/all", "GET"),
-                                                new AntPathRequestMatcher("/api/mail"),
+                                                new AntPathRequestMatcher("/api/mail/type", "GET"),
                                                 new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
                                                 new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
                                                 new AntPathRequestMatcher("/api/gitlab/webhooks/**")

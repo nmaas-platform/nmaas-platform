@@ -53,6 +53,8 @@ import {DomainRolesDirective} from '../directive/domain-roles.directive';
 import {SshKeysComponent} from './users/ssh-keys/ssh-keys.component';
 import {NewSshKeyComponent} from './users/new-ssh-key/new-ssh-key.component';
 import {ModalProvideSshKeyComponent} from './modal/modal-provide-ssh-key/modal-provide-ssh-key.component';
+import { ContactComponent } from './contact/contact.component';
+import {FormioModule} from 'angular-formio';
 
 @NgModule({
     imports: [
@@ -66,7 +68,8 @@ import {ModalProvideSshKeyComponent} from './modal/modal-provide-ssh-key/modal-p
         PasswordStrengthMeterModule,
         TranslateModule.forChild(),
         TooltipModule,
-        NgxPaginationModule
+        NgxPaginationModule,
+        FormioModule
     ],
     declarations: [
         RateComponent,
@@ -109,6 +112,7 @@ import {ModalProvideSshKeyComponent} from './modal/modal-provide-ssh-key/modal-p
         SshKeysComponent,
         NewSshKeyComponent,
         ModalProvideSshKeyComponent,
+        ContactComponent,
     ],
     providers: [
         PasswordValidator,

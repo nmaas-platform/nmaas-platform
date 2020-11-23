@@ -782,15 +782,26 @@
   },
   "CONTACT_FORM": {
     "TITLE": "Contact form",
-    "EMAIL": "Your email",
-    "NAME": "Your name",
-    "MESSAGE": "Your message",
-    "MESSAGE_PLACEHOLDER": "Please type your message here",
-    "SUBMIT_BUTTON": "Submit",
+    "FORMIO": {
+      "EMAIL": "Email",
+      "EMAIL_PLACEHOLDER": "Your email",
+      "NAME": "Name",
+      "NAME_PLACEHOLDER": "Your name",
+      "MESSAGE": "Your message",
+      "MESSAGE_PLACEHOLDER": "Please type your message here",
+      "Submit": "Submit"
+    },
     "MODAL": {
       "TITLE": "Mail has been sent",
       "MESSAGE": "NMaaS Team will reply soon.",
       "CLOSE_BUTTON": "Close"
+    },
+    "SELECT_CATEGORY": "Select category",
+    "TYPES": {
+      "CONTACT": "Contact",
+      "ISSUE": "Report issue",
+      "FEATURE_REQUEST": "Feature request",
+      "ACCESS_REQUEST": "Access request"
     }
   },
   "LANGUAGE": {

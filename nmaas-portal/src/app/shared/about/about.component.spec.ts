@@ -1,78 +1,64 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AboutComponent } from './about.component';
-import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
-import {ChangelogComponent} from "../changelog/changelog.component";
-import {FooterComponent} from "../footer";
-import {AppConfigService, ChangelogService} from "../../service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {ContentDisplayService} from "../../service/content-display.service";
-import {RouterTestingModule} from "@angular/router/testing";
-import {of} from "rxjs";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ModalComponent} from "../modal";
-import {NotificationService} from "../../service/notification.service";
-import {RECAPTCHA_V3_SITE_KEY, RecaptchaModule, ReCaptchaV3Service} from "ng-recaptcha";
-import {TooltipModule} from "ng2-tooltip-directive";
-import {Component} from "@angular/core";
-import {InternationalizationService} from "../../service/internationalization.service";
+import {AboutComponent} from './about.component';
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {AppConfigService, ChangelogService} from '../../service';
+import {RouterTestingModule} from '@angular/router/testing';
+import createSpyObj = jasmine.createSpyObj;
+import {of} from 'rxjs';
+import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-navbar',
-  template: '<p>Mock app-navbar Component</p>'
+    selector: 'app-contact',
+    template: '<p>App Contact Component Mock</p>'
 })
-class MockAppNavbar{}
+class MockAppContactComponent {
+}
+
+@Component({
+    selector: 'app-changelog',
+    template: '<p>App Changelog Component Mock</p>'
+})
+class MockChangelogComponent {
+}
 
 describe('AboutComponent', () => {
-  let component: AboutComponent;
-  let fixture: ComponentFixture<AboutComponent>;
-  let languageService: InternationalizationService;
+    let component: AboutComponent;
+    let fixture: ComponentFixture<AboutComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AboutComponent, ChangelogComponent, FooterComponent, ModalComponent, MockAppNavbar ],
-      imports:[
-          TranslateModule.forRoot({
-            loader: {
-            provide: TranslateLoader,
-            useClass: TranslateFakeLoader
+    const appConfigServiceSpy = createSpyObj('AppConfigService', ['getShowGitInfo'])
+    appConfigServiceSpy.getShowGitInfo.and.returnValue(true);
+
+    const changelogServiceSpy = createSpyObj('ChangelogService', ['getGitInfo'])
+    changelogServiceSpy.getGitInfo.and.returnValue(of({}))
+
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+                declarations: [AboutComponent, MockChangelogComponent, MockAppContactComponent],
+                imports: [
+                    TranslateModule.forRoot({
+                        loader: {
+                            provide: TranslateLoader,
+                            useClass: TranslateFakeLoader
+                        }
+                    }),
+                    RouterTestingModule,
+                ],
+                providers: [
+                    {provide: ChangelogService, useValue: changelogServiceSpy},
+                    {provide: AppConfigService, useValue: appConfigServiceSpy},
+                ]
             }
-          }),
-          HttpClientTestingModule,
-          RouterTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-          TooltipModule
-      ],
-      providers: [
-          ChangelogService,
-          AppConfigService,
-          ContentDisplayService,
-          NotificationService,
-          InternationalizationService,
-          ReCaptchaV3Service,
-          {
-              provide: RECAPTCHA_V3_SITE_KEY,
-              useFactory: function (appConfigService: AppConfigService) {
-                  return appConfigService.getSiteKey();
-              },
-              deps: [AppConfigService]
-          }
-      ]
-    })
-    .compileComponents();
-  }));
+        ).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AboutComponent);
-    component = fixture.componentInstance;
-    languageService = fixture.debugElement.injector.get(InternationalizationService);
-    spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
-    fixture.debugElement.injector.get(TranslateService).use("en");
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AboutComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 import {Observable} from 'rxjs';
 import {Language} from '../model/language';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -47,6 +48,10 @@ export class InternationalizationService extends GenericDataService {
 
   public shouldUpdate(): boolean {
     return this.updateRequiredFlag;
+  }
+
+  public getLanguageContent(language: string): Observable<any> {
+    return this.http.get(this.getInternationalizationUrl() + 'content/' + language);
   }
 
 }

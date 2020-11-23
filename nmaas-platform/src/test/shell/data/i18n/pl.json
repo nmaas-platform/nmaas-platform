@@ -782,15 +782,26 @@
   },
   "CONTACT_FORM": {
     "TITLE": "Formularz kontaktowy",
-    "EMAIL": "Twój adres email",
-    "NAME": "Twoje imię",
-    "MESSAGE": "Treść wiadomości",
-    "MESSAGE_PLACEHOLDER": "Tutaj wpisz treść wiadomości",
-    "SUBMIT_BUTTON": "Wyślij",
+    "FORMIO": {
+      "EMAIL": "Email",
+      "EMAIL_PLACEHOLDER": "Twoj adres email",
+      "NAME": "Imię",
+      "NAME_PLACEHOLDER": "Twoje imię",
+      "MESSAGE": "Wiadomość",
+      "MESSAGE_PLACEHOLDER": "Tutaj wpisz treść wiadomości",
+      "Submit": "Wyślij"
+    },
     "MODAL": {
       "TITLE": "Mail został wysłany",
       "MESSAGE": "NMaaS Team wyśle odpowiedź niedługo.",
       "CLOSE_BUTTON": "Zamknij"
+    },
+    "SELECT_CATEGORY": "Wybierz kategorię",
+    "TYPES": {
+      "CONTACT": "Kontakt",
+      "ISSUE": "Zgłoś błąd",
+      "FEATURE_REQUEST": "Zgłoś pomysł na nową funkcjonalność",
+      "ACCESS_REQUEST": "Prośba o dostęp"
     }
   },
   "LANGUAGE": {
