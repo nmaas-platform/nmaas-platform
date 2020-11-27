@@ -239,7 +239,7 @@
     },
     "appConfigurationSpec": {
         "configFileRepositoryRequired": true,
-        "configUpdateEnabled": false,
+        "configUpdateEnabled": true,
         "templates": [
             {
                 "configFileName": "init.sql",
