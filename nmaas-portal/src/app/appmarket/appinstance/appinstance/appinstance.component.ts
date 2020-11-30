@@ -527,4 +527,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         return false;
     }
 
+    public translateState(appState): string {
+        let outputString = '';
+        this.translateService.get('ENUM.' + appState.toString()).subscribe((res: string) => {
+            outputString = res;
+        });
+        return outputString;
+    }
+
 }
