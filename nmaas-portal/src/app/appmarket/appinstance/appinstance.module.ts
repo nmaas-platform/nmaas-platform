@@ -26,6 +26,7 @@ import {NgTerminalModule} from 'ng-terminal';
 import { AppInstanceShellViewComponent } from './appinstance-shell-view/appinstance-shell-view.component';
 import { AddMembersModalComponent } from './modals/add-members-modal/add-members-modal.component';
 import {MultiSelectModule} from 'primeng/multiselect';
+import { SelectPodModalComponent } from './modals/select-pod-modal/select-pod-modal.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import {MultiSelectModule} from 'primeng/multiselect';
       AccessMethodsModalComponent,
       SshShellComponent,
       AppInstanceShellViewComponent,
-      AddMembersModalComponent
+      AddMembersModalComponent,
+      SelectPodModalComponent
   ],
     imports: [
         FormioModule,

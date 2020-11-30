@@ -86,18 +86,12 @@
                            [routerLink]="router.url + '/shell/' + podNames[0].name" class="btn btn-default" role="button">
                             {{'APP_INSTANCE.SHELL' | translate}}
                         </a>
-                        <!-- if more pods available, go dropdown -->
-                        <div class="btn-group" *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length > 1">
-                            <button type="button" class="btn btn-default dropdown-toggle"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{'APP_INSTANCE.SHELL' | translate}} <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li *ngFor="let podName of podNames">
-                                    <a [routerLink]="router.url + '/shell/' + podName.name">{{podName.displayName}}</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <!-- if more pods available, go modal -->
+                        <button type="button" class="btn btn-default" (click)="this.selectPodModal.show()"
+                                *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length > 1">
+                            {{'APP_INSTANCE.SHELL' | translate}}
+                        </button>
+
                         <button class="btn btn-default" (click)="this.addMembersModal.show()" *ngIf="canDisplayAddMembersModal()">
                             {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
                         </button>
@@ -263,5 +257,8 @@
 
     <!-- Add members modal -->
     <app-add-members-modal *ngIf="appInstance" [appInstance]="appInstance"></app-add-members-modal>
+
+    <!-- Pods selection modal -->
+    <app-select-pod-modal *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames?.length > 1" [url]="router.url" [pods]="podNames"></app-select-pod-modal>
 
 </div>
