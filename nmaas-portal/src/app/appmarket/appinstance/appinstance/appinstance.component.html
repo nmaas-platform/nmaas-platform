@@ -72,46 +72,47 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li *ngIf="shouldDisplayButton()">
-                                <a href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}"
-                                   class = "btn btn-success" role = "button">
+                                <a href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}" role = "button">
                                     {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
                                 </a>
                             </li>
                             <li *ngIf="shouldDisplayModal()">
-                                <button class="btn btn-success" role="button" (click)="this.accessMethodsModal.show()">
+                                <a role="button" (click)="this.accessMethodsModal.show()">
                                     {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
-                                </button>
+                                </a>
                             </li>
                             <li  *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
-                                <button class="btn btn-default" *ngIf="app.application.appConfigurationSpec.configUpdateEnabled"
-                                        (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+                                <a *ngIf="app.application.appConfigurationSpec.configUpdateEnabled"
+                                        (click)="getConfigurationModal()">
+                                    {{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}
+                                </a>
                             </li>
                             <li *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length == 1">
                                 <!-- if only one pod available, select it by default -->
-                                <a [routerLink]="router.url + '/shell/' + podNames[0].name" class="btn btn-default" role="button">
+                                <a [routerLink]="router.url + '/shell/' + podNames[0].name" role="button">
                                     {{'APP_INSTANCE.SHELL' | translate}}
                                 </a>
                             </li>
                             <li *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length > 1">
                                 <!-- if more pods available, go modal -->
-                                <button type="button" class="btn btn-default" (click)="this.selectPodModal.show()">
+                                <a role="button" (click)="this.selectPodModal.show()">
                                     {{'APP_INSTANCE.SHELL' | translate}}
-                                </button>
+                                </a>
                             </li>
                             <li  *ngIf="canDisplayAddMembersModal()">
-                                <button class="btn btn-default" (click)="this.addMembersModal.show()">
+                                <a role="button" (click)="this.addMembersModal.show()">
                                     {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
-                                </button>
+                                </a>
                             </li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
-                                <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()" disabled>
+                                <a role="button" style="display: none" (click)="this.appRestartModal.show()" disabled>
                                     {{'APP_INSTANCE.RESTART_BUTTON' | translate}}
-                                </button>
+                                </a>
                             </li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
-                                <button class="btn btn-danger" (click)="this.undeployModal.show()">
+                                <a role="button" (click)="this.undeployModal.show()">
                                     {{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}
-                                </button>
+                                </a>
                             </li>
                         </ul>
                     </div>
