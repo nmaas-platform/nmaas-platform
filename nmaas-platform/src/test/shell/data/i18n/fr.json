@@ -424,6 +424,7 @@
     "HIDE_BUTTON": "Cancel"
   },
   "APP_INSTANCE": {
+    "INSTANCE_ACTIONS": "Instance actions",
     "SOURCE": "Source",
     "ISSUES": "Issues",
     "VERSION": "Version",
