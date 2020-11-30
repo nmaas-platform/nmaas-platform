@@ -25,6 +25,7 @@ import {PodInfo} from '../../../model/podinfo';
 import {ApplicationDTO} from '../../../model/application-dto';
 import {AddMembersModalComponent} from '../modals/add-members-modal/add-members-modal.component';
 import {AuthService} from '../../../auth/auth.service';
+import {SelectPodModalComponent} from '../modals/select-pod-modal/select-pod-modal.component';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -73,6 +74,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
     @ViewChild(AddMembersModalComponent)
     public addMembersModal: AddMembersModalComponent;
+
+    @ViewChild(SelectPodModalComponent)
+    public selectPodModal: SelectPodModalComponent;
 
     app: ApplicationDTO;
 

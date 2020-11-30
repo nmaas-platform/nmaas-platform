@@ -1,6 +1,4 @@
-/* tslint:disable:no-unused-variable */
-
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AppInstanceComponent} from './appinstance.component';
 import {FormsModule} from '@angular/forms';
 import {JwtModule} from '@auth0/angular-jwt';
@@ -24,7 +22,7 @@ import {AppDeploymentSpec} from '../../../model/app-deployment-spec';
 import {AppConfigurationSpec} from '../../../model/app-configuration-spec';
 import {ApplicationState} from '../../../model/application-state';
 import {AppInstanceStateHistory} from '../../../model/app-instance-state-history';
-import {Component, Directive, Input, Pipe, PipeTransform} from '@angular/core';
+import {Component, Directive, Input, OnInit, Pipe, PipeTransform} from '@angular/core';
 import {Domain} from '../../../model/domain';
 import {AccessMethodsModalComponent} from '../modals/access-methods-modal/access-methods-modal.component';
 import {ModalComponent} from '../../../shared/modal';
@@ -51,7 +49,7 @@ class SecurePipeMock implements PipeTransform {
     selector: 'rate',
     template: '<p>Rate Mock</p>'
 })
-class RateComponentMock {
+class RateComponentMockComponent {
     @Input()
     private pathUrl: string;
     @Input()
@@ -66,7 +64,7 @@ class RateComponentMock {
     selector: 'nmaas-appinstanceprogress',
     template: '<p>App Instance progress Mock</p>'
 })
-class AppInstanceProgressMock {
+class AppInstanceProgressMockComponent implements OnInit {
     @Input()
     stages: any;
     @Input()
@@ -93,10 +91,11 @@ class MockNmaasModalComponent extends ModalComponent {
 }
 
 @Directive({
-    selector: '[roles]',
-    inputs: ['roles']
+    selector: '[roles]'
 })
 class MockRolesDirective {
+    @Input()
+    public roles: string[] = []
 }
 
 @Component({
@@ -222,7 +221,7 @@ describe('Component: AppInstance', () => {
         },
     ];
 
-    beforeEach(async(() => {
+    beforeEach(async () => {
         const mockAppConfigService = jasmine.createSpyObj('AppConfigService', ['getApiUrl', 'getHttpTimeout']);
         mockAppConfigService.getApiUrl.and.returnValue('http://localhost/api');
         mockAppConfigService.getHttpTimeout.and.returnValue(10000);
@@ -242,14 +241,14 @@ describe('Component: AppInstance', () => {
         authServiceSpy.hasRole.and.returnValue(false);
         authServiceSpy.hasDomainRole.and.returnValue(false);
 
-        TestBed.configureTestingModule({
+        await TestBed.configureTestingModule({
             declarations: [
                 AppInstanceComponent,
                 AppRestartModalComponent,
                 AppAbortModalComponent,
                 SecurePipeMock,
-                RateComponentMock,
-                AppInstanceProgressMock,
+                RateComponentMockComponent,
+                AppInstanceProgressMockComponent,
                 MockNmaasModalComponent,
                 AccessMethodsModalComponent,
                 MockRolesDirective,
@@ -285,13 +284,15 @@ describe('Component: AppInstance', () => {
         }).compileComponents().then((result) => {
             console.log(result);
         });
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(AppInstanceComponent);
         component = fixture.componentInstance;
-        component.appInstanceProgress = TestBed.createComponent(AppInstanceProgressMock).componentInstance as AppInstanceProgressComponent;
-        component.undeployModal = TestBed.createComponent(MockNmaasModalComponent).componentInstance as ModalComponent;
+        component.appInstanceProgress =
+            TestBed.createComponent(AppInstanceProgressMockComponent).componentInstance as AppInstanceProgressComponent;
+        component.undeployModal =
+            TestBed.createComponent(MockNmaasModalComponent).componentInstance as ModalComponent;
 
         appConfigService = fixture.debugElement.injector.get(AppConfigService);
         appsService = fixture.debugElement.injector.get(AppsService);

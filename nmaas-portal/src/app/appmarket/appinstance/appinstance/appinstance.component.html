@@ -67,46 +67,53 @@
                 <!-- if application is already running -->
                 <div *ngIf="appInstance" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
-                        <a *ngIf="shouldDisplayButton()"
-                           href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}"
-                           class = "btn btn-success" role = "button">
-                            {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
-                        </a>
-                        <div class="btn-group" *ngIf="shouldDisplayModal()">
-                            <button class="btn btn-success" role="button" (click)="this.accessMethodsModal.show()">
-                                {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
-                            </button>
-                        </div>
-                        <div class="btn-group" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
-                            <button class="btn btn-default" *ngIf="app.application.appConfigurationSpec.configUpdateEnabled"
-                                    (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
-                        </div>
-                        <!-- if only one pod available, select it by default -->
-                        <a *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length == 1"
-                           [routerLink]="router.url + '/shell/' + podNames[0].name" class="btn btn-default" role="button">
-                            {{'APP_INSTANCE.SHELL' | translate}}
-                        </a>
-                        <!-- if more pods available, go dropdown -->
-                        <div class="btn-group" *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length > 1">
-                            <button type="button" class="btn btn-default dropdown-toggle"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{'APP_INSTANCE.SHELL' | translate}} <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li *ngFor="let podName of podNames">
-                                    <a [routerLink]="router.url + '/shell/' + podName.name">{{podName.displayName}}</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <button class="btn btn-default" (click)="this.addMembersModal.show()" *ngIf="canDisplayAddMembersModal()">
-                            {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{'APP_INSTANCE.INSTANCE_ACTIONS' | translate}} <span class="caret"></span>
                         </button>
-                        <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()"
-                                *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
-                                disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
-                        <button class="btn btn-danger"
-                                *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
-                                (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
+                        <ul class="dropdown-menu">
+                            <li *ngIf="shouldDisplayButton()">
+                                <a href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}"
+                                   class = "btn btn-success" role = "button">
+                                    {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
+                                </a>
+                            </li>
+                            <li *ngIf="shouldDisplayModal()">
+                                <button class="btn btn-success" role="button" (click)="this.accessMethodsModal.show()">
+                                    {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
+                                </button>
+                            </li>
+                            <li  *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
+                                <button class="btn btn-default" *ngIf="app.application.appConfigurationSpec.configUpdateEnabled"
+                                        (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+                            </li>
+                            <li *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length == 1">
+                                <!-- if only one pod available, select it by default -->
+                                <a [routerLink]="router.url + '/shell/' + podNames[0].name" class="btn btn-default" role="button">
+                                    {{'APP_INSTANCE.SHELL' | translate}}
+                                </a>
+                            </li>
+                            <li *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames.length > 1">
+                                <!-- if more pods available, go modal -->
+                                <button type="button" class="btn btn-default" (click)="this.selectPodModal.show()">
+                                    {{'APP_INSTANCE.SHELL' | translate}}
+                                </button>
+                            </li>
+                            <li  *ngIf="canDisplayAddMembersModal()">
+                                <button class="btn btn-default" (click)="this.addMembersModal.show()">
+                                    {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
+                                </button>
+                            </li>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
+                                <button class="btn btn-primary" style="display: none" (click)="this.appRestartModal.show()" disabled>
+                                    {{'APP_INSTANCE.RESTART_BUTTON' | translate}}
+                                </button>
+                            </li>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
+                                <button class="btn btn-danger" (click)="this.undeployModal.show()">
+                                    {{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}
+                                </button>
+                            </li>
+                        </ul>
                     </div>
 
                     <!-- if application deployment failed -->
@@ -263,5 +270,8 @@
 
     <!-- Add members modal -->
     <app-add-members-modal *ngIf="appInstance" [appInstance]="appInstance"></app-add-members-modal>
+
+    <!-- Pods selection modal -->
+    <app-select-pod-modal *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames?.length > 1" [url]="router.url" [pods]="podNames"></app-select-pod-modal>
 
 </div>
