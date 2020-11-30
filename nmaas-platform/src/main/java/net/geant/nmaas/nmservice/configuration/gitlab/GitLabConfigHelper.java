@@ -1,5 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
@@ -9,6 +11,7 @@ import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.springframework.http.HttpStatus;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Log4j2
 public class GitLabConfigHelper {
 

@@ -4,9 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import java.io.IOException;
-import java.io.StringReader;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.templates.MailType;

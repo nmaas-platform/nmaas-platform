@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -70,7 +69,7 @@ public class OrchestratorManagerControllerIntTest {
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
-        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, new ModelMapper())).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo)).build();
         Application application = new Application("testapp", "testversion","owner");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());

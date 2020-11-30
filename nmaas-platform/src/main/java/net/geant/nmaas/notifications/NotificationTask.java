@@ -1,8 +1,5 @@
 package net.geant.nmaas.notifications;
 
-import freemarker.template.TemplateException;
-import java.io.IOException;
-
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +22,7 @@ public class NotificationTask {
     @EventListener
     @Loggable(LogLevel.DEBUG)
     @Transactional
-    public void trigger(NotificationEvent event) throws IOException, TemplateException {
+    public void trigger(NotificationEvent event) {
         checkArgument(event.getMailAttributes() != null, "Mail attributes cannot be null");
         notificationManager.prepareAndSendMail(event.getMailAttributes());
     }

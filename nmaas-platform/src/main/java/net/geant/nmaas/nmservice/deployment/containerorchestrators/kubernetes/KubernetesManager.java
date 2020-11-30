@@ -160,9 +160,7 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     private Map<String, String> createAdditionalGlobalParametersMap(Map<String, String> globalDeployParameters) {
         Map<String, String> additionalParameters = new HashMap<>();
-        globalDeployParameters.forEach((k, v) -> {
-            additionalParameters.put(k, createParameterValueString(v));
-        });
+        globalDeployParameters.forEach((k, v) -> additionalParameters.put(k, createParameterValueString(v)));
         return additionalParameters;
     }
 

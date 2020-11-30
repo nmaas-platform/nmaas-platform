@@ -8,7 +8,6 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,13 +33,10 @@ public class AppLifecycleManagerRestController {
 
     private ApplicationRepository appRepo;
 
-    private ModelMapper modelMapper;
-
     @Autowired
-    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager, ApplicationRepository appRepo, ModelMapper modelMapper) {
+    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager, ApplicationRepository appRepo) {
         this.lifecycleManager = lifecycleManager;
         this.appRepo = appRepo;
-        this.modelMapper = modelMapper;
     }
 
     /**
