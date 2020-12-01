@@ -399,11 +399,11 @@
   "INSTALL_MODAL": {
     "HEADER": "Deploy new instance of ",
     "INSTANCE_NAME": "Instance name",
-    "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0-9 and - characters.",
-    "INSTANCE_NAME_LENGTH_ERROR": "Instance name has to be 3-10 characters long.",
-    "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required.",
+    "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0-9 and - characters",
+    "INSTANCE_NAME_LENGTH_ERROR": "Instance name has to be 3-10 characters long",
+    "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required",
     "DOMAIN": "Domain",
-    "CLOSE_BUTTON": "Close",
+    "CLOSE_BUTTON": "Cancel",
     "DEPLOY_BUTTON": "Deploy",
     "USE_DEFAULT_VERSION": "Use default version",
     "SELECT_VERSION": "Select version"
