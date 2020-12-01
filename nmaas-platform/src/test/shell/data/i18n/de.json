@@ -424,22 +424,22 @@
   },
   "APP_INSTANCE": {
     "INSTANCE_ACTIONS": "Instance actions",
-    "SOURCE": "Source",
-    "ISSUES": "Issues",
+    "SOURCE": "Quelle",
+    "ISSUES": "Probleme",
     "VERSION": "Version",
     "LICENSE": "Lizenz",
     "TAGS": "Tags",
     "RATING": "Bewertung",
     "MY_RATING": "Meine Bewertung",
-    "GO_TO_APP_BUTTON": "Open application UI",
+    "GO_TO_APP_BUTTON": "Zugriff",
     "UNDEPLOY_BUTTON": "Deinstallieren",
-    "APP_ACCESS_METHODS": "View application access methods",
+    "APP_ACCESS_METHODS": "Zugriff",
     "RESTART_BUTTON": "Neustart",
     "REMOVE_BUTTON": "Entfernen fehlgeschlagen",
-    "CHECK_STATUS_BUTTON": "Check status",
+    "CHECK_STATUS_BUTTON": "Status überprüfen",
     "REDEPLOY_BUTTON": "Neuinstallieren",
     "ABORT_BUTTON": "Abbrechen",
-    "UPDATE_CONFIG_BUTTON": "Update configuration",
+    "UPDATE_CONFIG_BUTTON": "Konfigurieren",
     "ADD_MEMBERS_BUTTON": "Add members",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {
@@ -769,9 +769,9 @@
   },
   "ABOUT": {
     "CONTACT_TITLE": "Kontaktieren Sie uns",
-    "CHANGELOG_TITLE": "Aktuelle Version und Änderungsprotokoll",
-    "CONTACT_DESC": "Haben Sie eine Frage? Problem mit einer der Funktionen? Ein technisches Problem? Senden Sie uns eine Nachricht und wir werden es so schnell wie möglich beheben.",
-    "CHANGELOG_DESC": "Wie Sie vielleicht wissen, entwickelt sich NMaaS noch und wir entwickeln weiterhin neue Funktionen. Nachfolgend finden Sie Informationen zu wichtigen Änderungen in den angegebenen Releases."
+    "CHANGELOG_TITLE": "Aktuelle Softwareversion und Änderungsprotokoll",
+    "CONTACT_DESC": "Das Kontaktformular bietet eine einfache Möglichkeit, mit dem NMaaS-Team in Kontakt zu treten. Wählen Sie den Formulartyp, der für Ihre Anfrage am besten geeignet ist.",
+    "CHANGELOG_DESC": "Im Folgenden finden Sie detaillierte Informationen zur aktuellen NMaaS-Version und eine Zusammenfassung der Änderungen, die in früheren Softwareversionen vorgenommen wurden."
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Letzte Veröffentlichung",

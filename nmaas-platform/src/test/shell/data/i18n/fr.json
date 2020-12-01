@@ -770,9 +770,9 @@
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",
-    "CHANGELOG_TITLE": "Version actuelle et journal des modifications",
-    "CONTACT_DESC": "Vous avez une question? Un problème de fonction? Un problème technique? Envoyez-nous un message et nous nous en occuperons dans les meilleurs délais.",
-    "CHANGELOG_DESC": "Comme vous le savez peut-être, NMaaS continue d'évoluer et nous développons de nouvelles fonctionnalités. Vous trouverez ci-dessous des informations sur les principales modifications apportées aux versions spécifiées."
+    "CHANGELOG_TITLE": "Version actuelle du logiciel et journal des modifications",
+    "CONTACT_DESC": "Le formulaire de contact offre un moyen facile d'entrer en contact avec l'équipe NMaaS. Choisissez le type de formulaire le plus adapté à votre demande.",
+    "CHANGELOG_DESC": "Vous trouverez ci-dessous des informations détaillées sur la version actuelle de NMaaS et un résumé des changements introduits dans les versions précédentes du logiciel."
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Dernière version",

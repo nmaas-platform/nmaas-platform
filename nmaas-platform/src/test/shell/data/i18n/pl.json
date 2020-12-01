@@ -431,16 +431,16 @@
     "TAGS": "Tagi",
     "RATING": "Oceny",
     "MY_RATING": "Moja ocena",
-    "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
+    "GO_TO_APP_BUTTON": "Dostęp",
     "UNDEPLOY_BUTTON": "Zatrzymaj",
-    "APP_ACCESS_METHODS": "Metody dostępu do aplikacji",
-    "RESTART_BUTTON": "Restart",
-    "REMOVE_BUTTON": "Usuń wadliwą instancję",
-    "CHECK_STATUS_BUTTON": "Check status",
-    "REDEPLOY_BUTTON": "Uruchom ponownie",
+    "APP_ACCESS_METHODS": "Dostęp",
+    "RESTART_BUTTON": "Restartuj",
+    "REMOVE_BUTTON": "Usuń",
+    "CHECK_STATUS_BUTTON": "Sprawdź stan",
+    "REDEPLOY_BUTTON": "Restartuj",
     "ABORT_BUTTON": "Przerwij",
-    "UPDATE_CONFIG_BUTTON": "Aktualizacja konfiguracji",
-    "ADD_MEMBERS_BUTTON": "Add members",
+    "UPDATE_CONFIG_BUTTON": "Konfiguracja",
+    "ADD_MEMBERS_BUTTON": "Osoby",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
@@ -770,9 +770,9 @@
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",
-    "CHANGELOG_TITLE": "Aktualna wersja oraz lista zmian",
-    "CONTACT_DESC": "Masz pytanie? Problem z funkcjonalnością? Problem techniczny? Wyślij nam wiadomość a my odpowiemy najszybciej jak tylko się da.",
-    "CHANGELOG_DESC": "Jak zapewne wiesz, NMaaS nadal ewoluuje a my tworzymy dla niego nowe funkcjonalności. Poniżej znajdziesz informacje na temat największych zmian w poszczególnych wersjach."
+    "CHANGELOG_TITLE": "Aktualna wersja oprogramowanie oraz wykaz zmian",
+    "CONTACT_DESC": "Formularz kontaktowy umożliwia łatwy kontakt z zespołem NMaaS. Wybierz typ formularza, który jest najbardziej odpowiedni dla Twojego zgłoszenia.",
+    "CHANGELOG_DESC": "Poniżej znajdziesz szczegółowe informacje o aktualnej wersji NMaaS oraz podsumowanie zmian wprowadzonych w poprzednich wersjach oprogramowania."
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Ostatnia wersja",
@@ -800,8 +800,8 @@
     "SELECT_CATEGORY": "Wybierz kategorię",
     "TYPES": {
       "CONTACT": "Kontakt",
-      "ISSUE": "Zgłoś błąd",
-      "FEATURE_REQUEST": "Zgłoś pomysł na nową funkcjonalność",
+      "ISSUE": "Zgłoszenie błędu",
+      "FEATURE_REQUEST": "Propozycja zmiany lub dodania nowej aplikacji",
       "ACCESS_REQUEST": "Prośba o dostęp"
     }
   },
@@ -813,7 +813,7 @@
   },
   "FOOTER": {
     "NOTICE": "Polityka Prywatności",
-    "CONTACT":  "Kontakt",
+    "CONTACT": "Kontakt",
     "WEBSITE": "Otwórz stronę GÉANT",
     "TOP": "GÓRA",
     "COOKIES": "Cookies",

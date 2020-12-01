@@ -423,7 +423,7 @@
     "HIDE_BUTTON": "Cancel"
   },
   "APP_INSTANCE": {
-    "INSTANCE_ACTIONS": "Instance actions",
+    "INSTANCE_ACTIONS": "Application actions",
     "SOURCE": "Source",
     "ISSUES": "Issues",
     "VERSION": "Version",
@@ -431,16 +431,16 @@
     "TAGS": "Tags",
     "RATING": "Rating",
     "MY_RATING": "My rating",
-    "GO_TO_APP_BUTTON": "Open application UI",
+    "GO_TO_APP_BUTTON": "Access",
     "UNDEPLOY_BUTTON": "Undeploy",
-    "APP_ACCESS_METHODS": "View application access methods",
+    "APP_ACCESS_METHODS": "Access",
     "RESTART_BUTTON": "Restart",
-    "REMOVE_BUTTON": "Remove failed",
-    "CHECK_STATUS_BUTTON": "Check status",
+    "REMOVE_BUTTON": "Remove",
+    "CHECK_STATUS_BUTTON": "Check state",
     "REDEPLOY_BUTTON": "Redeploy",
     "ABORT_BUTTON": "Abort",
-    "ADD_MEMBERS_BUTTON": "Add members",
-    "UPDATE_CONFIG_BUTTON": "Update configuration",
+    "ADD_MEMBERS_BUTTON": "Members",
+    "UPDATE_CONFIG_BUTTON": "Configure",
     "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
@@ -770,9 +770,9 @@
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contact us",
-    "CHANGELOG_TITLE": "Current version and changelog",
-    "CONTACT_DESC": "Got a question? Problem with one of the applications? Technical issue? Send us a message and we'll respond as soon as possible.",
-    "CHANGELOG_DESC": "As you may know, NMaaS is still evolving and we're still developing new features. Below you can find information about major changes in specified releases."
+    "CHANGELOG_TITLE": "Current software version and changelog",
+    "CONTACT_DESC": "Contact form offers an easy way to get in touch with the NMaaS team. Choose the type of form that is most suitable for your request.",
+    "CHANGELOG_DESC": "Below you will find detailed information about the current NMaaS version and summary of changes introduced in previous software releases."
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Latest release",
@@ -789,7 +789,7 @@
       "NAME": "Name",
       "NAME_PLACEHOLDER": "Your name",
       "MESSAGE": "Your message",
-      "MESSAGE_PLACEHOLDER": "Please type your message here",
+      "MESSAGE_PLACEHOLDER": "Please enter your message here",
       "Submit": "Submit"
     },
     "MODAL": {
@@ -797,11 +797,11 @@
       "MESSAGE": "NMaaS Team will reply soon.",
       "CLOSE_BUTTON": "Close"
     },
-    "SELECT_CATEGORY": "Select category",
+    "SELECT_CATEGORY": "Select form type",
     "TYPES": {
       "CONTACT": "Contact",
-      "ISSUE": "Report issue",
-      "FEATURE_REQUEST": "Feature request",
+      "ISSUE": "Issue report",
+      "FEATURE_REQUEST": "Enhancement or new application request",
       "ACCESS_REQUEST": "Access request"
     }
   },
