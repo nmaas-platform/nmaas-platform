@@ -423,6 +423,7 @@
     "HIDE_BUTTON": "Anuluj"
   },
   "APP_INSTANCE": {
+    "CONFIGURE": "Konfiguruj",
     "INSTANCE_ACTIONS": "Akcje",
     "SOURCE": "Źródło",
     "ISSUES": "Problemy",

@@ -12,7 +12,6 @@ import {UserDataService} from '../../../service/userdata.service';
 import {AuthService} from '../../../auth/auth.service';
 import {map, shareReplay, take} from 'rxjs/operators';
 import {CustomerSearchCriteria} from '../../../service';
-import {strict} from 'assert';
 import {FormControl} from '@angular/forms';
 
 function userMatches(u: User, term: string): boolean {

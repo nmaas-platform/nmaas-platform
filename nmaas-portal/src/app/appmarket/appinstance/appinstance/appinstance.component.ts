@@ -57,7 +57,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     @ViewChild(AppRestartModalComponent)
     public appRestartModal: AppRestartModalComponent;
 
-    @ViewChild(ModalComponent)
+    @ViewChild('undeployModal')
     public undeployModal: ModalComponent;
 
     @ViewChild(AppAbortModalComponent)
@@ -77,6 +77,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
     @ViewChild(SelectPodModalComponent)
     public selectPodModal: SelectPodModalComponent;
+
+    @ViewChild('applyConfig')
+    public applyConfig: ModalComponent;
 
     app: ApplicationDTO;
 
@@ -372,6 +375,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
             () => {
                 console.log('Configuration applied');
                 this.storage.set('appConfig_' + this.appInstanceId.toString(), this.appConfiguration);
+                this.applyConfig.hide();
             },
             (error) => {
                 console.error(error);

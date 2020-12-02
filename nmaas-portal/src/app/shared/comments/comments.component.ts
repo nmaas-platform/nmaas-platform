@@ -71,7 +71,7 @@ export class CommentsComponent implements OnInit, OnChanges {
         this.appsService.getAppCommentsByUrl(this.pathUrl).subscribe(comments => {
             this.comments = comments;
             for (const comm of comments) {
-                if (this.show[comm.id] == null || this.show[comm.id] == null) {
+                if (this.show[comm.id] == null) {
                     this.show[comm.id] = 3;
                 }
             }
