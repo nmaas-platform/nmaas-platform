@@ -10,23 +10,23 @@ import { Observable } from 'rxjs';
 export class TagFilterComponent implements OnInit {
 
   @Input()
-  public value: string;
+  public value = 'all';
 
-  public all: string = 'all';
-  
+  public all = 'all';
+
   @Output()
   public changed: EventEmitter<string> = new EventEmitter<string>();
-  
+
   public tags: Observable<string[]>;
-  
+
   constructor(private tagService: TagService) { }
 
   ngOnInit() {
     this.tags = this.tagService.getTags();
   }
 
-  public onChange(): void {    
+  public onChange(): void {
     this.changed.emit(this.value);
   }
-  
+
 }
