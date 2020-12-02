@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -139,7 +140,7 @@ public class PortalConfig {
 			}
 
 			private String readContent(String file) throws IOException {
-				return IOUtils.toString(resourceLoader.getResource(file).getInputStream(), "utf-8");
+				return IOUtils.toString(resourceLoader.getResource(file).getInputStream(), StandardCharsets.UTF_8);
 			}
 
 			private void addContentToDatabase(String name, String title, String content){

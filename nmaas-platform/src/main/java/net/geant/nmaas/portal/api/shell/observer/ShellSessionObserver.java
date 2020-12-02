@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +16,7 @@ import java.util.concurrent.Executors;
  */
 @Getter
 @Log4j2
-public class ShellSessionObserver implements Observer, Serializable {
+public class ShellSessionObserver implements Observer {
 
     private static final Long DEFAULT_HEARTBEAT_INTERVAL_MS = 30000L;
     private static final Long SSE_TIMEOUT_24H_MS = 86400000L;

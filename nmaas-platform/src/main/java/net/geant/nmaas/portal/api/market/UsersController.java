@@ -65,19 +65,19 @@ public class UsersController {
 	@Value("${portal.address}")
 	private String portalAddress;
 
-	private UserService userService;
+	private final UserService userService;
 
-    private DomainService domainService;
+    private final DomainService domainService;
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    private JWTTokenService jwtTokenService;
+    private final JWTTokenService jwtTokenService;
 
-    private ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
-    private UserLoginRegisterService userLoginService;
+    private final UserLoginRegisterService userLoginService;
 
     @Autowired
 	public UsersController(UserService userService,
@@ -218,7 +218,7 @@ public class UsersController {
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
 
-		Domain domain = null;
+		Domain domain;
 		if (userRole.getDomainId() == null) 
 			domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		else
@@ -555,7 +555,7 @@ public class UsersController {
 	}
 
 	private Role convertRole(String userRole) {
-		Role role = null;
+		Role role;
 		try {
 			role = Role.valueOf(userRole);
 		} catch(IllegalArgumentException ex) {
@@ -587,29 +587,30 @@ public class UsersController {
     }
 
     String getRoleWithDomainIdAsString(Set<UserRoleView> userRoles){
-        return String.join(", ", userRoles.stream().map(x -> x.getRole().authority() + "@domain" + x.getDomainId())
-				.collect(Collectors.toList()));
+        return userRoles.stream().map(x -> x.getRole().authority() + "@domain" + x.getDomainId())
+				.collect(Collectors.joining(", "));
     }
 
     String getMessageWhenUserUpdated(final User user, final UserRequest userRequest){
+    	final String mid = "] -> [";
         StringBuilder message = new StringBuilder();
         if(!isSame(userRequest.getUsername(), user.getUsername())){
-        	message.append(" Username [" + user.getUsername() + "] -> [" + userRequest.getUsername() + "]");
+        	message.append(" Username [").append(user.getUsername()).append(mid).append(userRequest.getUsername()).append("]");
         }
         if(!isSame(userRequest.getEmail(), user.getEmail())){
-            message.append(" Email [" + user.getEmail() + "] -> [" + userRequest.getEmail() + "]");
+            message.append(" Email [").append(user.getEmail()).append(mid).append(userRequest.getEmail()).append("]");
         }
         if(!isSame(userRequest.getFirstname(), user.getFirstname())){
-            message.append(" First name [" + user.getFirstname() + "] -> [" + userRequest.getFirstname() + "]");
+            message.append(" First name [").append(user.getFirstname()).append(mid).append(userRequest.getFirstname()).append("]");
         }
         if(!isSame(userRequest.getLastname(), user.getLastname())){
-            message.append(" Last name [" + user.getLastname() + "] -> [" + userRequest.getLastname() + "]");
+            message.append(" Last name [").append(user.getLastname()).append(mid).append(userRequest.getLastname()).append("]");
         }
         if(!userRequest.isEnabled() == user.isEnabled()){
-            message.append(" Enabled flag [" + user.isEnabled() + "] -> [" + userRequest.isEnabled() + "]");
+            message.append(" Enabled flag [").append(user.isEnabled()).append(mid).append(userRequest.isEnabled()).append("]");
         }
         if(!isSame(getRequestedRoleAsList(userRequest.getRoles()), getRoleAsList(user.getRoles()))){
-            message.append(" Roles changed [" + getRoleAsString(user.getRoles()) + "] -> [" + getRoleWithDomainIdAsString(userRequest.getRoles()) + "]");
+            message.append(" Roles changed [").append(getRoleAsString(user.getRoles())).append(mid).append(getRoleWithDomainIdAsString(userRequest.getRoles())).append("]");
         }
         return message.toString();
     }

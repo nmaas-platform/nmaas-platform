@@ -154,8 +154,8 @@ public class SshSessionConnector implements AsyncConnector {
 	public String executeSingleCommand(String command) {
 		if(!isAuthenticated())
 			throw new SshConnectionException("Not authenticated connection to " + client.getRemoteAddress());
-		try (Session session = client.startSession()){
-			final Session.Command c = session.exec(command);
+		try (Session ss = client.startSession()){
+			final Session.Command c = ss.exec(command);
 			String error = IOUtils.readFully(c.getErrorStream()).toString();
 			String output = IOUtils.readFully(c.getInputStream()).toString();
 			c.join(5, TimeUnit.SECONDS);

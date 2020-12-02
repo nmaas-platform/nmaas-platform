@@ -90,9 +90,9 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
          */
         resultReader = Executors.newSingleThreadExecutor();
         resultReader.execute(() -> {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
-            ShellResultReader shellResultReader = new ShellResultReader(reader);
             try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
+                ShellResultReader shellResultReader = new ShellResultReader(reader);
                 String part = shellResultReader.readWord();
                 while (part != null) {
                     log.debug("Part:\t" + part);
@@ -109,8 +109,8 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
         errorReader = Executors.newSingleThreadExecutor();
         errorReader.execute(() -> {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getErrorStream()));
             try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getErrorStream()));
                 String line = reader.readLine();
                 while (line != null) {
                     log.debug("Error:\t" + line);
@@ -159,6 +159,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     /**
      * completes the observable, destroys connection and readers
      */
+    @Override
     public void complete() {
         this.sshConnector.close();
         this.resultReader.shutdownNow();

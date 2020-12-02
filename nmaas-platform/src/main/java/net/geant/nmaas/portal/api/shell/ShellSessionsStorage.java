@@ -2,19 +2,17 @@ package net.geant.nmaas.portal.api.shell;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 import net.geant.nmaas.portal.api.shell.connectors.AsyncConnectorFactory;
 import net.geant.nmaas.portal.api.shell.observable.GenericShellSessionObservable;
 import net.geant.nmaas.portal.api.shell.observable.SshConnectionShellSessionObservable;
 import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

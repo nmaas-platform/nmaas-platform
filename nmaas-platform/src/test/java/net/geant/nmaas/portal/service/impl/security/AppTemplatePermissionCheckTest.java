@@ -24,7 +24,7 @@ public class AppTemplatePermissionCheckTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		this.atpch = new AppTemplatePermissionCheck(applications);
+		this.atpch = new AppTemplatePermissionCheck();
 
 		when(applications.findById(UsersHelper.APP1.getId())).thenReturn(Optional.of(UsersHelper.APP1));
 		when(applications.findById(UsersHelper.APP2.getId())).thenReturn(Optional.of(UsersHelper.APP2));
