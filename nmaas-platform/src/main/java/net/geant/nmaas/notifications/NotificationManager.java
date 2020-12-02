@@ -124,16 +124,7 @@ public class NotificationManager {
             ConfigurationView configuration = this.configurationManager.getConfiguration();
             if(configuration.isSendAppInstanceFailureEmails()) {
                 List<UserView> usrs = configuration.getAppInstanceFailureEmailList().stream()
-                        .map(email -> {
-                            try {
-                                return modelMapper.map(this.userService.findByEmail(email), UserView.class);
-                            } catch (IllegalArgumentException e) {
-                                UserView uv = new UserView(-1L, email, false);
-                                uv.setEmail(email);
-                                uv.setSelectedLanguage("en");
-                                return uv;
-                            }
-                        })
+                        .map(this::convertEmailToUserView)
                         .collect(Collectors.toList());
                 mailAttributes.setAddressees(usrs);
             }
@@ -236,6 +227,17 @@ public class NotificationManager {
         return users.stream()
                 .map(UserView::getEmail)
                 .collect(Collectors.toList());
+    }
+
+    private UserView convertEmailToUserView(String email) {
+        try {
+            return modelMapper.map(this.userService.findByEmail(email), UserView.class);
+        } catch (IllegalArgumentException e) {
+            UserView uv = new UserView(-1L, email, false);
+            uv.setEmail(email);
+            uv.setSelectedLanguage("en");
+            return uv;
+        }
     }
 
 }

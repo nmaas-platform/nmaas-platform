@@ -1,33 +1,27 @@
 package net.geant.nmaas.portal.service.impl.security;
 
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.service.AclService.Permissions;
+import org.springframework.stereotype.Component;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import net.geant.nmaas.portal.service.AclService.Permissions;
-
 @Component
 public class AppTemplatePermissionCheck extends BasePermissionCheck {
 
 	public static final String APPTEMPLATE = "appTemplate";
 	
-	private final ApplicationRepository applications;
-	
+
 	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 
-	public AppTemplatePermissionCheck(ApplicationRepository applications) {
+	public AppTemplatePermissionCheck() {
 		super();
-		this.applications = applications;
 		this.setupMatrix();
 	}
 

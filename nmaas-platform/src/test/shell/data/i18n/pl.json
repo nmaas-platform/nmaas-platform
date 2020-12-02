@@ -224,7 +224,14 @@
     "UNDEPLOYED": "Zatrzymane instancje",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
-    "UNDEPLOYED_VISIBLE": "Show undeployed instances"
+    "UNDEPLOYED_VISIBLE": "Show undeployed instances",
+    "SORT": "Sortuj",
+    "SORT_MODE": {
+      "NONE": "Brak",
+      "NAME": "Nazwa",
+      "RATING": "Najlepiej oceniane",
+      "POPULAR": "Najbardziej popularne"
+    }
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",

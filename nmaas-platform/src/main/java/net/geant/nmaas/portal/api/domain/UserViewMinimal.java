@@ -18,5 +18,5 @@ public class UserViewMinimal extends UserBase implements Serializable {
     protected String email;
 
     @Builder.Default
-    protected Set<UserRoleView> roles = new HashSet<>();
+    private Set<UserRoleView> roles = new HashSet<>();
 }

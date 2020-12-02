@@ -13,7 +13,7 @@ import java.util.Base64;
  */
 public class SshSessionConnectorDefaultData {
 
-    public final static String SSH_PUB_KEY_X509 =
+    public static final String SSH_PUB_KEY_X509 =
             "-----BEGIN PUBLIC KEY-----\n" +
                     "MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKCAQEAo1lfdfK74mV5Xqr7sLYQ\n" +
                     "bp0kF3PZHXzQt6p+J3QuiOVMbe1XEVPZP7QiJqikrGEghIPklYvOSLQE9wcr2mA+\n" +
@@ -23,7 +23,7 @@ public class SshSessionConnectorDefaultData {
                     "pbk87LDb/R/Hzbo/I+98D94qMx+x9IVA7yvyegw3z6FHKx4RkvUgfk7cz7RuDh+m\n" +
                     "XwIBJQ==\n" +
                     "-----END PUBLIC KEY-----";
-    public final static String SSH_PRIV_KEY =
+    public static final String SSH_PRIV_KEY =
             "-----BEGIN PRIVATE KEY-----\n" +
                     "MIIEugIBADANBgkqhkiG9w0BAQEFAASCBKQwggSgAgEAAoIBAQCjWV918rviZXle\n" +
                     "qvuwthBunSQXc9kdfNC3qn4ndC6I5Uxt7VcRU9k/tCImqKSsYSCEg+SVi85ItAT3\n" +
@@ -53,8 +53,10 @@ public class SshSessionConnectorDefaultData {
                     "wWiKDSVL4RJDRKFJAdc=\n" +
                     "-----END PRIVATE KEY-----";
 
-    private final static String SSH_USERNAME = "nmaastest";
-    private final static String SSH_HOST = "nmaastest-master1.qalab.geant.net";
+    private static final String SSH_USERNAME = "nmaastest";
+    private static final String SSH_HOST = "nmaastest-master1.qalab.geant.net";
+
+    private SshSessionConnectorDefaultData(){}
 
     /**
      * transforms string public key to java format
@@ -99,9 +101,9 @@ public class SshSessionConnectorDefaultData {
     }
 
     public static SshSessionConnector getDefaultConnector() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        PublicKey pub_key = getPublicKey(SshSessionConnectorDefaultData.SSH_PUB_KEY_X509);
-        PrivateKey priv_key = getPrivateKey(SshSessionConnectorDefaultData.SSH_PRIV_KEY);
-        KeyPair kp = new KeyPair(pub_key, priv_key);
+        PublicKey publicKey = getPublicKey(SshSessionConnectorDefaultData.SSH_PUB_KEY_X509);
+        PrivateKey privateKey = getPrivateKey(SshSessionConnectorDefaultData.SSH_PRIV_KEY);
+        KeyPair kp = new KeyPair(publicKey, privateKey);
 
         return new SshSessionConnector(
                 SSH_HOST,

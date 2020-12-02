@@ -1,8 +1,9 @@
 package net.geant.nmaas.portal.api.shell.connectors;
 
 import java.io.InputStream;
+import java.io.Serializable;
 
-public interface AsyncConnector {
+public interface AsyncConnector extends Serializable {
 
     void executeCommand(String command);
     String executeSingleCommand(String command);
