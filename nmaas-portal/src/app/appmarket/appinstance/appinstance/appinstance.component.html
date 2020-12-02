@@ -57,6 +57,10 @@
                          && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.RUNNING
                          && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.REMOVED
                          && getStateAsEnum(appInstanceStatus?.state) != AppInstanceState.DONE">
+                    <button *ngIf="getStateAsEnum(appInstanceStatus?.state) == AppInstanceState.CONFIGURATION_AWAITING"
+                            role="button" class="btn btn-primary" (click)="applyConfig.show()">
+                        {{'APP_INSTANCE.CONFIGURE' | translate}}
+                    </button>
                     <button class="btn btn-danger"
                             *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                             (click)="this.appAbortModal.show()">{{'APP_INSTANCE.ABORT_BUTTON' | translate}}</button>
@@ -192,20 +196,6 @@
 					{{  'APP_INSTANCE.USER_FRIENDLY.' + getStateAsString(appInstanceStatus?.state) | translate }}
 				</span>
             </div>
-        </div>
-    </div>
-
-    <!-- Apply configuration -->
-    <div class="row" [ngClass]="{
-            'collapse': storage.has('appConfig_' + appInstanceId.toString())
-			|| getStateAsEnum(appInstanceStatus?.state) === undefined
-			|| getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.REMOVED
-			|| getStateAsEnum(appInstanceStatus?.state) > AppInstanceState.CONFIGURATION_AWAITING
-			}">
-        <div class="col-xs-12 flex-center">
-            <button role="button" class="btn btn-primary" (click)="applyConfig.show()">
-                {{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}
-            </button>
         </div>
     </div>
 
