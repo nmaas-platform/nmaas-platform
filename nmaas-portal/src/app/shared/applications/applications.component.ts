@@ -11,6 +11,18 @@ import {Domain} from '../../model/domain';
 import {map} from 'rxjs/operators';
 import {ApplicationBase} from '../../model/application-base';
 
+function compareAppsName(a: ApplicationBase, b: ApplicationBase): number {
+    return a.name.localeCompare(b.name);
+}
+
+function compareAppsRating(a: ApplicationBase, b: ApplicationBase): number {
+    return (a.rate.averageRate - b.rate.averageRate) * -1; // desc
+}
+
+function compareAppsPopularity(a: ApplicationBase, b: ApplicationBase): number {
+    return 0; // TODO
+}
+
 @Component({
     selector: 'nmaas-applications-view',
     templateUrl: './applications.component.html',
@@ -38,6 +50,9 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
 
     public searchedAppName = '';
     protected searchedTag = 'all';
+
+    public sortModeList = ['NONE', 'NAME', 'RATING', 'POPULAR'];
+    public sortMode = 'NONE';
 
     constructor(private appsService: AppsService,
                 private appSubsService: AppSubscriptionsService,
@@ -127,7 +142,19 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
                     } // filter by name
                     return res.filter(a => a.name.toLocaleLowerCase().includes(typed));
                 }
-            )
+            ),
+            map(apps => {
+                switch (this.sortMode) {
+                    case 'NAME':
+                        return [...apps].sort(compareAppsName)
+                    case 'RATING':
+                        return [...apps].sort(compareAppsRating)
+                    case 'POPULAR':
+                        return [...apps].sort(compareAppsPopularity)
+                    default:
+                        return apps
+                }
+            })
         );
     }
 
@@ -141,6 +168,10 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
 
         this.searchedAppName = '';
         this.searchedTag = tag;
+        this.doSearch();
+    }
+
+    public onSort(): void {
         this.doSearch();
     }
 }
