@@ -355,12 +355,12 @@
     "SUBMIT_BUTTON": "Submit"
   },
   "COMMENTS": {
-    "ADD_COMMENT": "Add comment",
+    "ADD_COMMENT": "Add a comment",
     "ADD_BUTTON": "Add",
-    "NO_COMMENTS_MESSAGE": "No comment added yet",
+    "NO_COMMENTS_MESSAGE": "No comments yet",
     "COMMENTS_LIST": "Comments",
     "REPLY_BUTTON": "Reply",
-    "PLACEHOLDER": "Add some comment here...",
+    "PLACEHOLDER": "Enter your comment here...",
     "COMMENTS_TODAY": "Today at ",
     "COMMENTS_YESTERDAY": "Yesterday at ",
     "REMOVE": "Remove comment",

@@ -355,12 +355,12 @@
     "SUBMIT_BUTTON": "Prześlij"
   },
   "COMMENTS": {
-    "ADD_COMMENT": "Dodaj komentarz",
+    "ADD_COMMENT": "Skomentuj",
     "ADD_BUTTON": "Dodaj",
     "NO_COMMENTS_MESSAGE": "Jeszcze nie ma żadnych komentarzy",
     "COMMENTS_LIST": "Komentarze",
-    "REPLY_BUTTON": "Odpowiedz",
-    "PLACEHOLDER": "Wpisz tutaj komentarz...",
+    "REPLY_BUTTON": "Odpowiedź",
+    "PLACEHOLDER": "Tutaj wpisz swój komentarz...",
     "COMMENTS_TODAY": "Dzisiaj o ",
     "COMMENTS_YESTERDAY": "Wczoraj o ",
     "REMOVE": "Usuń komentarz",
@@ -378,7 +378,7 @@
     "CATEGORY": "Kategoria",
     "RATING": "Oceny",
     "RATING_AVERAGE": "Średnia ocena użytkowników",
-    "RATING_INFO": "Wybierz liczbę gwiazdek aby zagłosować",
+    "RATING_INFO": "Wskaż liczbę gwiazdek aby zagłosować",
     "RATING_BREAKDOWN": "Rozkład ocen",
     "TOOLTIP_MESSAGE_DEPLOY": "You cannot deploy this application, because it is disabled in your domain. Contact your domain admin for further information.",
     "TOOLTIP_MESSAGE_SUBSCRIBE": "You cannot subscribe this application, because it is disabled in your domain. Contact your domain admin for further information.",
@@ -399,28 +399,28 @@
   "INSTALL_MODAL": {
     "HEADER": "Uruchom nową instancję",
     "INSTANCE_NAME": "Nazwa instancji",
-    "INSTANCE_NAME_PATTERN_ERROR": "Nazwa instancji może zawierać tylko znaki a-z, A-Z, 0-9 and -.",
-    "INSTANCE_NAME_LENGTH_ERROR": "Nazwa instancji może mieć długość od 3 do 10 znaków.",
-    "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana.",
+    "INSTANCE_NAME_PATTERN_ERROR": "Nazwa instancji może zawierać tylko znaki a-z, A-Z, 0-9 oraz -",
+    "INSTANCE_NAME_LENGTH_ERROR": "Nazwa instancji może mieć długość od 3 do 10 znaków",
+    "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana",
     "DOMAIN": "Domena",
-    "CLOSE_BUTTON": "Zamknij",
+    "CLOSE_BUTTON": "Anuluj",
     "DEPLOY_BUTTON": "Uruchom",
     "USE_DEFAULT_VERSION": "Użyj domyślnej wersji",
-    "SELECT_VERSION": "Wybierz wersje"
+    "SELECT_VERSION": "Wybierz wersję"
   },
   "ADD_MEMBERS_MODAL": {
-    "HEADER": "Add members",
-    "SELECT_USERS": "Choose users",
-    "FILTER_PLACEHOLDER": "Filter users",
-    "MEMBERS_LIST": "Selected members",
+    "HEADER": "Dodaj użytkowników",
+    "SELECT_USERS": "Wybierz użytkowników",
+    "FILTER_PLACEHOLDER": "Filtruj użytkowników",
+    "MEMBERS_LIST": "Użytkownicy",
     "TABLE": {
-      "USERNAME": "Username",
-      "FIRSTNAME": "First name",
-      "LASTNAME": "Last name",
+      "USERNAME": "Nazwa użytkownika",
+      "FIRSTNAME": "Imię",
+      "LASTNAME": "Nazwisko",
       "EMAIL": "Email"
     },
-    "SUBMIT_BUTTON": "Submit",
-    "HIDE_BUTTON": "Cancel"
+    "SUBMIT_BUTTON": "Zatwierdź",
+    "HIDE_BUTTON": "Anuluj"
   },
   "APP_INSTANCE": {
     "INSTANCE_ACTIONS": "Akcje",
@@ -529,13 +529,13 @@
     "SHELL": "Shell"
   },
   "SHELL": {
-    "CONNECTED_TO" : "Podłączony do",
+    "CONNECTED_TO": "Podłączony do",
     "POD_NAME": "nazwa kontenera:",
-    "RECONNECT_BUTTON": "Reconnect",
-    "DISCONNECT_BUTTON": "Disconnect",
+    "RECONNECT_BUTTON": "Połącz ponownie",
+    "DISCONNECT_BUTTON": "Rozłącz",
     "EXIT_SHELL_MODAL": {
-      "HEADER": "Shell session ended",
-      "BODY": "Your connection was terminated",
+      "HEADER": "Sesja zakończona",
+      "BODY": "Twoje połączenie zostało rozłączone",
       "CONFIRM": "OK"
     }
   },
@@ -547,10 +547,10 @@
   },
   "SEARCH": "Szukaj",
   "COMPLETE_REGISTRATION": {
-    "HEADER": "Wprowadź następujące informacje aby dokończyć proces rejestracji",
+    "HEADER": "Wprowadź następujące dane aby dokończyć proces rejestracji",
     "MODAL": {
       "HEADER": "Rejestracja zakończona",
-      "BODY": "Twoje konto zostało założone w systemie. Proszę zaloguj się ponownie.",
+      "BODY": "Twoje konto zostało założone w systemie. Zaloguj się ponownie.",
       "RETURN_BUTTON": "Powrót do strony logowania"
     }
   },
