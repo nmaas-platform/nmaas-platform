@@ -19,6 +19,28 @@ describe('ContactComponent', () => {
     let component: ContactComponent;
     let fixture: ComponentFixture<ContactComponent>;
 
+    // dummy formio form
+    const frm: any = {
+        'display': 'form',
+        'components': [
+            {
+                'label': 'MESSAGE',
+                'tableView': true,
+                'key': 'textField',
+                'type': 'textfield',
+                'input': true
+            },
+            {
+                'type': 'button',
+                'label': 'Submit',
+                'key': 'submit',
+                'disableOnInvalid': true,
+                'input': true,
+                'tableView': false
+            }
+        ]
+    }
+
     const recaptchaSpy = createSpyObj('ReCaptchaV3Service', ['execute'])
     recaptchaSpy.execute.and.returnValue(of('TOKEN'))
 
@@ -26,7 +48,7 @@ describe('ContactComponent', () => {
     notificationServiceSpy.sendMail.and.returnValue(of({}))
 
     const contactFormServiceSpy = createSpyObj('ContactFormService', ['getForm', 'getAllFormTypesAsMap'])
-    contactFormServiceSpy.getForm.and.returnValue(of({}))
+    contactFormServiceSpy.getForm.and.returnValue(of(frm))
     contactFormServiceSpy.getAllFormTypesAsMap.and.returnValue(of(new Map([
         ['CONTACT', {key: 'CONTACT', access: AccessModifier.ALL, templateName: 'default'}],
         ['ISSUES', {key: 'ISSUES', access: AccessModifier.ONLY_LOGGED_IN, templateName: 'issues'}],
