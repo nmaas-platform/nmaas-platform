@@ -134,7 +134,7 @@
 
     <!-- Undeploy modal-->
     <!-- TODO should be moved to separate component-->
-    <nmaas-modal styleModal="warning">
+    <nmaas-modal styleModal="warning" #undeployModal>
         <div class="nmaas-modal-header">
             <h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
         </div>
@@ -202,20 +202,10 @@
 			|| getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.REMOVED
 			|| getStateAsEnum(appInstanceStatus?.state) > AppInstanceState.CONFIGURATION_AWAITING
 			}">
-        <div class="col-xs-12">
-            <h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
-            <p *ngIf="appInstance !== undefined && configurationTemplate !== undefined && app?.applicationBase.nmaasDocumentationUrl">
-                {{ 'APP_INSTANCE.CONFIGURATION.DOCUMENTATION_INFO' | translate }}
-                <a href="{{app.applicationBase.nmaasDocumentationUrl}}">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
-            </p>
-            <hr>
-            <formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
-                    [form]="configurationTemplate"
-                    [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-                    [refresh]="refreshForm"
-                    (formLoad)="changeForm()"
-                    (submit)="applyConfiguration($event.data)">
-            </formio>
+        <div class="col-xs-12 flex-center">
+            <button role="button" class="btn btn-primary" (click)="applyConfig.show()">
+                {{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}
+            </button>
         </div>
     </div>
 
@@ -256,6 +246,33 @@
                              screenReaderCurrentLabel="{{ 'PAGINATION.SCREEN_READER.CURRENT' | translate }}"></pagination-controls>
     </div>
     <hr>
+
+    <!-- apply config modal -->
+    <nmaas-modal styleModal="info" #applyConfig>
+        <div class="nmaas-modal-header">
+            <h4 style="text-align: center">{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h4>
+        </div>
+        <div class="nmaas-modal-body">
+            <div class="col-xs-12">
+                <p *ngIf="appInstance !== undefined && configurationTemplate !== undefined && app?.applicationBase.nmaasDocumentationUrl">
+                    {{ 'APP_INSTANCE.CONFIGURATION.DOCUMENTATION_INFO' | translate }}
+                    <a href="{{app.applicationBase.nmaasDocumentationUrl}}">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
+                </p>
+                <hr>
+                <formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
+                        [form]="configurationTemplate"
+                        [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+                        [refresh]="refreshForm"
+                        (formLoad)="changeForm()"
+                        (submit)="applyConfiguration($event.data)">
+                </formio>
+            </div>
+        </div>
+        <div class="nmaas-modal-footer">
+            <button type="button" class="btn btn-primary"
+                    (click)="this.applyConfig.hide()">{{'UNDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
+        </div>
+    </nmaas-modal>
 
     <!-- App abort modal -->
     <nmaas-modal-app-abort [appInstanceId]="appInstanceId"></nmaas-modal-app-abort>
