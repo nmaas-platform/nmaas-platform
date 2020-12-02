@@ -224,7 +224,14 @@
     "UNDEPLOYED": "Entfernte Instanzen",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
-    "UNDEPLOYED_VISIBLE": "Show undeployed instances"
+    "UNDEPLOYED_VISIBLE": "Show undeployed instances",
+    "SORT": "Sort",
+    "SORT_MODE": {
+      "NONE": "None",
+      "NAME": "By name",
+      "RATING": "Top rated",
+      "POPULAR": "Most popular"
+    }
   },
   "MONITOR": {
     "TITLE": "Überwachungsservice",
