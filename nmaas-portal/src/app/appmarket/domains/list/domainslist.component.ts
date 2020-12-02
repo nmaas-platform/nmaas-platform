@@ -35,7 +35,7 @@ export class DomainsListComponent implements OnInit {
 
     protected update(): void {
         this.domains = this.getDomainsObservable().pipe(
-            map((domains) => domains.sort(
+            map((domains) => [...domains].sort(
                 (a, b) => {
                     if (a.name.toLowerCase() < b.name.toLowerCase()) {
                         return -1;

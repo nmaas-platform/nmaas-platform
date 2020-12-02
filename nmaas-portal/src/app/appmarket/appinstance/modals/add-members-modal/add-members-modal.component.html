@@ -16,12 +16,12 @@
 
         <div class="col-sm-8">
             <h5>{{'ADD_MEMBERS_MODAL.MEMBERS_LIST' | translate}}</h5>
-            <table class="table table-condensed">
+            <table class="table table-condensed" aria-describedby="Table with potential members">
                 <tr>
-                    <th>{{'ADD_MEMBERS_MODAL.TABLE.USERNAME' | translate}}</th>
-                    <th>{{'ADD_MEMBERS_MODAL.TABLE.FIRSTNAME' | translate}}</th>
-                    <th>{{'ADD_MEMBERS_MODAL.TABLE.LASTNAME' | translate}}</th>
-                    <th>{{'ADD_MEMBERS_MODAL.TABLE.EMAIL' | translate}}</th>
+                    <th scope="col">{{'ADD_MEMBERS_MODAL.TABLE.USERNAME' | translate}}</th>
+                    <th scope="col">{{'ADD_MEMBERS_MODAL.TABLE.FIRSTNAME' | translate}}</th>
+                    <th scope="col">{{'ADD_MEMBERS_MODAL.TABLE.LASTNAME' | translate}}</th>
+                    <th scope="col">{{'ADD_MEMBERS_MODAL.TABLE.EMAIL' | translate}}</th>
                 </tr>
                 <tr *ngFor="let u of members">
                     <td>{{u.username}}</td>

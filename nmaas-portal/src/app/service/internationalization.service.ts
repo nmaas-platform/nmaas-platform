@@ -4,7 +4,6 @@ import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 import {Observable} from 'rxjs';
 import {Language} from '../model/language';
-import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
