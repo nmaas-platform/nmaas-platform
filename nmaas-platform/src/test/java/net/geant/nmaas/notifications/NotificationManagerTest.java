@@ -1,7 +1,6 @@
 package net.geant.nmaas.notifications;
 
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
@@ -10,8 +9,8 @@ import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -29,7 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class NotificationManagerTest {
@@ -38,17 +38,17 @@ public class NotificationManagerTest {
 
     private NotificationService notificationService = mock(NotificationService.class);
 
-    private TemplateService templateService = mock(TemplateService.class);
+    private final TemplateService templateService = mock(TemplateService.class);
 
-    private UserService userService = mock(UserService.class);
+    private final UserService userService = mock(UserService.class);
 
-    private DomainService domainService = mock(DomainService.class);
+    private final DomainService domainService = mock(DomainService.class);
 
-    private ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
-    private FormTypeService formTypeService = mock(FormTypeService.class);
+    private final FormTypeService formTypeService = mock(FormTypeService.class);
 
     private NotificationEventListener notificationEventListener;
 
@@ -94,7 +94,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void notificationTaskShouldSendEmail() throws IOException, TemplateException {
+    public void notificationTaskShouldSendEmail() {
         notificationManager = mock(NotificationManager.class);
         notificationEventListener = new NotificationEventListener(notificationManager);
         MailAttributes ma = new MailAttributes();
@@ -106,21 +106,19 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void notificationTaskShouldNotSendMail() throws IOException, TemplateException {
+    public void notificationTaskShouldNotSendMail() {
         notificationManager = mock(NotificationManager.class);
         notificationEventListener = new NotificationEventListener(notificationManager);
 
         NotificationEvent event = new NotificationEvent(this, null);
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-            notificationEventListener.trigger(event);
-        });
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> notificationEventListener.trigger(event));
 
         assertEquals("Mail attributes cannot be null", ex.getMessage());
 
     }
 
     @Test
-    public void shouldSendBroadcastEmail() throws IOException {
+    public void shouldSendBroadcastEmail() {
 
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.BROADCAST);
@@ -204,9 +202,7 @@ public class NotificationManagerTest {
 
         when(userService.findAllUsersWithAdminRole()).thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).collect(Collectors.toList()));
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-            notificationManager.prepareAndSendMail(ma);
-        });
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> notificationManager.prepareAndSendMail(ma));
         assertEquals("Mail template in language fr cannot be found", ex.getMessage());
     }
 
@@ -263,6 +259,22 @@ public class NotificationManagerTest {
 
         verify(notificationService, times(emails.size())).sendMail(any(String.class), eq("Default"), any(String.class));
 
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenTemplateServiceThrowsException() throws IOException {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.APP_DEPLOYED);
+        ma.setOtherAttributes(new HashMap<String, String>() {{
+            put("text", "text");
+            put("username", "MyUser");
+            put("owner", "ordinary");
+            put("domainName", "domainName");
+        }});
+
+        when(templateService.getHTMLTemplate()).thenThrow(new IOException());
+
+        ProcessingException pe = assertThrows(ProcessingException.class, () -> notificationManager.prepareAndSendMail(ma));
     }
 
     private MailTemplateView getDefaultMailTemplateView() {

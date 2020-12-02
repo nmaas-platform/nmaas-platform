@@ -53,7 +53,7 @@ public class SSHKeyControllerTest {
             this.sut.getAllByUser(absent);
         });
 
-        assertEquals(e.getMessage(), "User not found");
+        assertEquals("User not found", e.getMessage());
     }
 
     @Test

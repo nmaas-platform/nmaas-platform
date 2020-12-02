@@ -19,6 +19,8 @@ public class BasicUserMetricsService extends BaseMetricService {
     private static final String DOMAIN_COUNT_METRIC_NAME = "nmaas_domains_count";
     private static final String DOMAIN_COUNT_METRIC_DESCRIPTION = "Total NMaaS domains";
 
+    private static final String BASE_UNIT_NUMBER = "number";
+
     @Autowired
     private UserRepository userRepository;
 
@@ -29,15 +31,15 @@ public class BasicUserMetricsService extends BaseMetricService {
     public void registerMetric(MeterRegistry registry) {
         Gauge.builder(USER_COUNT_METRIC_NAME, userRepository, users -> (double) users.count())
                 .description(USER_COUNT_METRIC_DESCRIPTION)
-                .baseUnit("number")
+                .baseUnit(BASE_UNIT_NUMBER)
                 .register(registry);
         Gauge.builder(USER_WITHOUT_DOMAIN_COUNT_METRIC_NAME, userRepository, users -> (double) users.countWithoutDomain())
                 .description(USER_WITHOUT_DOMAIN_COUNT_METRIC_DESCRIPTION)
-                .baseUnit("number")
+                .baseUnit(BASE_UNIT_NUMBER)
                 .register(registry);
         Gauge.builder(DOMAIN_COUNT_METRIC_NAME, domainRepository, domains -> (double) domains.count() - 1)
                 .description(DOMAIN_COUNT_METRIC_DESCRIPTION)
-                .baseUnit("number")
+                .baseUnit(BASE_UNIT_NUMBER)
                 .register(registry);
     }
 

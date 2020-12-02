@@ -21,9 +21,9 @@ public class UserView extends UserBase implements Serializable {
 	protected OffsetDateTime lastSuccessfulLoginDate;
 	protected OffsetDateTime firstLoginDate;
 	
-	protected Set<UserRoleView> roles = new HashSet<>();
+	private Set<UserRoleView> roles = new HashSet<>();
 
-	protected Set<SSHKeyView> sshKeys = new HashSet<>();
+	private Set<SSHKeyView> sshKeys = new HashSet<>();
 	
 	protected UserView() {
 		super();
