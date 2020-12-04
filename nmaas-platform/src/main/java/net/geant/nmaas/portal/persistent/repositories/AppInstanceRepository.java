@@ -23,7 +23,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 	@Query("select count(ai.id) FROM AppInstance ai JOIN AppDeployment ad on ad.deploymentId = ai.internalId where ad.state = 'APPLICATION_DEPLOYMENT_VERIFIED'")
 	int countAllRunning();
 
-	@Query("select count(ai.id) FROM AppInstance ai JOIN AppDeployment ad on ad.deploymentId = ai.internalId where ad.state = 'APPLICATION_DEPLOYMENT_VERIFIED' and ai.name = ?1")
+	@Query("select count(ai.id) FROM AppInstance ai JOIN AppDeployment ad on ad.deploymentId = ai.internalId where ad.state = 'APPLICATION_DEPLOYMENT_VERIFIED' and ai.application.name = ?1")
 	int countRunningByName(String name);
 
 }
