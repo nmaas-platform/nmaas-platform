@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 container-bottom-right">
-                    <h3>{{ translateState(appInstanceStatus?.state) }}</h3>
+                    <h3><i>{{ translateState(appInstanceStatus?.state) }}</i></h3>
                 </div>
             </div>
             <hr>
@@ -175,19 +175,20 @@
         </div>
     </nmaas-modal>
 
-    <div id="app-progress-info" class="col-xs-12">
+    <!-- Installation step description text -->
+    <div id="app-progress-info" style="font-size: 16px;" class="col-xs-12">
         <div id="app-progress-info-sub alert"
              [ngClass]="{
 				 'alert-danger': getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE || getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.UNKNOWN,
 				 'other-states': getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN }"
              class="col-xs-offset-1 col-xs-10">
-				<span *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
+                <span *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
                     <span class="glyphicon glyphicon-exclamation-sign info-icon" aria-hidden="true"></span>
 					{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
 				</span>
-            <span *ngIf="getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN">
-                <span class="glyphicon glyphicon-info-sign info-icon" aria-hidden="true"></span>
-					{{  'APP_INSTANCE.USER_FRIENDLY.' + getStateAsString(appInstanceStatus?.state) | translate }}
+                <span *ngIf="getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN">
+                    <span class="glyphicon glyphicon-info-sign info-icon" aria-hidden="true"></span>
+                    {{ 'APP_INSTANCE.USER_FRIENDLY.' + getStateAsString(appInstanceStatus?.state) | translate }}
 				</span>
         </div>
     </div>
