@@ -35,14 +35,19 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
     @Override
     public List<ApplicationStatePerDomain> generateListOfDefaultApplicationStatesPerDomain() {
 
-        List<ApplicationStatePerDomain> list = this.applicationBaseRepository.findAll().stream().map(ApplicationStatePerDomain::new).collect(Collectors.toList());
         /*
          * here it is the place to set default state properties, for example default storage limit size
          * NOTE: in this case it's impossible to set `right` value for storage size limit, since we cannot assure that
          * Application object with default properties is available for this Application Base
          */
-        list = list.stream().peek(a -> a.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT)).collect(Collectors.toList());
-        return list;
+
+        return this.applicationBaseRepository.findAll().stream()
+                .map(appBase -> {
+                    ApplicationStatePerDomain appState = new ApplicationStatePerDomain(appBase);
+                    appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);
+                    return appState;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -55,7 +60,9 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
          * defaults values better not be higher than default limits
          */
         appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);
-        return domainRepository.saveAll(domainRepository.findAll().stream().peek(domain -> domain.addApplicationState(appState)).collect(Collectors.toList()));
+        List<Domain> allDomains = domainRepository.findAll();
+        allDomains.forEach(domain -> domain.addApplicationState(appState));
+        return domainRepository.saveAll(allDomains);
     }
 
     @Override

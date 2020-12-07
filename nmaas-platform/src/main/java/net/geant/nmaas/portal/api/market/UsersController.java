@@ -121,13 +121,7 @@ public class UsersController {
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     	/* updates user view with first and last login date */
 		return userService.findAll(pageable).getContent().stream()
-				.map(user -> modelMapper.map(user, UserView.class))
-				.peek(uv -> {
-					if(userLoginDateMap.containsKey(uv.getId())) {
-						uv.setLastSuccessfulLoginDate(userLoginDateMap.get(uv.getId()).getMaxLoginDate());
-						uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
-					}
-				})
+				.map(user -> mapUser(user, userLoginDateMap))
 				.collect(Collectors.toList());
 	}
 	
@@ -376,13 +370,7 @@ public class UsersController {
 				.map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		return domainService.getMembers(domainId).stream()
-				.map(domain -> modelMapper.map(domain, UserView.class))
-				.peek(uv -> {
-					if(userLoginDateMap.containsKey(uv.getId())) {
-						uv.setLastSuccessfulLoginDate(userLoginDateMap.get(uv.getId()).getMaxLoginDate());
-						uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
-					}
-				})
+				.map(member -> mapUser(member, userLoginDateMap))
 				.collect(Collectors.toList());
 	}
 	
@@ -632,6 +620,15 @@ public class UsersController {
 				.addressees(Collections.singletonList(modelMapper.map(user, UserView.class)))
 				.build();
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+	}
+
+	private UserView mapUser(User user, final Map<Long, UserLoginDate> userLoginDateMap) {
+		UserView uv = modelMapper.map(user, UserView.class);
+		if(userLoginDateMap.containsKey(uv.getId())) {
+			uv.setLastSuccessfulLoginDate(userLoginDateMap.get(uv.getId()).getMaxLoginDate());
+			uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
+		}
+		return uv;
 	}
 
 }
