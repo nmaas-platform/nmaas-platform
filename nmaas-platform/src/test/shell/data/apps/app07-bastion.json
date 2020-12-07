@@ -143,7 +143,10 @@
                 {
                     "type": "INTERNAL",
                     "name": "SSH",
-                    "tag": "bastion"
+                    "tag": "bastion",
+                    "deployParameters": {
+                        "K8S_SERVICE_PORT": "22"
+                    }
                 }
             ]
         },

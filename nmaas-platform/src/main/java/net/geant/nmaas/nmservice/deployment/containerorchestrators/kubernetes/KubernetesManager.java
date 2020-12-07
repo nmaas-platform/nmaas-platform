@@ -289,16 +289,15 @@ public class KubernetesManager implements ContainerOrchestrator {
     private void retrieveOrUpdateInternalServiceIpAddress(KubernetesNmServiceInfo service) {
         try {
             Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
-                    .peek(m -> {
+                    .map(m -> {
                         if (m.isOfType(INTERNAL) && StringUtils.isEmpty(m.getUrl())) {
-                            m.setUrl(getUserAtIpAddressUrl(
-                                    janitorService.retrieveServiceIp(
-                                            buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
-                                            service.getDomain()
-                                    ),
-                                    m.getProtocol()
-                            ));
+                            String lbServiceIp = janitorService.retrieveServiceIp(
+                                    buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
+                                    service.getDomain());
+                            String ipWithPortString = getIpAddressWithPort(lbServiceIp, m.getDeployParameters());
+                            m.setUrl(getUserAtIpAddressUrl(ipWithPortString, m.getProtocol()));
                         }
+                        return m;
                     })
                     .collect(Collectors.toSet());
             repositoryManager.updateKServiceAccessMethods(accessMethods);
@@ -311,6 +310,14 @@ public class KubernetesManager implements ContainerOrchestrator {
         return deployParameters != null && deployParameters.get(HelmChartIngressVariable.K8S_SERVICE_SUFFIX) != null ?
                 Identifier.newInstance(deploymentId + "-" + deployParameters.get(HelmChartIngressVariable.K8S_SERVICE_SUFFIX)) :
                 deploymentId;
+    }
+
+    private String getIpAddressWithPort(String ip, Map<HelmChartIngressVariable, String> deployParameters) {
+        if (deployParameters != null && deployParameters.containsKey(HelmChartIngressVariable.K8S_SERVICE_PORT)) {
+            return ip + ":" + deployParameters.get(HelmChartIngressVariable.K8S_SERVICE_PORT);
+        } else {
+            return ip;
+        }
     }
 
     private String getUserAtIpAddressUrl(String ipAddress, String protocol) {

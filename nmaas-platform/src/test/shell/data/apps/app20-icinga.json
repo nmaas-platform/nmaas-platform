@@ -107,6 +107,28 @@
                                                 "inputFormat": "plain"
                                             }
                                         ]
+                                    },
+                                    {
+                                        "label": "Configuration",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "configuration",
+                                        "components": [
+                                            {
+                                                "label": "Email address for sending email alerts",
+                                                "type": "email",
+                                                "input": true,
+                                                "key": "notificationsEmail",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
                                     }
                                 ]
                             }
@@ -163,7 +185,8 @@
                     "name": "API",
                     "tag": "api",
                     "deployParameters": {
-                        "K8S_SERVICE_SUFFIX": "api"
+                        "K8S_SERVICE_SUFFIX": "api",
+                        "K8S_SERVICE_PORT": "5665"
                     }
                 }
             ]
@@ -214,7 +237,7 @@
                 },
                 {
                     "configFileName": "users.conf",
-                    "configFileTemplateContent": "/**\n * The example user 'icingaadmin' and the example\n * group 'icingaadmins'.\n */\n\nobject User \"icingaadmin\" {\n  import \"generic-user\"\n\n  display_name = \"Icinga 2 Admin\"\n  groups = [ \"icingaadmins\" ]\n\n  email = \"{{ .Values.env.NOTIFICATIONS_EMAIL }}\"\n}\n\nobject UserGroup \"icingaadmins\" {\n  display_name = \"Icinga 2 Admin Group\"\n}"
+                    "configFileTemplateContent": "/**\n * The example user 'icingaadmin' and the example\n * group 'icingaadmins'.\n */\n\nobject User \"icingaadmin\" {\n  import \"generic-user\"\n\n  display_name = \"Icinga 2 Admin\"\n  groups = [ \"icingaadmins\" ]\n\n  email = \"${notificationsEmail}\"\n}\n\nobject UserGroup \"icingaadmins\" {\n  display_name = \"Icinga 2 Admin Group\"\n}"
                 }
             ]
         }
