@@ -156,7 +156,10 @@
                 {
                     "type": "INTERNAL",
                     "name": "SSH",
-                    "tag": "reprepro"
+                    "tag": "reprepro",
+                    "deployParameters": {
+                        "K8S_SERVICE_PORT": "22"
+                    }
                 }
             ]
         },

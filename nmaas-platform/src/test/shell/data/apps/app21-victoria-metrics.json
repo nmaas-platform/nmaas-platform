@@ -299,10 +299,29 @@
                 },
                 {
                     "type": "INTERNAL",
-                    "name": "DATA",
-                    "tag": "data",
+                    "name": "OpenTSDB",
+                    "tag": "opentsdb",
                     "deployParameters": {
-                        "K8S_SERVICE_SUFFIX": "nmaas-victoria-server"
+                        "K8S_SERVICE_SUFFIX": "nmaas-victoria-server",
+                        "K8S_SERVICE_PORT": "4242"
+                    }
+                },
+                {
+                    "type": "INTERNAL",
+                    "name": "Graphite",
+                    "tag": "graphite",
+                    "deployParameters": {
+                        "K8S_SERVICE_SUFFIX": "nmaas-victoria-server",
+                        "K8S_SERVICE_PORT": "8080"
+                    }
+                },
+                {
+                    "type": "INTERNAL",
+                    "name": "Victoria",
+                    "tag": "victoria",
+                    "deployParameters": {
+                        "K8S_SERVICE_SUFFIX": "nmaas-victoria-server",
+                        "K8S_SERVICE_PORT": "8428"
                     }
                 }
             ]
