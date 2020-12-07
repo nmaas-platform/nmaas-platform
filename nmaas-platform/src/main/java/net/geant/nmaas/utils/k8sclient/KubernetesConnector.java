@@ -34,9 +34,9 @@ public class KubernetesConnector implements AsyncConnector {
     protected String podName;
     protected String namespace;
 
-    protected Config config;
-    protected KubernetesClient client;
-    protected ExecWatch watch;
+    protected transient Config config;
+    protected transient KubernetesClient client;
+    protected transient ExecWatch watch;
 
     protected KubernetesConnector(){}
 
