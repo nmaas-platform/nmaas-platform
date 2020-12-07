@@ -5,10 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
 import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,16 +15,15 @@ import java.util.concurrent.Executors;
  */
 @Log4j2
 @NoArgsConstructor
-public class SshConnectionShellSessionObservable extends GenericShellSessionObservable {
+public class SshConnectionShellSessionObservable extends GenericShellSessionObservable implements Serializable {
 
     private String sessionId;
     private AsyncConnector sshConnector;
-    private ExecutorService resultReader;
-    private ExecutorService errorReader;
+    private transient ExecutorService resultReader;
+    private transient ExecutorService errorReader;
 
     /**
      * Purpose of this class is to read results from shell input stream
-     *
      */
     private static class ShellResultReader {
 
@@ -40,6 +36,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
         /**
          * Reads single message from the shell, it can be an entire line of result,
          * or part of line till command prompt is reached; e.g. `host@localhost:~/ $`
+         *
          * @return single message to be passed
          * @throws IOException exception
          */
@@ -49,24 +46,24 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
             int ch = reader.read();
             while (ch != -1) {
                 // skip endline characters
-                if((char) ch == '\n') {
+                if ((char) ch == '\n') {
                     ch = reader.read(); // assure progress
                     continue;
                 }
-                if((char) ch == '\r') { // carriage return is replaced with newline token
+                if ((char) ch == '\r') { // carriage return is replaced with newline token
                     result.append("<#>NEWLINE<#>"); // newline control token
                     break; // newline is the end of the message
                 }
                 result.append((char) ch);
-                if(result.toString().endsWith("$ ")) { // break after reaching command prompt
+                if (result.toString().endsWith("$ ")) { // break after reaching command prompt
                     break; // reaching prompt is the end of the message
                 }
-                if(result.toString().endsWith("# ")) { // break after reaching command prompt
+                if (result.toString().endsWith("# ")) { // break after reaching command prompt
                     break; // reaching prompt is the end of the message
                 }
                 ch = reader.read(); // finally read next character
             }
-            if(ch == -1) {
+            if (ch == -1) {
                 return null;
             }
 
@@ -76,6 +73,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
     /**
      * Creates observable, sets up SSH connection
+     *
      * @param sessionId
      * @param connector
      */
@@ -90,8 +88,9 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
          */
         resultReader = Executors.newSingleThreadExecutor();
         resultReader.execute(() -> {
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()));
+            try (
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getInputStream()))
+            ) {
                 ShellResultReader shellResultReader = new ShellResultReader(reader);
                 String part = shellResultReader.readWord();
                 while (part != null) {
@@ -109,8 +108,9 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
 
         errorReader = Executors.newSingleThreadExecutor();
         errorReader.execute(() -> {
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getErrorStream()));
+            try (
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(this.sshConnector.getErrorStream()))
+            ) {
                 String line = reader.readLine();
                 while (line != null) {
                     log.debug("Error:\t" + line);
@@ -132,6 +132,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
      * However command is executed in single session scope (one command <=> one session)
      * Execution results are automatically sent to observers
      * This method has only debug purpose
+     *
      * @param commandRequest command request
      */
     public void executeCommand(ShellCommandRequest commandRequest) {
@@ -140,7 +141,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
         String result = this.sshConnector.executeSingleCommand(commandRequest.getCommand());
 
         log.info(sessionId + "\tRESULT:\t" + result);
-        for(String r: result.split("\n")) {
+        for (String r : result.split("\n")) {
             this.sendMessage(r);
         }
     }
@@ -148,6 +149,7 @@ public class SshConnectionShellSessionObservable extends GenericShellSessionObse
     /**
      * Executes single command in asynchronous manner
      * Results of the command are read from input stream by executors and submitted to observers
+     *
      * @param commandRequest command request
      */
     public void executeCommandAsync(ShellCommandRequest commandRequest) {

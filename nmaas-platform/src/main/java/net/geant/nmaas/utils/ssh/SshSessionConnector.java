@@ -28,9 +28,9 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public class SshSessionConnector implements AsyncConnector {
 
-	private SSHClient client;
-	private Session session;
-	private Session.Shell shell;
+	private transient SSHClient client;
+	private transient Session session;
+	private transient Session.Shell shell;
 
 	/**
 	 * Creates SSH connection using public and private keys

@@ -56,6 +56,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private NmServiceConfigFileRepository configurations;
     private GitLabManager gitLabManager;
 
+    private static final String LOG_PREFIX = "GITLAB: ";
+
     public GitLabConfigHandler(KubernetesRepositoryManager repositoryManager, NmServiceConfigFileRepository configurations, GitLabManager gitLabManager) {
         this.repositoryManager = repositoryManager;
         this.configurations = configurations;
@@ -150,7 +152,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
                             () -> new GitLabNotFoundException(String.format("User [%s] not found with gitlab", username))
                     ).getId();
         } catch (GitLabNotFoundException e) {
-            throw new FileTransferException("GITLAB: " + e.getMessage());
+            throw new FileTransferException(LOG_PREFIX + e.getMessage());
         }
     }
 
@@ -166,7 +168,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
                 return groupId;
             }
         } catch (GitLabApiException e) {
-            throw new FileTransferException("GITLAB: " + e.getMessage());
+            throw new FileTransferException(LOG_PREFIX + e.getMessage());
         }
     }
 
@@ -174,7 +176,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             return gitLabManager.projects().createProject(groupId, projectName(deploymentId)).getId();
         } catch (GitLabApiException e) {
-            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
+            throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());
         }
     }
 
@@ -184,7 +186,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
             return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabSshRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
-            throw new FileTransferException("GITLAB: " + e.getMessage());
+            throw new FileTransferException(LOG_PREFIX + e.getMessage());
         }
     }
 
@@ -204,7 +206,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             gitLabManager.projects().addMember(gitLabProjectId, gitLabUserId, fullAccessCode());
         } catch (GitLabApiException e) {
-            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
+            throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());
         }
     }
 
@@ -219,7 +221,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             gitLabManager.projects().removeMember(gitLabProjectId, gitLabUserId);
         } catch (GitLabApiException e) {
-            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
+            throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());
         }
     }
 
@@ -238,7 +240,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             log.info(String.format("completeWebhookUrl: %s", completeWebhookUrl));
             gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
-            throw new FileTransferException("GITLAB: " + e.getMessage() + " " + e.getReason());
+            throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());
         }
     }
 
