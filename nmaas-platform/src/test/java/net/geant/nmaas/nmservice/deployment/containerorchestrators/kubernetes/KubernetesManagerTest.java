@@ -321,7 +321,7 @@ public class KubernetesManagerTest {
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service-with-port")
                             && m.getProtocol().equals("SSH")
-                            && m.getUrl().equals("netops@192.168.100.1:22")));
+                            && m.getUrl().equals("netops@192.168.100.1 (port: 22)")));
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("data-service")

@@ -1,12 +1,10 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.Arrays;
-import java.util.Collections;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
-import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -24,6 +22,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -406,7 +405,10 @@ public class UserServiceImplTest {
         List<UserRole> userRoles = new ArrayList<>();
 
         Domain domain = new Domain((long) 1, "test", "test");
-        User user = User.builder().firstname("test").lastname("test").email("test1@email.com").build();
+        User user = new User("test");
+        user.setFirstname("test");
+        user.setLastname("test");
+        user.setEmail("test1@email.com");
         UserRole userRole = new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN);
         userRoles.add(userRole);
 

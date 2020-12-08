@@ -2,9 +2,6 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-
-import java.util.*;
-
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -19,24 +16,29 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,8 +61,6 @@ public class DomainServiceTest {
     DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
 
     DomainService domainService;
-
-    ApplicationBaseRepository applicationBaseRepository = mock(ApplicationBaseRepository.class);
 
     ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
 
@@ -355,12 +355,11 @@ public class DomainServiceTest {
     public void  shouldFindUsersWithDomainAdminRole(){
         Domain domain = new Domain(1L, "testdom", "testdom");
 
-        User user1 = User.builder().roles(ImmutableList.of(
-                new UserRole(User.builder().id(1L).build(), domain, Role.ROLE_DOMAIN_ADMIN),
-                new UserRole(User.builder().id(2L).build(), domain, Role.ROLE_OPERATOR))).build();
+        User user1 = new User("user1");
+        user1.setRoles(ImmutableList.of(new UserRole(user1, domain, Role.ROLE_DOMAIN_ADMIN), new UserRole(user1, domain, Role.ROLE_OPERATOR)));
 
-        User user2 = User.builder().roles(ImmutableList.of(
-                new UserRole(User.builder().id(3L).build(), domain, Role.ROLE_DOMAIN_ADMIN))).build();
+        User user2 = new User("user2");
+        user2.setRoles(ImmutableList.of(new UserRole(user2, domain, Role.ROLE_DOMAIN_ADMIN)));
 
         List<User> users = ImmutableList.of(user1, user2);
         when(userRoleRepo.findDomainMembers(anyString())).thenReturn(users);

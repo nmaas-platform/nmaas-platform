@@ -35,7 +35,8 @@ public class DefaultAppDeploymentRepositoryManagerTest {
 
     @Test
     public void shouldReturnAppDeploymentOwnerWithDefaultNameAndNoKeys() {
-        User user1 = User.builder().username("user1").email("user1@test.eu").build();
+        User user1 = new User("user1");
+        user1.setEmail("user1@test.eu");
         when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user1));
         when(sshKeyRepository.findAllByOwner(user1)).thenReturn(Lists.emptyList());
         AppDeploymentOwner appDeploymentOwner = manager.loadOwner(deploymentId);
@@ -47,7 +48,10 @@ public class DefaultAppDeploymentRepositoryManagerTest {
 
     @Test
     public void shouldReturnAppDeploymentOwnerWithProperNameAndAKey() {
-        User user1 = User.builder().username("user1").email("user1@test.eu").firstname("firstname1").lastname("lastname1").build();
+        User user1 = new User("user1");
+        user1.setEmail("user1@test.eu");
+        user1.setFirstname("firstname1");
+        user1.setLastname("lastname1");
         when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user1));
         when(sshKeyRepository.findAllByOwner(user1)).thenReturn(Lists.newArrayList(new SSHKeyEntity(user1, "key1", "keycontent")));
         AppDeploymentOwner appDeploymentOwner = manager.loadOwner(deploymentId);

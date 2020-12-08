@@ -314,7 +314,7 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     private String getIpAddressWithPort(String ip, Map<HelmChartIngressVariable, String> deployParameters) {
         if (deployParameters != null && deployParameters.containsKey(HelmChartIngressVariable.K8S_SERVICE_PORT)) {
-            return ip + ":" + deployParameters.get(HelmChartIngressVariable.K8S_SERVICE_PORT);
+            return ip + " (port: " + deployParameters.get(HelmChartIngressVariable.K8S_SERVICE_PORT) + ")";
         } else {
             return ip;
         }

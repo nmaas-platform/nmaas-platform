@@ -23,7 +23,6 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @Audited
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -57,7 +56,6 @@ public class User implements Serializable {
 	private String selectedLanguage;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
-//	@Builder.Default
 	private List<UserRole> roles = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "owner")

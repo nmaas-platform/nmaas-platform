@@ -305,7 +305,9 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldGetMyDomains() throws Exception {
-        when(userService.findByUsername(any())).thenReturn(Optional.of(User.builder().id(1L).build()));
+        User user = new User("testUser");
+        user.setId(1L);
+        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
         when(domainService.getUserDomains(1L)).thenReturn(Sets.newSet(getDefaultDomain(), getGlobalDomain()));
         MvcResult result = mvc.perform(get("/api/domains/my")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))

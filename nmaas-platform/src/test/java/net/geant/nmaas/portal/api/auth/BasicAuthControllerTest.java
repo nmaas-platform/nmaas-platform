@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
@@ -79,7 +78,9 @@ public class BasicAuthControllerTest {
 
     @Test
     public void shouldNotChangeUserRoles() {
-        User user = User.builder().roles(new ArrayList<>()).privacyPolicyAccepted(true).termsOfUseAccepted(true).build();
+        User user = new User("testUser");
+        user.setPrivacyPolicyAccepted(true);
+        user.setTermsOfUseAccepted(true);
         basicAuthController.checkUserApprovals(user);
         assertTrue(user.getRoles().stream().map(UserRole::getRole).noneMatch(r -> r.equals(Role.ROLE_NOT_ACCEPTED)));
     }
@@ -87,7 +88,9 @@ public class BasicAuthControllerTest {
     @Test
     public void shouldAddIncompleteRoleToUser() {
         when(domains.getGlobalDomain()).thenReturn(Optional.of(new Domain("name", "codename")));
-        User user = User.builder().roles(new ArrayList<>()).username("testUser").privacyPolicyAccepted(false).termsOfUseAccepted(true).build();
+        User user = new User("testUser");
+        user.setPrivacyPolicyAccepted(false);
+        user.setTermsOfUseAccepted(true);
         basicAuthController.checkUserApprovals(user);
         assertTrue(user.getRoles().stream().map(UserRole::getRole).anyMatch(r -> r.equals(Role.ROLE_NOT_ACCEPTED)));
     }
