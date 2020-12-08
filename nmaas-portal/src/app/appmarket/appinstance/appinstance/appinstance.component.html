@@ -251,7 +251,7 @@
             <div class="col-xs-12">
                 <p *ngIf="appInstance !== undefined && configurationTemplate !== undefined && app?.applicationBase.nmaasDocumentationUrl">
                     {{ 'APP_INSTANCE.CONFIGURATION.DOCUMENTATION_INFO' | translate }}
-                    <a href="{{app.applicationBase.nmaasDocumentationUrl}}">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
+                    <a href="{{app.applicationBase.nmaasDocumentationUrl}}" target="_blank">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
                 </p>
                 <hr>
                 <formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
