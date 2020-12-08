@@ -5,7 +5,7 @@ import {ModalComponent} from '../modal';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {ReCaptchaV3Service} from 'ng-recaptcha';
 import {NotificationService} from '../../service/notification.service';
-import {of} from 'rxjs';
+import {of, ReplaySubject} from 'rxjs';
 import {FormioModule} from 'angular-formio';
 import {ContactFormService} from '../../service/contact-form.service';
 import {EventEmitter} from '@angular/core';
@@ -14,6 +14,31 @@ import {AuthService} from '../../auth/auth.service';
 import {AccessModifier} from '../../model/contact-form-type';
 import createSpyObj = jasmine.createSpyObj;
 import {InternationalizationService} from '../../service/internationalization.service';
+import {ActivatedRoute, convertToParamMap, ParamMap, Params} from '@angular/router';
+
+/**
+ * stub for activated route
+ * should be instantiated
+ */
+class ActivatedRouteStub {
+    // Use a ReplaySubject to share previous values with subscribers
+    // and pump new values into the `paramMap` observable
+    private subject = new ReplaySubject<ParamMap>();
+    snapshot = {};
+    /** The mock paramMap observable */
+    readonly paramMap = this.subject.asObservable();
+    readonly queryParamMap = this.subject.asObservable();
+
+    constructor(initialParams?: Params) {
+        this.setParamMap(initialParams);
+    }
+
+    /** Set the paramMap observables's next value */
+    setParamMap(params?: Params) {
+        this.subject.next(convertToParamMap(params));
+    }
+}
+
 
 describe('ContactComponent', () => {
     let component: ContactComponent;
@@ -63,6 +88,8 @@ describe('ContactComponent', () => {
     langServiceSpy.getEnabledLanguages.and.returnValue(of(['en', 'fr', 'ge', 'pl']))
     langServiceSpy.getLanguageContent.and.returnValue(of({CONTACT_FORM: {FORMIO: {MESSAGE: 'Message'}}}))
 
+    const activatedRoute = new ActivatedRouteStub()
+
     beforeEach(async () => {
 
         await TestBed.configureTestingModule({
@@ -84,6 +111,7 @@ describe('ContactComponent', () => {
                 {provide: ContactFormService, useValue: contactFormServiceSpy},
                 {provide: AuthService, useValue: authServiceSpy},
                 {provide: InternationalizationService, useValue: langServiceSpy},
+                {provide: ActivatedRoute, useValue: activatedRoute}
             ]
         }).compileComponents();
     });
