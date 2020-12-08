@@ -4,6 +4,7 @@ import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.projections.AppDeploymentCount;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -11,10 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 public class AppDeploymentRepositoryTest {
@@ -83,6 +87,24 @@ public class AppDeploymentRepositoryTest {
         String domain_name = repository.getDomainNameByDeploymentId(storedAppDeployment.getDeploymentId()).orElse(null);
 
         assertThat(domain_name, equalTo(DOMAIN));
+    }
+
+    @Test
+    public void shouldGetAppDeploymentCountByAppName() {
+        AppDeployment appDeployment = new AppDeployment();
+        appDeployment.setDeploymentId(deploymentId1);
+        appDeployment.setApplicationId(applicationId);
+        appDeployment.setDomain(DOMAIN_CODENAME);
+        appDeployment.setDeploymentName(DEPLOYMENT_NAME_1);
+        appDeployment.setAppName("Grafana");
+        appDeployment.setState(AppDeploymentState.APPLICATION_DEPLOYED);
+        AppDeployment storedAppDeployment = repository.save(appDeployment);
+
+        List<AppDeploymentCount> result = repository.countAllRunningByAppName();
+        assertEquals(1, result.size());
+        assertEquals(1, result.get(0).getCount());
+        assertEquals("Grafana", result.get(0).getApplicationName());
+
     }
 
 }

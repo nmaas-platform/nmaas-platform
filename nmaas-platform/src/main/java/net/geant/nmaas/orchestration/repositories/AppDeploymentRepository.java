@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration.repositories;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.projections.AppDeploymentCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,7 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
 
     @Query("select d.name FROM AppDeployment a join Domain d on a.domain = d.codename where a.deploymentId = :deploymentId")
     Optional<String> getDomainNameByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
+    @Query("SELECT d.appName AS applicationName, COUNT(d.appName) AS count FROM AppDeployment AS d WHERE d.state = 'APPLICATION_DEPLOYED' GROUP BY d.appName")
+    List<AppDeploymentCount> countAllRunningByAppName();
 }
