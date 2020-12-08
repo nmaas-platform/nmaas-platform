@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface AppDeploymentRepositoryManager {
@@ -37,5 +38,7 @@ public interface AppDeploymentRepositoryManager {
     void updateErrorMessage(Identifier deploymentId, String errorMessage);
 
     String loadErrorMessage(Identifier deploymentId);
+
+    Map<String, Long> getDeploymentStatistics();
 
 }

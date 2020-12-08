@@ -393,6 +393,15 @@ public class AppInstanceController extends AppBaseController {
         });
     }
 
+    /**
+     * provides deployment statistics/current number of applications of each type
+     * @return result map
+     */
+    @GetMapping("/statistics/deployment")
+    public Map<String, Long> deploymentStatistics() {
+        return this.appDeploymentRepositoryManager.getDeploymentStatistics();
+    }
+
     private AppInstanceStatus getAppInstanceState(AppInstance appInstance) {
         if (appInstance == null) {
             throw new MissingElementException("App instance is null");
