@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +14,10 @@ import java.util.Map;
  * PoC for command execution, does echo
  */
 @Log4j2
-public class EchoShellSessionObservable extends GenericShellSessionObservable {
+public class EchoShellSessionObservable extends GenericShellSessionObservable implements Serializable {
 
     private final String sessionId;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final transient ObjectMapper objectMapper = new ObjectMapper();
 
     public EchoShellSessionObservable(String sessionId) {
         this.sessionId = sessionId;

@@ -11,6 +11,7 @@ import {forkJoin, Observable, of, zip} from 'rxjs';
 import {AuthService} from '../../auth/auth.service';
 import {InternationalizationService} from '../../service/internationalization.service';
 import {TranslateService} from '@ngx-translate/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
     selector: 'app-contact',
@@ -43,7 +44,8 @@ export class ContactComponent implements OnInit {
                 private fb: FormBuilder,
                 private authService: AuthService,
                 private langService: InternationalizationService,
-                private translateService: TranslateService) {
+                private translateService: TranslateService,
+                private activatedRoute: ActivatedRoute) {
         this.selectForm = this.fb.group({
             formKey: [this.DEFAULT_FORM_KEY]
         })
@@ -51,27 +53,37 @@ export class ContactComponent implements OnInit {
 
     ngOnInit(): void {
         this.modal.setModalType('info');
-        // download types map, set default form values
-        this.contactFormProvider.getAllFormTypesAsMap().pipe(
-            tap(typesMap => {
-                this.formTypesMap = typesMap;
-                this.formType = this.formTypesMap.get(this.DEFAULT_FORM_KEY)
-            }),
-            switchMap(typesMap => this.contactFormProvider.getForm(typesMap.get(this.DEFAULT_FORM_KEY).templateName))
+
+        const $queryType = this.activatedRoute.queryParamMap.pipe(
+            map(params => params.get('type')),
+            tap(type => console.log('Query type:', type)),
+            map(type => type ? type.toUpperCase() : this.DEFAULT_FORM_KEY) // query param null check
+        );
+
+        const $typeMap = this.contactFormProvider.getAllFormTypesAsMap().pipe(
+            tap(typeMap => this.formTypesMap = typeMap)
+        );
+
+        // get selected form values
+        zip($queryType, $typeMap).pipe(
+            // if given type does not exist, fall back to default
+            map(([type, typesMap]) => typesMap.get(typesMap.has(type) ? type : this.DEFAULT_FORM_KEY)),
+            // set selected form type, trigger form value changed
+            tap(formType => this.selectForm.get('formKey').setValue(formType.key)),
         ).subscribe(
-            form => this.currentFormioTemplate = form
+            formType => this.formType = formType
         );
 
         // subscribe to form changes
         this.selectForm.valueChanges.pipe(
-            tap(result => console.log(result)),
+            tap(result => console.log('VALUE CHANGES:', result)),
             map(result => result.formKey), // retrieve form key
             map(formTypeKey => this.formTypesMap.get(formTypeKey)), // retrieve related formType object
             tap(formType => this.formType = formType), // set most recent formType
             map(formType => formType.templateName), // retrieve template name
             switchMap(formTemplateName => this.contactFormProvider.getForm(formTemplateName)) // retrieve form value
         ).subscribe(
-            form => this.currentFormioTemplate = form
+            frm => this.currentFormioTemplate = frm
         );
 
         this.translateService.onLangChange.pipe(
@@ -85,13 +97,13 @@ export class ContactComponent implements OnInit {
             switchMap((arg: any) => zip(of(arg.langs), forkJoin(arg.obs))),
             tap(value => console.log(value)),
             // parse result to final form {<langKey>: <formioObj>}
-            map(([langs, contents]) => {
+            map(([languages, contents]) => {
                 const value = {}
                 // traditional
-                // langs and contents are arrays, expected to have the same length
+                // languages and contents are arrays, expected to have the same length
                 // TODO find more civilised option
-                for (let i = 0; i < langs.length; i++) {
-                    value[langs[i]] = contents[i]['CONTACT_FORM']['FORMIO']
+                for (let i = 0; i < languages.length; i++) {
+                    value[languages[i]] = contents[i]['CONTACT_FORM']['FORMIO']
                 }
                 return value;
             }),
