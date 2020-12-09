@@ -127,6 +127,10 @@ export class AppInstanceService extends GenericDataService {
     return this.http.post<void>(this.getUrl() + appInstanceId + '/members', members)
   }
 
+  public getStatistics(): Observable<any> {
+    return this.http.get(this.getUrl() + 'statistics')
+  }
+
 }
 
 export class CustomerSearchCriteria {

@@ -397,7 +397,7 @@ public class AppInstanceController extends AppBaseController {
      * provides deployment statistics/current number of applications of each type
      * @return result map
      */
-    @GetMapping("/statistics/deployment")
+    @GetMapping("/statistics")
     public Map<String, Long> deploymentStatistics() {
         return this.appDeploymentRepositoryManager.getDeploymentStatistics();
     }
