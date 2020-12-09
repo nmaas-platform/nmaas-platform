@@ -97,7 +97,7 @@ public class AppDeploymentRepositoryTest {
         appDeployment.setDomain(DOMAIN_CODENAME);
         appDeployment.setDeploymentName(DEPLOYMENT_NAME_1);
         appDeployment.setAppName("Grafana");
-        appDeployment.setState(AppDeploymentState.APPLICATION_DEPLOYED);
+        appDeployment.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         AppDeployment storedAppDeployment = repository.save(appDeployment);
 
         List<AppDeploymentCount> result = repository.countAllRunningByAppName();
