@@ -1,5 +1,5 @@
 import {AppSubscription} from '../../model';
-import {AppConfigService, DomainService} from '../../service';
+import {AppConfigService, AppInstanceService, DomainService} from '../../service';
 import {AppsService} from '../../service';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
@@ -19,8 +19,10 @@ function compareAppsRating(a: ApplicationBase, b: ApplicationBase): number {
     return (a.rate.averageRate - b.rate.averageRate) * -1; // desc
 }
 
-function compareAppsPopularity(a: ApplicationBase, b: ApplicationBase): number {
-    return 0; // TODO
+function compareAppsPopularity(a: ApplicationBase, b: ApplicationBase, stats: any = {}): number {
+    const aPop = stats[a.name] ? stats[a.name] : 0;
+    const bPop = stats[b.name] ? stats[b.name] : 0;
+    return (aPop - bPop) * -1; // desc
 }
 
 @Component({
@@ -54,15 +56,24 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
     public sortModeList = ['NONE', 'NAME', 'RATING', 'POPULAR'];
     public sortMode = 'NONE';
 
+    private popStats: any = {};
+
     constructor(private appsService: AppsService,
                 private appSubsService: AppSubscriptionsService,
                 private userDataService: UserDataService,
                 private appConfig: AppConfigService,
-                private domainService: DomainService) {
+                private domainService: DomainService,
+                private instanceService: AppInstanceService) {
     }
 
     ngOnInit() {
         // this.updateDomain();
+        this.instanceService.getStatistics().subscribe(
+            data => {
+                console.log('stats', data);
+                this.popStats = data;
+            }
+        )
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -131,6 +142,12 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
         this.applications = this.copy_applications;
         const tag = this.searchedTag.toLocaleLowerCase();
         const typed = this.searchedAppName.toLocaleLowerCase();
+
+        const stats = this.popStats;
+        const popComp = function(a: ApplicationBase, b: ApplicationBase): number {
+            return compareAppsPopularity(a, b, stats)
+        }
+
         this.applications = this.applications.pipe(
             map(apps => {
                     // console.log(apps);
@@ -150,7 +167,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges {
                     case 'RATING':
                         return [...apps].sort(compareAppsRating)
                     case 'POPULAR':
-                        return [...apps].sort(compareAppsPopularity)
+                        return [...apps].sort(popComp)
                     default:
                         return apps
                 }

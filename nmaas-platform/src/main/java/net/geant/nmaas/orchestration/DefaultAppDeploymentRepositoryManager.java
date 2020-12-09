@@ -7,6 +7,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.projections.AppDeploymentCount;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -129,6 +131,11 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
         AppDeployment appDeployment = load(deploymentId);
         appDeployment.setErrorMessage(errorMessage);
         repository.save(appDeployment);
+    }
+
+    @Override
+    public Map<String, Long> getDeploymentStatistics() {
+        return this.repository.countAllRunningByAppName().stream().collect(Collectors.toMap(AppDeploymentCount::getApplicationName, AppDeploymentCount::getCount));
     }
 
     private String deploymentNotFoundMessage(Identifier deploymentId) {
