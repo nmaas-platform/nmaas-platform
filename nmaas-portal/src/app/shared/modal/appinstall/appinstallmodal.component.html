@@ -23,6 +23,6 @@
 	</div>
 	<div class="nmaas-modal-footer">
 		<button type="button" class="btn btn-default" (click)="modal.hide()">{{'INSTALL_MODAL.CLOSE_BUTTON' | translate}}</button>
-		<button type="button" class="btn btn-primary" (click)="create()" [disabled]="instance_name.invalid">{{'INSTALL_MODAL.DEPLOY_BUTTON' | translate}}</button>
+		<button type="button" class="btn btn-primary" (click)="create()" [disabled]="instance_name.invalid || clicked">{{'INSTALL_MODAL.DEPLOY_BUTTON' | translate}}</button>
 	</div>
 </nmaas-modal>
