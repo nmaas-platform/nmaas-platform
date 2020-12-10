@@ -522,7 +522,7 @@ echo Insert form type contact
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\contact.json
 echo
 echo Insert form type issue
-curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\issue.json
+curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\issue_report.json
 echo
 echo Insert form type feature request
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\feature_request.json

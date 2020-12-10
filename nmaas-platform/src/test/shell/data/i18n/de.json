@@ -449,13 +449,13 @@
     "ABORT_BUTTON": "Abbrechen",
     "UPDATE_CONFIG_BUTTON": "Konfigurieren",
     "ADD_MEMBERS_BUTTON": "Add members",
-    "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
+    "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern.<br>Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installationsfortschritt",
       "STATE": "Status",
       "DEFAULT_ERROR_STATE": "Etwas ist schief gelaufen",
       "DETAILS": "Details",
-      "DEFAULT_ERROR_MESSAGE": "Bitte kontaktieren Sie den Support"
+      "DEFAULT_ERROR_MESSAGE": "Die Anwendungsbereitstellung ist aufgrund eines unerwarteten Fehlers fehlgeschlagen. Das NMaaS-Supportteam wurde bereits benachrichtigt.<br>Um ein Problem zu melden, verwenden Sie das <a href=\"about?type=ISSUE_REPORT\">Kontaktformular</a>."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Installationshistorie",
@@ -807,7 +807,7 @@
     "SELECT_CATEGORY": "Select category",
     "TYPES": {
       "CONTACT": "Contact",
-      "ISSUE": "Report issue",
+      "ISSUE_REPORT": "Report issue",
       "FEATURE_REQUEST": "Feature request",
       "ACCESS_REQUEST": "Access request"
     }
@@ -837,14 +837,14 @@
     "ALL": "Alles",
     "MY": "Meine",
     "REQUESTED": "Angeforderte",
-    "VALIDATION": "Validierung",
-    "PREPARATION": "Vorbereitung",
-    "CONNECTING": "Verbinden",
-    "CONFIGURATION_AWAITING": "Warten auf Konfiguration",
-    "DEPLOYING": "Installieren",
-    "RUNNING": "Läuft",
-    "UNDEPLOYING": "Deinstallieren",
-    "DONE": "Erledigt",
+    "VALIDATION": "Installieren",
+    "PREPARATION": "Installieren",
+    "CONNECTING": "Installieren",
+    "CONFIGURATION_AWAITING": "Installiert",
+    "DEPLOYING": "Aktivieren",
+    "RUNNING": "Aktiviert",
+    "UNDEPLOYING": "Deaktivieren",
+    "DONE": "Entfernt",
     "FAILURE": "Fehler",
     "UNKNOWN": "Unbekannt",
     "REMOVED": "Entfernt",

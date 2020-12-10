@@ -1,7 +1,7 @@
 {
-  "key": "ISSUE",
+  "key": "ISSUE_REPORT",
   "access": "ALL",
   "templateName": "default",
   "emails": ["admin@nmaas.eu"],
-  "subject": "NMAAS: Issue report"
+  "subject": "NMaaS: Issue report"
 }

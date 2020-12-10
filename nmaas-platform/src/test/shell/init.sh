@@ -513,7 +513,7 @@ echo Create form type contact
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/contact.json
 echo
 echo Create form type issue
-curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/issue.json
+curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/issue_report.json
 echo
 echo Create form type feature_request
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/feature_request.json

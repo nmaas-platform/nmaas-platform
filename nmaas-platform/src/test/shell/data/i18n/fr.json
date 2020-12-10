@@ -450,13 +450,13 @@
     "ABORT_BUTTON": "Avorter",
     "ADD_MEMBERS_BUTTON": "Add members",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
-    "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
+    "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes.<br>Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
       "STATE": "Etat",
       "DEFAULT_ERROR_STATE": "Une erreur est survenue",
       "DETAILS": "Details",
-      "DEFAULT_ERROR_MESSAGE": "Veuillez contacter le support"
+      "DEFAULT_ERROR_MESSAGE": "Le déploiement de l'application a échoué en raison d'une erreur inattendue. L'équipe d'assistance NMaaS a déjà été notifiée.<br>Pour signaler un problème, utilisez le <a href=\"about?type=ISSUE_REPORT\">formulaire de contact</a>."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Historique des éeploiements",
@@ -808,7 +808,7 @@
     "SELECT_CATEGORY": "Select category",
     "TYPES": {
       "CONTACT": "Contact",
-      "ISSUE": "Report issue",
+      "ISSUE_REPORT": "Report issue",
       "FEATURE_REQUEST": "Feature request",
       "ACCESS_REQUEST": "Access request"
     }
@@ -838,19 +838,19 @@
     "ALL": "Tout",
     "MY": "Mon",
     "REQUESTED": "Demandé",
-    "VALIDATION": "Validation",
+    "VALIDATION": "Préparation",
     "PREPARATION": "Préparation",
-    "CONNECTING": "De liaison",
-    "CONFIGURATION_AWAITING": "En attente de configuration",
-    "DEPLOYING": "L'installation",
-    "RUNNING": "Fonctionnement",
+    "CONNECTING": "Préparation",
+    "CONFIGURATION_AWAITING": "Installé",
+    "DEPLOYING": "Activant",
+    "RUNNING": "Activé",
     "UNDEPLOYING": "Désinstaller",
     "DONE": "Terminé",
     "FAILURE": "Échec",
     "UNKNOWN": "Inconnu",
     "REMOVED": "Enlevé",
     "STATE": {
-      "ACTIVE": "Active",
+      "ACTIVE": "Activé",
       "REJECTED": "Rejected",
       "NEW": "New",
       "DISABLED": "Disabled",

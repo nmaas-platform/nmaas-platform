@@ -449,13 +449,13 @@
     "ABORT_BUTTON": "Przerwij",
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
     "ADD_MEMBERS_BUTTON": "Osoby",
-    "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
+    "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut.<br>Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
       "STATE": "Stan",
       "DEFAULT_ERROR_STATE": "Coś poszło nie tak",
       "DETAILS": "Szczegóły",
-      "DEFAULT_ERROR_MESSAGE": "Skontaktuj się z zespołem wsparcia"
+      "DEFAULT_ERROR_MESSAGE": "Aktywacja aplikacji nie powiodła się z powodu nieoczekiwanego błędu. Zespół NMaaS został już powiadomiony.<br>Aby zgłosić problem, skorzystaj z <a href=\"about?type=ISSUE_REPORT\">formularza kontaktowego</a>."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Historia uruchomienia aplikacji",
@@ -808,7 +808,7 @@
     "SELECT_CATEGORY": "Wybierz kategorię",
     "TYPES": {
       "CONTACT": "Kontakt",
-      "ISSUE": "Zgłoszenie błędu",
+      "ISSUE_REPORT": "Zgłoszenie błędu",
       "FEATURE_REQUEST": "Propozycja zmiany lub dodania nowej aplikacji",
       "ACCESS_REQUEST": "Prośba o dostęp"
     }
@@ -838,17 +838,17 @@
     "ALL": "Wszystkie",
     "MY": "Moje",
     "REQUESTED": "Inicjalizacja",
-    "VALIDATION": "Walidacja",
-    "PREPARATION": "Przygotowywanie",
-    "CONNECTING": "Łączenie",
-    "CONFIGURATION_AWAITING": "Oczekiwanie na konfigurację",
-    "DEPLOYING": "Instalowanie",
-    "RUNNING": "Uruchomiono",
-    "UNDEPLOYING": "Odinstalowywanie",
-    "DONE": "Zakończono",
+    "VALIDATION": "Uruchamianie",
+    "PREPARATION": "Uruchamianie",
+    "CONNECTING": "Uruchamianie",
+    "CONFIGURATION_AWAITING": "Uruchomiona",
+    "DEPLOYING": "Aktywacja",
+    "RUNNING": "Aktywna",
+    "UNDEPLOYING": "Deaktywacja",
+    "DONE": "Deaktywowana",
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany",
-    "REMOVED": "Usunięty",
+    "REMOVED": "Usunięta",
     "STATE": {
       "ACTIVE": "Aktywne",
       "REJECTED": "Odrzucone",
