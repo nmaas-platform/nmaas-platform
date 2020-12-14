@@ -4,7 +4,7 @@ import { ApplicationsViewComponent } from './applications.component';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule} from '@angular/forms';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {AppConfigService, AppsService, DomainService, TagService} from '../../service';
+import {AppConfigService, AppInstanceService, AppsService, DomainService, TagService} from '../../service';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {SearchComponent} from '../common/search/search.component';
@@ -27,6 +27,7 @@ describe('ApplicationsComponent', () => {
   let appSubscriptionsService: AppSubscriptionsService;
   let userDataService: UserDataService;
   let tagService: TagService;
+  let instanceService: AppInstanceService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -53,7 +54,7 @@ describe('ApplicationsComponent', () => {
           }),
           TooltipModule
       ],
-      providers: [AppsService, AppSubscriptionsService, UserDataService, AppConfigService, TagService, DomainService]
+      providers: [AppsService, AppSubscriptionsService, UserDataService, AppConfigService, TagService, DomainService, AppInstanceService]
     })
     .compileComponents();
   }));
@@ -67,7 +68,9 @@ describe('ApplicationsComponent', () => {
     appSubscriptionsService = fixture.debugElement.injector.get(AppSubscriptionsService);
     userDataService = fixture.debugElement.injector.get(UserDataService);
     tagService = fixture.debugElement.injector.get(TagService);
+    instanceService = fixture.debugElement.injector.get(AppInstanceService);
     spyOn(tagService, 'getTags').and.returnValue(of([]));
+    spyOn(instanceService, 'getStatistics').and.returnValue(of({}))
     fixture.detectChanges();
   });
 
