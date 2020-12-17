@@ -4,7 +4,7 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.util.reflection.FieldSetter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,11 +49,10 @@ public class SshSessionConnectorTest {
         when(this.mockedShell.getOutputStream()).thenReturn(this.outputStream);
         when(this.mockedShell.getInputStream()).thenReturn(this.inputStream);
 
-
         // use reflection to set fields
-        FieldSetter.setField(connector, this.connector.getClass().getDeclaredField("client"), this.mockedClient);
-        FieldSetter.setField(connector, this.connector.getClass().getDeclaredField("session"), this.mockedSession);
-        FieldSetter.setField(connector, this.connector.getClass().getDeclaredField("shell"), this.mockedShell);
+        ReflectionTestUtils.setField(connector, "client", this.mockedClient);
+        ReflectionTestUtils.setField(connector, "session", this.mockedSession);
+        ReflectionTestUtils.setField(connector, "shell", this.mockedShell);
     }
 
     @Test

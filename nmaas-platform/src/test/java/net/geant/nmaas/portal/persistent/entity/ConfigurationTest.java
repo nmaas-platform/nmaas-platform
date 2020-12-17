@@ -7,7 +7,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConfigurationTest {
 
