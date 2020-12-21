@@ -18,7 +18,7 @@
     "defaultNamespace":"default",
     "defaultStorageClass":"nmaas-nfs-storage",
     "forceDedicatedWorkers":false,
-    "smtpServerHostname": "nmaas-postfix",
+    "smtpServerHostname": "nmaas-postfix.nmaas-system",
     "smtpServerPort": "587"
   },
   "externalNetworks": [{
