@@ -232,16 +232,16 @@
                                     "required": true
                                 },
                                 "inputFormat": "plain"
-                            },
-                            {
-                                "type": "button",
-                                "label": "Apply configuration",
-                                "disableOnInvalid": true,
-                                "theme": "primary",
-                                "input": false,
-                                "tableView": true
                             }
                         ]
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
                     }
                 ]
             }

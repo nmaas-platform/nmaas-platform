@@ -313,7 +313,53 @@
                 ]
             }
         },
-        "configUpdateWizardTemplate": null,
+        "configUpdateWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Access credentials",
+                        "hideLabel": true,
+                        "tableView": true,
+                        "type": "container",
+                        "input": true,
+                        "tab": 0,
+                        "key": "accessCredentials",
+                        "components": [
+                            {
+                                "label": "Prometheus access username",
+                                "type": "textfield",
+                                "input": true,
+                                "key": "accessUsername",
+                                "tab": 0,
+                                "validate": {
+                                    "required": true
+                                },
+                                "inputFormat": "plain"
+                            },
+                            {
+                                "label": "Prometheus access password",
+                                "type": "password",
+                                "input": true,
+                                "key": "accessPassword",
+                                "tab": 0,
+                                "validate": {
+                                    "required": true
+                                },
+                                "inputFormat": "plain"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
         "appDeploymentSpec": {
             "supportedDeploymentEnvironments": [
                 "KUBERNETES"
