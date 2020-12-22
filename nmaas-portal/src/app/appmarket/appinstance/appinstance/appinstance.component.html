@@ -168,6 +168,13 @@
                     <input type="text" style="min-width: 100%;" disabled value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
                 </label>
             </div>
+            <div *ngIf="appInstance && configurationUpdateTemplate">
+                <formio [form]="configurationUpdateTemplate"
+                        [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+                        [refresh]="refreshUpdateForm"
+                        (submit)="changeConfigUpdate($event.data)">
+                </formio>
+            </div>
         </div>
         <div class="nmaas-modal-footer">
             <button type="button" class="btn btn-primary"
