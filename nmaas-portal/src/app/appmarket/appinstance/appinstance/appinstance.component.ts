@@ -385,17 +385,31 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public updateConfiguration(): void {
-        this.appInstanceService.updateConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
-            console.log('Configuration updated');
-            this.updateConfigModal.hide();
-        });
+        this.appInstanceService.updateConfiguration(this.appInstanceId, this.appConfiguration).subscribe(
+            () => {
+                console.log('Configuration updated');
+                this.updateConfigModal.hide();
+            },
+            (error) => {
+                console.error(error);
+                // TODO submission error message
+                throw new Error('Invalid submission');
+            }
+        );
     }
 
     public changeConfigUpdate(input: any): void {
-        if (input != null && input['data'] != null) {
-            this.isUpdateFormValid = input['isValid'];
-            this.changeConfiguration(input['data']['configuration']);
-            this.changeAccessCredentials(input['data']['accessCredentials']);
+        console.log('config update', input)
+        if (input != null) {
+            // this.isUpdateFormValid = input['isValid'];
+            this.changeConfiguration(input['configuration']);
+            this.changeAccessCredentials(input['accessCredentials']);
+
+            if (this.appConfiguration.jsonInput == null) {
+                this.appConfiguration.jsonInput = {};
+            }
+
+            this.updateConfiguration();
         }
     }
 
