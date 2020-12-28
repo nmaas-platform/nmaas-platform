@@ -168,7 +168,7 @@
                     <input type="text" style="min-width: 100%;" disabled value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
                 </label>
             </div>
-            <div *ngIf="appInstance && configurationUpdateTemplate">
+            <div style="padding-top: 5px" *ngIf="appInstance && configurationUpdateTemplate">
                 <formio [form]="configurationUpdateTemplate"
                         [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
                         [refresh]="refreshUpdateForm"

@@ -405,9 +405,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
             this.changeConfiguration(input['configuration']);
             this.changeAccessCredentials(input['accessCredentials']);
 
-            if (this.appConfiguration.jsonInput == null) {
-                this.appConfiguration.jsonInput = {};
-            }
+            // jsonInput should remain null for configuration updates
+            // if (this.appConfiguration.jsonInput == null) {
+            //    this.appConfiguration.jsonInput = {};
+            // }
 
             this.updateConfiguration();
         }
