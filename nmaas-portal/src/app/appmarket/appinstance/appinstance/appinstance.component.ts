@@ -399,10 +399,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
 
     public changeConfigUpdate(input: any): void {
-        if (input != null && input['data'] != null) {
-            this.isUpdateFormValid = input['isValid'];
-            this.changeConfiguration(input['data']['configuration']);
-            this.changeAccessCredentials(input['data']['accessCredentials']);
+        console.log('config update', input)
+        if (input != null) {
+            // this.isUpdateFormValid = input['isValid'];
+            this.changeConfiguration(input['configuration']);
+            this.changeAccessCredentials(input['accessCredentials']);
+
+            if (this.appConfiguration.jsonInput == null) {
+                this.appConfiguration.jsonInput = {};
+            }
 
             this.updateConfiguration();
         }
