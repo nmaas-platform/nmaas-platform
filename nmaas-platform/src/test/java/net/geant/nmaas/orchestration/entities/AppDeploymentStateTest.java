@@ -52,6 +52,7 @@ public class AppDeploymentStateTest {
     @EnumSource(
             value = AppDeploymentState.class,
             names = {"APPLICATION_CONFIGURATION_FAILED",
+                    "APPLICATION_CONFIGURATION_UPDATE_FAILED",
                     "APPLICATION_DEPLOYMENT_FAILED",
                     "APPLICATION_DEPLOYMENT_VERIFICATION_FAILED",
                     "APPLICATION_REMOVAL_FAILED",

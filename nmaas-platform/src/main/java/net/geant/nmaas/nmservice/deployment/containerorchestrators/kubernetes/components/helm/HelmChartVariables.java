@@ -68,13 +68,13 @@ class HelmChartVariables {
         return storageSpace.toString() + "Gi";
     }
 
-    static Map<String, String> ingressVariablesMap(Boolean enabled,
+    static Map<String, String> ingressVariablesMap(boolean enabled,
                                                    Set<ServiceAccessMethod> externalAccessMethods,
                                                    String ingressClass,
                                                    String publicIngressClass,
-                                                   Boolean tlsEnabled,
+                                                   boolean tlsEnabled,
                                                    String ingressCertOrIssuer,
-                                                   Boolean acme) {
+                                                   boolean acme) {
         Map<String, String> variables = new HashMap<>();
         externalAccessMethods.forEach(m -> {
                 if (enabled) {

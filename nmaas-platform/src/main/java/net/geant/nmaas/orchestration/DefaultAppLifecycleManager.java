@@ -17,7 +17,6 @@ import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -179,12 +178,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
         AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
-        if(isNotEmpty(configuration.getJsonInput())){
-            appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
-            deploymentRepositoryManager.update(appDeployment);
-            eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
-        }
-        if(isNotEmpty(configuration.getAccessCredentials())){
+        // only access credentials update is currently supported
+        if(isNotEmpty(configuration.getAccessCredentials())) {
             changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), appDeployment.getDomain(), configuration.getAccessCredentials());
         }
     }

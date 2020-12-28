@@ -204,7 +204,7 @@
                 "components": [
                     {
                         "label": "Access credentials",
-                        "hideLabel": true,
+                        "hideLabel": false,
                         "tableView": true,
                         "type": "container",
                         "input": true,

@@ -465,9 +465,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public boolean isInRunningState() {
-            return true;
-        }
+        public boolean isInFailedState() { return true; }
     },
     INTERNAL_ERROR {
         @Override

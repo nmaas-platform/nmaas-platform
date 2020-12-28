@@ -12,7 +12,6 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.commons.lang3.NotImplementedException;
@@ -107,7 +106,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldTriggerAppInstanceConfigurationInCorrectState() throws Throwable {
+    public void shouldTriggerAppInstanceConfigurationInCorrectState() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
@@ -117,30 +116,30 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldTriggerAppInstanceConfigurationUpdate() {
+    public void shouldNotTriggerAppInstanceConfigurationUpdate() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().configuration(new AppConfiguration()).build());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getJsonInput()).thenReturn("{config}");
         appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
-        verify(repositoryManager, times(1)).update(any());
-        verify(eventPublisher, times(1)).publishEvent(any(AppUpdateConfigurationEvent.class));
-    }
-
-    @Test
-    public void shouldNotTriggerAppInstanceConfigurationUpdateIfConfigIsNull() {
-        when(repositoryManager.load(any())).thenReturn(new AppDeployment());
-        AppConfigurationView configurationView = new AppConfigurationView();
-        appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
         verifyNoMoreInteractions(eventPublisher);
+        verifyNoMoreInteractions(janitorService);
     }
 
     @Test
-    public void shouldNotTriggerAppInstanceConfigurationUpdateIfConfigIsEmpty() {
-        when(repositoryManager.load(any())).thenReturn(new AppDeployment());
+    public void shouldTriggerAppInstanceAuthUpdate() {
+        Identifier deploymentId = Identifier.newInstance(1L);
+        Identifier descriptiveDeploymentId = Identifier.newInstance("identifier");
+        when(repositoryManager.load(deploymentId)).thenReturn(
+                AppDeployment.builder()
+                        .deploymentId(deploymentId)
+                        .descriptiveDeploymentId(descriptiveDeploymentId)
+                        .configuration(new AppConfiguration())
+                        .build()
+        );
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
-        when(configurationView.getJsonInput()).thenReturn("");
-        appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
-        verifyNoMoreInteractions(eventPublisher);
+        when(configurationView.getAccessCredentials()).thenReturn("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}");
+        appLifecycleManager.updateConfiguration(deploymentId, configurationView);
+        verify(janitorService, times(1)).createOrReplaceBasicAuth(descriptiveDeploymentId, null, "username", "password");
     }
 
     @Test
