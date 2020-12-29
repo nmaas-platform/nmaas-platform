@@ -169,9 +169,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
             this.intervalCheckerSubscription = interval(5000).subscribe(() => this.updateAppInstanceState());
 
             // TODO fix after modal init
-            console.log('Setting undeploy modal params')
-            this.undeployModal.setModalType('warning');
-            this.undeployModal.setStatusOfIcons(true);
+            // console.log('Setting undeploy modal params')
+            // this.undeployModal.setModalType('warning');
+            // this.undeployModal.setStatusOfIcons(true);
         });
     }
 
