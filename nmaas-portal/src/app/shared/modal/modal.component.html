@@ -1,17 +1,20 @@
 <div class="modal fade" tabindex="-1"
 	[ngClass]="{'in': visibleAnimate}"
 	[ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? '1' : '0'}">
-	<div class="modal-dialog modal-lg" style="max-height: 90%; overflow: auto; padding-top: calc(5vh + 75px); z-index: 1200;">
+	<div class="modal-dialog modal-lg" style="z-index: 1200;">
 		<div class="modal-content">
-            <div class="modal-header text-center" [ngClass]="{'alert-info': this.isInfo, 'alert-danger': this.isError,
-            'alert-success': this.isSuccess, 'alert-warning': this.isWarning}">
+            <div class="modal-header text-center"
+				 [ngClass]="{'alert-info': this.isInfo, 'alert-danger': this.isError,
+				 'alert-success': this.isSuccess, 'alert-warning': this.isWarning}">
                 <img *ngIf="isError && isIconsEnabled"  src="../../../assets/images/error.png" class="modal-img " alt="Error">
 				<img *ngIf="isInfo && isIconsEnabled" src="../../../assets/images/info.png" class="modal-img" alt="Error">
 				<img *ngIf="isSuccess && isIconsEnabled" src="../../../assets/images/success.png" class="modal-img" alt="Error">
 				<img *ngIf="isWarning && isIconsEnabled" src="../../../assets/images/alert.png" class="modal-img" alt="Error">
-				<h4 class="modal-title" style="display: inline-block;" ><ng-content select=".nmaas-modal-header"></ng-content></h4>
+				<h4 class="modal-title" style="display: inline-block;" >
+					<ng-content select=".nmaas-modal-header"></ng-content>
+				</h4>
             </div>
-			<div class="modal-body">
+			<div class="modal-body" style="max-height: 80vh; overflow: auto;">
 				<ng-content select=".nmaas-modal-body"></ng-content>
 			</div>
 			<div class="modal-footer">
