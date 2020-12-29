@@ -153,7 +153,8 @@
           <div class="form-group form-group-sm">
             <label for="configUpdateEnabled" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.CONFIG_UPDATE_ENABLED' | translate}}</label>
             <div class="col-sm-10">
-              <input type="checkbox" id="configUpdateEnabled" name="configUpdateEnabled" [(ngModel)]="applicationDTO.application.appConfigurationSpec.configUpdateEnabled">
+              <input type="checkbox" id="configUpdateEnabled" name="configUpdateEnabled"
+                     [(ngModel)]="applicationDTO.application.appConfigurationSpec.configUpdateEnabled">
             </div>
           </div>
           <div class="form-group form-group-sm">
@@ -204,6 +205,30 @@
                         [form]="applicationDTO.application.configWizardTemplate.template" (change)="setConfigTemplate($event)">
 
           </form-builder>
+        </div>
+      </div>
+      <hr>
+      <div class="panel" *ngIf="applicationDTO.application.appConfigurationSpec.configUpdateEnabled">
+        <div class="panel-heading">{{'APPS_WIZARD.UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL' | translate}}</div>
+        <div class="panel-body">
+          <div class="form-group form-group-sm" style="padding-bottom: 5vh;">
+            <label for="addConfigUpdate" style="text-align: left; padding-left: 0; font-size: 12px" class="col-sm-2 control-label">
+              {{'APPS_WIZARD.ADD_CONFIG_UPDATE_TEMPLATE_LABEL' | translate}}
+            </label>
+            <div class="col-sm-10">
+              <input type="checkbox" id="addConfigUpdate" (change)="handleConfigTemplate()"
+                     name="addConfigUpdate" [defaultChecked]="false" [(ngModel)]="addConfigUpdate"
+                     tooltip="{{'APPS_WIZARD.ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP' | translate}}"
+                     [display]="true" [options]="defaultTooltipOptions">
+            </div>
+          </div>
+          <div *ngIf="addConfigUpdate && applicationDTO.application.configUpdateWizardTemplate.template">
+            <form-builder *ngIf="formDisplayChange"
+                          [form]="applicationDTO.application.configUpdateWizardTemplate.template"
+                          (change)="setUpdateConfigTemplate($event)">
+
+            </form-builder>
+          </div>
         </div>
       </div>
     </div>
