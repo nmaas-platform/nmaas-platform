@@ -15,24 +15,36 @@
             <div class="row flex-stretch">
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <h2 style="margin-bottom: 4px;">{{appInstance?.name}} ({{app?.applicationBase.name}})</h2>
-                    <rate *ngIf="app?.applicationBase.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.applicationBase.id)"></rate>
+                    <rate *ngIf="app?.applicationBase.id" [showVotes]="true" [short]="true"
+                          [pathUrl]="getPathUrl(app?.applicationBase.id)"></rate>
                     <div class="text-muted" style="font-size: small;">
                         {{app?.application.version ? 'v.' + app?.application.version : 'None'}}
                         |
-                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.applicationBase.licenseUrl">
-							<a class="{{app?.applicationBase.licenseUrl ? '' : 'disabled-url'}}" [href]="app?.applicationBase.licenseUrl" target="_blank">{{app?.applicationBase.license || 'License'}}</a>
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}"
+                              [options]="defaultTooltipOptions" [display]="!app?.applicationBase.licenseUrl">
+							<a class="{{app?.applicationBase.licenseUrl ? '' : 'disabled-url'}}"
+                               [href]="app?.applicationBase.licenseUrl"
+                               target="_blank">{{app?.applicationBase.license || 'License'}}</a>
 						</span>
                         |
-                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.applicationBase.wwwUrl">
-							<a class="{{app?.applicationBase.wwwUrl ? '' : 'disabled-url'}}" [href]="app?.applicationBase.wwwUrl">WWW</a>
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}"
+                              [options]="defaultTooltipOptions" [display]="!app?.applicationBase.wwwUrl">
+							<a class="{{app?.applicationBase.wwwUrl ? '' : 'disabled-url'}}"
+                               [href]="app?.applicationBase.wwwUrl">WWW</a>
 						</span>
                         |
-                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.applicationBase.sourceUrl">
-							<a class="{{app?.applicationBase.sourceUrl ? '' : 'disabled-url'}}" [href]="app?.applicationBase.sourceUrl" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}"
+                              [options]="defaultTooltipOptions" [display]="!app?.applicationBase.sourceUrl">
+							<a class="{{app?.applicationBase.sourceUrl ? '' : 'disabled-url'}}"
+                               [href]="app?.applicationBase.sourceUrl"
+                               target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
 						</span>
                         |
-                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}" [options]="defaultTooltipOptions" [display]="!app?.applicationBase.issuesUrl">
-							<a class="{{app?.applicationBase.issuesUrl ? '' : 'disabled-url'}}" [href]="app?.applicationBase.issuesUrl" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+                        <span tooltip="{{'APPLICATIONS.TOOLTIP_MESSAGE_NOT_AVAILABLE' | translate}}"
+                              [options]="defaultTooltipOptions" [display]="!app?.applicationBase.issuesUrl">
+							<a class="{{app?.applicationBase.issuesUrl ? '' : 'disabled-url'}}"
+                               [href]="app?.applicationBase.issuesUrl"
+                               target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
 						</span>
                     </div>
                 </div>
@@ -68,13 +80,15 @@
 
                 <!-- if application is already running -->
                 <div *ngIf="appInstance" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <div class="btn-group pull-right"
+                         *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.RUNNING">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
                             {{'APP_INSTANCE.INSTANCE_ACTIONS' | translate}} <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
                             <li *ngIf="shouldDisplayButton()">
-                                <a href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}" role = "button">
+                                <a href="{{validateURL(appInstance?.serviceAccessMethods[0].url)}}" role="button">
                                     {{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}
                                 </a>
                             </li>
@@ -83,9 +97,9 @@
                                     {{'APP_INSTANCE.APP_ACCESS_METHODS' | translate}}
                                 </a>
                             </li>
-                            <li  *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
                                 <a *ngIf="app.application.appConfigurationSpec.configUpdateEnabled"
-                                        (click)="getConfigurationModal()">
+                                   (click)="getConfigurationModal()">
                                     {{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}
                                 </a>
                             </li>
@@ -101,7 +115,7 @@
                                     {{'APP_INSTANCE.SHELL' | translate}}
                                 </a>
                             </li>
-                            <li  *ngIf="canDisplayAddMembersModal()">
+                            <li *ngIf="canDisplayAddMembersModal()">
                                 <a role="button" (click)="this.addMembersModal.show()">
                                     {{'APP_INSTANCE.ADD_MEMBERS_BUTTON' | translate}}
                                 </a>
@@ -120,7 +134,8 @@
                     </div>
 
                     <!-- if application deployment failed -->
-                    <div class="btn-group pull-right" *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
+                    <div class="btn-group pull-right"
+                         *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
                         <button class="btn btn-primary"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
@@ -163,7 +178,8 @@
             <div>
                 <p>{{'UPDATE_CONFIG_MODAL.CLONE_LABEL' | translate}}</p>
                 <label style="min-width: 100%;">
-                    <input type="text" style="min-width: 100%;" disabled value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
+                    <input type="text" style="min-width: 100%;" disabled
+                           value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
                 </label>
             </div>
             <div style="padding-top: 30px" *ngIf="appInstance && configurationUpdateTemplate">
@@ -187,14 +203,15 @@
 				 'alert-danger': getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE || getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.UNKNOWN,
 				 'other-states': getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN }"
              class="col-xs-offset-1 col-xs-10">
-                <span *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
-                    <span class="glyphicon glyphicon-exclamation-sign info-icon" aria-hidden="true"></span>
-                    <span [innerHTML]="'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate"></span>
-				</span>
-                <span *ngIf="getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN">
-                    <span class="glyphicon glyphicon-info-sign info-icon" aria-hidden="true"></span>
-                    <span [innerHTML]="'APP_INSTANCE.USER_FRIENDLY.' + getStateAsString(appInstanceStatus?.state) | translate"></span>
-				</span>
+            <div *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE" class="info-container">
+                <span class="glyphicon glyphicon-exclamation-sign info-icon" aria-hidden="true"></span>
+                <span [innerHTML]="'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate"></span>
+            </div>
+            <div *ngIf="getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.FAILURE && getStateAsEnum(appInstanceStatus?.state) !== AppInstanceState.UNKNOWN"
+                 class="info-container">
+                <span class="glyphicon glyphicon-info-sign info-icon" aria-hidden="true"></span>
+                <span [innerHTML]="'APP_INSTANCE.USER_FRIENDLY.' + getStateAsString(appInstanceStatus?.state) | translate"></span>
+            </div>
         </div>
     </div>
 
@@ -256,7 +273,8 @@
             <div class="col-xs-12">
                 <p *ngIf="appInstance !== undefined && configurationTemplate !== undefined && app?.applicationBase.nmaasDocumentationUrl">
                     {{ 'APP_INSTANCE.CONFIGURATION.DOCUMENTATION_INFO' | translate }}
-                    <a href="{{app.applicationBase.nmaasDocumentationUrl}}" target="_blank">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
+                    <a href="{{app.applicationBase.nmaasDocumentationUrl}}"
+                       target="_blank">{{ 'APP_INSTANCE.CONFIGURATION.NMAAS_TOOLS' | translate}}</a>.
                 </p>
                 <hr>
                 <formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
@@ -282,12 +300,14 @@
                              [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
 
     <!-- App access methods modal -->
-    <app-access-methods-modal *ngIf="appInstance?.serviceAccessMethods" [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
+    <app-access-methods-modal *ngIf="appInstance?.serviceAccessMethods"
+                              [accessMethods]="appInstance?.serviceAccessMethods"></app-access-methods-modal>
 
     <!-- Add members modal -->
     <app-add-members-modal *ngIf="appInstance" [appInstance]="appInstance"></app-add-members-modal>
 
     <!-- Pods selection modal -->
-    <app-select-pod-modal *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames?.length > 1" [url]="router.url" [pods]="podNames"></app-select-pod-modal>
+    <app-select-pod-modal *ngIf="app.application.appDeploymentSpec.allowSshAccess && podNames?.length > 1"
+                          [url]="router.url" [pods]="podNames"></app-select-pod-modal>
 
 </div>
