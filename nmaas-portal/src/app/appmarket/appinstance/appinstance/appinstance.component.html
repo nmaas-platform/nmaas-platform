@@ -137,7 +137,6 @@
     </div>
 
     <!-- Undeploy modal-->
-    <!-- TODO should be moved to separate component-->
     <nmaas-modal styleModal="warning" #undeployModal>
         <div class="nmaas-modal-header">
             <h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
@@ -156,7 +155,6 @@
     </nmaas-modal>
 
     <!-- Update config modal -->
-    <!-- TODO should be moved to separate component-->
     <nmaas-modal styleModal="info" #updateConfig>
         <div class="nmaas-modal-header">
             <h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
@@ -168,7 +166,7 @@
                     <input type="text" style="min-width: 100%;" disabled value="git clone ssh://{{appInstance.appConfigRepositoryAccessDetails?.cloneUrl}}"/>
                 </label>
             </div>
-            <div style="padding-top: 5px" *ngIf="appInstance && configurationUpdateTemplate">
+            <div style="padding-top: 30px" *ngIf="appInstance && configurationUpdateTemplate">
                 <formio [form]="configurationUpdateTemplate"
                         [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
                         [refresh]="refreshUpdateForm"
