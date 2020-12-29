@@ -27,6 +27,7 @@
     border-bottom: 1px solid lightgray;
     border-top: 1px solid lightgray;
     text-align: center;
+    color: #337ab7;
 }
 
 .alert-danger{
@@ -64,4 +65,13 @@
     width: 20px;
     height: 20px;
     font-size: 20px;
+    margin-right: 10px;
 }
+
+.info-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
