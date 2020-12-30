@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.repositories.ConfigFileTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesDeploymentParametersProvider;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import org.junit.jupiter.api.Test;
@@ -39,14 +40,15 @@ public class ConfigFilePreparerIntTest {
         Identifier deploymentId = Identifier.newInstance("1");
         Identifier applicationId = Identifier.newInstance("2");
         Map<String, String> params = new HashMap<>();
-        params.put("RELEASE_NAME", "release_name");
+        params.put(ParameterType.RELEASE_NAME.name(), "release_name");
+        params.put(ParameterType.APP_INSTANCE_NAME.name(), "app_instance_name");
         when(kubernetesDeploymentParametersProvider.deploymentParameters(deploymentId)).thenReturn(params);
         ConfigFileTemplate fileTemplate = new ConfigFileTemplate(
                 1L,
                 2L,
                 "file.name",
                 null,
-                "Release name: ${RELEASE_NAME}");
+                "Release name: ${RELEASE_NAME} \n Application instance name: ${APP_INSTANCE_NAME}");
         when(templatesRepository.getAllByApplicationId(applicationId.longValue())).thenReturn(Collections.singletonList(fileTemplate));
         assertDoesNotThrow(() -> {
             List<String> configIds = configFilePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, new AppConfiguration("{\"id\":\"5\"}"));

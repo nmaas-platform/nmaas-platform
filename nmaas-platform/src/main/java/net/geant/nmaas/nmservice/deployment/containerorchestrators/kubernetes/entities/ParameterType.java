@@ -9,7 +9,8 @@ public enum ParameterType {
     SMTP_PASSWORD,
     DOMAIN_CODENAME,
     BASE_URL,
-    RELEASE_NAME;
+    RELEASE_NAME,
+    APP_INSTANCE_NAME;
 
     public static ParameterType fromValue(String value) {
         return Arrays.stream(ParameterType.values())
