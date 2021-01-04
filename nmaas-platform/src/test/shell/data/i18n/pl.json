@@ -267,8 +267,8 @@
     "LANGUAGE_ENABLED": "Aktywny",
     "LANGUAGE_DISABLED": "Nieaktywny",
     "TEST_INSTANCE": "Oznacz jako instancję testową NMaaS",
-    "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
-    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list"
+    "SEND_APP_INSTANCE_FAILURE_EMAILS": "Wyślij email gdy instalacja aplikacji nie powiedzie się",
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Lista adresów email"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
@@ -347,7 +347,7 @@
     "ROLE": "Rola",
     "ADD_BUTTON": "Dodaj/Aktualizuj",
     "REMOVE_BUTTON": "Usuń",
-    "NO_ROLES_INFO": "Your aren't assigned to any domain yet. Please contact the administrator if You have further questions."
+    "NO_ROLES_INFO": "Nie jesteś jeszcze dodany do żadnej domeny. Jeśli masz pytania skontaktuj się z administatorem."
   },
   "SCREENSHOTS": {
     "HEADER": "Zrzuty ekranu",
@@ -523,11 +523,11 @@
       "VALIDATION": "NMaaS weryfikuje dostępne zasoby",
       "PREPARATION": "NMaaS przygotowuje środowisko wdrażania dla Twojej aplikacji",
       "CONNECTING": "NMaaS nawiązuje bezpieczne połączenie",
-      "CONFIGURATION_AWAITING": "Twoja aplikacja została pomyślnie zainstalowana. <br>Teraz możesz wprowadzić pierwszą konfigurację korzystając z akcji \"Konfiguruj\"",
-      "DEPLOYING": "Aplikacja jest aktywowana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem gdy aplikacja będzie gotowa",
-      "RUNNING": "Twoja aplikacja jest aktywna. Możesz teraz uzyskać dostęp do swojej aplikacji, klikając przycisk powyżej",
-      "UNDEPLOYING": "Aplikacja jest usuwana. Ten proces może potrwać do kilku minut",
-      "DONE":  "Aplikacja została pomyślnie usunięta",
+      "CONFIGURATION_AWAITING": "Twoja aplikacja została pomyślnie zainstalowana. <br>Teraz możesz wprowadzić pierwszą konfigurację korzystając z akcji <i>Konfiguruj</i>",
+      "DEPLOYING": "Aplikacja jest aktywowana. Ten proces może potrwać do kilku minut. <br>Zostaniesz powiadomiony e-mailem gdy aplikacja będzie gotowa",
+      "RUNNING": "Twoja aplikacja jest aktywna. <br>Możesz teraz uzyskać dostęp do swojej aplikacji korzystając z opcji <i>Dostęp</i> z menu <i>Akcje</i>.",
+      "UNDEPLOYING": "Aplikacja jest deaktywowana. Ten proces może potrwać do kilku minut",
+      "DONE":  "Aplikacja została pomyślnie deaktywowana",
       "FAILURE": "",
       "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem NMaaS za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
       "REMOVED": "Aplikacja została pomyślnie usunięta"

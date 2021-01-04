@@ -275,7 +275,7 @@
     "TITLE": "Détails de l'organisation",
     "NAME": "Nom",
     "CODE_NAME": "Identifiant de l'organisation",
-    "ACTIVE": "Actif",
+    "ACTIVE": "Active",
     "ID_IN_DB": "ID dans la base de données",
     "KUBERNETES_NAMESPACE": "\"Namespace\" Kubernetes",
     "KUBERNETES_NAMESPACE_PLACEHOLDER": "Default value: codename",
@@ -348,7 +348,7 @@
     "ROLE": "Role",
     "ADD_BUTTON": "Ajouter/Update",
     "REMOVE_BUTTON": "Supprimer",
-    "NO_ROLES_INFO": "Your aren't assigned to any domain yet. Please contact the administrator if You have further questions."
+    "NO_ROLES_INFO": "Vous n'êtes encore attribué à aucun domaine. Veuillez contacter l'administrateur si vous avez d'autres questions."
   },
   "SCREENSHOTS": {
     "HEADER": "Copies d'écran",
@@ -442,7 +442,7 @@
     "MY_RATING": "Mon évaluation",
     "GO_TO_APP_BUTTON": "Aller à l'application",
     "UNDEPLOY_BUTTON": "Supprimer",
-    "APP_ACCESS_METHODS": "View application access methods",
+    "APP_ACCESS_METHODS": "Accès",
     "RESTART_BUTTON": "Re-démarrer",
     "REMOVE_BUTTON": "Supprimer échoué",
     "CHECK_STATUS_BUTTON": "Check status",
@@ -470,7 +470,7 @@
       "ADDITIONAL_TAB": "Parametres additionnels",
       "STORAGE_SPACE": "Espace de stockage",
       "NMAAS_TOOLS": "NMaaS Tools Page",
-      "DOCUMENTATION_INFO": "Detailed field descriptions are available at"
+      "DOCUMENTATION_INFO": "Des descriptions détaillées des champs sont disponibles sur"
     },
     "REQUIRED_FIELDS": "Champs obligatoire",
     "APPLY_CONFIG_BUTTON": "Appliquer la configuration",
@@ -481,7 +481,7 @@
       "SETTING_UP_CONNECTIVITY": "Mise en place de la connectivité",
       "APPLYING_APP_CONFIGURATION": "Application de la configuration de l'application",
       "APP_CONTAINER_DEPLOYMENT": "Déploiement de conteneur d'application",
-      "APP_RUNNING": "App en cours d'exécution",
+      "APP_RUNNING": "Application active",
       "UNDEPLOYING": "Déployer",
       "REMOVED": "Enlevé",
       "DEPLOY_REQUESTED": "Déploiement d'instance d'application demandé",
@@ -524,16 +524,16 @@
       "VALIDATION": "NMaaS valide les ressources disponibles",
       "PREPARATION": "NMaaS prépare l'environnement de déploiement de votre application",
       "CONNECTING": "NMaaS met en place une connectivité sécurisée à votre équipement",
-      "CONFIGURATION_AWAITING": "NMaaS attend la configuration de votre application. Fournissez la configuration initiale à l'aide de l'assistant situé sous l'historique de déploiement",
-      "DEPLOYING": "L'application est en cours de déploiement par NMaaS. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois votre instance prête",
-      "RUNNING": "Votre application est prête. Vous pouvez maintenant accéder à votre application en cliquant sur le bouton ci-dessus",
+      "CONFIGURATION_AWAITING": "Votre instance d'application a été déployée avec succès. <br>Pour continuer, effectuez la première configuration à l'aide du bouton d'action <i>Configurer</i>.",
+      "DEPLOYING": "L'application est en cours d'activation. Ce processus peut prendre plusieurs minutes. <br>Vous serez averti par e-mail une fois que votre instance sera prête",
+      "RUNNING": "Votre application est maintenant active. Vous pouvez y accéder en utilisant l'option <i>Accès</i> du menu <i>Actions</i>. <br>Utilisez les options <i>Configurer</i> et <i>Membres</i> pour mettre à jour respectivement la configuration et la liste des utilisateurs de l'application.",
       "UNDEPLOYING": "L'application n'est pas déployée. Ce processus peut prendre plusieurs minutes",
       "DONE": "Application non déployée avec succès",
       "FAILURE": "",
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
     },
-    "SHOW_VERSIONS_LABEL": "Show available versions",
+    "SHOW_VERSIONS_LABEL": "Afficher les versions disponibles",
     "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web",
     "SHELL": "Shell"
   },

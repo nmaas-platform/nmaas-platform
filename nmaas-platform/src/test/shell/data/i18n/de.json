@@ -347,7 +347,7 @@
     "ROLE": "Rolle",
     "ADD_BUTTON": "Hinzufügen/Update",
     "REMOVE_BUTTON": "Löschen",
-    "NO_ROLES_INFO": "Your aren't assigned to any domain yet. Please contact the administrator if You have further questions."
+    "NO_ROLES_INFO": "Sie sind noch keiner Domain zugeordnet. Bitte wenden Sie sich an den Administrator, wenn Sie weitere Fragen haben."
   },
   "SCREENSHOTS": {
     "HEADER": "Screenshots",
@@ -431,7 +431,7 @@
   },
   "APP_INSTANCE": {
     "CONFIGURE": "Configure",
-    "INSTANCE_ACTIONS": "Instance actions",
+    "INSTANCE_ACTIONS": "Aktionen",
     "SOURCE": "Quelle",
     "ISSUES": "Probleme",
     "VERSION": "Version",
@@ -468,8 +468,8 @@
       "ADVANCED_TAB": "Erweitert",
       "ADDITIONAL_TAB": "Erweiterte Parameter",
       "STORAGE_SPACE": "Speicherplatz",
-      "NMAAS_TOOLS": "NMaaS Tools Page",
-      "DOCUMENTATION_INFO": "Detailed field descriptions are available at"
+      "NMAAS_TOOLS": "NMaaS Tools Seite",
+      "DOCUMENTATION_INFO": "Detaillierte Feldbeschreibungen finden Sie unter"
     },
     "REQUIRED_FIELDS": "benötigte Felder",
     "APPLY_CONFIG_BUTTON": "Konfiguration anwenden",
@@ -480,7 +480,7 @@
       "SETTING_UP_CONNECTIVITY": "Konnektivität einrichten",
       "APPLYING_APP_CONFIGURATION": "App-Konfiguration anwenden",
       "APP_CONTAINER_DEPLOYMENT": "App-Container-Bereitstellung",
-      "APP_RUNNING": "App läuft",
+      "APP_RUNNING": "Anwendung aktiv",
       "UNDEPLOYING": "Bereitstellung aufheben",
       "REMOVED": "Entfernt",
       "DEPLOY_REQUESTED": "Bereitstellung der Anwendungsinstanz wurde angefordert",
@@ -523,9 +523,9 @@
       "VALIDATION": "NMaaS prüft verfügbare Ressourcen",
       "PREPARATION": "NMaaS bereitet die Installationsumgebung für Ihre Anwendung vor",
       "CONNECTING": "NMaaS richtet eine sichere Verbindungen zu Ihren Geräten ein",
-      "CONFIGURATION_AWAITING": "NMaaS wartet auf Ihre Anwendungskonfiguration. Bitte Erstkonfiguration mithilfe des Assistenten unterhalb der Installationshistorie vornehmen",
-      "DEPLOYING": "Die Anwendung wird von NMaaS bereitgestellt. Dieser Vorgang kann bis zu mehreren Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz bereit ist",
-      "RUNNING": "Ihre Anwendung ist bereit. Sie können jetzt auf Ihre Anwendung zugreifen, indem Sie auf die Schaltfläche oben klicken",
+      "CONFIGURATION_AWAITING": "Ihre Anwendungsinstanz wurde erfolgreich bereitgestellt. <br>Um fortzufahren, geben Sie die Erstkonfiguration über die Aktionsschaltfläche <i>Konfigurieren</i> ein",
+      "DEPLOYING": "Anwendung wird aktiviert. Dieser Vorgang kann bis zu mehreren Minuten dauern. <br>Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist",
+      "RUNNING": "Ihre Anwendung ist jetzt aktiv. Sie können mit der Option <i>Zugriff</i> im Menü <i>Aktionen</i> darauf zugreifen. <br>Verwenden Sie die Optionen <i>Konfigurieren</i> und <i>Mitglieder</i>, um die Konfiguration bzw. die Liste der Anwendungsbenutzer zu aktualisieren.",
       "UNDEPLOYING": "Die Anwendung wird entfernt. Dieser Vorgang kann bis zu mehreren Minuten dauern",
       "DONE": "Anwendung erfolgreich entfernt",
       "FAILURE": "",

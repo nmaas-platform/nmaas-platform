@@ -431,7 +431,7 @@
   },
   "APP_INSTANCE": {
     "CONFIGURE": "Configure",
-    "INSTANCE_ACTIONS": "Application actions",
+    "INSTANCE_ACTIONS": "Actions",
     "SOURCE": "Source",
     "ISSUES": "Issues",
     "VERSION": "Version",
@@ -525,11 +525,11 @@
       "CONNECTING": "Verifying secure connectivity to your equipment",
       "CONFIGURATION_AWAITING": "Your application instance was successfully deployed. <br>In order to proceed, provide first time configuration using the <i>Configure</i> action button",
       "DEPLOYING": "Application is being activated. This process may take up to several minutes. <br>You will be notified with an email once your instance is ready",
-      "RUNNING": "Your application is now active. <br>You can now access your application using the <i>Access</i> option from the action menu. <br>Use the <i>Configure</i> option from the action menu to update the configuration of your application.",
+      "RUNNING": "Your application is now active. You can access it using the <i>Access</i> option from the <i>Actions</i> menu. <br>Use the <i>Configure</i> and <i>Members</i> options to update the configuration and the list of application users respectively.",
       "UNDEPLOYING": "Your application is being deactivated. This process may take up to several minutes",
       "DONE": "Application deactivated",
       "FAILURE": "",
-      "UNKNOWN": "Unknown state of application - contact with NMaaS Team using contact form available on the \" About\" subpage",
+      "UNKNOWN": "Unknown state of application. <br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>.",
       "REMOVED": "Application removed"
     },
     "SHOW_VERSIONS_LABEL": "Show available versions",

@@ -1,7 +1,7 @@
 {
     "applicationBase": {
         "id": null,
-        "name": "Synapse with Element",
+        "name": "Synapse",
         "license": "Apache License 2.0",
         "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
         "wwwUrl": "https://matrix.org/docs/projects/server/synapse",
@@ -36,7 +36,7 @@
     },
     "application": {
         "id": null,
-        "name": "Synapse with Element",
+        "name": "Synapse",
         "version": "1.22.1",
         "configWizardTemplate": {
             "template": {
