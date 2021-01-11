@@ -1,5 +1,36 @@
 {"versions" : [
   {
+    "verNo" : "1.4.0",
+    "date" : "(2021/01/12)",
+    "topic" : [
+      {
+        "title" : "Enhanced application deployment process",
+        "tags" : "[Enhancement]",
+        "description" : "Introduced separation between the application deployment, first time configuration and activation processes."
+      },
+      {
+        "title" : "Assigning users to running application instances",
+        "tags" : "[Enhancement]",
+        "description" : "Added possibility to manage the list of users with access to particular running application instance."
+      },
+      {
+        "title" : "Synchronisation of user SSH-keys with GitLab account",
+        "tags" : "[Enhancement]",
+        "description" : "Added new functionality to sync user GitLab accounts with keys provided on the user Profile page."
+      },
+      {
+        "title" : "Predefined contact form messages",
+        "tags" : "[Enhancement]",
+        "description" : "Added a set of message types to choose from when submitting the contact form."
+      },
+      {
+        "title" : "New application list sorting options",
+        "tags" : "[Enhancement]",
+        "description" : "Added the possibility to sort available applications by name, rating and popularity."
+      }
+    ]
+  },
+  {
     "verNo" : "1.3.7",
     "date" : "(2020/10/06)",
     "topic" : [

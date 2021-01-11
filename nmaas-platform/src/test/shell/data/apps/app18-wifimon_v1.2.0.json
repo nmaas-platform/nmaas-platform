@@ -247,11 +247,6 @@
                 "configFileTemplateContent": "CREATE TABLE subnets (\nsubnet text,\nsubnet_id serial PRIMARY KEY );\nCREATE TABLE users (\nid serial PRIMARY KEY,\nemail text NOT NULL,\npassword_hash text NOT NULL,\nrole text NOT NULL);\nCREATE TABLE accesspoints (\napid serial PRIMARY KEY,\nmac text NOT NULL,\nlatitude text,\nlongitude text,\nbuilding text,\nfloor text,\nnotes text);\nCREATE TABLE options (\noptionsid serial PRIMARY KEY,\nuserdata text NOT NULL,\nuservisualoption text NOT NULL,\ncorrelationmethod text NOT NULL\n);\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT CONNECT ON DATABASE wifimon_database to wifimon_user;\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT SELECT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT INSERT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT DELETE ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT UPDATE ON accesspoints, options TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE subnets_subnet_id_seq TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE users_id_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE options_optionsid_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE accesspoints_apid_seq TO wifimon_user;\nINSERT INTO users VALUES ('1', '${defaultEmailAddress}', '${helper.encode(defaultAccessPassword)}', 'ADMIN');"
             },
             {
-                "configFileName": "uptime.conf",
-                "configFileDirectory": "pipelines",
-                "configFileTemplateContent": "input { exec { command => \"uptime\" interval => 30 } } output { elasticsearch { hosts => [\"http://${RELEASE_NAME}-pllabprod:9200\"] index => \"logstash\" } }"
-            },
-            {
                 "configFileName": "beats-pipeline.yml",
                 "configFileDirectory": "pipelines",
                 "configFileTemplateContent": "#\n# beats pipeline\n#\ninput {\n    beats {\n        port => 5044\n    }\n}\n\noutput {\n    if ([logtype] == \"radius\") {\n        pipeline { send_to => radiuslogs }\n    } else { # logtype is dhcp\n        pipeline { send_to => dhcplogs }\n    }\n}"
