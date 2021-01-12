@@ -147,7 +147,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-booked",
-                    "version": "1.0.1"
+                    "version": "1.0.2"
                 }
             },
             "storageVolumes": [
