@@ -1,0 +1,26 @@
+<div style="padding-bottom: 15px;" class="panel panel-default">
+    <div class="panel-heading">{{'USER_DETAILS.PREFERENCES' | translate}}</div>
+    <div class="panel-body">
+        <form *ngIf="user" (submit)="submit()" class="form-horizontal" #userPreferencesForm="ngForm">
+
+            <div class="form-group" [ngClass]="{'has-error':  defaultDomain.invalid && (defaultDomain.dirty || defaultDomain.touched),
+ 			    		 	'has-success': defaultDomain.valid && (defaultDomain.dirty || defaultDomain.touched)}">
+                <label for="defaultDomain" class="col-sm-2 control-label">{{'USER_DETAILS.DEFAULT_DOMAIN' | translate}}:</label>
+                <div class="col-sm-10">
+                    <select class="form-control" id="defaultDomain" name="defaultDomain" #defaultDomain="ngModel"
+                            [(ngModel)]="user.defaultDomain" [disabled]="isInMode(ComponentMode.VIEW)">
+                        <option [ngValue]="null">None</option>
+                        <option *ngFor="let role of getFilteredUserRoles()" [ngValue]="role.domainId">{{getNameForDomain(role.domainId)}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <button *ngIf="!isInMode(ComponentMode.VIEW)" type="button"
+                    class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.VIEW_BUTTON' | translate}}</button>
+            <button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit" [disabled]="userPreferencesForm.invalid"
+                    class="btn btn-danger">{{'USER_DETAILS.SUBMIT_BUTTON' | translate}}</button>
+            <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)" type="button"
+                    class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.EDIT_BUTTON' | translate}}</button>
+        </form>
+    </div>
+</div>

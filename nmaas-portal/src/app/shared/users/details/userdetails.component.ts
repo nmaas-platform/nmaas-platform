@@ -11,7 +11,6 @@ import {
 import {AuthService} from '../../../auth/auth.service';
 import {PasswordComponent} from '../../common/password/password.component';
 import {Role} from '../../../model/userrole';
-import {DomainService} from '../../../service';
 
 @Component({
     selector: 'nmaas-userdetails',
@@ -22,8 +21,6 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     public Role = Role;
 
-    public myDomainNames: Map<number, string> = new Map<number, string>();
-
     @ViewChild(PasswordComponent, {static: true})
     public readonly passwordModal: PasswordComponent;
 
@@ -33,7 +30,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     public _errorMessage: string;
 
     @Output()
-    errorMessageChange: EventEmitter<any> = new EventEmitter();
+    public errorMessageChange: EventEmitter<any> = new EventEmitter();
 
     @Output()
     public onSave: EventEmitter<User> = new EventEmitter<User>();
@@ -64,14 +61,11 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     }
 
 
-    constructor(public authService: AuthService, public domainService: DomainService) {
+    constructor(public authService: AuthService) {
         super();
     }
 
     ngOnInit() {
-        this.domainService.getMyDomains().subscribe(
-            domains => domains.forEach(d => this.myDomainNames.set(d.id, d.name))
-        )
     }
 
     public submit() {
@@ -84,10 +78,6 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     public canChangePassword(): boolean {
         return this.user.username === this.authService.getUsername();
-    }
-
-    public getNameForDomain(id: number): string {
-        return this.myDomainNames.get(id);
     }
 
 }

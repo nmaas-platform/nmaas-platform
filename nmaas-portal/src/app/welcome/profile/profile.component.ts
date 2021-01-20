@@ -20,6 +20,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   public languages: string[];
   public errorMessage: string;
   public userDetailsMode: ComponentMode = ComponentMode.VIEW;
+  public userPreferencesMode: ComponentMode = ComponentMode.VIEW;
 
   constructor(protected profileService: ProfileService,
               private translate: TranslateService,
@@ -64,6 +65,14 @@ export class ProfileComponent extends BaseComponent implements OnInit {
     });
   }
 
+  public onPreferencesRefresh() {
+    this.profileService.getOne().subscribe((user) => {
+      this.user = user;
+      this.userPreferencesMode = (this.userPreferencesMode === ComponentMode.VIEW ? ComponentMode.EDIT : ComponentMode.VIEW);
+      this.errorMessage = undefined;
+    });
+  }
+
   public onModeChange() {
       this.userDetailsMode = (this.userDetailsMode === ComponentMode.VIEW ? ComponentMode.EDIT : ComponentMode.VIEW);
   }
@@ -80,10 +89,12 @@ export class ProfileComponent extends BaseComponent implements OnInit {
     this.userService.updateUser(userId, user).subscribe(
         result => {
           this.userDetailsMode = ComponentMode.VIEW;
+          this.userPreferencesMode = ComponentMode.VIEW;
           this.errorMessage = undefined;
         },
         error => {
           this.userDetailsMode = ComponentMode.EDIT;
+          this.userPreferencesMode = ComponentMode.EDIT;
           this.errorMessage = error.message;
         }
     )

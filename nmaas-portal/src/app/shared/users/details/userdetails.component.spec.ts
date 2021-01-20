@@ -24,9 +24,6 @@ describe('UserDetailsComponent', () => {
         const authServiceSpy = createSpyObj('AuthService', ['getUsername'])
         authServiceSpy.getUsername.and.returnValue('andrew')
 
-        const domainServiceSpy = createSpyObj<DomainService>(['getMyDomains'])
-        domainServiceSpy.getMyDomains.and.returnValue(of([]))
-
         TestBed.configureTestingModule({
             declarations: [UserDetailsComponent, MockPasswordComponent],
             imports: [
@@ -41,7 +38,6 @@ describe('UserDetailsComponent', () => {
             ],
             providers: [
                 {provide: AuthService, useValue: authServiceSpy},
-                {provide: DomainService, useValue: domainServiceSpy},
             ]
         })
             .compileComponents();

@@ -26,6 +26,10 @@
                            [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]"
                            [(errorMessage)]="errorMessage" (onSave)="onSave($event)" (refresh)="onRefresh()">
         </nmaas-userdetails>
+        <nmaas-preferences [user]="user" [(userDetailsMode)]="userPreferencesMode"
+                           [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]"
+                           [(errorMessage)]="errorMessage" (onSave)="onSave($event)" (refresh)="onPreferencesRefresh()">
+        </nmaas-preferences>
         <nmaas-userprivileges [user]="user" [mode]="ComponentMode.PROFILVIEW"
                               [allowedModes]="[ComponentMode.PROFILVIEW, ComponentMode.EDIT]">
         </nmaas-userprivileges>
