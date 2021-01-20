@@ -340,7 +340,8 @@
     "SUBMIT_BUTTON": "Submit",
     "EDIT_BUTTON": "Edit",
     "REMOVE_BUTTON": "Remove",
-    "DEFAULT_DOMAIN": "Default domain"
+    "DEFAULT_DOMAIN": "Default domain",
+    "PREFERENCES": "Preferences"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Privileges",

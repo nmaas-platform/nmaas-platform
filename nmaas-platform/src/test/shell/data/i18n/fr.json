@@ -341,7 +341,8 @@
     "SUBMIT_BUTTON": "Soumettre",
     "EDIT_BUTTON": "Modifier",
     "REMOVE_BUTTON": "Supprimer",
-    "DEFAULT_DOMAIN": "Default domain"
+    "DEFAULT_DOMAIN": "Default domain",
+    "PREFERENCES": "Preferences"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Privileges",
