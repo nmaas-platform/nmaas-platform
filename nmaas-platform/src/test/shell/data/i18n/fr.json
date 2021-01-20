@@ -340,7 +340,8 @@
     "VIEW_BUTTON": "Voir",
     "SUBMIT_BUTTON": "Soumettre",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer"
+    "REMOVE_BUTTON": "Supprimer",
+    "DEFAULT_DOMAIN": "Default domain"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Privileges",

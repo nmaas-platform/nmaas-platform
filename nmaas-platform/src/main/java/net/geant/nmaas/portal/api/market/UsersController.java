@@ -176,6 +176,7 @@ public class UsersController {
 			}
 			userDetails.setEmail(userRequest.getEmail());
 		}
+		userDetails.setDefaultDomain(userRequest.getDefaultDomain());
 		userService.update(userDetails);
 		if (!StringUtils.isEmpty(message)) {
 			log.info(String.format("Data of user [%s] with role [%s] were updated. The following changes are: [%s] ",
