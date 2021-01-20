@@ -7,6 +7,8 @@ import {AuthService} from '../../../auth/auth.service';
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import createSpyObj = jasmine.createSpyObj;
+import {DomainService} from '../../../service';
+import {of} from 'rxjs';
 
 @Component({
     selector: 'nmaas-password',
@@ -22,6 +24,9 @@ describe('UserDetailsComponent', () => {
         const authServiceSpy = createSpyObj('AuthService', ['getUsername'])
         authServiceSpy.getUsername.and.returnValue('andrew')
 
+        const domainServiceSpy = createSpyObj<DomainService>(['getMyDomains'])
+        domainServiceSpy.getMyDomains.and.returnValue(of([]))
+
         TestBed.configureTestingModule({
             declarations: [UserDetailsComponent, MockPasswordComponent],
             imports: [
@@ -35,7 +40,8 @@ describe('UserDetailsComponent', () => {
                 }),
             ],
             providers: [
-                {provide: AuthService, useValue: authServiceSpy}
+                {provide: AuthService, useValue: authServiceSpy},
+                {provide: DomainService, useValue: domainServiceSpy},
             ]
         })
             .compileComponents();

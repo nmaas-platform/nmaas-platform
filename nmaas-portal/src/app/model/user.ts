@@ -12,7 +12,9 @@ export class User {
   public termsOfUseAccepted: boolean = undefined;
   public privacyPolicyAccepted: boolean = undefined;
   public ssoUser: boolean = undefined;
-  public selectedLanguage = undefined;
+  public selectedLanguage: string = undefined;
+
+  public defaultDomain: number = undefined;
 
   public lastSuccessfulLoginDate: Date = undefined;
   public firstLoginDate: Date = undefined;

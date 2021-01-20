@@ -11,6 +11,7 @@ import {
 import {AuthService} from '../../../auth/auth.service';
 import {PasswordComponent} from '../../common/password/password.component';
 import {Role} from '../../../model/userrole';
+import {DomainService} from '../../../service';
 
 @Component({
     selector: 'nmaas-userdetails',
@@ -21,6 +22,8 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     public Role = Role;
 
+    public myDomainNames: Map<number, string> = new Map<number, string>();
+
     @ViewChild(PasswordComponent, {static: true})
     public readonly passwordModal: PasswordComponent;
 
@@ -29,17 +32,8 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     public _errorMessage: string;
 
-    @Input()
-    get errorMessage() {
-        return this._errorMessage;
-    }
-
     @Output()
     errorMessageChange: EventEmitter<any> = new EventEmitter();
-
-    set errorMessage(val) {
-        this._errorMessage = val;
-    }
 
     @Output()
     public onSave: EventEmitter<User> = new EventEmitter<User>();
@@ -47,13 +41,22 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     @Output()
     public refresh: EventEmitter<any> = new EventEmitter();
 
+    @Output()
+    public userDetailsModeChange: EventEmitter<any> = new EventEmitter();
+
+    @Input()
+    get errorMessage() {
+        return this._errorMessage;
+    }
+
+    set errorMessage(val) {
+        this._errorMessage = val;
+    }
+
     @Input()
     get userDetailsMode() {
         return this.mode;
     }
-
-    @Output()
-    userDetailsModeChange: EventEmitter<any> = new EventEmitter();
 
     set userDetailsMode(val) {
         this.mode = val;
@@ -61,12 +64,14 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     }
 
 
-    constructor(public authService: AuthService) {
+    constructor(public authService: AuthService, public domainService: DomainService) {
         super();
     }
 
     ngOnInit() {
-
+        this.domainService.getMyDomains().subscribe(
+            domains => domains.forEach(d => this.myDomainNames.set(d.id, d.name))
+        )
     }
 
     public submit() {
@@ -79,6 +84,10 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     public canChangePassword(): boolean {
         return this.user.username === this.authService.getUsername();
+    }
+
+    public getNameForDomain(id: number): string {
+        return this.myDomainNames.get(id);
     }
 
 }
