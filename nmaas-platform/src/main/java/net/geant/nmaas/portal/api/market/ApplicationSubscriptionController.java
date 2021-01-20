@@ -1,10 +1,14 @@
 package net.geant.nmaas.portal.api.market;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.AllArgsConstructor;
+import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +29,12 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
 @RestController
 @RequestMapping("/api/subscriptions")
+@AllArgsConstructor
 public class ApplicationSubscriptionController extends AppBaseController {
 	
-	ApplicationSubscriptionService appSubscriptions;
+	private final ApplicationSubscriptionService appSubscriptions;
 
-	@Autowired
-	public ApplicationSubscriptionController(ApplicationSubscriptionService appSubscriptions){
-		this.appSubscriptions = appSubscriptions;
-	}
+	private final RatingRepository ratingRepository;
 	
 	@PostMapping
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'OWNER')")
@@ -86,13 +88,19 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@Transactional(readOnly=true)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	public List<ApplicationBaseView> getDomainSubscribedApplications(@PathVariable Long domainId) {
-		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBaseView.class)).collect(Collectors.toList());
+		return appSubscriptions.getSubscribedApplications(domainId).stream()
+				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
+				.map(this::setAppRating)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps")
 	@Transactional(readOnly=true)
 	public List<ApplicationBaseView> getSubscribedApplications() {
-		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBaseView.class)).collect(Collectors.toList());
+		return appSubscriptions.getSubscribedApplications().stream()
+				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
+				.map(this::setAppRating)
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps/{appId}")
@@ -100,6 +108,19 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	public List<ApplicationSubscriptionBase> getApplicationSubscriptions(@PathVariable Long appId) {
 		return appSubscriptions.getSubscriptionsBy(null, appId).stream()
 				.map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
+	}
+
+	private ApplicationBaseView setAppRating(ApplicationBaseView baseView) {
+		Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
+		baseView.setRate(this.createAppRateView(rating));
+		return baseView;
+	}
+
+	private AppRateView createAppRateView(Integer[] rating) {
+		return new AppRateView(
+				Arrays.stream(rating).mapToInt(Integer::intValue).average().orElse(0.0),
+				Arrays.stream(rating).collect(Collectors.groupingBy(s -> s, Collectors.counting()))
+		);
 	}
 	
 }
