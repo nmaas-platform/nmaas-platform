@@ -55,6 +55,8 @@ public class User implements Serializable {
 
 	private String selectedLanguage;
 
+	private Long defaultDomain;
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
 	private List<UserRole> roles = new ArrayList<>();
 

@@ -17,9 +17,9 @@ import java.security.Principal;
 @RequestMapping("/api/profile")
 public class ProfileController {
 
-    private UserService users;
+    private final UserService users;
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public ProfileController(UserService users, ModelMapper modelMapper){
