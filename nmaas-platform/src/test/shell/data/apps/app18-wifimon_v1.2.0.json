@@ -147,7 +147,7 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-wifimon",
-                "version": "1.2.0"
+                "version": "1.2.1"
             },
             "mainDeploymentName": "ui"
         },
@@ -245,16 +245,6 @@
                 "configFileName": "init.sql",
                 "configFileDirectory": "ui-init",
                 "configFileTemplateContent": "CREATE TABLE subnets (\nsubnet text,\nsubnet_id serial PRIMARY KEY );\nCREATE TABLE users (\nid serial PRIMARY KEY,\nemail text NOT NULL,\npassword_hash text NOT NULL,\nrole text NOT NULL);\nCREATE TABLE accesspoints (\napid serial PRIMARY KEY,\nmac text NOT NULL,\nlatitude text,\nlongitude text,\nbuilding text,\nfloor text,\nnotes text);\nCREATE TABLE options (\noptionsid serial PRIMARY KEY,\nuserdata text NOT NULL,\nuservisualoption text NOT NULL,\ncorrelationmethod text NOT NULL\n);\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT CONNECT ON DATABASE wifimon_database to wifimon_user;\nGRANT USAGE ON SCHEMA public to wifimon_user;\nGRANT SELECT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT INSERT ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT DELETE ON subnets, users, accesspoints, options TO wifimon_user;\nGRANT UPDATE ON accesspoints, options TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE subnets_subnet_id_seq TO wifimon_user;\nGRANT USAGE, SELECT ON SEQUENCE users_id_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE options_optionsid_seq TO wifimon_user;\nGRANT USAGE, SELECT, UPDATE ON SEQUENCE accesspoints_apid_seq TO wifimon_user;\nINSERT INTO users VALUES ('1', '${defaultEmailAddress}', '${helper.encode(defaultAccessPassword)}', 'ADMIN');"
-            },
-            {
-                "configFileName": "logstash.yml",
-                "configFileDirectory": "logstash-config",
-                "configFileTemplateContent": "http.host: 0.0.0.0\nxpack.monitoring.enabled: false"
-            },
-            {
-                "configFileName": "pipelines.yml",
-                "configFileDirectory": "logstash-config",
-                "configFileTemplateContent": "- pipeline.id: beats-pipeline\n  path.config: \"/usr/share/logstash/pipeline/beats-pipeline.yml\"\n- pipeline.id: radius-pipeline\n  path.config: \"/usr/share/logstash/pipeline/radius-pipeline.yml\"\n- pipeline.id: dhcp-pipeline\n  path.config: \"/usr/share/logstash/pipeline/dhcp-pipeline.yml\""
             },
             {
                 "configFileName": "beats-pipeline.yml",

@@ -14,7 +14,7 @@ repositories {
 }
 
 
-version = '1.4.0'
+version = '1.4.1-SNAPSHOT'
 group = 'net.geant.nmaas'
 
 sourceCompatibility = 1.8
