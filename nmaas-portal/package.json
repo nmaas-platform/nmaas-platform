@@ -32,7 +32,7 @@
     "angular-password-strength-meter": "3.0.0",
     "bootstrap": "^3.4.1",
     "document-register-element": "^1.14.10",
-    "formiojs": "^4.12.3",
+    "formiojs": "^4.12.4",
     "jasmine": "^2.99.0",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
@@ -45,7 +45,7 @@
     "primeicons": "^1.0.0",
     "primeng": "^10.0.3",
     "rxjs": "^6.6.3",
-    "tslib": "^2.0.0",
+    "tslib": "^2.1.0",
     "zone.js": "~0.10.2",
     "zxcvbn": "^4.4.2",
     "zxcvbn3": "^0.1.1"
@@ -57,7 +57,7 @@
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@types/jasmine": "^2.8.17",
-    "@types/node": "^12.19.9",
+    "@types/node": "^12.19.14",
     "babel-preset-env": "^1.7.0",
     "codelyzer": "^5.1.2",
     "intl": "^1.2.5",
@@ -77,6 +77,6 @@
     "ts-node": "^4.1.0",
     "tslint": "~6.1.0",
     "typescript": "4.0.3",
-    "webpack": "^4.44.2"
+    "webpack": "^4.46.0"
   }
 }

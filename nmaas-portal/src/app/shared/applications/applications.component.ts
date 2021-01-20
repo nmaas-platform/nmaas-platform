@@ -16,7 +16,7 @@ function compareAppsName(a: ApplicationBase, b: ApplicationBase): number {
 }
 
 function compareAppsRating(a: ApplicationBase, b: ApplicationBase): number {
-    return (a.rate.averageRate - b.rate.averageRate) * -1; // desc
+    return (a.rate?.averageRate - b.rate?.averageRate) * -1; // desc
 }
 
 function compareAppsPopularity(a: ApplicationBase, b: ApplicationBase, stats: any = {}): number {
