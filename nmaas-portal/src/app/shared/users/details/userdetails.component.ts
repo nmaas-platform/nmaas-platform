@@ -29,17 +29,8 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     public _errorMessage: string;
 
-    @Input()
-    get errorMessage() {
-        return this._errorMessage;
-    }
-
     @Output()
-    errorMessageChange: EventEmitter<any> = new EventEmitter();
-
-    set errorMessage(val) {
-        this._errorMessage = val;
-    }
+    public errorMessageChange: EventEmitter<any> = new EventEmitter();
 
     @Output()
     public onSave: EventEmitter<User> = new EventEmitter<User>();
@@ -47,13 +38,22 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     @Output()
     public refresh: EventEmitter<any> = new EventEmitter();
 
+    @Output()
+    public userDetailsModeChange: EventEmitter<any> = new EventEmitter();
+
+    @Input()
+    get errorMessage() {
+        return this._errorMessage;
+    }
+
+    set errorMessage(val) {
+        this._errorMessage = val;
+    }
+
     @Input()
     get userDetailsMode() {
         return this.mode;
     }
-
-    @Output()
-    userDetailsModeChange: EventEmitter<any> = new EventEmitter();
 
     set userDetailsMode(val) {
         this.mode = val;
@@ -66,7 +66,6 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     }
 
     ngOnInit() {
-
     }
 
     public submit() {

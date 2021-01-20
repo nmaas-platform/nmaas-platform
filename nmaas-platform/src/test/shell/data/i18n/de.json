@@ -339,7 +339,9 @@
     "VIEW_BUTTON": "Anzeigen",
     "SUBMIT_BUTTON": "Sende",
     "EDIT_BUTTON": "Bearbeiten",
-    "REMOVE_BUTTON": "Löschen"
+    "REMOVE_BUTTON": "Löschen",
+    "DEFAULT_DOMAIN": "Default domain",
+    "PREFERENCES": "Preferences"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Berechtigungen",

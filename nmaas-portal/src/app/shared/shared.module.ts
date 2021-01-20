@@ -55,6 +55,7 @@ import {NewSshKeyComponent} from './users/new-ssh-key/new-ssh-key.component';
 import {ModalProvideSshKeyComponent} from './modal/modal-provide-ssh-key/modal-provide-ssh-key.component';
 import { ContactComponent } from './contact/contact.component';
 import {FormioModule} from 'angular-formio';
+import { PreferencesComponent } from './users/preferences/preferences.component';
 
 @NgModule({
     imports: [
@@ -113,6 +114,7 @@ import {FormioModule} from 'angular-formio';
         NewSshKeyComponent,
         ModalProvideSshKeyComponent,
         ContactComponent,
+        PreferencesComponent,
     ],
     providers: [
         PasswordValidator,
@@ -161,6 +163,7 @@ import {FormioModule} from 'angular-formio';
         DomainRolesDirective,
         SshKeysComponent,
         ModalProvideSshKeyComponent,
+        PreferencesComponent,
     ]
 })
 export class SharedModule {

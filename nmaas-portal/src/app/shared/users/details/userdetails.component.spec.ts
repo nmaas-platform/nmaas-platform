@@ -7,6 +7,8 @@ import {AuthService} from '../../../auth/auth.service';
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import createSpyObj = jasmine.createSpyObj;
+import {DomainService} from '../../../service';
+import {of} from 'rxjs';
 
 @Component({
     selector: 'nmaas-password',
@@ -35,7 +37,7 @@ describe('UserDetailsComponent', () => {
                 }),
             ],
             providers: [
-                {provide: AuthService, useValue: authServiceSpy}
+                {provide: AuthService, useValue: authServiceSpy},
             ]
         })
             .compileComponents();

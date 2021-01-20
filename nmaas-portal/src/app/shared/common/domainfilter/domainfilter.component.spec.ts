@@ -9,6 +9,7 @@ import {AuthService} from '../../../auth/auth.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {of} from 'rxjs';
 import {Domain} from '../../../model/domain';
+import {ProfileService} from '../../../service/profile.service';
 
 describe('DomainFilterComponent', () => {
     let component: DomainFilterComponent;
@@ -53,6 +54,9 @@ describe('DomainFilterComponent', () => {
         domainServiceSpy.getAll.and.returnValue(of([domainG, domain1, domain2]))
         domainServiceSpy.getMyDomains.and.returnValue(of([domain1, domain2]))
 
+        const profileSpy = createSpyObj<ProfileService>(['getOne']);
+        profileSpy.getOne.and.returnValue(of({id: 1, defaultDomain: 1}))
+
         TestBed.configureTestingModule({
             declarations: [DomainFilterComponent],
             imports: [
@@ -73,6 +77,7 @@ describe('DomainFilterComponent', () => {
                         selectDomainId: function(data) {console.log('selectDomainId fake', data)},
                     }
                 },
+                {provide: ProfileService, useValue: profileSpy}
             ]
         })
             .compileComponents();

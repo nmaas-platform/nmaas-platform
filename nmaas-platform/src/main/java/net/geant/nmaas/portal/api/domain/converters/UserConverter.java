@@ -21,6 +21,7 @@ public class UserConverter extends AbstractConverter<User, UserView> {
                 .lastname(source.getLastname())
                 .email(source.getEmail())
                 .enabled(source.isEnabled())
+                .defaultDomain(source.getDefaultDomain())
                 .roles(convertUserRole(source))
                 .ssoUser(StringUtils.isNotEmpty(source.getSamlToken()))
                 .selectedLanguage(source.getSelectedLanguage())

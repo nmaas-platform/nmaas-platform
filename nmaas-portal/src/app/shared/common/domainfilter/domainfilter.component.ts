@@ -6,6 +6,8 @@ import {Component, OnInit} from '@angular/core';
 import {Subscription, Observable, of, interval} from 'rxjs';
 
 import {map} from 'rxjs/operators';
+import {ProfileService} from '../../../service/profile.service';
+import {User} from '../../../model';
 
 @Component({
     selector: 'nmaas-domain-filter',
@@ -22,9 +24,12 @@ export class DomainFilterComponent implements OnInit {
 
     public refresh: Subscription;
 
+    public profile: User;
+
     constructor(private authService: AuthService,
                 private domainService: DomainService,
-                private userData: UserDataService) {
+                private userData: UserDataService,
+                private profileService: ProfileService) {
     }
 
     ngOnInit() {
@@ -36,11 +41,17 @@ export class DomainFilterComponent implements OnInit {
                 }
             });
         }
-        this.updateDomains();
-        this.domains.subscribe(domain => {
-            this.domainName = domain[0].name;
-            this.userData.selectDomainId(domain[0].id)
-        });
+        this.profileService.getOne().subscribe(
+            profile => {
+                this.profile = profile;
+
+                this.updateDomains();
+                this.domains.subscribe(domain => {
+                    this.domainName = domain[0].name;
+                    this.userData.selectDomainId(domain[0].id)
+                });
+            }
+        );
 
         this.userData.selectedDomainId.subscribe(id => this.domainId = id);
     }
@@ -85,13 +96,18 @@ export class DomainFilterComponent implements OnInit {
         this.domains = this.domains.pipe(
             map(
                 domains => {
-                    const global = domains.find(domain => domain.id === globalDomainId)
-                    domains = domains.filter(domain => domain.id !== globalDomainId)
+                    const global = domains.find(domain => domain.id === globalDomainId);
+                    const defaultDomain = domains.find(domain => domain.id === this.profile.defaultDomain);
+                    domains = domains.filter(domain => domain.id !== globalDomainId && domain.id !== this.profile.defaultDomain);
+
                     domains.sort((a: Domain, b: Domain): number => {
                         return a.name.localeCompare(b.name)
                     })
                     if (global !== undefined) {
                         domains.unshift(global)
+                    }
+                    if (defaultDomain !== undefined && this.profile.defaultDomain !== globalDomainId) {
+                        domains.unshift(defaultDomain)
                     }
                     return domains
                 }
@@ -99,16 +115,11 @@ export class DomainFilterComponent implements OnInit {
         )
     }
 
-    public onChange($event) {
-        console.log('onChange(', this.domainId, ')');
-        this.userData.selectDomainId(Number(this.domainId));
-    }
-
-    public changeDomain(domain: number, dName: string) {
-        console.log('domainChange(', domain, ')');
-        this.domainId = domain;
-        this.domainName = dName;
-        this.userData.selectDomainId(Number(domain));
+    public changeDomain(domainId: number, domainName: string) {
+        console.log(`domainChange(${domainId})`);
+        this.domainId = domainId;
+        this.domainName = domainName;
+        this.userData.selectDomainId(Number(domainId));
     }
 
     public getCurrent() {
