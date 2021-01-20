@@ -76,9 +76,9 @@
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let content of getTemplateInSelectedLang(template.templates).template | keyvalue; let i=index">
-            <td>{{content.key}}</td>
-            <td><input style="width: 100%;" class="form-control" [ngModel]="content.value" name="content-{{i}}-input"></td>
+          <tr *ngFor="let key of getKeys(getTemplateInSelectedLang(template.templates).template); let i=index">
+            <td>{{key}}</td>
+            <td><input style="width: 100%;" class="form-control" [(ngModel)]="getTemplateInSelectedLang(template.templates).template[key]" name="content-{{i}}-input"></td>
           </tr>
           </tbody>
         </table>
@@ -111,9 +111,9 @@
           </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let content of getTemplateInSelectedLang(template.templates).template | keyvalue; let i=index">
-              <td>{{content.key}}</td>
-              <td><input style="width: 100%;" class="form-control" [ngModel]="content.value" name="raw-content-{{i}}-input"></td>
+            <tr *ngFor="let key of getKeys(getTemplateInSelectedLang(template.templates).template); let i=index">
+              <td>{{key}}</td>
+              <td><input style="width: 100%;" class="form-control" [(ngModel)]="getTemplateInSelectedLang(template.templates).template[key]" name="raw-content-{{i}}-input"></td>
             </tr>
           </tbody>
         </table>
