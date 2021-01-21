@@ -160,9 +160,9 @@
         },
         "globalDeployParameters": {
             "elastic-stack.elasticsearch.nodeGroup": "pllabprod",
-            "elastic-stack.elasticsearch.imageTag": "7.7.1",
-            "elastic-stack.logstash.imageTag": "7.7.1",
-            "elastic-stack.kibana.imageTag": "7.7.1",
+            "elastic-stack.elasticsearch.imageTag": "7.9.3",
+            "elastic-stack.logstash.imageTag": "7.9.3",
+            "elastic-stack.kibana.imageTag": "7.9.3",
             "elastic-stack.elasticsearch.clusterHealthCheckParams": "\"wait_for_status=yellow&timeout=1s\"",
             "elastic-stack.logstash.extraEnvs[0].name": "ENCRYPTION_STRING",
             "elastic-stack.logstash.extraEnvs[0].value": "%RANDOM_STRING_32%"
