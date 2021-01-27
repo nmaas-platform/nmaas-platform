@@ -13,6 +13,9 @@ public abstract class HelmCommand implements Command {
     protected static final String OPTION_VERSION = "--version";
     protected static final String TLS = "--tls";
 
+    protected static final String HELM_VERSION_2 = "v2";
+    protected static final String HELM_VERSION_3 = "v3";
+
     protected String command;
 
     @Override
