@@ -107,6 +107,7 @@ helm.useLocalCharts=${HELM_USELOCALCHARTS}
 helm.repositoryName=${HELM_REPOSITORY}
 helm.chartsDirectory=${HELM_LOCALCHARTSDIR}
 helm.enableTls=${HELM_ENABLETLS}
+helm.version=${HELM_VERSION}
 
 # --------------------- #
 # Janitor configuration #

@@ -14,6 +14,9 @@ import java.util.Map;
 @Component
 public class HelmCommandExecutor {
 
+    @Value("${helm.version:v3}")
+    String helmVersion;
+
     @Value("${helm.address}")
     String helmAddress;
 
@@ -81,7 +84,14 @@ public class HelmCommandExecutor {
 
     void executeHelmDeleteCommand(String releaseName) {
         try {
-            HelmDeleteCommand command = HelmDeleteCommand.command(releaseName, enableTls);
+            HelmCommand command;
+            if (HelmCommand.HELM_VERSION_2.equals(helmVersion)) {
+                command = HelmDeleteCommand.command(releaseName, enableTls);
+            } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion)) {
+                command = HelmUninstallCommand.command(releaseName, enableTls);
+            } else {
+                throw new CommandExecutionException("Unknown Helm version in use: " + helmVersion);
+            }
             singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
