@@ -24,7 +24,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @Log4j2
@@ -121,18 +120,18 @@ public class UserLoginRegisterRepositoryTest {
         List<UserLoginDate> lst = userLoginRegisterRepository.findAllFirstAndLastLogin();
 
         assertEquals(2, lst.size());
-        assertTrue(lst.get(0).getMinLoginDate().isEqual(firstLoginDate));
-        assertTrue(lst.get(1).getMinLoginDate().isEqual(firstLoginDate));
-        assertTrue(lst.get(0).getMaxLoginDate().isEqual(lastLoginDate));
-        assertTrue(lst.get(1).getMaxLoginDate().isEqual(lastLoginDate));
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(0).getMinLoginDate().toEpochSecond());
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(1).getMinLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(0).getMaxLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(1).getMaxLoginDate().toEpochSecond());
 
         lst = userLoginRegisterRepository.findAllFirstAndLastLoginByType(UserLoginRegisterType.SUCCESS);
 
         assertEquals(2, lst.size());
-        assertTrue(lst.get(0).getMinLoginDate().isEqual(firstLoginDate));
-        assertTrue(lst.get(1).getMinLoginDate().isEqual(firstLoginDate));
-        assertTrue(lst.get(0).getMaxLoginDate().isEqual(lastLoginDate));
-        assertTrue(lst.get(1).getMaxLoginDate().isEqual(lastLoginDate));
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(0).getMinLoginDate().toEpochSecond());
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(1).getMinLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(0).getMaxLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(1).getMaxLoginDate().toEpochSecond());
     }
 
     @Test
@@ -162,8 +161,8 @@ public class UserLoginRegisterRepositoryTest {
         List<UserLoginDate> lst = userLoginRegisterRepository.findAllFirstAndLastLoginByType(UserLoginRegisterType.FAILURE);
 
         assertEquals(2, lst.size());
-        assertTrue(lst.get(0).getMaxLoginDate().isEqual(midLoginDate));
-        assertTrue(lst.get(1).getMaxLoginDate().isEqual(midLoginDate));
+        assertEquals(midLoginDate.toEpochSecond(), lst.get(0).getMaxLoginDate().toEpochSecond());
+        assertEquals(midLoginDate.toEpochSecond(), lst.get(1).getMaxLoginDate().toEpochSecond());
     }
 
 }
