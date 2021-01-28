@@ -7,7 +7,7 @@
         "wwwUrl": "https://matrix.org/docs/projects/server/synapse",
         "sourceUrl": "https://github.com/matrix-org/synapse",
         "issuesUrl": "https://github.com/matrix-org/synapse/issues",
-        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-SynapseElement",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Synapse",
         "descriptions": [
             {
                 "language": "en",
