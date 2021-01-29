@@ -4,5 +4,6 @@ public enum ServiceAccessMethodType {
     DEFAULT,
     EXTERNAL,
     INTERNAL,
-    PUBLIC
+    PUBLIC,
+    LOCAL
 }

@@ -65,4 +65,5 @@ service ReadinessService {
 
 service InformationService {
     rpc RetrieveServiceIp(InstanceRequest) returns (InfoServiceResponse);
+    rpc CheckServiceExists(InstanceRequest) returns (InfoServiceResponse);
 }
