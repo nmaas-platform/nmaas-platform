@@ -14,6 +14,7 @@ describe('AccessMethodsModalComponent', () => {
     {type: ServiceAccessMethodType.EXTERNAL, name: 'External-1', protocol: 'Web', url: 'external.org'},
     {type: ServiceAccessMethodType.EXTERNAL, name: 'External-2', protocol: 'Web', url: 'http://external.stack.org'},
     {type: ServiceAccessMethodType.INTERNAL, name: 'SSH access', protocol: 'SSH', url: 'ssh user@remote'},
+    {type: ServiceAccessMethodType.LOCAL, name: 'Local', protocol: 'in-cluster', url: 'http://local-service-name'},
   ];
 
   beforeEach(async(() => {
@@ -48,5 +49,6 @@ describe('AccessMethodsModalComponent', () => {
     expect(component.accessMethods.length).toEqual(am.length);
     expect(component.externalAccessMethods.length).toEqual(3);
     expect(component.internalAccessMethods.length).toEqual(1);
+    expect(component.localAccessMethods.length).toEqual(1);
   });
 });
