@@ -26,6 +26,11 @@ public class JanitorService {
 
     private ManagedChannel channel;
 
+    protected JanitorService(KNamespaceService namespaceService, ManagedChannel channel) {
+        this.namespaceService = namespaceService;
+        this.channel = channel;
+    }
+
     @Autowired
     public JanitorService(KNamespaceService namespaceService, Environment env) {
         this.namespaceService = namespaceService;
@@ -107,7 +112,6 @@ public class JanitorService {
         }
     }
 
-    //TODO: Replace with proper health check once it's implemented in Janitor
     boolean isJanitorAvailable(){
         return Arrays.asList(ConnectivityState.CONNECTING, ConnectivityState.IDLE, ConnectivityState.READY).contains(this.channel.getState(false));
     }
@@ -135,6 +139,19 @@ public class JanitorService {
         switch (response.getStatus()) {
             case OK:
                 return response.getInfo();
+            case FAILED:
+            default:
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
+    }
+
+    public void checkServiceExists(Identifier serviceId, String domain) {
+        log.info(String.format("Verifying if provided service %s exists in domain %s", serviceId.value(), domain));
+        InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
+        JanitorManager.InfoServiceResponse response = stub.checkServiceExists(buildInstanceRequest(serviceId, domain));
+        switch (response.getStatus()) {
+            case OK:
+                return;
             case FAILED:
             default:
                 throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));

@@ -2,8 +2,8 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.4.1'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.sonarqube" version "3.0"
     id 'com.google.protobuf' version "0.8.13"
@@ -12,7 +12,6 @@ plugins {
 repositories {
     mavenCentral()
 }
-
 
 version = '1.4.1-SNAPSHOT'
 group = 'net.geant.nmaas'
@@ -114,6 +113,7 @@ dependencies {
     implementation('io.grpc:grpc-stub:1.31.1')
     implementation('io.fabric8:kubernetes-client:4.11.1')
 
+    testCompile('org.mockito:mockito-inline:3.7.7')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')

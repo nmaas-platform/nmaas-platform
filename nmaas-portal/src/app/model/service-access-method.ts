@@ -2,7 +2,8 @@ export enum ServiceAccessMethodType {
     DEFAULT= 'DEFAULT',
     EXTERNAL = 'EXTERNAL',
     INTERNAL = 'INTERNAL',
-    PUBLIC = 'PUBLIC'
+    PUBLIC = 'PUBLIC',
+    LOCAL = 'LOCAL'
 }
 
 export class ServiceAccessMethod {

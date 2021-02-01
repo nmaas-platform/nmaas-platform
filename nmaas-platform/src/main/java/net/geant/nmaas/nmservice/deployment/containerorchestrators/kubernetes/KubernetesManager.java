@@ -54,6 +54,7 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.INTERNAL;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.LOCAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.PUBLIC;
 
 /**
@@ -242,7 +243,7 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(Set<ServiceAccessMethod> inputAccessMethods, String serviceExternalUrl, String serviceBasePublicUrl) {
         Set<ServiceAccessMethod> accessMethods = inputAccessMethods.stream()
-                .filter(m -> m.isOfType(INTERNAL))
+                .filter(m -> m.isOfType(INTERNAL) || m.isOfType(LOCAL))
                 .collect(Collectors.toSet());
         accessMethods.addAll(inputAccessMethods.stream()
                 .filter(m -> m.isOfType(DEFAULT))
@@ -278,6 +279,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             }
 
             retrieveOrUpdateInternalServiceIpAddress(service);
+            retrieveOrUpdateLocalServiceName(service);
 
             return true;
 
@@ -328,6 +330,24 @@ public class KubernetesManager implements ContainerOrchestrator {
         return componentName != null ?
                 Identifier.newInstance(releaseName + "-" + componentName) :
                 Identifier.newInstance(releaseName);
+    }
+
+    private void retrieveOrUpdateLocalServiceName(KubernetesNmServiceInfo service) {
+        try {
+            Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
+                    .map(m -> {
+                        if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
+                            Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
+                            janitorService.checkServiceExists(serviceName, service.getDomain());
+                            m.setUrl(getUserAtIpAddressUrl(serviceName.getValue(), m.getProtocol()));
+                        }
+                        return m;
+                    })
+                    .collect(Collectors.toSet());
+            repositoryManager.updateKServiceAccessMethods(accessMethods);
+        } catch (JanitorResponseException je) {
+            log.error("Could not retrieve service name for " + service.getDescriptiveDeploymentId());
+        }
     }
 
     @Override

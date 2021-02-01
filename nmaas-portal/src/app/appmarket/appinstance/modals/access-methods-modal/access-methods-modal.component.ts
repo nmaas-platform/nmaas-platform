@@ -18,6 +18,7 @@ export class AccessMethodsModalComponent implements OnInit {
   public externalAccessMethods: ServiceAccessMethod[] = [];
   public internalAccessMethods: ServiceAccessMethod[] = [];
   public publicAccessMethods: ServiceAccessMethod[] = [];
+  public localAccessMethods : ServiceAccessMethod[] = [];
 
   constructor() { }
 
@@ -27,6 +28,7 @@ export class AccessMethodsModalComponent implements OnInit {
           || this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.DEFAULT);
       this.internalAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.INTERNAL);
       this.publicAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.PUBLIC);
+      this.localAccessMethods = this.accessMethods.filter(s => this.accessMethodTypeAsEnum(s.type) === ServiceAccessMethodType.LOCAL);
     }
   }
 
