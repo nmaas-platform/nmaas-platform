@@ -906,45 +906,46 @@
     "TEXT_SECOND_PART": "Sugerujemy zrobić krótką przerwę, np. na kawę - pracujemy nad tym. Spróbuj ponownie później!"
   },
   "MESSAGE_MODAL": {
-    "HEADER": "Send message",
-    "CONFIRM": "Send",
-    "DISMISS": "Dismiss"
+    "HEADER": "Wysyłanie wiadomości",
+    "CONFIRM": "Wyślij",
+    "DISMISS": "Pomiń"
   },
   "APP_ACCESS_METHODS_MODAL": {
-    "HEADER": "Access methods to the application",
-    "EXTERNAL_HEADER": "External access options",
-    "EXTERNAL_ACCESS": "Access the application",
-    "SERVICE_NAME": "Service name",
-    "ACCESS_METHOD": "Access method",
-    "INTERNAL_HEADER": "Internal access options",
-    "HIDE_BUTTON": "Cancel",
-    "MAIN_ACCESS": "Main Interface",
-    "PUBLIC_HEADER": "Public access options",
-    "PUBLIC_ACCESS": "Access the application"
+    "HEADER": "Metody dostępu do aplikacji",
+    "EXTERNAL_HEADER": "Dostęp z zewnątrz (w ramach VPN)",
+    "EXTERNAL_ACCESS": "Otwórz aplikację",
+    "SERVICE_NAME": "Nazwa serwisu",
+    "ACCESS_METHOD": "Metoda dostępu",
+    "INTERNAL_HEADER": "Dostęp wewnętrzny (w ramach VPN)",
+    "HIDE_BUTTON": "Anuluj",
+    "MAIN_ACCESS": "Główny interfejs użytkownika",
+    "PUBLIC_HEADER": "Dostęp publiczny (bez VPN)",
+    "PUBLIC_ACCESS": "Otwórz aplikację",
+    "LOCAL_HEADER": "Dostęp lokalny (w ramach klastra)"
   },
   "GUEST_USER_MODAL": {
-    "HEADER": "Guest account",
+    "HEADER": "Konto Gościa",
     "CONTENT": "You are currently logged as guest user. In order to deploy applications, You need to be assigned to a domain. Contact your administrator for further information.",
     "CONFIRM_BUTTON": "OK"
   },
   "SSH_KEYS": {
-    "HEADER": "SSH keys",
+    "HEADER": "Klucze SSH",
     "TABLE": {
-      "NAME": "Name",
+      "NAME": "Nazwa",
       "FINGERPRINT": "Fingerprint",
-      "ACTIONS": "Actions"
+      "ACTIONS": "Akcje"
     },
     "BUTTON_INVALIDATE": "Invalidate",
-    "NO_KEYS": "No keys available",
-    "BUTTON_NEW_KEY": "Add new key",
+    "NO_KEYS": "Brak dodanych kluczy",
+    "BUTTON_NEW_KEY": "Dodaj nowy klucz",
     "MODAL": {
-      "HEADER": "Add new SSH key",
+      "HEADER": "Dodawanie nowego klucza SSH",
       "LABEL": {
-        "NAME": "Name",
-        "KEY": "Key"
+        "NAME": "Nazwa",
+        "KEY": "Klucz"
       },
-      "BUTTON_ADD": "Add",
-      "BUTTON_CANCEL": "Cancel",
+      "BUTTON_ADD": "Dodaj",
+      "BUTTON_CANCEL": "Anuluj",
       "ERROR": {
         "NAME_REQUIRED": "Name is required",
         "NAME_MINLENGTH": "Name must have at lest 6 characters",

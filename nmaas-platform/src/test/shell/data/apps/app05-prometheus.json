@@ -396,6 +396,11 @@
                         "INGRESS_LETSENCRYPT": "ingress.tls.acme",
                         "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
                     }
+                },
+                {
+                    "type": "LOCAL",
+                    "name": "in-cluster",
+                    "tag": "prometheus"
                 }
             ]
         },

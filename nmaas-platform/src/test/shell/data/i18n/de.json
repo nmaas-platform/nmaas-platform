@@ -910,16 +910,17 @@
     "DISMISS": "Dismiss"
   },
   "APP_ACCESS_METHODS_MODAL": {
-    "HEADER": "Access methods to the application",
-    "EXTERNAL_HEADER": "External access options",
-    "EXTERNAL_ACCESS": "Access the application",
-    "SERVICE_NAME": "Service name",
-    "ACCESS_METHOD": "Access method",
-    "INTERNAL_HEADER": "Internal access options",
-    "HIDE_BUTTON": "Cancel",
-    "MAIN_ACCESS": "Main user interface",
-    "PUBLIC_HEADER": "Public access options",
-    "PUBLIC_ACCESS": "Access the application"
+    "HEADER": "Zugriffsmethoden auf die Anwendung",
+    "EXTERNAL_HEADER": "Externe Zugriffsoptionen",
+    "EXTERNAL_ACCESS": "Zugriff auf Anwendung",
+    "SERVICE_NAME": "Servicename",
+    "ACCESS_METHOD": "Zugriffsmethode",
+    "INTERNAL_HEADER": "Interne Zugriffsoptionen",
+    "HIDE_BUTTON": "Stornieren",
+    "MAIN_ACCESS": "Hauptbenutzeroberfläche",
+    "PUBLIC_HEADER": "Öffentliche Zugangsmöglichkeiten",
+    "PUBLIC_ACCESS": "Zugriff auf Anwendung",
+    "LOCAL_HEADER": "Lokale Zugriffsoptionen (im Cluster)"
   },
   "GUEST_USER_MODAL": {
     "HEADER": "Guest account",

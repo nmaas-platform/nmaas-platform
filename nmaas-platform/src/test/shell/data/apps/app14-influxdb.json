@@ -169,6 +169,11 @@
                         "INGRESS_CLASS": "ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
                         "INGRESS_TLS_ENABLED": "ingress.tls"
                     }
+                },
+                {
+                    "type": "LOCAL",
+                    "name": "in-cluster",
+                    "tag": "influxdb"
                 }
             ]
         },
