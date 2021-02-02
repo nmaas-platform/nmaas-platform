@@ -32,7 +32,7 @@ public class HelmCommandExecutor {
     @Value("${helm.chartsDirectory}")
     String helmChartsDirectory;
 
-    @Value("${helm.enableTls}")
+    @Value("${helm.enableTls:false}")
     Boolean enableTls;
 
     public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
@@ -48,7 +48,7 @@ public class HelmCommandExecutor {
                         releaseName,
                         arguments,
                         constructChartArchivePath(template.getArchive()),
-                        enableTls
+                        HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
                 );
             } else {
                 command = HelmInstallCommand.commandWithRepo(
@@ -57,7 +57,7 @@ public class HelmCommandExecutor {
                         arguments,
                         constructChartNameWithRepo(template.getChart().getName()),
                         template.getChart().getVersion(),
-                        enableTls
+                        HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
                 );
             }
             singleCommandExecutor().executeSingleCommand(command);
@@ -88,7 +88,7 @@ public class HelmCommandExecutor {
             if (HelmCommand.HELM_VERSION_2.equals(helmVersion)) {
                 command = HelmDeleteCommand.command(releaseName, enableTls);
             } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion)) {
-                command = HelmUninstallCommand.command(releaseName, enableTls);
+                command = HelmUninstallCommand.command(releaseName, false);
             } else {
                 throw new CommandExecutionException("Unknown Helm version in use: " + helmVersion);
             }
@@ -105,7 +105,10 @@ public class HelmCommandExecutor {
 
     private HelmPackageStatus executeStatus(String releaseName) {
         try {
-            HelmStatusCommand command = HelmStatusCommand.command(releaseName, enableTls);
+            HelmStatusCommand command = HelmStatusCommand.command(
+                    releaseName,
+                    HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+            );
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return parseStatus(output);
         } catch (SshConnectionException
@@ -123,7 +126,9 @@ public class HelmCommandExecutor {
 
     public List<String> executeHelmListCommand() {
         try {
-            HelmListCommand command = HelmListCommand.command(enableTls);
+            HelmListCommand command = HelmListCommand.command(
+                    HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+            );
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return Arrays.asList(output.split("\n"));
         } catch (SshConnectionException
@@ -139,7 +144,7 @@ public class HelmCommandExecutor {
                 command = HelmUpgradeCommand.commandWithArchive(
                         releaseName,
                         constructChartArchivePath(chartArchiveName),
-                        enableTls
+                        HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
                 );
             } else {
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
@@ -152,7 +157,11 @@ public class HelmCommandExecutor {
 
     void executeVersionCommand() {
         try{
-            singleCommandExecutor().executeSingleCommand(HelmVersionCommand.command(enableTls));
+            singleCommandExecutor().executeSingleCommand(
+                    HelmVersionCommand.command(
+                            HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+                    )
+            );
         } catch(SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm version command -> " + e.getMessage());
         }
