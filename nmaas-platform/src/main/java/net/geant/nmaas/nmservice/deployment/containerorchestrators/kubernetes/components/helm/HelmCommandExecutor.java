@@ -44,6 +44,7 @@ public class HelmCommandExecutor {
             HelmInstallCommand command;
             if (Boolean.TRUE.equals(useLocalCharts)) {
                 command = HelmInstallCommand.commandWithArchive(
+                        helmVersion,
                         namespace,
                         releaseName,
                         arguments,
@@ -52,6 +53,7 @@ public class HelmCommandExecutor {
                 );
             } else {
                 command = HelmInstallCommand.commandWithRepo(
+                        helmVersion,
                         namespace,
                         releaseName,
                         arguments,
