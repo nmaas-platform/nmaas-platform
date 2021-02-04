@@ -1,4 +1,4 @@
-<div class="col-sm-12 col-sm-offset-1 col-sm-10 col-md-offset-1 col-md-10" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
+<div class="col-sm-12" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
 	<nmaas-userslist *ngIf="!isInAddToDomainMode" [users]="allUsers" [allowedModes]="[ComponentMode.VIEW, ComponentMode.DELETE]"
 					 (onView)="onUserView($event)" (onModeChange)="onModeChange($event)" (onDelete)="onUserDelete($event)">
 	</nmaas-userslist>

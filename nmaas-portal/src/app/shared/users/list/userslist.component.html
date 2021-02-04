@@ -76,8 +76,8 @@
 					{{"ENUM.USER_ROLES." + role.role.toUpperCase() | translate}}
 				</span>
             </td>
-            <td *ngIf="!isModeAllowed(ComponentMode.EDIT)">{{getFirstLoginDateString(user)}}</td>
-            <td *ngIf="!isModeAllowed(ComponentMode.EDIT)">{{getLastSuccessfulLoginDateString(user)}}</td>
+            <td *ngIf="!isModeAllowed(ComponentMode.EDIT)">{{user.firstLoginDate | date:'dd-MM-yyyy HH:mm'}}</td>
+            <td *ngIf="!isModeAllowed(ComponentMode.EDIT)">{{user.lastSuccessfulLoginDate | date:'dd-MM-yyyy HH:mm'}}</td>
             <td>
                 <span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span>
                 <span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span>
