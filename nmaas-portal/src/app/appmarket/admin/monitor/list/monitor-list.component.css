@@ -16,3 +16,18 @@ tr.clickable {
 .dropdown:hover .dropdown-menu {
     display: block;
 }
+
+.entry-success {
+    background-color: #99ff99;
+}
+
+.entry-failure {
+    background-color: #FF6651;
+}
+
+.entry-deactivated {
+    background-color: #7f7f7f;
+}
+
+.entry-unknown {
+}
