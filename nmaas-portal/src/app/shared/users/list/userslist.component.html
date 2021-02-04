@@ -35,6 +35,8 @@
         <thead>
         <tr>
             <th scope="col" class="column-sortable" sortable-column="username">{{ 'USERS.USER_NAME' | translate }}</th>
+            <th scope="col" class="column-sortable" sortable-column="lastname">{{'USERS.NAME' | translate}}</th>
+            <th scope="col" class="column-sortable" sortable-column="email">{{'USERS.EMAIL' | translate}}</th>
             <th scope="col" class="column-sortable" sortable-column="domains"
                 *ngIf="domainId === domainService.getGlobalDomainId()">{{ 'USERS.DOMAINS' | translate }}</th>
             <th scope="col" class="column-sortable" sortable-column="globalRole"
@@ -53,6 +55,8 @@
         <tbody>
         <tr *ngFor="let user of displayUsers | paginate: {itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: paginatorName}" class="clickable" (click)="view(user.id)">
             <td>{{user.username}}</td>
+            <td>{{(user.firstname || '') + ' ' + (user.lastname || '')}}</td>
+            <td>{{user.email}}</td>
             <td *ngIf="domainId === domainService.getGlobalDomainId()">
                 <div *ngFor="let role of filterDomainNames(user); last as isLast">
 					<span *ngIf="!isLast" style="float:left;padding-right: 3px">
