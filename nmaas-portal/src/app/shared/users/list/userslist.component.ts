@@ -117,14 +117,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public getLastSuccessfulLoginDateString(user: User): string {
-    return user.lastSuccessfulLoginDate != null ? user.lastSuccessfulLoginDate.toUTCString() : '';
-  }
-
-  public getFirstLoginDateString(user: User): string {
-    return user.firstLoginDate != null ? user.firstLoginDate.toUTCString() : '';
-  }
-
   public remove(user: User) {
     this.onDelete.emit(user);
   }
