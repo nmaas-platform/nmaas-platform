@@ -555,6 +555,18 @@
     "YES_BUTTON": "Tak",
     "CANCEL_BUTTON": "Anuluj"
   },
+  "REDEPLOY_MODAL": {
+    "HEADER": "Potwierdzenie ponownego uruchomienia",
+    "BODY": "Potwierdź ponowne uruchomienie.",
+    "OK_BUTTON": "Akceptuj",
+    "CANCEL_BUTTON": "Anuluj"
+  },
+  "REMOVE_MODAL": {
+    "HEADER": "Potwierdzenie usunięcia",
+    "BODY": "Potwierdź usunięcie instancji.",
+    "OK_BUTTON": "Akceptuj",
+    "CANCEL_BUTTON": "Anuluj"
+  },
   "SEARCH": "Szukaj",
   "COMPLETE_REGISTRATION": {
     "HEADER": "Wprowadź następujące dane aby dokończyć proces rejestracji",

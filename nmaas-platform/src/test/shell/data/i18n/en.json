@@ -555,6 +555,18 @@
     "YES_BUTTON": "Yes",
     "CANCEL_BUTTON": "Cancel"
   },
+  "REDEPLOY_MODAL": {
+    "HEADER": "Redeploy Confirmation",
+    "BODY": "Confirm instance redeploy.",
+    "OK_BUTTON": "Confirm",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "REMOVE_MODAL": {
+    "HEADER": "Remove Confirmation",
+    "BODY": "Confirm failed instance removal.",
+    "OK_BUTTON": "Confirm",
+    "CANCEL_BUTTON": "Cancel"
+  },
   "SEARCH": "Search",
   "COMPLETE_REGISTRATION": {
     "HEADER": "Please provide the following information to finalize your registration",
