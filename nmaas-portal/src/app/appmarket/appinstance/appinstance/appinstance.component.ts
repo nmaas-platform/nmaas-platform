@@ -66,6 +66,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     @ViewChild('updateConfig')
     public updateConfigModal: ModalComponent;
 
+    @ViewChild('redeployConfirm')
+    public redeployConfirmModal: ModalComponent;
+
+    @ViewChild('removeConfirm')
+    public removeConfirmModal: ModalComponent;
+
     @ViewChild(AccessMethodsModalComponent)
     public accessMethodsModal: AccessMethodsModalComponent;
 
@@ -332,7 +338,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log('Redeployed'));
     }
 
-    public removalFailed(): void {
+    public removalFailedInstance(): void {
         this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.log('Removed failed instance'));
     }
 
