@@ -181,6 +181,8 @@
   "USERS": {
     "TITLE": "Benutzer",
     "USER_NAME": "Benutzername",
+    "EMAIL": "Email",
+    "NAME": "Name",
     "DOMAINS": "Domains",
     "GLOBAL_ROLE": "Globale Rolle",
     "ROLES": "Rollen",
