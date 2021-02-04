@@ -3,37 +3,43 @@
     <br>
     <table class="table table-hover table-condensed" aria-describedby="Service status table">
         <thead>
-            <tr>
-                <th scope="col">{{ 'MONITOR.SERVICE_NAME' | translate }}</th>
-                <th scope="col">{{ 'MONITOR.LAST_CHECK' | translate }}</th>
-                <th scope="col">{{ 'MONITOR.LAST_SUCCESS' | translate }}</th>
-                <th scope="col">{{ 'MONITOR.CHECK_INTERVAL' | translate }}</th>
-                <th scope="col">&nbsp;</th>
-            </tr>
+        <tr>
+            <th scope="col">{{ 'MONITOR.SERVICE_NAME' | translate }}</th>
+            <th scope="col">{{ 'MONITOR.LAST_CHECK' | translate }}</th>
+            <th scope="col">{{ 'MONITOR.LAST_SUCCESS' | translate }}</th>
+            <th scope="col">{{ 'MONITOR.CHECK_INTERVAL' | translate }}</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
         </thead>
 
         <tbody>
-            <ng-template ngFor let-entry [ngForOf]="monitorEntries">
-                <tr *ngIf="entry.status === null || entry.status === undefined" class="clickable" [routerLink]="['view/', entry.serviceName.toString()]">
-                    <td>{{services[entry.serviceName]}}</td>
-                    <td>
-                        <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
-                        <span *ngIf="!entry.lastCheck">---</span>
-                    </td>
-                    <td>
-                        <span *ngIf="entry.lastSuccess">{{entry.lastSuccess | date:'medium'}}</span>
-                        <span *ngIf="!entry.lastSuccess">---</span>
-                    </td>
-                    <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
-                    <td >
+        <ng-template ngFor let-entry [ngForOf]="monitorEntries">
+            <tr class="clickable" [routerLink]="['view/', entry.serviceName.toString()]"
+                [ngClass]="{'entry-unknown': entry.status === null || entry.status === undefined,
+                    'entry-deactivated': !entry.active,
+                    'entry-success': entry.status.toString() === 'SUCCESS',
+                    'entry-failure': entry.status.toString() === 'FAILURE'}">
+
+                <td>{{services[entry.serviceName]}}</td>
+                <td>
+                    <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
+                    <span *ngIf="!entry.lastCheck">---</span>
+                </td>
+                <td>
+                    <span *ngIf="entry.lastSuccess">{{entry.lastSuccess | date:'medium'}}</span>
+                    <span *ngIf="!entry.lastSuccess">---</span>
+                </td>
+                <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
+                <td>
                         <span class="dropdown">
-                            <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+                            <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false"
+                               aria-haspopup="true"
                                data-toggle="dropdown" href="#" role="button">
                                 <em class="fas fa-cog icon-black icon-bigger"></em>
                             </a>
                             <ul class="dropdown-menu pull-right-drop">
                                 <li>
-                                    <a (click)="executeJob(entry.serviceName.toString())">
+                                    <a (click)="executeJob(entry.serviceName.toString()); $event.stopPropagation()">
                                         {{ 'MONITOR.CHECK_NOW_BUTTON' | translate }}</a>
                                 </li>
                                 <li>
@@ -41,46 +47,13 @@
                                         {{ 'MONITOR.EDIT_SETTINGS_BUTTON' | translate }}</a>
                                 </li>
                                 <li>
-                                    <a (click)="changeJobState(entry)">{{  getCorrectStateLabel(entry.active) }}</a>
+                                    <a (click)="changeJobState(entry); $event.stopPropagation()">{{  getCorrectStateLabel(entry.active) }}</a>
                                 </li>
                             </ul>
 					    </span>
-                    </td>
-                </tr>
-                <tr *ngIf="entry.status !== null && entry.status !== undefined" [style.background-color]="entry.status.toString() === 'SUCCESS'?'#99ff99':entry.status.toString() === 'FAILURE'? '#FF6651' : null" class="clickable" [routerLink]="['view/', entry.serviceName.toString()]">
-                    <td>{{services[entry.serviceName]}}</td>
-                    <td>
-                        <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
-                        <span *ngIf="!entry.lastCheck">---</span>
-                    </td>
-                    <td>
-                        <span *ngIf="entry.lastSuccess && entry.status.toString() === 'FAILURE'">{{entry.lastSuccess | date:'medium'}}</span>
-                        <span *ngIf="!entry.lastSuccess || entry.status.toString() === 'SUCCESS'"></span>
-                    </td>
-                    <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
-                    <td>
-                        <span class="dropdown">
-                            <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
-                               data-toggle="dropdown" href="#" role="button">
-                                <em class="fas fa-cog icon-black icon-bigger"></em>
-                            </a>
-                            <ul class="dropdown-menu pull-right-drop">
-                                <li>
-                                    <a (click)="executeJob(entry.serviceName.toString())">
-                                        {{ 'MONITOR.CHECK_NOW_BUTTON' | translate }}</a>
-                                </li>
-                                <li>
-                                    <a [routerLink]="['edit/', entry.serviceName.toString()]">
-                                        {{ 'MONITOR.EDIT_SETTINGS_BUTTON' | translate }}</a>
-                                </li>
-                                <li>
-                                    <a (click)="changeJobState(entry)">{{  getCorrectStateLabel(entry.active) }}</a>
-                                </li>
-                            </ul>
-					    </span>
-                    </td>
-                </tr>
-            </ng-template>
+                </td>
+            </tr>
+        </ng-template>
         </tbody>
     </table>
 </div>
