@@ -138,13 +138,13 @@
                          *ngIf="getStateAsEnum(appInstanceStatus?.state) === AppInstanceState.FAILURE">
                         <button class="btn btn-primary"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
-                                (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
+                                (click)="redeployConfirm.show()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
                         <button class="btn btn-default"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
                                 (click)="checkStatus()">{{'APP_INSTANCE.CHECK_STATUS_BUTTON' | translate}}</button>
                         <button class="btn btn-primary btn-danger"
                                 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"
-                                (click)="removalFailed()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
+                                (click)="removeConfirm.show()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
                     </div>
                 </div>
             </div>
@@ -291,6 +291,39 @@
                     (click)="this.applyConfig.hide()">{{'UNDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
         </div>
     </nmaas-modal>
+
+    <!-- Redeploy Confirm -->
+    <nmaas-modal styleModal="info" #redeployConfirm>
+        <div class="nmaas-modal-header">
+            <h4>{{'REDEPLOY_MODAL.HEADER' | translate}}</h4>
+        </div>
+        <div class="nmaas-modal-body">
+            {{'REDEPLOY_MODAL.BODY' | translate}}
+        </div>
+        <div class="nmaas-modal-footer">
+            <button type="button" class="btn btn-primary"
+                    (click)="redeploy(); redeployConfirm.hide()">{{'REDEPLOY_MODAL.OK_BUTTON' | translate}}</button>
+            <button type="button" class="btn btn-primary"
+                    (click)="redeployConfirm.hide()">{{'REDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
+        </div>
+    </nmaas-modal>
+
+    <!-- Remove Confirm -->
+    <nmaas-modal styleModal="info" #removeConfirm>
+        <div class="nmaas-modal-header">
+            <h4>{{'REMOVE_MODAL.HEADER' | translate}}</h4>
+        </div>
+        <div class="nmaas-modal-body">
+            {{'REMOVE_MODAL.BODY' | translate}}
+        </div>
+        <div class="nmaas-modal-footer">
+            <button type="button" class="btn btn-primary"
+                    (click)="removalFailedInstance(); removeConfirm.hide()">{{'REMOVE_MODAL.OK_BUTTON' | translate}}</button>
+            <button type="button" class="btn btn-primary"
+                    (click)="removeConfirm.hide()">{{'REMOVE_MODAL.CANCEL_BUTTON' | translate}}</button>
+        </div>
+    </nmaas-modal>
+
 
     <!-- App abort modal -->
     <nmaas-modal-app-abort [appInstanceId]="appInstanceId"></nmaas-modal-app-abort>
