@@ -15,10 +15,11 @@ import {CustomerSearchCriteria} from '../../../service';
 import {FormControl} from '@angular/forms';
 
 function userMatches(u: User, term: string): boolean {
-  return u.username.toLowerCase().includes(term.toLowerCase()) ||
-      u.email.toLowerCase().includes(term.toLowerCase()) ||
-      (u.firstname || '').toLowerCase().includes(term.toLowerCase()) ||
-      (u.lastname || '').toLowerCase().includes(term.toLowerCase())
+  const t = term || ''
+  return (u.username || '').toLowerCase().includes(t.toLowerCase()) ||
+      (u.email || '').toLowerCase().includes(t.toLowerCase()) ||
+      (u.firstname || '').toLowerCase().includes(t.toLowerCase()) ||
+      (u.lastname || '').toLowerCase().includes(t.toLowerCase())
 }
 
 @Component({
