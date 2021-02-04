@@ -9,6 +9,7 @@ import {ComponentMode} from '../../../shared/common/componentmode';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {Observable, of} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-userslist',
@@ -57,6 +58,10 @@ export class UsersListComponent implements OnInit {
     } else {
       users = of<User[]>([]);
     }
+    // sort default user list by username
+    users = users.pipe(
+        map(userList => userList.sort((a, b) => a.username.localeCompare(b.username)))
+    )
 
     users.subscribe((all) => {
       this.allUsers = all;
