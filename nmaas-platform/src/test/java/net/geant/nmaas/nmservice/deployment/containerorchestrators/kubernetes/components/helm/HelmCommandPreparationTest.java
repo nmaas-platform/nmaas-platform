@@ -33,6 +33,7 @@ public class HelmCommandPreparationTest {
             CORRECT_HELM_INSTALL_COMMAND_FOR_V3_FIRST_PART + " " + CHART_NAME_WITH_REPO + " --version " + CHART_VERSION;
     private static final String CORRECT_HELM_DELETE_COMMAND = "helm delete --purge " + RELEASE_NAME;
     private static final String CORRECT_HELM_STATUS_COMMAND = "helm status " + RELEASE_NAME;
+    private static final String CORRECT_HELM_STATUS_COMMAND_FOR_V3 = "helm status " + RELEASE_NAME + " --namespace " + NAMESPACE;
     private static final String CORRECT_HELM_UPGRADE_COMMAND =
             "helm upgrade " + RELEASE_NAME + " " + CHART_ARCHIVE_NAME;
     private static final String CORRECT_HELM_VERSION_COMMAND = "helm version";
@@ -191,12 +192,17 @@ public class HelmCommandPreparationTest {
 
     @Test
     public void shouldConstructStatusCommandWithDisabledTls() {
-        assertThat(HelmStatusCommand.command(RELEASE_NAME, false).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND));
+        assertThat(HelmStatusCommand.command(HelmCommand.HELM_VERSION_2, NAMESPACE, RELEASE_NAME, false).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND));
     }
 
     @Test
     public void shouldConstructStatusCommandWithEnabledTls() {
-        assertThat(HelmStatusCommand.command(RELEASE_NAME, true).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND + TLS));
+        assertThat(HelmStatusCommand.command(HelmCommand.HELM_VERSION_2, NAMESPACE, RELEASE_NAME, true).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND + TLS));
+    }
+
+    @Test
+    public void shouldConstructStatusCommandForV3() {
+        assertThat(HelmStatusCommand.command(HelmCommand.HELM_VERSION_3, NAMESPACE, RELEASE_NAME, false).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND_FOR_V3));
     }
 
     @Test

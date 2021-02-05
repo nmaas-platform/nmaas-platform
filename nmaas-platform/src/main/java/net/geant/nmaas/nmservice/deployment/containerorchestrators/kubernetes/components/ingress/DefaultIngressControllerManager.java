@@ -46,7 +46,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     private void executeDeployIngressControllerIfMissing(String domain) {
         try {
             String ingressControllerName = ingressControllerName(domain);
-            if (checkIfIngressControllerForClientIsMissing(ingressControllerName)) {
+            if (checkIfIngressControllerForClientIsMissing(domain, ingressControllerName)) {
                 String externalIpAddress = obtainExternalIpAddressForClient(domain);
                 installIngressControllerHelmChart(
                         namespaceService.namespace(domain),
@@ -70,8 +70,10 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         return NMAAS_INGRESS_CONTROLLER_NAME_PREFIX + domain.toLowerCase();
     }
 
-    private boolean checkIfIngressControllerForClientIsMissing(String ingressControllerName) {
-        List<String> currentReleases = helmCommandExecutor.executeHelmListCommand();
+    private boolean checkIfIngressControllerForClientIsMissing(String domain, String ingressControllerName) {
+        List<String> currentReleases = helmCommandExecutor.executeHelmListCommand(
+                namespaceService.namespace(domain)
+        );
         return !currentReleases.contains(ingressControllerName);
     }
 

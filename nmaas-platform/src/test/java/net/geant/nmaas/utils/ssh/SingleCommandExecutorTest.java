@@ -14,7 +14,7 @@ public class SingleCommandExecutorTest {
 
     @BeforeEach
     public void setup() {
-        command = HelmListCommand.command(false);
+        command = HelmListCommand.command("v2", "namespace", false);
         executor = SingleCommandExecutor.getExecutor("", "");
     }
 

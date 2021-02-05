@@ -10,11 +10,17 @@ public class HelmListCommand extends HelmCommand {
     /**
      * Creates {@link HelmListCommand}.
      *
+     * @param helmVersion version of Helm in use
+     * @param namespace namespace to install the release into
+     * @param enableTls flag indicating if tls option should be added
      * @return complete command object
      */
-    public static HelmListCommand command(boolean enableTls) {
+    public static HelmListCommand command(String helmVersion, String namespace, boolean enableTls) {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(LIST).append(SPACE).append(LIST_OPTION);
+        if (HELM_VERSION_3.equals(helmVersion)) {
+            sb.append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
+        }
         if(enableTls){
             sb.append(SPACE).append(TLS);
         }

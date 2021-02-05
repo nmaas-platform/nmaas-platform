@@ -84,13 +84,13 @@ public class HelmCommandExecutor {
         return chartName.contains("/") ? chartName : helmRepositoryName + "/" + chartName;
     }
 
-    void executeHelmDeleteCommand(String releaseName) {
+    void executeHelmDeleteCommand(String namespace, String releaseName) {
         try {
             HelmCommand command;
             if (HelmCommand.HELM_VERSION_2.equals(helmVersion)) {
                 command = HelmDeleteCommand.command(releaseName, enableTls);
             } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion)) {
-                command = HelmUninstallCommand.command(releaseName, false);
+                command = HelmUninstallCommand.command(namespace, releaseName);
             } else {
                 throw new CommandExecutionException("Unknown Helm version in use: " + helmVersion);
             }
@@ -101,13 +101,15 @@ public class HelmCommandExecutor {
         }
     }
 
-    HelmPackageStatus executeHelmStatusCommand(String releaseName) {
-        return executeStatus(releaseName);
+    HelmPackageStatus executeHelmStatusCommand(String namespace, String releaseName) {
+        return executeStatus(namespace, releaseName);
     }
 
-    private HelmPackageStatus executeStatus(String releaseName) {
+    private HelmPackageStatus executeStatus(String namespace, String releaseName) {
         try {
             HelmStatusCommand command = HelmStatusCommand.command(
+                    helmVersion,
+                    namespace,
                     releaseName,
                     HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
             );
@@ -126,9 +128,11 @@ public class HelmCommandExecutor {
             return HelmPackageStatus.UNKNOWN;
     }
 
-    public List<String> executeHelmListCommand() {
+    public List<String> executeHelmListCommand(String namespace) {
         try {
             HelmListCommand command = HelmListCommand.command(
+                    helmVersion,
+                    namespace,
                     HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
             );
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);

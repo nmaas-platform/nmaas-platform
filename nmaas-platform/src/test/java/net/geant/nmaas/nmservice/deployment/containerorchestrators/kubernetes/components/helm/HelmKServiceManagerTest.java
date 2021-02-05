@@ -83,6 +83,7 @@ public class HelmKServiceManagerTest {
         service.setKubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", "archiveName"));
         when(repositoryManager.loadService(any())).thenReturn(service);
         when(repositoryManager.loadDescriptiveDeploymentId(deploymentId)).thenReturn(Identifier.newInstance("descriptiveDeploymentId"));
+        when(repositoryManager.loadDomain(deploymentId)).thenReturn("domain");
     }
 
     @Test
@@ -107,36 +108,47 @@ public class HelmKServiceManagerTest {
 
     @Test
     public void shouldCheckServiceDeployedTrue() {
-        when(helmCommandExecutor.executeHelmStatusCommand("descriptiveDeploymentId")).thenReturn(HelmPackageStatus.DEPLOYED);
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId"))
+                .thenReturn(HelmPackageStatus.DEPLOYED);
 
         boolean status = manager.checkServiceDeployed(deploymentId);
-        verify(helmCommandExecutor, times(1)).executeHelmStatusCommand(eq("descriptiveDeploymentId"));
+        verify(helmCommandExecutor, times(1))
+                .executeHelmStatusCommand(eq("namespace"), eq("descriptiveDeploymentId"));
         assertTrue(status);
     }
 
     @Test
     public void shouldCheckServiceDeployedFalse() {
-        when(helmCommandExecutor.executeHelmStatusCommand("descriptiveDeploymentId")).thenReturn(HelmPackageStatus.UNKNOWN);
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId")).
+                thenReturn(HelmPackageStatus.UNKNOWN);
 
         boolean status = manager.checkServiceDeployed(deploymentId);
-        verify(helmCommandExecutor, times(1)).executeHelmStatusCommand(eq("descriptiveDeploymentId"));
+        verify(helmCommandExecutor, times(1))
+                .executeHelmStatusCommand(eq("namespace"), eq("descriptiveDeploymentId"));
         assertFalse(status);
     }
 
     @Test
     public void shouldDeleteServiceSinceExists() {
-        when(helmCommandExecutor.executeHelmListCommand()).thenReturn(Arrays.asList("descriptiveDeploymentId", "otherString"));
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(helmCommandExecutor.executeHelmListCommand("namespace"))
+                .thenReturn(Arrays.asList("descriptiveDeploymentId", "otherString"));
 
         manager.deleteServiceIfExists(deploymentId);
-        verify(helmCommandExecutor, times(1)).executeHelmDeleteCommand(eq("descriptiveDeploymentId"));
+        verify(helmCommandExecutor, times(1)).
+                executeHelmDeleteCommand(eq("namespace"), eq("descriptiveDeploymentId"));
     }
 
     @Test
     public void shouldNotDeleteServiceSinceNotExists() {
-        when(helmCommandExecutor.executeHelmListCommand()).thenReturn(Collections.singletonList("otherString"));
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(helmCommandExecutor.executeHelmListCommand("namespace")).thenReturn(Collections.singletonList("otherString"));
 
         manager.deleteServiceIfExists(deploymentId);
-        verify(helmCommandExecutor, times(0)).executeHelmDeleteCommand(any());
+        verify(helmCommandExecutor, times(0))
+                .executeHelmDeleteCommand(eq("namespace"), any());
     }
 
     @Test

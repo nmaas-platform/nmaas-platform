@@ -126,6 +126,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     public boolean checkServiceDeployed(Identifier deploymentId) {
         try {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(
+                    namespaceService.namespace(repositoryManager.loadDomain(deploymentId)),
                     repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue()
             );
             return status.equals(HelmPackageStatus.DEPLOYED);
@@ -137,18 +138,22 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.DEBUG)
     public void deleteServiceIfExists(Identifier deploymentId) {
+        String namespace = namespaceService.namespace(repositoryManager.loadDomain(deploymentId));
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         try {
-            if(checkIfServiceExists(descriptiveDeploymentId)){
-                helmCommandExecutor.executeHelmDeleteCommand(descriptiveDeploymentId.getValue());
+            if(checkIfServiceExists(namespace, descriptiveDeploymentId)){
+                helmCommandExecutor.executeHelmDeleteCommand(
+                        namespace,
+                        descriptiveDeploymentId.getValue()
+                );
             }
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 
-    private boolean checkIfServiceExists(Identifier deploymentId){
-        return helmCommandExecutor.executeHelmListCommand().contains(deploymentId.value());
+    private boolean checkIfServiceExists(String namespace, Identifier deploymentId){
+        return helmCommandExecutor.executeHelmListCommand(namespace).contains(deploymentId.value());
     }
 
     @Override
