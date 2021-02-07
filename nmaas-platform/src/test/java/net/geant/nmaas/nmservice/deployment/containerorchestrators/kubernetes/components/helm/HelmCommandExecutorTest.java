@@ -26,15 +26,37 @@ public class HelmCommandExecutorTest {
             "c21584cd-666c-42de-9df7-d72b7bae5aae-nmaas-oxidized  1        1        1           1          1m" +
             "";
 
+    private static final String EXAMPLE_HELM_STATUS_FOR_V3_COMMAND_OUTPUT =
+            "NAME: testbastion\n" +
+            "LAST DEPLOYED: Thu Dec 31 11:25:34 2020\n" +
+            "NAMESPACE: default\n" +
+            "STATUS: deployed\n" +
+            "REVISION: 1\n" +
+            "TEST SUITE: None\n" +
+            "NOTES:\n" +
+            "1. Deployed.";
+
     @Test
     public void shouldReturnDeployedStatusFromInputString() {
         HelmCommandExecutor executor = new HelmCommandExecutor();
+        executor.helmVersion = HelmCommand.HELM_VERSION_2;
         assertThat(executor.parseStatus(EXAMPLE_HELM_STATUS_COMMAND_OUTPUT), equalTo(HelmPackageStatus.DEPLOYED));
+    }
+
+    @Test
+    public void shouldReturnDeployedStatusV3FromInputString() {
+        HelmCommandExecutor executor = new HelmCommandExecutor();
+        executor.helmVersion = HelmCommand.HELM_VERSION_3;
+        assertThat(executor.parseStatus(EXAMPLE_HELM_STATUS_FOR_V3_COMMAND_OUTPUT), equalTo(HelmPackageStatus.DEPLOYED));
     }
 
     @Test
     public void shouldReturnUnknownStatusFromInputString() {
         HelmCommandExecutor executor = new HelmCommandExecutor();
+        assertThat(executor.parseStatus("this is some example string"), equalTo(HelmPackageStatus.UNKNOWN));
+        executor.helmVersion = HelmCommand.HELM_VERSION_2;
+        assertThat(executor.parseStatus("this is some example string"), equalTo(HelmPackageStatus.UNKNOWN));
+        executor.helmVersion = HelmCommand.HELM_VERSION_3;
         assertThat(executor.parseStatus("this is some example string"), equalTo(HelmPackageStatus.UNKNOWN));
     }
 

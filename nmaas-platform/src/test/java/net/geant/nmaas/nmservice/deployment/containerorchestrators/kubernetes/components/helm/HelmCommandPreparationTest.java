@@ -1,10 +1,16 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmDeleteCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmStatusCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmUpgradeCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmVersionCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand.HELM_VERSION_2;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,7 +50,7 @@ public class HelmCommandPreparationTest {
     public void shouldConstructInstallCommandUsingLocalChartArchiveWithNoArgumentsWithDisabledTls() {
         assertThat(
                 HelmInstallCommand.commandWithArchive(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         null,
@@ -58,7 +64,7 @@ public class HelmCommandPreparationTest {
     public void shouldConstructInstallCommandUsingLocalChartArchiveWithNoArgumentsWithEnabledTls() {
         assertThat(
                 HelmInstallCommand.commandWithArchive(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         null,
@@ -72,7 +78,7 @@ public class HelmCommandPreparationTest {
     public void shouldConstructInstallCommandUsingChartFromRepoWithNoArgumentsWithDisabledTls() {
         assertThat(
                 HelmInstallCommand.commandWithRepo(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         null,
@@ -81,7 +87,7 @@ public class HelmCommandPreparationTest {
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO));
         assertThat(
                 HelmInstallCommand.commandWithRepo(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         null,
@@ -116,7 +122,7 @@ public class HelmCommandPreparationTest {
     public void shouldConstructInstallCommandUsingChartFromRepoWithNoArgumentsWithEnabledTls() {
         assertThat(
                 HelmInstallCommand.commandWithRepo(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         null,
@@ -125,7 +131,7 @@ public class HelmCommandPreparationTest {
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO + TLS));
         assertThat(
                 HelmInstallCommand.commandWithRepo(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         null,
@@ -141,7 +147,7 @@ public class HelmCommandPreparationTest {
         arguments.put("persistence.storageClass", "testStorageClass");
         assertThat(
                 HelmInstallCommand.commandWithArchive(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         arguments,
@@ -160,7 +166,7 @@ public class HelmCommandPreparationTest {
         arguments.put("persistence.storageClass", "testStorageClass");
         assertThat(
                 HelmInstallCommand.commandWithArchive(
-                        HelmCommand.HELM_VERSION_2,
+                        HELM_VERSION_2,
                         NAMESPACE,
                         RELEASE_NAME,
                         arguments,
@@ -192,12 +198,12 @@ public class HelmCommandPreparationTest {
 
     @Test
     public void shouldConstructStatusCommandWithDisabledTls() {
-        assertThat(HelmStatusCommand.command(HelmCommand.HELM_VERSION_2, NAMESPACE, RELEASE_NAME, false).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND));
+        assertThat(HelmStatusCommand.command(HELM_VERSION_2, NAMESPACE, RELEASE_NAME, false).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND));
     }
 
     @Test
     public void shouldConstructStatusCommandWithEnabledTls() {
-        assertThat(HelmStatusCommand.command(HelmCommand.HELM_VERSION_2, NAMESPACE, RELEASE_NAME, true).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND + TLS));
+        assertThat(HelmStatusCommand.command(HELM_VERSION_2, NAMESPACE, RELEASE_NAME, true).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND + TLS));
     }
 
     @Test
@@ -207,24 +213,24 @@ public class HelmCommandPreparationTest {
 
     @Test
     public void shouldConstructUpgradeCommandWithDisabledTls() {
-        assertThat(HelmUpgradeCommand.commandWithArchive(RELEASE_NAME, CHART_ARCHIVE_NAME, false).asString(),
+        assertThat(HelmUpgradeCommand.commandWithArchive(HELM_VERSION_2, RELEASE_NAME, CHART_ARCHIVE_NAME, false).asString(),
                 equalTo(CORRECT_HELM_UPGRADE_COMMAND));
     }
 
     @Test
     public void shouldConstructUpgradeCommandWithEnabledTls() {
-        assertThat(HelmUpgradeCommand.commandWithArchive(RELEASE_NAME, CHART_ARCHIVE_NAME, true).asString(),
+        assertThat(HelmUpgradeCommand.commandWithArchive(HELM_VERSION_2, RELEASE_NAME, CHART_ARCHIVE_NAME, true).asString(),
                 equalTo(CORRECT_HELM_UPGRADE_COMMAND + TLS));
     }
 
     @Test
     public void shouldConstructVersionCommandWithDisabledTls() {
-        assertThat(HelmVersionCommand.command(false).asString(), equalTo(CORRECT_HELM_VERSION_COMMAND));
+        assertThat(HelmVersionCommand.command(HELM_VERSION_2, false).asString(), equalTo(CORRECT_HELM_VERSION_COMMAND));
     }
 
     @Test
     public void shouldConstructVersionCommandWithEnabledTls() {
-        assertThat(HelmVersionCommand.command(true).asString(), equalTo(CORRECT_HELM_VERSION_COMMAND + TLS));
+        assertThat(HelmVersionCommand.command(HELM_VERSION_2, true).asString(), equalTo(CORRECT_HELM_VERSION_COMMAND + TLS));
     }
 
     @Test

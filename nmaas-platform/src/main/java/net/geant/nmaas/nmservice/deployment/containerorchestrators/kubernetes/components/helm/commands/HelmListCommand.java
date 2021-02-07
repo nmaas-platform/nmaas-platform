@@ -1,4 +1,6 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands;
+
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 
 import java.util.function.Predicate;
 
@@ -8,7 +10,7 @@ public class HelmListCommand extends HelmCommand {
     private static final String LIST_OPTION = "--short";
 
     /**
-     * Creates {@link HelmListCommand}.
+     * Creates {@link HelmListCommand}
      *
      * @param helmVersion version of Helm in use
      * @param namespace namespace to install the release into
@@ -21,9 +23,7 @@ public class HelmListCommand extends HelmCommand {
         if (HELM_VERSION_3.equals(helmVersion)) {
             sb.append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
         }
-        if(enableTls){
-            sb.append(SPACE).append(TLS);
-        }
+        addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmListCommand(sb.toString());
     }
 

@@ -23,4 +23,10 @@ public abstract class HelmCommand implements Command {
         return command;
     }
 
+    protected static void addTlsOptionIfRequired(String helmVersion, boolean enableTls, StringBuilder sb) {
+        if(HELM_VERSION_2.equals(helmVersion) && enableTls){
+            sb.append(SPACE).append(TLS);
+        }
+    }
+
 }

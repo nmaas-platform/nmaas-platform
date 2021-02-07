@@ -1,6 +1,6 @@
 package net.geant.nmaas.utils.ssh;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmListCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmListCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
