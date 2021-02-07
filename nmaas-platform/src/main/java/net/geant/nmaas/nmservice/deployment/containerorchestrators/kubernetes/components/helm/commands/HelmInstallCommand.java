@@ -1,6 +1,7 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands;
 
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -10,10 +11,10 @@ import java.util.stream.Collectors;
 public class HelmInstallCommand extends HelmCommand {
 
     private static final String INSTALL = "install";
-    static final String TEXT_TO_REPLACE_WITH_VALUE = "%VALUE%";
+    public static final String TEXT_TO_REPLACE_WITH_VALUE = "%VALUE%";
 
     /**
-     * Creates {@link HelmInstallCommand} with provided custom input.
+     * Creates {@link HelmInstallCommand} with provided custom input
      *
      * @param helmVersion version of Helm in use
      * @param namespace namespace to install the release into
@@ -21,9 +22,10 @@ public class HelmInstallCommand extends HelmCommand {
      * @param values a map of key - value pairs to customize the release installation
      * @param chartName chart name for download from repository
      * @param chartVersion chart version from download from repository
+     * @param enableTls flag indicating if tls option should be added
      * @return complete command object
      */
-    static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls) {
+    public static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls) {
         StringBuilder sb = buildBaseInstallCommand(helmVersion, namespace, releaseName, values);
         if (chartName == null || chartName.isEmpty()) {
             throw new IllegalArgumentException("Chart name can't be null or empty");
@@ -32,14 +34,12 @@ public class HelmInstallCommand extends HelmCommand {
         if (chartVersion != null && !chartVersion.isEmpty()) {
             sb.append(SPACE).append(OPTION_VERSION).append(SPACE).append(chartVersion);
         }
-        if(enableTls){
-            sb.append(SPACE).append(TLS);
-        }
+        addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmInstallCommand(sb.toString());
     }
 
     /**
-     * Creates {@link HelmInstallCommand} with provided custom input and local chart archive.
+     * Creates {@link HelmInstallCommand} with provided custom input and local chart archive
      *
      * @param helmVersion version of Helm in use
      * @param namespace namespace to install the release into
@@ -48,15 +48,13 @@ public class HelmInstallCommand extends HelmCommand {
      * @param chartArchive complete path to the release chart archive
      * @return complete command object
      */
-    static HelmInstallCommand commandWithArchive(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartArchive, boolean enableTls) {
+    public static HelmInstallCommand commandWithArchive(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartArchive, boolean enableTls) {
         StringBuilder sb = buildBaseInstallCommand(helmVersion, namespace, releaseName, values);
         if (chartArchive == null || chartArchive.isEmpty()) {
             throw new IllegalArgumentException("Path to chart archive can't be null or empty");
         }
         sb.append(SPACE).append(chartArchive);
-        if(enableTls){
-            sb.append(SPACE).append(TLS);
-        }
+        addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmInstallCommand(sb.toString());
     }
 
@@ -76,7 +74,7 @@ public class HelmInstallCommand extends HelmCommand {
         return sb;
     }
 
-    static String commaSeparatedValuesString(Map<String, String> values) {
+    public static String commaSeparatedValuesString(Map<String, String> values) {
         values.entrySet().forEach(e -> log.info(e.getKey() + " " + e.getValue()));
         return values.entrySet().stream()
                 .map(entry -> {

@@ -1,4 +1,6 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands;
+
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 
 import java.util.function.Predicate;
 
@@ -9,6 +11,7 @@ public class HelmUninstallCommand extends HelmCommand {
     /**
      * Creates {@link HelmUninstallCommand} with provided custom input.
      *
+     * @param namespace namespace with given release
      * @param releaseName release name
      * @return complete command object
      */

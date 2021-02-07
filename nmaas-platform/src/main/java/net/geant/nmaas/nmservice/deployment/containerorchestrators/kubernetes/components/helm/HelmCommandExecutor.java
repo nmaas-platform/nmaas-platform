@@ -1,5 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmDeleteCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmListCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmStatusCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmUninstallCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmUpgradeCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmVersionCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
@@ -10,6 +17,8 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand.HELM_VERSION_2;
 
 @Component
 public class HelmCommandExecutor {
@@ -49,7 +58,7 @@ public class HelmCommandExecutor {
                         releaseName,
                         arguments,
                         constructChartArchivePath(template.getArchive()),
-                        HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+                        enableTls
                 );
             } else {
                 command = HelmInstallCommand.commandWithRepo(
@@ -59,7 +68,7 @@ public class HelmCommandExecutor {
                         arguments,
                         constructChartNameWithRepo(template.getChart().getName()),
                         template.getChart().getVersion(),
-                        HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+                        enableTls
                 );
             }
             singleCommandExecutor().executeSingleCommand(command);
@@ -87,7 +96,7 @@ public class HelmCommandExecutor {
     void executeHelmDeleteCommand(String namespace, String releaseName) {
         try {
             HelmCommand command;
-            if (HelmCommand.HELM_VERSION_2.equals(helmVersion)) {
+            if (HELM_VERSION_2.equals(helmVersion)) {
                 command = HelmDeleteCommand.command(releaseName, enableTls);
             } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion)) {
                 command = HelmUninstallCommand.command(namespace, releaseName);
@@ -111,7 +120,7 @@ public class HelmCommandExecutor {
                     helmVersion,
                     namespace,
                     releaseName,
-                    HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+                    enableTls
             );
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return parseStatus(output);
@@ -122,10 +131,13 @@ public class HelmCommandExecutor {
     }
 
     HelmPackageStatus parseStatus(String output) {
-        if(output.contains("STATUS: DEPLOYED"))
+        if(HELM_VERSION_2.equals(helmVersion) && output.contains("STATUS: DEPLOYED")) {
             return HelmPackageStatus.DEPLOYED;
-        else
+        } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion) && output.contains("STATUS: deployed")) {
+            return HelmPackageStatus.DEPLOYED;
+        } else {
             return HelmPackageStatus.UNKNOWN;
+        }
     }
 
     public List<String> executeHelmListCommand(String namespace) {
@@ -133,7 +145,7 @@ public class HelmCommandExecutor {
             HelmListCommand command = HelmListCommand.command(
                     helmVersion,
                     namespace,
-                    HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+                    enableTls
             );
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return Arrays.asList(output.split("\n"));
@@ -148,9 +160,10 @@ public class HelmCommandExecutor {
             HelmUpgradeCommand command;
             if (Boolean.TRUE.equals(useLocalCharts)) {
                 command = HelmUpgradeCommand.commandWithArchive(
+                        helmVersion,
                         releaseName,
                         constructChartArchivePath(chartArchiveName),
-                        HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
+                        enableTls
                 );
             } else {
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
@@ -164,9 +177,7 @@ public class HelmCommandExecutor {
     void executeVersionCommand() {
         try{
             singleCommandExecutor().executeSingleCommand(
-                    HelmVersionCommand.command(
-                            HelmCommand.HELM_VERSION_2.equals(helmVersion) && enableTls
-                    )
+                    HelmVersionCommand.command(helmVersion, enableTls)
             );
         } catch(SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm version command -> " + e.getMessage());

@@ -16,6 +16,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.commons.lang3.StringUtils;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectHook;
@@ -23,7 +24,6 @@ import org.gitlab4j.api.models.RepositoryFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -314,7 +314,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         Optional<GitLabProject> gitLabProject = loadGitlabProject(deploymentId);
         if (gitLabProject.isPresent()) {
             String cloneUrl = gitLabProject.get().getCloneUrl();
-            if (!StringUtils.isEmpty(cloneUrl)) {
+            if (StringUtils.isNotEmpty(cloneUrl)) {
                 return AppConfigRepositoryAccessDetails.of(cloneUrl);
             }
         }

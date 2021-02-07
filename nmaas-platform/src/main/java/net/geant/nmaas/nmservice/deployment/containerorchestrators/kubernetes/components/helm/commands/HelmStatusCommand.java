@@ -1,4 +1,6 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands;
+
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 
 import java.util.function.Predicate;
 
@@ -7,9 +9,12 @@ public class HelmStatusCommand extends HelmCommand {
     private static final String STATUS = "status";
 
     /**
-     * Creates {@link HelmStatusCommand} with provided custom input.
+     * Creates {@link HelmStatusCommand} with provided custom input
      *
+     * @param helmVersion version of Helm in use
+     * @param namespace namespace with given release
      * @param releaseName release name
+     * @param enableTls flag indicating if tls option should be added
      * @return complete command object
      */
     public static HelmStatusCommand command(String helmVersion, String namespace, String releaseName, boolean enableTls) {
@@ -20,9 +25,7 @@ public class HelmStatusCommand extends HelmCommand {
         if (HELM_VERSION_3.equals(helmVersion)) {
             sb.append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
         }
-        if(enableTls){
-            sb.append(SPACE).append(TLS);
-        }
+        addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmStatusCommand(sb.toString());
     }
 
