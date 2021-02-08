@@ -114,3 +114,10 @@ helm.version=${HELM_VERSION}
 # --------------------- #
 janitor.address=${JANITOR_ADDRESS}
 janitor.port=${JANITOR_PORT}
+
+# -------------------- #
+# GitLab configuration #
+# -------------------- #
+gitlab.address=${GITLAB_ADDRESS}
+gitlab.port=${GITLAB_PORT}
+gitlab.token=${GITLAB_TOKEN}
