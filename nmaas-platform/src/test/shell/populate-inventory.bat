@@ -50,9 +50,3 @@ echo Adding default Kubernetes
 curl -X POST %API_URL%/management/kubernetes --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\kubernetes\kubernetes-1.json
 echo
 curl -X GET %API_URL%/management/kubernetes --header "Authorization: Bearer %token%"
-
-echo.
-echo Adding default GitLab configuration
-curl -X POST %API_URL%/management/gitlab --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\gitlab\gitlab-1.json
-echo
-curl -X GET %API_URL%/management/gitlab --header "Authorization: Bearer %token%"
