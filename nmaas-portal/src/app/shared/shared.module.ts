@@ -26,7 +26,6 @@ import {AppListComponent} from './applications/list/applist.component';
 import {ApplicationsViewComponent} from './applications/applications.component';
 import {AppElementComponent} from './applications/list/element/appelement.component';
 import {ClusterDetailsComponent} from './admin/clusters/details/clusterdetails.component';
-import {GitlabDetailsComponent} from './admin/gitlab/details/gitlab-details.component';
 import {ModalInfoTermsComponent} from './modal/modal-info-terms/modal-info-terms.component';
 import {ModalInfoPolicyComponent} from './modal/modal-info-policy/modal-info-policy.component';
 import {TranslateModule} from '@ngx-translate/core';
@@ -97,7 +96,6 @@ import { PreferencesComponent } from './users/preferences/preferences.component'
         AppInstallModalComponent,
         ApplicationsViewComponent,
         ClusterDetailsComponent,
-        GitlabDetailsComponent,
         ModalInfoTermsComponent,
         ModalInfoPolicyComponent,
         SortableColumnComponent,
@@ -150,7 +148,6 @@ import { PreferencesComponent } from './users/preferences/preferences.component'
         DomainFilterComponent,
         ApplicationsViewComponent,
         ClusterDetailsComponent,
-        GitlabDetailsComponent,
         ModalInfoTermsComponent,
         ModalInfoPolicyComponent,
         SortableColumnComponent,

@@ -8,12 +8,11 @@ import {AppListRoutes} from './applist/applist.routes';
 import {AppInstanceRoutes} from './appinstance/appinstance.routes';
 import {DomainsRoutes} from './domains/domains.routes';
 import {UsersRoutes} from './users/users.routes';
-import {ClustersRoutes} from "./admin/clusters/clusters.routes";
-import {GitlabRoutes} from "./admin/gitlab/gitlab.routes";
-import {ConfigurationRoutes} from "./admin/configuration/configuration.routes";
-import {MonitorRoutes} from "./admin/monitor/monitor.routes";
-import {AppManagementRoutes} from "./appmanagement/app-management.routes";
-import {LanguageManagementRoutes} from "./admin/languagemanagement/languagemanagement.routes";
+import {ClustersRoutes} from './admin/clusters/clusters.routes';
+import {ConfigurationRoutes} from './admin/configuration/configuration.routes';
+import {MonitorRoutes} from './admin/monitor/monitor.routes';
+import {AppManagementRoutes} from './appmanagement/app-management.routes';
+import {LanguageManagementRoutes} from './admin/languagemanagement/languagemanagement.routes';
 
 export const AppMarketRoutes: Route[] = [
     {
@@ -28,7 +27,6 @@ export const AppMarketRoutes: Route[] = [
         ...UsersRoutes,
         ...ClustersRoutes,
           ...ConfigurationRoutes,
-          ...GitlabRoutes,
           ...MonitorRoutes,
           ...AppManagementRoutes,
           ...LanguageManagementRoutes,

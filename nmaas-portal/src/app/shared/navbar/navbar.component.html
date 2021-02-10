@@ -56,9 +56,6 @@
                         </li>
                         <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/clusters']">Kubernetes</a>
                         </li>
-                        <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a
-                                [routerLink]="['/admin/gitlab']">GitLab</a>
-                        </li>
                         <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLinkActiveOptions]="{exact:true}"
                             [routerLinkActive]="['active']"><a
                                 [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a>
