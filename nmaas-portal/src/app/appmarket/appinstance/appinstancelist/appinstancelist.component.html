@@ -46,19 +46,19 @@
            aria-describedby="Deployed instances">
         <thead>
         <tr>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
+            <th scope="col" class="col-lg-1 col-md-1 column-sortable"
                 sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
-            <th scope="col" class="col-lg-2 col-md-2 column-sortable text-center"
+            <th scope="col" class="col-lg-2 col-md-2 column-sortable"
                 sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId"
+            <th scope="col" class="col-lg-1 col-md-1 column-sortable" sortable-column="domainId"
                 *ngIf="domainId === undefined || domainId === domainService.getGlobalDomainId()">
                 {{ 'APP_INSTANCES.DOMAIN' | translate }}
             </th>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
+            <th scope="col" class="col-lg-1 col-md-1 column-sortable"
                 sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-            <th scope="col" class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt"
+            <th scope="col" class="col-lg-2 col-md-2 column-sortable" sortable-column="createdAt"
                 sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-            <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center"
+            <th scope="col" class="col-lg-3 col-md-3 column-sortable"
                 sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
         </tr>
         </thead>
@@ -66,15 +66,15 @@
         <ng-template ngFor let-appInstance
                      [ngForOf]="appDeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }">
             <tr [ngClass]="userHasGuestRoleInCurrentDomain() ? '' : 'clickable'" [routerLink]="userHasGuestRoleInCurrentDomain() ? [] : [appInstance.id]">
-                <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
-                <td class="col-lg-2 col-md-2 text-center">{{appInstance?.applicationName}}</td>
-                <td class="col-lg-1 col-md-1 text-center"
+                <td class="col-lg-1 col-md-1">{{appInstance?.name}}</td>
+                <td class="col-lg-2 col-md-2">{{appInstance?.applicationName}}</td>
+                <td class="col-lg-1 col-md-1"
                     *ngIf="domainId === undefined || domainId === domainService.getGlobalDomainId()">
                     {{getDomainNameById(appInstance?.domainId)}}
                 </td>
-                <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
-                <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
-                <td class="col-lg-3 col-md-3 text-center">{{ translateState(appInstance?.state) }}</td>
+                <td class="col-lg-1 col-md-1">{{appInstance?.owner?.username}}</td>
+                <td class="col-lg-2 col-md-2">{{appInstance?.createdAt | localDate:'dd-MM-yyyy HH:mm'}}</td>
+                <td class="col-lg-3 col-md-3">{{ translateState(appInstance?.state) }}</td>
             </tr>
         </ng-template>
         </tbody>
@@ -92,17 +92,18 @@
            aria-describedby="Undeployed instances">
         <thead>
         <tr>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
+            <th scope="col" class="col-lg-1 col-md-1 column-sortable"
                 sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
+            <th scope="col" class="col-lg-2 col-md-2 column-sortable"
                 sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId"
-                *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
-            <th scope="col" class="col-lg-1 col-md-1 column-sortable text-center"
+            <th scope="col" class="col-lg-1 col-md-1 column-sortable" sortable-column="domainId"
+                *ngIf="domainId === undefined || domainId === domainService.getGlobalDomainId()">
+                {{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+            <th scope="col" class="col-lg-1 col-md-1 column-sortable"
                 sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-            <th scope="col" class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt"
+            <th scope="col" class="col-lg-2 col-md-2 column-sortable" sortable-column="createdAt"
                 sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-            <th scope="col" class="col-lg-3 col-md-3 column-sortable text-center"
+            <th scope="col" class="col-lg-3 col-md-3 column-sortable"
                 sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
         </tr>
         </thead>
@@ -110,13 +111,14 @@
         <ng-template ngFor let-appInstance
                      [ngForOf]="appUndeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPageSec, currentPage: secondPageNumber, id: p_second }">
             <tr class="clickable" [routerLink]="[appInstance.id]">
-                <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
-                <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
-                <td class="col-lg-1 col-md-1 text-center"
-                    *ngIf="domainId === undefined">{{getDomainNameById(appInstance?.domainId)}}</td>
-                <td class="col-lg-1 col-md-1 text-center">{{appInstance?.owner?.username}}</td>
-                <td class="col-lg-2 col-md-2 text-center">{{appInstance?.createdAt | localDate:'medium'}}</td>
-                <td class="col-lg-3 col-md-3 text-center">{{ translateState(appInstance?.state) }}</td>
+                <td class="col-lg-1 col-md-1">{{appInstance?.name}}</td>
+                <td class="col-lg-2 col-md-2">{{appInstance?.applicationName}}</td>
+                <td class="col-lg-1 col-md-1"
+                    *ngIf="domainId === undefined || domainId === domainService.getGlobalDomainId()">
+                    {{getDomainNameById(appInstance?.domainId)}}</td>
+                <td class="col-lg-1 col-md-1">{{appInstance?.owner?.username}}</td>
+                <td class="col-lg-2 col-md-2">{{appInstance?.createdAt | localDate:'dd-MM-yyyy HH:mm'}}</td>
+                <td class="col-lg-3 col-md-3">{{ translateState(appInstance?.state) }}</td>
             </tr>
         </ng-template>
         </tbody>
