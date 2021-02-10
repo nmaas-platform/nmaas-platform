@@ -19,7 +19,6 @@ import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
 import {ClustersModule} from './admin/clusters/clusters.module';
 import {ClusterService} from '../service/cluster.service';
-import {GitlabModule} from './admin/gitlab/gitlab.module';
 import {ConfigurationModule} from './admin/configuration/configuration.module';
 import {MonitorModule} from './admin/monitor/monitor.module';
 import {StorageServiceModule} from 'ngx-webstorage-service';
@@ -54,7 +53,6 @@ import { ModalGuestUserComponent } from './modals/modal-guest-user/modal-guest-u
     AuthModule,
     PipesModule,
     ClustersModule,
-    GitlabModule,
     MonitorModule,
     ConfigurationModule,
     BrowserModule,
