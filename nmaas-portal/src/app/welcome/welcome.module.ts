@@ -17,7 +17,7 @@ import {CompleteComponent} from './complete/complete.component';
 import {ContentDisplayService} from '../service/content-display.service';
 import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
 import {TranslateModule} from '@ngx-translate/core';
-import {ShibbolethService} from '../service/shibboleth.service';
+import {SSOService} from '../service/sso.service';
 import { PasswordResetComponent } from './passwordreset/password-reset.component';
 import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage/privacy-policy-subpage.component';
 import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
@@ -53,7 +53,7 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     UserService,
     ChangelogService,
     ContentDisplayService,
-    ShibbolethService
+    SSOService
   ]
 })
 export class WelcomeModule {}

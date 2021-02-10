@@ -4,8 +4,8 @@ import {Router} from '@angular/router';
 import {AuthService} from '../../auth/auth.service';
 import {ConfigurationService, UserService} from '../../service';
 import {Configuration} from '../../model/configuration';
-import {ShibbolethService} from '../../service/shibboleth.service';
-import {ShibbolethConfig} from '../../model/shibboleth';
+import {SSOService} from '../../service/sso.service';
+import {SSOConfig} from '../../model/sso';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ModalComponent} from '../../shared/modal';
 import {TranslateService} from '@ngx-translate/core';
@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
     loading = false;
     error = '';
     configuration: Configuration;
-    shibboleth: ShibbolethConfig;
+    ssoConfig: SSOConfig;
     resetPassword = false;
     resetPasswordForm: FormGroup;
 
@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
     constructor(private router: Router,
                 private auth: AuthService,
                 private configService: ConfigurationService,
-                private shibbolethService: ShibbolethService,
+                private ssoService: SSOService,
                 private fb: FormBuilder,
                 private userService: UserService,
                 private translate: TranslateService) {
@@ -47,8 +47,8 @@ export class LoginComponent implements OnInit {
         this.configService.getConfiguration().subscribe(config => {
             this.configuration = config;
             if (config.ssoLoginAllowed) {
-                this.shibbolethService.getOne().subscribe(shibboleth => {
-                    this.shibboleth = shibboleth;
+                this.ssoService.getOne().subscribe(sso => {
+                    this.ssoConfig = sso;
                     this.checkSSO();
                 });
             }
@@ -101,7 +101,7 @@ export class LoginComponent implements OnInit {
 
     public triggerSSO() {
         const url = window.location.href.replace(/ssoUserId=.+/, '');
-        window.location.href = this.shibboleth.loginUrl + '?return=' + url;
+        window.location.href = this.ssoConfig.loginUrl + '?return=' + url;
     }
 
     public sendResetNotification() {

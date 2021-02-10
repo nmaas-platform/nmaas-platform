@@ -7,12 +7,9 @@ import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
+import net.geant.nmaas.portal.api.security.SSOConfigManager;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -42,20 +39,20 @@ public class SSOAuthController {
 
 	private ConfigurationManager configurationManager;
 
-	private ShibbolethConfigManager shibbolethConfigManager;
+	private SSOConfigManager SSOConfigManager;
 
 	private UserLoginRegisterService userLoginService;
 
 	@Autowired
 	public SSOAuthController(UserService users, DomainService domains,
 							 JWTTokenService jwtTokenService, ConfigurationManager configurationManager,
-							 ShibbolethConfigManager shibbolethConfigManager,
+							 SSOConfigManager SSOConfigManager,
 							 UserLoginRegisterService userLoginService){
 		this.users = users;
 		this.domains = domains;
 		this.jwtTokenService = jwtTokenService;
 		this.configurationManager = configurationManager;
-		this.shibbolethConfigManager = shibbolethConfigManager;
+		this.SSOConfigManager = SSOConfigManager;
 		this.userLoginService = userLoginService;
 	}
 
@@ -71,8 +68,8 @@ public class SSOAuthController {
 		if(StringUtils.isEmpty(userSSOLoginData.getUsername()))
 			throw new AuthenticationException("Missing username");
 
-		shibbolethConfigManager.checkParam();
-		userSSOLoginData.validate(shibbolethConfigManager.getKey(), shibbolethConfigManager.getTimeout());
+		SSOConfigManager.checkParam();
+		userSSOLoginData.validate(SSOConfigManager.getKey(), SSOConfigManager.getTimeout());
 
 		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElseGet(() -> registerNewUser(userSSOLoginData));
 
@@ -98,6 +95,12 @@ public class SSOAuthController {
 		userLoginService.registerNewSuccessfulLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
+	}
+
+	@GetMapping
+	public SSOView getSSO(){
+		SSOConfigManager.checkParam();
+		return SSOConfigManager.getSSOView();
 	}
 
 	private User registerNewUser(UserSSOLogin userSSOLoginData){

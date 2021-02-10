@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.auth;
 
-import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
+import net.geant.nmaas.portal.api.security.SSOConfigManager;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -43,7 +43,7 @@ public class SSOAuthControlleTest {
 
     private ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
-    private ShibbolethConfigManager shibbolethConfigManager = mock(ShibbolethConfigManager.class);
+    private SSOConfigManager SSOConfigManager = mock(SSOConfigManager.class);
 
     private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
@@ -53,7 +53,7 @@ public class SSOAuthControlleTest {
 
     @BeforeEach
     public void setup(){
-        ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, shibbolethConfigManager, userLoginService);
+        ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, SSOConfigManager, userLoginService);
         when(request.getHeader(any())).thenReturn("empty");
     }
 
