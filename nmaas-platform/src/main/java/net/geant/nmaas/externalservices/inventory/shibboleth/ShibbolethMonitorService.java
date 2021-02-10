@@ -1,8 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.shibboleth;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
@@ -11,24 +8,28 @@ import net.geant.nmaas.portal.api.security.SSOConfigManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 @Service
 @Log4j2
 public class ShibbolethMonitorService extends MonitorService {
 
-    private SSOConfigManager shibbolethManager;
+    private SSOConfigManager ssoConfigManager;
 
     @Autowired
-    public void setShibbolethManager(SSOConfigManager shibbolethManager) {
-        this.shibbolethManager = shibbolethManager;
+    public void setSsoConfigManager(SSOConfigManager ssoConfigManager) {
+        this.ssoConfigManager = ssoConfigManager;
     }
 
     @Override
     public void checkStatus() {
-        String url = shibbolethManager.getLoginUrl();
+        String url = ssoConfigManager.getLoginUrl();
         try{
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setConnectTimeout(shibbolethManager.getTimeout() * 1000);
-            connection.setReadTimeout(shibbolethManager.getTimeout() * 1000);
+            connection.setConnectTimeout(ssoConfigManager.getTimeout() * 1000);
+            connection.setReadTimeout(ssoConfigManager.getTimeout() * 1000);
             connection.setRequestMethod("GET");
             connection.setDoOutput(true);
             int responseCode = connection.getResponseCode();

@@ -1,15 +1,12 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
+import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,9 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
-import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/subscriptions")
