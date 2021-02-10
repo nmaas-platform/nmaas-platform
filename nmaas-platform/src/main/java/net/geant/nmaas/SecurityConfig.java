@@ -97,7 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/i18n/content/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/i18n/all/enabled").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/auth/sso").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/mail").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/mail/type").permitAll()
                 .antMatchers("/api/users/reset/**").permitAll()
@@ -116,7 +116,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                                 new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
                                                 new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
                                                 new AntPathRequestMatcher("/api/configuration/**", "GET"),
-                                                new AntPathRequestMatcher("/api/management/shibboleth/", "GET"),
+                                                new AntPathRequestMatcher("/api/auth/sso", "GET"),
                                                 new AntPathRequestMatcher("/actuator/**"),
                                                 new AntPathRequestMatcher("/favicon.ico"),
                                                 new AntPathRequestMatcher(AUTH_SSO_LOGIN),

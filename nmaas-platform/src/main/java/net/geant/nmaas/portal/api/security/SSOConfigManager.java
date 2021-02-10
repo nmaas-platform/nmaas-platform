@@ -1,7 +1,7 @@
-package net.geant.nmaas.externalservices.inventory.shibboleth;
+package net.geant.nmaas.portal.api.security;
 
 import lombok.Getter;
-import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
+import net.geant.nmaas.portal.api.auth.SSOView;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -9,7 +9,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 @Getter
 @Component
 @ApplicationScope
-public class ShibbolethConfigManager {
+public class SSOConfigManager {
 
     @Value("${sso.loginUrl}")
     private String loginUrl;
@@ -34,8 +34,8 @@ public class ShibbolethConfigManager {
             throw new IllegalStateException("Timeout cannot be less than 0");
     }
 
-    ShibbolethView getShibbolethView(){
-        return new ShibbolethView(loginUrl, logoutUrl);
+    public SSOView getSSOView(){
+        return new SSOView(loginUrl, logoutUrl);
     }
 
 }

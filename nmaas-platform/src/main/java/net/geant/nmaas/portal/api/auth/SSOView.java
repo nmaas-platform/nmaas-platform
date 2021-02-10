@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.shibboleth.model;
+package net.geant.nmaas.portal.api.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ShibbolethView {
+public class SSOView {
     private String loginUrl;
     private String logoutUrl;
 }

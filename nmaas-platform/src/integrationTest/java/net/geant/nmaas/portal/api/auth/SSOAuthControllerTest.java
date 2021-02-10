@@ -6,7 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 import io.jsonwebtoken.impl.crypto.DefaultSignerFactory;
 import io.jsonwebtoken.impl.crypto.Signer;
-import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
+import net.geant.nmaas.portal.api.security.SSOConfigManager;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Autowired
-    private ShibbolethConfigManager shibbolethConfigManager;
+    private SSOConfigManager SSOConfigManager;
 
     @Autowired
     private ConfigurationManager configManager;
@@ -163,7 +163,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     private String getValidToken() {
         String signed = TextCodec.BASE64.encode("admin") + '|' + (new Date().getTime() / 1000) + 10000;
-        byte[] keyBytes = shibbolethConfigManager.getKey().getBytes(StandardCharsets.US_ASCII);
+        byte[] keyBytes = SSOConfigManager.getKey().getBytes(StandardCharsets.US_ASCII);
         Key keyspec = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
         Signer signer = DefaultSignerFactory.INSTANCE.createSigner(SignatureAlgorithm.HS256, keyspec);
         String signature = DatatypeConverter.printHexBinary(signer.sign(signed.getBytes(StandardCharsets.US_ASCII)));

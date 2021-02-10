@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.portal.api.security.SSOConfigManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,10 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class ShibbolethMonitorService extends MonitorService {
 
-    private ShibbolethConfigManager shibbolethManager;
+    private SSOConfigManager shibbolethManager;
 
     @Autowired
-    public void setShibbolethManager(ShibbolethConfigManager shibbolethManager) {
+    public void setShibbolethManager(SSOConfigManager shibbolethManager) {
         this.shibbolethManager = shibbolethManager;
     }
 

@@ -1,6 +1,6 @@
-package net.geant.nmaas.externalservices.inventory.shibboleth;
+package net.geant.nmaas.portal.api.security;
 
-import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
+import net.geant.nmaas.portal.api.auth.SSOView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -8,9 +8,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ShibbolethConfigManagerTest {
+public class SSOConfigManagerTest {
 
-    private ShibbolethConfigManager configManager;
+    private SSOConfigManager configManager;
 
     private static final String LOGIN_URL = "https://shibbolethsp.pllab.internal/cgi-bin/nmaas.php";
 
@@ -22,7 +22,7 @@ public class ShibbolethConfigManagerTest {
 
     @BeforeEach
     public void setup(){
-        configManager = new ShibbolethConfigManager();
+        configManager = new SSOConfigManager();
         ReflectionTestUtils.setField(configManager, "loginUrl", LOGIN_URL);
         ReflectionTestUtils.setField(configManager, "logoutUrl", LOGOUT_URL);
         ReflectionTestUtils.setField(configManager, "timeout", TIMEOUT);
@@ -91,8 +91,8 @@ public class ShibbolethConfigManagerTest {
     }
 
     @Test
-    public void shouldReturnShibbolethViewInstance(){
-        ShibbolethView result = configManager.getShibbolethView();
+    public void shouldReturnSSOViewInstance(){
+        SSOView result = configManager.getSSOView();
         assertThat("Login url mismatch", result.getLoginUrl().equals(configManager.getLoginUrl()));
         assertThat("Logout url mismatch", result.getLogoutUrl().equals(configManager.getLogoutUrl()));
     }
