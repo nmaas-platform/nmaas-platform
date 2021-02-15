@@ -36,7 +36,7 @@ public class BasicApplicationMetricsService extends BaseMetricService {
 
     @Override
     public void registerMetric(MeterRegistry registry) {
-        Gauge.builder(APPLICATION_COUNT_METRIC_NAME, applicationBaseRepository, apps -> (double) apps.count())
+        Gauge.builder(APPLICATION_COUNT_METRIC_NAME, applicationBaseRepository, apps -> (double) apps.countAllActive())
                 .description(APPLICATION_COUNT_METRIC_DESCRIPTION)
                 .baseUnit(BASE_UNIT_NUMBER)
                 .register(registry);
