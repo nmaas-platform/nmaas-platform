@@ -17,4 +17,7 @@ public interface ApplicationBaseRepository extends JpaRepository<ApplicationBase
     @Query("select distinct ab.name FROM ApplicationBase ab")
     List<String> findAllNames();
 
+    @Query("select count(distinct ab.name) FROM ApplicationBase ab JOIN Application a on a.name = ab.name WHERE a.state = 'ACTIVE'")
+    long countAllActive();
+
 }
