@@ -52,7 +52,7 @@ public class NotificationManager {
 
     private final DomainService domainService;
 
-    private ConfigurationManager configurationManager;
+    private final ConfigurationManager configurationManager;
 
     private final ModelMapper modelMapper;
 
@@ -65,7 +65,7 @@ public class NotificationManager {
                                DomainService domainService,
                                ConfigurationManager configurationManager,
                                ModelMapper modelMapper,
-                               FormTypeService formTypeService){
+                               FormTypeService formTypeService) {
         this.templateService = templateService;
         this.notificationService = notificationService;
         this.userService = userService;
@@ -77,6 +77,7 @@ public class NotificationManager {
 
     /**
      * Main function of `NotificationManager`
+     *
      * @param mailAttributes provided mail type and attributes
      */
     void prepareAndSendMail(MailAttributes mailAttributes) {
@@ -92,7 +93,7 @@ public class NotificationManager {
 
         this.getAllAddressees(mailAttributes);
 
-        for(UserView user : mailAttributes.getAddressees()){
+        for (UserView user : mailAttributes.getAddressees()) {
             try {
                 LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
                 this.customizeMessage(mailContent, mailAttributes);
@@ -106,7 +107,7 @@ public class NotificationManager {
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
     }
 
-    private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage){
+    private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage) {
         return mailContentList.stream()
                 .filter(mailContent -> mailContent.getLanguage().equalsIgnoreCase(selectedLanguage))
                 .findFirst()
@@ -117,51 +118,52 @@ public class NotificationManager {
      * This function sets email addresses server-side
      * When adding new MailType, make sure you edit this function so that your mail is sent to proper users
      * mailAttributes will be updated with new email addresses
+     *
      * @param mailAttributes
      */
-    private void getAllAddressees(MailAttributes mailAttributes){
-        if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYMENT_FAILED)){
+    private void getAllAddressees(MailAttributes mailAttributes) {
+        if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYMENT_FAILED)) {
             ConfigurationView configuration = this.configurationManager.getConfiguration();
-            if(configuration.isSendAppInstanceFailureEmails()) {
+            if (configuration.isSendAppInstanceFailureEmails()) {
                 List<UserView> usrs = configuration.getAppInstanceFailureEmailList().stream()
                         .map(this::convertEmailToUserView)
                         .collect(Collectors.toList());
                 mailAttributes.setAddressees(usrs);
             }
         }
-        if(mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)){
+        if (mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)) {
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
-        if(mailAttributes.getMailType().equals(MailType.REGISTRATION)
+        if (mailAttributes.getMailType().equals(MailType.REGISTRATION)
                 || mailAttributes.getMailType().equals(MailType.APP_NEW)
                 || mailAttributes.getMailType().equals(MailType.NEW_SSO_LOGIN)
-        ){
+        ) {
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
-        if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)){
+        if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)) {
             mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getOtherAttributes().get("domainName")));
-            if(mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))){
+            if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
                 userService.findByUsername(mailAttributes.getOtherAttributes().get("owner"))
                         .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));
             }
         }
-        if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
+        if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
             mailAttributes.setAddressees(userService.findAll().stream()
                     .filter(User::isEnabled)
                     .map(user -> modelMapper.map(user, UserView.class))
                     .collect(Collectors.toList()));
         }
-        if(mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
+        if (mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable(mailAttributes.getOtherAttributes().get("subType"));
-            if(!contactFormKey.isPresent()) {
+            if (!contactFormKey.isPresent()) {
                 log.error("Invalid contact form request, subType is null");
             } else {
                 this.formTypeService.findOne(contactFormKey.get())
                         .orElseThrow(() ->
-                            new MissingElementException(
-                                    String.format("Contact form type: [%s] was not found", contactFormKey.get())
-                            )
+                                new MissingElementException(
+                                        String.format("Contact form type: [%s] was not found", contactFormKey.get())
+                                )
                         )
                         .getEmailsList()
                         .forEach(email -> {
@@ -179,21 +181,22 @@ public class NotificationManager {
 
     /**
      * This function handles message type specific logic eg. custom title/subject for broadcast message
-     * @param mailContent mail content to be customize
+     *
+     * @param mailContent    mail content to be customize
      * @param mailAttributes mail information and data provider
      */
     private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes) {
-        if(mailAttributes.getMailType().equals(MailType.BROADCAST)) {
+        if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
             mailContent.setSubject(mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
         }
-        if(mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
+        if (mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
             Optional<String> contactFormKey = Optional.ofNullable(mailAttributes.getOtherAttributes().get("subType"));
-            Optional<FormType> formType =  this.formTypeService.findOne(
+            Optional<FormType> formType = this.formTypeService.findOne(
                     contactFormKey.orElseThrow(() -> new ProcessingException("Contact form subType not found"))
             );
             mailContent.setSubject(
-                   formType.orElseThrow(() -> new MissingElementException(String.format("Contact form type: [%s] was not found", contactFormKey.get())))
-                           .getSubject()
+                    formType.orElseThrow(() -> new MissingElementException(String.format("Contact form type: [%s] was not found", contactFormKey.get())))
+                            .getSubject()
             );
         }
     }
@@ -219,11 +222,16 @@ public class NotificationManager {
 
     private String getContent(String content, Map<String, String> otherAttributes) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(
-                new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)),
-                otherAttributes).replace("\n", "<br/>"); // replace end line characters with html break
+                new Template(
+                        MailTemplateElements.CONTENT,
+                        new StringReader(content),
+                        new Configuration(Configuration.VERSION_2_3_28)
+                ),
+                otherAttributes)
+                .replace("\n", "<br/>"); // replace end line characters with html break
     }
 
-    private List<String> getListOfMails(List<UserView> users){
+    private List<String> getListOfMails(List<UserView> users) {
         return users.stream()
                 .map(UserView::getEmail)
                 .collect(Collectors.toList());
