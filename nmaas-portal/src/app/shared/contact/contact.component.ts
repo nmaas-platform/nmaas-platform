@@ -129,7 +129,7 @@ export class ContactComponent implements OnInit {
                 const result = {token, mail: new Mail()} // create mail object
                 result.mail.otherAttributes = data; // set properties and mail attributes
                 result.mail.otherAttributes.subType = this.formType.key;
-                result.mail.mailType = 'CONTACT_FORM';
+                result.mail.mailType = this.formType.templateName === 'default' ? 'CONTACT_FORM' : this.formType.key;
                 return result;
             }),
             switchMap(arg => this.notificationService.sendMail(arg.mail, arg.token))

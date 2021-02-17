@@ -2,6 +2,6 @@
   "key": "CONTACT",
   "access": "ALL",
   "templateName": "default",
-  "emails": ["admin@nmaas.eu"],
+  "emails": ["nmaas-dev@lists.geant.org"],
   "subject": "NMaaS: Contact"
 }

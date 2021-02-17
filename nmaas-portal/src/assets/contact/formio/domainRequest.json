@@ -1,0 +1,57 @@
+{
+  "display": "form",
+  "components": [
+    {
+      "label": "DOMAIN_NAME",
+      "placeholder": "DOMAIN_NAME_PLACEHOLDER",
+      "description": "DOMAIN_NAME_DESCRIPTION",
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "minLength": 3,
+        "maxLength": 30
+      },
+      "errorLabel": "DOMAIN_NAME_ERROR",
+      "key": "domainName",
+      "type": "textfield",
+      "input": true
+    },
+    {
+      "label": "DOMAIN_CODENAME",
+      "placeholder": "DOMAIN_CODENAME_PLACEHOLDER",
+      "description": "DOMAIN_CODENAME_DESCRIPTION",
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "pattern": "[a-z0-9-]{2,12}"
+      },
+      "errorLabel": "DOMAIN_CODENAME_ERROR",
+      "key": "domainCodename",
+      "type": "textfield",
+      "input": true
+    },
+    {
+      "label": "JUSTIFICATION",
+      "description": "JUSTIFICATION_DESCRIPTION",
+      "autoExpand": false,
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "minLength": 10,
+        "maxLength": 1000
+      },
+      "key": "justification",
+      "type": "textarea",
+      "input": true,
+      "rows": 7
+    },
+    {
+      "type": "button",
+      "label": "Submit",
+      "key": "submit",
+      "disableOnInvalid": true,
+      "input": true,
+      "tableView": false
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "display": "form",
+  "components": [
+    {
+      "label": "ISSUE_DOMAIN_NAME",
+      "placeholder": "ISSUE_DOMAIN_NAME_PLACEHOLDER",
+      "tableView": true,
+      "persistent": false,
+      "key": "issueDomainName",
+      "type": "textfield",
+      "input": true
+    },
+    {
+      "label": "ISSUE_APPLICATION_NAME",
+      "placeholder": "ISSUE_APPLICATION_NAME_PLACEHOLDER",
+      "tableView": true,
+      "persistent": false,
+      "key": "issueApplicationName",
+      "type": "textfield",
+      "input": true
+    },
+    {
+      "label": "ISSUE_DESCRIPTION",
+      "placeholder": "ISSUE_DESCRIPTION_PLACEHOLDER",
+      "autoExpand": false,
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "required": true,
+        "minLength": 10,
+        "maxLength": 4000
+      },
+      "key": "issueDescription",
+      "type": "textarea",
+      "rows": 9,
+      "input": true
+    },
+    {
+      "type": "button",
+      "label": "Submit",
+      "key": "submit",
+      "disableOnInvalid": true,
+      "input": true,
+      "tableView": false
+    }
+  ]
+}

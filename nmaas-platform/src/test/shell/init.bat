@@ -106,6 +106,12 @@ echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appDeploymentFailedMail.json
 echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\issueReport.json
+echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\newDomainRequest.json
+echo.
 
 echo.
 echo App1
@@ -551,4 +557,7 @@ curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --heade
 echo
 echo Insert form type access request
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\access_request.json
+echo
+echo Insert form type domain request
+curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\domain_request.json
 echo

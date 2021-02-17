@@ -1,7 +1,7 @@
 {
   "key": "ISSUE_REPORT",
   "access": "ALL",
-  "templateName": "default",
-  "emails": ["admin@nmaas.eu"],
+  "templateName": "issueReport",
+  "emails": ["nmaas-dev@lists.geant.org"],
   "subject": "NMaaS: Issue report"
 }

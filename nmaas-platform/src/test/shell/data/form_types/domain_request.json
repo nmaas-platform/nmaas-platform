@@ -1,0 +1,7 @@
+{
+  "key": "NEW_DOMAIN_REQUEST",
+  "access": "ALL",
+  "templateName": "domainRequest",
+  "emails": ["nmaas-dev@lists.geant.org"],
+  "subject": "NMaaS: New domain request"
+}
