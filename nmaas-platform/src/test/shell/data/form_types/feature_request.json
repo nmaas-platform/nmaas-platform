@@ -2,6 +2,6 @@
   "key": "FEATURE_REQUEST",
   "access": "ALL",
   "templateName": "default",
-  "emails": ["admin@nmaas.eu"],
+  "emails": ["nmaas-dev@lists.geant.org"],
   "subject": "NMaaS: Feature request"
 }

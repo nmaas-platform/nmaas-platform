@@ -814,7 +814,23 @@
       "NAME_PLACEHOLDER": "Your name",
       "MESSAGE": "Your message",
       "MESSAGE_PLACEHOLDER": "Please enter your message here",
-      "Submit": "Submit"
+      "Submit": "Submit",
+      "DOMAIN_NAME": "Domain name",
+      "DOMAIN_NAME_PLACEHOLDER": "Proposed name for the new domain",
+      "DOMAIN_NAME_DESCRIPTION": "Proposed name for the new domain",
+      "DOMAIN_NAME_ERROR": "Invalid domain name",
+      "DOMAIN_CODENAME": "Domain codename",
+      "DOMAIN_CODENAME_PLACEHOLDER": "Abbreviated version of the domain name",
+      "DOMAIN_CODENAME_DESCRIPTION": "Abbreviated version of the domain name",
+      "DOMAIN_CODENAME_ERROR": "Invalid domain codename",
+      "JUSTIFICATION": "Request justification",
+      "JUSTIFICATION_DESCRIPTION": "Brief justification for the new domain creation including the name of the requesting Institution and the main purpose for deployment of NMaaS applications.",
+      "ISSUE_DOMAIN_NAME": "Domain name",
+      "ISSUE_DOMAIN_NAME_PLACEHOLDER": "Name of the domain affected by the issue",
+      "ISSUE_APPLICATION_NAME": "Application name",
+      "ISSUE_APPLICATION_NAME_PLACEHOLDER": "Name of the application affected by the issue",
+      "ISSUE_DESCRIPTION": "Issue description",
+      "ISSUE_DESCRIPTION_PLACEHOLDER": "Detailed description of the encountered issue"
     },
     "MODAL": {
       "TITLE": "Mail has been sent",
@@ -826,7 +842,8 @@
       "CONTACT": "Contact",
       "ISSUE_REPORT": "Issue report",
       "FEATURE_REQUEST": "Enhancement or new application request",
-      "ACCESS_REQUEST": "Access request"
+      "ACCESS_REQUEST": "Access request",
+      "NEW_DOMAIN_REQUEST": "New domain request"
     }
   },
   "LANGUAGE": {
