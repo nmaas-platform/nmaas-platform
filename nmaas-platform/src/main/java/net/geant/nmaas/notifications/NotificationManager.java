@@ -28,6 +28,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -153,7 +154,7 @@ public class NotificationManager {
                     .map(user -> modelMapper.map(user, UserView.class))
                     .collect(Collectors.toList()));
         }
-        if (mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
+        if (Arrays.asList(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST).contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable(mailAttributes.getOtherAttributes().get("subType"));
             if (!contactFormKey.isPresent()) {
