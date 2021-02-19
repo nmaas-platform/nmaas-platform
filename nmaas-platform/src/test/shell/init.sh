@@ -59,6 +59,10 @@ curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --h
 echo
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeploymentFailedMail.json
 echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/issueReport.json
+echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/newDomainRequest.json
+echo
 
 echo
 echo App1
@@ -542,3 +546,6 @@ curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header 
 echo
 echo Create form type access_request
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/access_request.json
+echo
+echo Create form type domain_request
+curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/domain_request.json

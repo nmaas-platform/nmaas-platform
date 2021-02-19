@@ -46,8 +46,8 @@
       "template": {
         "HEADER": "Dear ${username}",
         "CONTENT": "<p>New domain is requested</p><p>Domain Name: ${domainName}</p><p>Domain Codename: ${domainCodename}</p><p>Justification:</p><p>${justification}</p>",
-        "SENDER": "Best regards,<br />NMaaS Team",
-        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
       }
     }

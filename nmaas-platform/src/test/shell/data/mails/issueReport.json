@@ -42,12 +42,12 @@
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Issue report",
+      "subject": "NMaaS: Zgłoszenie problemu",
       "template": {
-        "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New issue reported</p><p>Affected domain: ${issueDomainName}</p><p>Affected application: ${issueApplicationName}</p><p>Description:</p><p>${issueDescription}</p>",
-        "SENDER": "Best regards,<br />NMaaS Team",
-        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "HEADER": "Drogi ${username}",
+        "CONTENT": "<p>Zgłoszenie nowego problemu.</p><p>Domena: ${issueDomainName}</p><p>Aplikacja: ${issueApplicationName}</p><p>Opis problemu:</p><p>${issueDescription}</p>",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
       }
     }
