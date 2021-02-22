@@ -837,8 +837,8 @@
       "ISSUE_DESCRIPTION_PLACEHOLDER": "Detailed description of the encountered issue"
     },
     "MODAL": {
-      "TITLE": "Mail has been sent",
-      "MESSAGE": "NMaaS Team will reply soon.",
+      "TITLE": "Mail sent",
+      "MESSAGE": "The NMaaS Team will reply as soon as possible.",
       "CLOSE_BUTTON": "Close"
     },
     "SELECT_CATEGORY": "Select form type",

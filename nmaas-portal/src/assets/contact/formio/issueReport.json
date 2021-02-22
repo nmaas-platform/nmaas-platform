@@ -4,6 +4,7 @@
     {
       "label": "ISSUE_DOMAIN_NAME",
       "placeholder": "ISSUE_DOMAIN_NAME_PLACEHOLDER",
+      "description": "ISSUE_DOMAIN_NAME_DESCRIPTION",
       "tableView": true,
       "persistent": false,
       "key": "issueDomainName",
@@ -13,6 +14,7 @@
     {
       "label": "ISSUE_APPLICATION_NAME",
       "placeholder": "ISSUE_APPLICATION_NAME_PLACEHOLDER",
+      "description": "ISSUE_APPLICATION_NAME_DESCRIPTION",
       "tableView": true,
       "persistent": false,
       "key": "issueApplicationName",
