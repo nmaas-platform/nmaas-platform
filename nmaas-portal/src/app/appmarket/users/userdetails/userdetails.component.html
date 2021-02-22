@@ -1,9 +1,0 @@
-<div class="col-sm-12 col-sm-12 col-md-12">
-	<div class="page-header">
-		<h3>{{'USER_DETAILS.USER' | translate}} {{user?.username}}  <a *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')" (click)="remove(user?.id)" class="btn btn-sm btn-danger" role="button">{{'USER_DETAILS.REMOVE_BUTTON' | translate}}</a></h3>
-	</div>
-	<div>
-	<nmaas-userdetails [user]="user" [(userDetailsMode)]="userDetailsMode" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]" [(errorMessage)]="errorMessage" (onSave)="onSave($event)" (refresh)="onRefresh()"></nmaas-userdetails>
-	<nmaas-userprivileges [allowedModes]="[ComponentMode.VIEW, ComponentMode.CREATE]" [user]="user"></nmaas-userprivileges>
-	</div>
-</div>

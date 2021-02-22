@@ -1,7 +1,0 @@
-<span [ngClass]="(rate?.averageRate >= 1) ? 'fa fa-star fa-star-small fa-star-checked' : 'fa fa-star fa-star-small'" (click)="update(1)"></span>
-<span [ngClass]="(rate?.averageRate >= 2) ? 'fa fa-star fa-star-small fa-star-checked' : 'fa fa-star fa-star-small'" (click)="update(2)"></span>
-<span [ngClass]="(rate?.averageRate >= 3) ? 'fa fa-star fa-star-small fa-star-checked' : 'fa fa-star fa-star-small'" (click)="update(3)"></span>
-<span [ngClass]="(rate?.averageRate >= 4) ? 'fa fa-star fa-star-small fa-star-checked' : 'fa fa-star fa-star-small'" (click)="update(4)"></span>
-<span [ngClass]="(rate?.averageRate >= 5) ? 'fa fa-star fa-star-small fa-star-checked' : 'fa fa-star fa-star-small'" (click)="update(5)"></span>
-<span *ngIf="!short" class="text">{{rate?.averageRate | number:'1.0-1'}}</span>
-<span *ngIf="showVotes" class="text text-muted" style="font-size: smaller">{{totalVotes}} votes</span>

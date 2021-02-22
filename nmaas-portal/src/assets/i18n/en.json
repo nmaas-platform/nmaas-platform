@@ -1,7 +1,0 @@
-{
-    "SERVICE_UNAVAILABLE": {
-        "HEADER": "503 - Service unavailable",
-        "TEXT_FIRST_PART": "The server is currently unable to handle your request due to temporary overload or one or more key services are currently offline.",
-        "TEXT_SECOND_PART": "We suggest to take a short break, e.g. for coffee - we're on it. Try again later!"
-    }
-}
