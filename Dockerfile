@@ -4,6 +4,7 @@ COPY . /build/nmaas-platform
 COPY .git /build/.git
 
 WORKDIR /build/nmaas-platform/
+RUN chmod +x ./gradlew
 RUN ./gradlew build -x test -x integrationTest
 
 FROM openjdk:8-jre-alpine
