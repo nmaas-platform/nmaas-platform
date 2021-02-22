@@ -1,23 +1,5 @@
-### Gradle ###
-*/.gradle
-*/build/
-*/bin/
-.gradle
-nmaas-platform/src/main/resources/git.properties
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-nmaas-platform/target/
-target/scala-2.12/
+/log/
+bin
+bin/
+bin/*
+out/
