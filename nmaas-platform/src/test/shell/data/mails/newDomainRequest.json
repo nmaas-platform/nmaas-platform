@@ -12,7 +12,7 @@
       "subject": "NMaaS: New Domain Request",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New domain is requested</p><p>Domain Name: ${domainName}</p><p>Domain Codename: ${domainCodename}</p><p>Justification:</p><p>${justification}</p>",
+        "CONTENT": "<p>New domain creation request was sent from the contact form.</p><p>Requester name: ${name}</p><p>Requester institution: ${institution}</p><p>Requester email: ${email}</p><p>Proposed domain Name: ${domainName}</p><p>Proposed domain codename: ${domainCodename}</p><p>Request justification:</p><p>${justification}</p>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -23,7 +23,7 @@
       "subject": "NMaaS: New Domain Request",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New domain is requested</p><p>Domain Name: ${domainName}</p><p>Domain Codename: ${domainCodename}</p><p>Justification:</p><p>${justification}</p>",
+        "CONTENT": "<p>New domain creation request was sent from the contact form.</p><p>Requester name: ${name}</p><p>Requester institution: ${institution}</p><p>Requester email: ${email}</p><p>Proposed domain Name: ${domainName}</p><p>Proposed domain codename: ${domainCodename}</p><p>Request justification:</p><p>${justification}</p>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -34,7 +34,7 @@
       "subject": "NMaaS: New Domain Request",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New domain is requested</p><p>Domain Name: ${domainName}</p><p>Domain Codename: ${domainCodename}</p><p>Justification:</p><p>${justification}</p>",
+        "CONTENT": "<p>New domain creation request was sent from the contact form.</p><p>Requester name: ${name}</p><p>Requester institution: ${institution}</p><p>Requester email: ${email}</p><p>Proposed domain Name: ${domainName}</p><p>Proposed domain codename: ${domainCodename}</p><p>Request justification:</p><p>${justification}</p>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -42,10 +42,10 @@
     },
     {
       "language": "pl",
-      "subject": "NMaaS: New Domain Request",
+      "subject": "NMaaS: Żądanie utworzenia nowej domeny",
       "template": {
-        "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New domain is requested</p><p>Domain Name: ${domainName}</p><p>Domain Codename: ${domainCodename}</p><p>Justification:</p><p>${justification}</p>",
+        "HEADER": "Drogi ${username}",
+        "CONTENT": "<p>Żądanie utworzenia nowej domeny zostało wysłane przez formularz kontaktowy.</p><p>Imię i Nazwisko: ${name}</p><p>Instytucja: ${institution}</p><p>Adres email: ${email}</p><p>Proponowana nazwa domany: ${domainName}</p><p>Proponowna nazwa kodowa domeny: ${domainCodename}</p><p>Uzasadnienie żądania:</p><p>${justification}</p>",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
