@@ -46,6 +46,44 @@
       "rows": 7
     },
     {
+      "label": "NAME",
+      "placeholder": "NAME_PLACEHOLDER",
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 30
+      },
+      "key": "name",
+      "type": "textfield",
+      "input": true
+    },
+    {
+      "label": "EMAIL",
+      "placeholder": "EMAIL_PLACEHOLDER",
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "required": true
+      },
+      "key": "email",
+      "type": "email",
+      "input": true
+    },
+    {
+      "label": "INSTITUTION",
+      "placeholder": "INSTITUTION_PLACEHOLDER",
+      "tableView": true,
+      "persistent": false,
+      "validate": {
+        "required": true
+      },
+      "key": "institution",
+      "type": "textfield",
+      "input": true
+    },
+    {
       "type": "button",
       "label": "Submit",
       "key": "submit",
