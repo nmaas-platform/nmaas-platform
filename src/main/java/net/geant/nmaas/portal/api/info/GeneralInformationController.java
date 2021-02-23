@@ -33,8 +33,8 @@ public class GeneralInformationController {
     }
 
     @GetMapping(value = "/git")
-    public Map<String, String> getGitInfo(@Value("${git.commit.time:none}")String buildTime, @Value("${git.commit.id.abbrev}")String commitName,
-                                          @Value("${git.build.version}")String buildVersion, @Value("${git.branch}") String branchName){
+    public Map<String, String> getGitInfo(@Value("${git.commit.time:none}") String buildTime, @Value("${git.commit.id.abbrev}") String commitName,
+                                          @Value("${git.build.version}") String buildVersion, @Value("${git.branch}") String branchName){
         return ImmutableMap.of("buildTime",buildTime, "commitName",commitName, "buildVersion", buildVersion, "branchName", branchName);
     }
 

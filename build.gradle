@@ -21,7 +21,7 @@ targetCompatibility = 1.8
 
 gitProperties {
     gitPropertiesDir = "src/main/resources"
-    keys = ['git.branch','git.commit.id','git.commit.time']
+    keys = ['git.branch', 'git.commit.time', 'git.commit.id.abbrev', 'git.build.version']
 }
 
 protobuf {
