@@ -7,3 +7,4 @@ out/
 .gradle/*
 /build/
 .idea/
+/src/main/resources/git.properties
