@@ -10,8 +10,6 @@ RUN ./gradlew build -x test -x integrationTest
 FROM openjdk:8-jre-alpine
 MAINTAINER nmaas@lists.geant.org
 
-VOLUME /tmp
-
 COPY --from=builder /build/nmaas-platform/build/libs/*.jar /nmaas/platform/
 COPY docker/run_platform.sh /nmaas/scripts/run_platform.sh
 COPY docker/nmaas-platform.properties.template /nmaas/platform/config/nmaas-platform.properties.template

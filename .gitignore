@@ -1,8 +1,9 @@
-/log/
+log/
 bin
 bin/
 bin/*
 out/
-/.gradle/
+.gradle/
+.gradle/*
 /build/
-/.idea/
+.idea/
