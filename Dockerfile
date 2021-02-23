@@ -4,8 +4,10 @@ COPY . /build/
 
 WORKDIR /build/
 RUN ls -all
+RUN ls -all .git/
 RUN chmod +x ./gradlew
-RUN ./gradlew build -x test -x integrationTest
+RUN ./gradlew generateGitProperties
+RUN ./gradlew build -x generateGitProperties -x test -x integrationTest
 
 FROM openjdk:8-jre-alpine
 MAINTAINER nmaas@lists.geant.org
