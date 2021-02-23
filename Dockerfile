@@ -5,7 +5,7 @@ COPY . /build/
 WORKDIR /build/
 RUN ls -all
 RUN chmod +x ./gradlew
-RUN ./gradlew build -x test -x integrationTest
+RUN ./gradlew build -x test -x integrationTest --debug
 
 FROM openjdk:8-jre-alpine
 MAINTAINER nmaas@lists.geant.org
