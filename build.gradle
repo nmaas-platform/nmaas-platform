@@ -21,6 +21,7 @@ targetCompatibility = 1.8
 
 gitProperties {
     gitPropertiesDir = "src/main/resources"
+    dotGitDirectory = ".git"
     keys = ['git.branch', 'git.commit.time', 'git.commit.id.abbrev', 'git.build.version']
 }
 
