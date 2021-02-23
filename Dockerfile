@@ -1,8 +1,10 @@
 FROM openjdk:8-jdk-slim as builder
 
 COPY . /build/
+COPY .git /build/
 
 WORKDIR /build/
+RUN ls -all
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test -x integrationTest
 
