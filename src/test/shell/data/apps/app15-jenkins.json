@@ -37,7 +37,7 @@
     "application": {
         "id": null,
         "name": "Jenkins",
-        "version": "latest",
+        "version": "2.263.4",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -60,7 +60,7 @@
                                                 "label": "Jenkins admin username",
                                                 "type": "textfield",
                                                 "input": true,
-                                                "key": "master#adminUser",
+                                                "key": "controller#adminUser",
                                                 "tab": 0,
                                                 "validate": {
                                                     "required": true
@@ -71,7 +71,7 @@
                                                 "label": "Jenkins admin password",
                                                 "type": "password",
                                                 "input": true,
-                                                "key": "master#adminPassword",
+                                                "key": "controller#adminPassword",
                                                 "tab": 0,
                                                 "validate": {
                                                     "required": true
@@ -82,7 +82,7 @@
                                                 "label": "Administrator email address",
                                                 "type": "email",
                                                 "input": true,
-                                                "key": "master#jenkinsAdminEmail",
+                                                "key": "controller#jenkinsAdminEmail",
                                                 "tab": 0,
                                                 "validate": {
                                                     "required": true
@@ -141,8 +141,8 @@
             ],
             "kubernetesTemplate": {
                 "chart": {
-                    "name": "stable/jenkins",
-                    "version": "1.21.3"
+                    "name": "jenkins/jenkins",
+                    "version": "3.1.13"
                 }
             },
             "storageVolumes": [
@@ -158,21 +158,19 @@
                 }
             ],
             "deployParameters": {
-                "DOMAIN_CODENAME": "master.slaveKubernetesNamespace"
+                "DOMAIN_CODENAME": "agent.namespace"
             },
             "globalDeployParameters": {
                 "clusterZone": "geant.local",
-                "agent.image": "artifactory.software.geant.org/nmaas-docker-local/nmaas-jenkins-slave",
-                "agent.tag": "1.0",
-                "master.installPlugins[0]": "kubernetes:1.25.3",
-                "master.installPlugins[1]": "workflow-job:2.38",
-                "master.installPlugins[2]": "workflow-aggregator:2.6",
-                "master.installPlugins[3]": "credentials-binding:1.21",
-                "master.installPlugins[4]": "git:4.2.2",
-                "master.installPlugins[5]": "configuration-as-code:1.39",
-                "master.installPlugins[6]": "locale:1.4",
-                "master.installPlugins[7]": "ssh:2.6.1",
-                "master.installPlugins[8]": "ansible:1.0",
+                "controller.installPlugins[0]": "kubernetes:1.29.0",
+                "controller.installPlugins[1]": "workflow-job:2.40",
+                "controller.installPlugins[2]": "workflow-aggregator:2.6",
+                "controller.installPlugins[3]": "credentials-binding:1.24",
+                "controller.installPlugins[4]": "git:4.5.2",
+                "controller.installPlugins[5]": "configuration-as-code:1.47",
+                "controller.installPlugins[6]": "locale:1.4",
+                "controller.installPlugins[7]": "ssh:2.6.1",
+                "controller.installPlugins[8]": "ansible:1.1",
                 "runAsUser": "1000",
                 "fsGroup": "1000",
                 "useSecurity": "true"
@@ -184,10 +182,10 @@
                     "name": "Jenkins",
                     "tag": "jenkins",
                     "deployParameters": {
-                        "INGRESS_ENABLED": "master.ingress.enabled",
-                        "INGRESS_HOSTS": "master.ingress.hostName=%VALUE%",
-                        "INGRESS_CLASS": "master.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
-                        "INGRESS_TLS_HOSTS": "master.ingress.tls[0].hosts"
+                        "INGRESS_ENABLED": "controller.ingress.enabled",
+                        "INGRESS_HOSTS": "controller.ingress.hostName=%VALUE%",
+                        "INGRESS_CLASS": "controller.ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "controller.ingress.tls[0].hosts"
                     }
                 }
             ]
