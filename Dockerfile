@@ -20,4 +20,5 @@ RUN apk add gettext postgresql-client
 
 RUN mkdir /nmaas/files
 
+RUN chmod +x /nmaas/scripts/run_platform.sh
 CMD /nmaas/scripts/run_platform.sh && tail -f /dev/null
