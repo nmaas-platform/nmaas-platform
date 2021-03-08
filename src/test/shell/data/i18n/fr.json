@@ -454,6 +454,7 @@
     "ABORT_BUTTON": "Avorter",
     "ADD_MEMBERS_BUTTON": "Add members",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
+    "ADDITIONAL_INFO": "Additional Information",
     "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes.<br>Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
