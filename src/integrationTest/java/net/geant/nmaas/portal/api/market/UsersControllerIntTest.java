@@ -248,9 +248,9 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void testDeleteUser() {
-//        assertThrows(ProcessingException.class, () ->
-//            userController.deleteUser(userEntity.getId())
-//        );
+        assertThrows(ProcessingException.class, () ->
+            userController.deleteUser(userEntity.getId())
+        );
     }
 
     @Test

@@ -1,7 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.PasswordChange;
+import net.geant.nmaas.portal.api.domain.UserRequest;
+import net.geant.nmaas.portal.api.domain.UserRoleView;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -9,7 +12,6 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
@@ -28,10 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UsersControllerTest {
 
@@ -39,27 +38,27 @@ public class UsersControllerTest {
 
 	private static final Domain DOMAIN = new Domain(2L,"testdom", "testdom", true);
 
-	private UserService userService = mock(UserService.class);
+	private final UserService userService = mock(UserService.class);
 
-	private DomainService domainService = mock(DomainService.class);
+	private final DomainService domainService = mock(DomainService.class);
 
-	private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
-	private ModelMapper modelMapper = new ModelMapper();
+	private final ModelMapper modelMapper = new ModelMapper();
 
-	private PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+	private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
 
 	private UsersController usersController;
 
 	private List<User> userList;
 
-	private Principal principal = mock(Principal.class);
+	private final Principal principal = mock(Principal.class);
 
-	private JWTTokenService jwtTokenService = mock(JWTTokenService.class);
+	private final JWTTokenService jwtTokenService = mock(JWTTokenService.class);
 
-	private UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
+	private final UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
 
-	private ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
+	private final ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
 
 	@BeforeEach
 	public void setup(){
@@ -474,6 +473,15 @@ public class UsersControllerTest {
 		usersController.completeRegistration(principal, userRequest);
 		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_GUEST);
 		verify(userService, times(1)).update(userList.get(0));
+	}
+
+	@Test
+	public void shouldDeleteUser() {
+		User tester = userList.get(0);
+		tester.setRoles(new ArrayList<>());
+		when(this.instanceService.findAllByOwner(tester.getId())).thenReturn(new ArrayList<>());
+		usersController.deleteUser(tester.getId());
+		verify(userService, times(1)).deleteById(tester.getId());
 	}
 
 }
