@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.results.UserLoginDate;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
@@ -79,6 +80,8 @@ public class UsersController {
 
     private final UserLoginRegisterService userLoginService;
 
+    private final ApplicationInstanceService instanceService;
+
     @Autowired
 	public UsersController(UserService userService,
 						   DomainService domainService,
@@ -86,7 +89,8 @@ public class UsersController {
 						   PasswordEncoder passwordEncoder,
 						   JWTTokenService jwtTokenService,
 						   ApplicationEventPublisher eventPublisher,
-						   UserLoginRegisterService userLoginService) {
+						   UserLoginRegisterService userLoginService,
+						   ApplicationInstanceService instanceService) {
 		this.userService = userService;
 		this.domainService = domainService;
 		this.modelMapper = modelMapper;
@@ -94,6 +98,7 @@ public class UsersController {
 		this.jwtTokenService = jwtTokenService;
 		this.eventPublisher = eventPublisher;
 		this.userLoginService = userLoginService;
+		this.instanceService = instanceService;
 	}
 
 	@GetMapping("/users")
@@ -190,7 +195,15 @@ public class UsersController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void deleteUser(@PathVariable("userId") Long userId) {
-		throw new ProcessingException("User removing not supported.");
+    	User user = this.userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
+//    	Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")).getId();
+    	if (user.getRoles().size() > 1) {
+    		throw new ProcessingException("User cannot be deleted because he belongs to at least one domain");
+		}
+    	if (!this.instanceService.findAllByOwner(userId).isEmpty()) {
+    		throw new ProcessingException("User cannot be deleted because he had deployed at least one instance");
+		}
+    	this.userService.deleteById(userId);
 	}
 	
 	@GetMapping("/users/{userId}/roles")

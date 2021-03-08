@@ -10,6 +10,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
@@ -58,9 +59,11 @@ public class UsersControllerTest {
 
 	private UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
 
+	private ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
+
 	@BeforeEach
 	public void setup(){
-		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService);
+		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService, instanceService);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
 		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
