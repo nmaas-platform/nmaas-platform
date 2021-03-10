@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import lombok.NoArgsConstructor;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.orchestration.AppDeploymentParametersProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -29,10 +29,10 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 public class KubernetesDeploymentParametersProvider implements AppDeploymentParametersProvider {
 
     @Autowired
-    private KClusterDeploymentManager deploymentManager;
+    private KubernetesClusterDeploymentManager deploymentManager;
 
     @Autowired
-    private KClusterIngressManager ingressManager;
+    private KubernetesClusterIngressManager ingressManager;
 
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;

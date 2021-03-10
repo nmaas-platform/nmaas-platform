@@ -10,7 +10,7 @@ import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.InformationServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -22,17 +22,17 @@ import java.util.Arrays;
 @Log4j2
 public class JanitorService {
 
-    private KNamespaceService namespaceService;
+    private KubernetesClusterNamespaceService namespaceService;
 
     private ManagedChannel channel;
 
-    protected JanitorService(KNamespaceService namespaceService, ManagedChannel channel) {
+    protected JanitorService(KubernetesClusterNamespaceService namespaceService, ManagedChannel channel) {
         this.namespaceService = namespaceService;
         this.channel = channel;
     }
 
     @Autowired
-    public JanitorService(KNamespaceService namespaceService, Environment env) {
+    public JanitorService(KubernetesClusterNamespaceService namespaceService, Environment env) {
         this.namespaceService = namespaceService;
         this.channel = ManagedChannelBuilder.forAddress(
                 env.getProperty("janitor.address"),
