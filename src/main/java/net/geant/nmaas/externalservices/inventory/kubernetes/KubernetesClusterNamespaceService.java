@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-public interface KNamespaceService {
+public interface KubernetesClusterNamespaceService {
 
     String namespace(String domain);
 

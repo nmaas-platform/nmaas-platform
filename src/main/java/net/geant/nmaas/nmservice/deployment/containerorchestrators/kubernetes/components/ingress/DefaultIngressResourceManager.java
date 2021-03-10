@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress;
 
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressResourceManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class DefaultIngressResourceManager implements IngressResourceManager {
-
-    private KNamespaceService namespaceService;
 
     /**
      * Generates URL to be used to access the deployed service from outside of the cluster.

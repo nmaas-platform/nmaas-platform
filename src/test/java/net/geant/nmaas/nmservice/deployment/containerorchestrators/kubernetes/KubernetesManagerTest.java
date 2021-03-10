@@ -2,8 +2,8 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.collect.Sets;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressControllerConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
@@ -65,7 +65,7 @@ public class KubernetesManagerTest {
     private KServiceOperationsManager serviceOperationsManager = mock(DefaultKServiceOperationsManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
-    private KClusterIngressManager ingressManager = mock(KClusterIngressManager.class);
+    private KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
     private GitLabManager gitLabManager = mock(GitLabManager.class);
     private JanitorService janitorService = mock(JanitorService.class);
 

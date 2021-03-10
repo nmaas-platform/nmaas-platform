@@ -14,7 +14,7 @@ import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.InfoSer
 import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.ServiceResponse;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc.ReadinessServiceBlockingStub;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 public class JanitorServiceTest {
 
-    private final KNamespaceService namespaceService = mock(KNamespaceService.class);
+    private final KubernetesClusterNamespaceService namespaceService = mock(KubernetesClusterNamespaceService.class);
     private final ManagedChannel channel = mock(ManagedChannel.class);
     private final ConfigServiceBlockingStub configServiceBlockingStub = mock(ConfigServiceBlockingStub.class);
     private final BasicAuthServiceBlockingStub basicAuthServiceBlockingStub = mock(BasicAuthServiceBlockingStub.class);

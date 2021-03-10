@@ -1,10 +1,10 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressCertificateConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -38,9 +38,9 @@ import static org.mockito.Mockito.when;
 public class HelmKServiceManagerTest {
 
     private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
-    private KNamespaceService namespaceService = mock(KNamespaceService.class);
-    private KClusterDeploymentManager deploymentManager = mock(KClusterDeploymentManager.class);
-    private KClusterIngressManager ingressManager = mock(KClusterIngressManager.class);
+    private KubernetesClusterNamespaceService namespaceService = mock(KubernetesClusterNamespaceService.class);
+    private KubernetesClusterDeploymentManager deploymentManager = mock(KubernetesClusterDeploymentManager.class);
+    private KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
     private HelmCommandExecutor helmCommandExecutor = mock(HelmCommandExecutor.class);
     private DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
 

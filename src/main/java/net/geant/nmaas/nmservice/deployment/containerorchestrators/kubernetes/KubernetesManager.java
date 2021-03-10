@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressControllerConfigOption;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
@@ -73,7 +73,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KServiceOperationsManager serviceOperationsManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
-    private KClusterIngressManager ingressManager;
+    private KubernetesClusterIngressManager ingressManager;
     private GitLabManager gitLabManager;
     private JanitorService janitorService;
 

@@ -27,7 +27,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/management/kubernetes")
                     .header("Authorization", "Bearer " + token))
-                    .andExpect(status().isNotFound());
+                    .andExpect(status().isOk());
         });
     }
 
