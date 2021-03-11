@@ -99,9 +99,13 @@ public class PortalConfig {
 				Arrays.stream(ServiceType.values())
 						.filter(service -> !this.scheduleManager.jobExists(service.toString())) // if job does not exist
 						.forEach(service ->{
-							monitorManager.deleteMonitorEntry(service.toString()); // delete entry if exists
-							MonitorEntryView monitorEntry = service.getDefaultMonitorEntry();
-							this.monitorManager.createMonitorEntry(monitorEntry); // create new default entry
+							MonitorEntryView monitorEntry;
+							if (monitorManager.existsByServiceName(service)) { // if entry exists
+								monitorEntry = monitorManager.getMonitorEntries(service.toString()); // read it from database
+							} else {
+								monitorEntry = service.getDefaultMonitorEntry(); // if entry does not exist
+								this.monitorManager.createMonitorEntry(monitorEntry); // create new default entry
+							}
 							this.scheduleManager.createJob(monitorEntry);
 						});
 			}
