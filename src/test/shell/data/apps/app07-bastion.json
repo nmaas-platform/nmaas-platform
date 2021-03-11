@@ -37,7 +37,7 @@
     "application": {
         "id": null,
         "name": "Bastion",
-        "version": "0.3",
+        "version": "18.04",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -137,6 +137,9 @@
             ],
             "deployParameters": {
                 "DOMAIN_CODENAME": "metallb.subnet_name"
+            },
+            "globalDeployParameters": {
+                "image.tag": "2.0"
             },
             "exposesWebUI": false,
             "accessMethods": [

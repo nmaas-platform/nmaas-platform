@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @Component
 @NoArgsConstructor
 @Getter
@@ -114,6 +116,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
 
     @PostConstruct
     public void validateConfig() {
+        checkArgument(this.getNamespaceConfigOption() != null, "NamespaceConfigOption property can't be null");
         this.getNamespaceConfigOption().validate(this.getKClusterDeploymentView());
     }
 
