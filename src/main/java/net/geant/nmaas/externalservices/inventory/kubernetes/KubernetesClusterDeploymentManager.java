@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 @Component
@@ -109,6 +110,11 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
         kClusterDeploymentView.setSmtpServerPassword(this.smtpServerPassword);
         kClusterDeploymentView.setForceDedicatedWorkers(this.forceDedicatedWorkers);
         return kClusterDeploymentView;
+    }
+
+    @PostConstruct
+    public void validateConfig() {
+        this.getNamespaceConfigOption().validate(this.getKClusterDeploymentView());
     }
 
 }

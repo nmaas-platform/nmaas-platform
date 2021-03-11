@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Component
 @NoArgsConstructor
 @Getter
@@ -84,6 +86,14 @@ public class KubernetesClusterIngressManager {
         kClusterIngressView.setIssuerOrWildcardName(this.issuerOrWildcardName);
         kClusterIngressView.setIngressPerDomain(this.ingressPerDomain);
         return kClusterIngressView;
+    }
+
+    @PostConstruct
+    public void validateConfig() {
+        KClusterView.KClusterIngressView view = this.getKClusterIngressView();
+        this.getControllerConfigOption().validate(view);
+        this.getResourceConfigOption().validate(view);
+        this.getCertificateConfigOption().validate(view);
     }
 
 }
