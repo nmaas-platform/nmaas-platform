@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @Component
 @NoArgsConstructor
 @Getter
@@ -90,6 +92,9 @@ public class KubernetesClusterIngressManager {
 
     @PostConstruct
     public void validateConfig() {
+        checkArgument(this.getControllerConfigOption() != null, "ControllerConfigOption property can't be null");
+        checkArgument(this.getResourceConfigOption() != null, "ResourceConfigOption property can't be null");
+        checkArgument(this.getCertificateConfigOption() != null, "CertificateConfigOption property can't be null");
         KClusterView.KClusterIngressView view = this.getKClusterIngressView();
         this.getControllerConfigOption().validate(view);
         this.getResourceConfigOption().validate(view);
