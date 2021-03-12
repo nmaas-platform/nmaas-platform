@@ -94,11 +94,15 @@ public class KubernetesClusterIngressManager {
     public void validateConfig() {
         checkArgument(this.getControllerConfigOption() != null, "ControllerConfigOption property can't be null");
         checkArgument(this.getResourceConfigOption() != null, "ResourceConfigOption property can't be null");
-        checkArgument(this.getCertificateConfigOption() != null, "CertificateConfigOption property can't be null");
+        if (this.getTlsSupported()) {
+            checkArgument(this.getCertificateConfigOption() != null, "CertificateConfigOption property can't be null if TLS is supported");
+        }
         KClusterView.KClusterIngressView view = this.getKClusterIngressView();
         this.getControllerConfigOption().validate(view);
         this.getResourceConfigOption().validate(view);
-        this.getCertificateConfigOption().validate(view);
+        if (this.getCertificateConfigOption() != null) {
+            this.getCertificateConfigOption().validate(view);
+        }
     }
 
 }
