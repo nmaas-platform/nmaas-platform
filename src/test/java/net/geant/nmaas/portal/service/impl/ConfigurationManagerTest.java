@@ -59,18 +59,18 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldAddConfiguration(){
+    public void shouldSetConfiguration(){
         when(repository.count()).thenReturn(0L);
-        Long id = configurationManager.addConfiguration(modelMapper.map(config, ConfigurationView.class));
+        Long id = configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
         assertEquals(config.getId(), id);
         verify(repository, times(1)).save(any());
     }
 
     @Test
-    public void shouldNotAddMultipleConfig(){
+    public void shouldNotSetConfigIfAlreadyExists(){
         assertThrows(OnlyOneConfigurationSupportedException.class, () -> {
             when(repository.count()).thenReturn(1L);
-            configurationManager.addConfiguration(modelMapper.map(config, ConfigurationView.class));
+            configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
         });
     }
 

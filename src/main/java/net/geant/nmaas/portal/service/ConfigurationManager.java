@@ -4,7 +4,7 @@ import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 
 public interface ConfigurationManager {
 
-    Long addConfiguration(ConfigurationView configuration);
+    Long setConfiguration(ConfigurationView configuration);
     ConfigurationView getConfiguration();
     void updateConfiguration(Long id, ConfigurationView updatedConfiguration);
 }

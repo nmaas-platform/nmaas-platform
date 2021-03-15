@@ -29,8 +29,8 @@ public class ConfigurationController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addConfiguration(@RequestBody @Valid ConfigurationView configuration) {
-        return this.configurationManager.addConfiguration(configuration);
+    public Long setConfiguration(@RequestBody @Valid ConfigurationView configuration) {
+        return this.configurationManager.setConfiguration(configuration);
     }
 
     @PutMapping(value="/{id}")
