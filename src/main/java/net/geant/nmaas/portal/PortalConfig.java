@@ -4,6 +4,7 @@ import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.monitor.scheduling.ScheduleManager;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -150,6 +151,41 @@ public class PortalConfig {
 			private void addContentToDatabase(String name, String title, String content){
 				Content newContent = new Content(name, title, content);
 				contentRepository.save(newContent);
+			}
+		};
+	}
+
+	@Bean
+	public InitializingBean saveDefaultPortalConfiguration() {
+		return new InitializingBean() {
+
+			@Value("${portal.config.maintenance}")
+			private boolean maintenance = false;
+			@Value("${portal.config.ssoLoginAllowed}")
+			private boolean ssoLoginAllowed = false;
+			@Value("${portal.config.defaultLanguage}")
+			private String defaultLanguage = "en";
+			@Value("${portal.config.testInstance}")
+			private boolean testInstance = false;
+			@Value("${portal.config.sendAppInstanceFailureEmails}")
+			private boolean sendAppInstanceFailureEmails = false;
+			@Value("${portal.config.appInstanceFailureEmailList}")
+			private String appInstanceFailureEmailList;
+
+			@Autowired
+			private ConfigurationManager configurationManager;
+
+			@Override
+			public void afterPropertiesSet() throws Exception {
+				ConfigurationView configurationView = ConfigurationView.builder()
+						.maintenance(this.maintenance)
+						.ssoLoginAllowed(this.ssoLoginAllowed)
+						.defaultLanguage(this.defaultLanguage)
+						.testInstance(this.testInstance)
+						.sendAppInstanceFailureEmails(this.sendAppInstanceFailureEmails)
+						.appInstanceFailureEmailList(Arrays.asList(this.appInstanceFailureEmailList.split(";")))
+						.build();
+				this.configurationManager.addConfiguration(configurationView);
 			}
 		};
 	}

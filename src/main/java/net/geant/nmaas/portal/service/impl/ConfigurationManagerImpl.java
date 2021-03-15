@@ -21,11 +21,11 @@ import java.util.Optional;
 @Component
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
-    private ConfigurationRepository repository;
+    private final ConfigurationRepository repository;
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    private InternationalizationSimpleRepository internationalizationRepository;
+    private final InternationalizationSimpleRepository internationalizationRepository;
 
     @Override
     public ConfigurationView getConfiguration(){
@@ -57,10 +57,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     private Configuration loadSingleConfiguration(){
-        if(repository.count() == 0){
-            addConfiguration(new ConfigurationView(false, true, "en", false, true, new ArrayList<>()));
-        }
-        else if(repository.count() > 1){
+        if(repository.count() > 1 || repository.count() == 0){
             throw new IllegalStateException("Found "+repository.count()+" configuration instead of one");
         }
         return repository.findAll().get(0);
