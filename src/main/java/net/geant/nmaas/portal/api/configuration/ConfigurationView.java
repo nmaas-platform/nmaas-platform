@@ -25,7 +25,7 @@ public class ConfigurationView {
     private boolean testInstance = false;
     @Builder.Default
     private boolean sendAppInstanceFailureEmails = false;
-
+    @Builder.Default
     private List<@Email String> appInstanceFailureEmailList = new ArrayList<>();
 
     public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance, boolean sendAppInstanceFailureEmails, List<String> appInstanceFailureEmailList) {

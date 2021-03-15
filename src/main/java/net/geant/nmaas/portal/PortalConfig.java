@@ -1,11 +1,13 @@
 package net.geant.nmaas.portal;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.monitor.scheduling.ScheduleManager;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -32,6 +34,7 @@ import java.util.Optional;
 
 @Configuration
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
+@Log4j2
 public class PortalConfig {
 
 	private PasswordEncoder passwordEncoder;
@@ -185,7 +188,11 @@ public class PortalConfig {
 						.sendAppInstanceFailureEmails(this.sendAppInstanceFailureEmails)
 						.appInstanceFailureEmailList(Arrays.asList(this.appInstanceFailureEmailList.split(";")))
 						.build();
-				this.configurationManager.addConfiguration(configurationView);
+				try {
+					this.configurationManager.setConfiguration(configurationView);
+				} catch (OnlyOneConfigurationSupportedException e) {
+					log.debug("Portal configuration already exists. Skipping initialization.");
+				}
 			}
 		};
 	}

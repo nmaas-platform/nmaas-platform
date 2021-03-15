@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 @ApplicationScope
@@ -33,7 +32,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     @Override
-    public Long addConfiguration(ConfigurationView configurationView) {
+    public Long setConfiguration(ConfigurationView configurationView) {
         if(repository.count() > 0){
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
