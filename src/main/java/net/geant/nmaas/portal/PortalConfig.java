@@ -51,14 +51,14 @@ public class PortalConfig {
 			@Autowired
 			private DomainService domains;
 
-			@Autowired
-			private ConfigurationManager configurationManager;
-
 			@Value("${admin.password}")
 			String adminPassword;
 
 			@Value("${admin.email}")
 			String adminEmail;
+
+			@Value("${portal.config.defaultLanguage}")
+			private String defaultLanguage = "en";
 
 			@Override
 			@Transactional
@@ -76,7 +76,7 @@ public class PortalConfig {
 				if(globalDomain.isPresent()) {
 					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
 					user.setEmail(email);
-					user.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
+					user.setSelectedLanguage(this.defaultLanguage);
 					userRepository.save(user);
 				}
 			}
