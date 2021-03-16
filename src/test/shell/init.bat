@@ -58,7 +58,7 @@ echo
 echo ---------------------
 echo
 echo Default mail template
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\mails\html-template\template.html;type=text/html" %API_URL%/mail/templates/html
+curl -X POST %API_URL%/mail/templates/html --header "Authorization: Bearer %token%" -F "file=@data\mails\html-template\template.html;type=text/html"
 echo.
 echo
 echo Create mail templates
