@@ -1,5 +1,21 @@
 {"versions" : [
   {
+    "verNo" : "1.4.1",
+    "date" : "(2021/03/18)",
+    "topic" : [
+      {
+        "title" : "Improved user management views",
+        "tags" : "[Enhancement]",
+        "description" : "Introduced multiple enhancements to the user administrator view."
+      },
+      {
+        "title" : "Enhanced NMaaS configuration process",
+        "tags" : "[Enhancement]",
+        "description" : "Refactored Platform source code in order to load additional configuration parameters from properties file."
+      }
+    ]
+  },
+  {
     "verNo" : "1.4.0",
     "date" : "(2021/01/12)",
     "topic" : [
