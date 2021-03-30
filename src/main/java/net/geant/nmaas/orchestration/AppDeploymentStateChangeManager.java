@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -109,7 +110,7 @@ public class AppDeploymentStateChangeManager {
                 .otherAttributes(ImmutableMap.of(
                         "accessURL", deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
                                 .getServiceAccessMethods().stream()
-                                .filter(m -> !m.getType().equals(ServiceAccessMethodType.INTERNAL))
+                                .filter(m -> !Arrays.asList(ServiceAccessMethodType.INTERNAL, ServiceAccessMethodType.LOCAL).contains(m.getType()))
                                 .map(ServiceAccessMethodView::getUrl)
                                 .findFirst()
                                 .orElse(""),
