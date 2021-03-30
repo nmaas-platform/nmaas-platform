@@ -454,6 +454,7 @@
     "ABORT_BUTTON": "Abbrechen",
     "UPDATE_CONFIG_BUTTON": "Konfigurieren",
     "ADD_MEMBERS_BUTTON": "Add members",
+    "ADDITIONAL_INFO": "Additional Information",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern.<br>Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installationsfortschritt",

@@ -454,6 +454,7 @@
     "ABORT_BUTTON": "Przerwij",
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
     "ADD_MEMBERS_BUTTON": "Osoby",
+    "ADDITIONAL_INFO": "Dodatkowe informacje",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut.<br>Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",

@@ -455,6 +455,7 @@
     "ADD_MEMBERS_BUTTON": "Members",
     "UPDATE_CONFIG_BUTTON": "Configure",
     "DEPLOYMENT_IN_PROGRESS": "Application is being activated. This process may take up to several minutes. <br>You will be notified with an email once your instance is ready.",
+    "ADDITIONAL_INFO": "Additional Information",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
       "STATE": "State",
