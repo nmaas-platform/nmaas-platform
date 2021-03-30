@@ -26,6 +26,13 @@ public class AppConfigurationView {
     @JsonProperty("accessCredentials")
     private String accessCredentials;
 
+    /**
+     * NMAAS-967
+     * terms acceptance config
+     */
+    @JsonProperty("termsAcceptance")
+    private String termsAcceptance;
+
     @JsonSetter("additionalParameters")
     public void setAdditionalParameters(JsonNode data){
         this.additionalParameters = data.toString();
@@ -51,4 +58,10 @@ public class AppConfigurationView {
     public void setAccessCredentials(JsonNode data){
         this.accessCredentials = data.toString();
     }
+
+    @JsonSetter("termsAcceptance")
+    public void setTermsAcceptance(JsonNode data) {this.termsAcceptance = data.toString();}
+
+    public void setTermsAcceptance(String data) {this.termsAcceptance = data; }
+
 }

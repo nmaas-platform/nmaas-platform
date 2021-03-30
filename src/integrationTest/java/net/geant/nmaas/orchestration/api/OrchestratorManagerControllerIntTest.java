@@ -105,7 +105,7 @@ public class OrchestratorManagerControllerIntTest {
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<AppConfigurationView> appConfigurationCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
 
-        verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture());
+        verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture(), "TEST");
         assertThat(deploymentIdCaptor.getValue(), equalTo(deploymentId));
         assertThat(appConfigurationCaptor.getValue().getJsonInput(), equalTo(appConfiguration.getJsonInput()));
     }
@@ -131,7 +131,7 @@ public class OrchestratorManagerControllerIntTest {
 
     @Test
     public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
-        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
+        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any(), "TEST");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
                     .contentType(MediaType.APPLICATION_JSON)

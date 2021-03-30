@@ -20,6 +20,7 @@ import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.NotImplementedException;
@@ -29,6 +30,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -63,7 +68,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         Identifier generatedId;
         do {
             generatedId = new Identifier(UUID.randomUUID().toString());
-        } while(deploymentDoesNotStartWithLetter(generatedId) || deploymentIdAlreadyInUse(generatedId));
+        } while (deploymentDoesNotStartWithLetter(generatedId) || deploymentIdAlreadyInUse(generatedId));
         return generatedId;
     }
 
@@ -74,7 +79,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
         try {
             deploymentRepositoryManager.load(generatedId);
-        } catch(InvalidDeploymentIdException e) {
+        } catch (InvalidDeploymentIdException e) {
             return false;
         }
         return true;
@@ -82,7 +87,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void redeployApplication(Identifier deploymentId){
+    public void redeployApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT, ""));
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
@@ -90,45 +95,77 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
+    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator) {
         AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
-        if(appDeployment.getConfiguration() != null) {
+        if (appDeployment.getConfiguration() != null) {
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
         } else {
             appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
         }
-        if(configuration.getStorageSpace() != null) {
+        if (configuration.getStorageSpace() != null) {
             serviceRepositoryManager.updateStorageSpace(deploymentId, configuration.getStorageSpace());
         }
-        if(isNotEmpty(configuration.getAdditionalParameters())) {
+        if (isNotEmpty(configuration.getAdditionalParameters())) {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getAdditionalParameters())));
         }
-        if(isNotEmpty(configuration.getMandatoryParameters())) {
+        if (isNotEmpty(configuration.getMandatoryParameters())) {
             serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
         }
-        if(isNotEmpty(configuration.getAccessCredentials())) {
+        if (isNotEmpty(configuration.getAccessCredentials())) {
             changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), serviceRepositoryManager.loadDomain(deploymentId), configuration.getAccessCredentials());
         }
+        /*
+         * NMAAS-967
+         * if terms acceptance is required, perform check actions
+         */
+        if (appDeployment.isTermsAcceptanceRequired()) {
+            if (!isNotEmpty(configuration.getTermsAcceptance())) {
+                // Terms are empty
+                throw new ProcessingException("Terms acceptance is required, however terms are not present");
+            }
+            Map<String, String> termsAcceptanceMap = replaceHashToDotsInMapKeys(getMapFromJson(configuration.getTermsAcceptance()));
+            String termsContent = termsAcceptanceMap.get("termsContent");
+            // TODO validate terms content
+            String termsAcceptanceStatement = termsAcceptanceMap.get("termsAcceptanceStatement");
+
+            OffsetDateTime now = OffsetDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
+
+            if (termsAcceptanceStatement != null && termsAcceptanceStatement.equalsIgnoreCase("yes")) {
+                // OK
+                log.info(String.format(
+                        "Terms were accepted: content [%s], statement [%s], by [%s], at: [%s]",
+                        termsContent,
+                        termsAcceptanceStatement,
+                        initiator,
+                        now.format(DateTimeFormatter.ISO_DATE_TIME)
+                ));
+            } else {
+                // Terms were not accepted by they should
+                throw new ProcessingException("Terms acceptance is required, however terms were not accepted");
+            }
+
+        }
         deploymentRepositoryManager.update(appDeployment);
-        if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
+        if (appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
     }
 
-    Map<String, String> getMapFromJson(String inputJson){
+    Map<String, String> getMapFromJson(String inputJson) {
         try {
-            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {});
+            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {
+            });
         } catch (IOException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
     }
 
-    static Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
+    static Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map) {
         Map<String, String> newMap = new HashMap<>();
-        for(Map.Entry<String, String> entry: map.entrySet()){
-            if(entry.getValue() != null && !entry.getValue().isEmpty()){
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            if (entry.getValue() != null && !entry.getValue().isEmpty()) {
                 newMap.put(
-                        entry.getKey().replace("#","."),
+                        entry.getKey().replace("#", "."),
                         escapeCommasIfRequired(addQuotationMarkIfRequired(entry.getValue()))
                 );
             }
@@ -144,7 +181,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         return value.replace(",", "\\,");
     }
 
-    private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
+    private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials) {
         Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
         String basicAuthUsername = accessCredentialsMap.get("accessUsername");
         String basicAuthPassword = accessCredentialsMap.get("accessPassword");
@@ -156,14 +193,14 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) {
-        if(!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
+        if (!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
             eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
         }
     }
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void removeFailedApplication(Identifier deploymentId){
+    public void removeFailedApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppRemoveFailedActionEvent(this, deploymentId));
     }
 
@@ -179,7 +216,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
         AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
         // only access credentials update is currently supported
-        if(isNotEmpty(configuration.getAccessCredentials())) {
+        if (isNotEmpty(configuration.getAccessCredentials())) {
             changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), appDeployment.getDomain(), configuration.getAccessCredentials());
         }
     }

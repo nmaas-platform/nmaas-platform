@@ -236,6 +236,11 @@ public class AppInstanceController extends AppBaseController {
                 .deploymentName(appInstance.getName())
                 .configFileRepositoryRequired(app.getAppConfigurationSpec().isConfigFileRepositoryRequired())
                 .configUpdateEnabled(app.getAppConfigurationSpec().isConfigUpdateEnabled())
+                /*
+                 * NMAAS-967
+                 * information if terms acceptance are required is passed to app deployment
+                 */
+                .termsAcceptanceRequired(app.getAppConfigurationSpec().isTermsAcceptanceRequired())
                 .owner(principal.getName())
                 .appName(app.getName())
                 .descriptiveDeploymentId(createDescriptiveDeploymentId(domain.getCodename(), app.getName(), appInstance.getId()))
