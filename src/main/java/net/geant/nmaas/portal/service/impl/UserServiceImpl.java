@@ -37,15 +37,15 @@ import java.util.Optional;
 @Log4j2
 public class UserServiceImpl implements UserService {
 	
-	private UserRepository userRepo;
+	private final UserRepository userRepo;
 	
-	private UserRoleRepository userRoleRepo;
+	private final UserRoleRepository userRoleRepo;
 
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-	private ConfigurationManager configurationManager;
+	private final ConfigurationManager configurationManager;
 
-	private ModelMapper modelMapper;
+	private final ModelMapper modelMapper;
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder, ConfigurationManager configurationManager, ModelMapper modelMapper){
@@ -185,6 +185,13 @@ public class UserServiceImpl implements UserService {
 		checkParam(user.getId());
 		
 		userRepo.delete(user);
+	}
+
+	@Override
+	public void deleteById(Long userId) {
+		checkParam(userId);
+
+		userRepo.deleteById(userId);
 	}
 
 	@Override

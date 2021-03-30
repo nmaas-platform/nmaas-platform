@@ -191,6 +191,7 @@
     "ENABLE_BUTTON": "Activer",
     "DETAILS_BUTTON": "Détails",
     "DISABLE_BUTTON": "Désactiver",
+    "DELETE_BUTTON": "Delete",
     "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer de l'organisation",
     "FIRST_LOGIN": "First login",
     "LAST_SUCCESSFUL_LOGIN": "Last successful login",

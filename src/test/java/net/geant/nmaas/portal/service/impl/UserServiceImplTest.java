@@ -364,6 +364,12 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void shouldDeleteById() {
+        userService.deleteById(0L);
+        verify(userRepository).deleteById(0L);
+    }
+
+    @Test
     public void setEnabledFlagShouldChangeFlagToTrue(){
         userService.setEnabledFlag((long) 0, true);
         verify(userRepository).setEnabledFlag((long) 0, true);

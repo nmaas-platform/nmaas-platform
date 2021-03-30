@@ -190,6 +190,7 @@
     "ENABLE_BUTTON": "Aktivieren",
     "DETAILS_BUTTON": "Details",
     "DISABLE_BUTTON": "Deaktivieren",
+    "DELETE_BUTTON": "Delete",
     "REMOVE_FROM_DOMAIN_BUTTON": "Aus Domain entfernen",
     "FIRST_LOGIN": "First login",
     "LAST_SUCCESSFUL_LOGIN": "Last successful login",

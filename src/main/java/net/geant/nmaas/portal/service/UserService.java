@@ -32,7 +32,8 @@ public interface UserService {
 	List<User> findAll();
 	Page<User> findAll(Pageable pageable);
 
-	void delete(User user);	
+	void delete(User user);
+	void deleteById(Long userId);
 	void update(User user);
     void setEnabledFlag(Long userId, boolean isEnabled);
     void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag);
