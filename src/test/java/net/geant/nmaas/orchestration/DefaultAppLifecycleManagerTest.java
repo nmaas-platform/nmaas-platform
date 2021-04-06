@@ -46,12 +46,13 @@ public class DefaultAppLifecycleManagerTest {
     private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private NmServiceRepositoryManager serviceRepositoryManager = mock(KubernetesRepositoryManager.class);
     private JanitorService janitorService = mock(JanitorService.class);
+    private AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
 
     private DefaultAppLifecycleManager appLifecycleManager;
 
     @BeforeEach
     public void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService);
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService, appTermsAcceptanceService);
     }
 
     @Test
