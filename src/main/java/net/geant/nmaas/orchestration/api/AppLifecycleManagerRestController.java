@@ -80,7 +80,11 @@ public class AppLifecycleManagerRestController {
             @PathVariable("deploymentId") String deploymentId,
             @RequestBody AppConfigurationView configuration,
             @NotNull Principal principal) throws Throwable {
-        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), configuration, principal.getName());
+        lifecycleManager.applyConfiguration(
+                Identifier.newInstance(deploymentId),
+                configuration,
+                principal.getName()
+        );
     }
 
     /**
