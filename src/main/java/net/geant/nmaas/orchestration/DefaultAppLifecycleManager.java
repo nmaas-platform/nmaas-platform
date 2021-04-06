@@ -53,6 +53,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private NmServiceRepositoryManager serviceRepositoryManager;
     private JanitorService janitorService;
 
+    private final AppTermsAcceptanceService appTermsAcceptanceService;
+
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -133,12 +135,14 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             if (termsAcceptanceStatement != null && termsAcceptanceStatement.equalsIgnoreCase("yes")) {
                 // OK
                 log.info(String.format(
-                        "Terms were accepted: content [%s], statement [%s], by [%s], at: [%s]",
+                        "Terms were accepted: application [%s], content [%s], statement [%s], by [%s], at: [%s]",
+                        appDeployment.getAppName(),
                         termsContent,
                         termsAcceptanceStatement,
                         initiator,
                         now.format(DateTimeFormatter.ISO_DATE_TIME)
                 ));
+                appTermsAcceptanceService.addTermsAcceptanceEntry(appDeployment.getAppName(), initiator, termsContent, termsAcceptanceStatement, now);
             } else {
                 // Terms were not accepted by they should
                 throw new ProcessingException("Terms acceptance is required, however terms were not accepted");
