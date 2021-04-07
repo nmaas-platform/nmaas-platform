@@ -123,6 +123,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         if (appDeployment.isTermsAcceptanceRequired()) {
             if (!isNotEmpty(configuration.getTermsAcceptance())) {
                 // Terms are empty
+                log.error("Terms acceptance is required for this application, however terms are not present in user configuration data");
                 throw new ProcessingException("Terms acceptance is required, however terms are not present");
             }
             Map<String, String> termsAcceptanceMap = replaceHashToDotsInMapKeys(getMapFromJson(configuration.getTermsAcceptance()));
