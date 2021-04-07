@@ -14,8 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,19 +23,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.security.Principal;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,10 +39,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class OrchestratorManagerControllerIntTest {
 
-    @Mock
+    @MockBean
     private AppLifecycleManager lifecycleManager;
 
-    private ApplicationRepository appRepo = mock(ApplicationRepository.class);
+    @MockBean
+    private ApplicationRepository appRepo;
 
     private MockMvc mvc;
 
@@ -56,6 +52,8 @@ public class OrchestratorManagerControllerIntTest {
     private Identifier applicationId;
     private Identifier deploymentId;
     private AppConfiguration appConfiguration;
+
+    private Principal principal;
 
     private static final String CONFIGURATION_JSON = "" +
             "{" +
@@ -70,11 +68,16 @@ public class OrchestratorManagerControllerIntTest {
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo)).build();
-        Application application = new Application("testapp", "testversion","owner");
+
+        Application application = new Application("testapp", "testversion", "owner");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         application.getAppConfigurationSpec().setConfigFileRepositoryRequired(true);
         when(appRepo.findById(any())).thenReturn(Optional.of(application));
+
+        this.principal = mock(Principal.class);
+        when(this.principal.getName()).thenReturn("user");
+
     }
 
     @Test
@@ -97,6 +100,7 @@ public class OrchestratorManagerControllerIntTest {
     @Test
     public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
+                .principal(this.principal)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CONFIGURATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -105,7 +109,7 @@ public class OrchestratorManagerControllerIntTest {
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<AppConfigurationView> appConfigurationCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
 
-        verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture());
+        verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture(), eq("user"));
         assertThat(deploymentIdCaptor.getValue(), equalTo(deploymentId));
         assertThat(appConfigurationCaptor.getValue().getJsonInput(), equalTo(appConfiguration.getJsonInput()));
     }
@@ -113,6 +117,7 @@ public class OrchestratorManagerControllerIntTest {
     @Test
     public void shouldUpdateConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
+                .principal(this.principal)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CONFIGURATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -131,9 +136,10 @@ public class OrchestratorManagerControllerIntTest {
 
     @Test
     public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
-        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
+        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(), any(), anyString());
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
+                    .principal(this.principal)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(CONFIGURATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))

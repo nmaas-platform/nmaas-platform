@@ -85,6 +85,15 @@ public class AppDeployment {
     @Column(nullable = false)
     private boolean configUpdateEnabled;
 
+    /**
+     * Indicates if accepting terms is required before starting app instance
+     * NMAAS-967
+     * information if terms acceptance is required, must be stored in app deployment
+     * It will be used to validate terms acceptance during process of aplying configuration
+     */
+    @Column(nullable = false)
+    private boolean termsAcceptanceRequired;
+
     /** Contains information about deployment fails */
     @Lob
     @Type(type = "text")

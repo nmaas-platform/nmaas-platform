@@ -30,11 +30,11 @@ public interface AppLifecycleManager {
 
     /**
      * Applies custom configuration for the NMaaS application being deployed once provided by the user.
-     *
-     * @param deploymentId unique identifier of the deployed user application
+     *  @param deploymentId unique identifier of the deployed user application
      * @param configuration configuration provided by user in application deployment wizard
+     * @param initiator username of a user who triggered this action
      */
-    void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable;
+    void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator) throws Throwable;
 
     /**
      * Removes deployed application from the system.

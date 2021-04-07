@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
+
 /**
  * Exposes REST API methods to manage application deployment lifecycle.
  */
@@ -75,8 +78,13 @@ public class AppLifecycleManagerRestController {
     @ResponseStatus(code = HttpStatus.OK)
     public void applyConfiguration(
             @PathVariable("deploymentId") String deploymentId,
-            @RequestBody AppConfigurationView configuration) throws Throwable {
-        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), configuration);
+            @RequestBody AppConfigurationView configuration,
+            @NotNull Principal principal) throws Throwable {
+        lifecycleManager.applyConfiguration(
+                Identifier.newInstance(deploymentId),
+                configuration,
+                principal.getName()
+        );
     }
 
     /**

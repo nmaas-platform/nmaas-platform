@@ -32,4 +32,10 @@ public class AppConfigurationSpec implements Serializable {
     private List<ConfigFileTemplate> templates = new ArrayList<>();
 
     private boolean configUpdateEnabled = false;
+
+    /**
+     * NMAAS-967
+     * add information if terms acceptance is required for this application
+     */
+    private boolean termsAcceptanceRequired = false;
 }

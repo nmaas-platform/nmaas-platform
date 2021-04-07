@@ -75,7 +75,7 @@ public class AppConfigurationController {
         instances.update(appInstance);
 
         try {
-            appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
+            appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration, principal.getName());
         } catch (Throwable e) {
             throw new ProcessingException(e.getMessage());
         }
