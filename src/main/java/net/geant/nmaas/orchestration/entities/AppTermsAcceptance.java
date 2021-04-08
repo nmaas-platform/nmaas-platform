@@ -22,6 +22,8 @@ public class AppTermsAcceptance {
 
     private String appName;
 
+    private Long appInstanceId;
+
     private String username;
 
     private String termsAcceptanceStatement;
