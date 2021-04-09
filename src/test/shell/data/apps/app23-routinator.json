@@ -1,0 +1,178 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "Routinator",
+        "license": "BSD-3-Clause License",
+        "licenseUrl": "https://github.com/NLnetLabs/routinator/blob/main/LICENSE",
+        "wwwUrl": "https://www.nlnetlabs.nl/projects/rpki/routinator/",
+        "sourceUrl": "https://github.com/NLnetLabs/routinator",
+        "issuesUrl": "https://github.com/NLnetLabs/routinator/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Routinator",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "RPKI Validator",
+                "fullDescription": "Routinator is a full-featured software package that can perform RPKI validation as a one-time operation and produce the result in formats such as CSV, JSON and RPSL, or run as a service that periodically downloads and verifies RPKI data. Routinator offers an RTR server allowing routers supporting Origin Validation (port 3323) to connect to it to fetch verified RPKI data. The built-in HTTP server offers a user interface and endpoints for the various file formats, as well as logging, status and Prometheus monitoring. <br/> <em>Please note that the initial start-up of this application may take upwards of 30 minutes, due to the large amount of verification data that needs to be downloaded."
+            },
+            {
+                "language": "de",
+                "briefDescription": "RPKI Validator",
+                "fullDescription": "Routinator is a full-featured software package that can perform RPKI validation as a one-time operation and produce the result in formats such as CSV, JSON and RPSL, or run as a service that periodically downloads and verifies RPKI data. Routinator offers an RTR server allowing routers supporting Origin Validation (port 3323) to connect to it to fetch verified RPKI data. The built-in HTTP server offers a user interface and endpoints for the various file formats, as well as logging, status and Prometheus monitoring. <br/> <em>Please note that the initial start-up of this application may take upwards of 30 minutes, due to the large amount of verification data that needs to be downloaded."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "RPKI Validator",
+                "fullDescription": "Routinator is a full-featured software package that can perform RPKI validation as a one-time operation and produce the result in formats such as CSV, JSON and RPSL, or run as a service that periodically downloads and verifies RPKI data. Routinator offers an RTR server allowing routers supporting Origin Validation (port 3323) to connect to it to fetch verified RPKI data. The built-in HTTP server offers a user interface and endpoints for the various file formats, as well as logging, status and Prometheus monitoring. <br/> <em>Please note that the initial start-up of this application may take upwards of 30 minutes, due to the large amount of verification data that needs to be downloaded."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "RPKI Validator",
+                "fullDescription": "Routinator is a full-featured software package that can perform RPKI validation as a one-time operation and produce the result in formats such as CSV, JSON and RPSL, or run as a service that periodically downloads and verifies RPKI data. Routinator offers an RTR server allowing routers supporting Origin Validation (port 3323) to connect to it to fetch verified RPKI data. The built-in HTTP server offers a user interface and endpoints for the various file formats, as well as logging, status and Prometheus monitoring. <br/> <em>Please note that the initial start-up of this application may take upwards of 30 minutes, due to the large amount of verification data that needs to be downloaded."
+            }
+        ],
+        "tags": [
+            "security",
+            "routing",
+            "bgp",
+            "rpki"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Routinator",
+        "version": "0.8.3",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Additional Parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "additionalParameters",
+                                        "components": [
+                                            {
+                                                "label": "Allocated storage space",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "persistence#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "defaultValue": "10Gi",
+                                                "placeholder": "Default value: 10Gi",
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "label": "Terms acceptance",
+                                        "hideLabel": true,
+                                        "tableView": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "termsAcceptance",
+                                        "display": "form",
+                                        "components": [
+                                            {
+                                                "label": "Terms review",
+                                                "autoExpand": false,
+                                                "spellcheck": false,
+                                                "disabled": true,
+                                                "tableView": true,
+                                                "persistent": false,
+                                                "key": "termsContent",
+                                                "attributes": {
+                                                    "style": "white-space: pre-wrap;"
+                                                },
+                                                "type": "textarea",
+                                                "inputFormat": "plain",
+                                                "rows": 5,
+                                                "input": true,
+                                                "defaultValue": "In order to proceed with Routinator installation it is required to first review and agree to the ARIN Relying Party Agreement terms available at https://www.arin.net/resources/manage/rpki/tal/. Type in \"yes\" in the text field below to confirm that You agree on the terms."
+                                            },
+                                            {
+                                                "label": "Terms acceptance confirmation",
+                                                "placeholder": "Type in -yes- to confirm",
+                                                "tableView": true,
+                                                "persistent": false,
+                                                "validate": {
+                                                    "required": true,
+                                                    "pattern": "(yes)|(YES)|(Yes)",
+                                                    "customMessage": "You must agree on the terms - enter \"yes\" to confirm"
+                                                },
+                                                "key": "termsAcceptanceStatement",
+                                                "type": "textfield",
+                                                "input": true
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-routinator",
+                    "version": "2.0.0"
+                }
+            },
+            "deployParameters": {
+                "DOMAIN_CODENAME": "metallb.subnet_name=%VALUE%"
+            },
+            "globalDeployParameters": {
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "Synapse",
+                    "tag": "synapse",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "ingress.enabled",
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
+                        "INGRESS_CLASS": "ingress.class"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": true,
+            "templates": []
+        }
+    }
+}
