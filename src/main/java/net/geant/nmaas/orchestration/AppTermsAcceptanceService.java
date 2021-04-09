@@ -13,9 +13,10 @@ public class AppTermsAcceptanceService {
 
     private final AppTermsAcceptanceRepository repository;
 
-    public void addTermsAcceptanceEntry(String applicationName, Long applicationId, String username, String termsContent, String termsAcceptanceStatement, OffsetDateTime date) {
+    public void addTermsAcceptanceEntry(String applicationName, Long applicationInstanceId, String username, String termsContent, String termsAcceptanceStatement, OffsetDateTime date) {
         AppTermsAcceptance entry = AppTermsAcceptance.builder()
                 .appName(applicationName)
+                .appInstanceId(applicationInstanceId)
                 .username(username)
                 .termsAcceptanceStatement(termsAcceptanceStatement)
                 .termsContent(termsContent)
