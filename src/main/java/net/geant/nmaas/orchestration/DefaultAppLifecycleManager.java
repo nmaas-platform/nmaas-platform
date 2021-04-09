@@ -136,14 +136,22 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             if (termsAcceptanceStatement != null && termsAcceptanceStatement.equalsIgnoreCase("yes")) {
                 // OK
                 log.info(String.format(
-                        "Terms were accepted: application [%s], content [%s], statement [%s], by [%s], at: [%s]",
+                        "Terms were accepted: application [%s], instance id [%s], content [%s], statement [%s], by [%s], at: [%s]",
                         appDeployment.getAppName(),
+                        appDeployment.getInstanceId(),
                         termsContent,
                         termsAcceptanceStatement,
                         initiator,
                         now.format(DateTimeFormatter.ISO_DATE_TIME)
                 ));
-                appTermsAcceptanceService.addTermsAcceptanceEntry(appDeployment.getAppName(), initiator, termsContent, termsAcceptanceStatement, now);
+                appTermsAcceptanceService.addTermsAcceptanceEntry(
+                        appDeployment.getAppName(),
+                        appDeployment.getInstanceId(),
+                        initiator,
+                        termsContent,
+                        termsAcceptanceStatement,
+                        now
+                );
             } else {
                 // Terms were not accepted by they should
                 throw new ProcessingException("Terms acceptance is required, however terms were not accepted");
