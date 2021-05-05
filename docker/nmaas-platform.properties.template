@@ -88,7 +88,7 @@ jwt.resetSigningKey=testResetKey
 jwt.resetTokenValidFor=1800000
 management.info.git.mode=full
 captcha.secret=${CAPTCHA_SECRET}
-spring.data.web.pageable.default-page-size=100
+spring.data.web.pageable.default-page-size=1000
 
 # ------------------------ #
 # SAML proxy configuration #
