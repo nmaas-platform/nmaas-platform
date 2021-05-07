@@ -254,7 +254,7 @@ echo App10
 curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app10-spa-inventory.json
 echo.
 echo App10 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\geant.png;type=image/png" %API_URL%/apps/10/logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\spa.png;type=image/png" %API_URL%/apps/10/logo
 echo.
 echo App10 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\spa-inventory\spa-inventory1.png;type=image/png" %API_URL%/apps/10/screenshots

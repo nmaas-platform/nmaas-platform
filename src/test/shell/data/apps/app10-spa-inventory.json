@@ -4,40 +4,40 @@
         "name": "SPA Inventory",
         "license": "",
         "licenseUrl": "",
-        "wwwUrl": "",
+        "wwwUrl": "https://wiki.geant.org/display/NETDEV/SPA",
         "sourceUrl": "",
         "issuesUrl": "",
         "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-SPAInventory",
         "descriptions": [
             {
                 "language": "en",
-                "briefDescription": "Topology database with TMF-compliant API",
+                "briefDescription": "Resource and Service Inventory with TMF-compliant API",
                 "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
             },
             {
                 "language": "de",
-                "briefDescription": "Topology database with TMF-compliant API",
+                "briefDescription": "Resource and Service Inventory with TMF-compliant API",
                 "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
             },
             {
                 "language": "fr",
-                "briefDescription": "Topology database with TMF-compliant API",
+                "briefDescription": "Resource and Service Inventory with TMF-compliant API",
                 "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
             },
             {
                 "language": "pl",
-                "briefDescription": "Topology database with TMF-compliant API",
+                "briefDescription": "Resource and Service Inventory with TMF-compliant API",
                 "fullDescription": "SPA Inventory - a database that stores the information about topology resources and service instances and offers TMF Open APIs for standardised access."
             }
         ],
         "tags": [
-            "management"
+            "management", "inventory"
         ]
     },
     "application": {
         "id": null,
         "name": "SPA Inventory",
-        "version": "1.2",
+        "version": "2.0",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -146,6 +146,9 @@
                     }
                 }
             ],
+            "globalDeployParameters": {
+                "image.tag": "2.0.0"
+            },
             "exposesWebUI": true,
             "accessMethods": [
                 {
