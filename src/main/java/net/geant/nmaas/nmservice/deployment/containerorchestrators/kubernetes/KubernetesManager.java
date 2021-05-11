@@ -339,7 +339,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                         if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
                             Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
                             janitorService.checkServiceExists(serviceName, service.getDomain());
-                            m.setUrl(getUserAtIpAddressUrl(serviceName.getValue(), m.getProtocol()));
+                            m.setUrl(serviceName.value());
                         }
                         return m;
                     })
