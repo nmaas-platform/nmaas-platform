@@ -1,5 +1,21 @@
 {"versions" : [
   {
+    "verNo" : "1.4.2",
+    "date" : "(2021/05/11)",
+    "topic" : [
+      {
+        "title" : "Added support for enforcing users to acknowledge terms before application deployment",
+        "tags" : "[Enhancement]",
+        "description" : "If given application requires users to explicitly accept terms of use before deployment, this will be enforced on the configuration wizard level."
+      },
+      {
+        "title" : "Fixed issue with users not visible in the Portal",
+        "tags" : "[Bugfix]",
+        "description" : "Fixed issue with users not visible in the Portal."
+      }
+    ]
+  },
+  {
     "verNo" : "1.4.1",
     "date" : "(2021/03/18)",
     "topic" : [
