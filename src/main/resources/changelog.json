@@ -11,7 +11,7 @@
       {
         "title" : "Fixed issue with users not visible in the Portal",
         "tags" : "[Bugfix]",
-        "description" : "Fixed issue with user not visible in the Portal"
+        "description" : "Fixed issue with users not visible in the Portal."
       }
     ]
   },
