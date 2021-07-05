@@ -37,7 +37,7 @@
     "application": {
         "id": null,
         "name": "MaDDash",
-        "version": "4.2.3-1",
+        "version": "4.x",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -57,7 +57,7 @@
                                         "key": "mandatoryParameters",
                                         "components": [
                                             {
-                                                "label": "Default username",
+                                                "label": "Admin username",
                                                 "type": "textfield",
                                                 "input": true,
                                                 "key": "env#MADDASH_USERNAME",
@@ -68,7 +68,7 @@
                                                 "inputFormat": "plain"
                                             },
                                             {
-                                                "label": "Default password",
+                                                "label": "Admin password",
                                                 "type": "password",
                                                 "input": true,
                                                 "key": "env#MADDASH_PASSWORD",
@@ -77,6 +77,52 @@
                                                     "required": true
                                                 },
                                                 "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Log access username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "env#LOG_USERNAME",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Log access password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "env#LOG_PASSWORD",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Access options",
+                                                "type": "radio",
+                                                "input": true,
+                                                "tableView": true,
+                                                "inputType": "radio",
+                                                "key": "accessmethods#public#maddash",
+                                                "values": [
+                                                    {
+                                                        "value": "yes",
+                                                        "label": "Public"
+                                                    },
+                                                    {
+                                                        "value": "no",
+                                                        "label": "VPN"
+                                                    }
+                                                ],
+                                                "defaultValue": "yes",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "labelPosition": "top",
+                                                "optionsLabelPosition": "right"
                                             }
                                         ]
                                     }
@@ -131,7 +177,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-perfsonar-maddash",
-                    "version": "2.0.1"
+                    "version": "2.2.0"
                 },
                 "mainDeploymentName": "maddash"
             },
@@ -151,7 +197,7 @@
             "allowSshAccess": true,
             "accessMethods": [
                 {
-                    "type": "DEFAULT",
+                    "type": "PUBLIC",
                     "name": "MaDDash",
                     "tag": "maddash",
                     "deployParameters": {
@@ -162,11 +208,24 @@
                         "INGRESS_LETSENCRYPT": "ingress.tls.acme",
                         "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
                     }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "Logs",
+                    "tag": "logs",
+                    "deployParameters": { }
                 }
             ]
         },
         "appConfigurationSpec": {
-            "configFileRepositoryRequired": false
+            "configFileRepositoryRequired": true,
+            "configUpdateEnabled": true,
+            "templates": [
+                {
+                    "configFileName": "mesh.txt",
+                    "configFileTemplateContent": ""
+                }
+            ]
         }
     }
 }

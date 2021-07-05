@@ -120,7 +120,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-bastion",
-                    "version": "0.1.0"
+                    "version": "2.1.0"
                 }
             },
             "storageVolumes": [
@@ -137,9 +137,6 @@
             ],
             "deployParameters": {
                 "DOMAIN_CODENAME": "metallb.subnet_name"
-            },
-            "globalDeployParameters": {
-                "image.tag": "2.0"
             },
             "exposesWebUI": false,
             "accessMethods": [

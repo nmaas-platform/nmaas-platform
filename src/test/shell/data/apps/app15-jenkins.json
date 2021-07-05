@@ -141,9 +141,10 @@
             ],
             "kubernetesTemplate": {
                 "chart": {
-                    "name": "jenkins/jenkins",
+                    "name": "nmaas-jenkins",
                     "version": "3.1.13"
-                }
+                },
+                "mainDeploymentName": "nmaas-jenkins"
             },
             "storageVolumes": [
                 {
@@ -167,7 +168,7 @@
                 "controller.installPlugins[2]": "workflow-aggregator:2.6",
                 "controller.installPlugins[3]": "credentials-binding:1.24",
                 "controller.installPlugins[4]": "git:4.5.2",
-                "controller.installPlugins[5]": "configuration-as-code:1.47",
+                "controller.installPlugins[5]": "configuration-as-code:1.51",
                 "controller.installPlugins[6]": "locale:1.4",
                 "controller.installPlugins[7]": "ssh:2.6.1",
                 "controller.installPlugins[8]": "ansible:1.1",
