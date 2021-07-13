@@ -37,7 +37,7 @@
     "application": {
         "id": null,
         "name": "MaDDash",
-        "version": "4.x",
+        "version": "4.3.4",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -177,7 +177,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-perfsonar-maddash",
-                    "version": "2.2.0"
+                    "version": "2.2.4"
                 },
                 "mainDeploymentName": "maddash"
             },
@@ -213,7 +213,10 @@
                     "type": "EXTERNAL",
                     "name": "Logs",
                     "tag": "logs",
-                    "deployParameters": { }
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "logs.ingress.hosts",
+                        "INGRESS_CLASS": "logs.ingress.class"
+                    }
                 }
             ]
         },
