@@ -752,7 +752,11 @@
     "STATIC_GLOBAL_DEPLOY_PARAMETERS": "Static global deploy parameters",
     "DEPLOY_PARAMETERS": "Global deploy parameters",
     "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
-    "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)"
+    "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)",
+    "RAW_JSON": "Raw JSON",
+    "FORM_BUILDER": "Form builder",
+    "FORM_DEFINITION": "Form definition",
+    "FORM_PREVIEW": "Form preview"
   },
   "APP_STORAGE_VOLUME_EDIT": {
     "BASIC_INFO": "Basic information",
@@ -995,5 +999,8 @@
         "KEY_PATTERN": "Key does not match required pattern"
       }
     }
+  },
+  "JSON_EDIT": {
+    "INVALID_JSON": "Invalid JSON"
   }
 }
