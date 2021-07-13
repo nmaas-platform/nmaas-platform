@@ -754,7 +754,7 @@
     "DEPLOY_PARAMETERS": "Global deploy parameters",
     "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
     "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)",
-    "RAW_JSON": "Raw JSON",
+    "RAW_JSON": "Raw JSON format",
     "FORM_BUILDER": "Form builder",
     "FORM_DEFINITION": "Form definition",
     "FORM_PREVIEW": "Form preview"
@@ -1002,6 +1002,6 @@
     }
   },
   "JSON_EDIT": {
-    "INVALID_JSON": "Invalid JSON"
+    "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   }
 }

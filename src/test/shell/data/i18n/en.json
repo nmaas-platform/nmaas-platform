@@ -716,10 +716,10 @@
     "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
     "CONFIG_FILEDIRECTORY_LABEL": "Configuration file directory (folder name)",
     "CONFIG_FILEDIRECTORY_TOOLTIP": "Enter the name of folder in which the configuration file should be placed in repository",
-    "CONFIG_CONTENT_LABEL": "Configuration template",
-    "CONFIG_CONTENT_TOOLTIP":"Enter configuration template. Please be advised that it has to be compatible with FreeMarker Template Language.",
-    "ADD_CONFIG_BUTTON": "Add new template",
-    "APP_CONFIG_TEMPLATES_HEADER": "Application templates configuration",
+    "CONFIG_CONTENT_LABEL": "Configuration file content template",
+    "CONFIG_CONTENT_TOOLTIP": "Enter configuration file content template. Please be advised that it has to be compatible with FreeMarker Template Language.",
+    "ADD_CONFIG_BUTTON": "Add new configuration file template",
+    "APP_CONFIG_TEMPLATES_HEADER": "Application configuration file templates configuration",
     "APP_REQUIRED_DESCRIPTIONS_HEADER": "Required application descriptions",
     "APP_OPTIONAL_DESCRIPTIONS_HEADER": "Optional application descriptions",
     "OPTIONAL_LANGS_LABEL": "Select optional languages",
@@ -754,7 +754,7 @@
     "DEPLOY_PARAMETERS": "Global deploy parameters",
     "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
     "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)",
-    "RAW_JSON": "Raw JSON",
+    "RAW_JSON": "Raw JSON format",
     "FORM_BUILDER": "Form builder",
     "FORM_DEFINITION": "Form definition",
     "FORM_PREVIEW": "Form preview"
@@ -1002,6 +1002,6 @@
     }
   },
   "JSON_EDIT": {
-    "INVALID_JSON": "Invalid JSON"
+    "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   }
 }

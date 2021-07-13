@@ -754,7 +754,7 @@
     "DEPLOY_PARAMETERS": "Global deploy parameters",
     "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
     "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)",
-    "RAW_JSON": "Czysty JSON",
+    "RAW_JSON": "Format JSON",
     "FORM_BUILDER": "Tworzenie formularza",
     "FORM_DEFINITION": "Definicja formularza",
     "FORM_PREVIEW": "Podgląd formularza"
@@ -978,10 +978,10 @@
     "HEADER": "Klucze SSH",
     "TABLE": {
       "NAME": "Nazwa",
-      "FINGERPRINT": "Fingerprint",
+      "FINGERPRINT": "Odcisk palca",
       "ACTIONS": "Akcje"
     },
-    "BUTTON_INVALIDATE": "Invalidate",
+    "BUTTON_INVALIDATE": "Unieważnij",
     "NO_KEYS": "Brak dodanych kluczy",
     "BUTTON_NEW_KEY": "Dodaj nowy klucz",
     "MODAL": {
@@ -993,15 +993,15 @@
       "BUTTON_ADD": "Dodaj",
       "BUTTON_CANCEL": "Anuluj",
       "ERROR": {
-        "NAME_REQUIRED": "Name is required",
-        "NAME_MINLENGTH": "Name must have at lest 6 characters",
-        "NAME_MAXLENGTH": "Name cannot be longer than 16 characters",
-        "KEY_REQUIRED": "Key is required",
-        "KEY_PATTERN": "Key does not match required pattern"
+        "NAME_REQUIRED": "Nazwa jest wymagana",
+        "NAME_MINLENGTH": "Nazwa musi mieć długość co najmniej 6 znaków",
+        "NAME_MAXLENGTH": "Nazwa nie może być dłuższa niż 16 znaków",
+        "KEY_REQUIRED": "Klucz jest wymagany",
+        "KEY_PATTERN": "Format klucza nie pasuje do zakładanego wzorca"
       }
     }
   },
   "JSON_EDIT": {
-    "INVALID_JSON": "Niewłaściwy format JSON"
+    "INVALID_JSON": "Niewłaściwy format JSON. Zmiany wprowadzone do zawartości formularza nie zostaną zapisane."
   }
 }
