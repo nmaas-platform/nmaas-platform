@@ -635,7 +635,7 @@ public class UsersController {
         return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
     }
 
-    private void sendMail(UserView user, MailType mailType, Map<String, String> other) {
+    private void sendMail(UserView user, MailType mailType, Map<String, Object> other) {
         MailAttributes mailAttributes = MailAttributes.builder()
                 .mailType(mailType)
                 .otherAttributes(other)

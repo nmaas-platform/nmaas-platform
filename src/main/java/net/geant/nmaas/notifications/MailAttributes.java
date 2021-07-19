@@ -24,11 +24,11 @@ public class MailAttributes implements Serializable {
     private MailType mailType;
 
     @Builder.Default
-    private Map<String, String> otherAttributes = new HashMap<>();
+    private Map<String, Object> otherAttributes = new HashMap<>();
 
     @Builder
     @SuppressWarnings("unused")
-    private MailAttributes(List<UserView> addressees, MailType mailType, Map<String, String> otherAttributes){
+    private MailAttributes(List<UserView> addressees, MailType mailType, Map<String, Object> otherAttributes){
         this.addressees = addressees;
         this.mailType = mailType;
         this.otherAttributes = Optional.ofNullable(otherAttributes).orElse(this.otherAttributes);
