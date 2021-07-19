@@ -142,9 +142,9 @@ public class NotificationManager {
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
         if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)) {
-            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getOtherAttributes().get("domainName")));
+            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole((String)mailAttributes.getOtherAttributes().get("domainName")));
             if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
-                userService.findByUsername(mailAttributes.getOtherAttributes().get("owner"))
+                userService.findByUsername((String)mailAttributes.getOtherAttributes().get("owner"))
                         .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));
             }
         }
@@ -156,7 +156,7 @@ public class NotificationManager {
         }
         if (Arrays.asList(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST).contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
-            Optional<String> contactFormKey = Optional.ofNullable(mailAttributes.getOtherAttributes().get("subType"));
+            Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
             if (!contactFormKey.isPresent()) {
                 log.error("Invalid contact form request, subType is null");
             } else {
@@ -188,10 +188,10 @@ public class NotificationManager {
      */
     private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes) {
         if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
-            mailContent.setSubject(mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
+            mailContent.setSubject((String)mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
         }
         if (mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
-            Optional<String> contactFormKey = Optional.ofNullable(mailAttributes.getOtherAttributes().get("subType"));
+            Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
             Optional<FormType> formType = this.formTypeService.findOne(
                     contactFormKey.orElseThrow(() -> new ProcessingException("Contact form subType not found"))
             );
@@ -221,7 +221,7 @@ public class NotificationManager {
                 ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
-    private String getContent(String content, Map<String, String> otherAttributes) throws IOException, TemplateException {
+    private String getContent(String content, Map<String, Object> otherAttributes) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(
                 new Template(
                         MailTemplateElements.CONTENT,

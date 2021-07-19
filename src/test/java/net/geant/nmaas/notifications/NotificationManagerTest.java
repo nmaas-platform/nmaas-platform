@@ -122,7 +122,7 @@ public class NotificationManagerTest {
 
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.BROADCAST);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "some text");
             put(MailTemplateElements.TITLE, "Some Title");
             put("username", "MyUser");
@@ -140,7 +140,7 @@ public class NotificationManagerTest {
     public void shouldSendHealthCheckEmail() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "text");
             put("username", "MyUser");
         }});
@@ -156,7 +156,7 @@ public class NotificationManagerTest {
     public void shouldSendAppDeployedEmailToAdminWhenOwnerIsAdmin() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "admin");
@@ -173,7 +173,7 @@ public class NotificationManagerTest {
     public void shouldSendAppDeployedEmailToAdminAndOrdinaryWhenOwnerIsOrdinary() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "ordinary");
@@ -192,7 +192,7 @@ public class NotificationManagerTest {
     public void shouldThrowExceptionWhenCannotFindTemplateWithMatchingLanguage() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.REGISTRATION);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "text");
             put("username", "MyUser");
         }});
@@ -210,7 +210,7 @@ public class NotificationManagerTest {
     public void shouldSendContactForm() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.CONTACT_FORM);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "text");
             put("subType", "CONTACT");
         }});
@@ -235,7 +235,7 @@ public class NotificationManagerTest {
     public void shouldSendAppDeploymentFailedEmail() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYMENT_FAILED);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "ordinary");
@@ -265,7 +265,7 @@ public class NotificationManagerTest {
     public void shouldThrowExceptionWhenTemplateServiceThrowsException() throws IOException {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
-        ma.setOtherAttributes(new HashMap<String, String>() {{
+        ma.setOtherAttributes(new HashMap<String, Object>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "ordinary");
