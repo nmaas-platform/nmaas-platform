@@ -1,5 +1,31 @@
 {"versions" : [
   {
+    "verNo" : "1.4.3",
+    "date" : "(2021/07/20)",
+    "topic" : [
+      {
+        "title" : "Enhanced application instance public access method",
+        "tags" : "[Enhancement]",
+        "description" : "Application public access URL includes custom instance name instead of the random UUID."
+      },
+      {
+        "title" : "Enhanced administrator views for adding new applications",
+        "tags" : "[Enhancement]",
+        "description" : "Introduced advanced option for configuration wizard definition."
+      },
+      {
+        "title" : "Enhanced new domain request form",
+        "tags" : "[Enhancement]",
+        "description" : "Added new VPN-setup related fields to the new domain request form."
+      },
+      {
+        "title" : "Fixed issue with application version selection",
+        "tags" : "[Bugfix]",
+        "description" : "Fixed issue related with allowing only active application versions to be deployed."
+      }
+    ]
+  },
+  {
     "verNo" : "1.4.2",
     "date" : "(2021/05/11)",
     "topic" : [
