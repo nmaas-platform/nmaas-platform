@@ -39,7 +39,7 @@
     "application": {
         "id": null,
         "name": "Oxidized",
-        "version": "0.25.1",
+        "version": "0.28.0",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -255,6 +255,9 @@
                     "name": "nmaas-oxidized",
                     "version": "2.0.1"
                 }
+            },
+            "globalDeployParameters": {
+                "image.tag": "0.28.0"
             },
             "storageVolumes": [
                 {

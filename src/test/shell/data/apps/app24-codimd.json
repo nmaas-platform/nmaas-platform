@@ -1,0 +1,155 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "CodiMD",
+        "license": "AGPL v3",
+        "licenseUrl": "https://www.gnu.org/licenses/agpl-3.0.txt",
+        "wwwUrl": "https://hackmd.io/",
+        "sourceUrl": "https://github.com/hackmdio/codimd",
+        "issuesUrl": "https://github.com/hackmdio/codimd/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-CodiMD",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Colaborative Markdown Editor",
+                "fullDescription": "CodiMD lets you collaborate in real-time with markdown. It is an open-source version of the popular HackMD software, letting you host and control your team's content with speed and ease."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Colaborative Markdown Editor",
+                "fullDescription": "CodiMD lets you collaborate in real-time with markdown. It is an open-source version of the popular HackMD software, letting you host and control your team's content with speed and ease."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Colaborative Markdown Editor",
+                "fullDescription": "CodiMD lets you collaborate in real-time with markdown. It is an open-source version of the popular HackMD software, letting you host and control your team's content with speed and ease."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Colaborative Markdown Editor",
+                "fullDescription": "CodiMD lets you collaborate in real-time with markdown. It is an open-source version of the popular HackMD software, letting you host and control your team's content with speed and ease."
+            }
+        ],
+        "tags": [
+            "documentation",
+            "writing",
+            "editor"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "CodiMD",
+        "version": "2.4.1",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Additional Parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "additionalParameters",
+                                        "components": [
+                                            {
+                                                "label": "Default user email address",
+                                                "type": "email",
+                                                "input": true,
+                                                "key": "config#email",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Default user password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "config#password",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Allow anonymous usage",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "key": "env#CMD_ALLOW_ANONYMOUS",
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Enable email based registrations",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "key": "env#CMD_ALLOW_EMAIL_REGISTER",
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-codimd",
+                    "version": "1.0.0"
+                },
+                "mainDeploymentName": "nmaas-codimd"
+            },
+            "deployParameters": {
+            },
+            "globalDeployParameters": {
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "CodiMD",
+                    "tag": "codimd",
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_CLASS": "ingress.class"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}
