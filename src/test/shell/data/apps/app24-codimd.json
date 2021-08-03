@@ -93,6 +93,30 @@
                                                 "input": true,
                                                 "key": "env#CMD_ALLOW_EMAIL_REGISTER",
                                                 "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Access options",
+                                                "type": "radio",
+                                                "input": true,
+                                                "tableView": true,
+                                                "inputType": "radio",
+                                                "key": "accessmethods#public#codimd",
+                                                "values": [
+                                                    {
+                                                        "value": "yes",
+                                                        "label": "Public"
+                                                    },
+                                                    {
+                                                        "value": "no",
+                                                        "label": "VPN"
+                                                    }
+                                                ],
+                                                "defaultValue": "yes",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "labelPosition": "top",
+                                                "optionsLabelPosition": "right"
                                             }
                                         ]
                                     }
@@ -135,7 +159,7 @@
             "allowSshAccess": false,
             "accessMethods": [
                 {
-                    "type": "DEFAULT",
+                    "type": "PUBLIC",
                     "name": "CodiMD",
                     "tag": "codimd",
                     "deployParameters": {
