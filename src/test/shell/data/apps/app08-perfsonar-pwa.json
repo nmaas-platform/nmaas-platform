@@ -143,7 +143,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-perfsonar-pwa",
-                    "version": "2.0.1"
+                    "version": "2.1.0"
                 },
                 "mainDeploymentName": "pwa-admin"
             },

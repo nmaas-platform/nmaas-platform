@@ -1,7 +1,7 @@
 {
     "id": null,
     "name": "WiFiMon",
-    "version": "1.2.0",
+    "version": "1.4.0",
     "configWizardTemplate": {
         "template": {
             "components": [
@@ -159,6 +159,8 @@
             "RELEASE_NAME_ELASTICSEARCH_MASTER_SERVICE": "elastic-stack.elasticsearch.masterService=%VALUE%-pllabprod"
         },
         "globalDeployParameters": {
+            "ui.image.tag": "1.4.0",
+            "sp.image.tag": "1.4.0",
             "elastic-stack.elasticsearch.nodeGroup": "pllabprod",
             "elastic-stack.elasticsearch.imageTag": "7.9.3",
             "elastic-stack.logstash.imageTag": "7.9.3",

@@ -38,7 +38,7 @@
     "application": {
         "id": null,
         "name": "esmond",
-        "version": "4.2.4-1",
+        "version": "4.3.4",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -80,6 +80,28 @@
                                                 },
                                                 "labelPosition": "top",
                                                 "optionsLabelPosition": "right"
+                                            },
+                                            {
+                                                "label": "Log access username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "env#LOG_USERNAME",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Log access password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "env#LOG_PASSWORD",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain"
                                             }
                                         ]
                                     },
@@ -128,7 +150,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-perfsonar-esmond",
-                    "version": "2.0.1"
+                    "version": "2.2.0"
                 },
                 "mainDeploymentName": "esmond"
             },
@@ -158,11 +180,27 @@
                         "INGRESS_LETSENCRYPT": "ingress.tls.acme",
                         "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.certOrIssuer"
                     }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "Logs",
+                    "tag": "logs",
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "logs.ingress.hosts",
+                        "INGRESS_CLASS": "logs.ingress.class"
+                    }
                 }
             ]
         },
         "appConfigurationSpec": {
-            "configFileRepositoryRequired": false
+            "configFileRepositoryRequired": true,
+            "configUpdateEnabled": true,
+            "templates": [
+                {
+                    "configFileName": "ip-auth.txt",
+                    "configFileTemplateContent": ""
+                }
+            ]
         }
     }
 }

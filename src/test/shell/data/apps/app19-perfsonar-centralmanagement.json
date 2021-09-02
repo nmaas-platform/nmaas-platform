@@ -42,7 +42,7 @@
     "application": {
         "id": null,
         "name": "Central Management",
-        "version": "4.2.4",
+        "version": "4.3.4",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -155,6 +155,52 @@
                                                         "inputFormat": "plain"
                                                     },
                                                     {
+                                                        "label": "Log access username",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-maddash#env#LOG_USERNAME",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Log access password",
+                                                        "type": "password",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-maddash#env#LOG_PASSWORD",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Access options",
+                                                        "type": "radio",
+                                                        "input": true,
+                                                        "tableView": true,
+                                                        "inputType": "radio",
+                                                        "key": "accessmethods#public#maddash",
+                                                        "values": [
+                                                            {
+                                                                "value": "yes",
+                                                                "label": "Public"
+                                                            },
+                                                            {
+                                                                "value": "no",
+                                                                "label": "VPN"
+                                                            }
+                                                        ],
+                                                        "defaultValue": "yes",
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "labelPosition": "top",
+                                                        "optionsLabelPosition": "right"
+                                                    },
+                                                    {
                                                         "label": "Allocated storage space (GB)",
                                                         "type": "textfield",
                                                         "input": true,
@@ -182,6 +228,28 @@
                                                 "breadcrumb": "default",
                                                 "hideLabel": false,
                                                 "components": [
+                                                    {
+                                                        "label": "Log access username",
+                                                        "type": "textfield",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-esmond#env#LOG_USERNAME",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
+                                                    {
+                                                        "label": "Log access password",
+                                                        "type": "password",
+                                                        "input": true,
+                                                        "key": "nmaas-perfsonar-esmond#env#LOG_PASSWORD",
+                                                        "tab": 0,
+                                                        "validate": {
+                                                            "required": true
+                                                        },
+                                                        "inputFormat": "plain"
+                                                    },
                                                     {
                                                         "label": "Access options",
                                                         "type": "radio",
@@ -252,7 +320,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-perfsonar-centralmanagement",
-                    "version": "2.0.1"
+                    "version": "2.2.0"
                 },
                 "mainDeploymentName": "pwa-admin"
             },
@@ -287,7 +355,7 @@
                     }
                 },
                 {
-                    "type": "EXTERNAL",
+                    "type": "PUBLIC",
                     "name": "MaDDash",
                     "tag": "maddash",
                     "deployParameters": {
@@ -297,6 +365,15 @@
                         "INGRESS_CLASS": "nmaas-perfsonar-maddash.ingress.class",
                         "INGRESS_LETSENCRYPT": "nmaas-perfsonar-maddash.ingress.tls.acme",
                         "INGRESS_WILDCARD_OR_ISSUER": "nmaas-perfsonar-maddash.ingress.tls.certOrIssuer"
+                    }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "MaDDash logs",
+                    "tag": "maddash-logs",
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "nmaas-perfsonar-maddash.logs.ingress.hosts",
+                        "INGRESS_CLASS": "nmaas-perfsonar-maddash.logs.ingress.class"
                     }
                 },
                 {
@@ -311,11 +388,33 @@
                         "INGRESS_LETSENCRYPT": "nmaas-perfsonar-esmond.ingress.tls.acme",
                         "INGRESS_WILDCARD_OR_ISSUER": "nmaas-perfsonar-esmond.ingress.tls.certOrIssuer"
                     }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "Esmond logs",
+                    "tag": "esmond-logs",
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "nmaas-perfsonar-esmond.logs.ingress.hosts",
+                        "INGRESS_CLASS": "nmaas-perfsonar-esmond.logs.ingress.class"
+                    }
                 }
             ]
         },
         "appConfigurationSpec": {
-            "configFileRepositoryRequired": false
+            "configFileRepositoryRequired": true,
+            "configUpdateEnabled": true,
+            "templates": [
+                {
+                    "configFileName": "mesh.txt",
+                    "configFileDirectory": "maddash",
+                    "configFileTemplateContent": "   "
+                },
+                {
+                    "configFileName": "ip-auth.txt",
+                    "configFileDirectory": "esmond",
+                    "configFileTemplateContent": "   "
+                }
+            ]
         }
     }
 }

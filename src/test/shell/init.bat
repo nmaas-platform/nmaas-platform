@@ -377,7 +377,7 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\wifimon\wifimon3.png;type=image/png" %API_URL%/apps/18/screenshots
 echo.
 echo App19 v2
-curl -X POST %API_URL%/apps/version --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app18-wifimon_v1.2.0.json
+curl -X POST %API_URL%/apps/version --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app18-wifimon_v1.4.0.json
 echo.
 
 echo.
