@@ -1,14 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableMap;
-import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +9,11 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
@@ -33,6 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -71,8 +68,14 @@ public class ApplicationController extends AppBaseController {
 	@GetMapping("/base/all")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public List<ApplicationBaseView> getAllApplicationBase(){
+	public List<ApplicationBaseView> getAllApplicationBase(Principal principal){
+		// NMAAS-1024 A user with Tool Manager role should only see applications he owns
+		boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
+				.anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
+
 		return appBaseService.findAll().stream()
+				// system admin should see all the applications
+				.filter(app -> isSystemAdmin || app.getOwner().equals(principal.getName()))
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.map(this::setAppRating)
 				.collect(Collectors.toList());
@@ -101,7 +104,9 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping(value = "/base")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void updateApplicationBase(@RequestBody ApplicationBaseView baseView){
+	public void updateApplicationBase(@RequestBody ApplicationBaseView baseView, Principal principal){
+		// only system admin and owner can update application base
+		this.applicationBaseOwnerCheck(baseView.getName(), principal);
 		appBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
 	}
 
@@ -113,8 +118,13 @@ public class ApplicationController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public Id addApplication(@RequestBody @Valid ApplicationDTO request, Principal principal) {
-		ApplicationBase base = this.appBaseService.create(modelMapper.map(request.getApplicationBase(), ApplicationBase.class));
+		ApplicationBaseView creationRequest = request.getApplicationBase();
+		creationRequest.setOwner(principal.getName());
+		// create new application base
+		ApplicationBase base = this.appBaseService.create(modelMapper.map(creationRequest, ApplicationBase.class));
+
 		this.addApplicationVersion(request.getApplication(), principal);
+
 		return new Id(base.getId());
 	}
 
@@ -159,6 +169,8 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public void addApplicationVersion(@RequestBody @Valid ApplicationView view, Principal principal) {
 
+		this.applicationBaseOwnerCheck(view.getName(), principal);
+
 		// validate
 		// application base with given name must exist
 		ApplicationBase base = appBaseService.findByName(view.getName());
@@ -173,13 +185,12 @@ public class ApplicationController extends AppBaseController {
 
 		// create application stub to avoid problems with circular dependencies
 		// see application -> app config spec -> config file template -> application (id) :)
-		Application temp = this.applicationService.create(new Application(view.getName(), view.getVersion(), principal.getName()));
+		Application temp = this.applicationService.create(new Application(view.getName(), view.getVersion()));
 		Long appId = temp.getId();
 
 		// create application entity & set properties
 		Application application = modelMapper.map(view, Application.class);
 		application.setId(appId);
-		application.setOwner(principal.getName());
 		application.setState(ApplicationState.NEW);
 		application.setCreationDate(LocalDateTime.now());
 		this.applicationService.setMissingProperties(application, appId);
@@ -197,7 +208,9 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping(value = "/version")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void updateApplicationVersion(@RequestBody @Valid ApplicationView view){
+	public void updateApplicationVersion(@RequestBody @Valid ApplicationView view, Principal principal){
+
+		this.applicationBaseOwnerCheck(view.getName(), principal);
 
 		// check if id exists
 		if(view.getId() == null) {
@@ -264,10 +277,11 @@ public class ApplicationController extends AppBaseController {
 	@DeleteMapping(value="/{id}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void deleteApplication(@PathVariable long id){
+	public void deleteApplication(@PathVariable long id, Principal principal){
 		Application app = getApp(id);
+		this.applicationBaseOwnerCheck(app.getName(), principal);
 		applicationService.delete(id);
-		appBaseService.updateApplicationVersionState(app.getName(), app.getOwner(), ApplicationState.DELETED);
+		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), ApplicationState.DELETED);
 	}
 
 	/*
@@ -279,11 +293,30 @@ public class ApplicationController extends AppBaseController {
 				.mailType(stateChangeRequest.getState().getMailType())
 				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason() == null? "": stateChangeRequest.getReason()))
 				.build();
+		ApplicationBase applicationBase = appBaseService.findByName(app.getName());
 		if(!stateChangeRequest.getState().equals(ApplicationState.NEW)){
-			UserView owner = modelMapper.map(userService.findByUsername(app.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
+			UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
 			mailAttributes.setAddressees(Collections.singletonList(owner));
 		}
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+	}
+
+
+	private void applicationBaseOwnerCheck(ApplicationBase applicationBase, Principal principal) throws MarketException {
+
+		boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
+				.anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
+
+		boolean isOwner = applicationBase.getOwner().equals(principal.getName());
+
+		if (!isOwner && !isSystemAdmin) {
+			throw new MarketException("The user is not application owner");
+		}
+	}
+
+	private void applicationBaseOwnerCheck(String applicationBaseName, Principal principal) throws MarketException {
+		ApplicationBase applicationBase = this.appBaseService.findByName(applicationBaseName);
+		this.applicationBaseOwnerCheck(applicationBase, principal);
 	}
 
 }

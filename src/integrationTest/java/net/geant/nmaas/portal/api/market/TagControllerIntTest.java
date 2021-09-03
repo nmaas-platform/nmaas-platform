@@ -131,6 +131,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     private ApplicationBaseView getDefaultApplicationBaseView(String name) {
         return  ApplicationBaseView.builder()
                 .name(name)
+                .owner("admin")
                 .descriptions(
                         Collections.singletonList(
                                 new AppDescriptionView("en", "description", "full description")
@@ -142,11 +143,6 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                                 new TagView(null, "tag2")
                         )
                 )
-//                .versions(
-//                        ImmutableSet.of(
-//                                new ApplicationVersionView("1.0.0", ApplicationState.ACTIVE, 1L)
-//                        )
-//                )
                 .build();
     }
 
@@ -160,7 +156,6 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
         Application application = new Application();
         application.setName(name);
         application.setVersion("1.0.0");
-        application.setOwner("admin");
         application.setState(ApplicationState.ACTIVE);
         application.setCreationDate(LocalDateTime.now());
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();

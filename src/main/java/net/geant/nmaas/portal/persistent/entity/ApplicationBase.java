@@ -7,18 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,6 +40,9 @@ public class ApplicationBase implements Serializable {
     private String sourceUrl;
     private String issuesUrl;
     private String nmaasDocumentationUrl;
+
+    @Column(nullable = false)
+    private String owner;
 
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private FileInfo logo;

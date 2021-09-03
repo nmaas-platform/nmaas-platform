@@ -38,39 +38,40 @@ public class ApplicationBaseRepositoryTest {
     public void shouldQueryApplicationBaseData() {
         ApplicationBase appBase1 = new ApplicationBase();
         appBase1.setName(APP1_NAME);
+        appBase1.setOwner("admin");
         repository.save(appBase1);
         Application app1 = new Application();
         app1.setName(APP1_NAME);
         app1.setState(ApplicationState.ACTIVE);
         app1.setVersion("1");
-        app1.setOwner("owner");
         app1.setCreationDate(LocalDateTime.now());
         applicationRepository.save(app1);
+
         ApplicationBase appBase2 = new ApplicationBase();
         appBase2.setName(APP2_NAME);
+        appBase2.setOwner("admin");
         repository.save(appBase2);
         Application app2 = new Application();
         app2.setName(APP2_NAME);
         app2.setState(ApplicationState.DISABLED);
         app2.setVersion("1");
-        app2.setOwner("owner");
         app2.setCreationDate(LocalDateTime.now());
         applicationRepository.save(app2);
         Application app3 = new Application();
         app3.setName(APP2_NAME);
         app3.setState(ApplicationState.ACTIVE);
         app3.setVersion("2");
-        app3.setOwner("owner");
         app3.setCreationDate(LocalDateTime.now());
         applicationRepository.save(app3);
+
         ApplicationBase appBase3 = new ApplicationBase();
         appBase3.setName(APP3_NAME);
+        appBase3.setOwner("admin");
         repository.save(appBase3);
         Application app4 = new Application();
         app4.setName(APP3_NAME);
         app4.setState(ApplicationState.DISABLED);
         app4.setVersion("1");
-        app4.setOwner("owner");
         app4.setCreationDate(LocalDateTime.now());
         applicationRepository.save(app4);
 

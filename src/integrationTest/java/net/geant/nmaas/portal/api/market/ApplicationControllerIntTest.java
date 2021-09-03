@@ -320,6 +320,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     private ApplicationBase getDefaultApplicationBase() {
         ApplicationBase applicationBase = new ApplicationBase(null, "test");
+        applicationBase.setOwner("admin");
         applicationBase.setLicense("");
         applicationBase.setLicenseUrl("");
         applicationBase.setSourceUrl("");
@@ -368,7 +369,6 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         Application application = new Application();
         application.setName("test");
         application.setVersion("1.1.0");
-        application.setOwner("admin");
         application.setState(ApplicationState.ACTIVE);
         application.setCreationDate(LocalDateTime.now());
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();

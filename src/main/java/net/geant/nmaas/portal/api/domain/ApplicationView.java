@@ -36,6 +36,5 @@ public class ApplicationView {
     @NotNull
     private AppConfigurationSpecView appConfigurationSpec;
 
-    private String owner;
     private ApplicationState state;
 }
