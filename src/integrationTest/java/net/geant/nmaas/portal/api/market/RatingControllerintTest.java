@@ -3,22 +3,21 @@ package net.geant.nmaas.portal.api.market;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppRateView;
-import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,12 +34,14 @@ public class RatingControllerintTest extends BaseControllerTestSetup {
     @Autowired
     private RatingRepository ratingRepo;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-        this.applicationBaseRepository.save(new ApplicationBase("testAPP"));
+        ApplicationBase testApp = new ApplicationBase("testAPP");
+        testApp.setOwner("admin");
+        this.applicationBaseRepository.save(testApp);
     }
 
     @AfterEach

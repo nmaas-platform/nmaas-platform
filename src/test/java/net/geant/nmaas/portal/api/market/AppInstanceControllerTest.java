@@ -65,7 +65,7 @@ public class AppInstanceControllerTest {
         domain1 = new Domain(2L, "domain one", "dom-1");
         domain2 = new Domain(3L, "domain two", "dom-2");
         global = new Domain(1L, "GLOBAL", "GLOBAL");
-        application = new Application(name,"1.0","admin");
+        application = new Application(name,"1.0");
         application.setId(1L);
         Set<UserRole> roleSet = new HashSet<>();
         roleSet.add(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN));

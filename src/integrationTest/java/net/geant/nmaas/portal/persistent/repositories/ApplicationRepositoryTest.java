@@ -48,6 +48,7 @@ public class ApplicationRepositoryTest {
 	@Transactional
 	public void testAddApplication() {
 		ApplicationBase app1 = new ApplicationBase("zabbix");
+		app1.setOwner("admin");
 		app1.setTags(new HashSet<>());
 		app1.getTags().add(new Tag("monitoring1"));
 		app1.getTags().add(new Tag("network1"));
@@ -85,6 +86,7 @@ public class ApplicationRepositoryTest {
 		managementTag = tagRepo.findByName("management").get();
 		
 		ApplicationBase app1 = new ApplicationBase("zabbix");
+		app1.setOwner("admin");
 		app1.setTags(new HashSet<>());
 		app1.getTags().add(monitoringTag);
 		monitoringTag.getApplications().add(app1);
@@ -93,6 +95,7 @@ public class ApplicationRepositoryTest {
 		appRepo.saveAndFlush(app1);
 
 		ApplicationBase app2 = new ApplicationBase("librenms");
+		app2.setOwner("admin");
 		app2.setTags(new HashSet<>());
 		app2.getTags().add(monitoringTag);
 		monitoringTag.getApplications().add(app2);

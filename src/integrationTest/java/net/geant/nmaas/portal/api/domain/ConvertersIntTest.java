@@ -174,7 +174,6 @@ public class ConvertersIntTest {
         app.setAppDeploymentSpec(new AppDeploymentSpecView());
         app.getAppDeploymentSpec().setExposesWebUI(true);
         app.setState(ApplicationState.ACTIVE);
-        app.setOwner("admin");
         return app;
     }
 
@@ -189,6 +188,7 @@ public class ConvertersIntTest {
         appBase.setDescriptions(new ArrayList<>());
         appBase.setLogo(new FileInfo("logo", "png"));
         appBase.setVersions(Sets.newHashSet(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
+        appBase.setOwner("admin");
         return appBase;
     }
 
@@ -202,7 +202,6 @@ public class ConvertersIntTest {
         app.setAppDeploymentSpec(new AppDeploymentSpec());
         app.getAppDeploymentSpec().setExposesWebUI(true);
         app.setState(ApplicationState.ACTIVE);
-        app.setOwner("admin");
         return app;
     }
 

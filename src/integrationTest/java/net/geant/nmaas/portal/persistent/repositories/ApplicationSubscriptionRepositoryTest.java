@@ -33,9 +33,16 @@ public class ApplicationSubscriptionRepositoryTest {
 	@BeforeEach
 	public void setUp() {
 
-		app1 = appRepo.save(new ApplicationBase("APP1"));
-		app2 = appRepo.save(new ApplicationBase("APP2"));
-		app3 = appRepo.save(new ApplicationBase("APP3"));
+		app1 = new ApplicationBase("APP1");
+		app1.setOwner("");
+		app2 = new ApplicationBase("APP2");
+		app2.setOwner("");
+		app3 = new ApplicationBase("APP3");
+		app3.setOwner("");
+
+		app1 = appRepo.save(app1);
+		app2 = appRepo.save(app2);
+		app3 = appRepo.save(app3);
 		appRepo.flush();
 
 		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false));

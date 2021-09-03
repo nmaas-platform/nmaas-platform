@@ -69,7 +69,7 @@ public class OrchestratorManagerControllerIntTest {
         appConfiguration = new AppConfiguration(jsonInput);
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo)).build();
 
-        Application application = new Application("testapp", "testversion", "owner");
+        Application application = new Application("testapp", "testversion");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         application.getAppConfigurationSpec().setConfigFileRepositoryRequired(true);

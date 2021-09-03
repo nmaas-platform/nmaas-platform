@@ -28,9 +28,9 @@ public class UsersHelper {
 	public final static List<User> USERS = Arrays.asList(ADMIN, TOOL_MANAGER, DOMAIN1_ADMIN, DOMAIN1_USER1, DOMAIN1_USER2, DOMAIN1_GUEST, DOMAIN2_ADMIN, DOMAIN2_USER1, DOMAIN2_USER2, DOMAIN2_GUEST, GLOBAL_GUEST);
 	public final static List<Domain> DOMAINS = Arrays.asList(GLOBAL, DOMAIN1, DOMAIN2);
 	
-	public final static Application APP1 = new Application(1L, "App1","testversion", "owner");
-	public final static Application APP2 = new Application(2L, "App2","testversion", "owner");
-	public final static Application APP3 = new Application(3L, "App3","testversion", "owner");
+	public final static Application APP1 = new Application(1L, "App1","testversion");
+	public final static Application APP2 = new Application(2L, "App2","testversion");
+	public final static Application APP3 = new Application(3L, "App3","testversion");
 
 	public final static ApplicationBase APP1_BASE = new ApplicationBase(1L, "App1");
 	public final static ApplicationBase APP2_BASE = new ApplicationBase(2L, "App2");

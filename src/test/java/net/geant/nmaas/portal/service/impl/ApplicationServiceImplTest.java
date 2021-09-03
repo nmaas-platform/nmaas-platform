@@ -74,15 +74,6 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToEmptyOwner(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            Application app = getDefaultApplication();
-            app.setOwner("");
-            applicationService.update(app);
-        });
-    }
-
-    @Test
     public void updateMethodShouldThrowExceptionDueToNullAppDeploymentSpec(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
@@ -138,7 +129,7 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void updateMethodShouldReturnApplicationObject(){
-        Application application = new Application("test", "testversion","owner");
+        Application application = new Application("test", "testversion");
         application.setId(1L);
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
@@ -159,7 +150,7 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void deleteMethodShouldSetApplicationAsDeleted(){
-        Application application = new Application("test", "testversion","owner");
+        Application application = new Application("test", "testversion");
         application.setId((long) 0);
         application.setState(ApplicationState.ACTIVE);
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
@@ -176,7 +167,7 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void findApplicationShouldReturnApplicationObject(){
-        Application application = new Application("test", "testversion","owner");
+        Application application = new Application("test", "testversion");
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         Optional<Application> result = applicationService.findApplication((long) 0);
         assertTrue(result.isPresent());
@@ -185,7 +176,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void findAllShouldReturnList(){
         List<Application> testList = new ArrayList<>();
-        Application test = new Application("test", "testversion","owner");
+        Application test = new Application("test", "testversion");
         testList.add(test);
         when(applicationRepository.findAll()).thenReturn(testList);
         List<Application> result = applicationService.findAll();
@@ -214,7 +205,6 @@ public class ApplicationServiceImplTest {
         Application application = new Application();
         application.setName("test");
         application.setVersion("testversion");
-        application.setOwner("owner");
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(
                 1L,

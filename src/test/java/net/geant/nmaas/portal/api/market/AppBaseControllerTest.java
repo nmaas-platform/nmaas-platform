@@ -29,7 +29,7 @@ public class AppBaseControllerTest {
 
     private AppBaseController appBaseController;
 
-    private Application app = new Application(1L, "defaultApp", "1.1", "admin");
+    private Application app = new Application(1L, "defaultApp", "1.1");
 
     private User user = new User("admin", true);
 

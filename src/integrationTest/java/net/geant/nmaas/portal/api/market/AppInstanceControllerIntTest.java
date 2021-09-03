@@ -86,7 +86,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldDeployApplicationInstance() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        Application application = new Application("name with spaces", "version", "owner");
+        Application application = new Application("name with spaces", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         AppInstanceRequest appInstanceRequest = appInstanceRequest();
@@ -111,7 +111,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldDeployApplicationInstanceAsAdminInDomain() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_ADMIN;
-        Application application = new Application("name", "version", "owner");
+        Application application = new Application("name", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         AppInstanceRequest appInstanceRequest = appInstanceRequest();
@@ -135,7 +135,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldNotDeployApplicationInstanceWhenNameIsUsedInDeployedInstance() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        Application application = new Application("test", "version", "owner");
+        Application application = new Application("test", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
 
@@ -167,7 +167,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldDeployApplicationInstanceWhenNameIsUsedInDoneInstance() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        Application application = new Application("test", "version", "owner");
+        Application application = new Application("test", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
 
@@ -199,7 +199,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldDeployApplicationInstanceWhenNameIsUsedInRemovedInstance() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        Application application = new Application("test", "version", "owner");
+        Application application = new Application("test", "version");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
 
@@ -239,7 +239,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldRestartApplication() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
@@ -254,7 +254,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         User user = UsersHelper.DOMAIN1_ADMIN;
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
@@ -273,7 +273,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         User user = UsersHelper.DOMAIN1_USER1;
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         assertDoesNotThrow(() -> {
@@ -367,7 +367,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion","admin"),"test", domain, UsersHelper.ADMIN);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, UsersHelper.ADMIN);
         when(applicationInstanceService.find(10L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
 
@@ -448,7 +448,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     private Application testApplication() {
-        Application application = new Application("name", "version", "owner");
+        Application application = new Application("name", "version");
         application.setId(1L);
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.setAppConfigurationSpec(new AppConfigurationSpec());
