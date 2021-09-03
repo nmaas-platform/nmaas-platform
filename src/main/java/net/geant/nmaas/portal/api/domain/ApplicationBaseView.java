@@ -31,6 +31,8 @@ public class ApplicationBaseView {
     protected String issuesUrl;
     protected String nmaasDocumentationUrl;
 
+    protected String owner;
+
     // logo
     // screenshots
 
