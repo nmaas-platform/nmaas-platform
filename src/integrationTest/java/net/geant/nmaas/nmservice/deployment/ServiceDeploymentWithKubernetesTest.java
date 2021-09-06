@@ -1,10 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
@@ -56,11 +53,19 @@ class ServiceDeploymentWithKubernetesTest {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
 		AppDeployment appDeployment = appDeployment();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES));
-		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
+		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(
+				null,
+				new KubernetesChart(null, "test", "0.0.0"),
+				"archive",
+				null,
+				new HelmChartRepositoryEntity(1L, "test", "http://test")
+		));
 		appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)));
 		appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
+
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance(1L), appDeployment, appDeploymentSpec);
 		KubernetesNmServiceInfo info = repositoryManager.loadService(deploymentId);
+
 		assertThat(info, is(notNullValue()));
 		assertThat(info.getDeploymentId(), equalTo(appDeployment.getDeploymentId()));
 		assertThat(info.getDeploymentName(), equalTo(appDeployment.getDeploymentName()));

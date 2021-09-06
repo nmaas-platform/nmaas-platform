@@ -3,34 +3,16 @@ package net.geant.nmaas.portal.api.market;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.HelmChartRepositoryView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
-import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
-import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.api.domain.ApplicationDTO;
-import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.persistent.entity.AppDescription;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -46,20 +28,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -288,7 +260,15 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void shouldAddNewVersion() {
         AppDeploymentSpecView appDeploymentSpec = new AppDeploymentSpecView();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(null, new KubernetesChartView(null, "name", "version"), "archive", null));
+        appDeploymentSpec.setKubernetesTemplate(
+                new KubernetesTemplateView(
+                        null,
+                        new KubernetesChartView(null, "name", "version"),
+                        "archive",
+                        null,
+                        new HelmChartRepositoryView(1L, "test", "http://test")
+                )
+        );
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());
         appDeploymentSpec.getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         appDeploymentSpec.setAccessMethods(new ArrayList<>());
@@ -349,7 +329,15 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         application.setName(name);
         application.setVersion(version);
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(null, new KubernetesChart(null, "name", "version"), "archive", null));
+        appDeploymentSpec.setKubernetesTemplate(
+                new KubernetesTemplate(
+                        null,
+                        new KubernetesChart(null, "name", "version"),
+                        "archive",
+                        null,
+                        new HelmChartRepositoryEntity(1L, "test", "http://test")
+                )
+        );
         appDeploymentSpec.setStorageVolumes(new HashSet<>(svList));
         appDeploymentSpec.setAccessMethods(new HashSet<>(mvList));
         application.setAppDeploymentSpec(appDeploymentSpec);
@@ -372,7 +360,15 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         application.setState(ApplicationState.ACTIVE);
         application.setCreationDate(LocalDateTime.now());
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(null, new KubernetesChart(null, "name", "version"), "archive", null));
+        appDeploymentSpec.setKubernetesTemplate(
+                new KubernetesTemplate(
+                        null,
+                        new KubernetesChart(null, "name", "version"),
+                        "archive",
+                        null,
+                        new HelmChartRepositoryEntity(1L, "test", "http://test")
+                )
+        );
         appDeploymentSpec.setStorageVolumes(new HashSet<>(svList));
         appDeploymentSpec.setAccessMethods(new HashSet<>(mvList));
         application.setAppDeploymentSpec(appDeploymentSpec);
