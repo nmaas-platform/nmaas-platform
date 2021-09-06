@@ -57,8 +57,8 @@ spring.devtools.add-properties=false
 # -------------------------------------------------------- #
 # NMaaS application deployment and configuration processes #
 # -------------------------------------------------------- #
-nmaas.service.deployment.check.interval=${DEPLOYMENT_CHECK_INTERVAL:10}
-nmaas.service.deployment.max.duration=${DEPLOYMENT_CHECK_TIMEOUT:600}
+nmaas.service.deployment.check.interval=${DEPLOYMENT_CHECK_INTERVAL}
+nmaas.service.deployment.max.duration=${DEPLOYMENT_CHECK_TIMEOUT}
 
 nmaas.portal.domains.codename.pattern=[a-z0-9-]{2,12}
 nmaas.portal.modals.appinstall.pattern=[a-zA-Z0-9-]{3,10}
