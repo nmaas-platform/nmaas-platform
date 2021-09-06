@@ -6,12 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -43,6 +38,13 @@ public class KubernetesTemplate implements Serializable {
      */
     private String mainDeploymentName;
 
+    /**
+     * The entity representing helm chart repository
+     */
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name="FK_HELM_CHART_REPOSITORY"))
+    private HelmChartRepositoryEntity helmChartRepository;
+
     public KubernetesTemplate(KubernetesChart chart, String archive, String mainDeploymentName) {
         this.chart = chart;
         this.archive = archive;
@@ -61,6 +63,7 @@ public class KubernetesTemplate implements Serializable {
         }
         template.setArchive(toCopy.getArchive());
         template.setMainDeploymentName(toCopy.getMainDeploymentName());
+        template.setHelmChartRepository(toCopy.getHelmChartRepository());
         return template;
     }
 
