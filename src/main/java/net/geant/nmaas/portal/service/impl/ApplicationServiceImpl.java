@@ -61,7 +61,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public Application findApplicationLatestVersion(String name) {
-		if(StringUtils.isEmpty(name)){
+		if(!StringUtils.hasText(name)){
 			throw new IllegalArgumentException("Application name cannot be null or empty");
 		}
 		return applicationRepository.findByName(name).stream()

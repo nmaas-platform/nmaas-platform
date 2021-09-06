@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,5 +20,8 @@ public class KubernetesTemplateView {
     private String archive;
 
     private String mainDeploymentName;
+
+    @Valid
+    private HelmChartRepositoryView helmChartRepository = new HelmChartRepositoryView();
 
 }

@@ -2,10 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
@@ -133,7 +130,10 @@ public class ApplicationServiceImplTest {
         application.setId(1L);
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart("chart", "version"), null, null));
+        appDeploymentSpec.setKubernetesTemplate(
+                new KubernetesTemplate(
+                        new KubernetesChart("chart", "version"), null, null)
+        );
         appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)));
         appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         application.setAppDeploymentSpec(appDeploymentSpec);
@@ -210,7 +210,9 @@ public class ApplicationServiceImplTest {
                 1L,
                 new KubernetesChart(1L, "name", "version"),
                 "archive",
-                null));
+                null,
+                new HelmChartRepositoryEntity(1L, "test", "http://test"))
+        );
         appDeploymentSpec.setStorageVolumes(ImmutableSet.of(new AppStorageVolume(12L, ServiceStorageVolumeType.MAIN, 2, null)));
         appDeploymentSpec.setAccessMethods(ImmutableSet.of(new AppAccessMethod(13L, ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
         application.setAppDeploymentSpec(appDeploymentSpec);
