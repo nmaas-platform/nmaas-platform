@@ -46,7 +46,7 @@ public class KubernetesTemplate implements Serializable {
             @AttributeOverride( name = "name", column = @Column(name = "helm_chart_repository_name")),
             @AttributeOverride( name = "url",  column = @Column(name = "helm_chart_repository_url")),
     })
-    private HelmChartRepositoryEmbeddable helmChartRepository;
+    private HelmChartRepositoryEmbeddable helmChartRepository = new HelmChartRepositoryEmbeddable();
 
     public KubernetesTemplate(KubernetesChart chart, String archive, String mainDeploymentName) {
         this.chart = chart;
