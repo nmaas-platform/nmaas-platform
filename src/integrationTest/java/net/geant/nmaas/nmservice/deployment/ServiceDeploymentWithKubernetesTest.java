@@ -58,7 +58,7 @@ class ServiceDeploymentWithKubernetesTest {
 				new KubernetesChart(null, "test", "0.0.0"),
 				"archive",
 				null,
-				new HelmChartRepositoryEntity(1L, "test", "http://test")
+				new HelmChartRepositoryEmbeddable("test", "http://test")
 		));
 		appDeploymentSpec.setStorageVolumes(Collections.singleton(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)));
 		appDeploymentSpec.setAccessMethods(Collections.singleton(new AppAccessMethod(ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
