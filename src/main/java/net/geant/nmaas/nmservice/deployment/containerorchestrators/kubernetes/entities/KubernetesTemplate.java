@@ -41,9 +41,12 @@ public class KubernetesTemplate implements Serializable {
     /**
      * The entity representing helm chart repository
      */
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name="FK_HELM_CHART_REPOSITORY"))
-    private HelmChartRepositoryEntity helmChartRepository;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride( name = "name", column = @Column(name = "helm_chart_repository_name")),
+            @AttributeOverride( name = "url",  column = @Column(name = "helm_chart_repository_url")),
+    })
+    private HelmChartRepositoryEmbeddable helmChartRepository;
 
     public KubernetesTemplate(KubernetesChart chart, String archive, String mainDeploymentName) {
         this.chart = chart;

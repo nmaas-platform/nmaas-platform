@@ -13,12 +13,8 @@ import javax.validation.constraints.Pattern;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class HelmChartRepositoryEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Embeddable
+public class HelmChartRepositoryEmbeddable {
 
     @Column(length = 14, nullable = false, unique = true)
     @Pattern(regexp = "[A-Za-z-]{1,14}")

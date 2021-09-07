@@ -15,8 +15,6 @@ import javax.validation.constraints.Size;
 @Setter
 public class HelmChartRepositoryView {
 
-    private Long id;
-
     @Size(min=1, max=14)
     @Pattern(regexp = "[A-Za-z-]{1,14}")
     private String name;
