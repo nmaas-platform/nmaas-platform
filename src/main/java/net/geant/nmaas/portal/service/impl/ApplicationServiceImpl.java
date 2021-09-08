@@ -3,7 +3,9 @@ package net.geant.nmaas.portal.service.impl;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -23,6 +25,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Service
+@Log4j2
 public class ApplicationServiceImpl implements ApplicationService {
 
 	private final ApplicationRepository applicationRepository;

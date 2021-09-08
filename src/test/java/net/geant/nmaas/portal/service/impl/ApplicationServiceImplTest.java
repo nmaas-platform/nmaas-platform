@@ -211,7 +211,7 @@ public class ApplicationServiceImplTest {
                 new KubernetesChart(1L, "name", "version"),
                 "archive",
                 null,
-                new HelmChartRepositoryEntity(1L, "test", "http://test"))
+                new HelmChartRepositoryEmbeddable("test", "http://test"))
         );
         appDeploymentSpec.setStorageVolumes(ImmutableSet.of(new AppStorageVolume(12L, ServiceStorageVolumeType.MAIN, 2, null)));
         appDeploymentSpec.setAccessMethods(ImmutableSet.of(new AppAccessMethod(13L, ServiceAccessMethodType.DEFAULT, "name", "tag", null)));

@@ -9,7 +9,9 @@ import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.TagView;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
@@ -49,7 +51,6 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
     private ApplicationBaseRepository appBaseRepo;
-
 
     @BeforeEach
     public void setup(){
@@ -156,7 +157,15 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
         application.setState(ApplicationState.ACTIVE);
         application.setCreationDate(LocalDateTime.now());
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate(null, new KubernetesChart(null, "name", "version"), "archive", null, new HelmChartRepositoryEntity(1L, null, null)));
+        appDeploymentSpec.setKubernetesTemplate(
+                new KubernetesTemplate(
+                        null,
+                        new KubernetesChart(null, "name", "version"),
+                        "archive",
+                        null,
+                        new HelmChartRepositoryEmbeddable("test", "http://test")
+                )
+        );
         appDeploymentSpec.setStorageVolumes(new HashSet<>(svList));
         appDeploymentSpec.setAccessMethods(new HashSet<>(mvList));
         application.setAppDeploymentSpec(appDeploymentSpec);

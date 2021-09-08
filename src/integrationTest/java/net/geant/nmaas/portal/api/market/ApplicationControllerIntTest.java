@@ -82,8 +82,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldGetApplications() throws Exception {
         MvcResult result = mvc.perform(get("/api/apps/base")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -93,8 +93,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldGetAllApplications() throws Exception {
         MvcResult result = mvc.perform(get("/api/apps/base/all")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -109,15 +109,15 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         ));
 
         MvcResult result = mvc.perform(post("/api/apps")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                        new ApplicationDTO(
-                                modelMapper.map(newApplicationBase, ApplicationBaseView.class),
-                                modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationView.class)
-                        )
-                ))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new ApplicationDTO(
+                                        modelMapper.map(newApplicationBase, ApplicationBaseView.class),
+                                        modelMapper.map(getNewApplication(newApplicationBase.getName(), "1.2.3"), ApplicationView.class)
+                                )
+                        ))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         Id appId = objectMapper.readValue(result.getResponse().getContentAsString(), Id.class);
@@ -131,12 +131,12 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(null, "{}"));
 
         mvc.perform(patch("/api/apps/version")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                        modelMapper.map(this.defaultApplication, ApplicationView.class)
-                ))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                modelMapper.map(this.defaultApplication, ApplicationView.class)
+                        ))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         // simulate bug from NMAAS-844
@@ -149,17 +149,17 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         applicationView.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
 
         mvc.perform(patch("/api/apps/version")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(applicationView))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(applicationView))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
 //        Application test = applicationRepository.findByName(applicationView.getName()).get(0);
 
         MvcResult result = mvc.perform(get("/api/apps/version/" + applicationView.getId())
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationView test = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
@@ -172,12 +172,12 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     public void shouldUpdateAppBase() {
         assertDoesNotThrow(() -> {
             mvc.perform(patch("/api/apps/base")
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(
-                            modelMapper.map(defaultAppBase, ApplicationBase.class)
-                    ))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(
+                                    modelMapper.map(defaultAppBase, ApplicationBase.class)
+                            ))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         });
     }
@@ -186,8 +186,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     void shouldDeleteApplication() throws Exception {
         long id = this.defaultApplication.getId();
         mvc.perform(delete("/api/apps/" + id)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         assertEquals(ApplicationState.DELETED, applicationRepository.findAll().get(0).getState());
     }
@@ -196,8 +196,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     void shouldGetAppBase() throws Exception {
         long id = this.defaultAppBase.getId();
         MvcResult result = mvc.perform(get("/api/apps/base/" + id)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationBaseView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseView.class);
@@ -205,10 +205,10 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetLatestAppVersion() throws Exception{
+    void shouldGetLatestAppVersion() throws Exception {
         MvcResult result = mvc.perform(get("/api/apps/" + DEFAULT_APP_NAME + "/latest")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
@@ -220,8 +220,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     void shouldGetApp() throws Exception {
         long id = applicationRepository.findAll().get(0).getId();
         MvcResult result = mvc.perform(get("/api/apps/" + id)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
@@ -242,15 +242,15 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     public void shouldChangeAppState() throws Exception {
         long id = this.defaultApplication.getId();
         mvc.perform(patch("/api/apps/state/" + id)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.DISABLED, "reason")))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.DISABLED, "reason")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         MvcResult result = mvc.perform(get("/api/apps/version/" + id)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationView applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
@@ -266,7 +266,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         new KubernetesChartView(null, "name", "version"),
                         "archive",
                         null,
-                        new HelmChartRepositoryView(1L, "test", "http://test")
+                        new HelmChartRepositoryView("test", "http://test")
                 )
         );
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());
@@ -290,10 +290,10 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/apps/version")
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(view))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(view))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated());
         });
     }
@@ -335,7 +335,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         new KubernetesChart(null, "name", "version"),
                         "archive",
                         null,
-                        new HelmChartRepositoryEntity(1L, "test", "http://test")
+                        new HelmChartRepositoryEmbeddable("test", "http://test")
                 )
         );
         appDeploymentSpec.setStorageVolumes(new HashSet<>(svList));
@@ -366,7 +366,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         new KubernetesChart(null, "name", "version"),
                         "archive",
                         null,
-                        new HelmChartRepositoryEntity(1L, "test", "http://test")
+                        new HelmChartRepositoryEmbeddable("test", "http://test")
                 )
         );
         appDeploymentSpec.setStorageVolumes(new HashSet<>(svList));
