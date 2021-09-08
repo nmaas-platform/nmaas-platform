@@ -105,6 +105,7 @@ helm.address=${HELM_ADDRESS}
 helm.username=${HELM_USERNAME}
 helm.useLocalCharts=${HELM_USELOCALCHARTS}
 helm.repositoryName=${HELM_REPOSITORY}
+helm.repositoryUrl=${HELM_REPOSITORY_URL}
 helm.chartsDirectory=${HELM_LOCALCHARTSDIR}
 helm.enableTls=${HELM_ENABLETLS}
 helm.version=${HELM_VERSION}
