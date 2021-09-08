@@ -16,18 +16,10 @@ import javax.validation.constraints.Pattern;
 @Embeddable
 public class HelmChartRepositoryEmbeddable {
 
-    @Column(length = 14,  nullable = false, columnDefinition = "varchar(14) default 'nmaas'")
+    @Column(length = 14)
     @Pattern(regexp = "[A-Za-z-]{1,14}")
     private String name;
 
-    @Column(length = 255, nullable = false, columnDefinition = "varchar(255) default 'https://artifactory.software.geant.org/artifactory/nmaas-helm'")
     @URL
     private String url;
-
-    public static HelmChartRepositoryEmbeddable getDefault() {
-        return new HelmChartRepositoryEmbeddable(
-                "nmaas",
-                "https://artifactory.software.geant.org/artifactory/nmaas-helm"
-        );
-    }
 }

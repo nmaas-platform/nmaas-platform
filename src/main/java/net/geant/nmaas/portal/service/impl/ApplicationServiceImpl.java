@@ -122,7 +122,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public void setMissingProperties(Application app, Long appId) {
 		this.setMissingTemplatesId(app, appId);
-		this.setMissingHelmChartRepository(app);
 	}
 
 	private void checkParam(Long id) {
@@ -133,17 +132,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private void setMissingTemplatesId(Application app, Long appId){
 		app.getAppConfigurationSpec().getTemplates()
 				.forEach(template -> template.setApplicationId(appId));
-	}
-
-	private void setMissingHelmChartRepository(Application application) {
-		HelmChartRepositoryEmbeddable helmChartRepository = application.getAppDeploymentSpec()
-				.getKubernetesTemplate().getHelmChartRepository();
-		if (helmChartRepository == null || helmChartRepository.getUrl() == null) {
-			log.info(String.format("Missing HelmChartRepository in application [%s:%s], setting default", application.getName(), application.getVersion()));
-			application.getAppDeploymentSpec()
-					.getKubernetesTemplate()
-					.setHelmChartRepository(HelmChartRepositoryEmbeddable.getDefault());
-		}
 	}
 
 	public static void clearIds(Application app) {
