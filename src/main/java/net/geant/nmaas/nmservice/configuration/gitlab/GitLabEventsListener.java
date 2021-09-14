@@ -74,7 +74,7 @@ public class GitLabEventsListener {
     public void handleGitlabEvent(UserSshKeysUpdatedGitlabEvent event) {
         log.info(String.format("[UPDATE USER SSH KEYS GITLAB EVENT] [%s]", event.getUserUsername()));
         // create user method creates user only if user does not exist and replaces all ssh keys
-        this.gitConfigHandler.createUser(event.getUserUsername(), null, null, event.getUserSshKeys());
+        this.gitConfigHandler.createUser(event.getUserUsername(), event.getUserEmail(), event.getUserName(), event.getUserSshKeys());
     }
 
     protected GitLabProject loadGitlabProject(Identifier deploymentId){
