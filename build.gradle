@@ -114,7 +114,7 @@ dependencies {
     implementation('io.grpc:grpc-stub:1.31.1')
     implementation('io.fabric8:kubernetes-client:4.11.1')
 
-    testCompile('org.mockito:mockito-inline:3.8.0')
+    testImplementation('org.mockito:mockito-inline:3.8.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
