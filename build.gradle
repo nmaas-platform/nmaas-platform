@@ -41,6 +41,10 @@ protobuf {
     }
 }
 
+jar {
+    enabled = false
+}
+
 bootJar {
     mainClassName = 'net.geant.nmaas.MainConfig'
 }
