@@ -266,7 +266,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         new KubernetesChartView(null, "name", "version"),
                         "archive",
                         null,
-                        new HelmChartRepositoryView("test", "http://test")
+                        new HelmChartRepositoryView("tooLongNameToMatchTheConstraint", "http://test")
                 )
         );
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());

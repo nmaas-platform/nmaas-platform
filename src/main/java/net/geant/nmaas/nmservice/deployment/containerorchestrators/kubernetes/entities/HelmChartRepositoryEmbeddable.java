@@ -12,7 +12,6 @@ import javax.validation.constraints.Pattern;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Embeddable
 public class HelmChartRepositoryEmbeddable {
 
@@ -22,4 +21,13 @@ public class HelmChartRepositoryEmbeddable {
 
     @URL
     private String url;
+
+    public HelmChartRepositoryEmbeddable(String name, String url) {
+        this.setName(name);
+        this.setUrl(url);
+    }
+
+    public void setName(String name) {
+        this.name = name.substring(0, Math.min(14, name.length()));
+    }
 }
