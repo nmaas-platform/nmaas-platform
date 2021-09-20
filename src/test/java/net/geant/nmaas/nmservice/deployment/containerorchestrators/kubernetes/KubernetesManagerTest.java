@@ -206,9 +206,10 @@ public class KubernetesManagerTest {
         verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
         assertEquals(deploymentId, serviceInfo.getValue().getDeploymentId());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(11, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(14, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
         assertEquals("customvalue2", serviceInfo.getValue().getAdditionalParameters().get("customkey2"));
+        assertEquals(serviceInfo.getValue().getAdditionalParameters().get("customkey3"), serviceInfo.getValue().getAdditionalParameters().get("customkey5"));
         assertEquals(4, serviceInfo.getValue().getAdditionalParameters().get("customkey3").length());
         assertEquals(49, serviceInfo.getValue().getAdditionalParameters().get("customkey4").length());
         assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey4").matches("beginning-(.*)-ending"));
@@ -219,6 +220,8 @@ public class KubernetesManagerTest {
         assertEquals("domain", serviceInfo.getValue().getAdditionalParameters().get("domainCodeName"));
         assertEquals("extBaseUrl", serviceInfo.getValue().getAdditionalParameters().get("baseUrl"));
         assertEquals("descriptiveDeploymentId", serviceInfo.getValue().getAdditionalParameters().get("releaseName"));
+        assertNotNull(serviceInfo.getValue().getAdditionalParameters().get("RANDOM_STRING_4"));
+        assertNotNull(serviceInfo.getValue().getAdditionalParameters().get("RANDOM_STRING_32"));
     }
 
     private Map<String, String> getStringStringMap() {
@@ -227,6 +230,7 @@ public class KubernetesManagerTest {
         globalDeployParameters.put("customkey2", "customvalue2");
         globalDeployParameters.put("customkey3", "%RANDOM_STRING_4%");
         globalDeployParameters.put("customkey4", "beginning-%RANDOM_STRING_32%-ending");
+        globalDeployParameters.put("customkey5", "%RANDOM_STRING_4%");
         return globalDeployParameters;
     }
 
