@@ -28,6 +28,6 @@ public class HelmChartRepositoryEmbeddable {
     }
 
     public void setName(String name) {
-        this.name = name.substring(0, Math.min(14, name.length()));
+        this.name = name == null ? null : name.substring(0, Math.min(14, name.length()));
     }
 }
