@@ -1,4 +1,6 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands;
+
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 
 import java.util.function.Predicate;
 
@@ -12,7 +14,7 @@ public class HelmRepoUpdateCommand extends HelmCommand {
      *
      * @return complete command object
      */
-    static HelmRepoUpdateCommand command() {
+    public static HelmRepoUpdateCommand command() {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(REPO).append(SPACE).append(UPDATE);
         return new HelmRepoUpdateCommand(sb.toString());

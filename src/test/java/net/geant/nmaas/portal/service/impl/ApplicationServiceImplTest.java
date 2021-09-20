@@ -2,10 +2,15 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
+import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
@@ -13,9 +18,11 @@ import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,12 +46,15 @@ public class ApplicationServiceImplTest {
     @Mock
     ApplicationRepository applicationRepository;
 
+    @Mock
+    ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     ApplicationServiceImpl applicationService;
 
     @BeforeEach
     public void setup(){
-        applicationService = new ApplicationServiceImpl(applicationRepository);
+        applicationService = new ApplicationServiceImpl(applicationRepository, eventPublisher);
     }
 
     @Test
@@ -141,6 +151,9 @@ public class ApplicationServiceImplTest {
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         Application result = applicationService.update(application);
         assertNotNull(result);
+        ArgumentCaptor<ApplicationListUpdatedEvent> event = ArgumentCaptor.forClass(ApplicationListUpdatedEvent.class);
+        verify(eventPublisher, times(1)).publishEvent(event.capture());
+        assertEquals(ApplicationListUpdatedEvent.ApplicationAction.UPDATED, event.getValue().getAction());
     }
 
     @Test
@@ -158,6 +171,9 @@ public class ApplicationServiceImplTest {
         applicationService.delete((long) 0);
         verify(applicationRepository).findById(anyLong());
         verify(applicationRepository).save(isA(Application.class));
+        ArgumentCaptor<ApplicationListUpdatedEvent> event = ArgumentCaptor.forClass(ApplicationListUpdatedEvent.class);
+        verify(eventPublisher, times(1)).publishEvent(event.capture());
+        assertEquals(ApplicationListUpdatedEvent.ApplicationAction.DELETED, event.getValue().getAction());
     }
 
     @Test
