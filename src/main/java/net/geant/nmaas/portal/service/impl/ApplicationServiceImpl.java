@@ -5,13 +5,17 @@ import freemarker.template.Template;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
+import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.ADDED;
+import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.DELETED;
+import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.UPDATED;
+
 @AllArgsConstructor
 @Service
 @Log4j2
@@ -30,12 +38,43 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	private final ApplicationRepository applicationRepository;
 
+	private final ApplicationEventPublisher eventPublisher;
+
 	@Override
 	@Transactional
 	public Application update(Application application) {
 		// TODO checks
 		checkApp(application);
-		return applicationRepository.save(application);
+		Application saved = applicationRepository.save(application);
+		generateApplicationListUpdatedEvent(saved, UPDATED);
+		return saved;
+	}
+
+	private void generateApplicationListUpdatedEvent(Application app, ApplicationAction action) {
+		ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(
+				ApplicationServiceImpl.class,
+				app.getName(),
+				app.getVersion(),
+				action,
+				app.getAppDeploymentSpec()
+		);
+		this.eventPublisher.publishEvent(event);
+	}
+
+	@Override
+	public boolean exists(String name, String version) {
+		return applicationRepository.existsByNameAndVersion(name, version);
+	}
+
+	@Override
+	public Application create(Application application) {
+		if(application.getId() != null) {
+			throw new ProcessingException("While creating id must be null");
+		}
+		clearIds(application);
+		Application saved = applicationRepository.save(application);
+		generateApplicationListUpdatedEvent(saved, ADDED);
+		return saved;
 	}
 
 	@Override
@@ -45,6 +84,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			if(app.getState().isChangeAllowed(ApplicationState.DELETED)){
 				app.setState(ApplicationState.DELETED);
 				applicationRepository.save(app);
+				generateApplicationListUpdatedEvent(app, DELETED);
 			}
 		});
 	}
@@ -154,17 +194,4 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 	}
 
-	@Override
-	public boolean exists(String name, String version) {
-		return applicationRepository.existsByNameAndVersion(name, version);
-	}
-
-	@Override
-	public Application create(Application application) {
-		if(application.getId() != null) {
-			throw new ProcessingException("While creating id must be null");
-		}
-		clearIds(application);
-		return this.applicationRepository.save(application);
-	}
 }
