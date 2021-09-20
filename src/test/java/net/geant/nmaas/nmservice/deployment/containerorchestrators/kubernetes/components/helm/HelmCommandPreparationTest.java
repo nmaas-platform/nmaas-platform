@@ -2,6 +2,8 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmDeleteCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmRepoAddCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmRepoUpdateCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmStatusCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmUpgradeCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmVersionCommand;
@@ -22,6 +24,8 @@ public class HelmCommandPreparationTest {
     private static final String RELEASE_NAME = "releaseName";
     private static final String CHART_ARCHIVE_NAME = "/home/nmaas/charts/testapp-0.0.1.tgz";
     private static final String CHART_NAME_WITH_REPO = "test-repo/testapp";
+    private static final String CHART_REPO_NAME = "test-repo";
+    private static final String CHART_REPO_URL = "https://test-repo.eu";
     private static final String CHART_VERSION = "0.0.1";
     private static final String CORRECT_HELM_INSTALL_COMMAND_FIRST_PART =
             "helm install --name " + RELEASE_NAME + " --namespace " + NAMESPACE;
@@ -45,6 +49,7 @@ public class HelmCommandPreparationTest {
     private static final String CORRECT_HELM_VERSION_COMMAND = "helm version";
     private static final String TLS = " --tls";
     private static final String CORRECT_HELM_REPO_UPDATE_COMMAND = "helm repo update";
+    private static final String CORRECT_HELM_REPO_ADD_COMMAND = "helm repo add " + CHART_REPO_NAME + " " + CHART_REPO_URL;
 
     @Test
     public void shouldConstructInstallCommandUsingLocalChartArchiveWithNoArgumentsWithDisabledTls() {
@@ -236,6 +241,11 @@ public class HelmCommandPreparationTest {
     @Test
     public void shouldConstructRepoUpdateCommand() {
         assertThat(HelmRepoUpdateCommand.command().asString(), equalTo(CORRECT_HELM_REPO_UPDATE_COMMAND));
+    }
+
+    @Test
+    public void shouldConstructRepoAddCommand() {
+        assertThat(HelmRepoAddCommand.command(CHART_REPO_NAME, CHART_REPO_URL).asString(), equalTo(CORRECT_HELM_REPO_ADD_COMMAND));
     }
 
 }

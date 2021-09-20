@@ -3,6 +3,8 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmDeleteCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmListCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmRepoAddCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmRepoUpdateCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmStatusCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmUninstallCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmUpgradeCommand;
@@ -195,4 +197,13 @@ public class HelmCommandExecutor {
             throw new CommandExecutionException("Failed to execute helm repository update command -> " + e.getMessage());
         }
     }
+
+    void executeHelmRepoAddCommand(String repoName, String repoUrl) {
+        try{
+            singleCommandExecutor().executeSingleCommand(HelmRepoAddCommand.command(repoName, repoUrl));
+        } catch(SshConnectionException e) {
+            throw new CommandExecutionException("Failed to execute helm repository add command -> " + e.getMessage());
+        }
+    }
+
 }
