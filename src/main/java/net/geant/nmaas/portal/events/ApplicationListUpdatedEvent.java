@@ -26,4 +26,11 @@ public class ApplicationListUpdatedEvent extends ApplicationEvent {
         DELETED;
     }
 
+    @Override
+    public String toString() {
+        return "ApplicationListUpdatedEvent{" +
+                "name=" + name + ", version=" + version + ", action=" + action + ", deploymentSpec=" + ((deploymentSpec != null) ? "provided" : "empty") +
+                '}';
+    }
+
 }
