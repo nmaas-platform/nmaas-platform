@@ -26,7 +26,7 @@ public class CaptchaValidator {
     }
 
     public boolean verifyToken(String token) {
-        if (secret.equalsIgnoreCase("not_provided")) {
+        if (secret.equalsIgnoreCase("not_provided") || secret.isEmpty()) {
             log.info("Skipped captcha validation due to not provided token");
             return true; // validate if secret is not provided
         }
