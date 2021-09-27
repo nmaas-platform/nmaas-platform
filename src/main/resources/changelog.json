@@ -1,5 +1,26 @@
 {"versions" : [
   {
+    "verNo" : "1.4.4",
+    "date" : "(2021/09/27)",
+    "topic" : [
+      {
+        "title" : "Enhanced support for application management",
+        "tags" : "[Enhancement]",
+        "description" : "Added possibility to set users as application owners with specific set of permissions within the Portal."
+      },
+      {
+        "title" : "Support for local NMaaS deployments",
+        "tags" : "[Enhancement]",
+        "description" : "Added set of improvements to support local NMaaS deployments."
+      },
+      {
+        "title" : "Advanced support for specifying Helm chart repositories",
+        "tags" : "[Enhancement]",
+        "description" : "Added possibility to specify the URL of Helm chart repository for each application."
+      }
+    ]
+  },
+  {
     "verNo" : "1.4.3",
     "date" : "(2021/07/20)",
     "topic" : [

@@ -8,19 +8,36 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppRateView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -287,7 +304,6 @@ public class ApplicationController extends AppBaseController {
 	/*
 	 * Utilities
 	 */
-
 	private void sendMail(Application app, ApplicationStateChangeRequest stateChangeRequest){
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.mailType(stateChangeRequest.getState().getMailType())
@@ -302,7 +318,7 @@ public class ApplicationController extends AppBaseController {
 	}
 
 
-	private void applicationBaseOwnerCheck(ApplicationBase applicationBase, Principal principal) throws MarketException {
+	private void applicationBaseOwnerCheck(ApplicationBase applicationBase, Principal principal) {
 
 		boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
 				.anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
@@ -314,7 +330,7 @@ public class ApplicationController extends AppBaseController {
 		}
 	}
 
-	private void applicationBaseOwnerCheck(String applicationBaseName, Principal principal) throws MarketException {
+	private void applicationBaseOwnerCheck(String applicationBaseName, Principal principal) {
 		ApplicationBase applicationBase = this.appBaseService.findByName(applicationBaseName);
 		this.applicationBaseOwnerCheck(applicationBase, principal);
 	}

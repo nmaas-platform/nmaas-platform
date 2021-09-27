@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TAG=1.4.3
+TAG=1.4.4
 PACKAGE=nmaas-platform
 REPOSITORY=artifactory.geant.net/nmaas-docker-local
 sudo docker build --rm -t $REPOSITORY/$PACKAGE:$TAG -f ./Dockerfile ..

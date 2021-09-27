@@ -136,7 +136,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             if (termsAcceptanceStatement != null && termsAcceptanceStatement.equalsIgnoreCase("yes")) {
                 // OK
                 log.info(String.format(
-                        "Terms were accepted: application [%s], instance id [%s], content [%s], statement [%s], by [%s], at: [%s]",
+                        "Application usage terms were accepted: application [%s], instance id [%s], content [%s], statement [%s], by [%s], at: [%s]",
                         appDeployment.getAppName(),
                         appDeployment.getInstanceId(),
                         termsContent,
@@ -154,7 +154,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 );
             } else {
                 // Terms were not accepted by they should
-                throw new ProcessingException("Terms acceptance is required, however terms were not accepted");
+                throw new ProcessingException("Application usage terms acceptance is required, however terms were not accepted");
             }
 
         }
