@@ -1,0 +1,218 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "WebDAV Server",
+        "license": "",
+        "licenseUrl": "",
+        "wwwUrl": "",
+        "sourceUrl": "https://github.com/nmaas-platform/nmaas-webdav",
+        "issuesUrl": "",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-WebDAV",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "WebDAV Server with Git versioning",
+                "fullDescription": "This application represents a simple WebDAV server which can accept remote files. <br><br>During the deployment process, the user can also choose whether the uploaded files should be version using Git. <br><br>Three deployments options are possible: <br>1) Do not use Git for file versioning; <br>2) Initiate a local Git repository for file versioning which can be browsed using an embedded Git web interface; <br>3) Integrate with a remote Git repository (e.g. GitHub) and automatically push any uploaded file to the remote git repository. <br><br>In cases where the third option is chosen, users are required to set up an SSH key pair which will have push access to the target repository. <br>The target repository URL also must be given in an SSH format during application deployment, e.g. git@host.example.com/username/myrepo.<br>"
+            },
+            {
+                "language": "de",
+                "briefDescription": "WebDAV Server with Git versioning",
+                "fullDescription": "This application represents a simple WebDAV server which can accept remote files. <br><br>During the deployment process, the user can also choose whether the uploaded files should be version using Git. <br><br>Three deployments options are possible: <br>1) Do not use Git for file versioning; <br>2) Initiate a local Git repository for file versioning which can be browsed using an embedded Git web interface; <br>3) Integrate with a remote Git repository (e.g. GitHub) and automatically push any uploaded file to the remote git repository. <br><br>In cases where the third option is chosen, users are required to set up an SSH key pair which will have push access to the target repository. <br>The target repository URL also must be given in an SSH format during application deployment, e.g. git@host.example.com/username/myrepo.<br>"
+            },
+            {
+                "language": "fr",
+                "briefDescription": "WebDAV Server with Git versioning",
+                "fullDescription": "This application represents a simple WebDAV server which can accept remote files. <br><br>During the deployment process, the user can also choose whether the uploaded files should be version using Git. <br><br>Three deployments options are possible: <br>1) Do not use Git for file versioning; <br>2) Initiate a local Git repository for file versioning which can be browsed using an embedded Git web interface; <br>3) Integrate with a remote Git repository (e.g. GitHub) and automatically push any uploaded file to the remote git repository. <br><br>In cases where the third option is chosen, users are required to set up an SSH key pair which will have push access to the target repository. <br>The target repository URL also must be given in an SSH format during application deployment, e.g. git@host.example.com/username/myrepo.<br>"
+            },
+            {
+                "language": "pl",
+                "briefDescription": "WebDAV Server with Git versioning",
+                "fullDescription": "This application represents a simple WebDAV server which can accept remote files. <br><br>During the deployment process, the user can also choose whether the uploaded files should be version using Git. <br><br>Three deployments options are possible: <br>1) Do not use Git for file versioning; <br>2) Initiate a local Git repository for file versioning which can be browsed using an embedded Git web interface; <br>3) Integrate with a remote Git repository (e.g. GitHub) and automatically push any uploaded file to the remote git repository. <br><br>In cases where the third option is chosen, users are required to set up an SSH key pair which will have push access to the target repository. <br>The target repository URL also must be given in an SSH format during application deployment, e.g. git@host.example.com/username/myrepo.<br>"
+            }
+        ],
+        "tags": [
+            "file management",
+            "versioning",
+            "git",
+            "file storage"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "WebDAV",
+        "version": "1.0.0",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Additional Parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "additionalParameters",
+                                        "components": [
+                                            {
+                                                "label": "WebDAV HTTP Username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "env#HTTP_USERNAME",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                }
+                                            },
+                                            {
+                                                "label": "WebDAV HTTP Password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "env#HTTP_PASSWORD",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Enable HTTPS",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "key": "ingress#tls#enabled",
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Enable upload versioning using Git",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "key": "env#GIT_ENABLED",
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Git committer email",
+                                                "type": "email",
+                                                "input": true,
+                                                "key": "env#GIT_EMAIL",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "env#GIT_ENABLED",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Git committer username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "env#GIT_USERNAME",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "env#GIT_ENABLED",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Git repository URL (SSH format)",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "env#GIT_CLONE_URL",
+                                                "inputFormat": "plain",
+                                                "placeholder": "username@host/repo",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "env#GIT_ENABLED",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Git maintainer SSH private key",
+                                                "type": "textarea",
+                                                "rows": 8,
+                                                "input": true,
+                                                "key": "env#SSH_PRIVKEY",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "env#GIT_ENABLED",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Allocated storage space",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "persistence#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "defaultValue": "10Gi",
+                                                "placeholder": "Default value: 10Gi",
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-webdav",
+                    "version": "1.0.0"
+                }
+            },
+            "deployParameters": {
+            },
+            "globalDeployParameters": {
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "WebDAV",
+                    "tag": "webdav",
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_CLASS": "ingress.class"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}

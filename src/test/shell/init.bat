@@ -477,6 +477,25 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 
 echo.
+echo App25
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app25-webdav.json
+echo.
+echo App25 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\webdav.svg;type=image/svg+xml" %API_URL%/apps/25/logo
+echo.
+echo App25 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\webdav\webdav1.png;type=image/png" %API_URL%/apps/25/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\webdav\webdav2.png;type=image/png" %API_URL%/apps/25/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\webdav\webdav3.png;type=image/png" %API_URL%/apps/25/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\webdav\webdav4.png;type=image/png" %API_URL%/apps/25/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\webdav\webdav5.png;type=image/png" %API_URL%/apps/25/screenshots
+echo.
+
+echo.
 echo ---------------------
 echo Activate apps
 curl -X PATCH %API_URL%/apps/state/1 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
@@ -504,6 +523,7 @@ curl -X PATCH %API_URL%/apps/state/23 --header "Authorization: Bearer %token%" -
 curl -X PATCH %API_URL%/apps/state/24 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/25 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/26 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
+curl -X PATCH %API_URL%/apps/state/27 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 echo.
 
 echo.
