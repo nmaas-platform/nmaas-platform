@@ -39,7 +39,7 @@
     },
     "application": {
         "id": null,
-        "name": "WebDAV",
+        "name": "WebDAV Server",
         "version": "1.0.0",
         "configWizardTemplate": {
             "template": {
