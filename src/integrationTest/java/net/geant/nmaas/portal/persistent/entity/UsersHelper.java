@@ -36,10 +36,10 @@ public class UsersHelper {
 	public final static ApplicationBase APP2_BASE = new ApplicationBase(2L, "App2");
 	public final static ApplicationBase APP3_BASE = new ApplicationBase(3L, "App3");
 
-	public final static AppInstance DOMAIN1_APP1 = new AppInstance(1L, APP1, "domain1_app1", DOMAIN1, DOMAIN1_USER1);
-	public final static AppInstance DOMAIN1_APP2 = new AppInstance(2L, APP3, "domain1_app2", DOMAIN1, DOMAIN1_USER2);
-	public final static AppInstance DOMAIN2_APP1 = new AppInstance(3L, APP2, "domain2_app1", DOMAIN2, DOMAIN2_USER1);
-	public final static AppInstance DOMAIN2_APP2 = new AppInstance(4L, APP3, "domain2_app2", DOMAIN2, DOMAIN2_USER1);
+	public final static AppInstance DOMAIN1_APP1 = new AppInstance(1L, APP1, "domain1_app1", DOMAIN1, true, DOMAIN1_USER1);
+	public final static AppInstance DOMAIN1_APP2 = new AppInstance(2L, APP3, "domain1_app2", DOMAIN1, false, DOMAIN1_USER2);
+	public final static AppInstance DOMAIN2_APP1 = new AppInstance(3L, APP2, "domain2_app1", DOMAIN2, true, DOMAIN2_USER1);
+	public final static AppInstance DOMAIN2_APP2 = new AppInstance(4L, APP3, "domain2_app2", DOMAIN2, false, DOMAIN2_USER1);
 
     List<Application> applications = Arrays.asList(APP1, APP2, APP3);
 	List<AppInstance> appInstances = Arrays.asList(DOMAIN1_APP1, DOMAIN1_APP2, DOMAIN2_APP1, DOMAIN2_APP2);

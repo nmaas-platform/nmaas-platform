@@ -1,21 +1,29 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.*;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.orchestration.Identifier;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import net.geant.nmaas.orchestration.Identifier;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -49,27 +57,30 @@ public class AppInstance extends DomainAware implements Serializable {
 	@Basic
 	Identifier internalId;
 
+	private boolean autoUpgradesEnabled;
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	private Set<User> members = new HashSet<>();
 	
-	public AppInstance(Application application, Domain domain, String name) {
+	public AppInstance(Application application, Domain domain, String name, boolean autoUpgradesEnabled) {
 		this.application = application;
 		this.domain = domain;
 		this.name = name;
+		this.autoUpgradesEnabled = autoUpgradesEnabled;
 	}
 	
-	public AppInstance(Long id, Application application, Domain domain, String name) {
-		this(application, domain, name);
+	public AppInstance(Long id, Application application, Domain domain, String name, boolean autoUpgradesEnabled) {
+		this(application, domain, name, autoUpgradesEnabled);
 		this.id = id;
 	}
 	
-	public AppInstance(Application application, String name, Domain domain, User owner) {
-		this(application, domain, name);		
+	public AppInstance(Application application, String name, Domain domain, User owner, boolean autoUpgradesEnabled) {
+		this(application, domain, name, autoUpgradesEnabled);
 		this.owner = owner;
 	}
 	
-	protected AppInstance(Long id, Application application, String name, Domain domain, User owner) {
-		this(application, name, domain, owner);
+	protected AppInstance(Long id, Application application, String name, Domain domain, boolean autoUpgradesEnabled, User owner) {
+		this(application, name, domain, owner, autoUpgradesEnabled);
 		this.id = id;
 	}
 

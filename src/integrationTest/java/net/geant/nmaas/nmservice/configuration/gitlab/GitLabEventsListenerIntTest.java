@@ -3,7 +3,6 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.Identifier;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-/**
- * TODO verify validity of application event publisher test
- * currently these tests are disabled
- */
-@Disabled
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class GitLabEventsListenerIntTest {
@@ -46,7 +40,7 @@ public class GitLabEventsListenerIntTest {
 
         publisher.publishEvent(event);
 
-        verify(gitLabEventsListener, times(1)).gitlabEventListener(any(AddUserToRepositoryGitlabEvent.class));
+        verify(gitLabEventsListener, timeout(100).times(1)).gitlabEventListener(any(AddUserToRepositoryGitlabEvent.class));
     }
 
     @Test
@@ -59,7 +53,7 @@ public class GitLabEventsListenerIntTest {
 
         publisher.publishEvent(event);
 
-        verify(gitLabEventsListener, times(1)).gitlabEventListener(any(RemoveUserFromRepositoryGitlabEvent.class));
+        verify(gitLabEventsListener, timeout(100).times(1)).gitlabEventListener(any(RemoveUserFromRepositoryGitlabEvent.class));
     }
 
 }

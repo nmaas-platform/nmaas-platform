@@ -3,9 +3,18 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
-import net.geant.nmaas.portal.service.*;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -52,17 +61,18 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
-	public AppInstance create(Long domainId, Long applicationId, String name) {
+	public AppInstance create(Long domainId, Long applicationId, String name, boolean autoUpgradesEnabled) {
 		Application app = applications.findApplication(applicationId).orElseThrow(() -> new ObjectNotFoundException("Application not found."));
 		Domain domain = domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found."));
-		return create(domain, app, name);
+		return create(domain, app, name, autoUpgradesEnabled);
 	}
 
 	@Override
-	public AppInstance create(Domain domain, Application application, String name) {
+	public AppInstance create(Domain domain, Application application, String name, boolean autoUpgradesEnabled) {
 		checkParam(domain);
-		if(!domain.isActive())
+		if(!domain.isActive()) {
 			throw new IllegalArgumentException("Domain is inactive");
+		}
 		checkParam(application);
 		checkNameCharacters(name);
 
@@ -70,10 +80,8 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             throw new IllegalArgumentException("Application is disabled in domain settings");
         }
 
-		// TODO validate
-
 		if(applicationSubscriptions.isActive(application.getName(), domain))
-			return appInstanceRepo.save(new AppInstance(application, domain, name));
+			return appInstanceRepo.save(new AppInstance(application, domain, name, autoUpgradesEnabled));
 		else
 			throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
 	}

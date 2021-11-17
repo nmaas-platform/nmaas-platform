@@ -1,19 +1,36 @@
 package net.geant.nmaas.portal.api.market;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
-import net.geant.nmaas.orchestration.*;
+import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppInstanceBase;
+import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
+import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.ApplicationDTO;
+import net.geant.nmaas.portal.api.domain.DomainBase;
+import net.geant.nmaas.portal.api.domain.UserBase;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.persistent.entity.*;
-import net.geant.nmaas.portal.service.*;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -24,9 +41,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 public class AppInstanceControllerTest {
@@ -126,7 +159,7 @@ public class AppInstanceControllerTest {
 
     @Test
     public void shouldGetAllInstancesWithPageable() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, true);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
@@ -139,12 +172,12 @@ public class AppInstanceControllerTest {
         AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+        assertTrue(appInstanceView.isAutoUpgradesEnabled());
     }
 
     @Test
     public void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobal() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin);
+        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
@@ -160,12 +193,12 @@ public class AppInstanceControllerTest {
         AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
+        assertFalse(appInstanceView.isAutoUpgradesEnabled());
     }
 
     @Test
     public void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobalAndPageableInvalid() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin);
+        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
 
@@ -185,7 +218,7 @@ public class AppInstanceControllerTest {
 
     @Test
     public void shouldGetAllInstancesWithParamsWhenIsUserAndPageableInvalid() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
@@ -206,7 +239,7 @@ public class AppInstanceControllerTest {
 
     @Test
     public void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin);
+        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
@@ -222,12 +255,11 @@ public class AppInstanceControllerTest {
         AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
     public void shouldGetAllUserInstancesInDomain() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin);
+        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
@@ -240,12 +272,11 @@ public class AppInstanceControllerTest {
         AppInstanceBase appInstanceView = result.get(0);
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
     public void shouldGetAllMyInstancesInDomain() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
@@ -266,7 +297,7 @@ public class AppInstanceControllerTest {
 
     @Test
     public void shouldGetAllRunningInstancesOfUserInDomain() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
 
@@ -288,7 +319,7 @@ public class AppInstanceControllerTest {
 
     @Test
     public void shouldGetAppInstance() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
@@ -314,7 +345,7 @@ public class AppInstanceControllerTest {
     @Test
     public void shouldConvertAppInstanceToAppInstanceViewWithApplicationIdAndDomainId() {
         ModelMapper modelMapper = new ModelMapper();
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         AppInstanceView appInstanceView = modelMapper.map(appInstance, AppInstanceView.class);
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain1.getId(), appInstanceView.getDomainId());
@@ -323,7 +354,7 @@ public class AppInstanceControllerTest {
     @Test
     public void shouldConvertAppInstanceToAppInstanceViewExtendedWithApplicationViewAndDomainView() {
         ModelMapper modelMapper = new ModelMapper();
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         AppInstanceViewExtended appInstanceView = modelMapper.map(appInstance, AppInstanceViewExtended.class);
 
         assertEquals(application.getId(), appInstanceView.getApplicationId());
@@ -347,7 +378,7 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         appInstance.setId(1L);
         appInstance.setInternalId(new Identifier(identifierValue));
 
@@ -369,11 +400,10 @@ public class AppInstanceControllerTest {
 
         ModelMapper modelMapper = new ModelMapper();
 
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner);
+        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         appInstance.setId(1L);
         appInstance.setInternalId(new Identifier(identifierValue));
         appInstance.setMembers(new HashSet<>());
-
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());

@@ -14,7 +14,14 @@ import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
 import net.geant.nmaas.portal.api.domain.UserBase;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
@@ -42,8 +49,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -92,8 +103,8 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstanceRequest appInstanceRequest = appInstanceRequest();
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName()));
+        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()));
         when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
         mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -108,7 +119,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldDeployApplicationInstanceAsAdminInDomain() throws Exception {
+    void shouldDeployApplicationInstanceAsAdminInDomain() {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_ADMIN;
         Application application = new Application("name", "version");
@@ -119,8 +130,8 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
-        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName()));
+        when(applicationInstanceService.create(domain, application, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled()));
         when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/apps/instances/domain/{domainId}", domain.getId())
@@ -142,15 +153,15 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstanceRequest appInstanceDeployed = appInstanceRequest();
         appInstanceDeployed.setName("deployedAppName");
 
-        AppInstance appInstance = new AppInstance(application, domain, "deployedAppName");
+        AppInstance appInstance = new AppInstance(application, domain, "deployedAppName", true);
         appInstance.setInternalId(new Identifier("1001"));
         List<AppInstance> deployedInstances = new ArrayList<>();
         deployedInstances.add(appInstance);
 
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceDeployed.getName()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceDeployed.getName()));
+        when(applicationInstanceService.create(domain, application, appInstanceDeployed.getName(), appInstanceDeployed.isAutoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceDeployed.getName(), appInstanceDeployed.isAutoUpgradesEnabled()));
         when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
         when(applicationInstanceService.findAllByDomain(domain)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYED);
@@ -174,15 +185,15 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstanceRequest appInstanceDone = appInstanceRequest();
         appInstanceDone.setName("doneAppName");
 
-        AppInstance appInstance = new AppInstance(application, domain, "doneAppName");
+        AppInstance appInstance = new AppInstance(application, domain, "doneAppName", true);
         appInstance.setInternalId(new Identifier("1002"));
         List<AppInstance> deployedInstances = new ArrayList<>();
         deployedInstances.add(appInstance);
 
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceDone.getName()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceDone.getName()));
+        when(applicationInstanceService.create(domain, application, appInstanceDone.getName(), appInstance.isAutoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceDone.getName(), appInstance.isAutoUpgradesEnabled()));
         when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
         when(applicationInstanceService.findAllByDomain(domain)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.APPLICATION_REMOVED);
@@ -206,15 +217,15 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstanceRequest appInstanceRemoved = appInstanceRequest();
         appInstanceRemoved.setName("removedAppName");
 
-        AppInstance appInstance = new AppInstance(application, domain, "removedAppName");
+        AppInstance appInstance = new AppInstance(application, domain, "removedAppName", true);
         appInstance.setInternalId(new Identifier("1003"));
         List<AppInstance> deployedInstances = new ArrayList<>();
         deployedInstances.add(appInstance);
 
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         when(domainService.findDomain(domain.getId())).thenReturn(Optional.of(domain));
-        when(applicationInstanceService.create(domain, application, appInstanceRemoved.getName()))
-                .thenReturn(new AppInstance(10L, application, domain, appInstanceRemoved.getName()));
+        when(applicationInstanceService.create(domain, application, appInstanceRemoved.getName(), appInstanceRemoved.isAutoUpgradesEnabled()))
+                .thenReturn(new AppInstance(10L, application, domain, appInstanceRemoved.getName(), appInstanceRemoved.isAutoUpgradesEnabled()));
         when(modelMapper.map(application.getAppDeploymentSpec(), AppDeploymentSpec.class)).thenReturn(new AppDeploymentSpec());
         when(applicationInstanceService.findAllByDomain(domain)).thenReturn(deployedInstances);
         when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.FAILED_APPLICATION_REMOVED);
@@ -232,6 +243,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         AppInstanceRequest appInstanceRequest = new AppInstanceRequest();
         appInstanceRequest.setApplicationId(1L);
         appInstanceRequest.setName("appInstanceName");
+        appInstanceRequest.setAutoUpgradesEnabled(true);
         return appInstanceRequest;
     }
 
@@ -239,7 +251,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     void shouldRestartApplication() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user, true);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
@@ -254,7 +266,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         User user = UsersHelper.DOMAIN1_ADMIN;
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user, true);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
@@ -273,7 +285,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
         User user = UsersHelper.DOMAIN1_USER1;
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user, true);
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         assertDoesNotThrow(() -> {
@@ -367,7 +379,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(userService.findById(user.getId())).thenReturn(Optional.of(user));
-        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, UsersHelper.ADMIN);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, UsersHelper.ADMIN, true);
         when(applicationInstanceService.find(10L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
 
@@ -429,7 +441,6 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         Set<UserViewMinimal> retrieved = objectMapper.readValue(data, AppInstanceViewExtended.class).getMembers();
         assertEquals(1, retrieved.size());
-
     }
 
     private void mockAppInstanceGetProcess(Domain domain, User user, ApplicationBase applicationBase, Application application, AppInstance appInstance) {
@@ -456,7 +467,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     private AppInstance testAppInstance(Domain domain, Application application) {
-        AppInstance appInstance = new AppInstance(10L, application, domain, "test");
+        AppInstance appInstance = new AppInstance(10L, application, domain, "test", true);
         appInstance.setInternalId(new Identifier("1014"));
         return appInstance;
     }

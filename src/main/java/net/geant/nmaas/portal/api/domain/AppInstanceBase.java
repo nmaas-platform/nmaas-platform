@@ -7,7 +7,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AppInstanceBase extends DomainAware{
+public class AppInstanceBase extends DomainAware {
 
     private Long id;
 
@@ -24,4 +24,7 @@ public class AppInstanceBase extends DomainAware{
     private String userFriendlyState;
 
     private Long createdAt;
+
+    // indicates if automatic upgrades are enabled for this application instance
+    private boolean autoUpgradesEnabled = false;
 }
