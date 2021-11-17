@@ -1,21 +1,20 @@
 package net.geant.nmaas.portal.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface ApplicationInstanceService {
 
-	AppInstance create(Long domainId, Long applicationId, String name);
-	AppInstance create(Domain domain, Application application, String name);
+	AppInstance create(Long domainId, Long applicationId, String name, boolean autoUpgradesEnabled);
+	AppInstance create(Domain domain, Application application, String name, boolean autoUpgradesEnabled);
 	
 	void delete(Long appInstanceId);
 
@@ -42,6 +41,5 @@ public interface ApplicationInstanceService {
 	Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
 
 	boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView);
-	
-	
+
 }

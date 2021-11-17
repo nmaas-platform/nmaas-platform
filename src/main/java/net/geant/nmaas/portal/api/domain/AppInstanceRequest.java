@@ -13,4 +13,6 @@ public class AppInstanceRequest {
 	
 	private String name;
 
+	private boolean autoUpgradesEnabled;
+
 }
