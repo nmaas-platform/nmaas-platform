@@ -418,7 +418,8 @@
     "CLOSE_BUTTON": "Schließen",
     "DEPLOY_BUTTON": "Installieren",
     "USE_DEFAULT_VERSION": "Standardversion verwenden",
-    "SELECT_VERSION": "Version auswählen"
+    "SELECT_VERSION": "Version auswählen",
+    "AUTO_UPGRADES_ENABLED": "Automatische upgrades aktivieren"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Add members",
