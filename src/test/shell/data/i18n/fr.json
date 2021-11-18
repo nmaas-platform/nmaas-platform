@@ -419,7 +419,8 @@
     "CLOSE_BUTTON": "Fermer",
     "DEPLOY_BUTTON": "Déployer",
     "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
-    "SELECT_VERSION": "Sélectionnez la version"
+    "SELECT_VERSION": "Sélectionnez la version",
+    "AUTO_UPGRADES_ENABLED": "Activer les mises à jour automatiques"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Add members",
