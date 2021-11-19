@@ -40,7 +40,7 @@ public class GitLabEventsListenerIntTest {
 
         publisher.publishEvent(event);
 
-        verify(gitLabEventsListener, timeout(100).times(1)).gitlabEventListener(any(AddUserToRepositoryGitlabEvent.class));
+        verify(gitLabEventsListener, timeout(200).times(1)).gitlabEventListener(any(AddUserToRepositoryGitlabEvent.class));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class GitLabEventsListenerIntTest {
 
         publisher.publishEvent(event);
 
-        verify(gitLabEventsListener, timeout(100).times(1)).gitlabEventListener(any(RemoveUserFromRepositoryGitlabEvent.class));
+        verify(gitLabEventsListener, timeout(200).times(1)).gitlabEventListener(any(RemoveUserFromRepositoryGitlabEvent.class));
     }
 
 }

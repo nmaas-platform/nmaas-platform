@@ -435,6 +435,18 @@
     "SUBMIT_BUTTON": "Submit",
     "HIDE_BUTTON": "Cancel"
   },
+  "ENABLE_AUTO_UPGRADES_MODAL": {
+    "HEADER": "Automatic upgrades confirmation",
+    "BODY": "Do you want to enable automatic upgrades for this application instance?",
+    "OK_BUTTON": "Confirm",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "DISABLE_AUTO_UPGRADES_MODAL": {
+    "HEADER": "Automatic upgrades confirmation",
+    "BODY": "Do you want to disable automatic upgrades for this application instance?<br>You will be still able to trigger upgrades manually.",
+    "OK_BUTTON": "Confirm",
+    "CANCEL_BUTTON": "Cancel"
+  },
   "APP_INSTANCE": {
     "CONFIGURE": "Configure",
     "INSTANCE_ACTIONS": "Aktionen",
@@ -454,6 +466,8 @@
     "REDEPLOY_BUTTON": "Neuinstallieren",
     "ABORT_BUTTON": "Abbrechen",
     "UPDATE_CONFIG_BUTTON": "Konfigurieren",
+    "ENABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades aktivieren",
+    "DISABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades deaktivieren",
     "ADD_MEMBERS_BUTTON": "Add members",
     "ADDITIONAL_INFO": "Additional Information",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern.<br>Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
