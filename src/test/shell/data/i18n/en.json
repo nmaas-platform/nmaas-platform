@@ -435,6 +435,18 @@
     "SUBMIT_BUTTON": "Submit",
     "HIDE_BUTTON": "Cancel"
   },
+  "ENABLE_AUTO_UPGRADES_MODAL": {
+    "HEADER": "Automatic upgrades confirmation",
+    "BODY": "Do you want to enable automatic upgrades for this application instance?",
+    "OK_BUTTON": "Confirm",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "DISABLE_AUTO_UPGRADES_MODAL": {
+    "HEADER": "Automatic upgrades confirmation",
+    "BODY": "Do you want to disable automatic upgrades for this application instance?<br>You will be still able to trigger upgrades manually.",
+    "OK_BUTTON": "Confirm",
+    "CANCEL_BUTTON": "Cancel"
+  },
   "APP_INSTANCE": {
     "CONFIGURE": "Configure",
     "INSTANCE_ACTIONS": "Actions",
@@ -455,6 +467,8 @@
     "ABORT_BUTTON": "Abort",
     "ADD_MEMBERS_BUTTON": "Members",
     "UPDATE_CONFIG_BUTTON": "Configure",
+    "ENABLE_AUTO_UPGRADES_BUTTON": "Enable auto upgrades",
+    "DISABLE_AUTO_UPGRADES_BUTTON": "Disable auto upgrades",
     "DEPLOYMENT_IN_PROGRESS": "Application is being activated. This process may take up to several minutes. <br>You will be notified with an email once your instance is ready.",
     "ADDITIONAL_INFO": "Additional Information",
     "INSTALLATION_PROGRESS": {

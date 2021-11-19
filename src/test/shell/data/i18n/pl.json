@@ -435,6 +435,18 @@
     "SUBMIT_BUTTON": "Zatwierdź",
     "HIDE_BUTTON": "Anuluj"
   },
+  "ENABLE_AUTO_UPGRADES_MODAL": {
+    "HEADER": "Potwierdzenie automatycznych aktualizacji",
+    "BODY": "Czy chcesz włączyć automatyczne aktualizacje dla tej instancji aplikacji?",
+    "OK_BUTTON": "Tak",
+    "CANCEL_BUTTON": "Anuluj"
+  },
+  "DISABLE_AUTO_UPGRADES_MODAL": {
+    "HEADER": "Potwierdzenie automatycznych aktualizacji",
+    "BODY": "Czy chcesz wyłączyć automatyczne aktualizacje dla tej instancji aplikacji?<br>Nadal będziesz mógł uruchomić aktualizacje ręcznie.",
+    "OK_BUTTON": "Tak",
+    "CANCEL_BUTTON": "Anuluj"
+  },
   "APP_INSTANCE": {
     "CONFIGURE": "Konfiguruj",
     "INSTANCE_ACTIONS": "Akcje",
@@ -454,6 +466,8 @@
     "REDEPLOY_BUTTON": "Restartuj",
     "ABORT_BUTTON": "Przerwij",
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
+    "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",
+    "DISABLE_AUTO_UPGRADES_BUTTON": "Wyłącz automatyczne aktualizacje",
     "ADD_MEMBERS_BUTTON": "Osoby",
     "ADDITIONAL_INFO": "Dodatkowe informacje",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut.<br>Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",

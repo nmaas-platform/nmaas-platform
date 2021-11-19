@@ -3,13 +3,15 @@ package net.geant.nmaas.portal.api.shell.observer;
 import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
 import net.geant.nmaas.portal.api.shell.observable.EchoShellSessionObservable;
 import net.geant.nmaas.portal.api.shell.observable.GenericShellSessionObservable;
-import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 public class ShellSessionObserverTest {
 
@@ -24,7 +26,6 @@ public class ShellSessionObserverTest {
         }
     }
 
-
     @Test
     public void testObserver() throws IOException {
         GenericShellSessionObservable observable = new EchoShellSessionObservable("someId");
@@ -36,11 +37,10 @@ public class ShellSessionObserverTest {
         observable.executeCommand(new ShellCommandRequest("some command", ""));
 
         // one heartbeat and one message
-        verify(mockEmitter, times(2)).send(any());
+        verify(mockEmitter, timeout(200).times(2)).send(any());
 
         observer.complete();
         observable.complete();
-
-
     }
+
 }

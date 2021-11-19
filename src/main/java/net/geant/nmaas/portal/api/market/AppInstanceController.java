@@ -113,7 +113,7 @@ public class AppInstanceController extends AppBaseController {
     NOTICE:
     NMAAS-756
     temporary fix on pagination size issue involves changing default pagination size in application.properties
-    to mitigate this issue in future, it is advised to implement server-side pagination,
+    to mitigate this issue in the future, it is advised to implement server-side pagination,
     currently both api and user interface does not support this feature
      */
 
@@ -350,6 +350,32 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
+    @PostMapping("/{appInstanceId}/enableAutoUpgrades")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @Transactional
+    public void enableAutoUpgradesForAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            appInstance.setAutoUpgradesEnabled(true);
+            this.instanceService.update(appInstance);
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
+    @PostMapping("/{appInstanceId}/disableAutoUpgrades")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @Transactional
+    public void disableAutoUpgradesForAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            appInstance.setAutoUpgradesEnabled(false);
+            this.instanceService.update(appInstance);
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
