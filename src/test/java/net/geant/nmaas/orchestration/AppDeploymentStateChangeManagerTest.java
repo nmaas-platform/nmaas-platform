@@ -27,6 +27,7 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTARTED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.MANAGEMENT_VPN_CONFIGURED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.REQUEST_VALIDATED;
@@ -132,6 +133,9 @@ public class AppDeploymentStateChangeManagerTest {
         newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_REMOVED);
         assertThat(newEvent.isPresent(), is(true));
         assertThat(newEvent.get(), instanceOf(AppRemoveDcnIfRequiredEvent.class));
+        newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_UPGRADED);
+        assertThat(newEvent.isPresent(), is(true));
+        assertThat(newEvent.get(), instanceOf(AppVerifyServiceActionEvent.class));
     }
 
 }

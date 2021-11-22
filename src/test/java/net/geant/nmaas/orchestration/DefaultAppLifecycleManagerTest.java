@@ -12,9 +12,9 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,7 +29,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -37,6 +36,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -165,10 +165,17 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldTriggerAppInstanceUpdate() {
-        assertThrows(NotImplementedException.class, () -> {
-            appLifecycleManager.updateApplication(new Identifier(), new Identifier());
-        });
+    public void shouldTriggerAppInstanceUpgrade() {
+        when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
+        appLifecycleManager.upgradeApplication(new Identifier(), new Identifier());
+        verify(eventPublisher, times(1)).publishEvent(any(AppUpgradeActionEvent.class));
+    }
+
+    @Test
+    public void shouldNotTriggerAppInstanceUpgrade() {
+        when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_IN_PROGRESS);
+        appLifecycleManager.upgradeApplication(new Identifier(), new Identifier());
+        verifyNoInteractions(eventPublisher);
     }
 
     @Test

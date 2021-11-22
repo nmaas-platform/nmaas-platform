@@ -32,6 +32,9 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTARTED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTART_FAILED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTART_IN_PROGRESS;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADE_FAILED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADE_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED;
@@ -57,6 +60,7 @@ public class AppDeploymentStateTest {
                     "APPLICATION_DEPLOYMENT_VERIFICATION_FAILED",
                     "APPLICATION_REMOVAL_FAILED",
                     "APPLICATION_RESTART_FAILED",
+                    "APPLICATION_UPGRADE_FAILED",
                     "DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED",
                     "REQUEST_VALIDATION_FAILED",
                     "INTERNAL_ERROR"})
@@ -68,7 +72,8 @@ public class AppDeploymentStateTest {
     @EnumSource(
             value = AppDeploymentState.class,
             names = {"APPLICATION_DEPLOYMENT_VERIFIED",
-                    "APPLICATION_RESTARTED"})
+                    "APPLICATION_RESTARTED",
+                    "APPLICATION_UPGRADED"})
     void shouldReturnIsInRunningState(AppDeploymentState state) {
         assertThat(state.isInRunningState(), is(true));
     }
@@ -149,7 +154,9 @@ public class AppDeploymentStateTest {
                 Arguments.of(APPLICATION_REMOVED, NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED, APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS),
                 Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_REMOVED, APPLICATION_CONFIGURATION_REMOVED),
                 Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED, APPLICATION_CONFIGURATION_REMOVAL_FAILED),
-                Arguments.of(APPLICATION_CONFIGURATION_REMOVED, NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, FAILED_APPLICATION_REMOVED)
+                Arguments.of(APPLICATION_CONFIGURATION_REMOVED, NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, FAILED_APPLICATION_REMOVED),
+                Arguments.of(APPLICATION_UPGRADE_IN_PROGRESS, NmServiceDeploymentState.UPGRADED, APPLICATION_UPGRADED),
+                Arguments.of(APPLICATION_UPGRADE_IN_PROGRESS, NmServiceDeploymentState.UPGRADE_FAILED, APPLICATION_UPGRADE_FAILED)
         );
     }
 
@@ -189,6 +196,9 @@ public class AppDeploymentStateTest {
                 Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS, AppLifecycleState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS),
                 Arguments.of(APPLICATION_CONFIGURATION_REMOVED, AppLifecycleState.APPLICATION_CONFIGURATION_REMOVED),
                 Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_FAILED, AppLifecycleState.APPLICATION_CONFIGURATION_REMOVAL_FAILED),
+                Arguments.of(APPLICATION_UPGRADE_IN_PROGRESS, AppLifecycleState.APPLICATION_UPGRADE_IN_PROGRESS),
+                Arguments.of(APPLICATION_UPGRADED, AppLifecycleState.APPLICATION_UPGRADED),
+                Arguments.of(APPLICATION_UPGRADE_FAILED, AppLifecycleState.APPLICATION_UPGRADE_FAILED),
                 Arguments.of(INTERNAL_ERROR, AppLifecycleState.INTERNAL_ERROR)
         );
     }

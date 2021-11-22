@@ -1,16 +1,18 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
 /**
  * Defines a set of methods each container orchestrator has to implement in order to support NM service deployment.
@@ -100,4 +102,15 @@ public interface ContainerOrchestrator {
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void restartNmService(Identifier deploymentId);
+
+    /**
+     * Triggers all the required actions to upgrade given NM service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @param kubernetesTemplate Helm chart information of the desired application version
+     * @throws CouldNotUpgradeKubernetesServiceException if any of the service restart steps failed
+     * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
+     */
+    void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate);
+
 }

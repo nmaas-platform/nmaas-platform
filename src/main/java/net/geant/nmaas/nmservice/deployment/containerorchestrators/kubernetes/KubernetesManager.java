@@ -408,6 +408,11 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
+    @Override
+    public void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate) {
+        throw new ContainerOrchestratorInternalErrorException("Not implemented yet");
+    }
+
     private String serviceNotFoundMessage(String exceptionMessage) {
         return String.format("Service not found in repository -> Invalid deployment id %s", exceptionMessage);
     }

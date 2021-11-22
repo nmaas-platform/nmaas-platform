@@ -33,6 +33,9 @@ public enum NmServiceDeploymentState {
     RESTART_INITIATED(true, false),
     RESTARTED(true, true),
     RESTART_FAILED(false, false),
+    UPGRADE_INITIATED(true, false),
+    UPGRADED(true, true),
+    UPGRADE_FAILED(false, false),
     ERROR(false, false),
     FAILED_APPLICATION_REMOVED(false, false);
 

@@ -24,7 +24,7 @@ public class AppRestartTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRestartActionEvent event) {
         try{
-            serviceDeployment.restartNmService(event.getRelatedTo());
+            serviceDeployment.restartService(event.getRelatedTo());
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

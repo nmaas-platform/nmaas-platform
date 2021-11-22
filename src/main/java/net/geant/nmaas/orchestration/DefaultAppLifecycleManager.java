@@ -17,6 +17,7 @@ import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -219,8 +220,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateApplication(Identifier deploymentId, Identifier applicationId) {
-        throw new NotImplementedException("Updating application is currently not supported.");
+    public void upgradeApplication(Identifier deploymentId, Identifier applicationId) {
+        if (AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
+            eventPublisher.publishEvent(new AppUpgradeActionEvent(this, deploymentId, applicationId));
+        }
     }
 
     @Override

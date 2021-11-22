@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
@@ -11,10 +12,10 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceE
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTARTED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFIED;
@@ -92,7 +96,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployNmService(Identifier deploymentId) {
+    public void deployService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_INITIATED);
             orchestrator.deployNmService(deploymentId);
@@ -106,7 +110,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyNmService(Identifier deploymentId) {
+    public void verifyService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, VERIFICATION_INITIATED);
             int currentWaitTime = 0;
@@ -141,7 +145,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeNmService(Identifier deploymentId) {
+    public void removeService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, REMOVAL_INITIATED);
             orchestrator.removeNmService(deploymentId);
@@ -155,7 +159,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void restartNmService(Identifier deploymentId) {
+    public void restartService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, RESTART_INITIATED);
             orchestrator.restartNmService(deploymentId);
@@ -163,6 +167,19 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (CouldNotRestartNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
+            throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate) {
+        try {
+            notifyStateChangeListeners(deploymentId, UPGRADE_INITIATED);
+            orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
+            notifyStateChangeListeners(deploymentId, UPGRADED);
+        } catch (CouldNotRestartNmServiceException
+                | ContainerOrchestratorInternalErrorException e) {
+            notifyStateChangeListeners(deploymentId, UPGRADE_FAILED, e.getMessage());
             throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
         }
     }

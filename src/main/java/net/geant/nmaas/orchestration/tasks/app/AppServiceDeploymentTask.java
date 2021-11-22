@@ -24,7 +24,7 @@ public class AppServiceDeploymentTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppDeployServiceActionEvent event) {
         try{
-            serviceDeployment.deployNmService(event.getRelatedTo());
+            serviceDeployment.deployService(event.getRelatedTo());
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

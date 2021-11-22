@@ -34,7 +34,7 @@ public class AppRemoveFailedActionTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRemoveFailedActionEvent event) {
         try{
-            this.serviceDeployment.removeNmService(event.getRelatedTo());
+            this.serviceDeployment.removeService(event.getRelatedTo());
             this.configurationProvider.removeNmService(event.getRelatedTo());
             Thread.sleep(1000);
             eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, event.getRelatedTo(), NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, ""));
