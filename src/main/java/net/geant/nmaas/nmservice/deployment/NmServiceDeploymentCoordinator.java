@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -177,10 +178,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, UPGRADE_INITIATED);
             orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
             notifyStateChangeListeners(deploymentId, UPGRADED);
-        } catch (CouldNotRestartNmServiceException
+        } catch (CouldNotUpgradeKubernetesServiceException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, UPGRADE_FAILED, e.getMessage());
-            throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
+            throw new CouldNotUpgradeKubernetesServiceException("NM Service upgrade failed -> " + e.getMessage());
         }
     }
 
