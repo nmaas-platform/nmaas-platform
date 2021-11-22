@@ -153,11 +153,11 @@ public class HelmKServiceManagerTest {
 
     @Test
     public void shouldUpgradeService() {
-        manager.upgradeService(deploymentId);
+        manager.upgradeService(deploymentId, new KubernetesTemplate());
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
         verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
                 eq("descriptiveDeploymentId"),
-                eq("archiveName")
+                any(KubernetesTemplate.class)
         );
     }
 

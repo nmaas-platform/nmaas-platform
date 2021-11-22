@@ -25,6 +25,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
@@ -409,11 +410,18 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    public void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate) {
-        throw new ContainerOrchestratorInternalErrorException("Not implemented yet");
+    @Loggable(LogLevel.INFO)
+    public void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate targetVersion) {
+        try {
+            serviceLifecycleManager.upgradeService(deploymentId, targetVersion);
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (KServiceManipulationException e) {
+            throw new CouldNotUpgradeKubernetesServiceException(e.getMessage());
+        }
     }
 
-    private String serviceNotFoundMessage(String exceptionMessage) {
+    private static String serviceNotFoundMessage(String exceptionMessage) {
         return String.format("Service not found in repository -> Invalid deployment id %s", exceptionMessage);
     }
 

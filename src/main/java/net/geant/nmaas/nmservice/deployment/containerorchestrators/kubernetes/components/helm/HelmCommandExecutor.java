@@ -157,14 +157,15 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeCommand(String releaseName, String chartArchiveName) {
+    void executeHelmUpgradeCommand(String releaseName, KubernetesTemplate template) {
         try {
             HelmUpgradeCommand command;
             if (Boolean.TRUE.equals(useLocalCharts)) {
-                command = HelmUpgradeCommand.commandWithArchive(
+                command = HelmUpgradeCommand.commandWithRepo(
                         helmVersion,
                         releaseName,
-                        constructChartArchivePath(chartArchiveName),
+                        constructChartNameWithRepo(template.getChart().getName()),
+                        template.getChart().getVersion(),
                         enableTls
                 );
             } else {

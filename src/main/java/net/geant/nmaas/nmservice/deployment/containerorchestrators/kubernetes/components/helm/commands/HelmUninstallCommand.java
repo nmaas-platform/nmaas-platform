@@ -16,8 +16,9 @@ public class HelmUninstallCommand extends HelmCommand {
      * @return complete command object
      */
     public static HelmUninstallCommand command(String namespace, String releaseName) {
-        if (releaseName == null || releaseName.isEmpty())
+        if (releaseName == null || releaseName.isEmpty()) {
             throw new IllegalArgumentException("Name of the release can't be null or empty");
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(HELM)
                 .append(SPACE).append(UNINSTALL)

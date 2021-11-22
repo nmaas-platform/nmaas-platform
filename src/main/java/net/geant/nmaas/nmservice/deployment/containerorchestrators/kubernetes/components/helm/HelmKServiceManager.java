@@ -158,14 +158,13 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void upgradeService(Identifier deploymentId) {
+    public void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion) {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-        KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         try {
             updateHelmRepo();
             helmCommandExecutor.executeHelmUpgradeCommand(
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
-                    template.getArchive()
+                    targetVersion
             );
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());

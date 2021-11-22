@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands;
 
+import com.google.common.base.Strings;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 
 import java.util.function.Predicate;
@@ -7,6 +8,38 @@ import java.util.function.Predicate;
 public class HelmUpgradeCommand extends HelmCommand {
 
     private static final String UPGRADE = "upgrade";
+
+    /**
+     * Creates {@link HelmUpgradeCommand} with provided custom input
+     *
+     * @param helmVersion version of Helm in use
+     * @param releaseName release name
+     * @param chartName name of the target Helm chart
+     * @param chartVersion version of the target Helm chart
+     * @param enableTls flag indicating if tls option should be added
+     * @return complete command object
+     */
+    public static HelmUpgradeCommand commandWithRepo(String helmVersion, String releaseName, String chartName, String chartVersion, boolean enableTls) {
+        if (!HELM_VERSION_3.equals(helmVersion)) {
+            throw new IllegalArgumentException("Upgrades are not supported for Helm v2");
+        }
+        if (releaseName == null || releaseName.isEmpty()) {
+            throw new IllegalArgumentException("Name of the release can't be null or empty");
+        }
+        if (Strings.isNullOrEmpty(chartName) || Strings.isNullOrEmpty(chartVersion)) {
+            throw new IllegalArgumentException("Chart information can't be null or empty");
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(HELM)
+                .append(SPACE).append(UPGRADE)
+                .append(SPACE).append(releaseName)
+                .append(SPACE).append(chartName)
+                .append(SPACE).append(OPTION_VERSION)
+                .append(SPACE).append(chartVersion);
+
+        addTlsOptionIfRequired(helmVersion, enableTls, sb);
+        return new HelmUpgradeCommand(sb.toString());
+    }
 
     /**
      * Creates {@link HelmUpgradeCommand} with provided custom input
