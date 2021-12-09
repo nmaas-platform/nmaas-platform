@@ -1,13 +1,21 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
 /**
- * Defines a set of methods to manage NM service deployment lifecycle.
+ * Defines a set of methods to manage service deployment lifecycle.
  */
 public interface NmServiceDeploymentProvider {
 
@@ -31,20 +39,20 @@ public interface NmServiceDeploymentProvider {
     void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired);
 
     /**
-     * Coordinates NM service deployment (delegates tasks to attached {@link ContainerOrchestrator}).
+     * Coordinates service deployment (delegates tasks to attached {@link ContainerOrchestrator}).
      *
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotDeployNmServiceException if NM service couldn't be deployed for some reason
      */
-    void deployNmService(Identifier deploymentId);
+    void deployService(Identifier deploymentId);
 
     /**
-     * Coordinates NM service deployment verification (delegates tasks to attached {@link ContainerOrchestrator}).
+     * Coordinates service deployment verification (delegates tasks to attached {@link ContainerOrchestrator}).
      *
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotVerifyNmServiceException if NM service deployment verification failed
      */
-    void verifyNmService(Identifier deploymentId);
+    void verifyService(Identifier deploymentId);
 
     /**
      * Retrieves deployed service access details to be presented to the client.
@@ -56,19 +64,28 @@ public interface NmServiceDeploymentProvider {
     AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
 
     /**
-     * Coordinates NM service removal (delegates tasks to attached {@link ContainerOrchestrator}).
+     * Coordinates service removal (delegates tasks to attached {@link ContainerOrchestrator}).
      *
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotRemoveNmServiceException if NM service couldn't be removed for some reason
      */
-    void removeNmService(Identifier deploymentId);
+    void removeService(Identifier deploymentId);
 
     /**
-     * Coordinates NM service restart (delegates tasks to attached {@link ContainerOrchestrator}).
+     * Coordinates service restart (delegates tasks to attached {@link ContainerOrchestrator}).
      *
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotRestartNmServiceException if NM service couldn't be restarted for some reason
      */
-    void restartNmService(Identifier deploymentId);
+    void restartService(Identifier deploymentId);
+
+    /**
+     * Coordinates service upgrade to specified version (delegates tasks to attached {@link ContainerOrchestrator}).
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @param kubernetesTemplate Helm chart information of the desired application version
+     * @throws CouldNotUpgradeKubernetesServiceException if service couldn't be upgraded for some reason
+     */
+    void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate);
 
 }

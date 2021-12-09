@@ -44,14 +44,14 @@ public interface AppLifecycleManager {
     void removeApplication(Identifier deploymentId);
 
     /**
-     * Updates already deployed user application to the latest or provided by user version available in the NMaaS Portal.
+     * Upgrades already deployed user application to the desired version available in the NMaaS Portal.
      * This most probably requires application container redeployment.
-     * Application configuration and persistent data must be restored.
+     * Application configuration and persistent data must be retained.
      *
      * @param deploymentId unique identifier of the deployed user application
-     * @param applicationId unique identifier of the desired version or originally deployed application
+     * @param applicationId unique identifier of the desired version of the originally deployed application
      */
-    void updateApplication(Identifier deploymentId, Identifier applicationId);
+    void upgradeApplication(Identifier deploymentId, Identifier applicationId);
 
     /**
      * Updates the configuration of already deployed user application.

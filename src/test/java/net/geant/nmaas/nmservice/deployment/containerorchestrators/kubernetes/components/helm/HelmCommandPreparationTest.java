@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class HelmCommandPreparationTest {
 
@@ -44,8 +45,8 @@ public class HelmCommandPreparationTest {
     private static final String CORRECT_HELM_DELETE_COMMAND = "helm delete --purge " + RELEASE_NAME;
     private static final String CORRECT_HELM_STATUS_COMMAND = "helm status " + RELEASE_NAME;
     private static final String CORRECT_HELM_STATUS_COMMAND_FOR_V3 = "helm status " + RELEASE_NAME + " --namespace " + NAMESPACE;
-    private static final String CORRECT_HELM_UPGRADE_COMMAND =
-            "helm upgrade " + RELEASE_NAME + " " + CHART_ARCHIVE_NAME;
+    private static final String CORRECT_HELM_UPGRADE_COMMAND = "helm upgrade" + " --namespace " + NAMESPACE + " " + RELEASE_NAME + " " + CHART_ARCHIVE_NAME;
+    private static final String CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND = "helm upgrade" + " --namespace " + NAMESPACE + " " + RELEASE_NAME + " " + CHART_NAME_WITH_REPO + " --version " + CHART_VERSION;
     private static final String CORRECT_HELM_VERSION_COMMAND = "helm version";
     private static final String TLS = " --tls";
     private static final String CORRECT_HELM_REPO_UPDATE_COMMAND = "helm repo update";
@@ -218,14 +219,27 @@ public class HelmCommandPreparationTest {
 
     @Test
     public void shouldConstructUpgradeCommandWithDisabledTls() {
-        assertThat(HelmUpgradeCommand.commandWithArchive(HELM_VERSION_2, RELEASE_NAME, CHART_ARCHIVE_NAME, false).asString(),
+        assertThat(HelmUpgradeCommand.commandWithArchive(HELM_VERSION_2, NAMESPACE, RELEASE_NAME, CHART_ARCHIVE_NAME, false).asString(),
                 equalTo(CORRECT_HELM_UPGRADE_COMMAND));
     }
 
     @Test
     public void shouldConstructUpgradeCommandWithEnabledTls() {
-        assertThat(HelmUpgradeCommand.commandWithArchive(HELM_VERSION_2, RELEASE_NAME, CHART_ARCHIVE_NAME, true).asString(),
+        assertThat(HelmUpgradeCommand.commandWithArchive(HELM_VERSION_2, NAMESPACE, RELEASE_NAME, CHART_ARCHIVE_NAME, true).asString(),
                 equalTo(CORRECT_HELM_UPGRADE_COMMAND + TLS));
+    }
+
+    @Test
+    public void shouldConstructUpgradeCommandWithRepo() {
+        assertThat(HelmUpgradeCommand.commandWithRepo(HelmCommand.HELM_VERSION_3, NAMESPACE, RELEASE_NAME, CHART_NAME_WITH_REPO, CHART_VERSION, true).asString(),
+                equalTo(CORRECT_HELM_UPGRADE_WITH_REPO_COMMAND));
+    }
+
+    @Test
+    public void shouldFailConstructUpgradeCommandWithRepoDueToHelmVersion() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            HelmUpgradeCommand.commandWithRepo(HELM_VERSION_2, NAMESPACE, RELEASE_NAME, CHART_REPO_NAME, CHART_VERSION, true);
+        });
     }
 
     @Test

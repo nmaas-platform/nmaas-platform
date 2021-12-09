@@ -332,6 +332,54 @@ public enum AppDeploymentState {
         @Override
         public boolean isInFailedState() { return true; }
     },
+    APPLICATION_UPGRADE_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_UPGRADE_IN_PROGRESS;
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            switch (state) {
+                case UPGRADED:
+                    return APPLICATION_UPGRADED;
+                case UPGRADE_FAILED:
+                    return APPLICATION_UPGRADE_FAILED;
+                default:
+                    return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            }
+        }
+    },
+    APPLICATION_UPGRADED {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_UPGRADED;
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
+
+        @Override
+        public boolean isInRunningState() {
+            return true;
+        }
+    },
+    APPLICATION_UPGRADE_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_UPGRADE_FAILED;
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
+
+        @Override
+        public boolean isInFailedState() { return true; }
+    },
     APPLICATION_REMOVAL_IN_PROGRESS {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }

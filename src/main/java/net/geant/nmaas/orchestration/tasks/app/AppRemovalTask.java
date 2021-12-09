@@ -24,7 +24,7 @@ public class AppRemovalTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppRemoveActionEvent event) {
         try{
-            serviceDeployment.removeNmService(event.getRelatedTo());
+            serviceDeployment.removeService(event.getRelatedTo());
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

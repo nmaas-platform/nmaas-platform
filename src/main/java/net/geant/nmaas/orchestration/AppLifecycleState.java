@@ -155,6 +155,24 @@ public enum AppLifecycleState {
             return "APP_INSTANCE.PROGRESS.APP_RESTART_FAILED";
         }
     },
+    APPLICATION_UPGRADE_IN_PROGRESS{
+        @Override
+        public String getUserFriendlyState(){
+            return "APP_INSTANCE.PROGRESS.APP_UPGRADE_PROGRESS";
+        }
+    },
+    APPLICATION_UPGRADED{
+        @Override
+        public String getUserFriendlyState(){
+            return "APP_INSTANCE.PROGRESS.APP_UPGRADE_SUCCESS";
+        }
+    },
+    APPLICATION_UPGRADE_FAILED{
+        @Override
+        public String getUserFriendlyState(){
+            return "APP_INSTANCE.PROGRESS.APP_UPGRADE_FAILED";
+        }
+    },
     APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS{
         @Override
         public String getUserFriendlyState() {

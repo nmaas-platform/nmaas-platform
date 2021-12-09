@@ -38,7 +38,7 @@ public class NmServiceVerificationTest {
     public void shouldVerifyDeploymentSuccessRightAway() {
         assertDoesNotThrow(() -> {
             when(orchestrator.checkService(any())).thenReturn(true);
-            provider.verifyNmService(Identifier.newInstance("id"));
+            provider.verifyService(Identifier.newInstance("id"));
         });
     }
 
@@ -49,7 +49,7 @@ public class NmServiceVerificationTest {
                     .thenReturn(false)
                     .thenReturn(false)
                     .thenReturn(true);
-            provider.verifyNmService(Identifier.newInstance("id"));
+            provider.verifyService(Identifier.newInstance("id"));
         });
     }
 
@@ -62,7 +62,7 @@ public class NmServiceVerificationTest {
                     .thenReturn(false)
                     .thenReturn(false)
                     .thenReturn(false);
-            provider.verifyNmService(Identifier.newInstance("id"));
+            provider.verifyService(Identifier.newInstance("id"));
         });
     }
 
@@ -70,7 +70,7 @@ public class NmServiceVerificationTest {
     public void shouldThrowExceptionWhenUnexpectedErrorOccurs(){
         assertThrows(CouldNotVerifyNmServiceException.class, () -> {
             when(orchestrator.checkService(any())).thenThrow(new ContainerCheckFailedException(""));
-            provider.verifyNmService(Identifier.newInstance("id"));
+            provider.verifyService(Identifier.newInstance("id"));
         });
     }
 
