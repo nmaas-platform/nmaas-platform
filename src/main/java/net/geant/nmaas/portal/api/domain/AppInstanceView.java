@@ -28,4 +28,8 @@ public class AppInstanceView extends AppInstanceBase {
 	private AppConfigRepositoryAccessDetails appConfigRepositoryAccessDetails;
 
 	private Set<UserViewMinimal> members;
+
+	// application version to which this instance can be upgraded
+	private ApplicationVersionView upgradeVersion;
+
 }

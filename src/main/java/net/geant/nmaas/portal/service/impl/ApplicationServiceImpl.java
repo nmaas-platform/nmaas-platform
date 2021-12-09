@@ -22,7 +22,9 @@ import org.springframework.util.StringUtils;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.ADDED;
@@ -163,8 +165,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	private void checkParam(Long id) {
-		if(id == null)
+		if(id == null) {
 			throw new IllegalArgumentException("id is null");
+		}
 	}
 
 	private void setMissingTemplatesId(Application app, Long appId){
@@ -190,6 +193,20 @@ public class ApplicationServiceImpl implements ApplicationService {
 			app.getAppDeploymentSpec().getKubernetesTemplate().setId(null);
 			app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setId(null);
 		}
+	}
+
+	@Override
+	public Map<String, String> findAllVersionNumbers(String name) {
+		if (!StringUtils.hasText(name)) {
+			throw new IllegalArgumentException("Application name cannot be null or empty");
+		}
+		Map<String, String> versions = new HashMap<>();
+		applicationRepository.findByName(name).forEach(app ->
+				versions.put(
+					app.getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+					app.getVersion())
+		);
+		return versions;
 	}
 
 }

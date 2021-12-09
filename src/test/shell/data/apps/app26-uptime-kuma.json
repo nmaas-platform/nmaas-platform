@@ -1,0 +1,132 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "Uptime Kuma",
+        "license": "MIT",
+        "licenseUrl": "https://raw.githubusercontent.com/louislam/uptime-kuma/master/LICENSE",
+        "wwwUrl": "https://uptime.kuma.pet/docs/",
+        "sourceUrl": "https://github.com/louislam/uptime-kuma",
+        "issuesUrl": "https://github.com/louislam/uptime-kuma/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Uptime-Kuma",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Self-hosted monitoring tool like \"Uptime Robot\"",
+                "fullDescription": "Uptime Kuma is an open-source uptime monitoring application allowing users to set up alerts for their infrastructure. <br><br>It support multiple monitor types, including: HTTP/HTTPs, TCP Port, Ping, DNS, certificate expiry...<br><br> Users can set granular alerts using one of the many supported social services. <br><br>Public status pages are also supported, with the option of communicating maintenance windows and incidents.<br>"
+            },
+            {
+                "language": "de",
+                "briefDescription": "Self-hosted monitoring tool like \"Uptime Robot\"",
+                "fullDescription": "Uptime Kuma is an open-source uptime monitoring application allowing users to set up alerts for their infrastructure. <br><br>It support multiple monitor types, including: HTTP/HTTPs, TCP Port, Ping, DNS, certificate expiry...<br><br> Users can set granular alerts using one of the many supported social services. <br><br>Public status pages are also supported, with the option of communicating maintenance windows and incidents.<br>"
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Self-hosted monitoring tool like \"Uptime Robot\"",
+                "fullDescription": "Uptime Kuma is an open-source uptime monitoring application allowing users to set up alerts for their infrastructure. <br><br>It support multiple monitor types, including: HTTP/HTTPs, TCP Port, Ping, DNS, certificate expiry...<br><br> Users can set granular alerts using one of the many supported social services. <br>vPublic status pages are also supported, with the option of communicating maintenance windows and incidents.<br>"
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Self-hosted monitoring tool like \"Uptime Robot\"",
+                "fullDescription": "Uptime Kuma is an open-source uptime monitoring application allowing users to set up alerts for their infrastructure. <br><br>It support multiple monitor types, including: HTTP/HTTPs, TCP Port, Ping, DNS, certificate expiry...<br><br> Users can set granular alerts using one of the many supported social services. <br><br>Public status pages are also supported, with the option of communicating maintenance windows and incidents.<br>"
+            }
+        ],
+        "tags": [
+            "uptime monitoring",
+            "maintenance",
+            "certificate expiry",
+            "status page"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Uptime Kuma",
+        "version": "1.10.2",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Additional Parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "additionalParameters",
+                                        "components": [
+                                            {
+                                                "label": "Allocated storage space",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "persistence#size",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "defaultValue": "5Gi",
+                                                "placeholder": "Default value: 5Gi",
+                                                "inputFormat": "plain"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-uptimekuma",
+                    "version": "1.0.0"
+                }
+            },
+            "deployParameters": {
+            },
+            "globalDeployParameters": {
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "UptimeKuma",
+                    "tag": "uptimekuma",
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_CLASS": "ingress.class"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}
