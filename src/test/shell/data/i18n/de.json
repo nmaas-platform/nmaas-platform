@@ -218,6 +218,7 @@
     "OWNER": "Eigentümer",
     "DEPLOYED_AT": "Bereitstellungszeit",
     "APPLICATION": "Anwendung",
+    "VERSION": "Version",
     "STATE": "Status",
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Open application UI",
