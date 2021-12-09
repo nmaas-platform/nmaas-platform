@@ -13,13 +13,14 @@ public class HelmUpgradeCommand extends HelmCommand {
      * Creates {@link HelmUpgradeCommand} with provided custom input
      *
      * @param helmVersion version of Helm in use
+     * @param namespace namespace of the release
      * @param releaseName release name
      * @param chartName name of the target Helm chart
      * @param chartVersion version of the target Helm chart
      * @param enableTls flag indicating if tls option should be added
      * @return complete command object
      */
-    public static HelmUpgradeCommand commandWithRepo(String helmVersion, String releaseName, String chartName, String chartVersion, boolean enableTls) {
+    public static HelmUpgradeCommand commandWithRepo(String helmVersion, String namespace, String releaseName, String chartName, String chartVersion, boolean enableTls) {
         if (!HELM_VERSION_3.equals(helmVersion)) {
             throw new IllegalArgumentException("Upgrades are not supported for Helm v2");
         }
@@ -32,10 +33,10 @@ public class HelmUpgradeCommand extends HelmCommand {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM)
                 .append(SPACE).append(UPGRADE)
+                .append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace)
                 .append(SPACE).append(releaseName)
                 .append(SPACE).append(chartName)
-                .append(SPACE).append(OPTION_VERSION)
-                .append(SPACE).append(chartVersion);
+                .append(SPACE).append(OPTION_VERSION).append(SPACE).append(chartVersion);
 
         addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmUpgradeCommand(sb.toString());
@@ -45,12 +46,13 @@ public class HelmUpgradeCommand extends HelmCommand {
      * Creates {@link HelmUpgradeCommand} with provided custom input
      *
      * @param helmVersion version of Helm in use
+     * @param namespace namespace of the release
      * @param releaseName release name
      * @param chartArchive complete path to the release chart archive
      * @param enableTls flag indicating if tls option should be added
      * @return complete command object
      */
-    public static HelmUpgradeCommand commandWithArchive(String helmVersion, String releaseName, String chartArchive, boolean enableTls) {
+    public static HelmUpgradeCommand commandWithArchive(String helmVersion, String namespace, String releaseName, String chartArchive, boolean enableTls) {
         if (releaseName == null || releaseName.isEmpty()) {
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         }
@@ -60,6 +62,7 @@ public class HelmUpgradeCommand extends HelmCommand {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM)
                 .append(SPACE).append(UPGRADE)
+                .append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace)
                 .append(SPACE).append(releaseName)
                 .append(SPACE).append(chartArchive);
         addTlsOptionIfRequired(helmVersion, enableTls, sb);

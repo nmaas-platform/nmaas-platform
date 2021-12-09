@@ -163,6 +163,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         try {
             updateHelmRepo();
             helmCommandExecutor.executeHelmUpgradeCommand(
+                    namespaceService.namespace(serviceInfo.getDomain()),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
                     targetVersion
             );

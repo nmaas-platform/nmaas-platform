@@ -153,9 +153,11 @@ public class HelmKServiceManagerTest {
 
     @Test
     public void shouldUpgradeService() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
         manager.upgradeService(deploymentId, new KubernetesTemplate());
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
         verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
+                eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class)
         );

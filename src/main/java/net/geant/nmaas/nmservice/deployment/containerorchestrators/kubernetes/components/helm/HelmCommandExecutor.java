@@ -46,8 +46,8 @@ public class HelmCommandExecutor {
     @Value("${helm.enableTls:false}")
     Boolean enableTls;
 
-    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
-        executeInstall(kubernetesNamespace, releaseName, template, arguments);
+    void executeHelmInstallCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
+        executeInstall(namespace, releaseName, template, arguments);
     }
 
     private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
@@ -157,12 +157,13 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeCommand(String releaseName, KubernetesTemplate template) {
+    void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template) {
         try {
             HelmUpgradeCommand command;
             if (Boolean.TRUE.equals(useLocalCharts)) {
                 command = HelmUpgradeCommand.commandWithRepo(
                         helmVersion,
+                        namespace,
                         releaseName,
                         constructChartNameWithRepo(template.getChart().getName()),
                         template.getChart().getVersion(),
