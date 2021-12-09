@@ -13,6 +13,8 @@ public class AppInstanceBase extends DomainAware {
 
     private String applicationName;
 
+    private String applicationVersion;
+
     private String name;
 
     private String internalId;

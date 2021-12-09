@@ -18,7 +18,6 @@
     "LANGUAGES": "Langages",
     "NOTIFICATION": "Send notification",
     "ALL_USERS": "To all users"
-
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -219,6 +218,7 @@
     "OWNER": "Propriétaire",
     "DEPLOYED_AT": "Temps de déploiement",
     "APPLICATION": "Application",
+    "VERSION": "Version",
     "STATE": "Etat",
     "DETAILS_BUTTON": "Détails",
     "GO_TO_APP_BUTTON": "Aller à l'application",

@@ -218,6 +218,7 @@
     "OWNER": "Owner",
     "DEPLOYED_AT": "Deployment time",
     "APPLICATION": "Application",
+    "VERSION": "Version",
     "STATE": "State",
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Open application UI",
