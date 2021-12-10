@@ -458,6 +458,27 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 echo
 
 echo
+echo App26
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app26-uptime-kuma.json
+echo
+echo App26 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/uptime-kuma.png;type=image/png" $API_URL/apps/26/logo
+echo
+echo App26 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/uptime-kuma/uptime-kuma1.jpg;type=image/jpg" $API_URL/apps/26/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/uptime-kuma/uptime-kuma2.jpg;type=image/jpg" $API_URL/apps/26/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/uptime-kuma/uptime-kuma3.jpg;type=image/jpg" $API_URL/apps/26/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/uptime-kuma/uptime-kuma4.jpg;type=image/jpg" $API_URL/apps/26/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/uptime-kuma/uptime-kuma5.jpg;type=image/jpg" $API_URL/apps/26/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/uptime-kuma/uptime-kuma6.jpg;type=image/jpg" $API_URL/apps/26/screenshots
+echo
+
+echo
 echo ---------------------
 echo Activate apps
 curl -X PATCH $API_URL/apps/state/1 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
@@ -487,6 +508,7 @@ curl -X PATCH $API_URL/apps/state/24 --header "Authorization: Bearer $TOKEN" --h
 curl -X PATCH $API_URL/apps/state/25 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
 curl -X PATCH $API_URL/apps/state/26 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
 curl -X PATCH $API_URL/apps/state/27 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
+curl -X PATCH $API_URL/apps/state/28 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/activations/active.json
 echo
 
 echo
