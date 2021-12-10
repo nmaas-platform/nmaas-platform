@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-version = '1.5.0'
+version = '1.5.0-SNAPSHOT'
 group = 'net.geant.nmaas'
 
 sourceCompatibility = 1.8
