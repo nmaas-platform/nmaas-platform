@@ -280,7 +280,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldNotRestartNorRedeployApplicationAsUserInDomain() {
+    void shouldNotRestartNorRedeployNotUpgradeApplicationAsUserInDomain() {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_USER1;
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
@@ -294,6 +294,9 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                     .andExpect(status().isUnauthorized());
             mvc.perform(post("/api/apps/instances/{appInstanceId}/redeploy", 1L)
                     .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .andExpect(status().isUnauthorized());
+            mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
+                            .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
         });
     }
@@ -441,6 +444,20 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
         Set<UserViewMinimal> retrieved = objectMapper.readValue(data, AppInstanceViewExtended.class).getMembers();
         assertEquals(1, retrieved.size());
+    }
+
+    @Test
+    void shouldUpgradeApplication() throws Exception {
+        Domain domain = UsersHelper.DOMAIN1;
+        User user = UsersHelper.ADMIN;
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test", domain, user, true);
+        when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
+        when(applicationInstanceRepository.findById(10L)).thenReturn(Optional.of(appInstance));
+
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
+                        .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+        verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L));
     }
 
     private void mockAppInstanceGetProcess(Domain domain, User user, ApplicationBase applicationBase, Application application, AppInstance appInstance) {
