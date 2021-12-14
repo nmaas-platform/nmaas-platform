@@ -29,4 +29,8 @@ public class AppInstanceBase extends DomainAware {
 
     // indicates if automatic upgrades are enabled for this application instance
     private boolean autoUpgradesEnabled = false;
+
+    // indicates if this application instance can be manually upgraded to newer version
+    private boolean upgradePossible = false;
+
 }

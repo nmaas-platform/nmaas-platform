@@ -261,7 +261,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldRestartAndRedeployApplicationAsAdminInDomain() throws Exception {
+    void shouldRestartRedeployAndUpgradeApplicationAsAdminInDomain() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.DOMAIN1_ADMIN;
         when(userService.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
@@ -277,6 +277,10 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).redeployApplication(appInstance.getInternalId());
+        mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                .andExpect(status().isOk());
+        verify(appLifecycleManager, times(1)).upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(2L));
     }
 
     @Test
@@ -296,7 +300,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                     .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
             mvc.perform(post("/api/apps/instances/{appInstanceId}/upgrade/{targetAppInstanceId}", 1L, 2L)
-                            .header("Authorization", "Bearer " + getValidTokenForUser(user)))
+                    .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                     .andExpect(status().isUnauthorized());
         });
     }

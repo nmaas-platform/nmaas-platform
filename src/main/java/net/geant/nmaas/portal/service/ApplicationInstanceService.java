@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
+import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -42,4 +43,6 @@ public interface ApplicationInstanceService {
 
 	boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView);
 
+	boolean checkUpgradePossible(Long appInstanceId);
+    AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
 }

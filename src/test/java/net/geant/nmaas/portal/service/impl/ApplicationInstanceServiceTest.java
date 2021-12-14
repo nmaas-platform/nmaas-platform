@@ -1,5 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -9,6 +13,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
+import net.geant.nmaas.portal.service.ApplicationInstanceUpgradeService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
@@ -66,9 +71,20 @@ public class ApplicationInstanceServiceTest {
     @Mock
     ApplicationStatePerDomainService applicationStatePerDomainService;
 
+    @Mock
+    ApplicationInstanceUpgradeService applicationInstanceUpgradeService;
+
     @BeforeEach
     public void setup(){
-        applicationInstanceService = new ApplicationInstanceServiceImpl(appInstanceRepo, applications, domains, users, applicationSubscriptions, validator, applicationStatePerDomainService);
+        applicationInstanceService = new ApplicationInstanceServiceImpl(
+                appInstanceRepo,
+                applications,
+                domains,
+                users,
+                applicationSubscriptions,
+                validator,
+                applicationStatePerDomainService,
+                applicationInstanceUpgradeService);
     }
 
     @Test
@@ -523,4 +539,30 @@ public class ApplicationInstanceServiceTest {
         assertNotNull(resultList);
         assertEquals(1, resultList.size());
     }
+
+    @Test
+    public void shouldCheckIfUpgradePossibleAndObtainUpgradeInfo() {
+        Domain domain = new Domain("test", "test");
+        domain.setId((long) 0);
+        Application testApp = new Application(1L, "test","1.1.1");
+        KubernetesChart kubernetesChart = new KubernetesChart("testapp", "1.0.0");
+        KubernetesTemplate kubernetesTemplate = new KubernetesTemplate(kubernetesChart, null, null);
+        testApp.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(kubernetesTemplate).build());
+        Application testApp2 = new Application(2L, "test2","1.2.0");
+        KubernetesChart kubernetesChart2 = new KubernetesChart("testapp", "1.1.0");
+        KubernetesTemplate kubernetesTemplate2 = new KubernetesTemplate(kubernetesChart2, null, null);
+        testApp2.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(kubernetesTemplate2).build());
+        AppInstance test1 = new AppInstance(100L, testApp, domain, "test1", true);
+        when(applications.findApplication(any())).thenReturn(Optional.of(testApp2));
+        when(appInstanceRepo.findById(100L)).thenReturn(Optional.of(test1));
+        when(applicationInstanceUpgradeService.getNextApplicationVersionForUpgrade(any(), any())).thenReturn(Optional.of(2L));
+
+        assertTrue(applicationInstanceService.checkUpgradePossible(test1.getId()));
+
+        AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(test1.getId());
+        assertEquals(2L, upgradeInfo.getApplicationId());
+        assertEquals("1.2.0", upgradeInfo.getApplicationVersion());
+        assertEquals("1.1.0", upgradeInfo.getHelmChartVersion());
+    }
+
 }
