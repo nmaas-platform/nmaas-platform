@@ -287,8 +287,7 @@ public class AppInstanceController extends AppBaseController {
     @DeleteMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
-    public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                  @NotNull Principal principal) {
+    public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.removeApplication(appInstance.getInternalId());
@@ -300,8 +299,7 @@ public class AppInstanceController extends AppBaseController {
     @DeleteMapping("/failed/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
-    public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                     @NotNull Principal principal) {
+    public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.removeFailedApplication(appInstance.getInternalId());
@@ -322,7 +320,7 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/{appInstanceId}/state/history")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
-    public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId, @NotNull Principal principal) {
+    public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             return appDeploymentMonitor.appDeploymentHistory(appInstance.getInternalId());
@@ -350,6 +348,19 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
+    @PostMapping("/{appInstanceId}/upgrade/{targetAppInstanceId}")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @Transactional
+    public void upgradeAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                   @PathVariable(value = "targetAppInstanceId") String targetAppInstanceId) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            this.appLifecycleManager.upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(targetAppInstanceId));
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -552,22 +563,24 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstance getAppInstance(Long appInstanceId) {
-        if (appInstanceId == null)
-            throw new MissingElementException("Missing app instance id.");
+        if (appInstanceId == null) {
+            throw new MissingElementException("Missing app instance identifier");
+        }
         return instanceService.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
     }
 
     private AppInstanceView mapAppInstance(AppInstance appInstance) {
-        if (appInstance == null)
+        if (appInstance == null) {
             return null;
+        }
         AppInstanceView ai = modelMapper.map(appInstance, AppInstanceView.class);
-
         return this.addAppInstanceProperties(ai, appInstance);
     }
 
     private AppInstanceViewExtended mapAppInstanceExtended(AppInstance appInstance) {
-        if (appInstance == null)
+        if (appInstance == null) {
             return null;
+        }
         AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
 
         // explicitly set application base
@@ -578,10 +591,10 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
-        if (appInstance == null)
+        if (appInstance == null) {
             return null;
+        }
         AppInstanceBase ai = modelMapper.map(appInstance, AppInstanceBase.class);
-
         return addAppInstanceBaseProperties(ai, appInstance);
     }
 
@@ -597,6 +610,9 @@ public class AppInstanceController extends AppBaseController {
         if (!ai.getDomainId().equals(appInstance.getDomain().getId())) {
             ai.setDomainId(appInstance.getDomain().getId());
         }
+
+        // add information about app instance upgrade possibility
+        ai.setUpgradePossible(instanceService.checkUpgradePossible(appInstance.getId()));
 
         return ai;
     }
@@ -639,6 +655,9 @@ public class AppInstanceController extends AppBaseController {
         } catch (Exception e) {
             ai.setConfigUpdateWizardTemplate(null);
         }
+
+        // add app instance upgrade details (might be null as well)
+        ai.setUpgradeInfo(instanceService.obtainUpgradeInfo(appInstance.getId()));
 
         return ai;
     }

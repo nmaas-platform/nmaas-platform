@@ -18,28 +18,28 @@ public class ApplicationInstanceUpgradeServiceImplTest {
 
     @Test
     public void shouldReturnValidNextVersion() {
-        Map<String, String> allVersions = new HashMap<>();
-        allVersions.put(CURRENT_CHART_VERSION, "appversion-1.2.3");
-        allVersions.put("1.2.5", "appversion-1.2.5");
-        allVersions.put("2.2.4", "appversion-2.2.4");
-        allVersions.put("1.1.1", "appversion-1.1.1");
-        allVersions.put("1.3.0", "appversion-1.3.0");
-        assertEquals(Optional.of("appversion-1.2.5"), appInstanceUpgradeService.getNextApplicationVersionForUpgrade(CURRENT_CHART_VERSION, allVersions));
+        Map<String, Long> allVersions = new HashMap<>();
+        allVersions.put(CURRENT_CHART_VERSION, 123L);
+        allVersions.put("1.2.5", 125L);
+        allVersions.put("2.2.4", 224L);
+        allVersions.put("1.1.1", 111L);
+        allVersions.put("1.3.0", 130L);
+        assertEquals(Optional.of(125L), appInstanceUpgradeService.getNextApplicationVersionForUpgrade(CURRENT_CHART_VERSION, allVersions));
 
-        allVersions.put("1.2.4", "appversion-1.2.4");
-        assertEquals(Optional.of("appversion-1.2.4"), appInstanceUpgradeService.getNextApplicationVersionForUpgrade(CURRENT_CHART_VERSION, allVersions));
+        allVersions.put("1.2.4", 124L);
+        assertEquals(Optional.of(124L), appInstanceUpgradeService.getNextApplicationVersionForUpgrade(CURRENT_CHART_VERSION, allVersions));
 
         allVersions.remove("1.2.4");
         allVersions.remove("1.2.5");
-        assertEquals(Optional.of("appversion-1.3.0"), appInstanceUpgradeService.getNextApplicationVersionForUpgrade(CURRENT_CHART_VERSION, allVersions));
+        assertEquals(Optional.of(130L), appInstanceUpgradeService.getNextApplicationVersionForUpgrade(CURRENT_CHART_VERSION, allVersions));
     }
 
     @Test
     public void shouldReturnEmptyNextVersion() {
-        Map<String, String> allVersions = new HashMap<>();
-        allVersions.put(CURRENT_CHART_VERSION, "appversion-1.2.3");
-        allVersions.put("1.2.2", "appversion-1.2.5");
-        allVersions.put("2.2.4", "appversion-2.2.4");
+        Map<String, Long> allVersions = new HashMap<>();
+        allVersions.put(CURRENT_CHART_VERSION, 123L);
+        allVersions.put("1.2.2", 125L);
+        allVersions.put("2.2.4",224L);
         assertFalse(appInstanceUpgradeService.getNextApplicationVersionForUpgrade(CURRENT_CHART_VERSION, allVersions).isPresent());
 
         allVersions = new HashMap<>();

@@ -2,7 +2,6 @@ package net.geant.nmaas;
 
 import net.geant.nmaas.nmservice.configuration.api.security.StatelessGitlabAuthenticationFilter;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
-import net.geant.nmaas.portal.api.security.JWTSettings;
 import net.geant.nmaas.portal.api.security.RestAuthenticationEntryPoint;
 import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
@@ -175,8 +174,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new CorsFilter(source);
     }
 
-    @Bean
-    public JWTSettings jwtSettings() {
-        return new JWTSettings();
-    }
 }

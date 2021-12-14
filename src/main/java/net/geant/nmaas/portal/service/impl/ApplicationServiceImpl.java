@@ -196,15 +196,15 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public Map<String, String> findAllVersionNumbers(String name) {
+	public Map<String, Long> findAllVersionNumbers(String name) {
 		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("Application name cannot be null or empty");
 		}
-		Map<String, String> versions = new HashMap<>();
+		Map<String, Long> versions = new HashMap<>();
 		applicationRepository.findByName(name).forEach(app ->
 				versions.put(
 					app.getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
-					app.getVersion())
+					app.getId())
 		);
 		return versions;
 	}

@@ -12,7 +12,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class NmServiceConfigurationExecutorTest {
@@ -58,7 +57,7 @@ public class NmServiceConfigurationExecutorTest {
     public void shouldNotInteractWithGitLab() {
         NmServiceDeployment nsd = NmServiceDeployment.builder().configFileRepositoryRequired(false).build();
         executor.configureNmService(nsd);
-        verifyZeroInteractions(configHandler);
+        verifyNoMoreInteractions(configHandler);
     }
 
     @Test

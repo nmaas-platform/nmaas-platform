@@ -25,9 +25,9 @@ public interface ApplicationService {
 	 * Retrieves all Helm chart versions of given application with corresponding application version
 	 *
 	 * @param name Application name
-	 * @return map of application Helm chart version and corresponding application version
+	 * @return map of application Helm chart version and corresponding application version identifier
 	 */
-	Map<String, String> findAllVersionNumbers(String name);
+	Map<String, Long> findAllVersionNumbers(String name);
 
 	Page<Application> findAll(Pageable pageable);
 	List<Application> findAll();

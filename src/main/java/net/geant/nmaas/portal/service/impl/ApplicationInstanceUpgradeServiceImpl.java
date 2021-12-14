@@ -2,10 +2,12 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.vdurmont.semver4j.Semver;
 import net.geant.nmaas.portal.service.ApplicationInstanceUpgradeService;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
 
+@Service
 public class ApplicationInstanceUpgradeServiceImpl implements ApplicationInstanceUpgradeService {
 
     /**
@@ -15,7 +17,7 @@ public class ApplicationInstanceUpgradeServiceImpl implements ApplicationInstanc
      *  - only minor and patch changes are possible
      */
     @Override
-    public Optional<String> getNextApplicationVersionForUpgrade(String currentHelmChartVersion, Map<String, String> allVersions) {
+    public Optional<Long> getNextApplicationVersionForUpgrade(String currentHelmChartVersion, Map<String, Long> allVersions) {
         Semver current = new Semver(currentHelmChartVersion);
         Optional<String> next = allVersions.keySet().stream()
                 .map(Semver::new)

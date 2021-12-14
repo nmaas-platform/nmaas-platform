@@ -226,9 +226,9 @@
     "ACTIONS": "Operacje",
     "DEPLOYED": "Uruchomione instancje",
     "UNDEPLOYED": "Zatrzymane instancje",
-    "SHOW_UNDEPLOYED": "Show undeployed instances",
-    "HIDE_UNDEPLOYED": "Hide undeployed instances",
-    "UNDEPLOYED_VISIBLE": "Show undeployed instances",
+    "SHOW_UNDEPLOYED": "Pokaż zatrzymane instancje",
+    "HIDE_UNDEPLOYED": "Ukryj zatrzymane instancje",
+    "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
     "SORT_MODE": {
       "NONE": "Brak",

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
+import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -10,6 +11,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationInstanceUpgradeService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -43,6 +46,8 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
 	private final ApplicationStatePerDomainService applicationStatePerDomainService;
 
+	private final ApplicationInstanceUpgradeService instanceUpgradeService;
+
 	@Autowired
 	public ApplicationInstanceServiceImpl(AppInstanceRepository appInstanceRepo,
                                           ApplicationService applications,
@@ -50,7 +55,8 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
                                           UserService users,
                                           ApplicationSubscriptionService applicationSubscriptions,
                                           @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator,
-                                          ApplicationStatePerDomainService applicationStatePerDomainService) {
+                                          ApplicationStatePerDomainService applicationStatePerDomainService,
+										  ApplicationInstanceUpgradeService instanceUpgradeService) {
 		this.appInstanceRepo = appInstanceRepo;
 		this.applications = applications;
 		this.domains = domains;
@@ -58,6 +64,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		this.applicationSubscriptions = applicationSubscriptions;
 		this.validator = validator;
 		this.applicationStatePerDomainService = applicationStatePerDomainService;
+		this.instanceUpgradeService = instanceUpgradeService;
 	}
 
 	@Override
@@ -202,7 +209,38 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		checkParam(domain);
 		return appInstanceRepo.findAllByDomain(domain, pageable);
 	}
-	
+
+	@Override
+	public boolean checkUpgradePossible(Long appInstanceId) {
+		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
+		if (appInstance.isPresent()) {
+			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
+			Map<String, Long> allAppVersions = applications.findAllVersionNumbers(appInstance.get().getApplication().getName());
+			return instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions).isPresent();
+		}
+		return false;
+	}
+
+	@Override
+	public AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
+		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
+		if (appInstance.isPresent()) {
+			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
+			Map<String, Long> allAppVersions = applications.findAllVersionNumbers(appInstance.get().getApplication().getName());
+			Optional<Long> nextVersionId = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
+			if (nextVersionId.isPresent()) {
+				Optional<Application> nextApplication = applications.findApplication(nextVersionId.get());
+				if (nextApplication.isPresent()) {
+					return new AppInstanceView.AppInstanceUpgradeInfo(
+							nextVersionId.get(),
+							nextApplication.get().getVersion(),
+							nextApplication.get().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion());
+				}
+			}
+		}
+		return null;
+	}
+
 	private void checkParam(AppInstance appInstance) {
 		if(appInstance == null)
 			throw new IllegalArgumentException("appInstance is null");
