@@ -49,9 +49,9 @@ public interface AppLifecycleManager {
      * Application configuration and persistent data must be retained.
      *
      * @param deploymentId unique identifier of the deployed user application
-     * @param applicationId unique identifier of the desired version of the originally deployed application
+     * @param targetApplicationId unique identifier of the desired version of the originally deployed application
      */
-    void upgradeApplication(Identifier deploymentId, Identifier applicationId);
+    void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId);
 
     /**
      * Updates the configuration of already deployed user application.

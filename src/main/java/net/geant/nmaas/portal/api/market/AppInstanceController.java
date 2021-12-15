@@ -353,14 +353,14 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @PostMapping("/{appInstanceId}/upgrade/{targetAppInstanceId}")
+    @PostMapping("/{appInstanceId}/upgrade/{targetApplicationId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void upgradeAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                   @PathVariable(value = "targetAppInstanceId") String targetAppInstanceId) {
+                                   @PathVariable(value = "targetApplicationId") Long targetApplicationId) {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
-            this.appLifecycleManager.upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(targetAppInstanceId));
+            this.appLifecycleManager.upgradeApplication(appInstance.getInternalId(), Identifier.newInstance(targetApplicationId));
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }

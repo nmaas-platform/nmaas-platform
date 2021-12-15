@@ -24,7 +24,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -220,9 +219,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void upgradeApplication(Identifier deploymentId, Identifier applicationId) {
+    public void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId) {
         if (AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
-            eventPublisher.publishEvent(new AppUpgradeActionEvent(this, deploymentId, applicationId));
+            eventPublisher.publishEvent(new AppUpgradeActionEvent(this, deploymentId, targetApplicationId));
         }
     }
 
