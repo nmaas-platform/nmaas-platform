@@ -462,6 +462,7 @@
     "UNDEPLOY_BUTTON": "Deinstallieren",
     "APP_ACCESS_METHODS": "Zugriff",
     "RESTART_BUTTON": "Neustart",
+    "UPGRADE_BUTTON": "Upgrade",
     "REMOVE_BUTTON": "Entfernen fehlgeschlagen",
     "CHECK_STATUS_BUTTON": "Status überprüfen",
     "REDEPLOY_BUTTON": "Neuinstallieren",
@@ -573,7 +574,16 @@
     "HEADER": "Bestätigung der Deinstallation",
     "BODY": "Möchten Sie die Anwendungsinstanz entfernen?",
     "YES_BUTTON": "Ja",
-    "CANCEL_BUTTON": "zurück"
+    "CANCEL_BUTTON": "Zurück"
+  },
+  "UPGRADE_MODAL": {
+    "HEADER": "Upgrade to newer version",
+    "BODY": "Do you want to upgrade this application instance?",
+    "CURRENT_VERSION": "Current version",
+    "NEW_VERSION": "New version",
+    "HELM_CHART_VERSION": "Helm chart",
+    "YES_BUTTON": "Begin upgrade",
+    "CANCEL_BUTTON": "Zurück"
   },
   "REDEPLOY_MODAL": {
     "HEADER": "Redeploy Confirmation",

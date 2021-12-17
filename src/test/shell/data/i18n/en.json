@@ -462,6 +462,7 @@
     "UNDEPLOY_BUTTON": "Undeploy",
     "APP_ACCESS_METHODS": "Access",
     "RESTART_BUTTON": "Restart",
+    "UPGRADE_BUTTON": "Upgrade",
     "REMOVE_BUTTON": "Remove",
     "CHECK_STATUS_BUTTON": "Check state",
     "REDEPLOY_BUTTON": "Redeploy",
@@ -573,6 +574,15 @@
     "HEADER": "Undeploy confirmation",
     "BODY": "Do you want to undeploy this application instance?",
     "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "UPGRADE_MODAL": {
+    "HEADER": "Upgrade to newer version",
+    "BODY": "Do you want to upgrade this application instance?",
+    "CURRENT_VERSION": "Current version",
+    "NEW_VERSION": "New version",
+    "HELM_CHART_VERSION": "Helm chart",
+    "YES_BUTTON": "Begin upgrade",
     "CANCEL_BUTTON": "Cancel"
   },
   "REDEPLOY_MODAL": {

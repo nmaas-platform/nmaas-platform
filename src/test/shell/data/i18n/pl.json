@@ -462,6 +462,7 @@
     "UNDEPLOY_BUTTON": "Zatrzymaj",
     "APP_ACCESS_METHODS": "Dostęp",
     "RESTART_BUTTON": "Restartuj",
+    "UPGRADE_BUTTON": "Aktualizuj",
     "REMOVE_BUTTON": "Usuń",
     "CHECK_STATUS_BUTTON": "Sprawdź stan",
     "REDEPLOY_BUTTON": "Restartuj",
@@ -573,6 +574,15 @@
     "HEADER": "Potwierdzenie zatrzymania",
     "BODY": "Czy chcesz zatrzymać tę instancję?",
     "YES_BUTTON": "Tak",
+    "CANCEL_BUTTON": "Anuluj"
+  },
+  "UPGRADE_MODAL": {
+    "HEADER": "Aktualizacja do nowszej wersji",
+    "BODY": "Czy chcesz zaktualizować instancję do nowszej wersji?",
+    "CURRENT_VERSION": "Aktualna wersja",
+    "NEW_VERSION": "Nowa wersja",
+    "HELM_CHART_VERSION": "Helm chart",
+    "YES_BUTTON": "Rozpocznij aktualizację",
     "CANCEL_BUTTON": "Anuluj"
   },
   "REDEPLOY_MODAL": {

@@ -462,6 +462,7 @@
     "UNDEPLOY_BUTTON": "Supprimer",
     "APP_ACCESS_METHODS": "Accès",
     "RESTART_BUTTON": "Re-démarrer",
+    "UPGRADE_BUTTON": "Upgrade",
     "REMOVE_BUTTON": "Supprimer échoué",
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Re-déployer",
@@ -573,6 +574,15 @@
     "HEADER": "Confirmation de suppression",
     "BODY": "Voulez-vous poursuivre la suppression de l'instance de cette application?",
     "YES_BUTTON": "Oui",
+    "CANCEL_BUTTON": "Annuler"
+  },
+  "UPGRADE_MODAL": {
+    "HEADER": "Upgrade to newer version",
+    "BODY": "Do you want to upgrade this application instance?",
+    "CURRENT_VERSION": "Current version",
+    "NEW_VERSION": "New version",
+    "HELM_CHART_VERSION": "Helm chart",
+    "YES_BUTTON": "Begin upgrade",
     "CANCEL_BUTTON": "Annuler"
   },
   "REDEPLOY_MODAL": {
