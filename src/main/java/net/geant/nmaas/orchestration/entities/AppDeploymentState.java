@@ -264,6 +264,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if  (NmServiceDeploymentState.UPGRADE_INITIATED.equals(state)) {
+                return APPLICATION_UPGRADE_IN_PROGRESS;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
