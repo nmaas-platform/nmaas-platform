@@ -161,6 +161,14 @@ public class HelmCommandExecutor {
         try {
             HelmUpgradeCommand command;
             if (Boolean.TRUE.equals(useLocalCharts)) {
+                command = HelmUpgradeCommand.commandWithArchive(
+                        helmVersion,
+                        namespace,
+                        releaseName,
+                        constructChartArchivePath(template.getArchive()),
+                        enableTls
+                );
+            } else {
                 command = HelmUpgradeCommand.commandWithRepo(
                         helmVersion,
                         namespace,
@@ -169,8 +177,6 @@ public class HelmCommandExecutor {
                         template.getChart().getVersion(),
                         enableTls
                 );
-            } else {
-                throw new CommandExecutionException("Currently only referencing local chart archive is supported");
             }
             singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException e) {

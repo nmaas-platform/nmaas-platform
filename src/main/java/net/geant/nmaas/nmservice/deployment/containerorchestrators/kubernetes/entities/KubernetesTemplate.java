@@ -76,4 +76,10 @@ public class KubernetesTemplate implements Serializable {
         checkArgument(StringUtils.isNotEmpty(chart.getVersion()), "You must provide chart version");
     }
 
+    @Override
+    public String toString() {
+        return "KubernetesTemplate{" +
+                "chart=" + chart +
+                '}';
+    }
 }

@@ -36,4 +36,13 @@ public class KubernetesChart implements Serializable {
     public static KubernetesChart copy(KubernetesChart toCopy) {
         return new KubernetesChart(toCopy.getName(), toCopy.getVersion());
     }
+
+    @Override
+    public String toString() {
+        return "KubernetesChart{" +
+                "name='" + name + '\'' +
+                ", version='" + version + '\'' +
+                '}';
+    }
+
 }
