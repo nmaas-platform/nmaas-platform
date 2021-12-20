@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -25,8 +22,6 @@ public class AppUpgradeTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
 
-    private AppDeploymentRepository repository;
-
     private ApplicationRepository appRepository;
 
     @EventListener
@@ -35,9 +30,8 @@ public class AppUpgradeTask {
     public void trigger(AppUpgradeActionEvent event) {
         try{
             final Identifier deploymentId = event.getRelatedTo();
-            final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-            final Application application = appRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue())).orElseThrow(() ->
-                    new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
+            final Application application = appRepository.findById(event.getApplicationId().longValue()).orElseThrow(() ->
+                    new InvalidApplicationIdException("Application with id " + event.getApplicationId() + " does not exist in repository"));
             serviceDeployment.upgradeKubernetesService(
                     deploymentId,
                     application.getAppDeploymentSpec().getKubernetesTemplate());

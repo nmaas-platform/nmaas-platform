@@ -34,7 +34,7 @@ public class AppUpgradeTaskTest {
 
     @BeforeEach
     public void setup() {
-        task = new AppUpgradeTask(deploymentProvider, deployments, applications);
+        task = new AppUpgradeTask(deploymentProvider, applications);
         application = new Application(1L, "appName", "appVersion");
         application.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(new KubernetesTemplate()).build());
     }
