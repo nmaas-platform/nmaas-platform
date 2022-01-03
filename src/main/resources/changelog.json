@@ -1,5 +1,16 @@
 {"versions" : [
   {
+    "verNo" : "1.4.5",
+    "date" : "(2022/01/03)",
+    "topic" : [
+      {
+        "title" : "Dependency upgrade",
+        "tags" : "[Enhancement]",
+        "description" : "Upgraded Spring Boot library version to mitigate Log4j related security vulnerability."
+      }
+    ]
+  },
+  {
     "verNo" : "1.4.4",
     "date" : "(2021/09/27)",
     "topic" : [
