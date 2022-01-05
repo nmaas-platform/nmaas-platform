@@ -183,7 +183,8 @@
                 "persistence.enabled": "true",
                 "persistence.accessMode": "ReadWriteOnce",
                 "housekeeping.enabled": "false",
-                "email.from": "netbox@nmaas.eu"
+                "email.from": "netbox@nmaas.eu",
+                "ingress.hosts[0].paths": "{/}"
             },
             "storageVolumes": [],
             "exposesWebUI": true,
@@ -195,12 +196,11 @@
                     "tag": "netbox",
                     "deployParameters": {
                         "INGRESS_ENABLED": "ingress.enabled",
-                        "INGRESS_HOSTS": "ingress.hosts",
                         "INGRESS_CLASS": "ingress.className",
-                        "INGRESS_TLS_ENABLED": "ingress.tls.enabled",
-                        "INGRESS_LETSENCRYPT": "ingress.tls.secretName",
-                        "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls.secretName",
-                        "INGRESS_TLS_HOSTS": "ingress.hosts"
+                        "INGRESS_HOSTS": "ingress.hosts[0].host=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "ingress.tls[0].hosts[0]=%VALUE%",
+                        "INGRESS_LETSENCRYPT": "ingress.tls[0].secretName",
+                        "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls[0].secretName"
                     }
                 }
             ]
