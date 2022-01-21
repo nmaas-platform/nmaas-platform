@@ -40,7 +40,7 @@
     "application": {
         "id": null,
         "name": "NetBox",
-        "version": "v3.0.11",
+        "version": "3.0.11",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -153,11 +153,11 @@
             ],
             "kubernetesTemplate": {
                 "chart": {
-                    "name": "bootc/netbox",
+                    "name": "netbox/netbox",
                     "version": "4.0.1"
                 },
                 "helmChartRepository": {
-                    "name": "bootc",
+                    "name": "netbox",
                     "url": "https://charts.boo.tc"
                 }
             },
@@ -184,7 +184,8 @@
                 "persistence.accessMode": "ReadWriteOnce",
                 "housekeeping.enabled": "false",
                 "email.from": "netbox@nmaas.eu",
-                "ingress.hosts[0].paths": "{/}"
+                "ingress.hosts[0].paths": "{/}",
+                "worker.enabled": "false"
             },
             "storageVolumes": [],
             "exposesWebUI": true,
