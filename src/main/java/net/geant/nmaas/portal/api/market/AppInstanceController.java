@@ -524,6 +524,8 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_CONFIGURATION_UPDATED:
             case APPLICATION_RESTART_IN_PROGRESS:
             case APPLICATION_RESTARTED:
+            case APPLICATION_UPGRADE_IN_PROGRESS:
+            case APPLICATION_UPGRADED:
             case APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS:
                 appInstanceState = AppInstanceState.DEPLOYING;
                 break;
