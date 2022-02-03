@@ -539,7 +539,10 @@
       "FAILED_APPLICATION_REMOVED": "Fehlgeschlagene Anwendung entfernt",
       "APP_CONF_REMOVE_PROGRESS": "Anwendungskonfiguration wird entfernt",
       "APP_CONF_REMOVE_SUCCESS": "Anwendungskonfiguration erfolgreich entfernt",
-      "APP_CONF_REMOVE_ERROR": "Das Entfernen der Anwendungskonfiguration ist fehlgeschlagen"
+      "APP_CONF_REMOVE_ERROR": "Das Entfernen der Anwendungskonfiguration ist fehlgeschlagen",
+      "APP_UPGRADE_PROGRESS": "Anwendungsaktualisierung läuft",
+      "APP_UPGRADE_SUCCESS": "Anwendung erfolgreich aktualisiert",
+      "APP_UPGRADE_FAILED": "Anwendungsaktualisierung fehlgeschlagen"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "NMaaS bearbeitet Ihre Anfrage",

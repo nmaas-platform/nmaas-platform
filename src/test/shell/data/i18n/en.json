@@ -539,7 +539,10 @@
       "FAILED_APPLICATION_REMOVED": "Removed",
       "APP_CONF_REMOVE_PROGRESS": "Application configuration removal in progress",
       "APP_CONF_REMOVE_SUCCESS": "Application configuration removed successfully",
-      "APP_CONF_REMOVE_ERROR": "Application configuration removal failed"
+      "APP_CONF_REMOVE_ERROR": "Application configuration removal failed",
+      "APP_UPGRADE_PROGRESS": "Application upgrade in progress",
+      "APP_UPGRADE_SUCCESS": "Application upgraded successfully",
+      "APP_UPGRADE_FAILED": "Application upgrade failed"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "Processing your application deployment request",

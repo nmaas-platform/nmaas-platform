@@ -539,7 +539,10 @@
       "FAILED_APPLICATION_REMOVED": "Échec de l'application supprimée",
       "APP_CONF_REMOVE_PROGRESS": "Suppression de la configuration de l'application en cours",
       "APP_CONF_REMOVE_SUCCESS": "Configuration de l'application supprimée avec succès",
-      "APP_CONF_REMOVE_ERROR": "La suppression de la configuration de l'application a échoué"
+      "APP_CONF_REMOVE_ERROR": "La suppression de la configuration de l'application a échoué",
+      "APP_UPGRADE_PROGRESS": "Mise à jour de l'application en cours",
+      "APP_UPGRADE_SUCCESS": "Application mise à jour avec succès",
+      "APP_UPGRADE_FAILED": "La mise à niveau de l'application a échoué"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "NMaaS traite votre demande",

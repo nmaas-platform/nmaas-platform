@@ -361,7 +361,14 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
-            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            switch (state) {
+                case VERIFICATION_INITIATED:
+                    return APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
+                case VERIFICATION_FAILED:
+                    return APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
+                default:
+                    return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            }
         }
 
         @Override
