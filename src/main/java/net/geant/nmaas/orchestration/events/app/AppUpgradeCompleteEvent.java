@@ -2,11 +2,11 @@ package net.geant.nmaas.orchestration.events.app;
 
 import net.geant.nmaas.orchestration.Identifier;
 
-public class AppUpgradeActionEvent extends AppBaseEvent {
+public class AppUpgradeCompleteEvent extends AppBaseEvent {
 
     private final Identifier applicationId;
 
-    public AppUpgradeActionEvent(Object source, Identifier deploymentId, Identifier applicationId) {
+    public AppUpgradeCompleteEvent(Object source, Identifier deploymentId, Identifier applicationId) {
         super(source, deploymentId);
         this.applicationId = applicationId;
     }

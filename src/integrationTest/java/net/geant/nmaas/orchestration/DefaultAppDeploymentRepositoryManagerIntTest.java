@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -27,8 +25,9 @@ public class DefaultAppDeploymentRepositoryManagerIntTest {
 
     private static final String DOMAIN = "domain1";
     private static final String DEPLOYMENT_NAME_1 = "deploymentName1";
-    private Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
-    private Identifier applicationId = Identifier.newInstance("applicationId");
+    private final Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
+    private final Identifier applicationId = Identifier.newInstance("applicationId");
+    private final Identifier newApplicationId = Identifier.newInstance("newApplicationId");
 
     @AfterEach
     void cleanup() {
@@ -45,14 +44,17 @@ public class DefaultAppDeploymentRepositoryManagerIntTest {
                 .build();
 
         repositoryManager.store(appDeployment);
-        assertThat(repositoryManager.load(deploymentId1), is(notNullValue()));
-        assertThat(repositoryManager.loadState(deploymentId1), is(AppDeploymentState.REQUESTED));
-        assertThat(repositoryManager.loadDomain(deploymentId1), is(DOMAIN));
-        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size(), is(0));
+        assertThat(repositoryManager.load(deploymentId1)).isNotNull();
+        assertThat(repositoryManager.loadState(deploymentId1)).isEqualTo(AppDeploymentState.REQUESTED);
+        assertThat(repositoryManager.loadDomain(deploymentId1)).isEqualTo(DOMAIN);
+        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isEqualTo(0);
 
         repositoryManager.updateState(deploymentId1, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
-        assertThat(repositoryManager.loadState(deploymentId1), is(AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED));
-        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size(), is(1));
+        assertThat(repositoryManager.loadState(deploymentId1)).isEqualTo(AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
+        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isEqualTo(1);
+
+        repositoryManager.updateApplicationId(deploymentId1, newApplicationId);
+        assertThat(repositoryManager.load(deploymentId1).getApplicationId()).isEqualTo(newApplicationId);
     }
 
 }

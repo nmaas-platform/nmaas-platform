@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -20,12 +21,14 @@ public interface ApplicationInstanceService {
 	void delete(Long appInstanceId);
 
 	void update(AppInstance appInstance);
+	void updateApplication(AppInstance appInstance, Application application);
 	
 	Optional<AppInstance> find(Long appInstanceId);
-	
+    Optional<AppInstance> findByInternalId(Identifier deploymentId);
+
 	List<AppInstance> findAll();
 	Page<AppInstance> findAll(Pageable pageable);
-	
+
 	List<AppInstance> findAllByOwner(Long userId);
 	List<AppInstance> findAllByOwner(User owner);
 	List<AppInstance> findAllByOwner(Long userId, Long domainId);
@@ -35,7 +38,7 @@ public interface ApplicationInstanceService {
 	Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
 	Page<AppInstance> findAllByOwner(Long userId, Long domainId, Pageable pageable);
 	Page<AppInstance> findAllByOwner(User owner, Domain domain, Pageable pageable);
-	
+
 	List<AppInstance> findAllByDomain(Long domainId);
 	List<AppInstance> findAllByDomain(Domain domain);
 	Page<AppInstance> findAllByDomain(Long domainId, Pageable pageable);
@@ -45,4 +48,5 @@ public interface ApplicationInstanceService {
 
 	boolean checkUpgradePossible(Long appInstanceId);
     AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
+
 }

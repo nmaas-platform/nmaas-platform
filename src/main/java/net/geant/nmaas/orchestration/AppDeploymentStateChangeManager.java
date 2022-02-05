@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -16,6 +17,7 @@ import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
@@ -52,6 +54,13 @@ public class AppDeploymentStateChangeManager {
                 deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), event.getErrorMessage());
                 eventPublisher.publishEvent(
                         new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()), event.getErrorMessage()))
+                );
+            }
+            if(newDeploymentState == AppDeploymentState.APPLICATION_UPGRADED) {
+                Identifier newApplicationId = Identifier.newInstance(event.getDetail(EventDetailType.NEW_APPLICATION_ID));
+                deploymentRepositoryManager.updateApplicationId(event.getDeploymentId(), newApplicationId);
+                eventPublisher.publishEvent(
+                        new AppUpgradeCompleteEvent(this, event.getDeploymentId(), newApplicationId)
                 );
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {

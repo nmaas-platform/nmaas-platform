@@ -58,6 +58,13 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
+    public void updateApplicationId(Identifier deploymentId, Identifier applicationId) {
+        AppDeployment appDeployment = load(deploymentId);
+        appDeployment.setApplicationId(applicationId);
+        repository.save(appDeployment);
+    }
+
+    @Override
     public AppDeployment load(Identifier deploymentId) {
         return repository.findByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentNotFoundMessage(deploymentId)));

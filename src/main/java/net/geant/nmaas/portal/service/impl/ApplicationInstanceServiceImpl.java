@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
@@ -118,9 +119,24 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	public void updateApplication(AppInstance appInstance, Application application) {
+		checkParam(appInstance);
+		checkParam(application);
+		appInstance.setPreviousApplicationId(appInstance.getApplication().getId());
+		appInstance.setApplication(application);
+		appInstanceRepo.save(appInstance);
+	}
+
+	@Override
 	public Optional<AppInstance> find(Long appInstanceId) {
 		checkParam(appInstanceId);
 		return appInstanceRepo.findById(appInstanceId);
+	}
+
+	@Override
+	public Optional<AppInstance> findByInternalId(Identifier deploymentId) {
+		checkParam(deploymentId);
+		return appInstanceRepo.findByInternalId(deploymentId);
 	}
 
 	@Override
@@ -242,31 +258,39 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	private void checkParam(AppInstance appInstance) {
-		if(appInstance == null)
+		if(appInstance == null) {
 			throw new IllegalArgumentException("appInstance is null");
+		}
 		checkParam(appInstance.getId());
 	}
 	
 	private void checkParam(Long id) {
 		checkArgument(id != null, "Id is null");
 	}
+
+	private void checkParam(Identifier id) {
+		checkArgument(id != null, "Id is null");
+	}
 	
 	private void checkParam(Application application) {
-		if(application == null)
+		if(application == null) {
 			throw new IllegalArgumentException("application is null");
+		}
 		checkParam(application.getId());
 	}
 	
 	private void checkParam(Domain domain) {
-		if(domain == null)
+		if(domain == null) {
 			throw new IllegalArgumentException("domain is null");
+		}
 		checkParam(domain.getId());		
 	}
 	
 	private void checkParam(User user) {
-		if(user == null)
+		if(user == null) {
 			throw new IllegalArgumentException("user is null");
-		checkParam(user.getId())    ;
+		}
+		checkParam(user.getId());
 	}
 
 	private void checkNameCharacters(String name){

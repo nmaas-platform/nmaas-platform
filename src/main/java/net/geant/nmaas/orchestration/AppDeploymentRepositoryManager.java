@@ -17,6 +17,8 @@ public interface AppDeploymentRepositoryManager {
 
     void updateState(Identifier deploymentId, AppDeploymentState currentState);
 
+    void updateApplicationId(Identifier deploymentId, Identifier applicationId);
+
     AppDeployment load(Identifier deploymentId);
 
     AppDeploymentOwner loadOwner(Identifier deploymentId);

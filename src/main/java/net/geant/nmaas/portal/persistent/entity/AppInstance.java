@@ -57,7 +57,11 @@ public class AppInstance extends DomainAware implements Serializable {
 	@Basic
 	Identifier internalId;
 
+	@Basic
 	private boolean autoUpgradesEnabled;
+
+	@Column(name = "previous_application_id")
+	private Long previousApplicationId;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	private Set<User> members = new HashSet<>();
