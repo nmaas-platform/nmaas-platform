@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -9,13 +10,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> {
-	
+
+	Optional<AppInstance> findByInternalId(Identifier internalId);
+
 	List<AppInstance> findAllByOwner(User user);
 	List<AppInstance> findAllByDomain(Domain domain);
 	List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain);
-	
+
 	Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
 	Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
 	Page<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain, Pageable pageable);

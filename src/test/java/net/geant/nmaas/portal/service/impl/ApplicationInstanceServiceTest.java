@@ -19,17 +19,14 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,39 +41,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 public class ApplicationInstanceServiceTest {
 
-    @Mock
-    AppInstanceRepository appInstanceRepo;
+    AppInstanceRepository appInstanceRepo = mock(AppInstanceRepository.class);
+    ApplicationService applications = mock(ApplicationService.class);
+    DomainService domains = mock(DomainService.class);
+    UserService users = mock(UserService.class);
+    ApplicationSubscriptionService applicationSubscriptions = mock(ApplicationSubscriptionService.class);
+    DomainServiceImpl.CodenameValidator validator = mock(DomainServiceImpl.CodenameValidator.class);
+    ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+    ApplicationInstanceUpgradeService applicationInstanceUpgradeService = mock(ApplicationInstanceUpgradeService.class);
 
-    @Mock
-    ApplicationService applications;
-
-    @Mock
-    DomainService domains;
-
-    @Mock
-    UserService users;
-
-    @Mock
-    ApplicationSubscriptionService applicationSubscriptions;
-
-    @Mock
-    DomainServiceImpl.CodenameValidator validator;
-
-    @InjectMocks
-    ApplicationInstanceServiceImpl applicationInstanceService;
-
-    @Mock
-    ApplicationStatePerDomainService applicationStatePerDomainService;
-
-    @Mock
-    ApplicationInstanceUpgradeService applicationInstanceUpgradeService;
-
-    @BeforeEach
-    public void setup(){
-        applicationInstanceService = new ApplicationInstanceServiceImpl(
+    ApplicationInstanceServiceImpl applicationInstanceService = new ApplicationInstanceServiceImpl(
                 appInstanceRepo,
                 applications,
                 domains,
@@ -85,7 +61,7 @@ public class ApplicationInstanceServiceTest {
                 validator,
                 applicationStatePerDomainService,
                 applicationInstanceUpgradeService);
-    }
+
 
     @Test
     public void createByIdsMethodShouldThrowObjectNotFoundExceptionDueToApplicationObjectDoNotExists(){
@@ -256,6 +232,40 @@ public class ApplicationInstanceServiceTest {
         appInstance.setId((long) 0);
         applicationInstanceService.update(appInstance);
         verify(appInstanceRepo).save(isA(AppInstance.class));
+    }
+
+    @Test
+    public void updateApplicationMethodShouldThrowIllegalArgumentExceptionDueToMissingApplicationInstanceId() {
+        Application newApplication = new Application(40L, "test", "newtestversion");
+        assertThrows(IllegalArgumentException.class, () -> {
+            applicationInstanceService.updateApplication(null, newApplication);
+        });
+    }
+
+    @Test
+    public void updateApplicationMethodShouldThrowIllegalArgumentExceptionDueToMissingApplication() {
+        Domain domain = new Domain(10L, "test", "test");
+        Application application = new Application(20L,"test","testversion");
+        AppInstance appInstance = new AppInstance(application, domain, "test", true);
+        appInstance.setId(30L);
+        assertThrows(IllegalArgumentException.class, () -> {
+            applicationInstanceService.updateApplication(appInstance, null);
+        });
+    }
+
+    @Test
+    public void updateApplicationMethodShouldSuccessfulUpdateApplicationInstance() {
+        Domain domain = new Domain(10L, "test", "test");
+        Application application = new Application(20L,"test","testversion");
+        AppInstance appInstance = new AppInstance(application, domain, "test", true);
+        appInstance.setId(30L);
+        Application newApplication = new Application(40L, "test", "newtestversion");
+        applicationInstanceService.updateApplication(appInstance, newApplication);
+
+        ArgumentCaptor<AppInstance> appInstanceArgumentCaptor = ArgumentCaptor.forClass(AppInstance.class);
+        verify(appInstanceRepo).save(appInstanceArgumentCaptor.capture());
+        assertThat(appInstanceArgumentCaptor.getValue().getApplication().getId()).isEqualTo(40L);
+        assertThat(appInstanceArgumentCaptor.getValue().getPreviousApplicationId()).isEqualTo(20L);
     }
 
     @Test

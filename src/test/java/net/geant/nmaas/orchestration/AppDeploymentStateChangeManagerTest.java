@@ -10,6 +10,7 @@ import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTARTED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADE_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.MANAGEMENT_VPN_CONFIGURED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.REQUEST_VALIDATED;
@@ -43,14 +45,14 @@ import static org.mockito.Mockito.when;
 
 public class AppDeploymentStateChangeManagerTest {
 
-    private DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
-    private AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
-    private ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+    private final Identifier deploymentId = Identifier.newInstance("deploymentId");
+    private final NmServiceDeploymentStateChangeEvent event = mock(NmServiceDeploymentStateChangeEvent.class);
+
+    private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
+    private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
+    private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
     private AppDeploymentStateChangeManager manager;
-
-    private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private NmServiceDeploymentStateChangeEvent event = mock(NmServiceDeploymentStateChangeEvent.class);
 
     @BeforeEach
     public void setup() {
@@ -136,6 +138,17 @@ public class AppDeploymentStateChangeManagerTest {
         newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_UPGRADED);
         assertThat(newEvent.isPresent(), is(true));
         assertThat(newEvent.get(), instanceOf(AppVerifyServiceActionEvent.class));
+    }
+
+    @Test
+    public void shouldProcessApplicationUpgradedState() {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_UPGRADE_IN_PROGRESS);
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
+        when(event.getState()).thenReturn(NmServiceDeploymentState.UPGRADED);
+        when(event.getDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
+        manager.notifyStateChange(event);
+        verify(deployments).updateApplicationId(deploymentId, Identifier.newInstance(10L));
+        verify(publisher).publishEvent(any(AppUpgradeCompleteEvent.class));
     }
 
 }

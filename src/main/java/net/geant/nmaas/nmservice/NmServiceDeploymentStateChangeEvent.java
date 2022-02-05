@@ -5,13 +5,19 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.context.ApplicationEvent;
 
-@Getter
+import java.util.EnumMap;
+
 public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
 
+    @Getter
     private Identifier deploymentId;
 
+    @Getter
     private NmServiceDeploymentState state;
 
+    private EnumMap<EventDetailType, String> details = new EnumMap<EventDetailType, String>(EventDetailType.class);
+
+    @Getter
     private String errorMessage;
 
     public NmServiceDeploymentStateChangeEvent(Object source, Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
@@ -21,6 +27,14 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
         this.errorMessage = errorMessage;
     }
 
+    public void addDetail(EventDetailType type, String value) {
+        this.details.put(type, value);
+    }
+
+    public String getDetail(EventDetailType type) {
+        return this.details.get(type);
+    }
+
     @Override
     public String toString() {
         return "NmServiceDeploymentStateChangeEvent{" +
@@ -28,4 +42,9 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
                 ", state=" + state +
                 '}';
     }
+
+    public enum EventDetailType {
+        NEW_APPLICATION_ID
+    }
+
 }

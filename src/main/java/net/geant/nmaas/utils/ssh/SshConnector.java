@@ -17,14 +17,15 @@ public class SshConnector {
 
 	SshConnector(String hostname, int port, BasicCredentials credentials) {
 		connect(hostname, port);
-		if(isConnected())
+		if (isConnected()) {
 			authenticate(credentials);
+		}
 	}
 
 	private void connect(String hostname, int port) {
 		try {
 			ssh = new SSHClient();
-			ssh.addHostKeyVerifier((arg0, arg1, arg2) -> true);
+			ssh.addHostKeyVerifier(new DummyHostKeyVerifier());
 			ssh.connect(hostname, port);
 		} catch (IOException ex) {
 			ssh = null;
