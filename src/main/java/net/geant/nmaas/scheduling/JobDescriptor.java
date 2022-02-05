@@ -19,7 +19,7 @@ public class JobDescriptor {
 
     private TimeFormat timeFormat;
 
-    Trigger buildTrigger(){
+    Trigger buildTrigger() {
         return new TriggerDescriptor(serviceName, checkInterval, timeFormat).buildTrigger();
     }
 }

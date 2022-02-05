@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.monitor.MonitorService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @NoArgsConstructor
+@AllArgsConstructor
 public class GitLabMonitorService extends MonitorService {
 
     private GitLabManager gitLabManager;

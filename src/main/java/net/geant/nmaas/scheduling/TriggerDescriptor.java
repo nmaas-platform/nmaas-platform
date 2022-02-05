@@ -18,14 +18,14 @@ public class TriggerDescriptor {
     private final TimeFormat timeFormat;
     private final String cron;
 
-    public TriggerDescriptor(ServiceType serviceName, Long checkInterval, TimeFormat timeFormat){
+    public TriggerDescriptor(ServiceType serviceName, Long checkInterval, TimeFormat timeFormat) {
         this.serviceName = serviceName;
         this.checkInterval = checkInterval;
         this.timeFormat = timeFormat;
         this.cron = createCronString();
     }
 
-    private String createCronString(){
+    private String createCronString() {
         if (timeFormat.equals(TimeFormat.H) && checkInterval.equals(24L)) {
             return "0 0 0 * * ?";
         } else if(timeFormat.equals(TimeFormat.H)) {
@@ -34,7 +34,7 @@ public class TriggerDescriptor {
         return String.format("0 0/%d * * * ?", checkInterval);
     }
 
-    Trigger buildTrigger(){
+    Trigger buildTrigger() {
         if(cron != null && !cron.isEmpty()) {
             if(!isValidExpression(cron)) {
                 throw new IllegalStateException("Provided interval is incorrect. You can choose from 1-59 minutes and 1-24 hours.");

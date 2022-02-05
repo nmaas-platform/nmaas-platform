@@ -3,19 +3,14 @@ package net.geant.nmaas.scheduling;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorService;
 import net.geant.nmaas.monitor.MonitorManager;
-import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.TimeFormat;
-import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.TriggerKey;
-
-import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,21 +29,22 @@ public class SchedulingManagerTest {
     private final Scheduler scheduler = mock(Scheduler.class);
     private final MonitorEntryView monitorEntryView = new MonitorEntryView(ServiceType.GITLAB, 3L, TimeFormat.MIN);
 
+    private GitLabMonitorService gitLabMonitorService;
+
     private ScheduleManager scheduleManager;
 
     @BeforeEach
     public void setup() throws Exception{
-        GitLabMonitorService gitLabMonitorService = new GitLabMonitorService();
+        gitLabMonitorService = new GitLabMonitorService();
         gitLabMonitorService.setGitLabManager(gitLabManager);
         gitLabMonitorService.setMonitorManager(monitorManager);
-        List<MonitorService> monitorServices = Collections.singletonList(gitLabMonitorService);
-        scheduleManager = new ScheduleManager(monitorServices, scheduler);
+        scheduleManager = new ScheduleManager( scheduler);
         when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(false);
     }
 
     @Test
     public void shouldCreateJob() throws Exception {
-        JobDescriptor result = this.scheduleManager.createJob(monitorEntryView);
+        JobDescriptor result = this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryView);
         assertThat("Job mismatch", result.getServiceName().equals(monitorEntryView.getServiceName()));
         assertThat("Interval mismatch", result.getCheckInterval().equals(monitorEntryView.getCheckInterval()));
         verify(scheduler, times(1)).scheduleJob(any(), anySet(), anyBoolean());
@@ -58,26 +54,7 @@ public class SchedulingManagerTest {
     public void shouldNotCreateJobWhenJobExists() {
         assertThrows(IllegalStateException.class, () -> {
             when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(true);
-            this.scheduleManager.createJob(monitorEntryView);
-        });
-    }
-
-    @Test
-    public void shouldExecuteJobWithCorrectName() {
-        this.scheduleManager.executeJob("GITLAB");
-        verify(monitorManager, times(1)).updateMonitorEntry(any(), any(), any());
-    }
-
-    @Test
-    public void shouldExecuteJobWhenNameIsCorrectButIsNotUpperCase() {
-        this.scheduleManager.executeJob("GiTLaB");
-        verify(monitorManager, times(1)).updateMonitorEntry(any(), any(), any());
-    }
-
-    @Test
-    public void shouldNotExecuteJobWhenServiceCannotBeFound() {
-        assertThrows(MonitorServiceNotFound.class, () -> {
-            this.scheduleManager.executeJob("GITHUB");
+            this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryView);
         });
     }
 

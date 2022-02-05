@@ -1,11 +1,9 @@
 package net.geant.nmaas.monitor;
 
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.scheduling.ScheduleManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,10 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/monitor")
 public class MonitorController {
+
+    private final List<MonitorService> monitorServices;
 
     private final MonitorManager monitorManager;
 
@@ -32,7 +34,8 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
-        this.scheduleManager.createJob(monitorEntryView);
+        MonitorService service = getMonitorService(monitorEntryView.getServiceName().getName());
+        this.scheduleManager.createJob(service, monitorEntryView);
         this.monitorManager.createMonitorEntry(monitorEntryView);
     }
 
@@ -40,7 +43,15 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void executeJobNow(@PathVariable String serviceName){
-        scheduleManager.executeJob(serviceName);
+        MonitorService service = getMonitorService(serviceName);
+        service.checkStatus();
+    }
+
+    private MonitorService getMonitorService(String serviceName) {
+        MonitorService service = monitorServices.stream().filter(s->s.getServiceType().getName().equals(serviceName.toUpperCase()))
+                .findAny()
+                .orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", serviceName)));
+        return service;
     }
 
     @PutMapping
