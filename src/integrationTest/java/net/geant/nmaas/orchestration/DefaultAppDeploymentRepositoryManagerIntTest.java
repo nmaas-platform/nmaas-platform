@@ -47,11 +47,11 @@ public class DefaultAppDeploymentRepositoryManagerIntTest {
         assertThat(repositoryManager.load(deploymentId1)).isNotNull();
         assertThat(repositoryManager.loadState(deploymentId1)).isEqualTo(AppDeploymentState.REQUESTED);
         assertThat(repositoryManager.loadDomain(deploymentId1)).isEqualTo(DOMAIN);
-        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isEqualTo(0);
+        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isZero();
 
         repositoryManager.updateState(deploymentId1, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
         assertThat(repositoryManager.loadState(deploymentId1)).isEqualTo(AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
-        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isEqualTo(1);
+        assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isOne();
 
         repositoryManager.updateApplicationId(deploymentId1, newApplicationId);
         assertThat(repositoryManager.load(deploymentId1).getApplicationId()).isEqualTo(newApplicationId);

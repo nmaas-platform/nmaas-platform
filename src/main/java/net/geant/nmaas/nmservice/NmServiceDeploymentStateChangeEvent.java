@@ -15,7 +15,7 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
     @Getter
     private NmServiceDeploymentState state;
 
-    private EnumMap<EventDetailType, String> details = new EnumMap<EventDetailType, String>(EventDetailType.class);
+    private EnumMap<EventDetailType, String> details = new EnumMap<>(EventDetailType.class);
 
     @Getter
     private String errorMessage;

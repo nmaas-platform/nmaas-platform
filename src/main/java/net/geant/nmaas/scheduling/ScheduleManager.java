@@ -1,6 +1,7 @@
-package net.geant.nmaas.monitor.scheduling;
+package net.geant.nmaas.scheduling;
 
 import com.google.common.collect.ImmutableSet;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
@@ -12,7 +13,6 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,18 +24,14 @@ import java.util.Set;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 
-@Log4j2
 @Component
+@RequiredArgsConstructor
+@Log4j2
 public class ScheduleManager {
-    private List<MonitorService> monitorServices;
 
-    private Scheduler scheduler;
+    private final List<MonitorService> monitorServices;
 
-    @Autowired
-    public ScheduleManager(List<MonitorService> monitorServices, Scheduler scheduler){
-        this.monitorServices = monitorServices;
-        this.scheduler = scheduler;
-    }
+    private final Scheduler scheduler;
 
     public JobDescriptor createJob(MonitorEntryView monitorEntryView){
         JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());

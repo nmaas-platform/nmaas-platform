@@ -1,4 +1,4 @@
-package net.geant.nmaas.monitor.scheduling;
+package net.geant.nmaas.scheduling;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

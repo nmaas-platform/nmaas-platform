@@ -8,13 +8,10 @@ import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.TransportException;
-import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.PublicKey;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -89,17 +86,7 @@ public class SshSessionConnector implements AsyncConnector {
 	private void connect(String hostname, int port) {
 		try {
 			client = new SSHClient();
-			client.addHostKeyVerifier(new HostKeyVerifier() {
-				@Override
-				public boolean verify(String hostname, int port, PublicKey key) {
-					return true;
-				}
-
-				@Override
-				public List<String> findExistingAlgorithms(String hostname, int port) {
-					return null;
-				}
-			});
+			client.addHostKeyVerifier(new DummyHostKeyVerifier());
 			client.connect(hostname, port);
 		} catch (IOException ex) {
 			client = null;

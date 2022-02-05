@@ -37,14 +37,14 @@ public class AppUpgradeTaskTest {
     private Application application;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         task = new AppUpgradeTask(deploymentProvider, applicationService, instanceService);
         application = new Application(1L, "appName", "appVersion");
         application.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(new KubernetesTemplate()).build());
     }
 
     @Test
-    public void shouldTriggerUpgradeProcess() {
+    void shouldTriggerUpgradeProcess() {
         when(deployments.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().applicationId(applicationId).build()));
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         task.trigger(new AppUpgradeActionEvent(this, deploymentId, applicationId));
@@ -52,7 +52,7 @@ public class AppUpgradeTaskTest {
     }
 
     @Test
-    public void shouldTriggerPortUpgradeProcess() {
+    void shouldTriggerPortUpgradeProcess() {
         when(deployments.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().applicationId(applicationId).build()));
         when(applicationService.findApplication(1L)).thenReturn(Optional.of(application));
         AppInstance instance = new AppInstance(1L, application, null,"testInstance", false);

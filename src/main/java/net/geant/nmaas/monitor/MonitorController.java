@@ -1,8 +1,10 @@
 package net.geant.nmaas.monitor;
 
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
-import net.geant.nmaas.monitor.scheduling.ScheduleManager;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,23 +20,18 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/monitor")
 public class MonitorController {
 
-    private MonitorManager monitorManager;
+    private final MonitorManager monitorManager;
 
-    private ScheduleManager scheduleManager;
-
-    @Autowired
-    public MonitorController(MonitorManager monitorManager, ScheduleManager scheduleManager){
-        this.monitorManager = monitorManager;
-        this.scheduleManager = scheduleManager;
-    }
+    private final ScheduleManager scheduleManager;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
+    public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
         this.scheduleManager.createJob(monitorEntryView);
         this.monitorManager.createMonitorEntry(monitorEntryView);
     }
@@ -49,7 +46,7 @@ public class MonitorController {
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
+    public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
         this.scheduleManager.updateJob(monitorEntryView);
         this.monitorManager.updateMonitorEntry(monitorEntryView);
     }

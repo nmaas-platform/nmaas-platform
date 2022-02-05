@@ -55,13 +55,13 @@ public class AppDeploymentStateChangeManagerTest {
     private AppDeploymentStateChangeManager manager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
         manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
     }
 
     @Test
-    public void shouldNotTriggerAnyNewEventInNormalState() {
+    void shouldNotTriggerAnyNewEventInNormalState() {
         when(deployments.loadState(deploymentId)).thenReturn(MANAGEMENT_VPN_CONFIGURED);
         when(event.getState()).thenReturn(NmServiceDeploymentState.CONFIGURATION_INITIATED);
         ApplicationEvent newEvent = manager.notifyStateChange(event);
@@ -71,7 +71,7 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldTriggerNewEventInFailedState() {
+    void shouldTriggerNewEventInFailedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_CONFIGURATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(event.getState()).thenReturn(NmServiceDeploymentState.CONFIGURATION_FAILED);
@@ -84,7 +84,7 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldTriggerNotificationEvent() {
+    void shouldTriggerNotificationEvent() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
@@ -108,7 +108,7 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldTriggerActionEventIfRequired() {
+    void shouldTriggerActionEventIfRequired() {
         Optional<ApplicationEvent> newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_CONFIGURATION_IN_PROGRESS);
         assertThat(newEvent.isPresent(), is(false));
         newEvent = manager.triggerActionEventIfRequired(deploymentId, REQUEST_VALIDATED);
@@ -141,7 +141,7 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldProcessApplicationUpgradedState() {
+    void shouldProcessApplicationUpgradedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_UPGRADE_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(event.getState()).thenReturn(NmServiceDeploymentState.UPGRADED);
