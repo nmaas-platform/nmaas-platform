@@ -1,11 +1,6 @@
 package net.geant.nmaas.portal;
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.monitor.MonitorManager;
-import net.geant.nmaas.monitor.MonitorService;
-import net.geant.nmaas.monitor.ServiceType;
-import net.geant.nmaas.monitor.model.MonitorEntryView;
-import net.geant.nmaas.scheduling.ScheduleManager;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -31,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 @Configuration
