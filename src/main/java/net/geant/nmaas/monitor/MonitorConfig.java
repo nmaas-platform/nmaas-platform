@@ -16,7 +16,7 @@ import java.util.List;
 public class MonitorConfig {
 
     @Bean
-    public InitializingBean insertDefaultMonitoringJobs(){
+    public InitializingBean insertDefaultMonitoringJobs() {
         return new InitializingBean() {
 
             @Autowired

@@ -1,8 +1,8 @@
 package net.geant.nmaas.orchestration.repositories;
 
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.projections.AppDeploymentCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +17,8 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
 
     Optional<AppDeployment> findByDeploymentId(Identifier deploymentId);
 
+    List<AppDeployment> findByState(AppDeploymentState state);
+
     List<AppDeployment> findByDomainAndState(String domain, AppDeploymentState state);
 
     Optional<AppDeployment> findByDeploymentNameAndDomain(String deploymentName, String domain);
@@ -26,6 +28,9 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
 
     @Query("SELECT a.domain FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
     Optional<String> getDomainByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
+    @Query("SELECT a.applicationId FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
+    Optional<Identifier> getApplicationIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
     @Query("SELECT a.errorMessage FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
     Optional<String> getErrorMessageByDeploymentId(@Param("deploymentId") Identifier deploymentId);

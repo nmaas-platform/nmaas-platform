@@ -221,7 +221,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     public void upgradeApplication(Identifier deploymentId, Identifier targetApplicationId) {
         if (AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
-            eventPublisher.publishEvent(new AppUpgradeActionEvent(this, deploymentId, targetApplicationId));
+            eventPublisher.publishEvent(new AppUpgradeActionEvent(this, deploymentId, targetApplicationId, AppUpgradeMode.MANUAL));
         }
     }
 

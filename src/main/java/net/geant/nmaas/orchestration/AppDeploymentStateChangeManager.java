@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
@@ -33,15 +33,13 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
-@AllArgsConstructor
 public class AppDeploymentStateChangeManager {
 
-    private DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
-
-    private AppDeploymentMonitor deploymentMonitor;
-
-    private ApplicationEventPublisher eventPublisher;
+    private final DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
+    private final AppDeploymentMonitor deploymentMonitor;
+    private final ApplicationEventPublisher eventPublisher;
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -57,10 +55,15 @@ public class AppDeploymentStateChangeManager {
                 );
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_UPGRADED) {
+                Identifier previousApplicationId = deploymentRepositoryManager.loadApplicationId(event.getDeploymentId());
                 Identifier newApplicationId = Identifier.newInstance(event.getDetail(EventDetailType.NEW_APPLICATION_ID));
                 deploymentRepositoryManager.updateApplicationId(event.getDeploymentId(), newApplicationId);
                 eventPublisher.publishEvent(
-                        new AppUpgradeCompleteEvent(this, event.getDeploymentId(), newApplicationId)
+                        new AppUpgradeCompleteEvent(this,
+                                event.getDeploymentId(),
+                                previousApplicationId,
+                                newApplicationId,
+                                AppUpgradeMode.valueOf(event.getDetail(EventDetailType.UPGRADE_TRIGGER_TYPE)))
                 );
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {

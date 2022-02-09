@@ -146,6 +146,7 @@ public class AppDeploymentStateChangeManagerTest {
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(event.getState()).thenReturn(NmServiceDeploymentState.UPGRADED);
         when(event.getDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
+        when(event.getDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.UPGRADE_TRIGGER_TYPE)).thenReturn(AppUpgradeMode.MANUAL.toString());
         manager.notifyStateChange(event);
         verify(deployments).updateApplicationId(deploymentId, Identifier.newInstance(10L));
         verify(publisher).publishEvent(any(AppUpgradeCompleteEvent.class));

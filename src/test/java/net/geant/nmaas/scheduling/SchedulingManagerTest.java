@@ -12,7 +12,6 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.TriggerKey;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -44,9 +43,7 @@ public class SchedulingManagerTest {
 
     @Test
     public void shouldCreateJob() throws Exception {
-        JobDescriptor result = this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryView);
-        assertThat("Job mismatch", result.getServiceName().equals(monitorEntryView.getServiceName()));
-        assertThat("Interval mismatch", result.getCheckInterval().equals(monitorEntryView.getCheckInterval()));
+        this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryView);
         verify(scheduler, times(1)).scheduleJob(any(), anySet(), anyBoolean());
     }
 

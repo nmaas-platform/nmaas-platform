@@ -71,6 +71,11 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
+    public List<AppDeployment> loadByState(AppDeploymentState state) {
+        return repository.findByState(state);
+    }
+
+    @Override
     public AppDeploymentOwner loadOwner(Identifier deploymentId) {
         User owner = userRepository.findByUsername(load(deploymentId).getOwner())
                 .orElseThrow(() -> new InvalidDeploymentIdException("Owner for " + deploymentId + " not found in the repository."));
@@ -125,6 +130,12 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     @Override
     public String loadDomainName(Identifier deploymentId) {
         return repository.getDomainNameByDeploymentId(deploymentId)
+                .orElseThrow(() -> new InvalidDeploymentIdException(deploymentNotFoundMessage(deploymentId)));
+    }
+
+    @Override
+    public Identifier loadApplicationId(Identifier deploymentId) {
+        return repository.getApplicationIdByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentNotFoundMessage(deploymentId)));
     }
 

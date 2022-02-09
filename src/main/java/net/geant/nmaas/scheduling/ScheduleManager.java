@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
+import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -16,11 +17,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.TimeZone;
 
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 @Component
 @RequiredArgsConstructor
@@ -29,7 +34,7 @@ public class ScheduleManager {
 
     private final Scheduler scheduler;
 
-    public JobDescriptor createJob(MonitorService service, MonitorEntryView monitorEntryView){
+    public void createJob(MonitorService service, MonitorEntryView monitorEntryView) {
         JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
         try{
@@ -42,10 +47,26 @@ public class ScheduleManager {
                 log.info("Scheduling job: " + jobDescriptor.getServiceName().toString());
                 scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), false);
             }
-        } catch (SchedulerException e){
+        } catch (SchedulerException e) {
             throw new IllegalStateException(e.getMessage());
         }
-        return jobDescriptor;
+    }
+
+    public void createJob(Job job, String jobName, String jobCron) {
+        try {
+            JobDetail jobDetail = newJob(job.getClass()).withIdentity(jobName).build();
+            Trigger trigger = newTrigger()
+                    .withIdentity(jobName)
+                    .withSchedule(cronSchedule(jobCron)
+                            .withMisfireHandlingInstructionFireAndProceed()
+                            .inTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault())))
+                    .usingJobData("cron", jobCron)
+                    .build();
+            log.info("Scheduling job: {}", jobName);
+            scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), true);
+        } catch (SchedulerException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
     }
 
     public void updateJob(MonitorEntryView monitorEntryView){
