@@ -86,7 +86,7 @@ public class AppUpgradeTask {
                     .previousApplicationId(event.getPreviousApplicationId())
                     .targetApplicationId(event.getTargetApplicationId())
                     .mode(event.getAppUpgradeMode())
-                    .status(AppUpgradeStatus.SUCCESS)
+                    .status(AppUpgradeStatus.FAILURE)
                     .timestamp(new Date()).build());
         } catch(Exception ex) {
             long timestamp = System.currentTimeMillis();
