@@ -94,7 +94,7 @@ public class AppUpgradeTaskTest {
         assertThat(result.getDeploymentId()).isEqualTo(deploymentId);
         assertThat(result.getPreviousApplicationId()).isEqualTo(previousApplicationId);
         assertThat(result.getTargetApplicationId()).isEqualTo(applicationId);
-        assertThat(result.getStatus()).isEqualTo(AppUpgradeStatus.SUCCESS);
+        assertThat(result.getStatus()).isEqualTo(AppUpgradeStatus.FAILURE);
         assertThat(result.getMode()).isEqualTo(AppUpgradeMode.MANUAL);
     }
 
