@@ -3,12 +3,14 @@ package net.geant.nmaas.orchestration.tasks.app;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.AppUpgradeMode;
+import net.geant.nmaas.orchestration.AppUpgradeStatus;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUpgradeHistory;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -75,8 +77,25 @@ public class AppUpgradeTaskTest {
         assertThat(result.getDeploymentId()).isEqualTo(deploymentId);
         assertThat(result.getPreviousApplicationId()).isEqualTo(previousApplicationId);
         assertThat(result.getTargetApplicationId()).isEqualTo(applicationId);
+        assertThat(result.getStatus()).isEqualTo(AppUpgradeStatus.SUCCESS);
         assertThat(result.getMode()).isEqualTo(AppUpgradeMode.MANUAL);
         verify(instanceService).updateApplication(instance, application);
+    }
+
+    @Test
+    void shouldTriggerPostFailedUpgradeProcess() {
+        Identifier previousApplicationId = Identifier.newInstance(5L);
+
+        task.trigger(new AppUpgradeFailedEvent(this, deploymentId, previousApplicationId, applicationId, AppUpgradeMode.MANUAL));
+
+        ArgumentCaptor<AppUpgradeHistory> appUpgradeHistoryArgumentCaptor = ArgumentCaptor.forClass(AppUpgradeHistory.class);
+        verify(appUpgradeHistoryRepository).save(appUpgradeHistoryArgumentCaptor.capture());
+        AppUpgradeHistory result = appUpgradeHistoryArgumentCaptor.getValue();
+        assertThat(result.getDeploymentId()).isEqualTo(deploymentId);
+        assertThat(result.getPreviousApplicationId()).isEqualTo(previousApplicationId);
+        assertThat(result.getTargetApplicationId()).isEqualTo(applicationId);
+        assertThat(result.getStatus()).isEqualTo(AppUpgradeStatus.SUCCESS);
+        assertThat(result.getMode()).isEqualTo(AppUpgradeMode.MANUAL);
     }
 
 }

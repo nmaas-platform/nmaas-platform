@@ -8,6 +8,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppUpgradeHistory;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -68,6 +69,25 @@ public class AppUpgradeTask {
                     .status(AppUpgradeStatus.SUCCESS)
                     .timestamp(new Date()).build());
             applicationInstanceService.updateApplication(instance, application);
+        } catch(Exception ex) {
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
+    }
+
+    @EventListener
+    @Loggable(LogLevel.INFO)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void trigger(AppUpgradeFailedEvent event) {
+        try {
+            final Identifier deploymentId = event.getRelatedTo();
+            appUpgradeHistoryRepository.save(AppUpgradeHistory.builder()
+                    .deploymentId(deploymentId)
+                    .previousApplicationId(event.getPreviousApplicationId())
+                    .targetApplicationId(event.getTargetApplicationId())
+                    .mode(event.getAppUpgradeMode())
+                    .status(AppUpgradeStatus.SUCCESS)
+                    .timestamp(new Date()).build());
         } catch(Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
