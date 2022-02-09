@@ -48,10 +48,9 @@ public class MonitorController {
     }
 
     private MonitorService getMonitorService(String serviceName) {
-        MonitorService service = monitorServices.stream().filter(s->s.getServiceType().getName().equals(serviceName.toUpperCase()))
+        return monitorServices.stream().filter(s->s.getServiceType().getName().equals(serviceName.toUpperCase()))
                 .findAny()
                 .orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", serviceName)));
-        return service;
     }
 
     @PutMapping

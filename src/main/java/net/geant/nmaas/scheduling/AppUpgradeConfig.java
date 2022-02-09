@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Configuration
 public class AppUpgradeConfig {
 
-    private final String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
+    private final static String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
 
     @Bean
     public InitializingBean insertDefaultAppUpgradeJob() {
