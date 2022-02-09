@@ -1,6 +1,5 @@
 package net.geant.nmaas.monitor;
 
-import java.util.Collections;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -24,23 +24,18 @@ import static org.mockito.Mockito.when;
 
 public class MonitorManagerTest {
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
+    private final MonitorRepository repository = mock(MonitorRepository.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
-    private MonitorRepository repository = mock(MonitorRepository.class);
-
-    private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+    private final MonitorEntryView monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN, true);
+    private final MonitorEntry monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN,true);
 
     private MonitorManager monitorManager;
-
-    private MonitorEntryView monitorEntryView;
-
-    private MonitorEntry monitorEntry;
 
     @BeforeEach
     public void setup(){
         this.monitorManager = new MonitorManager(repository, modelMapper, eventPublisher);
-        this.monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN, true);
-        this.monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN,true);
         when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(false);
         when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.of(monitorEntry));
     }

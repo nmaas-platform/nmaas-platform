@@ -10,15 +10,15 @@ import java.util.EnumMap;
 public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
 
     @Getter
-    private Identifier deploymentId;
+    private final Identifier deploymentId;
 
     @Getter
-    private NmServiceDeploymentState state;
+    private final NmServiceDeploymentState state;
 
-    private EnumMap<EventDetailType, String> details = new EnumMap<EventDetailType, String>(EventDetailType.class);
+    private final EnumMap<EventDetailType, String> details = new EnumMap<>(EventDetailType.class);
 
     @Getter
-    private String errorMessage;
+    private final String errorMessage;
 
     public NmServiceDeploymentStateChangeEvent(Object source, Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
         super(source);
@@ -40,11 +40,14 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
         return "NmServiceDeploymentStateChangeEvent{" +
                 "deploymentId=" + deploymentId +
                 ", state=" + state +
+                ", details=" + details +
+                ", errorMessage='" + errorMessage + '\'' +
                 '}';
     }
 
     public enum EventDetailType {
-        NEW_APPLICATION_ID
+        NEW_APPLICATION_ID,
+        UPGRADE_TRIGGER_TYPE
     }
 
 }

@@ -1,4 +1,4 @@
-package net.geant.nmaas.monitor.scheduling;
+package net.geant.nmaas.scheduling;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class JobDescriptor {
 
     private TimeFormat timeFormat;
 
-    Trigger buildTrigger(){
+    Trigger buildTrigger() {
         return new TriggerDescriptor(serviceName, checkInterval, timeFormat).buildTrigger();
     }
 }

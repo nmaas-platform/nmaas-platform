@@ -27,6 +27,8 @@ public interface AppDeploymentRepositoryManager {
 
     List<AppDeployment> loadAll();
 
+    List<AppDeployment> loadByState(AppDeploymentState state);
+
     AppDeploymentState loadState(Identifier deploymentId);
 
     List<AppDeploymentHistory> loadStateHistory(Identifier deploymentId);
@@ -36,6 +38,8 @@ public interface AppDeploymentRepositoryManager {
     String loadDomain(Identifier deploymentId);
 
     String loadDomainName(Identifier deploymentId);
+
+    Identifier loadApplicationId(Identifier deploymentId);
 
     void updateErrorMessage(Identifier deploymentId, String errorMessage);
 

@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
@@ -18,6 +18,7 @@ import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
@@ -33,15 +34,13 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
-@AllArgsConstructor
 public class AppDeploymentStateChangeManager {
 
-    private DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
-
-    private AppDeploymentMonitor deploymentMonitor;
-
-    private ApplicationEventPublisher eventPublisher;
+    private final DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
+    private final AppDeploymentMonitor deploymentMonitor;
+    private final ApplicationEventPublisher eventPublisher;
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -49,18 +48,32 @@ public class AppDeploymentStateChangeManager {
         try {
             AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
             deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
-            if(newDeploymentState.isInFailedState()){
+            if(newDeploymentState.isInFailedState()) {
                 log.warn("Application deployment failed state detected. Saving error message: " + event.getErrorMessage());
                 deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), event.getErrorMessage());
                 eventPublisher.publishEvent(
                         new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()), event.getErrorMessage()))
                 );
+                if(newDeploymentState == AppDeploymentState.APPLICATION_UPGRADE_FAILED) {
+                    eventPublisher.publishEvent(
+                            new AppUpgradeFailedEvent(this,
+                                    event.getDeploymentId(),
+                                    deploymentRepositoryManager.loadApplicationId(event.getDeploymentId()),
+                                    Identifier.newInstance(event.getDetail(EventDetailType.NEW_APPLICATION_ID)),
+                                    AppUpgradeMode.valueOf(event.getDetail(EventDetailType.UPGRADE_TRIGGER_TYPE)))
+                    );
+                }
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_UPGRADED) {
+                Identifier previousApplicationId = deploymentRepositoryManager.loadApplicationId(event.getDeploymentId());
                 Identifier newApplicationId = Identifier.newInstance(event.getDetail(EventDetailType.NEW_APPLICATION_ID));
                 deploymentRepositoryManager.updateApplicationId(event.getDeploymentId(), newApplicationId);
                 eventPublisher.publishEvent(
-                        new AppUpgradeCompleteEvent(this, event.getDeploymentId(), newApplicationId)
+                        new AppUpgradeCompleteEvent(this,
+                                event.getDeploymentId(),
+                                previousApplicationId,
+                                newApplicationId,
+                                AppUpgradeMode.valueOf(event.getDetail(EventDetailType.UPGRADE_TRIGGER_TYPE)))
                 );
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {

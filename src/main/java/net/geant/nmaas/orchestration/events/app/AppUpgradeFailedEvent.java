@@ -5,17 +5,17 @@ import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 
 @Getter
-public class AppUpgradeCompleteEvent extends AppBaseEvent {
+public class AppUpgradeFailedEvent extends AppBaseEvent {
 
     private final Identifier previousApplicationId;
     private final Identifier targetApplicationId;
     private final AppUpgradeMode appUpgradeMode;
 
-    public AppUpgradeCompleteEvent(Object source,
-                                   Identifier deploymentId,
-                                   Identifier previousApplicationId,
-                                   Identifier targetApplicationId,
-                                   AppUpgradeMode appUpgradeMode) {
+    public AppUpgradeFailedEvent(Object source,
+                                 Identifier deploymentId,
+                                 Identifier previousApplicationId,
+                                 Identifier targetApplicationId,
+                                 AppUpgradeMode appUpgradeMode) {
         super(source, deploymentId);
         this.previousApplicationId = previousApplicationId;
         this.targetApplicationId = targetApplicationId;

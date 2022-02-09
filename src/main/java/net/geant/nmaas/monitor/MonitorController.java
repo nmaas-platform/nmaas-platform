@@ -1,9 +1,9 @@
 package net.geant.nmaas.monitor;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
-import net.geant.nmaas.monitor.scheduling.ScheduleManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,25 +17,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/monitor")
 public class MonitorController {
 
-    private MonitorManager monitorManager;
+    private final List<MonitorService> monitorServices;
 
-    private ScheduleManager scheduleManager;
+    private final MonitorManager monitorManager;
 
-    @Autowired
-    public MonitorController(MonitorManager monitorManager, ScheduleManager scheduleManager){
-        this.monitorManager = monitorManager;
-        this.scheduleManager = scheduleManager;
-    }
+    private final ScheduleManager scheduleManager;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
-        this.scheduleManager.createJob(monitorEntryView);
+    public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
+        MonitorService service = getMonitorService(monitorEntryView.getServiceName().getName());
+        this.scheduleManager.createJob(service, monitorEntryView);
         this.monitorManager.createMonitorEntry(monitorEntryView);
     }
 
@@ -43,13 +43,21 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void executeJobNow(@PathVariable String serviceName){
-        scheduleManager.executeJob(serviceName);
+        MonitorService service = getMonitorService(serviceName);
+        service.checkStatus();
+    }
+
+    private MonitorService getMonitorService(String serviceName) {
+        MonitorService service = monitorServices.stream().filter(s->s.getServiceType().getName().equals(serviceName.toUpperCase()))
+                .findAny()
+                .orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", serviceName)));
+        return service;
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
+    public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView) {
         this.scheduleManager.updateJob(monitorEntryView);
         this.monitorManager.updateMonitorEntry(monitorEntryView);
     }

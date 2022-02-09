@@ -1,6 +1,7 @@
 package net.geant.nmaas.monitor;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
@@ -10,7 +11,6 @@ import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -21,21 +21,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 @Log4j2
 public class MonitorManager {
 
-    private MonitorRepository repository;
+    private final MonitorRepository repository;
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    private ApplicationEventPublisher eventPublisher;
-
-    @Autowired
-    public MonitorManager(MonitorRepository repository, ModelMapper modelMapper, ApplicationEventPublisher eventPublisher){
-        this.repository = repository;
-        this.modelMapper = modelMapper;
-        this.eventPublisher = eventPublisher;
-    }
+    private final ApplicationEventPublisher eventPublisher;
 
     public void createMonitorEntry(MonitorEntryView monitorEntryView){
         validateMonitorEntryCreation(monitorEntryView);

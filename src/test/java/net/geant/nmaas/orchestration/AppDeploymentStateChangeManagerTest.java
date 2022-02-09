@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -11,6 +12,7 @@ import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,13 +57,13 @@ public class AppDeploymentStateChangeManagerTest {
     private AppDeploymentStateChangeManager manager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
         manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
     }
 
     @Test
-    public void shouldNotTriggerAnyNewEventInNormalState() {
+    void shouldNotTriggerAnyNewEventInNormalState() {
         when(deployments.loadState(deploymentId)).thenReturn(MANAGEMENT_VPN_CONFIGURED);
         when(event.getState()).thenReturn(NmServiceDeploymentState.CONFIGURATION_INITIATED);
         ApplicationEvent newEvent = manager.notifyStateChange(event);
@@ -71,7 +73,7 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldTriggerNewEventInFailedState() {
+    void shouldTriggerNewEventInFailedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_CONFIGURATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(event.getState()).thenReturn(NmServiceDeploymentState.CONFIGURATION_FAILED);
@@ -84,7 +86,7 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldTriggerNotificationEvent() {
+    void shouldTriggerNotificationEvent() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
@@ -108,7 +110,7 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldTriggerActionEventIfRequired() {
+    void shouldTriggerActionEventIfRequired() {
         Optional<ApplicationEvent> newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_CONFIGURATION_IN_PROGRESS);
         assertThat(newEvent.isPresent(), is(false));
         newEvent = manager.triggerActionEventIfRequired(deploymentId, REQUEST_VALIDATED);
@@ -141,14 +143,28 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldProcessApplicationUpgradedState() {
+    void shouldProcessApplicationUpgradedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_UPGRADE_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(event.getState()).thenReturn(NmServiceDeploymentState.UPGRADED);
-        when(event.getDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
+        when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
+        when(event.getDetail(EventDetailType.UPGRADE_TRIGGER_TYPE)).thenReturn(AppUpgradeMode.MANUAL.toString());
         manager.notifyStateChange(event);
         verify(deployments).updateApplicationId(deploymentId, Identifier.newInstance(10L));
         verify(publisher).publishEvent(any(AppUpgradeCompleteEvent.class));
+    }
+
+    @Test
+    void shouldProcessApplicationUpgradeFailedState() {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_UPGRADE_IN_PROGRESS);
+        when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
+        when(event.getState()).thenReturn(NmServiceDeploymentState.UPGRADE_FAILED);
+        when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
+        when(event.getDetail(EventDetailType.UPGRADE_TRIGGER_TYPE)).thenReturn(AppUpgradeMode.MANUAL.toString());
+        when(event.getErrorMessage()).thenReturn("example error message");
+        manager.notifyStateChange(event);
+        verify(publisher).publishEvent(any(AppUpgradeFailedEvent.class));
     }
 
 }
