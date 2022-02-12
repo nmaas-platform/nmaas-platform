@@ -10,6 +10,7 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -46,8 +47,7 @@ public class AppUpgradeTask {
                     deploymentId,
                     application.getAppDeploymentSpec().getKubernetesTemplate());
         } catch(Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            logGenericError(ex);
         }
     }
 
@@ -60,7 +60,7 @@ public class AppUpgradeTask {
             final Application application = applicationService.findApplication(event.getTargetApplicationId().longValue()).orElseThrow(() ->
                     new InvalidApplicationIdException("Application with id " + event.getTargetApplicationId() + " does not exist"));
             final AppInstance instance = applicationInstanceService.findByInternalId(deploymentId).orElseThrow(() ->
-                    new InvalidApplicationIdException("Application instance for deployment " + deploymentId + " does not exist"));
+                    new InvalidDeploymentIdException("Application instance for deployment " + deploymentId + " does not exist"));
             appUpgradeHistoryRepository.save(AppUpgradeHistory.builder()
                     .deploymentId(deploymentId)
                     .previousApplicationId(event.getPreviousApplicationId())
@@ -70,8 +70,7 @@ public class AppUpgradeTask {
                     .timestamp(new Date()).build());
             applicationInstanceService.updateApplication(instance, application);
         } catch(Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            logGenericError(ex);
         }
     }
 
@@ -89,9 +88,12 @@ public class AppUpgradeTask {
                     .status(AppUpgradeStatus.FAILURE)
                     .timestamp(new Date()).build());
         } catch(Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            logGenericError(ex);
         }
+    }
+
+    private void logGenericError(Exception ex) {
+        log.error("Error reported at " + System.currentTimeMillis(), ex);
     }
 
 }

@@ -154,6 +154,8 @@ public class KubernetesManager implements ContainerOrchestrator {
                 case RELEASE_NAME:
                     additionalParameters.put(v, deploymentParameters.get(ParameterType.RELEASE_NAME.name()));
                     break;
+                default:
+                    throw new IllegalArgumentException();
             }
         });
         return additionalParameters;
