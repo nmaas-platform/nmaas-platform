@@ -8,12 +8,13 @@ import org.hibernate.validator.constraints.URL;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Embeddable
-public class HelmChartRepositoryEmbeddable {
+public class HelmChartRepositoryEmbeddable implements Serializable {
 
     @Column(length = 14)
     @Pattern(regexp = "[A-Za-z-]{1,14}")
