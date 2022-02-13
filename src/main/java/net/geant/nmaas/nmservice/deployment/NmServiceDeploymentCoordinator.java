@@ -14,6 +14,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetes
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -173,11 +174,13 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    public void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate) {
+    public void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, KubernetesTemplate kubernetesTemplate) {
         try {
             notifyStateChangeListeners(deploymentId, UPGRADE_INITIATED);
             orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
-            notifyStateChangeListeners(deploymentId, UPGRADED);
+            NmServiceDeploymentStateChangeEvent event = new NmServiceDeploymentStateChangeEvent(this, deploymentId, UPGRADED, "");
+            event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.UPGRADE_TRIGGER_TYPE, mode.name());
+            applicationEventPublisher.publishEvent(event);
         } catch (CouldNotUpgradeKubernetesServiceException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, UPGRADE_FAILED, e.getMessage());

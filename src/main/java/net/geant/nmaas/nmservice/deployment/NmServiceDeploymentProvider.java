@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetes
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -83,9 +84,10 @@ public interface NmServiceDeploymentProvider {
      * Coordinates service upgrade to specified version (delegates tasks to attached {@link ContainerOrchestrator}).
      *
      * @param deploymentId unique identifier of service deployment
+     * @param mode application upgrade mode
      * @param kubernetesTemplate Helm chart information of the desired application version
      * @throws CouldNotUpgradeKubernetesServiceException if service couldn't be upgraded for some reason
      */
-    void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate);
+    void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, KubernetesTemplate kubernetesTemplate);
 
 }
