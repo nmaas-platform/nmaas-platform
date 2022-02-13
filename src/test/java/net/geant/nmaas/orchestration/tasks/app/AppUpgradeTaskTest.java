@@ -59,7 +59,7 @@ public class AppUpgradeTaskTest {
 
         task.trigger(new AppUpgradeActionEvent(this, deploymentId, applicationId, AppUpgradeMode.MANUAL));
 
-        verify(deploymentProvider, times(1)).upgradeKubernetesService(deploymentId, AppUpgradeMode.MANUAL, kubernetesTemplate);
+        verify(deploymentProvider, times(1)).upgradeKubernetesService(deploymentId, AppUpgradeMode.MANUAL, Identifier.newInstance(10L), kubernetesTemplate);
     }
 
     @Test

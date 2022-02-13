@@ -46,6 +46,7 @@ public class AppUpgradeTask {
             serviceDeployment.upgradeKubernetesService(
                     deploymentId,
                     event.getAppUpgradeMode(),
+                    event.getApplicationId(),
                     application.getAppDeploymentSpec().getKubernetesTemplate());
         } catch(Exception ex) {
             logGenericError(ex);

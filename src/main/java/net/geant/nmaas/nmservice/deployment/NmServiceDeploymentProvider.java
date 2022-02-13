@@ -85,9 +85,10 @@ public interface NmServiceDeploymentProvider {
      *
      * @param deploymentId unique identifier of service deployment
      * @param mode application upgrade mode
+     * @param targetApplicationId target application identifier
      * @param kubernetesTemplate Helm chart information of the desired application version
      * @throws CouldNotUpgradeKubernetesServiceException if service couldn't be upgraded for some reason
      */
-    void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, KubernetesTemplate kubernetesTemplate);
+    void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate);
 
 }

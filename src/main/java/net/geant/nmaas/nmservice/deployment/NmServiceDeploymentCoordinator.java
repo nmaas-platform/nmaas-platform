@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -20,7 +21,6 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -51,23 +51,17 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
  * delegates particular tasks to currently used {@link ContainerOrchestrator}.
  */
 @Component
+@RequiredArgsConstructor
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
 
-    private ContainerOrchestrator orchestrator;
-
-    private ApplicationEventPublisher applicationEventPublisher;
+    private final ContainerOrchestrator orchestrator;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${nmaas.service.deployment.check.interval}")
     int serviceDeploymentCheckInternal;
 
     @Value("${nmaas.service.deployment.max.duration}")
     int serviceDeploymentCheckMaxWaitTime;
-
-    @Autowired
-    public NmServiceDeploymentCoordinator(ContainerOrchestrator orchestrator, ApplicationEventPublisher applicationEventPublisher) {
-        this.orchestrator = orchestrator;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -174,12 +168,13 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    public void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, KubernetesTemplate kubernetesTemplate) {
+    public void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate) {
         try {
             notifyStateChangeListeners(deploymentId, UPGRADE_INITIATED);
             orchestrator.upgradeKubernetesService(deploymentId, kubernetesTemplate);
             NmServiceDeploymentStateChangeEvent event = new NmServiceDeploymentStateChangeEvent(this, deploymentId, UPGRADED, "");
             event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.UPGRADE_TRIGGER_TYPE, mode.name());
+            event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.NEW_APPLICATION_ID, targetApplicationId.value());
             applicationEventPublisher.publishEvent(event);
         } catch (CouldNotUpgradeKubernetesServiceException
                 | ContainerOrchestratorInternalErrorException e) {
