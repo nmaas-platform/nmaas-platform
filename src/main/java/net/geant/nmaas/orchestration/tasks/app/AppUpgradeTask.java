@@ -45,6 +45,7 @@ public class AppUpgradeTask {
                     new InvalidApplicationIdException("Application with id " + event.getApplicationId() + " does not exist"));
             serviceDeployment.upgradeKubernetesService(
                     deploymentId,
+                    event.getAppUpgradeMode(),
                     application.getAppDeploymentSpec().getKubernetesTemplate());
         } catch(Exception ex) {
             logGenericError(ex);

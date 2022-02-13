@@ -24,7 +24,6 @@ import org.mockito.ArgumentCaptor;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,13 +41,15 @@ public class AppUpgradeTaskTest {
 
     private final Identifier deploymentId = Identifier.newInstance("deploymentId");
     private final Identifier applicationId = Identifier.newInstance(10L);
+    private final KubernetesTemplate kubernetesTemplate = new KubernetesTemplate("chartName", "chartVersion", null);
+
     private Application application;
 
     @BeforeEach
     void setup() {
         task = new AppUpgradeTask(deploymentProvider, applicationService, instanceService, appUpgradeHistoryRepository);
         application = new Application(1L, "appName", "appVersion");
-        application.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(new KubernetesTemplate()).build());
+        application.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(kubernetesTemplate).build());
     }
 
     @Test
@@ -58,7 +59,7 @@ public class AppUpgradeTaskTest {
 
         task.trigger(new AppUpgradeActionEvent(this, deploymentId, applicationId, AppUpgradeMode.MANUAL));
 
-        verify(deploymentProvider, times(1)).upgradeKubernetesService(any(Identifier.class), any(KubernetesTemplate.class));
+        verify(deploymentProvider, times(1)).upgradeKubernetesService(deploymentId, AppUpgradeMode.MANUAL, kubernetesTemplate);
     }
 
     @Test
