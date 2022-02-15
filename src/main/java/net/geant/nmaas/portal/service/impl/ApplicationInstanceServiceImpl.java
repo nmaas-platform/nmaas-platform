@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
+import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -36,19 +38,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class ApplicationInstanceServiceImpl implements ApplicationInstanceService {
 
 	private final AppInstanceRepository appInstanceRepo;
-	
 	private final ApplicationService applications;
-	
 	private final DomainService domains;
-	
 	private final UserService users;
-	
 	private final ApplicationSubscriptionService applicationSubscriptions;
-
 	private final DomainServiceImpl.CodenameValidator validator;
-
 	private final ApplicationStatePerDomainService applicationStatePerDomainService;
-
 	private final ApplicationInstanceUpgradeService instanceUpgradeService;
 
 	@Autowired
@@ -122,24 +117,28 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void updateApplication(AppInstance appInstance, Application application) {
-		checkParam(appInstance);
-		checkParam(application);
-		appInstance.setPreviousApplicationId(appInstance.getApplication().getId());
-		appInstance.setApplication(application);
-		appInstanceRepo.save(appInstance);
-	}
-
-	@Override
-	public Optional<AppInstance> find(Long appInstanceId) {
-		checkParam(appInstanceId);
-		return appInstanceRepo.findById(appInstanceId);
+	public void updateApplication(Identifier internalId, Long applicationId) {
+		checkParam(internalId);
+		checkParam(applicationId);
+		final AppInstance instance = findByInternalId(internalId).orElseThrow(() ->
+				new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
+		final Application application = applications.findApplication(applicationId).orElseThrow(() ->
+				new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
+		instance.setPreviousApplicationId(instance.getApplication().getId());
+		instance.setApplication(application);
+		appInstanceRepo.save(instance);
 	}
 
 	@Override
 	public Optional<AppInstance> findByInternalId(Identifier deploymentId) {
 		checkParam(deploymentId);
 		return appInstanceRepo.findByInternalId(deploymentId);
+	}
+
+	@Override
+	public Optional<AppInstance> find(Long appInstanceId) {
+		checkParam(appInstanceId);
+		return appInstanceRepo.findById(appInstanceId);
 	}
 
 	@Override
