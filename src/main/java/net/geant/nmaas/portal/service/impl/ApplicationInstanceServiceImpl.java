@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -119,6 +121,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateApplication(AppInstance appInstance, Application application) {
 		checkParam(appInstance);
 		checkParam(application);
