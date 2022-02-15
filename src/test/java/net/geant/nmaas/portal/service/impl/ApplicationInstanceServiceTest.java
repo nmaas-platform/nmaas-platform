@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
@@ -236,31 +237,31 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void updateApplicationMethodShouldThrowIllegalArgumentExceptionDueToMissingApplicationInstanceId() {
-        Application newApplication = new Application(40L, "test", "newtestversion");
         assertThrows(IllegalArgumentException.class, () -> {
-            applicationInstanceService.updateApplication(null, newApplication);
+            applicationInstanceService.updateApplication(null, 40L);
         });
     }
 
     @Test
     void updateApplicationMethodShouldThrowIllegalArgumentExceptionDueToMissingApplication() {
-        Domain domain = new Domain(10L, "test", "test");
-        Application application = new Application(20L,"test","testversion");
-        AppInstance appInstance = new AppInstance(application, domain, "test", true);
-        appInstance.setId(30L);
         assertThrows(IllegalArgumentException.class, () -> {
-            applicationInstanceService.updateApplication(appInstance, null);
+            applicationInstanceService.updateApplication(Identifier.newInstance("deploymentId"), null);
         });
     }
 
     @Test
     void updateApplicationMethodShouldSuccessfulUpdateApplicationInstance() {
+        Identifier deploymentId = Identifier.newInstance("deploymentId");
         Domain domain = new Domain(10L, "test", "test");
         Application application = new Application(20L,"test","testversion");
         AppInstance appInstance = new AppInstance(application, domain, "test", true);
         appInstance.setId(30L);
+        appInstance.setInternalId(deploymentId);
         Application newApplication = new Application(40L, "test", "newtestversion");
-        applicationInstanceService.updateApplication(appInstance, newApplication);
+        when(appInstanceRepo.findByInternalId(deploymentId)).thenReturn(Optional.of(appInstance));
+        when(applications.findApplication(newApplication.getId())).thenReturn(Optional.of(newApplication));
+
+        applicationInstanceService.updateApplication(deploymentId, newApplication.getId());
 
         ArgumentCaptor<AppInstance> appInstanceArgumentCaptor = ArgumentCaptor.forClass(AppInstance.class);
         verify(appInstanceRepo).save(appInstanceArgumentCaptor.capture());

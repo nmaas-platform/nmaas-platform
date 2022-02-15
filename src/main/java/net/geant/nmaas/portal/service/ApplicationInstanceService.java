@@ -21,7 +21,7 @@ public interface ApplicationInstanceService {
 	void delete(Long appInstanceId);
 
 	void update(AppInstance appInstance);
-	void updateApplication(AppInstance appInstance, Application application);
+	void updateApplication(Identifier internalId, Long applicationId);
 	
 	Optional<AppInstance> find(Long appInstanceId);
     Optional<AppInstance> findByInternalId(Identifier deploymentId);

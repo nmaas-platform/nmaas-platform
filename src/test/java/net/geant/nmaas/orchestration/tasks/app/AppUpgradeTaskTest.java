@@ -80,7 +80,7 @@ public class AppUpgradeTaskTest {
         assertThat(result.getTargetApplicationId()).isEqualTo(applicationId);
         assertThat(result.getStatus()).isEqualTo(AppUpgradeStatus.SUCCESS);
         assertThat(result.getMode()).isEqualTo(AppUpgradeMode.MANUAL);
-        verify(instanceService).updateApplication(instance, application);
+        verify(instanceService).updateApplication(deploymentId, applicationId.longValue());
     }
 
     @Test

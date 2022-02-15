@@ -10,9 +10,7 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
@@ -59,10 +57,7 @@ public class AppUpgradeTask {
     public void trigger(AppUpgradeCompleteEvent event) {
         try {
             final Identifier deploymentId = event.getRelatedTo();
-            final Application application = applicationService.findApplication(event.getTargetApplicationId().longValue()).orElseThrow(() ->
-                    new InvalidApplicationIdException("Application with id " + event.getTargetApplicationId() + " does not exist"));
-            final AppInstance instance = applicationInstanceService.findByInternalId(deploymentId).orElseThrow(() ->
-                    new InvalidDeploymentIdException("Application instance for deployment " + deploymentId + " does not exist"));
+            applicationInstanceService.updateApplication(deploymentId, event.getTargetApplicationId().longValue());
             appUpgradeHistoryRepository.save(AppUpgradeHistory.builder()
                     .deploymentId(deploymentId)
                     .previousApplicationId(event.getPreviousApplicationId())
@@ -70,7 +65,6 @@ public class AppUpgradeTask {
                     .mode(event.getAppUpgradeMode())
                     .status(AppUpgradeStatus.SUCCESS)
                     .timestamp(new Date()).build());
-            applicationInstanceService.updateApplication(instance, application);
         } catch(Exception ex) {
             logGenericError(ex);
         }
