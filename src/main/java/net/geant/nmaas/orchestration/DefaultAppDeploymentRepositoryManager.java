@@ -58,6 +58,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateApplicationId(Identifier deploymentId, Identifier applicationId) {
         AppDeployment appDeployment = load(deploymentId);
         appDeployment.setApplicationId(applicationId);
