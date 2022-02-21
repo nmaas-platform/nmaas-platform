@@ -57,12 +57,14 @@ public class PersistentConfig {
 			@Transactional(propagation=Propagation.REQUIRES_NEW)
 			public Optional<User> getCurrentAuditor() {
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-				if(auth == null)
+				if(auth == null) {
 					throw new UsernameNotFoundException("Authentication object not found.");
+				}
 				
 				String username = auth.getName();
-				if(username == null)
+				if(username == null) {
 					throw new UsernameNotFoundException("Username is null.");
+				}
 
 				User user = userRepo.findByUsername(username).orElseThrow(()
 						-> new UsernameNotFoundException("User " + username + " not found."));
