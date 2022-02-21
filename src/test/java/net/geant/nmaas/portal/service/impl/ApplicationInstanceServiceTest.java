@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -263,10 +264,9 @@ public class ApplicationInstanceServiceTest {
 
         applicationInstanceService.updateApplication(deploymentId, newApplication.getId());
 
-        ArgumentCaptor<AppInstance> appInstanceArgumentCaptor = ArgumentCaptor.forClass(AppInstance.class);
-        verify(appInstanceRepo).save(appInstanceArgumentCaptor.capture());
-        assertThat(appInstanceArgumentCaptor.getValue().getApplication().getId()).isEqualTo(40L);
-        assertThat(appInstanceArgumentCaptor.getValue().getPreviousApplicationId()).isEqualTo(20L);
+        ArgumentCaptor<Application> applicationArgumentCaptor = ArgumentCaptor.forClass(Application.class);
+        verify(appInstanceRepo).updateApplication(eq(30L), eq(20L), applicationArgumentCaptor.capture());
+        assertThat(applicationArgumentCaptor.getValue().getId()).isEqualTo(40L);
     }
 
     @Test

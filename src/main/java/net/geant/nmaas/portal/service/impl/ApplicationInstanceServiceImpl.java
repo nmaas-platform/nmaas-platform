@@ -124,9 +124,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 				new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
 		final Application application = applications.findApplication(applicationId).orElseThrow(() ->
 				new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
-		instance.setPreviousApplicationId(instance.getApplication().getId());
-		instance.setApplication(application);
-		appInstanceRepo.save(instance);
+		appInstanceRepo.updateApplication(instance.getId(), instance.getApplication().getId(), application);
 	}
 
 	@Override
