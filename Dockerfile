@@ -6,7 +6,7 @@ WORKDIR /build/
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test -x integrationTest
 
-FROM openjdk:11-jre-alpine
+FROM adoptopenjdk/openjdk11:jre-11.0.14.1_1-alpine
 MAINTAINER nmaas@lists.geant.org
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
