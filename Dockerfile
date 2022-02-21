@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-slim as builder
+FROM openjdk:11-jdk-slim as builder
 
 COPY . /build/
 WORKDIR /build/
@@ -6,7 +6,7 @@ WORKDIR /build/
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test -x integrationTest
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:11-jre-alpine
 MAINTAINER nmaas@lists.geant.org
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
