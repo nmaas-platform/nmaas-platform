@@ -37,6 +37,7 @@ public class AppUpgradeTriggerService implements Job {
                 .filter(AppInstance::isAutoUpgradesEnabled)
                 .filter(instance -> applicationInstanceService.checkUpgradePossible(instance.getApplication().getId()))
                 .forEach(instance -> {
+                    log.debug("Processing application instance: {}/{}", instance.getId(), instance.getInternalId());
                     AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getApplication().getId());
                     if (Objects.nonNull(upgradeInfo)) {
                         logUpgradeTriggerDetails(instance);

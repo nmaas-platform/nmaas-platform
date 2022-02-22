@@ -7,20 +7,17 @@ Platform exposes a REST API consumed by the NMaaS Portal GUI.
 
 ### Technologies
 ---
- * Java 8
+ * Java 11
  * Spring 5
- * Spring Boot (2.4.5)
- * freemarker (2.3.30)
- * Google Guava (30.0)
- * Log4j2 (2.11.1)
- * Lombok (1.18.2)
- * Gitlab4j (4.14.27)
+ * Spring Boot (2.6.3)
+ * freemarker (2.3.31)
+ * Gitlab4j (4.17.0)
  * Flyway (5.2.0)
  * Kubernetes client from fabric8 (4.10.2)
 
 ### Prerequisites
 ---
-  + Install Java 8 jdk
+  + Install Java 11 jdk
 
 ### Running NMaaS Platform locally
 ---

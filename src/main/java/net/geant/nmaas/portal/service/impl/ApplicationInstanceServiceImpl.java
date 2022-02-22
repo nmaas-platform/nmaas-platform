@@ -20,6 +20,8 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -128,6 +130,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	@Loggable(LogLevel.DEBUG)
 	public Optional<AppInstance> findByInternalId(Identifier deploymentId) {
 		checkParam(deploymentId);
 		return appInstanceRepo.findByInternalId(deploymentId);
@@ -227,6 +230,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	@Loggable(LogLevel.DEBUG)
 	public boolean checkUpgradePossible(Long appInstanceId) {
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
 		if (appInstance.isPresent()) {
@@ -238,6 +242,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	@Loggable(LogLevel.DEBUG)
 	public AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
 		if (appInstance.isPresent()) {
