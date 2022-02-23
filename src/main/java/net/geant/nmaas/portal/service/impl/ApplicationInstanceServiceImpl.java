@@ -230,6 +230,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	@Transactional
 	@Loggable(LogLevel.DEBUG)
 	public boolean checkUpgradePossible(Long appInstanceId) {
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
@@ -242,6 +243,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	@Transactional
 	@Loggable(LogLevel.DEBUG)
 	public AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
