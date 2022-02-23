@@ -2,7 +2,7 @@ package net.geant.nmaas.scheduling;
 
 import com.google.common.base.Strings;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.orchestration.AppUpgradeTriggerService;
+import net.geant.nmaas.orchestration.AppUpgradeTriggerJob;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ public class AppUpgradeConfig {
         return new InitializingBean() {
 
             @Autowired
-            private AppUpgradeTriggerService appUpgradeTriggerService;
+            private AppUpgradeTriggerJob appUpgradeTriggerJob;
 
             @Autowired
             private ScheduleManager scheduleManager;
@@ -37,7 +37,7 @@ public class AppUpgradeConfig {
                     log.warn("Automatic application upgrades are disabled!");
                     return;
                 }
-                this.scheduleManager.createJob(appUpgradeTriggerService, APP_UPGRADE_JOB_NAME, appUpgradeCron);
+                this.scheduleManager.createJob(appUpgradeTriggerJob, APP_UPGRADE_JOB_NAME, appUpgradeCron);
             }
         };
     }
