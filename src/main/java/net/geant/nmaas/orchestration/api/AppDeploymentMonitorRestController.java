@@ -1,10 +1,15 @@
 package net.geant.nmaas.orchestration.api;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,32 +19,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
-import net.geant.nmaas.orchestration.AppLifecycleState;
-import net.geant.nmaas.orchestration.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Exposes REST API methods to retrieve information on application deployments.
  */
 @RestController
 @RequestMapping(value = "/api/orchestration/deployments")
+@RequiredArgsConstructor
 @Log4j2
 public class AppDeploymentMonitorRestController {
 
-    private AppDeploymentMonitor deploymentMonitor;
-
-    private ModelMapper modelMapper;
-
-    @Autowired
-    public AppDeploymentMonitorRestController(AppDeploymentMonitor deploymentMonitor, ModelMapper modelMapper) {
-        this.deploymentMonitor = deploymentMonitor;
-        this.modelMapper = modelMapper;
-    }
+    private final AppDeploymentMonitor deploymentMonitor;
+    private final ModelMapper modelMapper;
 
     /**
      * Retrieves information on all deployments including their identifier and current state.
@@ -63,8 +56,7 @@ public class AppDeploymentMonitorRestController {
      */
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping(value = "{deploymentId}/state")
-    public AppLifecycleState loadDeploymentState(
-            @PathVariable String deploymentId) {
+    public AppLifecycleState loadDeploymentState(@PathVariable String deploymentId) {
         return deploymentMonitor.state(Identifier.newInstance(deploymentId));
     }
 
@@ -78,8 +70,7 @@ public class AppDeploymentMonitorRestController {
      */
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping(value = "{deploymentId}/access")
-    public AppUiAccessDetails loadDeploymentUserAccessInfo(
-            @PathVariable String deploymentId) {
+    public AppUiAccessDetails loadDeploymentUserAccessInfo(@PathVariable String deploymentId) {
         return deploymentMonitor.userAccessDetails(Identifier.newInstance(deploymentId));
     }
 

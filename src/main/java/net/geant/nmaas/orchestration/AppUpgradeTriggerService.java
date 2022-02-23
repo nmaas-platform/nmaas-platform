@@ -35,10 +35,10 @@ public class AppUpgradeTriggerService implements Job {
                 .map(deployment -> applicationInstanceService.findByInternalId(deployment.getDeploymentId()).orElse(null))
                 .filter(Objects::nonNull)
                 .filter(AppInstance::isAutoUpgradesEnabled)
-                .filter(instance -> applicationInstanceService.checkUpgradePossible(instance.getApplication().getId()))
+                .filter(instance -> applicationInstanceService.checkUpgradePossible(instance.getId()))
                 .forEach(instance -> {
                     log.debug("Processing application instance: {}/{}", instance.getId(), instance.getInternalId());
-                    AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getApplication().getId());
+                    AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getId());
                     if (Objects.nonNull(upgradeInfo)) {
                         logUpgradeTriggerDetails(instance);
                         eventPublisher.publishEvent(getAppUpgradeActionEvent(instance, upgradeInfo));

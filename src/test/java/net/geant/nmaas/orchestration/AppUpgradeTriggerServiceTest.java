@@ -31,14 +31,17 @@ public class AppUpgradeTriggerServiceTest {
     private static final Long APPLICATION_ID1 = 1L;
     private static final Long APPLICATION_ID2 = 2L;
     private static final Long APPLICATION_ID3 = 3L;
+    private static final Long APPINSTANCE_ID1 = 11L;
+    private static final Long APPINSTANCE_ID2 = 12L;
+    private static final Long APPINSTANCE_ID3 = 13L;
 
     private static final Application APPLICATION1 = new Application(APPLICATION_ID1,"appname1", "appversion1");
     private static final Application APPLICATION2 = new Application(APPLICATION_ID2,"appname2", "appversion2");
     private static final Domain DOMAIN = new Domain("Domain", "domain");
 
-    private static final AppInstance APP_INSTANCE1 = new AppInstance(APPLICATION1, DOMAIN, "appinstance1", false);
-    private static final AppInstance APP_INSTANCE2 = new AppInstance(APPLICATION1, DOMAIN, "appinstance2", true);
-    private static final AppInstance APP_INSTANCE3 = new AppInstance(APPLICATION2, DOMAIN, "appinstance3", true);
+    private static final AppInstance APP_INSTANCE1 = new AppInstance(APPINSTANCE_ID1, APPLICATION1, DOMAIN, "appinstance1", false);
+    private static final AppInstance APP_INSTANCE2 = new AppInstance(APPINSTANCE_ID2, APPLICATION1, DOMAIN, "appinstance2", true);
+    private static final AppInstance APP_INSTANCE3 = new AppInstance(APPINSTANCE_ID3, APPLICATION2, DOMAIN, "appinstance3", true);
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
@@ -67,9 +70,11 @@ public class AppUpgradeTriggerServiceTest {
         when(applicationInstanceService.findByInternalId(DEPLOYMENT_ID2)).thenReturn(Optional.of(APP_INSTANCE1));
         when(applicationInstanceService.findByInternalId(DEPLOYMENT_ID3)).thenReturn(Optional.of(APP_INSTANCE2));
         when(applicationInstanceService.findByInternalId(DEPLOYMENT_ID4)).thenReturn(Optional.of(APP_INSTANCE3));
-        when(applicationInstanceService.checkUpgradePossible(APPLICATION_ID1)).thenReturn(Boolean.TRUE);
-        when(applicationInstanceService.checkUpgradePossible(APPLICATION_ID2)).thenReturn(Boolean.FALSE);
-        when(applicationInstanceService.obtainUpgradeInfo(APPLICATION_ID1)).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "", ""));
+        when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID1)).thenReturn(Boolean.TRUE);
+        when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID2)).thenReturn(Boolean.TRUE);
+        when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID3)).thenReturn(Boolean.FALSE);
+        when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE1.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "", ""));
+        when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE2.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "", ""));
 
         service.execute(null);
 

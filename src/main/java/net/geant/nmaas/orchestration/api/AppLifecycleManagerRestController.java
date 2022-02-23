@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.api;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
@@ -8,7 +9,6 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,20 +27,14 @@ import java.security.Principal;
 /**
  * Exposes REST API methods to manage application deployment lifecycle.
  */
-@Log4j2
 @RestController
 @RequestMapping(value = "/api/orchestration/deployments")
+@RequiredArgsConstructor
+@Log4j2
 public class AppLifecycleManagerRestController {
 
-    private AppLifecycleManager lifecycleManager;
-
-    private ApplicationRepository appRepo;
-
-    @Autowired
-    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager, ApplicationRepository appRepo) {
-        this.lifecycleManager = lifecycleManager;
-        this.appRepo = appRepo;
-    }
+    private final AppLifecycleManager lifecycleManager;
+    private final ApplicationRepository appRepo;
 
     /**
      * Requests new application deployment.
@@ -94,7 +88,6 @@ public class AppLifecycleManagerRestController {
      * @param configuration initial application configuration provided by the user
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
-
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PostMapping(value = "/{deploymentId}/update")
     @ResponseStatus(code = HttpStatus.OK)
@@ -112,8 +105,7 @@ public class AppLifecycleManagerRestController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @DeleteMapping(value = "/{deploymentId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public void removeApplication(
-            @PathVariable("deploymentId") String deploymentId) {
+    public void removeApplication(@PathVariable("deploymentId") String deploymentId) {
         lifecycleManager.removeApplication(Identifier.newInstance(deploymentId));
     }
 
