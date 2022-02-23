@@ -8,11 +8,9 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,14 +18,14 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class AppUpgradeTriggerService implements Job {
+public class AppUpgradeTriggerService {
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationInstanceService applicationInstanceService;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    @Transactional
+    public void trigger() {
         List<AppDeployment> runningDeployments = deploymentRepositoryManager.loadByState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         log.info("Launching automatic application upgrade process");
         log.info("Number of running deployments: {}", runningDeployments.size());

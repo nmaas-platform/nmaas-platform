@@ -76,7 +76,7 @@ public class AppUpgradeTriggerServiceTest {
         when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE1.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "", ""));
         when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE2.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "", ""));
 
-        service.execute(null);
+        service.trigger();
 
         ArgumentCaptor<AppUpgradeActionEvent> appUpgradeActionEventArgumentCaptor = ArgumentCaptor.forClass(AppUpgradeActionEvent.class);
         verify(applicationEventPublisher).publishEvent(appUpgradeActionEventArgumentCaptor.capture());
