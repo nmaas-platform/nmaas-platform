@@ -14,7 +14,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,7 +27,6 @@ public class AppUpgradeTriggerService implements Job {
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
-    @Transactional
     public void execute(JobExecutionContext context) throws JobExecutionException {
         List<AppDeployment> runningDeployments = deploymentRepositoryManager.loadByState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         log.info("Launching automatic application upgrade process");
