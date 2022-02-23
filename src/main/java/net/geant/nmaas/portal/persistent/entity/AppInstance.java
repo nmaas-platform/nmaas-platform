@@ -95,4 +95,10 @@ public class AppInstance extends DomainAware implements Serializable {
 	public void removeMember(User user) {
 		members.remove(user);
 	}
+
+	@Override
+	public String toString() {
+		return "AppInstance{id=" + id  + "}";
+	}
+
 }
