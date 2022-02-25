@@ -172,7 +172,7 @@
           ]
         },
         {
-          "name": "io.grpc.netty.shaded.io.grpc.netty",
+          "name": "io.grpc.netty.shaded.io.netty",
           "level": "info",
           "additivity": "false",
           "AppenderRef": [

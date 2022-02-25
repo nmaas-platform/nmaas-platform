@@ -615,7 +615,9 @@ public class AppInstanceController extends AppBaseController {
         }
 
         // add information about app instance upgrade possibility
-        ai.setUpgradePossible(instanceService.checkUpgradePossible(appInstance.getId()));
+        if (!List.of(AppInstanceState.DONE, AppInstanceState.REMOVED).contains(ai.getState())) {
+            ai.setUpgradePossible(instanceService.checkUpgradePossible(appInstance.getId()));
+        }
 
         return ai;
     }
@@ -691,7 +693,7 @@ public class AppInstanceController extends AppBaseController {
         }
 
         if(domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
-            isDomainGlobal =true;
+            isDomainGlobal = true;
         }
 
         return isSystemAdmin && isDomainGlobal;
