@@ -25,8 +25,10 @@ curl -X POST $API_URL/domains --header "Authorization: Bearer $TOKEN" --header "
 echo
 curl -X GET $API_URL/domains --header "Authorization: Bearer $TOKEN" | python -m json.tool
 echo
+
 echo Default mail template
 curl -X POST $API_URL/mail/templates/html --header "Authorization: Bearer $TOKEN" -F "file=@data/mails/html-template/template.html;type=text/html"
+
 echo
 echo Create mail templates
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/activateAccountMail.json
@@ -566,14 +568,12 @@ echo ---------------------
 echo Get second app
 curl -X GET $API_URL/apps/2/ --header "Authorization: Bearer $TOKEN"
 
-
-echo 
+echo
 echo ---------------------
 echo Get comments for first app
 curl -X GET $API_URL/apps/1/comments --header "Authorization: Bearer $TOKEN"
 
-
-echo 
+echo
 echo ---------------------
 echo Rate App1
 curl -X POST $API_URL/apps/1/rate/my/4 --header "Authorization: Bearer $TOKEN" 
@@ -585,8 +585,7 @@ curl -X GET $API_URL/apps/1/rate/my --header "Authorization: Bearer $TOKEN"
 echo 
 curl -X GET $API_URL/apps/1/rate/user/1 --header "Authorization: Bearer $TOKEN" 
 
-
-echo 
+echo
 echo Rate App2
 curl -X POST $API_URL/apps/2/rate/my/4 --header "Authorization: Bearer $TOKEN"
 
@@ -603,28 +602,20 @@ echo ---------------------
 echo Tags:
 curl -X GET $API_URL/tags --header "Authorization: Bearer $TOKEN" --header "Accept: application/json"
 
-echo 
+echo
 echo ---------------------
-echo By tag:
-curl -X GET $API_URL/tags/management --header "Authorization: Bearer $TOKEN" --header "Accept: application/json"
-
-echo 
-echo ---------------------
-echo Create app1 aubscription to Domain One
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub1.json
+echo Create app1 subscription to Domain One
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub1.json
 echo
-echo Create app2 aubscription to Domain One
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub2.json
+echo Create app2 subscription to Domain One
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub2.json
 echo
-echo Create app3 aubscription to Domain One
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub3.json
+echo Create app3 subscription to Domain One
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub3.json
 echo
-echo Create app3 aubscription to Domain Two
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub4.json
+echo Create app3 subscription to Domain Two
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub4.json
 echo
-echo Get all subscriptions
-curl -X GET $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Accept: application/json" | python -m json.tool
-
 
 echo
 echo ---------------------
@@ -640,20 +631,20 @@ echo
 echo Create german language content
 curl -X POST $API_URL/i18n/de?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
 
-
 echo
 echo ---------------------
-echo Create form type contact
+echo Insert form type contact
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/contact.json
 echo
-echo Create form type issue
+echo Insert form type issue
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/issue_report.json
 echo
-echo Create form type feature_request
+echo Insert form type feature request
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/feature_request.json
 echo
-echo Create form type access_request
+echo Insert form type access request
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/access_request.json
 echo
-echo Create form type domain_request
+echo Insert form type domain request
 curl -X PUT $API_URL/mail/type --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/form_type/domain_request.json
+echo

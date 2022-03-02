@@ -43,73 +43,57 @@ echo %token%
 echo ----------------------
 echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
-
-echo
-echo Domain1
-curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
 echo.
 
-echo
-echo Domain2
+echo.
+echo ---------------------
+echo.
+echo Add Domain One with codename domain1
+curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
+echo.
+echo Add Domain Two with codename domain2
 curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain2.json
 echo.
 
-echo
+echo.
 echo ---------------------
-echo
-echo Default mail template
+echo.
+echo Create common mail template
 curl -X POST %API_URL%/mail/templates/html --header "Authorization: Bearer %token%" -F "file=@data\mails\html-template\template.html;type=text/html"
 echo.
-echo
 echo Create mail templates
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\activateAccountMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appDeployedMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\blockAccountMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\externalServiceHealthCheckMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\passwordReset.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\registrationMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\contactFormMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appActiveMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appDeletedMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appNewMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appNotActiveMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appRejectedMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\newSsoLoginMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\broadcast.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appDeploymentFailedMail.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\issueReport.json
 echo.
-echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\newDomainRequest.json
 echo.
 
@@ -184,7 +168,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps/images\screenshots\prometheus\prometheus2.png;type=image/png" %API_URL%/apps/5/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps/images\screenshots\prometheus\prometheus3.png;type=image/png" %API_URL%/apps/5/screenshots
-echo.
 
 echo.
 echo App6
@@ -202,7 +185,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App6 v2
 curl -X POST %API_URL%/apps/version --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app06-grafana_v7.2.0.json
-echo.
 
 echo.
 echo App7
@@ -213,7 +195,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App7 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\bastion\bastion1.png;type=image/png" %API_URL%/apps/7/screenshots
-echo.
 
 echo.
 echo App8
@@ -232,7 +213,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-pwa\perfsonar-pwa4.png;type=image/png" %API_URL%/apps/8/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-pwa\perfsonar-pwa5.png;type=image/png" %API_URL%/apps/8/screenshots
-echo.
 
 echo.
 echo App9
@@ -247,7 +227,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked2.png;type=image/png" %API_URL%/apps/9/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked3.png;type=image/png" %API_URL%/apps/9/screenshots
-echo.
 
 echo.
 echo App10
@@ -264,7 +243,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\spa-inventory\spa-inventory3.png;type=image/png" %API_URL%/apps/10/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\spa-inventory\spa-inventory4.png;type=image/png" %API_URL%/apps/10/screenshots
-echo.
 
 echo.
 echo App11
@@ -279,7 +257,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\statping\statping2.png;type=image/png" %API_URL%/apps/11/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\statping\statping3.png;type=image/png" %API_URL%/apps/11/screenshots
-echo.
 
 echo.
 echo App12
@@ -290,7 +267,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App12 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-maddash\perfsonar-maddash1.png;type=image/png" %API_URL%/apps/12/screenshots
-echo.
 
 echo.
 echo App13
@@ -310,7 +286,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App13 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\debian-repository\debian-repository4.png;type=image/png" %API_URL%/apps/13/screenshots
-echo.
 
 echo.
 echo App14
@@ -324,7 +299,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App14 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\influxdb\influxdb2.png;type=image/png" %API_URL%/apps/14/screenshots
-echo.
 
 echo.
 echo App15
@@ -335,7 +309,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App15 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\jenkins\jenkins1.png;type=image/png" %API_URL%/apps/15/screenshots
-echo.
 
 echo.
 echo App16
@@ -349,7 +322,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App16 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\elasticstack\elk2.png;type=image/png" %API_URL%/apps/16/screenshots
-echo.
 
 echo.
 echo App17
@@ -360,7 +332,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App17 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-esmond\perfsonar-esmond1.png;type=image/png" %API_URL%/apps/17/screenshots
-echo.
 
 echo.
 echo App18
@@ -376,9 +347,8 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\wifimon\wifimon3.png;type=image/png" %API_URL%/apps/18/screenshots
 echo.
-echo App19 v2
+echo App18 v2
 curl -X POST %API_URL%/apps/version --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app18-wifimon_v1.4.0.json
-echo.
 
 echo.
 echo App19
@@ -389,7 +359,6 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 echo App19 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\perfsonar-centralmanagement\perfsonar-centralmanagement1.png;type=image/png" %API_URL%/apps/19/screenshots
-echo.
 
 echo.
 echo App20
@@ -410,7 +379,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga5.png;type=image/png" %API_URL%/apps/20/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\icinga\icinga6.png;type=image/png" %API_URL%/apps/20/screenshots
-echo.
 
 echo.
 echo App21
@@ -425,7 +393,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\victoria-metrics\victoria-metrics2.png;type=image/png" %API_URL%/apps/21/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\victoria-metrics\victoria-metrics3.png;type=image/png" %API_URL%/apps/21/screenshots
-echo.
 
 echo.
 echo App22
@@ -446,7 +413,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\synapse\synapse5.png;type=image/png" %API_URL%/apps/22/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\synapse\synapse6.png;type=image/png" %API_URL%/apps/22/screenshots
-echo.
 
 echo.
 echo App23
@@ -461,7 +427,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\routinator\routinator2.png;type=image/png" %API_URL%/apps/23/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\routinator\routinator3.png;type=image/png" %API_URL%/apps/23/screenshots
-echo.
 
 echo.
 echo App24
@@ -474,7 +439,6 @@ echo App24 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\codimd\codimd1.png;type=image/png" %API_URL%/apps/24/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\codimd\codimd2.png;type=image/png" %API_URL%/apps/24/screenshots
-echo.
 
 echo.
 echo App25
@@ -493,7 +457,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\webdav\webdav4.png;type=image/png" %API_URL%/apps/25/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\webdav\webdav5.png;type=image/png" %API_URL%/apps/25/screenshots
-echo.
 
 echo.
 echo App26
@@ -514,7 +477,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\uptime-kuma\uptime-kuma5.jpg;type=image/jpg" %API_URL%/apps/26/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\uptime-kuma\uptime-kuma6.jpg;type=image/jpg" %API_URL%/apps/26/screenshots
-echo.
 
 echo.
 echo App27
@@ -528,10 +490,9 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox2.png;type=image/png" %API_URL%/apps/27/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox3.png;type=image/png" %API_URL%/apps/26/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox3.png;type=image/png" %API_URL%/apps/27/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox4.png;type=image/png" %API_URL%/apps/26/screenshots
-echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox4.png;type=image/png" %API_URL%/apps/27/screenshots
 
 echo.
 echo App28
@@ -548,7 +509,6 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\zabbix\zabbix3.png;type=image/png" %API_URL%/apps/28/screenshots
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\zabbix\zabbix4.png;type=image/png" %API_URL%/apps/28/screenshots
-echo.
 
 echo.
 echo ---------------------
@@ -583,7 +543,6 @@ curl -X PATCH %API_URL%/apps/state/27 --header "Authorization: Bearer %token%" -
 curl -X PATCH %API_URL%/apps/state/28 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/29 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/30 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
-echo.
 
 echo.
 echo ---------------------
@@ -626,47 +585,47 @@ curl -X GET %API_URL%/tags --header "Authorization: Bearer %token%" --header "Ac
 echo.
 echo ---------------------
 echo Create app1 subscription to Domain One
-curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\subscriptions\sub1.json
-echo
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\subscriptions\sub1.json
+echo.
 echo Create app2 subscription to Domain One
-curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\subscriptions\sub2.json
-echo
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\subscriptions\sub2.json
+echo.
 echo Create app3 subscription to Domain One
-curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\subscriptions\sub3.json
-echo
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\subscriptions\sub3.json
+echo.
 echo Create app3 subscription to Domain Two
-curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\subscriptions\sub4.json
-echo
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\subscriptions\sub4.json
+echo.
 
 echo.
 echo ---------------------
 echo Create english language content
 curl -X POST %API_URL%/i18n/en?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\i18n\en.json
-echo
+echo.
 echo Create french language content
 curl -X POST %API_URL%/i18n/fr?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\i18n\fr.json
-echo
+echo.
 echo Create polish language content
 curl -X POST %API_URL%/i18n/pl?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\i18n\pl.json
-echo
+echo.
 echo Create german language content
 curl -X POST %API_URL%/i18n/de?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\i18n\de.json
-echo
+echo.
 
 echo.
 echo ---------------------
 echo Insert form type contact
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\contact.json
-echo
+echo.
 echo Insert form type issue
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\issue_report.json
-echo
+echo.
 echo Insert form type feature request
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\feature_request.json
-echo
+echo.
 echo Insert form type access request
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\access_request.json
-echo
+echo.
 echo Insert form type domain request
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\domain_request.json
-echo
+echo.

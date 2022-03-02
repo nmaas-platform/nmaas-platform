@@ -17,7 +17,7 @@ Platform exposes a REST API consumed by the NMaaS Portal GUI.
 
 ### Prerequisites
 ---
-  + Install Java 11 jdk
+  Install Java 11 jdk
 
 ### Running NMaaS Platform locally
 ---
@@ -25,18 +25,22 @@ Platform exposes a REST API consumed by the NMaaS Portal GUI.
 
 ### Running NMaaS Platform on dedicated machine
 ---
-  In order to run NMaaS Platform on dedicated machine perform the following steps:
-  + Build the Platform with *./gradlew clean build* in this directory.
-  + The output executable *nmaas-platform-x.x.x.jar* file is created in *nmaas-platform/build/libs* directory.
-  + Run the Platform with *java -jar nmaas-platform-x.x.x.jar*.
-  + Optionally run the Platform with additional argument *--Dlog4j.configurationFile* specifying the name of logger (Log4j2) configuration file (located in the same directory as the jar file) to be loaded instead of the built in one. Please be advised that you have to add that parameter before the *-jar* parameter.
-  + It is advised to run the Platform with additional argument *--spring.config.name* specifying the name of the properties file (located in the same directory as the jar file) to be loaded instead of the built in one.
+  In order to run the NMaaS Platform on dedicated machine perform the following steps:
+  + Build the NMaaS Platform with *./gradlew clean build* command project root directory.
+  + Retrieve the output executable *nmaas-platform-x.x.x.jar* file from *build/libs* directory.
+  + Run the NMaaS Platform with *java -jar nmaas-platform-x.x.x.jar* and optional arguments:
+    + *--Dlog4j.configurationFile* specifying the name of logger (Log4j2) configuration file (located in the same directory as the jar file) to be loaded instead of the built-in one. Please be advised that you have to add that parameter before the *-jar* parameter.
+    + *--spring.config.name* specifying the name of the properties file (located in the same directory as the jar file) to be loaded instead of the built-in one.
 
 #### Populating NMaaS Platform database with initial data
 ---
-To add pre-defined set of applications to the Platform run *nmaas-platform/src/test/shell/init.sh* script that will load NMaaS-compatible application definitions included in the *nmaas-platform/src/test/shell/data/apps* directory.
-
-Initial deployment environment data/configuration may be applied by running *nmaas-platform/src/test/shell/populate-inventory.sh* script that will load customer network, Kubernetes cluster and GitLab definitions included in the *nmaas-platform/src/test/shell/data/inventory* directory.
+  To initialize the NMaaS Platform database with a default set of data run *src/test/shell/init.sh* script.
+  Script will load the following data:
+  + set of content translation data (from *src/test/shell/data/i18n*)
+  + set of default email templates (from *src/test/shell/data/mails*)
+  + set of default contact form templates (from *src/test/shell/data/form_types*)
+  + set of test NMaaS user domains (from *src/test/shell/data/domains*)
+  + set of NMaaS-compatible application definitions with test subscriptions and comments (from *src/test/shell/data/apps*)
 
 #### Complete deployment environment setup for Kubernetes
 ---
