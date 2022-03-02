@@ -15,6 +15,13 @@ portal.address=${PORTAL_HOST}
 admin.password=${ADMIN_PASSWORD}
 admin.email=${ADMIN_EMAIL}
 
+# REST API documentation
+springdoc.api-docs.enabled=${PLATFORM_API_DOCS_ENABLED:false}
+springdoc.api-docs.path=/api-docs/spec
+springdoc.swagger-ui.enabled=${PLATFORM_API_DOCS_ENABLED:false}
+springdoc.swagger-ui.path=/api-docs/ui.html
+
+# Email
 spring.mail.username=${SMTP_LOGIN}
 spring.mail.password=${SMTP_PASSWORD}
 spring.mail.host=${SMTP_HOST}
@@ -23,12 +30,12 @@ spring.mail.properties.mail.smtp.auth=${USE_LOGIN_PASSWORD}
 spring.mail.properties.mail.smtp.starttls.enable=${USE_STARTTLS}
 spring.mail.properties.mail.smtp.starttls.required=${USE_STARTTLS}
 
-#HTTP filter options
+# HTTP filter options
 spring.http.encoding.charset=UTF-8
 spring.http.encoding.enabled=true
 spring.http.encoding.force=true
 
-#Prometheus metrics
+# Prometheus metrics
 nmaas.metrics.enabled=${METRICS_ENABLED}
 management.endpoints.web.exposure.include=health,prometheus
 

@@ -66,13 +66,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/content/**",
             "/api/users/reset/**",
             "/api/mail",
+            "/api-docs/**"
     };
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         boolean sslEnabled = Boolean.parseBoolean(env.getProperty(SSL_ENABLED, "false"));
-        if (sslEnabled)
+        if (sslEnabled) {
             http.requiresChannel().anyRequest().requiresSecure();
+        }
         http
                 .csrf().disable()
                 .exceptionHandling()
@@ -114,11 +116,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                                 new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
                                                 new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
                                                 new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
-                                                new AntPathRequestMatcher("/api/configuration/**", "GET"),
-                                                new AntPathRequestMatcher("/api/auth/sso", "GET"),
+                                                new AntPathRequestMatcher(AUTH_SSO_LOGIN),
+                                                new AntPathRequestMatcher("/api-docs/**"),
                                                 new AntPathRequestMatcher("/actuator/**"),
                                                 new AntPathRequestMatcher("/favicon.ico"),
-                                                new AntPathRequestMatcher(AUTH_SSO_LOGIN),
+                                                new AntPathRequestMatcher("/api/configuration/**", "GET"),
+                                                new AntPathRequestMatcher("/api/auth/sso", "GET"),
                                                 new AntPathRequestMatcher("/api/info/**"),
                                                 new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
                                                 new AntPathRequestMatcher("/api/content/**"),

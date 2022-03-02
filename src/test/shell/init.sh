@@ -25,8 +25,10 @@ curl -X POST $API_URL/domains --header "Authorization: Bearer $TOKEN" --header "
 echo
 curl -X GET $API_URL/domains --header "Authorization: Bearer $TOKEN" | python -m json.tool
 echo
+
 echo Default mail template
 curl -X POST $API_URL/mail/templates/html --header "Authorization: Bearer $TOKEN" -F "file=@data/mails/html-template/template.html;type=text/html"
+
 echo
 echo Create mail templates
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/activateAccountMail.json
@@ -603,16 +605,16 @@ curl -X GET $API_URL/tags --header "Authorization: Bearer $TOKEN" --header "Acce
 echo
 echo ---------------------
 echo Create app1 subscription to Domain One
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub1.json
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub1.json
 echo
 echo Create app2 subscription to Domain One
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub2.json
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub2.json
 echo
 echo Create app3 subscription to Domain One
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub3.json
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub3.json
 echo
 echo Create app3 subscription to Domain Two
-curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub4.json
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/subscriptions/sub4.json
 echo
 
 echo

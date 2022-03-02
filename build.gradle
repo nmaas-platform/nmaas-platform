@@ -80,10 +80,8 @@ configurations {
 dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
-
     integrationTestCompileOnly 'org.projectlombok:lombok'
     integrationTestAnnotationProcessor 'org.projectlombok:lombok'
 
@@ -97,6 +95,7 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-log4j2')
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
+    implementation('org.springdoc:springdoc-openapi-ui:1.6.6')
     implementation('io.micrometer:micrometer-registry-prometheus:1.6.5')
 
     implementation('org.modelmapper:modelmapper:2.4.5')

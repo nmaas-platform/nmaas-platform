@@ -146,7 +146,7 @@
           ]
         },
         {
-          "name": "springfox.documentation",
+          "name": "io.swagger.v3",
           "level": "info",
           "additivity": "false",
           "AppenderRef": [
