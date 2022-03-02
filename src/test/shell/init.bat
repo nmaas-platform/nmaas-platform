@@ -528,9 +528,9 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox2.png;type=image/png" %API_URL%/apps/27/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox3.png;type=image/png" %API_URL%/apps/26/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox3.png;type=image/png" %API_URL%/apps/27/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox4.png;type=image/png" %API_URL%/apps/26/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\netbox\netbox4.png;type=image/png" %API_URL%/apps/27/screenshots
 echo.
 
 echo.
