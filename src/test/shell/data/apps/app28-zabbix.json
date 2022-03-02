@@ -1,0 +1,127 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "Zabbix",
+        "license": "GPL Version 2",
+        "licenseUrl": "https://www.zabbix.com/license",
+        "wwwUrl": "https://www.zabbix.com/index",
+        "sourceUrl": "https://git.zabbix.com/repos?visibility=public",
+        "issuesUrl": "https://support.zabbix.com/projects/ZBX/issues/ZBX-19223?filter=allopenissues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Zabbix",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Enterprise-class monitoring solution for networks and applications",
+                "fullDescription": "Zabbix is a mature and effortless enterprise-class open source monitoring solution for network monitoring and application monitoring of millions of metrics. <br><br>The Zabbix application included in the NMaaS catalog uses TimescaleDB for better performance. <br><br>After deployment, use the default Admin/zabbix credentials to login."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Enterprise-class monitoring solution for networks and applications",
+                "fullDescription": "Zabbix is a mature and effortless enterprise-class open source monitoring solution for network monitoring and application monitoring of millions of metrics. <br><br>The Zabbix application included in the NMaaS catalog uses TimescaleDB for better performance. <br><br>After deployment, use the default Admin/zabbix credentials to login."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Enterprise-class monitoring solution for networks and applications",
+                "fullDescription": "Zabbix is a mature and effortless enterprise-class open source monitoring solution for network monitoring and application monitoring of millions of metrics. <br><br>The Zabbix application included in the NMaaS catalog uses TimescaleDB for better performance. <br><br>After deployment, use the default Admin/zabbix credentials to login."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Enterprise-class monitoring solution for networks and applications",
+                "fullDescription": "Zabbix is a mature and effortless enterprise-class open source monitoring solution for network monitoring and application monitoring of millions of metrics. <br><br>The Zabbix application included in the NMaaS catalog uses TimescaleDB for better performance. <br><br>After deployment, use the default Admin/zabbix credentials to login."
+            }
+        ],
+        "tags": [
+            "monitoring",
+            "notifications",
+            "snmp",
+            "agent",
+            "proxy"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "Zabbix",
+        "version": "5.0.20",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "type": "htmlelement",
+                                        "input": false,
+                                        "content": "<p>All required configuration should be applied after activation process is completed using dedicated Git repository.</p><p>Click Apply configuration button to proceed</p>",
+                                        "tab": 0
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-zabbix",
+                    "version": "1.0.0"
+                },
+                "mainDeploymentName": "server"
+            },
+            "deployParameters": {
+                "DOMAIN_CODENAME": "zabbixServer.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%"
+            },
+            "globalDeployParameters": {
+                "nmaas-timescaledb.properties.password": "%RANDOM_STRING_12%",
+                "properties.database.password": "%RANDOM_STRING_12%"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "Zabbix",
+                    "tag": "zabbix",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "zabbixWeb.ingress.enabled",
+                        "INGRESS_CLASS": "zabbixWeb.ingress.class",
+                        "INGRESS_HOSTS": "zabbixWeb.ingress.hosts"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": true,
+            "configUpdateEnabled": true,
+            "termsAcceptanceRequired": false,
+            "templates": [
+                {
+                    "configFileName": "zabbix-server.conf",
+                    "configFileDirectory": "config",
+                    "configFileTemplateContent": "CacheSize = 64M"
+                }
+            ]
+        }
+    }
+}
