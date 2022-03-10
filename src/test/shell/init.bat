@@ -96,6 +96,8 @@ curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" -
 echo.
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\newDomainRequest.json
 echo.
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appUpgradedMail.json
+echo.
 
 echo.
 echo App1

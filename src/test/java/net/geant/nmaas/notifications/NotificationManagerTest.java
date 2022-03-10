@@ -67,13 +67,11 @@ public class NotificationManagerTest {
                         .collect(Collectors.toList())
         );
         when(userService.findAll()).thenReturn(this.getDefaultUserList());
-
         when(domainService.findUsersWithDomainAdminRole("domainName")).thenReturn(
                 this.getAdminUserList().stream()
                         .map(u -> this.modelMapper.map(u, UserView.class))
                         .collect(Collectors.toList())
         );
-
         when(userService.findByUsername("ordinary")).thenReturn(Optional.of(this.getDefaultUserList().get(1)));
 
         MailTemplateView mt = this.getDefaultMailTemplateView();
@@ -90,7 +88,7 @@ public class NotificationManagerTest {
 
         this.notificationService.sendMail("mail", "subject", "content");
 
-        verify(jms, times(1)).send(any(MimeMessagePreparator.class));
+        verify(jms).send(any(MimeMessagePreparator.class));
     }
 
     @Test
@@ -102,7 +100,7 @@ public class NotificationManagerTest {
         NotificationEvent event = new NotificationEvent(this, ma);
         notificationEventListener.trigger(event);
 
-        verify(notificationManager, times(1)).prepareAndSendMail(ma);
+        verify(notificationManager).prepareAndSendMail(ma);
     }
 
     @Test
@@ -114,85 +112,91 @@ public class NotificationManagerTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> notificationEventListener.trigger(event));
 
         assertEquals("Mail attributes cannot be null", ex.getMessage());
-
     }
 
     @Test
     public void shouldSendBroadcastEmail() {
-
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.BROADCAST);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "some text");
             put(MailTemplateElements.TITLE, "Some Title");
             put("username", "MyUser");
         }});
 
-
         notificationManager.prepareAndSendMail(ma);
 
-
-        verify(notificationService, times(2)).sendMail(any(String.class), eq("Some Title"), any(String.class));
-
+        verify(notificationService, times(2))
+                .sendMail(any(String.class), eq("Some Title"), any(String.class));
     }
 
     @Test
     public void shouldSendHealthCheckEmail() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "text");
             put("username", "MyUser");
         }});
 
-
         notificationManager.prepareAndSendMail(ma);
 
-
-        verify(notificationService, times(1)).sendMail(any(String.class), eq("Default"), any(String.class));
+        verify(notificationService).sendMail(any(String.class), eq("Default"), any(String.class));
     }
 
     @Test
     public void shouldSendAppDeployedEmailToAdminWhenOwnerIsAdmin() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "admin");
             put("domainName", "domainName");
         }});
 
+        notificationManager.prepareAndSendMail(ma);
+
+        verify(notificationService).sendMail(any(String.class), eq("Default"), any(String.class));
+    }
+
+    @Test
+    public void shouldSendAppUpgradedEmailToAdminWhenOwnerIsAdmin() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.APP_UPGRADED);
+        ma.setOtherAttributes(new HashMap<>() {{
+            put("text", "text");
+            put("username", "MyUser");
+            put("owner", "admin");
+            put("domainName", "domainName");
+        }});
 
         notificationManager.prepareAndSendMail(ma);
 
-        verify(notificationService, times(1)).sendMail(any(String.class), eq("Default"), any(String.class));
+        verify(notificationService).sendMail(any(String.class), eq("Default"), any(String.class));
     }
 
     @Test
     public void shouldSendAppDeployedEmailToAdminAndOrdinaryWhenOwnerIsOrdinary() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "ordinary");
             put("domainName", "domainName");
         }});
 
-
         notificationManager.prepareAndSendMail(ma);
-
 
         verify(notificationService, times(2)).sendMail(any(String.class), eq("Default"), any(String.class));
     }
-
 
     @Test
     public void shouldThrowExceptionWhenCannotFindTemplateWithMatchingLanguage() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.REGISTRATION);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "text");
             put("username", "MyUser");
         }});
@@ -210,7 +214,7 @@ public class NotificationManagerTest {
     public void shouldSendContactForm() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.CONTACT_FORM);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "text");
             put("subType", "CONTACT");
         }});
@@ -225,21 +229,19 @@ public class NotificationManagerTest {
 
         notificationManager.prepareAndSendMail(ma);
 
-        verify(notificationService,
-                times(adminUsers.size() + emails.size())
-        ).sendMail(any(String.class), eq("Subject"), any(String.class));
-
+        verify(notificationService, times(adminUsers.size() + emails.size()))
+                .sendMail(any(String.class), eq("Subject"), any(String.class));
     }
 
     @Test
     public void shouldSendAppDeploymentFailedEmail() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYMENT_FAILED);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "ordinary");
-            put("domainName","domainName");
+            put("domainName", "domainName");
         }});
 
         String external = "external@email.com";
@@ -258,14 +260,13 @@ public class NotificationManagerTest {
         notificationManager.prepareAndSendMail(ma);
 
         verify(notificationService, times(emails.size())).sendMail(any(String.class), eq("Default"), any(String.class));
-
     }
 
     @Test
     public void shouldThrowExceptionWhenTemplateServiceThrowsException() throws IOException {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
-        ma.setOtherAttributes(new HashMap<String, Object>() {{
+        ma.setOtherAttributes(new HashMap<>() {{
             put("text", "text");
             put("username", "MyUser");
             put("owner", "ordinary");
@@ -274,7 +275,7 @@ public class NotificationManagerTest {
 
         when(templateService.getHTMLTemplate()).thenThrow(new IOException());
 
-        ProcessingException pe = assertThrows(ProcessingException.class, () -> notificationManager.prepareAndSendMail(ma));
+        assertThrows(ProcessingException.class, () -> notificationManager.prepareAndSendMail(ma));
     }
 
     private MailTemplateView getDefaultMailTemplateView() {
@@ -292,7 +293,7 @@ public class NotificationManagerTest {
         }});
 
         MailTemplateView mt = new MailTemplateView();
-        mt.setTemplates(new ArrayList<LanguageMailContentView>() {{
+        mt.setTemplates(new ArrayList<>() {{
             add(lmcv);
         }});
         mt.setGlobalInformation(new HashMap<String, String>() {{
@@ -313,7 +314,7 @@ public class NotificationManagerTest {
         user1.setEmail("ordinary@email.com");
         user1.setSelectedLanguage("en");
 
-        return new ArrayList<User>() {{
+        return new ArrayList<>() {{
             add(user0);
             add(user1);
         }};
@@ -326,7 +327,7 @@ public class NotificationManagerTest {
         user0.setLastname("");
         user0.setSelectedLanguage("en");
 
-        return new ArrayList<User>() {{
+        return new ArrayList<>() {{
             add(user0);
         }};
     }

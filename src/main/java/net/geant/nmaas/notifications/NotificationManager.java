@@ -28,7 +28,6 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -141,7 +140,8 @@ public class NotificationManager {
         ) {
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
-        if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)) {
+        if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)
+                || mailAttributes.getMailType().equals(MailType.APP_UPGRADED)) {
             mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole((String)mailAttributes.getOtherAttributes().get("domainName")));
             if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
                 userService.findByUsername((String)mailAttributes.getOtherAttributes().get("owner"))
@@ -154,10 +154,10 @@ public class NotificationManager {
                     .map(user -> modelMapper.map(user, UserView.class))
                     .collect(Collectors.toList()));
         }
-        if (Arrays.asList(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST).contains(mailAttributes.getMailType())) {
+        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST).contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
-            if (!contactFormKey.isPresent()) {
+            if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");
             } else {
                 this.formTypeService.findOne(contactFormKey.get())
@@ -181,7 +181,7 @@ public class NotificationManager {
     }
 
     /**
-     * This function handles message type specific logic eg. custom title/subject for broadcast message
+     * This function handles message type specific logic e.g. custom title/subject for broadcast message
      *
      * @param mailContent    mail content to be customize
      * @param mailAttributes mail information and data provider

@@ -31,6 +31,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -148,7 +149,7 @@ public class AppDeploymentStateChangeManager {
 
     private MailAttributes getMailAttributes(AppDeployment appDeployment, String error) {
         return MailAttributes.builder()
-                .otherAttributes(ImmutableMap.of(
+                .otherAttributes(Map.of(
                         "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                         "owner", appDeployment.getOwner(),
                         "appInstanceName", appDeployment.getDeploymentName(),
