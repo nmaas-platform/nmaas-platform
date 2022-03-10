@@ -18,4 +18,5 @@ public enum MailType {
     APP_DEPLOYMENT_FAILED,
     NEW_DOMAIN_REQUEST,
     ISSUE_REPORT,
+    APP_UPGRADED
 }
