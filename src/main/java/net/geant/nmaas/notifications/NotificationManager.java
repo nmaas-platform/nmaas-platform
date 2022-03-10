@@ -218,7 +218,7 @@ public class NotificationManager {
     private String getHeader(String header, UserView user) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(
                 new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)),
-                ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
+                Map.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
     private String getContent(String content, Map<String, Object> otherAttributes) throws IOException, TemplateException {

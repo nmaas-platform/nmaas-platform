@@ -245,8 +245,9 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void updateApplicationMethodShouldThrowIllegalArgumentExceptionDueToMissingApplication() {
+        Identifier identifier = Identifier.newInstance("deploymentId");
         assertThrows(IllegalArgumentException.class, () -> {
-            applicationInstanceService.updateApplication(Identifier.newInstance("deploymentId"), null);
+            applicationInstanceService.updateApplication(identifier, null);
         });
     }
 

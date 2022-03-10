@@ -1,6 +1,5 @@
 package net.geant.nmaas.monitor;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -120,7 +120,7 @@ public class MonitorManager {
     private MailAttributes getMailAttributes(String service){
         return MailAttributes.builder()
                 .mailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)
-                .otherAttributes(ImmutableMap.of("serviceName" ,service))
+                .otherAttributes(Map.of("serviceName" ,service))
                 .build();
     }
 }
