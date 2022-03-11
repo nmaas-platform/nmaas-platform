@@ -4,14 +4,14 @@ import org.springframework.context.ApplicationEvent;
 
 public class NotificationEvent extends ApplicationEvent {
 
-    private MailAttributes mailAttributes;
+    private final MailAttributes mailAttributes;
 
     public NotificationEvent(Object source, MailAttributes mailAttributes){
         super(source);
         this.mailAttributes = mailAttributes;
     }
 
-    MailAttributes getMailAttributes() {
+    public MailAttributes getMailAttributes() {
         return mailAttributes;
     }
 }

@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
+import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -17,11 +18,7 @@ import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
@@ -36,20 +33,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 public class ApplicationServiceImplTest {
 
-    @Mock
-    ApplicationRepository applicationRepository;
+    ApplicationRepository applicationRepository = mock(ApplicationRepository.class);
+    ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
-    @Mock
-    ApplicationEventPublisher eventPublisher;
-
-    @InjectMocks
     ApplicationServiceImpl applicationService;
 
     @BeforeEach
@@ -190,7 +183,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void findAllShouldReturnList(){
+    public void findAllShouldReturnList() {
         List<Application> testList = new ArrayList<>();
         Application test = new Application("test", "testversion");
         testList.add(test);
@@ -201,11 +194,12 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void shouldChangeApplicationState(){
+    public void shouldChangeApplicationState() {
         Application app = getDefaultApplication();
         app.setState(ApplicationState.NEW);
         applicationService.changeApplicationState(app, ApplicationState.ACTIVE);
-        verify(applicationRepository, times(1)).save(any());
+        verify(applicationRepository).save(any());
+        verify(eventPublisher).publishEvent(any(ApplicationActivatedEvent.class));
     }
 
     @Test
