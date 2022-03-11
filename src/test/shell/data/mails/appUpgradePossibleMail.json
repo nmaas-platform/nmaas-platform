@@ -9,7 +9,7 @@
   "templates": [
     {
       "language": "en",
-      "subject": "NMaaS: Your application instance can be upgraded",
+      "subject": "NMaaS: Your application instance is ready to be upgraded",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${appVersion} to version ${appVersionNew} (chart version: ${appVersionNewChart}).",
@@ -20,7 +20,7 @@
     },
     {
       "language": "fr",
-      "subject": "NMaaS: Your application instance can be upgraded",
+      "subject": "NMaaS: Your application instance is ready to be upgraded",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${appVersion} to version ${appVersionNew} (chart version: ${appVersionNewChart}).",
@@ -31,7 +31,7 @@
     },
     {
       "language": "de",
-      "subject": "NMaaS: Your application instance can be upgraded",
+      "subject": "NMaaS: Your application instance is ready to be upgraded",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${appVersion} to version ${appVersionNew} (chart version: ${appVersionNewChart}).",
@@ -42,7 +42,7 @@
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Twoja aplikacja może zostać zaktualizowana",
+      "subject": "NMaaS: Twoja aplikacja jest gotowa do zaktualizacji",
       "template": {
         "HEADER": "Drogi ${username},",
         "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest gotowa to aktualizacji z obecnej wersji ${appVersion} do wersji ${appVersionNew} (wersja chartu: ${appVersionNewChart}).",
