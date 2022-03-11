@@ -2,11 +2,12 @@ package net.geant.nmaas.portal.service.impl;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -31,19 +32,17 @@ import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.Applicat
 import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.DELETED;
 import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.UPDATED;
 
-@AllArgsConstructor
 @Service
+@RequiredArgsConstructor
 @Log4j2
 public class ApplicationServiceImpl implements ApplicationService {
 
 	private final ApplicationRepository applicationRepository;
-
 	private final ApplicationEventPublisher eventPublisher;
 
 	@Override
 	@Transactional
 	public Application update(Application application) {
-		// TODO checks
 		checkApp(application);
 		Application saved = applicationRepository.save(application);
 		generateApplicationListUpdatedEvent(saved, UPDATED);
@@ -81,7 +80,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public void delete(Long id) {
 		checkParam(id);
 		applicationRepository.findById(id).ifPresent(app -> {
-			if(app.getState().isChangeAllowed(ApplicationState.DELETED)){
+			if(app.getState().isChangeAllowed(ApplicationState.DELETED)) {
 				app.setState(ApplicationState.DELETED);
 				applicationRepository.save(app);
 				generateApplicationListUpdatedEvent(app, DELETED);
@@ -91,10 +90,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public Optional<Application> findApplication(Long id) {
-		if (id != null)
+		if (id != null) {
 			return applicationRepository.findById(id);
-		else
+		} else {
 			throw new IllegalArgumentException("applicationId is null");
+		}
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public Application findApplicationLatestVersion(String name) {
-		if(!StringUtils.hasText(name)){
+		if(!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("Application name cannot be null or empty");
 		}
 		return applicationRepository.findByName(name).stream()
@@ -123,20 +123,23 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public void changeApplicationState(Application app, ApplicationState state){
-		if(!app.getState().isChangeAllowed(state)){
+	public void changeApplicationState(Application app, ApplicationState state) {
+		if(!app.getState().isChangeAllowed(state)) {
 			throw new IllegalStateException("Application state transition from " + app.getState() + " to " + state + " is not allowed.");
 		}
-		if(state.equals(ApplicationState.ACTIVE)){
+		if(state.equals(ApplicationState.ACTIVE)) {
 			checkApp(app);
 			checkTemplates(app);
 		}
 		app.setState(state);
 		applicationRepository.save(app);
+		if(state.equals(ApplicationState.ACTIVE)) {
+			eventPublisher.publishEvent(new ApplicationActivatedEvent(this, app.getName(), app.getVersion()));
+		}
 	}
 
-	private void checkApp(Application app){
-		if(app == null){
+	private void checkApp(Application app) {
+		if(app == null) {
 			throw new IllegalArgumentException("App cannot be null");
 		}
 		app.validate();
@@ -145,13 +148,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 		checkTemplates(app);
 	}
 
-	private void checkTemplates(Application app){
-		if(app.getAppConfigurationSpec().isConfigFileRepositoryRequired()){
+	private void checkTemplates(Application app) {
+		if(app.getAppConfigurationSpec().isConfigFileRepositoryRequired()) {
 			app.getAppConfigurationSpec().getTemplates().forEach(this::validateConfigFileTemplates);
 		}
 	}
 
-	private void validateConfigFileTemplates(ConfigFileTemplate configFileTemplate){
+	private void validateConfigFileTemplates(ConfigFileTemplate configFileTemplate) {
 		try {
 			new Template("test", configFileTemplate.getConfigFileTemplateContent(), new Configuration(Configuration.VERSION_2_3_28));
 		} catch (IOException e) {
@@ -170,7 +173,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 	}
 
-	private void setMissingTemplatesId(Application app, Long appId){
+	private void setMissingTemplatesId(Application app, Long appId) {
 		app.getAppConfigurationSpec().getTemplates()
 				.forEach(template -> template.setApplicationId(appId));
 	}

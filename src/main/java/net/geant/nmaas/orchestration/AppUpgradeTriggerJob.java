@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AppUpgradeTriggerJob implements Job {
 
-    private final AppUpgradeTriggerService appUpgradeTriggerService;
+    private final AppUpgradeService appUpgradeService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        appUpgradeTriggerService.trigger();
+        appUpgradeService.triggerUpgrade();
     }
 
 }
