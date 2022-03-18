@@ -1,9 +1,14 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
+import net.geant.nmaas.orchestration.entities.AppUpgradeHistory;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
+import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -17,10 +22,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -49,12 +59,18 @@ public class AppUpgradeServiceTest {
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
+    private final AppUpgradeHistoryRepository appUpgradeHistoryRepository = mock(AppUpgradeHistoryRepository.class);
     private final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
-    private final AppUpgradeService service = new AppUpgradeService(appDeploymentRepositoryManager, applicationInstanceService, applicationEventPublisher);
+    private final AppUpgradeService service = new AppUpgradeService(appDeploymentRepositoryManager, applicationInstanceService, appUpgradeHistoryRepository, applicationEventPublisher);
 
     @BeforeAll
     static void init() {
+        KubernetesChart kc = new KubernetesChart("chartName", "chartVersion");
+        KubernetesTemplate kt = new KubernetesTemplate(kc, null, null);
+        AppDeploymentSpec ads = AppDeploymentSpec.builder().kubernetesTemplate(kt).build();
+        APPLICATION1.setAppDeploymentSpec(ads);
+        APPLICATION2.setAppDeploymentSpec(ads);
         APP_INSTANCE1.setInternalId(DEPLOYMENT_ID2);
         APP_INSTANCE1.setOwner(new User("username"));
         APP_INSTANCE2.setInternalId(DEPLOYMENT_ID3);
@@ -112,6 +128,35 @@ public class AppUpgradeServiceTest {
         assertThat(result.getMailAttributes().getOtherAttributes().get("appName")).isEqualTo(APPLICATION1.getName());
         assertThat(result.getMailAttributes().getOtherAttributes().get("appVersion")).isEqualTo(APPLICATION1.getVersion());
         assertThat(result.getMailAttributes().getOtherAttributes().get("appVersionNew")).isEqualTo("appversion3");
+    }
+
+    @Test
+    void shouldNotifySummaryAutoUpgraded() {
+        when(appUpgradeHistoryRepository.findInPeriod(any(), any())).thenReturn(
+                List.of(
+                        AppUpgradeHistory.builder()
+                                .deploymentId(DEPLOYMENT_ID2)
+                                .timestamp(Date.from(Instant.now()))
+                                .status(AppUpgradeStatus.SUCCESS)
+                                .build(),
+                        AppUpgradeHistory.builder()
+                                .deploymentId(DEPLOYMENT_ID3)
+                                .timestamp(Date.from(Instant.now()))
+                                .status(AppUpgradeStatus.FAILURE)
+                                .build())
+                );
+        when(applicationInstanceService.findByInternalId(DEPLOYMENT_ID2)).thenReturn(Optional.of(APP_INSTANCE1));
+        when(applicationInstanceService.findByInternalId(DEPLOYMENT_ID3)).thenReturn(Optional.of(APP_INSTANCE2));
+        service.appUpgradeSummaryInterval = 1;
+
+        service.notifySummaryAutoUpgraded();
+
+        ArgumentCaptor<NotificationEvent> notificationEventArgumentCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
+        verify(applicationEventPublisher, times(1)).publishEvent(notificationEventArgumentCaptor.capture());
+        NotificationEvent result = notificationEventArgumentCaptor.getValue();
+        assertThat(result.getMailAttributes().getOtherAttributes().get("summaryInternal")).isEqualTo(1);
+        assertThat(result.getMailAttributes().getOtherAttributes().get("upgradesExist")).isEqualTo(Boolean.TRUE);
+        assertThat(((List<Map>) result.getMailAttributes().getOtherAttributes().get("appUpgrades")).size()).isEqualTo(2);
     }
 
 }

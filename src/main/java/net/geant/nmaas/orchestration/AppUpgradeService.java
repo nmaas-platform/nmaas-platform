@@ -8,20 +8,25 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.utils.logging.LogLevel;
-import net.geant.nmaas.utils.logging.Loggable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +35,11 @@ public class AppUpgradeService {
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationInstanceService applicationInstanceService;
+    private final AppUpgradeHistoryRepository appUpgradeHistoryRepository;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Value("${nmaas.service.upgrade-summary.interval}")
+    Integer appUpgradeSummaryInterval;
 
     @Transactional
     public void triggerUpgrade() {
@@ -65,7 +74,6 @@ public class AppUpgradeService {
     }
 
     @EventListener
-    @Loggable(LogLevel.INFO)
     @Transactional
     public void notifyReadyForUpgrade(ApplicationActivatedEvent event) {
         List<AppDeployment> runningDeployments = deploymentRepositoryManager.loadByState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
@@ -95,6 +103,34 @@ public class AppUpgradeService {
                         eventPublisher.publishEvent(new NotificationEvent(this, attributes));
                     }
                 });
+    }
+
+    @Transactional
+    public void notifySummaryAutoUpgraded() {
+        log.info("Launching generation of email notification about automatic upgrades that were completed within given period");
+        Instant now = Instant.now();
+        List<Map> appUpgradesInPeriod = appUpgradeHistoryRepository
+                .findInPeriod(Date.from(now.minus(Duration.ofHours(appUpgradeSummaryInterval))), Date.from(now)).stream()
+                .map(item -> {
+                    AppInstance appInstance = applicationInstanceService.findByInternalId(item.getDeploymentId()).orElseThrow(InvalidDeploymentIdException::new);
+                    return Map.of(
+                            "timestamp", item.getTimestamp(),
+                            "status", item.getStatus().name(),
+                            "appInstanceName", appInstance.getName(),
+                            "appVersion", appInstance.getApplication().getVersion(),
+                            "appHelmChartVersion", appInstance.getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion()
+                    );
+                })
+                .collect(Collectors.toList());
+        MailAttributes attributes = MailAttributes.builder()
+                .otherAttributes(Map.of(
+                        "summaryInternal", appUpgradeSummaryInterval,
+                        "upgradesExist", !appUpgradesInPeriod.isEmpty(),
+                        "appUpgrades", appUpgradesInPeriod
+                ))
+                .mailType(MailType.APP_UPGRADE_SUMMARY)
+                .build();
+        eventPublisher.publishEvent(new NotificationEvent(this, attributes));
     }
 
 }

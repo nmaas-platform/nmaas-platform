@@ -67,6 +67,8 @@ spring.devtools.add-properties=false
 nmaas.service.deployment.check.interval=${DEPLOYMENT_CHECK_INTERVAL}
 nmaas.service.deployment.max.duration=${DEPLOYMENT_CHECK_TIMEOUT}
 nmaas.service.upgrade.cron=${APP_UPGRADE_CRON}
+nmaas.service.upgrade-summary.cron=${APP_UPGRADE_SUMMARY_CRON}
+nmaas.service.upgrade-summary.interval=${APP_UPGRADE_SUMMARY_INTERVAL}
 
 nmaas.portal.domains.codename.pattern=[a-z0-9-]{2,12}
 nmaas.portal.modals.appinstall.pattern=[a-zA-Z0-9-]{3,10}

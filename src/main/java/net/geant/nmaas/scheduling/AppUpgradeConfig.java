@@ -2,6 +2,7 @@ package net.geant.nmaas.scheduling;
 
 import com.google.common.base.Strings;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.orchestration.AppUpgradeSummaryJob;
 import net.geant.nmaas.orchestration.AppUpgradeTriggerJob;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AppUpgradeConfig {
 
     private final static String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
+    private final static String APP_UPGRADE_SUMMARY_JOB_NAME = "AppUpgradeSummaryJob";
 
     @Bean
     public InitializingBean insertDefaultAppUpgradeJob() {
@@ -24,10 +26,16 @@ public class AppUpgradeConfig {
             private AppUpgradeTriggerJob appUpgradeTriggerJob;
 
             @Autowired
+            private AppUpgradeSummaryJob appUpgradeSummaryJob;
+
+            @Autowired
             private ScheduleManager scheduleManager;
 
             @Value("${nmaas.service.upgrade.cron}")
             String appUpgradeCron;
+
+            @Value("${nmaas.service.upgrade-summary.cron}")
+            String appUpgradeSummaryCron;
 
             @Override
             @Transactional
@@ -35,9 +43,15 @@ public class AppUpgradeConfig {
                 if (Strings.isNullOrEmpty(appUpgradeCron)) {
                     log.warn("Application upgrade cron expression not provided");
                     log.warn("Automatic application upgrades are disabled!");
-                    return;
+                } else {
+                    this.scheduleManager.createJob(appUpgradeTriggerJob, APP_UPGRADE_JOB_NAME, appUpgradeCron);
                 }
-                this.scheduleManager.createJob(appUpgradeTriggerJob, APP_UPGRADE_JOB_NAME, appUpgradeCron);
+                if (Strings.isNullOrEmpty(appUpgradeSummaryCron)) {
+                    log.warn("Application upgrade summary cron expression not provided");
+                    log.warn("Won't send out email notifications about automatic upgrades in given period");
+                } else {
+                    this.scheduleManager.createJob(appUpgradeSummaryJob, APP_UPGRADE_SUMMARY_JOB_NAME, appUpgradeSummaryCron);
+                }
             }
         };
     }
