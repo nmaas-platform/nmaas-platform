@@ -1,0 +1,55 @@
+{
+  "mailType": "APP_UPGRADE_SUMMARY",
+  "globalInformation": {
+    "LOGO_LINK": "https://www.geant.org/Style%20Library/Geant/Images/logo.png",
+    "LOGO_ALT": "Geant logo",
+    "PORTAL_LOGO_ALT": "NMaaS logo",
+    "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
+  },
+  "templates": [
+    {
+      "language": "en",
+      "subject": "NMaaS: Summary of automatic application upgrades",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "<#if ${upgradesExist}>The following application upgrades were performed during last ${summaryInternal} hours.<#list appUpgrades as upgrade><br>${upgrade.timestamp} | ${upgrade.appInstanceName} | ${upgrade.appVersion} | ${upgrade.status}</#list><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "fr",
+      "subject": "NMaaS: Summary of automatic application upgrades",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "<#if ${upgradesExist}>The following application upgrades were performed during last ${summaryInternal} hours.<#list appUpgrades as upgrade><br>${upgrade.timestamp} | ${upgrade.appInstanceName} | ${upgrade.appVersion} | ${upgrade.status}</#list><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "de",
+      "subject": "NMaaS: Summary of automatic application upgrades",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "<#if ${upgradesExist}>The following application upgrades were performed during last ${summaryInternal} hours.<#list appUpgrades as upgrade><br>${upgrade.timestamp} | ${upgrade.appInstanceName} | ${upgrade.appVersion} | ${upgrade.status}</#list><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "pl",
+      "subject": "NMaaS: Podsumowanie automatycznych aktualizacji aplikacji",
+      "template": {
+        "HEADER": "Drogi ${username},",
+        "CONTENT": "<#if ${upgradesExist}>The following application upgrades were performed during last ${summaryInternal} hours.<#list appUpgrades as upgrade><br>${upgrade.timestamp} | ${upgrade.appInstanceName} | ${upgrade.appVersion} | ${upgrade.status}</#list><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
+        "SENDER_POLICY": ""
+      }
+    }
+  ]
+}
