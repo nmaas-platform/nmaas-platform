@@ -21,21 +21,21 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-public class AppDeploymentRepositoryTest {
+public class AppDeploymentRepositoryIntTest {
+
+    private static final String DOMAIN = "domain1";
+    private static final String DOMAIN_CODENAME = "cod-dom-1";
+    private static final String DEPLOYMENT_NAME_1 = "deploymentName1";
+    private static final String DEPLOYMENT_NAME_2 = "deploymentName2";
+    private static final Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
+    private static final Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
+    private static final Identifier applicationId = Identifier.newInstance("applicationId");
 
     @Autowired
     private AppDeploymentRepository repository;
 
     @Autowired
     private DomainRepository domainRepository;
-
-    private static final String DOMAIN = "domain1";
-    private static final String DOMAIN_CODENAME = "cod-dom-1";
-    private static final String DEPLOYMENT_NAME_1 = "deploymentName1";
-    private static final String DEPLOYMENT_NAME_2 = "deploymentName2";
-    private Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
-    private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
-    private Identifier applicationId = Identifier.newInstance("applicationId");
 
     @AfterEach
     public void tearDown() {
@@ -82,7 +82,7 @@ public class AppDeploymentRepositoryTest {
         AppDeployment storedAppDeployment = repository.save(appDeployment);
 
         Domain d = new Domain(DOMAIN, DOMAIN_CODENAME);
-        d = domainRepository.save(d);
+        domainRepository.save(d);
 
         String domain_name = repository.getDomainNameByDeploymentId(storedAppDeployment.getDeploymentId()).orElse(null);
 
@@ -104,7 +104,6 @@ public class AppDeploymentRepositoryTest {
         assertEquals(1, result.size());
         assertEquals(1, result.get(0).getCount());
         assertEquals("Grafana", result.get(0).getApplicationName());
-
     }
 
 }

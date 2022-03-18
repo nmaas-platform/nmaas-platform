@@ -119,25 +119,23 @@ public class NotificationManager {
      * When adding new MailType, make sure you edit this function so that your mail is sent to proper users
      * mailAttributes will be updated with new email addresses
      *
-     * @param mailAttributes
+     * @param mailAttributes Mail attributes passed by the notification service client
      */
     private void getAllAddressees(MailAttributes mailAttributes) {
         if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYMENT_FAILED)) {
             ConfigurationView configuration = this.configurationManager.getConfiguration();
             if (configuration.isSendAppInstanceFailureEmails()) {
-                List<UserView> usrs = configuration.getAppInstanceFailureEmailList().stream()
+                List<UserView> users = configuration.getAppInstanceFailureEmailList().stream()
                         .map(this::convertEmailToUserView)
                         .collect(Collectors.toList());
-                mailAttributes.setAddressees(usrs);
+                mailAttributes.setAddressees(users);
             }
         }
         if (mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)) {
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
-        if (mailAttributes.getMailType().equals(MailType.REGISTRATION)
-                || mailAttributes.getMailType().equals(MailType.APP_NEW)
-                || mailAttributes.getMailType().equals(MailType.NEW_SSO_LOGIN)
-        ) {
+        if (List.of(MailType.REGISTRATION, MailType.APP_NEW, MailType.NEW_SSO_LOGIN, MailType.APP_UPGRADE_SUMMARY)
+                .contains(mailAttributes.getMailType())) {
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
         if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)
@@ -154,7 +152,8 @@ public class NotificationManager {
                     .map(user -> modelMapper.map(user, UserView.class))
                     .collect(Collectors.toList()));
         }
-        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST).contains(mailAttributes.getMailType())) {
+        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST)
+                .contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
             if (contactFormKey.isEmpty()) {
