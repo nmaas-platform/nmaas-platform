@@ -112,7 +112,7 @@ public class AppUpgradeTask {
                         "appVersion", appInstance.getApplication().getVersion(),
                         "appVersionPrevious", previousApplication.getVersion()
                 ))
-                .mailType(MailType.APP_DEPLOYMENT_FAILED)
+                .mailType(MailType.APP_UPGRADED)
                 .build();
         eventPublisher.publishEvent(new NotificationEvent(this, attributes));
     }

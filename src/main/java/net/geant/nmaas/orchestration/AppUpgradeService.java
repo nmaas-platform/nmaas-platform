@@ -114,11 +114,12 @@ public class AppUpgradeService {
                 .map(item -> {
                     AppInstance appInstance = applicationInstanceService.findByInternalId(item.getDeploymentId()).orElseThrow(InvalidDeploymentIdException::new);
                     return Map.of(
-                            "timestamp", item.getTimestamp(),
-                            "status", item.getStatus().name(),
+                            "domainName", appInstance.getDomain().getName(),
                             "appInstanceName", appInstance.getName(),
                             "appVersion", appInstance.getApplication().getVersion(),
-                            "appHelmChartVersion", appInstance.getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion()
+                            "appHelmChartVersion", appInstance.getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+                            "timestamp", item.getTimestamp(),
+                            "status", item.getStatus().name().toLowerCase()
                     );
                 })
                 .collect(Collectors.toList());
