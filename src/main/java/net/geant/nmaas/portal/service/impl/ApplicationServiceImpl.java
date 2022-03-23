@@ -199,15 +199,17 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public Map<String, Long> findAllVersionNumbers(String name) {
+	public Map<String, Long> findAllActiveVersionNumbers(String name) {
 		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("Application name cannot be null or empty");
 		}
 		Map<String, Long> versions = new HashMap<>();
-		applicationRepository.findByName(name).forEach(app ->
-				versions.put(
-					app.getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
-					app.getId())
+		applicationRepository.findByName(name).stream()
+				.filter(app -> ApplicationState.ACTIVE.equals(app.getState()))
+				.forEach(app ->
+					versions.put(
+						app.getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+						app.getId())
 		);
 		return versions;
 	}

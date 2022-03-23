@@ -236,7 +236,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
 		if (appInstance.isPresent()) {
 			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
-			Map<String, Long> allAppVersions = applications.findAllVersionNumbers(appInstance.get().getApplication().getName());
+			Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
 			return instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions).isPresent();
 		}
 		return false;
@@ -249,7 +249,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
 		if (appInstance.isPresent()) {
 			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
-			Map<String, Long> allAppVersions = applications.findAllVersionNumbers(appInstance.get().getApplication().getName());
+			Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
 			Optional<Long> nextVersionId = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
 			if (nextVersionId.isPresent()) {
 				Optional<Application> nextApplication = applications.findApplication(nextVersionId.get());
