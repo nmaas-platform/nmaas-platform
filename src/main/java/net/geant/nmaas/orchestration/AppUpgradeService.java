@@ -91,7 +91,7 @@ public class AppUpgradeService {
                         MailAttributes attributes = MailAttributes.builder()
                                 .otherAttributes(Map.of(
                                         "domainName", instance.getDomain().getName(),
-                                        "owner", instance.getOwner(),
+                                        "owner", instance.getOwner().getUsername(),
                                         "appInstanceName", instance.getName(),
                                         "appName", instance.getApplication().getName(),
                                         "appVersion", instance.getApplication().getVersion(),

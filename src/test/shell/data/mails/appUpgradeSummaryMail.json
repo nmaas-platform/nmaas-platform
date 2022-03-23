@@ -12,7 +12,7 @@
       "subject": "NMaaS: Summary of automatic application upgrades",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -23,7 +23,7 @@
       "subject": "NMaaS: Summary of automatic application upgrades",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -34,7 +34,7 @@
       "subject": "NMaaS: Summary of automatic application upgrades",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -45,7 +45,7 @@
       "subject": "NMaaS: Podsumowanie automatycznych aktualizacji aplikacji",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
+        "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>Application version</th><th>Helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
