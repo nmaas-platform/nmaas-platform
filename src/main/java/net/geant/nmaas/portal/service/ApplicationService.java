@@ -22,12 +22,12 @@ public interface ApplicationService {
 	Application findApplicationLatestVersion(String name);
 
 	/**
-	 * Retrieves all Helm chart versions of given application with corresponding application version
+	 * Retrieves all Helm chart versions of given application with corresponding active application version
 	 *
 	 * @param name Application name
 	 * @return map of application Helm chart version and corresponding application version identifier
 	 */
-	Map<String, Long> findAllVersionNumbers(String name);
+	Map<String, Long> findAllActiveVersionNumbers(String name);
 
 	Page<Application> findAll(Pageable pageable);
 	List<Application> findAll();
