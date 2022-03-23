@@ -138,8 +138,8 @@ public class NotificationManager {
                 .contains(mailAttributes.getMailType())) {
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
-        if (mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)
-                || mailAttributes.getMailType().equals(MailType.APP_UPGRADED)) {
+        if (List.of(MailType.APP_DEPLOYED, MailType.APP_UPGRADED, MailType.APP_UPGRADE_POSSIBLE)
+                .contains(mailAttributes.getMailType())) {
             mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole((String)mailAttributes.getOtherAttributes().get("domainName")));
             if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
                 userService.findByUsername((String)mailAttributes.getOtherAttributes().get("owner"))

@@ -106,7 +106,7 @@ public class AppUpgradeTask {
         MailAttributes attributes = MailAttributes.builder()
                 .otherAttributes(Map.of(
                         "domainName", appInstance.getDomain().getName(),
-                        "owner", appInstance.getOwner(),
+                        "owner", appInstance.getOwner().getUsername(),
                         "appInstanceName", appInstance.getName(),
                         "appName", appInstance.getApplication().getName(),
                         "appVersion", appInstance.getApplication().getVersion(),
