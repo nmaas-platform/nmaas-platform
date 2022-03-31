@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.6.3'
+    id 'org.springframework.boot' version '2.6.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "com.gorylenko.gradle-git-properties" version "2.2.3"
     id "org.sonarqube" version "3.2.0"
@@ -112,7 +112,7 @@ dependencies {
     implementation('io.jsonwebtoken:jjwt:0.9.1')
     implementation('com.hierynomus:sshj:0.32.0')
     implementation('org.freemarker:freemarker:2.3.31')
-    implementation('org.gitlab4j:gitlab4j-api:4.17.0')
+    implementation('org.gitlab4j:gitlab4j-api:4.19.0')
     implementation('io.fabric8:kubernetes-client:4.11.2')
     implementation('com.vdurmont:semver4j:3.1.0')
 
