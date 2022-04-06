@@ -1,5 +1,31 @@
 {"versions" : [
   {
+    "verNo" : "1.5.0",
+    "date" : "(2022/04/12)",
+    "topic" : [
+      {
+        "title" : "Manual application upgrade",
+        "tags" : "[Enhancement]",
+        "description" : ""
+      },
+      {
+        "title" : "Fully automated application upgrade",
+        "tags" : "[Enhancement]",
+        "description" : ""
+      },
+      {
+        "title" : "Email notifications related with application upgrade process",
+        "tags" : "[Enhancement]",
+        "description" : ""
+      },
+      {
+        "title" : "REST API documentation endpoint",
+        "tags" : "[Enhancement]",
+        "description" : ""
+      }
+    ]
+  },
+  {
     "verNo" : "1.4.5",
     "date" : "(2022/01/03)",
     "topic" : [
