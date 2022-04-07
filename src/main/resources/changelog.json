@@ -5,22 +5,22 @@
     "topic" : [
       {
         "title" : "Manual application upgrade",
-        "tags" : "[Enhancement]",
+        "tags" : "[New Feature]",
         "description" : ""
       },
       {
         "title" : "Fully automated application upgrade",
-        "tags" : "[Enhancement]",
+        "tags" : "[New Feature]",
         "description" : ""
       },
       {
         "title" : "Email notifications related with application upgrade process",
-        "tags" : "[Enhancement]",
+        "tags" : "[New Feature]",
         "description" : ""
       },
       {
         "title" : "REST API documentation endpoint",
-        "tags" : "[Enhancement]",
+        "tags" : "[New Feature]",
         "description" : ""
       }
     ]
