@@ -1,0 +1,144 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "SPA",
+        "license": "",
+        "licenseUrl": "",
+        "wwwUrl": "https://wiki.geant.org/display/NETDEV/SPA",
+        "sourceUrl": "",
+        "issuesUrl": "",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-SPA",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "SPA for the E-Line service",
+                "fullDescription": "The Service Provider Architecture (SPA) is a service management digital platform providing the general processes and components necessary to manage the CSP services via a user-friendly web graphical user interface (Self-Service Portal).<br><br>The platform in NMaaS has been prepared to manage E-Line service (L2 end-to-end connectivity) implemented by the OpenNSA application with a test default configuration and virtual simplified network topology. Users can familiarise with the SPA without the need of setting up the platform from the scratch.<br><br>Just log in to the portal and start creating new circuits in a simple network to see how it works."
+            },
+            {
+                "language": "de",
+                "briefDescription": "SPA for the E-Line service",
+                "fullDescription": "The Service Provider Architecture (SPA) is a service management digital platform providing the general processes and components necessary to manage the CSP services via a user-friendly web graphical user interface (Self-Service Portal).<br><br>The platform in NMaaS has been prepared to manage E-Line service (L2 end-to-end connectivity) implemented by the OpenNSA application with a test default configuration and virtual simplified network topology. Users can familiarise with the SPA without the need of setting up the platform from the scratch.<br><br>Just log in to the portal and start creating new circuits in a simple network to see how it works."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "SPA for the E-Line service",
+                "fullDescription": "The Service Provider Architecture (SPA) is a service management digital platform providing the general processes and components necessary to manage the CSP services via a user-friendly web graphical user interface (Self-Service Portal).<br><br>The platform in NMaaS has been prepared to manage E-Line service (L2 end-to-end connectivity) implemented by the OpenNSA application with a test default configuration and virtual simplified network topology. Users can familiarise with the SPA without the need of setting up the platform from the scratch.<br><br>Just log in to the portal and start creating new circuits in a simple network to see how it works."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "SPA for the E-Line service",
+                "fullDescription": "The Service Provider Architecture (SPA) is a service management digital platform providing the general processes and components necessary to manage the CSP services via a user-friendly web graphical user interface (Self-Service Portal).<br><br>The platform in NMaaS has been prepared to manage E-Line service (L2 end-to-end connectivity) implemented by the OpenNSA application with a test default configuration and virtual simplified network topology. Users can familiarise with the SPA without the need of setting up the platform from the scratch.<br><br>Just log in to the portal and start creating new circuits in a simple network to see how it works."
+            }
+        ],
+        "tags": [
+            "management",
+            "inventory",
+            "crm"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "SPA",
+        "version": "1.3.3",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Info",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "type": "htmlelement",
+                                        "input": false,
+                                        "content": "<p>SPA installation is preconfigured to ease tests without complex set up.<p><p>For additional details and default user access credentials refer to <a href=\"https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-SPA\">NMaaS wiki</a>.</p><p>Click <i>Apply configuration</i> button to proceed</p>",
+                                        "tab": 0
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-spa",
+                    "version": "1.0.0"
+                },
+                "mainDeploymentName": "ssp"
+            },
+            "deployParameters": {},
+            "globalDeployParameters": {},
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "Portal",
+                    "tag": "portal",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "ssp.ingress.enabled",
+                        "INGRESS_CLASS": "ssp.ingress.class",
+                        "INGRESS_HOSTS": "ssp.ingress.hosts"
+                    }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "Inventory",
+                    "tag": "inventory",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "inventory.ingress.enabled",
+                        "INGRESS_CLASS": "inventory.ingress.class",
+                        "INGRESS_HOSTS": "inventory.ingress.hosts"
+                    }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "OTRS",
+                    "tag": "otrs",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "otrs.ingress.enabled",
+                        "INGRESS_CLASS": "otrs.ingress.class",
+                        "INGRESS_HOSTS": "otrs.ingress.hosts"
+                    }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "SuiteCRM",
+                    "tag": "suitecrm",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "suitecrm.ingress.enabled",
+                        "INGRESS_CLASS": "suitecrm.ingress.class",
+                        "INGRESS_HOSTS": "suitecrm.ingress.hosts"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}
