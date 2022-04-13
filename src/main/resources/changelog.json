@@ -1,27 +1,27 @@
 {"versions" : [
   {
     "verNo" : "1.5.0",
-    "date" : "(2022/04/12)",
+    "date" : "(2022/04/13)",
     "topic" : [
       {
         "title" : "Manual application upgrade",
         "tags" : "[New Feature]",
-        "description" : ""
+        "description" : "If upgrade is possible, users may trigger application instance upgrade process manually from the application instance details page."
       },
       {
         "title" : "Fully automated application upgrade",
         "tags" : "[New Feature]",
-        "description" : ""
+        "description" : "Users may choose to upgrade application instance automatically once upgrade possibility becomes available."
       },
       {
         "title" : "Email notifications related with application upgrade process",
         "tags" : "[New Feature]",
-        "description" : ""
+        "description" : "New email notifications are sent out to domain administrators once application instance upgrade becomes available and once application instance gets automatically upgraded as well as to system administrators with a summary of automatic upgrades that took place over night."
       },
       {
         "title" : "REST API documentation endpoint",
         "tags" : "[New Feature]",
-        "description" : ""
+        "description" : "Enabled Swagger and OpenAPI specification endpoints to document NMaaS Platform API."
       }
     ]
   },
