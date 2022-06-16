@@ -75,8 +75,8 @@ public class ApplicationController extends AppBaseController {
 
 	@GetMapping("/base")
 	@Transactional
-	public List<ApplicationBaseView> getAllActiveOrDisabledApplicationBase() {
-		return appBaseService.findAllActiveOrDisabledApps().stream()
+	public List<ApplicationBaseView> getAllActiveApplicationBase() {
+		return appBaseService.findAllActiveApps().stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.map(this::setAppRating)
 				.collect(Collectors.toList());
@@ -85,8 +85,8 @@ public class ApplicationController extends AppBaseController {
 	@GetMapping("/base/all")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public List<ApplicationBaseView> getAllApplicationBase(Principal principal){
-		// NMAAS-1024 A user with Tool Manager role should only see applications he owns
+	public List<ApplicationBaseView> getAllApplicationBaseBasedOnRole(Principal principal){
+		// user with Tool Manager role should only see applications he owns
 		boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
 				.anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
 
@@ -121,7 +121,7 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping(value = "/base")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void updateApplicationBase(@RequestBody ApplicationBaseView baseView, Principal principal){
+	public void updateApplicationBase(@RequestBody ApplicationBaseView baseView, Principal principal) {
 		// only system admin and owner can update application base
 		this.applicationBaseOwnerCheck(baseView.getName(), principal);
 		appBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
@@ -176,7 +176,7 @@ public class ApplicationController extends AppBaseController {
 	}
 
 	/**
-	 * use this method to add new ApplicationVersion and Application for existing ApplicationBaseEntity
+	 * Use this method to add new ApplicationVersion and Application for existing ApplicationBaseEntity
 	 * @param view - application entity view
 	 * @param principal - security object (used to retrieve creator)
 	 */

@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,7 +59,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     @Transactional
-    public ApplicationBase update(ApplicationBase applicationBase){
+    public ApplicationBase update(ApplicationBase applicationBase) {
         if(applicationBase.getId() == null) {
             throw new ProcessingException("Updated entity id must not be null");
         }
@@ -85,9 +84,9 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
-    public List<ApplicationBase> findAllActiveOrDisabledApps() {
+    public List<ApplicationBase> findAllActiveApps() {
         return appBaseRepository.findAll().stream()
-                .filter(this::isAppActiveOrDisabled)
+                .filter(this::isAppActive)
                 .collect(Collectors.toList());
     }
 
@@ -100,11 +99,6 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     public boolean isAppActive(ApplicationBase application) {
         return application.getVersions().stream()
                 .anyMatch(app -> app.getState().equals(ApplicationState.ACTIVE));
-    }
-
-    private boolean isAppActiveOrDisabled(ApplicationBase applicationBase){
-        return applicationBase.getVersions().stream()
-                .anyMatch(app -> Arrays.asList(ApplicationState.ACTIVE, ApplicationState.DISABLED).contains(app.getState()));
     }
 
     @Override
