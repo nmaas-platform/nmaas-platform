@@ -44,18 +44,19 @@ public class AppScreenshotsController extends AppBaseController {
 		this.fileStorage = fileStorage;
 	}
 
-	@GetMapping(value="/logo")
+	@GetMapping("/logo")
 	public ResponseEntity<InputStreamResource> getLogo(@PathVariable("appId") Long appId) throws FileNotFoundException {
 		ApplicationBase app = getBaseApp(appId);
 		
-		if(app.getLogo() != null)
+		if(app.getLogo() != null) {
 			return getFile(app.getLogo());
+		}
 
 		log.error("No logo found for app " + app.getId());
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
-	@PostMapping(value="/logo")
+	@PostMapping("/logo")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public FileInfoView uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
@@ -74,7 +75,7 @@ public class AppScreenshotsController extends AppBaseController {
 		return modelMapper.map(fileInfo, FileInfoView.class);
 	}
 	
-	@DeleteMapping(value="/logo")
+	@DeleteMapping("/logo")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public void deleteLogo(@PathVariable("appId") Long appId) {
@@ -87,7 +88,7 @@ public class AppScreenshotsController extends AppBaseController {
 		}
 	}
 	
-	@GetMapping(value="/screenshots")
+	@GetMapping("/screenshots")
 	public List<UserFile> getScreenshotsInfo(@PathVariable("appId") Long appId) {
 		ApplicationBase app = getBaseApp(appId);
 
@@ -97,7 +98,7 @@ public class AppScreenshotsController extends AppBaseController {
 					.collect(Collectors.toList());
 	}	
 	
-	@PostMapping(value="/screenshots")
+	@PostMapping("/screenshots")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public FileInfoView uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
@@ -110,20 +111,19 @@ public class AppScreenshotsController extends AppBaseController {
 		return modelMapper.map(fileInfo, FileInfoView.class);
 	}
 
-	@GetMapping(value="/screenshots/{screenshotId}")
+	@GetMapping("/screenshots/{screenshotId}")
 	public ResponseEntity<InputStreamResource> getScreenshot(@PathVariable("appId") Long appId, @PathVariable("screenshotId") Long screenshotId) throws FileNotFoundException {
 		ApplicationBase app = getBaseApp(appId);
 		
 		for(FileInfo screenshot : app.getScreenshots()) {
 			if(screenshot.getId().equals(screenshotId)) {
-
 				return getFile(screenshot);
 			}
 		}
 		throw new MissingElementException("Screenshot id= " + screenshotId + " for app id=" + appId + " not found.");
 	}
 
-	@DeleteMapping(value="/screenshots/{screenshotId}")
+	@DeleteMapping("/screenshots/{screenshotId}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public void deleteScreenshot(@PathVariable(value="appId") Long appId, @PathVariable(value="screenshotId") Long screenshotId) {
@@ -135,7 +135,7 @@ public class AppScreenshotsController extends AppBaseController {
 		appBaseService.update(app);
 	}
 
-	@DeleteMapping(value="/screenshots/all")
+	@DeleteMapping("/screenshots/all")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public void deleteScreenshots(@PathVariable(value = "appId") Long appId){
@@ -145,8 +145,7 @@ public class AppScreenshotsController extends AppBaseController {
 		appBaseService.update(app);
 	}
 	
-	private ResponseEntity<InputStreamResource> getFile(FileInfo imageFile)
-			throws FileNotFoundException {
+	private ResponseEntity<InputStreamResource> getFile(FileInfo imageFile) throws FileNotFoundException {
 		File file = fileStorage.getFile(imageFile.getId());
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -157,7 +156,6 @@ public class AppScreenshotsController extends AppBaseController {
 		return new ResponseEntity<>(streamFile, headers, HttpStatus.OK);
 	}
 	
-
 	private FileInfo getScreenshot(ApplicationBase app, Long screenshotId) {
 		for(FileInfo screenshot : app.getScreenshots()) {
 			if(screenshot.getId().equals(screenshotId))

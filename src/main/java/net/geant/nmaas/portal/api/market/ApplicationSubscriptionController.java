@@ -49,7 +49,6 @@ public class ApplicationSubscriptionController extends AppBaseController {
 		appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
 	}
 	
-	
 	@DeleteMapping("/apps/{appId}/domains/{domainId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
@@ -72,7 +71,6 @@ public class ApplicationSubscriptionController extends AppBaseController {
 		return appSubscriptions.getSubscriptions().stream().filter(appSub->!appSub.isDeleted())
 				.map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
 	}
-	
 	
 	@GetMapping("/domains/{domainId}")
 	@Transactional(readOnly=true)
