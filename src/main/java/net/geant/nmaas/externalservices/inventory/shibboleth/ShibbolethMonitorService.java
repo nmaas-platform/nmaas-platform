@@ -1,11 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.shibboleth;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.portal.api.security.SSOConfigManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,20 +13,21 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
 public class ShibbolethMonitorService extends MonitorService {
 
-    private SSOConfigManager ssoConfigManager;
-
-    @Autowired
-    public void setSsoConfigManager(SSOConfigManager ssoConfigManager) {
-        this.ssoConfigManager = ssoConfigManager;
-    }
+    private final SSOConfigManager ssoConfigManager;
 
     @Override
     public void checkStatus() {
+        if(!ssoConfigManager.isConfigValid()) {
+            log.debug("Invalid SSO configuration. Skipping Shibboleth instance status check");
+            return;
+        }
+
         String url = ssoConfigManager.getLoginUrl();
-        try{
+        try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setConnectTimeout(ssoConfigManager.getTimeout() * 1000);
             connection.setReadTimeout(ssoConfigManager.getTimeout() * 1000);
@@ -40,7 +41,7 @@ public class ShibbolethMonitorService extends MonitorService {
                 this.updateMonitorEntry(MonitorStatus.FAILURE);
                 log.warn("Shibboleth instance is not running");
             }
-        } catch (IOException | IllegalStateException e){
+        } catch (IOException | IllegalStateException e) {
             this.updateMonitorEntry(MonitorStatus.FAILURE);
             log.warn("Shibboleth instance is not running -> " + e.getMessage());
         }
