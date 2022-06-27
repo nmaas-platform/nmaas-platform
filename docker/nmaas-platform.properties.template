@@ -96,9 +96,10 @@ jwt.issuer=NMaaS
 jwt.signingKey=${API_KEY}
 jwt.resetSigningKey=testResetKey
 jwt.resetTokenValidFor=1800000
-management.info.git.mode=full
 captcha.secret=${CAPTCHA_SECRET}
 spring.data.web.pageable.default-page-size=1000
+management.info.git.mode=full
+management.health.mail.enabled=false
 
 # ------------------------ #
 # SAML proxy configuration #
