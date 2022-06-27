@@ -6,18 +6,37 @@ import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.HelmChartRepositoryView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.*;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
+import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
+import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.ApplicationDTO;
+import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.persistent.entity.AppDescription;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,10 +47,21 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -55,22 +85,33 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Autowired
     private ModelMapper modelMapper;
 
-    private final static String DEFAULT_APP_NAME = "test";
+    private final static String APP_1_NAME = "testApp1";
+    private final static String APP_2_NAME = "testApp2";
 
-    private ApplicationBase defaultAppBase;
-    private Application defaultApplication;
+    private ApplicationBase testApp1Base;
+    private Application testApp1;
+
+    private ApplicationBase testApp2Base;
+    private Application testApp2;
 
     @BeforeEach
     void setup() {
         this.mvc = createMVC();
         this.objectMapper = new ObjectMapper();
 
-        this.defaultAppBase = this.applicationBaseService.create(getDefaultApplicationBase());
-        this.defaultApplication = this.applicationService.create(getDefaultApplication());
-        this.defaultAppBase.getVersions().add(
-                new ApplicationVersion(this.defaultApplication.getVersion(), this.defaultApplication.getState(), this.defaultApplication.getId())
+        this.testApp1Base = this.applicationBaseService.create(getDefaultApplicationBase(APP_1_NAME));
+        this.testApp1 = this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.0", ApplicationState.ACTIVE));
+        this.testApp1Base.getVersions().add(
+                new ApplicationVersion(this.testApp1.getVersion(), this.testApp1.getState(), this.testApp1.getId())
         );
-        this.defaultAppBase = this.applicationBaseService.update(this.defaultAppBase);
+        this.testApp1Base = this.applicationBaseService.update(this.testApp1Base);
+
+        this.testApp2Base = this.applicationBaseService.create(getDefaultApplicationBase(APP_2_NAME));
+        this.testApp2 = this.applicationService.create(getDefaultApplication(APP_2_NAME, "2.0.0", ApplicationState.DISABLED));
+        this.testApp2Base.getVersions().add(
+                new ApplicationVersion(this.testApp2.getVersion(), this.testApp2.getState(), this.testApp2.getId())
+        );
+        this.testApp2Base = this.applicationBaseService.update(this.testApp2Base);
     }
 
     @AfterEach
@@ -80,14 +121,15 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetApplications() throws Exception {
+    void shouldGetActiveApplications() throws Exception {
         MvcResult result = mvc.perform(get("/api/apps/base")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
-        assertTrue(result.getResponse().getContentAsString().contains(DEFAULT_APP_NAME));
+        ApplicationBaseView[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseView[].class);
+        assertEquals(1, resultView.length);
+        assertEquals(APP_1_NAME, resultView[0].getName());
     }
 
     @Test
@@ -97,8 +139,10 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
-        assertTrue(result.getResponse().getContentAsString().contains(DEFAULT_APP_NAME));
+        ApplicationBaseView[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseView[].class);
+        assertEquals(2, resultView.length);
+        assertTrue(Arrays.stream(resultView).anyMatch(app -> app.getName().equals(APP_1_NAME)));
+        assertTrue(Arrays.stream(resultView).anyMatch(app -> app.getName().equals(APP_2_NAME)));
     }
 
     @Test
@@ -127,14 +171,14 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldUpdateApplicationVersion() throws Exception {
-        ApplicationView applicationView = modelMapper.map(this.defaultApplication, ApplicationView.class);
+        ApplicationView applicationView = modelMapper.map(this.testApp1, ApplicationView.class);
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView(null, "{}"));
 
         mvc.perform(patch("/api/apps/version")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                modelMapper.map(this.defaultApplication, ApplicationView.class)
+                                modelMapper.map(this.testApp1, ApplicationView.class)
                         ))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -155,8 +199,6 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-//        Application test = applicationRepository.findByName(applicationView.getName()).get(0);
-
         MvcResult result = mvc.perform(get("/api/apps/version/" + applicationView.getId())
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
@@ -175,7 +217,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                             .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(
-                                    modelMapper.map(defaultAppBase, ApplicationBase.class)
+                                    modelMapper.map(testApp1Base, ApplicationBase.class)
                             ))
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
@@ -184,7 +226,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldDeleteApplication() throws Exception {
-        long id = this.defaultApplication.getId();
+        long id = this.testApp1.getId();
         mvc.perform(delete("/api/apps/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
@@ -194,26 +236,28 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetAppBase() throws Exception {
-        long id = this.defaultAppBase.getId();
+        long id = this.testApp1Base.getId();
         MvcResult result = mvc.perform(get("/api/apps/base/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationBaseView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseView.class);
-        assertEquals(DEFAULT_APP_NAME, app.getName());
+        assertEquals(APP_1_NAME, app.getName());
     }
 
     @Test
     void shouldGetLatestAppVersion() throws Exception {
-        MvcResult result = mvc.perform(get("/api/apps/" + DEFAULT_APP_NAME + "/latest")
+        this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.3.0", ApplicationState.DISABLED));
+        this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.2.0", ApplicationState.ACTIVE));
+        MvcResult result = mvc.perform(get("/api/apps/" + APP_1_NAME + "/latest")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
-        assertEquals(DEFAULT_APP_NAME, app.getApplicationBase().getName());
-        assertEquals("1.1.0", app.getApplication().getVersion());
+        assertEquals(APP_1_NAME, app.getApplicationBase().getName());
+        assertEquals("1.2.0", app.getApplication().getVersion());
     }
 
     @Test
@@ -225,7 +269,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk())
                 .andReturn();
         ApplicationDTO app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationDTO.class);
-        assertEquals(DEFAULT_APP_NAME, app.getApplicationBase().getName());
+        assertEquals(APP_1_NAME, app.getApplicationBase().getName());
         assertEquals("1.1.0", app.getApplication().getVersion());
 
         assertEquals(3, app.getApplication().getAppDeploymentSpec().getAccessMethods().size());
@@ -240,7 +284,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldChangeAppState() throws Exception {
-        long id = this.defaultApplication.getId();
+        long id = this.testApp1.getId();
         mvc.perform(patch("/api/apps/state/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.DISABLED, "reason")))
@@ -280,7 +324,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         appConfigurationSpec.getTemplates().add(new ConfigFileTemplateView(null, null, "name", "dir", "content"));
 
         ApplicationView view = ApplicationView.builder()
-                .name(DEFAULT_APP_NAME)
+                .name(APP_1_NAME)
                 .version("3.0.0")
                 .appConfigurationSpec(appConfigurationSpec)
                 .appDeploymentSpec(appDeploymentSpec)
@@ -298,8 +342,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         });
     }
 
-    private ApplicationBase getDefaultApplicationBase() {
-        ApplicationBase applicationBase = new ApplicationBase(null, "test");
+    private ApplicationBase getDefaultApplicationBase(String name) {
+        ApplicationBase applicationBase = new ApplicationBase(null, name);
         applicationBase.setOwner("admin");
         applicationBase.setLicense("");
         applicationBase.setLicenseUrl("");
@@ -347,7 +391,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         return application;
     }
 
-    private Application getDefaultApplication() {
+    private Application getDefaultApplication(String name, String version, ApplicationState state) {
         List<AppStorageVolume> svList = new ArrayList<>();
         svList.add(new AppStorageVolume(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         List<AppAccessMethod> mvList = new ArrayList<>();
@@ -355,9 +399,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
         mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
         Application application = new Application();
-        application.setName("test");
-        application.setVersion("1.1.0");
-        application.setState(ApplicationState.ACTIVE);
+        application.setName(name);
+        application.setVersion(version);
+        application.setState(state);
         application.setCreationDate(LocalDateTime.now());
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setKubernetesTemplate(

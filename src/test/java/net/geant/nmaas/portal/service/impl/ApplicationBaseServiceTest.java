@@ -16,9 +16,16 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ApplicationBaseServiceTest {
 
@@ -34,7 +41,7 @@ public class ApplicationBaseServiceTest {
     private final ApplicationBase applicationBase2 = new ApplicationBase(2L, "another");
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, tagRepo, applicationStatePerDomainService);
         applicationBase1.setDescriptions(Collections.singletonList(
                 new AppDescription(11L, "en", "description", "full description")
@@ -45,7 +52,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldCreateNewApplicationBase(){
+    public void shouldCreateNewApplicationBase() {
         when(appBaseRepo.existsByName(applicationBase1.getName())).thenReturn(false);
         when(appBaseRepo.save(any())).thenAnswer(i -> i.getArgument(0));
 
@@ -54,11 +61,10 @@ public class ApplicationBaseServiceTest {
         verify(appBaseRepo, times(1)).save(any());
         assertEquals(applicationBase1.getName(), result.getName());
         assertEquals(0, result.getVersions().size());
-
     }
 
     @Test
-    public void shouldAddNewVersionDuringUpdate(){
+    public void shouldAddNewVersionDuringUpdate() {
         this.applicationBase2.setVersions(Sets.newHashSet(new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)));
 
         when(appBaseRepo.existsByName(applicationBase2.getName())).thenReturn(true);
@@ -70,11 +76,10 @@ public class ApplicationBaseServiceTest {
         assertEquals(1, result.getVersions().size());
 
         assertTrue(result.getVersions().stream().anyMatch(version -> version.getVersion().equals("1.2")));
-
     }
 
     @Test
-    public void shouldNotAddSameVersion(){
+    public void shouldNotAddSameVersion() {
         applicationBase2.setVersions(Sets.newHashSet(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)
         ));
@@ -87,37 +92,37 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldUpdateApplicationBase(){
+    public void shouldUpdateApplicationBase() {
         this.appBaseService.update(applicationBase2);
         verify(appBaseRepo, times(1)).save(any());
     }
 
     @Test
-    public void shouldNotUpdateWhenNameIsEmpty(){
-        assertThrows(IllegalArgumentException.class, () ->{
+    public void shouldNotUpdateWhenNameIsEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> {
             ApplicationBase temp = new ApplicationBase(12L,"");
             this.appBaseService.update(temp);
         });
     }
 
     @Test
-    public void shouldNotUpdateWhenNameContainsIllegalCharacters(){
-        assertThrows(IllegalArgumentException.class, () ->{
+    public void shouldNotUpdateWhenNameContainsIllegalCharacters() {
+        assertThrows(IllegalArgumentException.class, () -> {
             ApplicationBase temp = new ApplicationBase(12L,"%^&!@#");
             this.appBaseService.update(temp);
         });
     }
 
     @Test
-    public void shouldNotUpdateWhenDescriptionsAreEmpty(){
-        assertThrows(IllegalArgumentException.class, () ->{
+    public void shouldNotUpdateWhenDescriptionsAreEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> {
             applicationBase2.setDescriptions(Collections.emptyList());
             this.appBaseService.update(applicationBase2);
         });
     }
 
     @Test
-    public void shouldUpdateApplicationVersionState(){
+    public void shouldUpdateApplicationVersionState() {
         this.applicationBase1.setVersions(Sets.newHashSet(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)
         ));
@@ -127,30 +132,20 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldFindAll(){
+    public void shouldFindAll() {
         when(appBaseRepo.findAll()).thenReturn(Collections.singletonList(applicationBase1));
         assertEquals(1, appBaseService.findAll().size());
     }
 
     @Test
-    public void shouldGetActiveAndDisabledApps(){
-        applicationBase1.setVersions(Sets.newHashSet(
-                new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L),
-                new ApplicationVersion("1.1", ApplicationState.DISABLED, 2L)
-        ));
-        when(appBaseRepo.findAll()).thenReturn(Collections.singletonList(applicationBase1));
-        assertEquals(1, appBaseService.findAllActiveOrDisabledApps().size());
-    }
-
-    @Test
-    public void shouldGetBaseApp(){
+    public void shouldGetBaseApp() {
         when(appBaseRepo.findById(anyLong())).thenReturn(Optional.of(applicationBase1));
         ApplicationBase result = appBaseService.getBaseApp(1L);
         assertEquals(applicationBase1.getName(), result.getName());
     }
 
     @Test
-    public void shouldNotGetBaseAppWhenNotExist(){
+    public void shouldNotGetBaseAppWhenNotExist() {
         assertThrows(MissingElementException.class, () -> {
             when(appBaseRepo.findById(anyLong())).thenReturn(Optional.empty());
             appBaseService.getBaseApp(1L);
@@ -158,7 +153,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldReturnAppActive(){
+    public void shouldReturnAppActive() {
         applicationBase1.setVersions(Sets.newHashSet(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L),
                 new ApplicationVersion("1.1", ApplicationState.DISABLED, 2L)
@@ -167,14 +162,14 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldFindByName(){
+    public void shouldFindByName() {
         when(appBaseRepo.findByName(applicationBase1.getName())).thenReturn(Optional.of(applicationBase1));
         ApplicationBase result = appBaseService.findByName(applicationBase1.getName());
         assertEquals(applicationBase1.getName(), result.getName());
     }
 
     @Test
-    public void shouldNotFindByNameWhenAppNotExists(){
+    public void shouldNotFindByNameWhenAppNotExists() {
         assertThrows(MissingElementException.class, () -> {
             when(appBaseRepo.findByName(applicationBase1.getName())).thenReturn(Optional.empty());
             appBaseService.findByName(applicationBase1.getName());
