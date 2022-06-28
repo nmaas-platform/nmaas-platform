@@ -21,6 +21,10 @@ public class ShibbolethMonitorService extends MonitorService {
 
     @Override
     public void checkStatus() {
+        if(!ssoConfigManager.isSsoLoginAllowed()) {
+            log.debug("SSO login option is disabled. Skipping Shibboleth instance status check");
+            return;
+        }
         if(!ssoConfigManager.isConfigValid()) {
             log.debug("Invalid SSO configuration. Skipping Shibboleth instance status check");
             return;
@@ -45,6 +49,12 @@ public class ShibbolethMonitorService extends MonitorService {
             this.updateMonitorEntry(MonitorStatus.FAILURE);
             log.warn("Shibboleth instance is not running -> " + e.getMessage());
         }
+    }
+
+    @Override
+    public boolean schedulable() {
+        // schedule Shibboleth monitoring only if SSO login option is enabled
+        return ssoConfigManager.isSsoLoginAllowed();
     }
 
     @Override

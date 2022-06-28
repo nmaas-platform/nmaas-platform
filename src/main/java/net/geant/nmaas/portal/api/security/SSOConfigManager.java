@@ -25,6 +25,9 @@ public class SSOConfigManager {
     @Value("${sso.key}")
     private String key;
 
+    @Value("${portal.config.ssoLoginAllowed}")
+    private boolean ssoLoginAllowed = true;
+
     public void validateConfig() {
         if(this.loginUrl == null || this.loginUrl.isEmpty()) {
             throw new IllegalStateException("Login url cannot be null or empty");
