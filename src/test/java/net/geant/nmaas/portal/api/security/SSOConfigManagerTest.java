@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SSOConfigManagerTest {
 
@@ -30,68 +32,79 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldCheckParamAndNotThrowAnException(){
-        configManager.checkParam();
+    public void shouldValidateConfigAndNotThrowAnException(){
+        configManager.validateConfig();
+    }
+
+    @Test
+    public void shouldConfirmThatConfigIsValid(){
+        assertTrue(configManager.isConfigValid());
     }
 
     @Test
     public void shouldThrowExceptionWhenLoginUrlIsEmpty(){
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "loginUrl", "");
-            configManager.checkParam();
+            configManager.validateConfig();
         });
     }
 
     @Test
-    public void shouldThrowExceptionWhenLoginUrlIsNull(){
+    public void shouldConfirmThatConfigIsNotValid() {
+        ReflectionTestUtils.setField(configManager, "loginUrl", "");
+        assertFalse(configManager.isConfigValid());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenLoginUrlIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "loginUrl", null);
-            configManager.checkParam();
+            configManager.validateConfig();
         });
     }
 
     @Test
-    public void shouldThrowExceptionWhenLogoutUrlIsNull(){
+    public void shouldThrowExceptionWhenLogoutUrlIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "logoutUrl", null);
-            configManager.checkParam();
+            configManager.validateConfig();
         });
     }
 
     @Test
-    public void shouldThrowExceptionWhenLogoutUrlIsEmpty(){
+    public void shouldThrowExceptionWhenLogoutUrlIsEmpty() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "logoutUrl", "");
-            configManager.checkParam();
+            configManager.validateConfig();
         });
     }
 
     @Test
-    public void shouldThrowExceptionWhenKeyIsNull(){
+    public void shouldThrowExceptionWhenKeyIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "key", null);
-            configManager.checkParam();
+            configManager.validateConfig();
         });
     }
 
     @Test
-    public void shouldThrowExceptionWhenKeyIsEmpty(){
+    public void shouldThrowExceptionWhenKeyIsEmpty() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "key", "");
-            configManager.checkParam();
+            configManager.validateConfig();
         });
     }
 
     @Test
-    public void shouldThrowExceptionWhenTimeoutIsLessThanZero(){
+    public void shouldThrowExceptionWhenTimeoutIsLessThanZero() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "timeout", -123);
-            configManager.checkParam();
+            configManager.validateConfig();
         });
     }
 
     @Test
-    public void shouldReturnSSOViewInstance(){
+    public void shouldReturnSSOViewInstance() {
         SSOView result = configManager.getSSOView();
         assertThat("Login url mismatch", result.getLoginUrl().equals(configManager.getLoginUrl()));
         assertThat("Logout url mismatch", result.getLogoutUrl().equals(configManager.getLogoutUrl()));

@@ -1,6 +1,6 @@
 package net.geant.nmaas.monitor;
 
-import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
+@Log4j2
 public class MonitorConfig {
 
     @Bean
@@ -32,20 +34,24 @@ public class MonitorConfig {
             @Transactional
             public void afterPropertiesSet() {
                 Arrays.stream(ServiceType.values())
-                        .filter(serviceType -> !this.scheduleManager.jobExists(serviceType.toString())) // if job does not exist
+                        .filter(serviceType -> !scheduleManager.jobExists(serviceType.toString())) // if job does not exist
                         .forEach(serviceType -> {
                             MonitorEntryView monitorEntry;
                             if (monitorManager.existsByServiceName(serviceType)) { // if entry exists
                                 monitorEntry = monitorManager.getMonitorEntries(serviceType.toString()); // read it from database
                             } else {
                                 monitorEntry = serviceType.getDefaultMonitorEntry(); // if entry does not exist
-                                this.monitorManager.createMonitorEntry(monitorEntry); // create new default entry
+                                monitorManager.createMonitorEntry(monitorEntry); // create new default entry
                             }
-                            MonitorService service = monitorServices.stream()
-                                    .filter(s->s.getServiceType().equals(serviceType))
-                                    .findAny()
-                                    .orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", serviceType)));
-                            this.scheduleManager.createJob(service, monitorEntry);
+                            Optional<MonitorService> service = monitorServices.stream()
+                                    .filter(s -> s.getServiceType().equals(serviceType))
+                                    .filter(MonitorService::schedulable)
+                                    .findFirst();
+                            if (service.isPresent()) {
+                                scheduleManager.createJob(service.get(), monitorEntry);
+                            } else {
+                                log.warn(String.format("Monitor service for %s not found or is not schedulable", serviceType));
+                            }
                         });
             }
         };

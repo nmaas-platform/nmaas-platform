@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.security;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.SSOView;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 @Getter
 @Component
 @ApplicationScope
+@Log4j2
 public class SSOConfigManager {
 
     @Value("${sso.loginUrl}")
@@ -23,15 +25,32 @@ public class SSOConfigManager {
     @Value("${sso.key}")
     private String key;
 
-    public void checkParam(){
-        if(this.loginUrl == null || this.loginUrl.isEmpty())
+    @Value("${portal.config.ssoLoginAllowed}")
+    private boolean ssoLoginAllowed = true;
+
+    public void validateConfig() {
+        if(this.loginUrl == null || this.loginUrl.isEmpty()) {
             throw new IllegalStateException("Login url cannot be null or empty");
-        if(this.logoutUrl == null || this.logoutUrl.isEmpty())
+        }
+        if(this.logoutUrl == null || this.logoutUrl.isEmpty()) {
             throw new IllegalStateException("Logout url cannot be null or empty");
-        if(this.key == null || this.key.isEmpty())
+        }
+        if(this.key == null || this.key.isEmpty()) {
             throw new IllegalStateException("Key cannot be null or empty");
-        if(this.timeout < 0)
+        }
+        if(this.timeout < 0) {
             throw new IllegalStateException("Timeout cannot be less than 0");
+        }
+    }
+
+    public boolean isConfigValid() {
+        try {
+            validateConfig();
+        } catch (IllegalStateException e) {
+            log.warn(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     public SSOView getSSOView(){

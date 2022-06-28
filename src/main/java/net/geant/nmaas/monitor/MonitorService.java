@@ -19,8 +19,12 @@ public abstract class MonitorService implements Job {
 
     public abstract ServiceType getServiceType();
 
-    protected void updateMonitorEntry(MonitorStatus status){
+    protected void updateMonitorEntry(MonitorStatus status) {
         this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), status);
+    }
+
+    protected boolean schedulable() {
+        return true;
     }
 
     @Override
