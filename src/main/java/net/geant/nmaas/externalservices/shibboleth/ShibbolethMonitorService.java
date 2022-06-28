@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.shibboleth;
+package net.geant.nmaas.externalservices.shibboleth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

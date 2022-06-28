@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.database;
+package net.geant.nmaas.externalservices.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,6 +1,6 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.gitlab;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

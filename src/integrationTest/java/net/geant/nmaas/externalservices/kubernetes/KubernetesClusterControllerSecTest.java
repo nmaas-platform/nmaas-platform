@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.kubernetes;
+package net.geant.nmaas.externalservices.kubernetes;
 
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -22,7 +22,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldAuthorizeAdminProperUser() throws Exception {
+    public void shouldAuthorizeAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/management/kubernetes")
@@ -32,7 +32,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldRejectNonAdminProperUser() throws Exception {
+    public void shouldRejectNonAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/management/kubernetes")

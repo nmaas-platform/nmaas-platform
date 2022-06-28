@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.kubernetes.model;
+package net.geant.nmaas.externalservices.kubernetes.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

@@ -1,10 +1,10 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.gitlab;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.GroupApi;

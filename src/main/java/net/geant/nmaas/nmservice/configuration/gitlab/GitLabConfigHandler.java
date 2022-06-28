@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabNotFoundException;
+import net.geant.nmaas.externalservices.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;

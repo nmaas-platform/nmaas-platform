@@ -1,7 +1,7 @@
 package net.geant.nmaas.scheduling;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorService;
+import net.geant.nmaas.externalservices.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.gitlab.GitLabMonitorService;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.TimeFormat;

@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import lombok.NoArgsConstructor;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterDeploymentManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.orchestration.AppDeploymentParametersProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;

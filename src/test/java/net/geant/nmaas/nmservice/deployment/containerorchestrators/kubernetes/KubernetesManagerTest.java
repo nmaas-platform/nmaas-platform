@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.collect.Sets;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.kubernetes.model.IngressControllerConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;

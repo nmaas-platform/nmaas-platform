@@ -14,7 +14,7 @@ import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.InfoSer
 import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.ServiceResponse;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc.ReadinessServiceBlockingStub;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

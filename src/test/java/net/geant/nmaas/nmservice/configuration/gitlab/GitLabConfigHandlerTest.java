@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;

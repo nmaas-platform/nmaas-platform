@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.kubernetes;
+package net.geant.nmaas.externalservices.kubernetes;
 
 import net.geant.nmaas.portal.api.market.ApiExceptionHandler;
 import org.junit.jupiter.api.Test;

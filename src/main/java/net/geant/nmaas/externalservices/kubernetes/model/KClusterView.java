@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.kubernetes.model;
+package net.geant.nmaas.externalservices.kubernetes.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

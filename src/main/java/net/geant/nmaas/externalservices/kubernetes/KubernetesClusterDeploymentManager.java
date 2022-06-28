@@ -1,10 +1,10 @@
-package net.geant.nmaas.externalservices.inventory.kubernetes;
+package net.geant.nmaas.externalservices.kubernetes;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.NamespaceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.model.KClusterView;
+import net.geant.nmaas.externalservices.kubernetes.model.NamespaceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.apache.commons.lang3.StringUtils;

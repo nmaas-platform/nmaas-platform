@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.kubernetes;
+package net.geant.nmaas.externalservices.kubernetes;
 
 public interface KubernetesClusterNamespaceService {
 

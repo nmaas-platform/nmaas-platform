@@ -10,7 +10,7 @@ import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.InformationServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;

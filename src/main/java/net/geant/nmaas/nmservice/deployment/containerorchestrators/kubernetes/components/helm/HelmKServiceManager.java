@@ -1,11 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterDeploymentManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.externalservices.kubernetes.model.IngressCertificateConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.model.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static net.geant.nmaas.externalservices.inventory.kubernetes.model.IngressResourceConfigOption.DEPLOY_FROM_CHART;
+import static net.geant.nmaas.externalservices.kubernetes.model.IngressResourceConfigOption.DEPLOY_FROM_CHART;
 
 @Component
 @AllArgsConstructor
