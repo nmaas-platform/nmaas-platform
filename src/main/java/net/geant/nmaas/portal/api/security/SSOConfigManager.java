@@ -19,7 +19,7 @@ public class SSOConfigManager {
     @Value("${sso.logoutUrl}")
     private String logoutUrl;
 
-    @Value("${sso.timeout:15}")
+    @Value("${sso.timeout}")
     private Integer timeout;
 
     @Value("${sso.key}")
