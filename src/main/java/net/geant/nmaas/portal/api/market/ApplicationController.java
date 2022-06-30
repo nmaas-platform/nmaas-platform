@@ -239,7 +239,7 @@ public class ApplicationController extends AppBaseController {
 		Optional<Application> optId = applicationService.findApplication(view.getId());
 		Optional<Application> optNameVersion = applicationService.findApplication(view.getName(), view.getVersion());
 
-		if(!optId.isPresent() || !optNameVersion.isPresent()) {
+		if(optId.isEmpty() || optNameVersion.isEmpty()) {
 			log.error("Requested application does not exist");
 			throw new MissingElementException("Application does not exist");
 		}
@@ -257,7 +257,7 @@ public class ApplicationController extends AppBaseController {
 				.filter(v -> v.getVersion().equals(view.getVersion()) && v.getAppVersionId().equals(view.getId()))
 				.findFirst();
 
-		if (!version.isPresent()) {
+		if (version.isEmpty()) {
 			log.error("Application version cannot be updated (no matching versions available in ApplicationBase)");
 			throw new ProcessingException("Cannot update application version");
 		}

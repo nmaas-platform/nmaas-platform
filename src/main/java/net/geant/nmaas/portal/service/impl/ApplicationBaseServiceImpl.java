@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistent.entity.AppDescription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -13,6 +14,7 @@ import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,10 +28,9 @@ import java.util.stream.Collectors;
 public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     private final ApplicationBaseRepository appBaseRepository;
-
     private final TagRepository tagRepository;
-
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -76,6 +77,9 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .ifPresent(appVersion -> appVersion.setState(state));
         appBase.validate();
         appBaseRepository.save(appBase);
+        if(state.equals(ApplicationState.ACTIVE)) {
+            eventPublisher.publishEvent(new ApplicationActivatedEvent(this, name, version));
+        }
     }
 
     @Override

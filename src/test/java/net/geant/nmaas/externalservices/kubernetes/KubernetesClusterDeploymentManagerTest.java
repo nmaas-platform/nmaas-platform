@@ -25,12 +25,12 @@ public class KubernetesClusterDeploymentManagerTest {
     private KubernetesClusterDeploymentManager manager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         manager = new KubernetesClusterDeploymentManager(domainTechDetailsRepository);
     }
 
     @Test
-    public void shouldReturnEmptyStorageClassName() throws UnknownHostException {
+    void shouldReturnEmptyStorageClassName() throws UnknownHostException {
         manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         manager.setDefaultNamespace("testNamespace");
         manager.setDefaultStorageClass(null);
@@ -39,7 +39,7 @@ public class KubernetesClusterDeploymentManagerTest {
     }
 
     @Test
-    public void shouldReturnProperStorageClassName() {
+    void shouldReturnProperStorageClassName() {
         manager.setDefaultStorageClass("testClusterStorageClass");
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
         assertThat(manager.getStorageClass(DOMAIN).get(), is(manager.getKClusterDeploymentView().getDefaultStorageClass()));
@@ -62,7 +62,7 @@ public class KubernetesClusterDeploymentManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionDuringNamespaceConfigOptionValidation() {
+    void shouldThrowExceptionDuringNamespaceConfigOptionValidation() {
         assertThrows(IllegalArgumentException.class, () -> {
             manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
             manager.setDefaultNamespace(null);
@@ -71,7 +71,7 @@ public class KubernetesClusterDeploymentManagerTest {
     }
 
     @Test
-    public void shouldReturnProperNamespace() {
+    void shouldReturnProperNamespace() {
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
         manager.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         manager.setDefaultNamespace("testNamespace");
@@ -79,7 +79,7 @@ public class KubernetesClusterDeploymentManagerTest {
     }
 
     @Test
-    public void shouldReturnProperNamespaceFromDomain() {
+    void shouldReturnProperNamespaceFromDomain() {
         DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", null, null);
         Domain domain = new Domain("Domain Name", DOMAIN, false);
         domain.setDomainTechDetails(domainTechDetails);

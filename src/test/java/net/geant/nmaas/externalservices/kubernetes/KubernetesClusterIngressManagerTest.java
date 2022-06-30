@@ -26,12 +26,12 @@ public class KubernetesClusterIngressManagerTest {
     private KubernetesClusterIngressManager manager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         manager = new KubernetesClusterIngressManager(domainTechDetailsRepository);
     }
 
     @Test
-    public void shouldReturnProperExternalServiceDomain() {
+    void shouldReturnProperExternalServiceDomain() {
         manager.setIngressPerDomain(false);
         manager.setExternalServiceDomain("testClusterServiceDomain");
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
@@ -46,7 +46,7 @@ public class KubernetesClusterIngressManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnMissingDomain() {
+    void shouldThrowExceptionOnMissingDomain() {
         assertThrows(IllegalArgumentException.class, () -> {
             manager.setIngressPerDomain(true);
             manager.setExternalServiceDomain("testClusterServiceDomain");
@@ -56,7 +56,7 @@ public class KubernetesClusterIngressManagerTest {
     }
 
     @Test
-    public void shouldProceedWithUseExistingControllerConfigOption() {
+    void shouldProceedWithUseExistingControllerConfigOption() {
         assertDoesNotThrow(() -> {
             manager.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
             manager.setSupportedIngressClass("class");
@@ -67,7 +67,7 @@ public class KubernetesClusterIngressManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionDuringIngressControllerConfigValidationExisting() {
+    void shouldThrowExceptionDuringIngressControllerConfigValidationExisting() {
         assertThrows(IllegalArgumentException.class, () -> {
             manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
             manager.setSupportedIngressClass(null);
@@ -78,7 +78,7 @@ public class KubernetesClusterIngressManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionDuringIngressControllerConfigValidationRepo() {
+    void shouldThrowExceptionDuringIngressControllerConfigValidationRepo() {
         assertThrows(IllegalArgumentException.class, () -> {
             manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
             manager.setControllerChartName(null);
@@ -88,7 +88,7 @@ public class KubernetesClusterIngressManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionDuringIngressControllerConfigValidationArchive() {
+    void shouldThrowExceptionDuringIngressControllerConfigValidationArchive() {
         assertThrows(IllegalArgumentException.class, () -> {
             manager.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
             manager.setControllerChartArchive(null);
@@ -98,7 +98,7 @@ public class KubernetesClusterIngressManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionDuringIngressResourceConfigValidation() {
+    void shouldThrowExceptionDuringIngressResourceConfigValidation() {
         assertThrows(IllegalArgumentException.class, () -> {
             manager.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
             manager.setExternalServiceDomain(null);

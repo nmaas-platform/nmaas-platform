@@ -11,7 +11,7 @@ public class GitLabManagerTest {
     private GitLabManager manager;
 
     @Test
-    public void shouldValidateGitLabInstance() {
+    void shouldValidateGitLabInstance() {
         manager = new GitLabManager();
         Exception thrown;
 
