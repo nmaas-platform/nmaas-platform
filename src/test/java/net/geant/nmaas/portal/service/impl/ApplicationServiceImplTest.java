@@ -10,7 +10,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
-import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -199,7 +198,6 @@ public class ApplicationServiceImplTest {
         app.setState(ApplicationState.NEW);
         applicationService.changeApplicationState(app, ApplicationState.ACTIVE);
         verify(applicationRepository).save(any());
-        verify(eventPublisher).publishEvent(any(ApplicationActivatedEvent.class));
     }
 
     @Test

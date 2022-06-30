@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -133,9 +132,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 		app.setState(state);
 		applicationRepository.save(app);
-		if(state.equals(ApplicationState.ACTIVE)) {
-			eventPublisher.publishEvent(new ApplicationActivatedEvent(this, app.getName(), app.getVersion()));
-		}
 	}
 
 	private void checkApp(Application app) {

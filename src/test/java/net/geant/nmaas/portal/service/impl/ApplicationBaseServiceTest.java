@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.Sets;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistent.entity.AppDescription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -12,6 +13,7 @@ import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -25,24 +27,24 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 public class ApplicationBaseServiceTest {
 
-    private ApplicationBaseService appBaseService;
-
-    private final ApplicationBaseRepository appBaseRepo = mock(ApplicationBaseRepository.class);
-
-    private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
-
-    private final TagRepository tagRepo = mock(TagRepository.class);
-
     private final ApplicationBase applicationBase1 = new ApplicationBase("name");
     private final ApplicationBase applicationBase2 = new ApplicationBase(2L, "another");
 
+    private final ApplicationBaseRepository appBaseRepo = mock(ApplicationBaseRepository.class);
+    private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+    private final TagRepository tagRepo = mock(TagRepository.class);
+    private final ApplicationEventPublisher eventPublisher= mock(ApplicationEventPublisher.class);
+
+    private ApplicationBaseService appBaseService;
+
     @BeforeEach
-    public void setup() {
-        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, tagRepo, applicationStatePerDomainService);
+    void setup() {
+        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, tagRepo, applicationStatePerDomainService,eventPublisher);
         applicationBase1.setDescriptions(Collections.singletonList(
                 new AppDescription(11L, "en", "description", "full description")
         ));
@@ -52,7 +54,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldCreateNewApplicationBase() {
+    void shouldCreateNewApplicationBase() {
         when(appBaseRepo.existsByName(applicationBase1.getName())).thenReturn(false);
         when(appBaseRepo.save(any())).thenAnswer(i -> i.getArgument(0));
 
@@ -64,7 +66,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldAddNewVersionDuringUpdate() {
+    void shouldAddNewVersionDuringUpdate() {
         this.applicationBase2.setVersions(Sets.newHashSet(new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)));
 
         when(appBaseRepo.existsByName(applicationBase2.getName())).thenReturn(true);
@@ -79,7 +81,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldNotAddSameVersion() {
+    void shouldNotAddSameVersion() {
         applicationBase2.setVersions(Sets.newHashSet(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)
         ));
@@ -92,13 +94,13 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldUpdateApplicationBase() {
+    void shouldUpdateApplicationBase() {
         this.appBaseService.update(applicationBase2);
         verify(appBaseRepo, times(1)).save(any());
     }
 
     @Test
-    public void shouldNotUpdateWhenNameIsEmpty() {
+    void shouldNotUpdateWhenNameIsEmpty() {
         assertThrows(IllegalArgumentException.class, () -> {
             ApplicationBase temp = new ApplicationBase(12L,"");
             this.appBaseService.update(temp);
@@ -106,7 +108,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldNotUpdateWhenNameContainsIllegalCharacters() {
+    void shouldNotUpdateWhenNameContainsIllegalCharacters() {
         assertThrows(IllegalArgumentException.class, () -> {
             ApplicationBase temp = new ApplicationBase(12L,"%^&!@#");
             this.appBaseService.update(temp);
@@ -114,7 +116,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldNotUpdateWhenDescriptionsAreEmpty() {
+    void shouldNotUpdateWhenDescriptionsAreEmpty() {
         assertThrows(IllegalArgumentException.class, () -> {
             applicationBase2.setDescriptions(Collections.emptyList());
             this.appBaseService.update(applicationBase2);
@@ -122,30 +124,42 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldUpdateApplicationVersionState() {
+    void shouldUpdateApplicationVersionState() {
         this.applicationBase1.setVersions(Sets.newHashSet(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)
         ));
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(applicationBase1));
         this.appBaseService.updateApplicationVersionState(applicationBase1.getName(),"1.2", ApplicationState.DELETED);
         verify(appBaseRepo, times(1)).save(any());
+        verifyNoInteractions(eventPublisher);
     }
 
     @Test
-    public void shouldFindAll() {
+    void shouldUpdateApplicationVersionStateToActive() {
+        this.applicationBase1.setVersions(Sets.newHashSet(
+                new ApplicationVersion("1.2", ApplicationState.NEW, 1L)
+        ));
+        when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(applicationBase1));
+        this.appBaseService.updateApplicationVersionState(applicationBase1.getName(),"1.2", ApplicationState.ACTIVE);
+        verify(appBaseRepo, times(1)).save(any());
+        verify(eventPublisher).publishEvent(any(ApplicationActivatedEvent.class));
+    }
+
+    @Test
+    void shouldFindAll() {
         when(appBaseRepo.findAll()).thenReturn(Collections.singletonList(applicationBase1));
         assertEquals(1, appBaseService.findAll().size());
     }
 
     @Test
-    public void shouldGetBaseApp() {
+    void shouldGetBaseApp() {
         when(appBaseRepo.findById(anyLong())).thenReturn(Optional.of(applicationBase1));
         ApplicationBase result = appBaseService.getBaseApp(1L);
         assertEquals(applicationBase1.getName(), result.getName());
     }
 
     @Test
-    public void shouldNotGetBaseAppWhenNotExist() {
+    void shouldNotGetBaseAppWhenNotExist() {
         assertThrows(MissingElementException.class, () -> {
             when(appBaseRepo.findById(anyLong())).thenReturn(Optional.empty());
             appBaseService.getBaseApp(1L);
@@ -153,7 +167,7 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldReturnAppActive() {
+    void shouldReturnAppActive() {
         applicationBase1.setVersions(Sets.newHashSet(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L),
                 new ApplicationVersion("1.1", ApplicationState.DISABLED, 2L)
@@ -162,14 +176,14 @@ public class ApplicationBaseServiceTest {
     }
 
     @Test
-    public void shouldFindByName() {
+    void shouldFindByName() {
         when(appBaseRepo.findByName(applicationBase1.getName())).thenReturn(Optional.of(applicationBase1));
         ApplicationBase result = appBaseService.findByName(applicationBase1.getName());
         assertEquals(applicationBase1.getName(), result.getName());
     }
 
     @Test
-    public void shouldNotFindByNameWhenAppNotExists() {
+    void shouldNotFindByNameWhenAppNotExists() {
         assertThrows(MissingElementException.class, () -> {
             when(appBaseRepo.findByName(applicationBase1.getName())).thenReturn(Optional.empty());
             appBaseService.findByName(applicationBase1.getName());
