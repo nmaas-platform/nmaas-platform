@@ -1,13 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.orchestration.AppDeploymentParametersProvider;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -24,18 +22,13 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_USERNAME;
 
 @Component
+@RequiredArgsConstructor
 @Profile("env_kubernetes")
-@NoArgsConstructor
 public class KubernetesDeploymentParametersProvider implements AppDeploymentParametersProvider {
 
-    @Autowired
-    private KubernetesClusterDeploymentManager deploymentManager;
-
-    @Autowired
-    private KubernetesClusterIngressManager ingressManager;
-
-    @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
+    private final KubernetesClusterDeploymentManager deploymentManager;
+    private final KubernetesClusterIngressManager ingressManager;
+    private final AppDeploymentRepository appDeploymentRepository;
 
     @Override
     public Map<String, String> deploymentParameters(Identifier deploymentId) {
@@ -53,10 +46,10 @@ public class KubernetesDeploymentParametersProvider implements AppDeploymentPara
             }
         });
         parametersMap.put(BASE_URL.name(), ingressManager.getExternalServiceDomain());
-        AppDeployment appDeployment = appDeploymentRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new IllegalStateException("Missing application deployment"));
+        var appDeployment = appDeploymentRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new IllegalStateException("Missing application deployment"));
         parametersMap.put(DOMAIN_CODENAME.name(), appDeployment.getDomain());
         parametersMap.put(RELEASE_NAME.name(), appDeployment.getDescriptiveDeploymentId().value());
-        parametersMap.put(APP_INSTANCE_NAME.name(), appDeployment.getDeploymentName());
+        parametersMap.put(APP_INSTANCE_NAME.name(), appDeployment.getDeploymentName().toLowerCase());
         return parametersMap;
     }
 
