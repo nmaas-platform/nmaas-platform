@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Autowired
-    private SSOConfigManager SSOConfigManager;
+    private SSOConfigManager ssoConfigManager;
 
     @Autowired
     private ConfigurationManager configManager;
@@ -53,14 +53,14 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
     private UserRepository userRepo;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.mvc = createMVC();
         this.addLanguage();
         this.changeConfigToDefault();
     }
 
     @AfterEach
-    public void teardown() {
+    void teardown() {
         this.userRepo.findAll().stream()
                 .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                 .forEach(user -> userRepo.delete(user));
@@ -69,7 +69,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void shouldRegister() throws Exception {
+    void shouldRegister() throws Exception {
         MvcResult mvcResult = this.mvc.perform(post("/api/auth/sso/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(ImmutableMap.of("userid", getValidToken()))))
@@ -81,7 +81,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void shouldNotLoginWhenSSOIsDisabled() {
+    void shouldNotLoginWhenSSOIsDisabled() {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setSsoLoginAllowed(false);
         config.setDefaultLanguage("en");
@@ -96,7 +96,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void shouldNotLoginWhenUsernameIsEmpty() {
+    void shouldNotLoginWhenUsernameIsEmpty() {
         String[] token = getValidToken().split("\\|");
         assertDoesNotThrow(() -> {
             this.mvc.perform(post("/api/auth/sso/login")
@@ -108,7 +108,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void shouldNotLoginWithInvalidSignature() {
+    void shouldNotLoginWithInvalidSignature() {
         String[] token = getValidToken().split("\\|");
         token[2] = "invalidSignature";
         assertDoesNotThrow(() -> {
@@ -121,7 +121,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void shouldNotLoginWithExpiredToken() {
+    void shouldNotLoginWithExpiredToken() {
         String[] token = getValidToken().split("\\|");
         token[1] = Long.toString((new Date().getTime() /1000) - 10000);
         assertDoesNotThrow(() -> {
@@ -134,7 +134,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void shouldNotLoginWithPortalMaintenance() {
+    void shouldNotLoginWithPortalMaintenance() {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setMaintenance(true);
         config.setDefaultLanguage("en");
@@ -163,7 +163,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     private String getValidToken() {
         String signed = TextCodec.BASE64.encode("admin") + '|' + (new Date().getTime() / 1000) + 10000;
-        byte[] keyBytes = SSOConfigManager.getKey().getBytes(StandardCharsets.US_ASCII);
+        byte[] keyBytes = ssoConfigManager.getKey().getBytes(StandardCharsets.US_ASCII);
         Key keyspec = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
         Signer signer = DefaultSignerFactory.INSTANCE.createSigner(SignatureAlgorithm.HS256, keyspec);
         String signature = DatatypeConverter.printHexBinary(signer.sign(signed.getBytes(StandardCharsets.US_ASCII)));

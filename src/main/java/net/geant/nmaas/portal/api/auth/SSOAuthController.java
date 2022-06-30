@@ -43,7 +43,7 @@ public class SSOAuthController {
 
 	private final ConfigurationManager configurationManager;
 
-	private final SSOConfigManager SSOConfigManager;
+	private final SSOConfigManager ssoConfigManager;
 
 	private final UserLoginRegisterService userLoginService;
 
@@ -58,12 +58,12 @@ public class SSOAuthController {
 			throw new AuthenticationException("Received user SSO login data is incorrect");
 		}
 
-		if(Strings.isNullOrEmpty(userSSOLoginData.getUsername())){
+		if(Strings.isNullOrEmpty(userSSOLoginData.getUsername())) {
 			throw new AuthenticationException("Missing username");
 		}
 
-		SSOConfigManager.validateConfig();
-		userSSOLoginData.validate(SSOConfigManager.getKey(), SSOConfigManager.getTimeout());
+		ssoConfigManager.validateConfig();
+		userSSOLoginData.validate(ssoConfigManager.getKey(), ssoConfigManager.getTimeout());
 
 		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElseGet(() -> registerNewUser(userSSOLoginData));
 
@@ -93,8 +93,8 @@ public class SSOAuthController {
 
 	@GetMapping
 	public SSOView getSSO() {
-		SSOConfigManager.validateConfig();
-		return SSOConfigManager.getSSOView();
+		ssoConfigManager.validateConfig();
+		return ssoConfigManager.getSSOView();
 	}
 
 	private User registerNewUser(UserSSOLogin userSSOLoginData) {
