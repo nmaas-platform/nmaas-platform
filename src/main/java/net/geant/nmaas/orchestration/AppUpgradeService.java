@@ -8,12 +8,15 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
+import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppUpgradeHistoryRepository;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -35,6 +38,7 @@ public class AppUpgradeService {
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationInstanceService applicationInstanceService;
+    private final ApplicationService applicationService;
     private final AppUpgradeHistoryRepository appUpgradeHistoryRepository;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -113,11 +117,12 @@ public class AppUpgradeService {
                 .findInPeriod(Date.from(now.minus(Duration.ofHours(appUpgradeSummaryInterval))), Date.from(now)).stream()
                 .map(item -> {
                     AppInstance appInstance = applicationInstanceService.findByInternalId(item.getDeploymentId()).orElseThrow(InvalidDeploymentIdException::new);
+                    Application app = applicationService.findApplication(item.getTargetApplicationId().longValue()).orElseThrow(InvalidApplicationIdException::new);
                     return Map.of(
                             "domainName", appInstance.getDomain().getName(),
                             "appInstanceName", appInstance.getName(),
-                            "appVersion", appInstance.getApplication().getVersion(),
-                            "appHelmChartVersion", appInstance.getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+                            "appVersion", app.getVersion(),
+                            "appHelmChartVersion", app.getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
                             "timestamp", item.getTimestamp(),
                             "status", item.getStatus().name().toLowerCase()
                     );
