@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,10 +60,11 @@ public class AppUpgradeServiceTest {
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
+    private final ApplicationService applicationService = mock(ApplicationService.class);
     private final AppUpgradeHistoryRepository appUpgradeHistoryRepository = mock(AppUpgradeHistoryRepository.class);
     private final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
-    private final AppUpgradeService service = new AppUpgradeService(appDeploymentRepositoryManager, applicationInstanceService, appUpgradeHistoryRepository, applicationEventPublisher);
+    private final AppUpgradeService service = new AppUpgradeService(appDeploymentRepositoryManager, applicationInstanceService, applicationService, appUpgradeHistoryRepository, applicationEventPublisher);
 
     @BeforeAll
     static void init() {
@@ -97,6 +99,8 @@ public class AppUpgradeServiceTest {
         when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID3)).thenReturn(Boolean.FALSE);
         when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE1.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
         when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE2.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
+        when(applicationService.findApplication(APPLICATION_ID1)).thenReturn(Optional.of(APPLICATION1));
+        when(applicationService.findApplication(APPLICATION_ID2)).thenReturn(Optional.of(APPLICATION2));
     }
 
     @Test
@@ -137,11 +141,13 @@ public class AppUpgradeServiceTest {
                         AppUpgradeHistory.builder()
                                 .deploymentId(DEPLOYMENT_ID2)
                                 .timestamp(Date.from(Instant.now()))
+                                .targetApplicationId(Identifier.newInstance(APPLICATION_ID1))
                                 .status(AppUpgradeStatus.SUCCESS)
                                 .build(),
                         AppUpgradeHistory.builder()
                                 .deploymentId(DEPLOYMENT_ID3)
                                 .timestamp(Date.from(Instant.now()))
+                                .targetApplicationId(Identifier.newInstance(APPLICATION_ID2))
                                 .status(AppUpgradeStatus.FAILURE)
                                 .build())
                 );
@@ -156,7 +162,10 @@ public class AppUpgradeServiceTest {
         NotificationEvent result = notificationEventArgumentCaptor.getValue();
         assertThat(result.getMailAttributes().getOtherAttributes().get("summaryInternal")).isEqualTo(1);
         assertThat(result.getMailAttributes().getOtherAttributes().get("upgradesExist")).isEqualTo(Boolean.TRUE);
-        assertThat(((List<Map>) result.getMailAttributes().getOtherAttributes().get("appUpgrades")).size()).isEqualTo(2);
+        List<Map> appUpgradesFromEmail = (List<Map>) result.getMailAttributes().getOtherAttributes().get("appUpgrades");
+        assertThat(appUpgradesFromEmail.size()).isEqualTo(2);
+        assertThat(appUpgradesFromEmail.get(0).get("appVersion")).isEqualTo(APPLICATION1.getVersion());
+        assertThat(appUpgradesFromEmail.get(1).get("appVersion")).isEqualTo(APPLICATION2.getVersion());
     }
 
 }
