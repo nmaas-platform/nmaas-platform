@@ -99,6 +99,7 @@ public class KubernetesManagerTest {
 
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");
+        service.setDeploymentName("DeploymentName");
         service.setDescriptiveDeploymentId(Identifier.newInstance("deploymentId"));
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", null));
@@ -107,6 +108,7 @@ public class KubernetesManagerTest {
         Map<HelmChartIngressVariable, String> sshAccessDeploymentParameters = new HashMap<>();
         sshAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_PORT, "22");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service-with-port", null, "SSH", sshAccessDeploymentParameters));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public",null));
         Map<HelmChartIngressVariable, String> dataAccessDeploymentParameters = new HashMap<>();
         dataAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_SUFFIX, "component1");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service", null, "DATA", dataAccessDeploymentParameters));
@@ -283,11 +285,12 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldTriggerServiceDeployment() {
-        when(ingressResourceManager.generateServiceExternalURL("domain", null, null, false)).thenReturn("base.url");
+        when(ingressResourceManager.generateServiceExternalURL("domain", "DeploymentName", null, false)).thenReturn("base.url");
+        when(ingressManager.getPublicServiceDomain()).thenReturn("public-base.url");
         manager.deployNmService(DEPLOYMENT_ID);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-        assertEquals(5, accessMethodsArg.getValue().size());
+        assertEquals(6, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
@@ -298,6 +301,11 @@ public class KubernetesManagerTest {
                         && m.getName().equals("web-service")
                         && m.getProtocol().equals("Web")
                         && m.getUrl().equals("web-service-base.url")));
+        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.PUBLIC)
+                        && m.getName().equals("public-service")
+                        && m.getProtocol().equals("Public")
+                        && m.getUrl().equals("deploymentname-domain.public-base.url")));
         verify(serviceLifecycleManager, times(1)).deployService(DEPLOYMENT_ID);
     }
 
@@ -322,7 +330,7 @@ public class KubernetesManagerTest {
 
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
             verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(5, accessMethodsArg.getValue().size());
+            assertEquals(6, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")
