@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
@@ -63,19 +63,19 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 @Component
 @Profile("env_kubernetes")
 @Log4j2
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class KubernetesManager implements ContainerOrchestrator {
 
-    private KubernetesRepositoryManager repositoryManager;
-    private KubernetesDeploymentParametersProvider deploymentParametersProvider;
-    private KClusterValidator clusterValidator;
-    private KServiceLifecycleManager serviceLifecycleManager;
-    private KServiceOperationsManager serviceOperationsManager;
-    private IngressControllerManager ingressControllerManager;
-    private IngressResourceManager ingressResourceManager;
-    private KubernetesClusterIngressManager ingressManager;
-    private GitLabManager gitLabManager;
-    private JanitorService janitorService;
+    private final KubernetesRepositoryManager repositoryManager;
+    private final KubernetesDeploymentParametersProvider deploymentParametersProvider;
+    private final KClusterValidator clusterValidator;
+    private final KServiceLifecycleManager serviceLifecycleManager;
+    private final KServiceOperationsManager serviceOperationsManager;
+    private final IngressControllerManager ingressControllerManager;
+    private final IngressResourceManager ingressResourceManager;
+    private final KubernetesClusterIngressManager ingressManager;
+    private final GitLabManager gitLabManager;
+    private final JanitorService janitorService;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -241,13 +241,13 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     private String generateServicePublicUrl(KubernetesNmServiceInfo service) {
-        return service.getDeploymentName() + "-" + service.getDomain() + "." + ingressManager.getPublicServiceDomain();
+        return service.getDeploymentName().toLowerCase() + "-" + service.getDomain() + "." + ingressManager.getPublicServiceDomain();
     }
 
     private Set<ServiceAccessMethod> retrieveAccessMethods(KubernetesNmServiceInfo service) {
         return service.getAccessMethods().stream().map(am -> {
             if (am.isOfType(PUBLIC)) {
-                boolean shouldRemainPublic = service.getAdditionalParameters().getOrDefault("accessmethods.public." + am.getName(), "yes").equals("yes");
+                boolean shouldRemainPublic = service.getAdditionalParameters() == null || service.getAdditionalParameters().getOrDefault("accessmethods.public." + am.getName(), "yes").equals("yes");
                 if (!shouldRemainPublic) {
                     log.info(String.format("%s access will remain public: no", am.getName()));
                     return new ServiceAccessMethod(am.getId(), EXTERNAL, am.getName(), am.getUrl(), am.getProtocol(), am.getDeployParameters());
