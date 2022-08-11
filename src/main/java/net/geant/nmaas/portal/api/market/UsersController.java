@@ -228,34 +228,33 @@ public class UsersController {
     public void removeUserRole(@PathVariable final Long userId,
                                @RequestBody final UserRoleView userRole,
                                final Principal principal) {
-        if (userRole == null)
+        if (userRole == null) {
             throw new MissingElementException("userRole is null");
+        }
 
         if (userRole.getRole() == null)
             throw new MissingElementException("Missing role");
 
         Domain domain;
-        if (userRole.getDomainId() == null)
+        if (userRole.getDomainId() == null) {
             domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
-        else
+        }
+        else {
             domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
+        }
 
         User user = getUser(userId);
 
         try {
             domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
-
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
-
             final String adminRoles = getRoleAsString(adminUser.getRoles());
-
             log.info(String.format("User [%s] with role [%s] removed role [%s] from user [%s] in domain [%d]",
                     principal.getName(),
                     adminRoles,
                     userRole.getRole().authority(),
                     user.getUsername(),
                     userRole.getDomainId()));
-
             domainService.addGlobalGuestUserRoleIfMissing(userId);
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());

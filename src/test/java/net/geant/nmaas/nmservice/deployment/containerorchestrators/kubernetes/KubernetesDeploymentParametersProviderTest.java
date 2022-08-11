@@ -18,11 +18,11 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_PASSWORD;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_PORT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_USERNAME;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class KubernetesDeploymentParametersProviderTest {
+class KubernetesDeploymentParametersProviderTest {
 
     private final KubernetesClusterDeploymentManager deploymentManager = mock(KubernetesClusterDeploymentManager.class);
     private final KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
@@ -52,15 +52,15 @@ public class KubernetesDeploymentParametersProviderTest {
         Map<String, String> deploymentParameters = provider.deploymentParameters(DEPLOYMENT_ID);
 
         assertThat(deploymentParameters).isNotNull();
-        assertThat(deploymentParameters.get(SMTP_HOSTNAME.name())).isEqualTo("smtpHostname");
-        assertThat(deploymentParameters.get(SMTP_PORT.name())).isEqualTo("505");
+        assertThat(deploymentParameters).containsEntry(SMTP_HOSTNAME.name(), "smtpHostname");
+        assertThat(deploymentParameters).containsEntry(SMTP_PORT.name(), "505");
         assertThat(deploymentParameters.get(SMTP_USERNAME.name())).isNull();
         assertThat(deploymentParameters.get(SMTP_PASSWORD.name())).isNull();
-        assertThat(deploymentParameters.get(BASE_URL.name())).isEqualTo("externalDomain");
-        assertThat(deploymentParameters.get(DOMAIN_CODENAME.name())).isEqualTo("domain");
-        assertThat(deploymentParameters.get(RELEASE_NAME.name())).isEqualTo("descriptiveDeploymentId");
+        assertThat(deploymentParameters).containsEntry(BASE_URL.name(), "externalDomain");
+        assertThat(deploymentParameters).containsEntry(DOMAIN_CODENAME.name(), "domain");
+        assertThat(deploymentParameters).containsEntry(RELEASE_NAME.name(), "descriptiveDeploymentId");
         // note the lowercase conversion
-        assertThat(deploymentParameters.get(APP_INSTANCE_NAME.name())).isEqualTo("deploymentname");
+        assertThat(deploymentParameters).containsEntry(APP_INSTANCE_NAME.name(), "deploymentname");
     }
 
 }
