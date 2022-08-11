@@ -42,11 +42,11 @@ import static org.mockito.Mockito.when;
 
 public class DefaultAppLifecycleManagerTest {
 
-    private AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
-    private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
-    private NmServiceRepositoryManager serviceRepositoryManager = mock(KubernetesRepositoryManager.class);
-    private JanitorService janitorService = mock(JanitorService.class);
-    private AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
+    private final AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+    private final NmServiceRepositoryManager<KubernetesNmServiceInfo> serviceRepositoryManager = mock(KubernetesRepositoryManager.class);
+    private final JanitorService janitorService = mock(JanitorService.class);
+    private final AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
 
     private DefaultAppLifecycleManager appLifecycleManager;
 
@@ -191,7 +191,7 @@ public class DefaultAppLifecycleManagerTest {
         input.put("keywith#inthemiddle", "value");
         input.put("keywith#andnullvalue", null);
         input.put("keywith#andemptyvalue", "");
-        Map<String, String> output = DefaultAppLifecycleManager.replaceHashToDotsInMapKeys(input);
+        Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
         assertThat(output.keySet().size(), is(2));
         assertThat(output.keySet().containsAll(Arrays.asList("keywith.", "keywith.inthemiddle")), is(true));
     }
@@ -201,8 +201,17 @@ public class DefaultAppLifecycleManagerTest {
         Map<String, String> input = new HashMap<>();
         input.put("keywith#", "value");
         input.put("keywith#inthemiddle", "value, this value and another value");
-        Map<String, String> output = DefaultAppLifecycleManager.replaceHashToDotsInMapKeys(input);
+        Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
         assertThat(output.values().containsAll(Arrays.asList("value", "\"value\\, this value and another value\"")), is(true));
+    }
+
+    @Test
+    public void shouldReplaceHashWithEscapedQuotesInMapValuesWhereRequired() {
+        Map<String, String> input = new HashMap<>();
+        input.put("key1", "value");
+        input.put("key2", "#valuewithhashonbothends#");
+        Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
+        assertThat(output.values().containsAll(Arrays.asList("value", "\\\"valuewithhashonbothends\\\"")), is(true));
     }
 
     @Test

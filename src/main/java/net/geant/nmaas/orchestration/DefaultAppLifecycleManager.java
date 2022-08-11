@@ -94,6 +94,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -108,13 +109,20 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceRepositoryManager.updateStorageSpace(deploymentId, configuration.getStorageSpace());
         }
         if (isNotEmpty(configuration.getAdditionalParameters())) {
-            serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getAdditionalParameters())));
+            serviceRepositoryManager.addAdditionalParameters(
+                    deploymentId,
+                    replaceHashWithDotInMapKeysAndProcessValues(getMapFromJson(configuration.getAdditionalParameters())));
         }
         if (isNotEmpty(configuration.getMandatoryParameters())) {
-            serviceRepositoryManager.addAdditionalParameters(deploymentId, replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
+            serviceRepositoryManager.addAdditionalParameters(
+                    deploymentId,
+                    replaceHashWithDotInMapKeysAndProcessValues(getMapFromJson(configuration.getMandatoryParameters())));
         }
         if (isNotEmpty(configuration.getAccessCredentials())) {
-            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), serviceRepositoryManager.loadDomain(deploymentId), configuration.getAccessCredentials());
+            changeBasicAuth(
+                    appDeployment.getDescriptiveDeploymentId(),
+                    serviceRepositoryManager.loadDomain(deploymentId),
+                    configuration.getAccessCredentials());
         }
         /*
          * NMAAS-967
@@ -126,7 +134,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 log.error("Terms acceptance is required for this application, however terms are not present in user configuration data");
                 throw new ProcessingException("Terms acceptance is required, however terms are not present");
             }
-            Map<String, String> termsAcceptanceMap = replaceHashToDotsInMapKeys(getMapFromJson(configuration.getTermsAcceptance()));
+            Map<String, String> termsAcceptanceMap = replaceHashWithDotInMapKeysAndProcessValues(getMapFromJson(configuration.getTermsAcceptance()));
             String termsContent = termsAcceptanceMap.get("termsContent");
             // TODO validate terms content
             String termsAcceptanceStatement = termsAcceptanceMap.get("termsAcceptanceStatement");
@@ -166,31 +174,34 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     Map<String, String> getMapFromJson(String inputJson) {
         try {
-            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {
-            });
+            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() { });
         } catch (IOException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
     }
 
-    static Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map) {
+    static Map<String, String> replaceHashWithDotInMapKeysAndProcessValues(Map<String, String> map) {
         Map<String, String> newMap = new HashMap<>();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isEmpty()) {
                 newMap.put(
                         entry.getKey().replace("#", "."),
-                        escapeCommasIfRequired(addQuotationMarkIfRequired(entry.getValue()))
+                        escapeCommasIfRequired(addQuotationMarkIfRequired(replaceHashWithQuote(entry.getValue())))
                 );
             }
         }
         return newMap;
     }
 
-    static String addQuotationMarkIfRequired(String value) {
+    private static String replaceHashWithQuote(String value) {
+        return value.replace("#", "\\\"");
+    }
+
+    private static String addQuotationMarkIfRequired(String value) {
         return value.contains(" ") ? "\"" + value + "\"" : value;
     }
 
-    static String escapeCommasIfRequired(String value) {
+    private static String escapeCommasIfRequired(String value) {
         return value.replace(",", "\\,");
     }
 

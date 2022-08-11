@@ -12,18 +12,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SSOConfigManagerTest {
 
-    private SSOConfigManager configManager;
-
     private static final String LOGIN_URL = "https://shibbolethsp.pllab.internal/cgi-bin/nmaas.php";
-
     private static final String LOGOUT_URL = "https://shibbolethsp.pllab.internal/Shibboleth.sso/Logout";
-
     private static final Integer TIMEOUT = 15;
-
     private static final String KEY = "sso_shared_secret_key";
 
+    private SSOConfigManager configManager;
+
     @BeforeEach
-    public void setup(){
+    void setup(){
         configManager = new SSOConfigManager();
         ReflectionTestUtils.setField(configManager, "loginUrl", LOGIN_URL);
         ReflectionTestUtils.setField(configManager, "logoutUrl", LOGOUT_URL);
@@ -32,17 +29,17 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldValidateConfigAndNotThrowAnException(){
+    void shouldValidateConfigAndNotThrowAnException(){
         configManager.validateConfig();
     }
 
     @Test
-    public void shouldConfirmThatConfigIsValid(){
+    void shouldConfirmThatConfigIsValid(){
         assertTrue(configManager.isConfigValid());
     }
 
     @Test
-    public void shouldThrowExceptionWhenLoginUrlIsEmpty(){
+    void shouldThrowExceptionWhenLoginUrlIsEmpty(){
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "loginUrl", "");
             configManager.validateConfig();
@@ -50,13 +47,13 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldConfirmThatConfigIsNotValid() {
+    void shouldConfirmThatConfigIsNotValid() {
         ReflectionTestUtils.setField(configManager, "loginUrl", "");
         assertFalse(configManager.isConfigValid());
     }
 
     @Test
-    public void shouldThrowExceptionWhenLoginUrlIsNull() {
+    void shouldThrowExceptionWhenLoginUrlIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "loginUrl", null);
             configManager.validateConfig();
@@ -64,7 +61,7 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenLogoutUrlIsNull() {
+    void shouldThrowExceptionWhenLogoutUrlIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "logoutUrl", null);
             configManager.validateConfig();
@@ -72,7 +69,7 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenLogoutUrlIsEmpty() {
+    void shouldThrowExceptionWhenLogoutUrlIsEmpty() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "logoutUrl", "");
             configManager.validateConfig();
@@ -80,7 +77,7 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenKeyIsNull() {
+    void shouldThrowExceptionWhenKeyIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "key", null);
             configManager.validateConfig();
@@ -88,7 +85,7 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenKeyIsEmpty() {
+    void shouldThrowExceptionWhenKeyIsEmpty() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "key", "");
             configManager.validateConfig();
@@ -96,7 +93,7 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenTimeoutIsLessThanZero() {
+    void shouldThrowExceptionWhenTimeoutIsLessThanZero() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "timeout", -123);
             configManager.validateConfig();
@@ -104,7 +101,7 @@ public class SSOConfigManagerTest {
     }
 
     @Test
-    public void shouldReturnSSOViewInstance() {
+    void shouldReturnSSOViewInstance() {
         SSOView result = configManager.getSSOView();
         assertThat("Login url mismatch", result.getLoginUrl().equals(configManager.getLoginUrl()));
         assertThat("Logout url mismatch", result.getLogoutUrl().equals(configManager.getLogoutUrl()));

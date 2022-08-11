@@ -134,6 +134,7 @@ public class AppUpgradeServiceTest {
         assertThat(result.getMailAttributes().getOtherAttributes().get("appVersionNew")).isEqualTo("appversion3");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldNotifySummaryAutoUpgraded() {
         when(appUpgradeHistoryRepository.findInPeriod(any(), any())).thenReturn(
@@ -164,8 +165,8 @@ public class AppUpgradeServiceTest {
         assertThat(result.getMailAttributes().getOtherAttributes().get("upgradesExist")).isEqualTo(Boolean.TRUE);
         List<Map> appUpgradesFromEmail = (List<Map>) result.getMailAttributes().getOtherAttributes().get("appUpgrades");
         assertThat(appUpgradesFromEmail.size()).isEqualTo(2);
-        assertThat(appUpgradesFromEmail.get(0).get("appVersion")).isEqualTo(APPLICATION1.getVersion());
-        assertThat(appUpgradesFromEmail.get(1).get("appVersion")).isEqualTo(APPLICATION2.getVersion());
+        assertThat(appUpgradesFromEmail.get(0)).containsEntry("appVersion", APPLICATION1.getVersion());
+        assertThat(appUpgradesFromEmail.get(1)).containsEntry("appVersion", APPLICATION2.getVersion());
     }
 
 }
