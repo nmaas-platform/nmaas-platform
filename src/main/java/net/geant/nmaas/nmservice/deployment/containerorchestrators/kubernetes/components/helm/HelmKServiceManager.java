@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.externalservices.kubernetes.model.IngressResourceConfigOption.DEPLOY_FROM_CHART;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.RANDOM_ARGUMENT_EXPRESSION_PREFIX;
 
 @Component
 @AllArgsConstructor
@@ -69,7 +71,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         );
     }
 
-    private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo){
+    private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo) {
         Map<String, String> arguments = new HashMap<>();
         if(deploymentManager.getForceDedicatedWorkers()){
             arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
@@ -83,9 +85,16 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             arguments.putAll(getIngressVariables(ingressManager.getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain()));
         }
         if(serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()){
-            serviceInfo.getAdditionalParameters().forEach(arguments::put);
+            arguments.putAll(removeRedundantParameters(serviceInfo.getAdditionalParameters()));
         }
         return arguments;
+    }
+
+    static Map<String, String> removeRedundantParameters(Map<String, String> additionalParameters) {
+        return additionalParameters.entrySet().stream().filter(entry ->
+                        !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
+                                && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
+                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Map<String, String> getPersistenceVariables(Set<ServiceStorageVolume> serviceStorageVolumes, Optional<String> storageClass, String storageName) {

@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,26 +38,26 @@ import static org.mockito.Mockito.when;
 
 public class HelmKServiceManagerTest {
 
-    private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
-    private KubernetesClusterNamespaceService namespaceService = mock(KubernetesClusterNamespaceService.class);
-    private KubernetesClusterDeploymentManager deploymentManager = mock(KubernetesClusterDeploymentManager.class);
-    private KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
-    private HelmCommandExecutor helmCommandExecutor = mock(HelmCommandExecutor.class);
-    private DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
+    private final Identifier deploymentId = Identifier.newInstance("deploymentId");
 
-    private Identifier deploymentId = Identifier.newInstance("deploymentId");
+    private final KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
+    private final KubernetesClusterNamespaceService namespaceService = mock(KubernetesClusterNamespaceService.class);
+    private final KubernetesClusterDeploymentManager deploymentManager = mock(KubernetesClusterDeploymentManager.class);
+    private final KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
+    private final HelmCommandExecutor helmCommandExecutor = mock(HelmCommandExecutor.class);
+    private final DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
 
-    private HelmKServiceManager manager = new HelmKServiceManager(
-            repositoryManager,
-            namespaceService,
-            deploymentManager,
-            ingressManager,
-            helmCommandExecutor,
-            domainTechDetailsRepository
-    );
+    private HelmKServiceManager manager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
+        manager = new HelmKServiceManager(
+                repositoryManager,
+                namespaceService,
+                deploymentManager,
+                ingressManager,
+                helmCommandExecutor,
+                domainTechDetailsRepository);
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         service.setDomain("domain");
         Set<ServiceStorageVolume> storageVolumes = new HashSet<>();
@@ -87,7 +88,7 @@ public class HelmKServiceManagerTest {
     }
 
     @Test
-    public void shouldDeployService() {
+    void shouldDeployService() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(ingressManager.getResourceConfigOption()).thenReturn(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         when(ingressManager.getIngressPerDomain()).thenReturn(false);
@@ -107,7 +108,21 @@ public class HelmKServiceManagerTest {
     }
 
     @Test
-    public void shouldCheckServiceDeployedTrue() {
+    void shouldRemoveRedundantParametersFromMap() {
+        Map<String, String> allParameters = new HashMap<>();
+        allParameters.put("key1", "value1");
+        allParameters.put("%RANDOM_STRING_8%", "value2");
+        allParameters.put("key2", "value3");
+        allParameters.put("accessmethods.public.method", "value4");
+
+        Map<String, String> filteredParameters = HelmKServiceManager.removeRedundantParameters(allParameters);
+        assertThat(filteredParameters.size()).isEqualTo(2);
+        assertThat(filteredParameters).containsEntry("key1", "value1");
+        assertThat(filteredParameters).containsEntry("key2", "value3");
+    }
+
+    @Test
+    void shouldCheckServiceDeployedTrue() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId"))
                 .thenReturn(HelmPackageStatus.DEPLOYED);
@@ -119,7 +134,7 @@ public class HelmKServiceManagerTest {
     }
 
     @Test
-    public void shouldCheckServiceDeployedFalse() {
+    void shouldCheckServiceDeployedFalse() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId")).
                 thenReturn(HelmPackageStatus.UNKNOWN);
@@ -131,7 +146,7 @@ public class HelmKServiceManagerTest {
     }
 
     @Test
-    public void shouldDeleteServiceSinceExists() {
+    void shouldDeleteServiceSinceExists() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(helmCommandExecutor.executeHelmListCommand("namespace"))
                 .thenReturn(Arrays.asList("descriptiveDeploymentId", "otherString"));
@@ -142,7 +157,7 @@ public class HelmKServiceManagerTest {
     }
 
     @Test
-    public void shouldNotDeleteServiceSinceNotExists() {
+    void shouldNotDeleteServiceSinceNotExists() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         when(helmCommandExecutor.executeHelmListCommand("namespace")).thenReturn(Collections.singletonList("otherString"));
 
@@ -152,7 +167,7 @@ public class HelmKServiceManagerTest {
     }
 
     @Test
-    public void shouldUpgradeService() {
+    void shouldUpgradeService() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
         manager.upgradeService(deploymentId, new KubernetesTemplate());
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
