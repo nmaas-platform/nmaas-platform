@@ -211,7 +211,7 @@ public class DefaultAppLifecycleManagerTest {
         input.put("key1", "value");
         input.put("key2", "#valuewithhashonbothends#");
         Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
-        assertThat(output.values().containsAll(Arrays.asList("value", "\\'valuewithhashonbothends\\'")), is(true));
+        assertThat(output.values().containsAll(Arrays.asList("value", "\\\"valuewithhashonbothends\\\"")), is(true));
     }
 
     @Test
