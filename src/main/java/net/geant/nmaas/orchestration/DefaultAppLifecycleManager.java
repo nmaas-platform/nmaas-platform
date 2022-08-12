@@ -188,15 +188,15 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                         entry.getKey().replace("#", "."),
                         escapeCommasIfRequired(
                                 addQuotationMarkIfRequired(
-                                        replaceHashWithSingleQuote(entry.getValue())))
+                                        replaceHashWithQuote(entry.getValue())))
                 );
             }
         }
         return newMap;
     }
 
-    private static String replaceHashWithSingleQuote(String value) {
-        return value.replace("#", "\\'");
+    private static String replaceHashWithQuote(String value) {
+        return value.replace("#", "\\\"");
     }
 
     private static String addQuotationMarkIfRequired(String value) {
