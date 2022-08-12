@@ -40,26 +40,19 @@ import static org.mockito.Mockito.when;
 
 public class NotificationManagerTest {
 
-    private NotificationManager notificationManager;
-
     private NotificationService notificationService = mock(NotificationService.class);
-
     private final TemplateService templateService = mock(TemplateService.class);
-
     private final UserService userService = mock(UserService.class);
-
     private final DomainService domainService = mock(DomainService.class);
-
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
-
     private final ModelMapper modelMapper = new ModelMapper();
-
     private final FormTypeService formTypeService = mock(FormTypeService.class);
-
     private NotificationEventListener notificationEventListener;
 
+    private NotificationManager notificationManager;
+
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
         this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, configurationManager, modelMapper, formTypeService);
 
         when(userService.findAllUsersWithAdminRole()).thenReturn(
@@ -88,7 +81,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void notificationServiceShouldSentEmail() {
+    void notificationServiceShouldSentEmail() {
         JavaMailSender jms = mock(JavaMailSender.class);
         this.notificationService = new NotificationService(jms);
 
@@ -98,7 +91,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void notificationTaskShouldSendEmail() {
+    void notificationTaskShouldSendEmail() {
         notificationManager = mock(NotificationManager.class);
         notificationEventListener = new NotificationEventListener(notificationManager);
         MailAttributes ma = new MailAttributes();
@@ -110,7 +103,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void notificationTaskShouldNotSendMail() {
+    void notificationTaskShouldNotSendMail() {
         notificationManager = mock(NotificationManager.class);
         notificationEventListener = new NotificationEventListener(notificationManager);
 
@@ -121,7 +114,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldSendBroadcastEmail() {
+    void shouldSendBroadcastEmail() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.BROADCAST);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -137,7 +130,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldSendHealthCheckEmail() {
+    void shouldSendHealthCheckEmail() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -151,7 +144,22 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldSendAppDeployedEmailToAdminWhenOwnerIsAdmin() {
+    void shouldSendHealthCheckEmailWithFromAddress() {
+        MailAttributes ma = new MailAttributes();
+        ma.setMailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK);
+        ma.setOtherAttributes(new HashMap<>() {{
+            put("text", "text");
+            put("username", "MyUser");
+        }});
+        notificationManager.setFromAddress("noreply@from.address");
+
+        notificationManager.prepareAndSendMail(ma);
+
+        verify(notificationService).sendMail(any(String.class), eq("Default"), any(String.class), any(String.class));
+    }
+
+    @Test
+    void shouldSendAppDeployedEmailToAdminWhenOwnerIsAdmin() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -167,7 +175,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldSendAppUpgradedEmailToAdminWhenOwnerIsAdmin() {
+    void shouldSendAppUpgradedEmailToAdminWhenOwnerIsAdmin() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_UPGRADED);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -183,7 +191,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldSendAppDeployedEmailToAdminAndOrdinaryWhenOwnerIsOrdinary() {
+    void shouldSendAppDeployedEmailToAdminAndOrdinaryWhenOwnerIsOrdinary() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -199,7 +207,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenCannotFindTemplateWithMatchingLanguage() {
+    void shouldThrowExceptionWhenCannotFindTemplateWithMatchingLanguage() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.REGISTRATION);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -217,7 +225,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldSendContactForm() {
+    void shouldSendContactForm() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.CONTACT_FORM);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -240,7 +248,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldSendAppDeploymentFailedEmail() {
+    void shouldSendAppDeploymentFailedEmail() {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYMENT_FAILED);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -269,7 +277,7 @@ public class NotificationManagerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenTemplateServiceThrowsException() throws IOException {
+    void shouldThrowExceptionWhenTemplateServiceThrowsException() throws IOException {
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.APP_DEPLOYED);
         ma.setOtherAttributes(new HashMap<>() {{

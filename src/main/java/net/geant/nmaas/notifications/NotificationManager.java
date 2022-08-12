@@ -1,10 +1,12 @@
 package net.geant.nmaas.notifications;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
@@ -21,7 +23,6 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -38,42 +39,23 @@ import java.util.stream.Collectors;
  */
 @Service
 @Log4j2
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NotificationManager {
 
     @Value("${portal.address}")
     private String portalAddress;
 
+    @Setter
+    @Value("${notifications.from-address}")
+    private String fromAddress;
+
     private final TemplateService templateService;
-
     private final NotificationService notificationService;
-
     private final UserService userService;
-
     private final DomainService domainService;
-
     private final ConfigurationManager configurationManager;
-
     private final ModelMapper modelMapper;
-
     private final FormTypeService formTypeService;
-
-    @Autowired
-    public NotificationManager(TemplateService templateService,
-                               NotificationService notificationService,
-                               UserService userService,
-                               DomainService domainService,
-                               ConfigurationManager configurationManager,
-                               ModelMapper modelMapper,
-                               FormTypeService formTypeService) {
-        this.templateService = templateService;
-        this.notificationService = notificationService;
-        this.userService = userService;
-        this.domainService = domainService;
-        this.configurationManager = configurationManager;
-        this.modelMapper = modelMapper;
-        this.formTypeService = formTypeService;
-    }
 
     /**
      * Main function of `NotificationManager`
@@ -96,13 +78,16 @@ public class NotificationManager {
         for (UserView user : mailAttributes.getAddressees()) {
             try {
                 LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
-                this.customizeMessage(mailContent, mailAttributes);
+                customizeMessage(mailContent, mailAttributes);
                 String filledTemplate = getFilledTemplate(template, mailContent, user, mailAttributes, mailTemplate);
-                this.notificationService.sendMail(user.getEmail(), mailContent.getSubject(), filledTemplate);
+                if (Strings.isNullOrEmpty(fromAddress)) {
+                    notificationService.sendMail(user.getEmail(), mailContent.getSubject(), filledTemplate);
+                } else {
+                    notificationService.sendMail(user.getEmail(), mailContent.getSubject(), filledTemplate, fromAddress);
+                }
             } catch (TemplateException | IOException e) {
                 log.error(String.format("Unable to generate template; to: [%s], template: [%s], message: %s", user.getEmail(), template.getName(), e.getMessage()));
             }
-
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
     }
