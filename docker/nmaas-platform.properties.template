@@ -42,6 +42,9 @@ spring.http.encoding.force=true
 nmaas.metrics.enabled=${METRICS_ENABLED}
 management.endpoints.web.exposure.include=health,prometheus
 
+# Notifications
+notifications.from-address=${SMTP_FROM}
+
 # ---------------- #
 # Database         #
 # ---------------- #
