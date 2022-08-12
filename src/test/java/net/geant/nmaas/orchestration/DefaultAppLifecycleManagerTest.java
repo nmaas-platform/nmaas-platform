@@ -51,19 +51,19 @@ public class DefaultAppLifecycleManagerTest {
     private DefaultAppLifecycleManager appLifecycleManager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService, appTermsAcceptanceService);
     }
 
     @Test
-    public void shouldGenerateProperIdentifier() {
+    void shouldGenerateProperIdentifier() {
         when(repositoryManager.load(any())).thenThrow(new InvalidDeploymentIdException());
         Identifier id = appLifecycleManager.generateDeploymentId();
         assertThat(id.value().matches("[a-z]([-a-z0-9]*[a-z0-9])?"), is(true));
     }
 
     @Test
-    public void shouldTriggerAppInstanceDeployment() {
+    void shouldTriggerAppInstanceDeployment() {
         when(repositoryManager.load(any())).thenThrow(new InvalidDeploymentIdException());
         AppDeployment appDeployment = new AppDeployment();
         Identifier assignedID = appLifecycleManager.deployApplication(appDeployment);
@@ -75,7 +75,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldNotTriggerAppInstanceConfiguration() throws Throwable {
+    void shouldNotTriggerAppInstanceConfiguration() throws Throwable {
         when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
@@ -89,7 +89,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldNotTriggerAppInstanceConfigurationButPopulateAdditionalParameters() {
+    void shouldNotTriggerAppInstanceConfigurationButPopulateAdditionalParameters() {
         when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
@@ -107,7 +107,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldTriggerAppInstanceConfigurationInCorrectState() {
+    void shouldTriggerAppInstanceConfigurationInCorrectState() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build());
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
@@ -117,7 +117,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldNotTriggerAppInstanceConfigurationUpdate() {
+    void shouldNotTriggerAppInstanceConfigurationUpdate() {
         when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().configuration(new AppConfiguration()).build());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getJsonInput()).thenReturn("{config}");
@@ -127,7 +127,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldTriggerAppInstanceAuthUpdate() {
+    void shouldTriggerAppInstanceAuthUpdate() {
         Identifier deploymentId = Identifier.newInstance(1L);
         Identifier descriptiveDeploymentId = Identifier.newInstance("identifier");
         when(repositoryManager.load(deploymentId)).thenReturn(
@@ -144,48 +144,48 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldTriggerAppInstanceReDeployment() {
+    void shouldTriggerAppInstanceReDeployment() {
         appLifecycleManager.redeployApplication(new Identifier());
         verify(eventPublisher, times(1)).publishEvent(any(NmServiceDeploymentStateChangeEvent.class));
         verify(eventPublisher, times(1)).publishEvent(any(AppVerifyRequestActionEvent.class));
     }
 
     @Test
-    public void shouldTriggerAppInstanceRemoval() {
+    void shouldTriggerAppInstanceRemoval() {
         when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         appLifecycleManager.removeApplication(new Identifier());
         verify(eventPublisher, times(1)).publishEvent(any(AppRemoveActionEvent.class));
     }
 
     @Test
-    public void shouldNotTriggerAppInstanceRemovalIfAlreadyRemoved() {
+    void shouldNotTriggerAppInstanceRemovalIfAlreadyRemoved() {
         when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_REMOVED);
         appLifecycleManager.removeApplication(new Identifier());
         verifyNoMoreInteractions(eventPublisher);
     }
 
     @Test
-    public void shouldTriggerAppInstanceUpgrade() {
+    void shouldTriggerAppInstanceUpgrade() {
         when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         appLifecycleManager.upgradeApplication(new Identifier(), new Identifier());
         verify(eventPublisher, times(1)).publishEvent(any(AppUpgradeActionEvent.class));
     }
 
     @Test
-    public void shouldNotTriggerAppInstanceUpgrade() {
+    void shouldNotTriggerAppInstanceUpgrade() {
         when(repositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_IN_PROGRESS);
         appLifecycleManager.upgradeApplication(new Identifier(), new Identifier());
         verifyNoInteractions(eventPublisher);
     }
 
     @Test
-    public void shouldTriggerAppInstanceRestart() {
+    void shouldTriggerAppInstanceRestart() {
         appLifecycleManager.restartApplication(new Identifier());
         verify(eventPublisher, times(1)).publishEvent(any(AppRestartActionEvent.class));
     }
 
     @Test
-    public void shouldReplaceHashToDotsInMapKeys() {
+    void shouldReplaceHashToDotsInMapKeys() {
         Map<String, String> input = new HashMap<>();
         input.put("keywith#", "value");
         input.put("keywith#inthemiddle", "value");
@@ -197,7 +197,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldAddQuotesInMapValuesWhereRequired() {
+    void shouldAddQuotesInMapValuesWhereRequired() {
         Map<String, String> input = new HashMap<>();
         input.put("keywith#", "value");
         input.put("keywith#inthemiddle", "value, this value and another value");
@@ -206,7 +206,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldReplaceHashWithEscapedQuotesInMapValuesWhereRequired() {
+    void shouldReplaceHashWithEscapedQuotesInMapValuesWhereRequired() {
         Map<String, String> input = new HashMap<>();
         input.put("key1", "value");
         input.put("key2", "#valuewithhashonbothends#");
@@ -215,7 +215,7 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    public void shouldGetMapFromJson() {
+    void shouldGetMapFromJson() {
         Map<String, String> map = appLifecycleManager.getMapFromJson("{\"key1\": \"val1\", \"key2\": \"val2\"}");
         assertThat(map.keySet().size(), is(2));
         assertThat(map.get("key1"), allOf(is(notNullValue()), is(equalTo("val1"))));

@@ -7,12 +7,21 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.PasswordChange;
+import net.geant.nmaas.portal.api.domain.PasswordReset;
+import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.domain.UserRequest;
+import net.geant.nmaas.portal.api.domain.UserRoleView;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.results.UserLoginDate;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -43,7 +52,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -232,14 +246,14 @@ public class UsersController {
             throw new MissingElementException("userRole is null");
         }
 
-        if (userRole.getRole() == null)
+        if (userRole.getRole() == null) {
             throw new MissingElementException("Missing role");
+        }
 
         Domain domain;
         if (userRole.getDomainId() == null) {
             domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
-        }
-        else {
+        } else {
             domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         }
 
@@ -266,7 +280,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_NOT_ACCEPTED')")
     public void setAcceptance(@PathVariable String username) {
         try {
-            this.setAcceptanceFlags(username);
+            setAcceptanceFlags(username);
             log.info(String.format("User [%s] accepted Terms of Use and Privacy Policy", username));
         } catch (ProcessingException err) {
             throw new MissingElementException(err.getMessage());
@@ -298,10 +312,12 @@ public class UsersController {
         } else {
             user.setUsername(userRequest.getUsername());
         }
-        if (userRequest.getFirstname() != null)
+        if (userRequest.getFirstname() != null) {
             user.setFirstname(userRequest.getFirstname());
-        if (userRequest.getLastname() != null)
+        }
+        if (userRequest.getLastname() != null) {
             user.setLastname(userRequest.getLastname());
+        }
         if (userRequest.getEmail() != null) {
             if (userService.existsByEmail(userRequest.getEmail())) {
                 throw new ProcessingException("User with mail " + userRequest.getEmail() + " already exists");

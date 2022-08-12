@@ -51,16 +51,16 @@ class KubernetesDeploymentParametersProviderTest {
 
         Map<String, String> deploymentParameters = provider.deploymentParameters(DEPLOYMENT_ID);
 
-        assertThat(deploymentParameters).isNotNull();
-        assertThat(deploymentParameters).containsEntry(SMTP_HOSTNAME.name(), "smtpHostname");
-        assertThat(deploymentParameters).containsEntry(SMTP_PORT.name(), "505");
+        assertThat(deploymentParameters)
+                .isNotNull()
+                .containsEntry(SMTP_HOSTNAME.name(), "smtpHostname")
+                .containsEntry(SMTP_PORT.name(), "505")
+                .containsEntry(BASE_URL.name(), "externalDomain")
+                .containsEntry(DOMAIN_CODENAME.name(), "domain")
+                .containsEntry(RELEASE_NAME.name(), "descriptiveDeploymentId")
+                .containsEntry(APP_INSTANCE_NAME.name(), "deploymentname"); // note the lowercase conversion
         assertThat(deploymentParameters.get(SMTP_USERNAME.name())).isNull();
         assertThat(deploymentParameters.get(SMTP_PASSWORD.name())).isNull();
-        assertThat(deploymentParameters).containsEntry(BASE_URL.name(), "externalDomain");
-        assertThat(deploymentParameters).containsEntry(DOMAIN_CODENAME.name(), "domain");
-        assertThat(deploymentParameters).containsEntry(RELEASE_NAME.name(), "descriptiveDeploymentId");
-        // note the lowercase conversion
-        assertThat(deploymentParameters).containsEntry(APP_INSTANCE_NAME.name(), "deploymentname");
     }
 
 }

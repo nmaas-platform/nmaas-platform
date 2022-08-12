@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,21 +63,20 @@ public class ApplicationBaseServiceTest {
 
         verify(appBaseRepo, times(1)).save(any());
         assertEquals(applicationBase1.getName(), result.getName());
-        assertEquals(0, result.getVersions().size());
+        assertThat(result.getVersions()).hasSize(0);
     }
 
     @Test
     void shouldAddNewVersionDuringUpdate() {
-        this.applicationBase2.setVersions(Sets.newHashSet(new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)));
-
+        applicationBase2.setVersions(Sets.newHashSet(new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)));
         when(appBaseRepo.existsByName(applicationBase2.getName())).thenReturn(true);
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(applicationBase2));
         when(appBaseRepo.save(any())).thenAnswer(i -> i.getArgument(0));
 
         ApplicationBase result = this.appBaseService.update(applicationBase2);
-        verify(appBaseRepo, times(1)).save(any());
-        assertEquals(1, result.getVersions().size());
 
+        verify(appBaseRepo, times(1)).save(any());
+        assertThat(result.getVersions()).hasSize(1);
         assertTrue(result.getVersions().stream().anyMatch(version -> version.getVersion().equals("1.2")));
     }
 

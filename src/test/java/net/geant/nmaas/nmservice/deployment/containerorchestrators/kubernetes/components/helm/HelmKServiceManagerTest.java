@@ -116,9 +116,10 @@ public class HelmKServiceManagerTest {
         allParameters.put("accessmethods.public.method", "value4");
 
         Map<String, String> filteredParameters = HelmKServiceManager.removeRedundantParameters(allParameters);
-        assertThat(filteredParameters.size()).isEqualTo(2);
-        assertThat(filteredParameters).containsEntry("key1", "value1");
-        assertThat(filteredParameters).containsEntry("key2", "value3");
+        assertThat(filteredParameters)
+                .hasSize(2)
+                .containsEntry("key1", "value1")
+                .containsEntry("key2", "value3");
     }
 
     @Test
