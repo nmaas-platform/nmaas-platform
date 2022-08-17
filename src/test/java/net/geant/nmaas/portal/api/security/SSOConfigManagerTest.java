@@ -26,10 +26,18 @@ public class SSOConfigManagerTest {
         ReflectionTestUtils.setField(configManager, "logoutUrl", LOGOUT_URL);
         ReflectionTestUtils.setField(configManager, "timeout", TIMEOUT);
         ReflectionTestUtils.setField(configManager, "key", KEY);
+        ReflectionTestUtils.setField(configManager,"ssoLoginAllowed", true);
     }
 
     @Test
     void shouldValidateConfigAndNotThrowAnException(){
+        configManager.validateConfig();
+    }
+
+    @Test
+    void shouldValidateConfigAndNotThrowAnExceptionSinceSSOLoginDisabled(){
+        ReflectionTestUtils.setField(configManager,"ssoLoginAllowed", false);
+        ReflectionTestUtils.setField(configManager, "loginUrl", "");
         configManager.validateConfig();
     }
 

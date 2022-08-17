@@ -25,21 +25,25 @@ public class SSOConfigManager {
     @Value("${sso.key}")
     private String key;
 
-    @Value("${portal.config.ssoLoginAllowed}")
-    private boolean ssoLoginAllowed = true;
+    @Value("${portal.config.ssoLoginAllowed:true}")
+    private boolean ssoLoginAllowed;
 
     public void validateConfig() {
-        if(this.loginUrl == null || this.loginUrl.isEmpty()) {
-            throw new IllegalStateException("Login url cannot be null or empty");
-        }
-        if(this.logoutUrl == null || this.logoutUrl.isEmpty()) {
-            throw new IllegalStateException("Logout url cannot be null or empty");
-        }
-        if(this.key == null || this.key.isEmpty()) {
-            throw new IllegalStateException("Key cannot be null or empty");
-        }
-        if(this.timeout < 0) {
-            throw new IllegalStateException("Timeout cannot be less than 0");
+        if (ssoLoginAllowed) {
+            if (this.loginUrl == null || this.loginUrl.isEmpty()) {
+                throw new IllegalStateException("Login url cannot be null or empty");
+            }
+            if (this.logoutUrl == null || this.logoutUrl.isEmpty()) {
+                throw new IllegalStateException("Logout url cannot be null or empty");
+            }
+            if (this.key == null || this.key.isEmpty()) {
+                throw new IllegalStateException("Key cannot be null or empty");
+            }
+            if (this.timeout < 0) {
+                throw new IllegalStateException("Timeout cannot be less than 0");
+            }
+        } else {
+            log.debug("SSO login option is disabled. Skipping SSO configuration validation");
         }
     }
 
