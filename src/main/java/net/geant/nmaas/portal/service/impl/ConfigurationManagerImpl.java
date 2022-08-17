@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -16,24 +16,22 @@ import org.springframework.web.context.annotation.ApplicationScope;
 import java.util.Optional;
 
 @ApplicationScope
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Component
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private final ConfigurationRepository repository;
-
     private final ModelMapper modelMapper;
-
     private final InternationalizationSimpleRepository internationalizationRepository;
 
     @Override
-    public ConfigurationView getConfiguration(){
+    public ConfigurationView getConfiguration() {
         return modelMapper.map(this.loadSingleConfiguration(), ConfigurationView.class);
     }
 
     @Override
-    public Long setConfiguration(ConfigurationView configurationView) {
-        if(repository.count() > 0){
+    public Long setConfiguration (ConfigurationView configurationView) {
+        if (repository.count() > 0) {
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
         Configuration configuration = modelMapper.map(configurationView, Configuration.class);
@@ -44,20 +42,20 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     @Override
     public void updateConfiguration(Long id, ConfigurationView updatedConfiguration) {
         Optional<Configuration> configuration = repository.findById(id);
-        if(!configuration.isPresent()){
-            throw new ConfigurationNotFoundException("Configuration with id "+id+" not found in repository");
+        if (configuration.isEmpty()) {
+            throw new ConfigurationNotFoundException("Configuration with id " + id + " not found in repository");
         }
         InternationalizationSimple internationalization = internationalizationRepository.findByLanguageOrderByIdDesc(updatedConfiguration.getDefaultLanguage())
-                .orElseThrow(()->new IllegalArgumentException("Language not found"));
-        if(!internationalization.isEnabled()){
+                .orElseThrow(() -> new IllegalArgumentException("Language not found"));
+        if (!internationalization.isEnabled()) {
             throw new IllegalStateException("Default language must be active");
         }
         repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
     }
 
-    private Configuration loadSingleConfiguration(){
-        if(repository.count() > 1 || repository.count() == 0){
-            throw new IllegalStateException("Found "+repository.count()+" configuration instead of one");
+    private Configuration loadSingleConfiguration() {
+        if (repository.count() > 1 || repository.count() == 0) {
+            throw new IllegalStateException("Found " + repository.count() + " configuration instead of one");
         }
         return repository.findAll().get(0);
     }

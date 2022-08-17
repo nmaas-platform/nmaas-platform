@@ -50,15 +50,15 @@ public class SSOAuthController {
 	@PostMapping(value="/login")
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData, HttpServletRequest request) {
 		ConfigurationView configuration = this.configurationManager.getConfiguration();
-		if(!configuration.isSsoLoginAllowed()) {
+		if (!configuration.isSsoLoginAllowed()) {
 			throw new SignupException("SSO login method is not enabled");
 		}
 
-		if(userSSOLoginData == null) {
+		if (userSSOLoginData == null) {
 			throw new AuthenticationException("Received user SSO login data is incorrect");
 		}
 
-		if(Strings.isNullOrEmpty(userSSOLoginData.getUsername())) {
+		if (Strings.isNullOrEmpty(userSSOLoginData.getUsername())) {
 			throw new AuthenticationException("Missing username");
 		}
 
@@ -67,12 +67,12 @@ public class SSOAuthController {
 
 		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElseGet(() -> registerNewUser(userSSOLoginData));
 
-		if(!user.isEnabled()) {
+		if (!user.isEnabled()) {
 			userLoginService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 			throw new AuthenticationException("User is not active.");
 		}
 
-		if(configuration.isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN"))) {
+		if (configuration.isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN"))) {
 			userLoginService.registerNewFailedLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 			throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
 		}
@@ -106,4 +106,5 @@ public class SSOAuthController {
 			throw new SignupException("Domain not found");
 		}
 	}
+
 }

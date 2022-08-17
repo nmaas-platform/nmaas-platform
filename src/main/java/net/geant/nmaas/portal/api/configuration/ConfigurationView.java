@@ -1,6 +1,10 @@
 package net.geant.nmaas.portal.api.configuration;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import java.util.ArrayList;
@@ -17,14 +21,18 @@ public class ConfigurationView {
 
     @Builder.Default
     private boolean maintenance = false;
+
     @Builder.Default
     private boolean ssoLoginAllowed = false;
 
     private String defaultLanguage;
+
     @Builder.Default
     private boolean testInstance = false;
+
     @Builder.Default
     private boolean sendAppInstanceFailureEmails = false;
+
     @Builder.Default
     private List<@Email String> appInstanceFailureEmailList = new ArrayList<>();
 
@@ -36,4 +44,5 @@ public class ConfigurationView {
         this.sendAppInstanceFailureEmails = sendAppInstanceFailureEmails;
         this.appInstanceFailureEmailList = appInstanceFailureEmailList;
     }
+
 }

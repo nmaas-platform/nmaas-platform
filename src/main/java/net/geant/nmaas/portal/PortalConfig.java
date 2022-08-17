@@ -129,16 +129,21 @@ public class PortalConfig {
 	public InitializingBean saveDefaultPortalConfiguration() {
 		return new InitializingBean() {
 
-			@Value("${portal.config.maintenance}")
-			private boolean maintenance = false;
-			@Value("${portal.config.ssoLoginAllowed}")
-			private boolean ssoLoginAllowed = false;
+			@Value("${portal.config.maintenance:false}")
+			private boolean maintenance;
+
+			@Value("${portal.config.ssoLoginAllowed:false}")
+			private boolean ssoLoginAllowed;
+
 			@Value("${portal.config.defaultLanguage}")
 			private String defaultLanguage = "en";
-			@Value("${portal.config.testInstance}")
-			private boolean testInstance = false;
-			@Value("${portal.config.sendAppInstanceFailureEmails}")
-			private boolean sendAppInstanceFailureEmails = false;
+
+			@Value("${portal.config.testInstance:false}")
+			private boolean testInstance;
+
+			@Value("${portal.config.sendAppInstanceFailureEmails:false}")
+			private boolean sendAppInstanceFailureEmails;
+
 			@Value("${portal.config.appInstanceFailureEmailList}")
 			private String appInstanceFailureEmailList;
 
