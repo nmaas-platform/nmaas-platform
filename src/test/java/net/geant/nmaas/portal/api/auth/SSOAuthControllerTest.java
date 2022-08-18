@@ -1,10 +1,10 @@
 package net.geant.nmaas.portal.api.auth;
 
-import net.geant.nmaas.portal.api.security.SSOConfigManager;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.api.security.SSOConfigManager;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -17,7 +17,6 @@ import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationEventPublisher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -31,66 +30,67 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SSOAuthControlleTest {
+public class SSOAuthControllerTest {
 
     private SSOAuthController ssoAuthController;
 
-    private UserService users = mock(UserService.class);
+    private final UserService users = mock(UserService.class);
 
-    private DomainService domains = mock(DomainService.class);
+    private final DomainService domains = mock(DomainService.class);
 
-    private JWTTokenService jwtTokenService = mock(JWTTokenService.class);
+    private final JWTTokenService jwtTokenService = mock(JWTTokenService.class);
 
-    private ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
-    private SSOConfigManager SSOConfigManager = mock(SSOConfigManager.class);
+    private final SSOConfigManager SSOConfigManager = mock(SSOConfigManager.class);
 
-    private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+    private final UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
 
-    private UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
-
-    private HttpServletRequest request = mock(HttpServletRequest.class);
+    private final HttpServletRequest request = mock(HttpServletRequest.class);
 
     @BeforeEach
-    public void setup(){
+    void setup(){
         ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, SSOConfigManager, userLoginService);
         when(request.getHeader(any())).thenReturn("empty");
     }
 
     @Test
-    public void loginShouldThrowSignupExceptionWhenSSOLoginNotAllowed() {
+    void loginShouldThrowSignupExceptionWhenSSOLoginNotAllowed() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(false);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
+
         assertThrows(SignupException.class, () -> {
             ssoAuthController.login(null, request);
         });
     }
 
     @Test
-    public void loginShouldThrowAuthenticationExceptionWhenLoginDataIsNull() {
+    void loginShouldThrowAuthenticationExceptionWhenLoginDataIsNull() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
+
         assertThrows(AuthenticationException.class, () -> {
             ssoAuthController.login(null, request);
         });
     }
 
     @Test
-    public void loginShouldThrowAuthenticationExceptionWhenLoginDataIsEmpty() {
+    void loginShouldThrowAuthenticationExceptionWhenLoginDataIsEmpty() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
         UserSSOLogin userSSOLogin = mock(UserSSOLogin.class);
         when(userSSOLogin.getUsername()).thenReturn("");
+
         assertThrows(AuthenticationException.class, () -> {
             ssoAuthController.login(userSSOLogin, request);
         });
     }
 
     @Test
-    public void loginShouldThrowAuthenticationExceptionWhenUserIsNotEnabled() {
+    void loginShouldThrowAuthenticationExceptionWhenUserIsNotEnabled() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
@@ -98,13 +98,14 @@ public class SSOAuthControlleTest {
         when(userSSOLogin.getUsername()).thenReturn("johny");
         User user = new User("johny", false);
         when(users.findBySamlToken(any())).thenReturn(Optional.of(user));
+
         assertThrows(AuthenticationException.class, () -> {
             ssoAuthController.login(userSSOLogin, request);
         });
     }
 
     @Test
-    public void shouldRegisterNewUserIfUserIsNotFound() {
+    void shouldRegisterNewUserIfUserIsNotFound() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
@@ -123,7 +124,7 @@ public class SSOAuthControlleTest {
     }
 
     @Test
-    public void shouldLoginUserWithoutRegistrationIfUserExistsAndIsEnabled() {
+    void shouldLoginUserWithoutRegistrationIfUserExistsAndIsEnabled() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         configuration.setMaintenance(false);
@@ -146,7 +147,7 @@ public class SSOAuthControlleTest {
     }
 
     @Test
-    public void shouldThrowSignupExceptionWhenUserAlreadyExists() {
+    void shouldThrowSignupExceptionWhenUserAlreadyExists() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
@@ -161,11 +162,10 @@ public class SSOAuthControlleTest {
         assertThrows(SignupException.class, () -> {
             ssoAuthController.login(userSSOLoginData, request);
         });
-
     }
 
     @Test
-    public void shouldThrowSignupExceptionWhenDomainDoesNotExist() {
+    void shouldThrowSignupExceptionWhenDomainDoesNotExist() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         when(configurationManager.getConfiguration()).thenReturn(configuration);
@@ -183,7 +183,7 @@ public class SSOAuthControlleTest {
     }
 
     @Test
-    public void shouldThrowUndergoingMaintenanceExceptionIfApplicationIsUndergoingMaintenance() {
+    void shouldThrowUndergoingMaintenanceExceptionIfApplicationIsUndergoingMaintenance() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         configuration.setMaintenance(true);
@@ -208,7 +208,7 @@ public class SSOAuthControlleTest {
     }
 
     @Test
-    public void whenUserIsAdminAndApplicationIsUnderMaintenanceThenShouldLogin(){
+    void whenUserIsAdminAndApplicationIsUnderMaintenanceThenShouldLogin(){
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         configuration.setMaintenance(true);
@@ -233,10 +233,6 @@ public class SSOAuthControlleTest {
 
         assertEquals("sometoken", userToken.getToken());
         assertEquals("somerefreshtoken", userToken.getRefreshToken());
-
-
     }
-
-
 
 }

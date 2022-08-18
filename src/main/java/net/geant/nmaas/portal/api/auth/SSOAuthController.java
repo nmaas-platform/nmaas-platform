@@ -62,7 +62,7 @@ public class SSOAuthController {
 			throw new AuthenticationException("Missing username");
 		}
 
-		ssoConfigManager.validateConfig();
+		ssoConfigManager.validateConfig(configuration.isSsoLoginAllowed());
 		userSSOLoginData.validate(ssoConfigManager.getKey(), ssoConfigManager.getTimeout());
 
 		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElseGet(() -> registerNewUser(userSSOLoginData));
@@ -93,7 +93,8 @@ public class SSOAuthController {
 
 	@GetMapping
 	public SSOView getSSO() {
-		ssoConfigManager.validateConfig();
+		ConfigurationView configuration = this.configurationManager.getConfiguration();
+		ssoConfigManager.validateConfig(configuration.isSsoLoginAllowed());
 		return ssoConfigManager.getSSOView();
 	}
 

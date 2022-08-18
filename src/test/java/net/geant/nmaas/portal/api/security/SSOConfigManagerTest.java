@@ -26,45 +26,43 @@ public class SSOConfigManagerTest {
         ReflectionTestUtils.setField(configManager, "logoutUrl", LOGOUT_URL);
         ReflectionTestUtils.setField(configManager, "timeout", TIMEOUT);
         ReflectionTestUtils.setField(configManager, "key", KEY);
-        ReflectionTestUtils.setField(configManager,"ssoLoginAllowed", true);
     }
 
     @Test
     void shouldValidateConfigAndNotThrowAnException(){
-        configManager.validateConfig();
+        configManager.validateConfig(true);
     }
 
     @Test
     void shouldValidateConfigAndNotThrowAnExceptionSinceSSOLoginDisabled(){
-        ReflectionTestUtils.setField(configManager,"ssoLoginAllowed", false);
         ReflectionTestUtils.setField(configManager, "loginUrl", "");
-        configManager.validateConfig();
+        configManager.validateConfig(false);
     }
 
     @Test
     void shouldConfirmThatConfigIsValid(){
-        assertTrue(configManager.isConfigValid());
+        assertTrue(configManager.isConfigValid(true));
     }
 
     @Test
     void shouldThrowExceptionWhenLoginUrlIsEmpty(){
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "loginUrl", "");
-            configManager.validateConfig();
+            configManager.validateConfig(true);
         });
     }
 
     @Test
     void shouldConfirmThatConfigIsNotValid() {
         ReflectionTestUtils.setField(configManager, "loginUrl", "");
-        assertFalse(configManager.isConfigValid());
+        assertFalse(configManager.isConfigValid(true));
     }
 
     @Test
     void shouldThrowExceptionWhenLoginUrlIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "loginUrl", null);
-            configManager.validateConfig();
+            configManager.validateConfig(true);
         });
     }
 
@@ -72,7 +70,7 @@ public class SSOConfigManagerTest {
     void shouldThrowExceptionWhenLogoutUrlIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "logoutUrl", null);
-            configManager.validateConfig();
+            configManager.validateConfig(true);
         });
     }
 
@@ -80,7 +78,7 @@ public class SSOConfigManagerTest {
     void shouldThrowExceptionWhenLogoutUrlIsEmpty() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "logoutUrl", "");
-            configManager.validateConfig();
+            configManager.validateConfig(true);
         });
     }
 
@@ -88,7 +86,7 @@ public class SSOConfigManagerTest {
     void shouldThrowExceptionWhenKeyIsNull() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "key", null);
-            configManager.validateConfig();
+            configManager.validateConfig(true);
         });
     }
 
@@ -96,7 +94,7 @@ public class SSOConfigManagerTest {
     void shouldThrowExceptionWhenKeyIsEmpty() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "key", "");
-            configManager.validateConfig();
+            configManager.validateConfig(true);
         });
     }
 
@@ -104,7 +102,7 @@ public class SSOConfigManagerTest {
     void shouldThrowExceptionWhenTimeoutIsLessThanZero() {
         assertThrows(IllegalStateException.class, () -> {
             ReflectionTestUtils.setField(configManager, "timeout", -123);
-            configManager.validateConfig();
+            configManager.validateConfig(true);
         });
     }
 

@@ -6,6 +6,8 @@ import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.portal.api.security.SSOConfigManager;
+import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,15 +19,19 @@ import java.net.URL;
 @Log4j2
 public class ShibbolethMonitorService extends MonitorService {
 
+    private final ConfigurationManager configurationManager;
     private final SSOConfigManager ssoConfigManager;
+
+    @Value("${portal.config.ssoLoginAllowed:true}")
+    private boolean ssoLoginAllowed;
 
     @Override
     public void checkStatus() {
-        if(!ssoConfigManager.isSsoLoginAllowed()) {
+        if(!configurationManager.getConfiguration().isSsoLoginAllowed()) {
             log.debug("SSO login option is disabled. Skipping Shibboleth instance status check");
             return;
         }
-        if(!ssoConfigManager.isConfigValid()) {
+        if(!ssoConfigManager.isConfigValid(true)) {
             log.debug("Invalid SSO configuration. Skipping Shibboleth instance status check");
             return;
         }
@@ -38,7 +44,7 @@ public class ShibbolethMonitorService extends MonitorService {
             connection.setRequestMethod("GET");
             connection.setDoOutput(true);
             int responseCode = connection.getResponseCode();
-            if(responseCode >= 200 && responseCode <= 399){
+            if (responseCode >= 200 && responseCode <= 399) {
                 this.updateMonitorEntry(MonitorStatus.SUCCESS);
                 log.trace("Shibboleth instance is running");
             } else{
@@ -54,7 +60,13 @@ public class ShibbolethMonitorService extends MonitorService {
     @Override
     public boolean schedulable() {
         // schedule Shibboleth monitoring only if SSO login option is enabled
-        return ssoConfigManager.isSsoLoginAllowed();
+        // if configuration is not yet present in the database, the flag should be read from properties
+        try {
+            return configurationManager.getConfiguration().isSsoLoginAllowed();
+        } catch (IllegalStateException e) {
+            log.debug("Configuration entry doesn't exist. Will read ssoLoginAllowed flag from properties.");
+            return ssoLoginAllowed;
+        }
     }
 
     @Override

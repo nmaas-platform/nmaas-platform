@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-public class SSOAuthControllerTest extends BaseControllerTestSetup {
+public class SSOAuthControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
     private SSOConfigManager ssoConfigManager;
