@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 @Log4j2
 public class AppUpgradeService {
 
+    private static final int EVENT_PROCESSING_DELAY_IN_MILLIS = 5000;
+
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationInstanceService applicationInstanceService;
     private final ApplicationService applicationService;
@@ -79,7 +81,10 @@ public class AppUpgradeService {
 
     @EventListener
     @Transactional
-    public void notifyReadyForUpgrade(ApplicationActivatedEvent event) {
+    public void notifyReadyForUpgrade(ApplicationActivatedEvent event) throws InterruptedException {
+        log.info("Processing application activated event");
+        log.debug("Introducing a 5 seconds delay");
+        Thread.sleep(EVENT_PROCESSING_DELAY_IN_MILLIS);
         List<AppDeployment> runningDeployments = deploymentRepositoryManager.loadByState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         log.info("Launching upgrade possibility checks and notifications");
         log.info("Number of running deployments: {}", runningDeployments.size());

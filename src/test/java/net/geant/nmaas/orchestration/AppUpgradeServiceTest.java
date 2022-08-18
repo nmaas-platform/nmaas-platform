@@ -117,7 +117,7 @@ public class AppUpgradeServiceTest {
     }
 
     @Test
-    void shouldNotifyAboutPossibleUpgrades() {
+    void shouldNotifyAboutPossibleUpgrades() throws InterruptedException {
         ApplicationActivatedEvent event = new ApplicationActivatedEvent(this, APPLICATION1.getName(), "newappversion1");
 
         service.notifyReadyForUpgrade(event);
