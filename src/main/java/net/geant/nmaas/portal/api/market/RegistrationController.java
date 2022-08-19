@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -22,47 +22,53 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/auth/basic/registration")
 @Log4j2
 public class RegistrationController {
 
-	private UserService usersService;
+	private final UserService usersService;
 
-	private DomainService domains;
+	private final DomainService domains;
 
-	private ModelMapper modelMapper;
+	private final ModelMapper modelMapper;
 
-	private ApplicationEventPublisher eventPublisher;
+	private final ApplicationEventPublisher eventPublisher;
 	
 	@PostMapping
 	@ValidateCaptcha
     @ResponseStatus(HttpStatus.CREATED)
 	public void signup(@RequestBody final Registration registration, @RequestParam String token) {
 		if(registration == null
-				|| StringUtils.isEmpty(registration.getUsername())
-				|| StringUtils.isEmpty(registration.getPassword())
-				|| StringUtils.isEmpty(registration.getEmail())) {
+				|| !StringUtils.hasText(registration.getUsername())
+				|| !StringUtils.hasText(registration.getPassword())
+				|| !StringUtils.hasText(registration.getEmail())) {
 			throw new SignupException("Invalid credentials");
 		}
 
 		// explicit null values handling
 		Boolean termsOfUseAccepted = registration.getTermsOfUseAccepted();
-		if(Boolean.FALSE.equals(termsOfUseAccepted)){
+		if (Boolean.FALSE.equals(termsOfUseAccepted)) {
 			throw new SignupException("Terms of Use were not accepted");
 		}
 		Boolean privacyPolicyAccepted = registration.getPrivacyPolicyAccepted();
-		if(Boolean.FALSE.equals(privacyPolicyAccepted)){
+		if (Boolean.FALSE.equals(privacyPolicyAccepted)) {
 			throw new SignupException("Privacy policy was not accepted");
 		}
 		Domain domain = null;
-		if(registration.getDomainId() != null){
+		if (registration.getDomainId() != null) {
 			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("Domain not found"));
 		}
 		Domain globalDomain = domains.getGlobalDomain().orElseThrow(MissingElementException::new);
@@ -75,12 +81,12 @@ public class RegistrationController {
 					registration.getEmail(),
 					registration.getDomainId()));
 			this.sendMail(newUser);
-			if(registration.getDomainId() != null) {
+			if (registration.getDomainId() != null) {
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 			}
-		} catch (ObjectAlreadyExistsException e){
+		} catch (ObjectAlreadyExistsException e) {
 			throw new SignupException("User already exists");
-		} catch (MissingElementException e){
+		} catch (MissingElementException e) {
 			throw new SignupException("Domain not found");
 		}
 	}
@@ -97,7 +103,7 @@ public class RegistrationController {
 		
 	}
 
-	private void sendMail(User user){
+	private void sendMail(User user) {
 		MailAttributes mailAttributes = MailAttributes
 				.builder()
 				.otherAttributes(ImmutableMap.of("newUser", user.getUsername()))
