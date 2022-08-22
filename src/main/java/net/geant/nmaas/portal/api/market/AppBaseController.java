@@ -35,22 +35,25 @@ public class AppBaseController {
 		return applicationService.findApplication(appId).orElseThrow(() -> new MissingElementException("Application id=" + appId + " not found."));
 	}
 
-	protected ApplicationBase getBaseApp(Long appBaseId){
-		if(appBaseId == null)
+	protected ApplicationBase getBaseApp(Long appBaseId) {
+		if (appBaseId == null) {
 			throw new MissingElementException("Missing application id.");
+		}
     	return appBaseService.getBaseApp(appBaseId);
 	}
 
 	protected User getUser(String username) {
-		if(username == null)
+		if (username == null) {
 			throw new MissingElementException("Missing username.");
-		
+		}
+
 		return userService.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
 	}
 
 	protected User getUser(Long userId) {
-		if(userId == null)
+		if (userId == null) {
 			throw new MissingElementException("Missing username.");
+		}
 		
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
 	}

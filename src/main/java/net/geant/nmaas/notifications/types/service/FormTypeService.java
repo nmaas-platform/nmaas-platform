@@ -20,7 +20,7 @@ public class FormTypeService {
 
     public List<FormTypeView> getAll() {
         return this.typeRepository.findAll().stream().map(
-                t -> new FormTypeView(t.getKey(), t.getAccess(), t.getTemplateName())
+                t -> new FormTypeView(t.getKeyValue(), t.getAccess(), t.getTemplateName())
         ).collect(Collectors.toList());
     }
 
@@ -29,7 +29,7 @@ public class FormTypeService {
     }
 
     public void create(FormType ent) {
-        if(!this.typeRepository.existsById(ent.getKey())) {
+        if(!this.typeRepository.existsById(ent.getKeyValue())) {
             this.typeRepository.save(ent);
         } else {
             throw new ProcessingException("Form type already exists");

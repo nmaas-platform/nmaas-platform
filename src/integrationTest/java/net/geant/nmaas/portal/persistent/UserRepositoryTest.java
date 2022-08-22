@@ -32,19 +32,19 @@ public class UserRepositoryTest {
 	private final static String DOMAIN = "userdom";
 	
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-    DomainRepository domainRepository;
+    private DomainRepository domainRepository;
 	
 	@BeforeEach
     @Transactional
-	public void setUp() {
+	void setUp() {
 		domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
     }
 
     @AfterEach
-	public void tearDown(){
+	void tearDown(){
 		try{
 			this.userRepository.findAll().stream()
 					.filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
@@ -52,13 +52,13 @@ public class UserRepositoryTest {
 			domainRepository.findAll().stream()
 					.filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
 					.forEach(domain -> domainRepository.delete(domain));
-		} catch(Exception ex){
+		} catch(Exception ex) {
 			log.error(ex.getMessage());
 		}
 	}
 
 	@Test
-	public void shouldCreateTwoUsersOneWithRoleUserAndSecondWithRoleSystemAdminAndAddSecondUserRoleUser() {
+	void shouldCreateTwoUsersOneWithRoleUserAndSecondWithRoleSystemAdminAndAddSecondUserRoleUser() {
 		User tester = new User("tester", true, "test123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
 		tester.setEmail("test@test.com");
 		User admin = new User("testadmin", true, "testadmin123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_SYSTEM_ADMIN);
@@ -75,7 +75,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldSetEnabledFlag(){
+	void shouldSetEnabledFlag() {
 		User enableTestUser = new User("enableTest", false, "test123",
 				domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
 		enableTestUser.setEmail("enableUser@test.com");
@@ -93,7 +93,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldSetTermsOfUseAcceptedFlag(){
+	void shouldSetTermsOfUseAcceptedFlag(){
 		User termsOfUseAcceptedTestUser = new User("termsTest", true, "test123",
 				domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER, false, true);
 		termsOfUseAcceptedTestUser.setEmail("terms@email.com");
@@ -112,7 +112,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldSetPrivacyPolicyAcceptedFlag(){
+	void shouldSetPrivacyPolicyAcceptedFlag(){
 		User privacyPolicyAcceptedTestUser = new User("privacyTest", true, "test123",
 				domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER, true, false);
 		privacyPolicyAcceptedTestUser.setEmail("privacy@test.com");
@@ -131,7 +131,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldSaveUserWithMail(){
+	void shouldSaveUserWithMail(){
 		User testUser = new User("testUser", true, "test123",
 				domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER, true, false);
 		testUser.setEmail("email@email.com");
@@ -140,7 +140,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldNotSaveUserWithWrongMailFormat(){
+	void shouldNotSaveUserWithWrongMailFormat(){
 		assertThrows(ConstraintViolationException.class, () -> {
 			User testUser = new User("testUser", true, "test123",
 					domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER, true, false);
@@ -150,7 +150,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldSaveUserWithSamlToken(){
+	void shouldSaveUserWithSamlToken() {
 		User testUser = new User("testUser", true, "test123",
 				domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER, true, false);
 		testUser.setSamlToken("test|1234|saml");
@@ -159,7 +159,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldNotSaveUserWithoutBothMailAndToken(){
+	void shouldNotSaveUserWithoutBothMailAndToken() {
 		assertThrows(ConstraintViolationException.class, () -> {
 			User testUser = new User("testUser", true, "test123",
 					domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER, true, false);
@@ -168,7 +168,7 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldNotSaveUserWithNonUnique(){
+	void shouldNotSaveUserWithNonUnique() {
 		assertThrows(DataIntegrityViolationException.class, () -> {
 			User testUser = new User("testUser", true, "test123",
 					domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER, true, false);

@@ -37,7 +37,7 @@ public class SSHKeyEntity implements Serializable {
     private String name;
 
     @Column(columnDefinition="TEXT")
-    private String key;
+    private String keyValue;
     // base64 encoded SHA256
     @EqualsAndHashCode.Exclude
     private String fingerprint;
@@ -47,16 +47,16 @@ public class SSHKeyEntity implements Serializable {
     @EqualsAndHashCode.Exclude
     private User owner;
 
-    public SSHKeyEntity(User owner, String name, String key) {
+    public SSHKeyEntity(User owner, String name, String keyValue) {
         this.owner = owner;
         this.name = name;
-        this.key = key;
+        this.keyValue = keyValue;
         this.fingerprint = "fingerprint";
 
         // generate fingerprint
         // https://stackoverflow.com/questions/51059782/how-to-calculate-fingerprint-from-ssh-rsa-public-key-in-java
         String temp = "";
-        String[] elements = key.split(" ");
+        String[] elements = keyValue.split(" ");
         if(elements.length>1) {
             temp = elements[1];
         } else {

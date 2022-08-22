@@ -37,7 +37,8 @@ public class UserConverter extends AbstractConverter<User, UserView> {
 
     private Set<SSHKeyView> convertSshKeys(User source) {
         return source.getSshKeys().stream()
-                .map(key -> new SSHKeyView(key.getId(),key.getName() , key.getFingerprint()))
+                .map(key -> new SSHKeyView(key.getId(), key.getName(), key.getFingerprint()))
                 .collect(Collectors.toSet());
     }
+
 }

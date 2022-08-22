@@ -41,7 +41,7 @@ public class SSHKeyServiceImpl implements SSHKeyService {
                         owner.getUsername(),
                         owner.getEmail(),
                         owner.getFirstname() + " " + owner.getLastname(),
-                        this.repository.findAllByOwner(owner).stream().map(SSHKeyEntity::getKey).collect(Collectors.toList())
+                        this.repository.findAllByOwner(owner).stream().map(SSHKeyEntity::getKeyValue).collect(Collectors.toList())
                 );
                 this.eventPublisher.publishEvent(event);
             } else {
@@ -65,7 +65,7 @@ public class SSHKeyServiceImpl implements SSHKeyService {
                 owner.getUsername(),
                 owner.getEmail(),
                 owner.getFirstname() + " " + owner.getLastname(),
-                this.repository.findAllByOwner(owner).stream().map(SSHKeyEntity::getKey).collect(Collectors.toList())
+                this.repository.findAllByOwner(owner).stream().map(SSHKeyEntity::getKeyValue).collect(Collectors.toList())
         );
         this.eventPublisher.publishEvent(event);
         return new SSHKeyView(newSSHKeyEntity.getId(), newSSHKeyEntity.getName(), newSSHKeyEntity.getFingerprint());
