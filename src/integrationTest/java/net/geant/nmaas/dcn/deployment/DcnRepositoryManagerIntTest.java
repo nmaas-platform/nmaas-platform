@@ -33,29 +33,30 @@ public class DcnRepositoryManagerIntTest {
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
 
-    private static Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
-    private static String DOMAIN = "domain";
-    private static String DEPLOYMENT_NAME = "deploymentName";
+    private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
+    private static final String DOMAIN = "domain";
 
     @BeforeEach
-    public void populateRepositories() {
-        AppDeployment appDeployment = AppDeployment.builder().deploymentId(DEPLOYMENT_ID)
+    void populateRepositories() {
+        AppDeployment appDeployment = AppDeployment.builder()
+                .deploymentId(DEPLOYMENT_ID)
+                .descriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"))
                 .domain(DOMAIN)
                 .applicationId(Identifier.newInstance(""))
-                .deploymentName(DEPLOYMENT_NAME)
+                .deploymentName("deploymentName")
                 .configFileRepositoryRequired(true)
                 .build();
         appDeploymentRepository.save(appDeployment);
     }
 
     @AfterEach
-    public void cleanRepositories() {
+    void cleanRepositories() {
         appDeploymentRepository.deleteAll();
         dcnInfoRepository.deleteAll();
     }
 
     @Test
-    public void shouldAddUpdateAndRemoteDcns() throws InvalidDomainException {
+    void shouldAddUpdateAndRemoteDcns() throws InvalidDomainException {
         storeDefaultDcnInfoInRepository();
         assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.INIT));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.REQUEST_VERIFIED));
@@ -66,7 +67,7 @@ public class DcnRepositoryManagerIntTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnMissingDeployment(){
+    void shouldThrowExceptionOnMissingDeployment(){
         assertThrows(InvalidDomainException.class, () -> {
             appDeploymentRepository.deleteAll();
             dcnRepositoryManager.loadNetwork(DOMAIN);
@@ -74,28 +75,28 @@ public class DcnRepositoryManagerIntTest {
     }
 
     @Test
-    public void shouldThrowExceptionOnMissingDcnForGivenClient(){
+    void shouldThrowExceptionOnMissingDcnForGivenClient(){
         assertThrows(InvalidDomainException.class, () -> {
             dcnRepositoryManager.loadNetwork(DOMAIN);
         });
     }
 
     @Test
-    public void shouldThrowExceptionDuringRemovalOnMissingDcnForGivenClient() {
+    void shouldThrowExceptionDuringRemovalOnMissingDcnForGivenClient() {
         assertThrows(InvalidDomainException.class, () -> {
             dcnRepositoryManager.removeDcnInfo(DOMAIN);
         });
     }
 
     @Test
-    public void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() {
+    void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() {
         assertThrows(InvalidDomainException.class, () -> {
             dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
         });
     }
 
     @Test
-    public void shouldThrowExceptionDuringStateRetrievalOnMissingDcnForGivenClient() {
+    void shouldThrowExceptionDuringStateRetrievalOnMissingDcnForGivenClient() {
         assertThrows(InvalidDomainException.class, () -> {
             dcnRepositoryManager.loadCurrentState(DOMAIN);
         });

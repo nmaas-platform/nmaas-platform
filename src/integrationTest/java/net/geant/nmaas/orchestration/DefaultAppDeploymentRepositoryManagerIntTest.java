@@ -25,9 +25,10 @@ public class DefaultAppDeploymentRepositoryManagerIntTest {
 
     private static final String DOMAIN = "domain1";
     private static final String DEPLOYMENT_NAME_1 = "deploymentName1";
-    private final Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
-    private final Identifier applicationId = Identifier.newInstance("applicationId");
-    private final Identifier newApplicationId = Identifier.newInstance("newApplicationId");
+    private static final Identifier DEPLOYMENT_ID_1 = Identifier.newInstance("deploymentId1");
+    private static final Identifier DESCRIPTIVE_DEPLOYMENT_ID = Identifier.newInstance("descriptiveDeploymentId");
+    private static final Identifier APPLICATION_ID = Identifier.newInstance("applicationId");
+    private static final Identifier NEW_APPLICATION_ID = Identifier.newInstance("newApplicationId");
 
     @AfterEach
     void cleanup() {
@@ -37,24 +38,25 @@ public class DefaultAppDeploymentRepositoryManagerIntTest {
     @Test
     void shouldStoreAndUpdateAppDeployment() throws InvalidDeploymentIdException {
         AppDeployment appDeployment = AppDeployment.builder()
-                .deploymentId(deploymentId1)
-                .applicationId(applicationId)
+                .deploymentId(DEPLOYMENT_ID_1)
+                .descriptiveDeploymentId(DESCRIPTIVE_DEPLOYMENT_ID)
+                .applicationId(APPLICATION_ID)
                 .domain(DOMAIN)
                 .deploymentName(DEPLOYMENT_NAME_1)
                 .build();
 
         repositoryManager.store(appDeployment);
-        assertThat(repositoryManager.load(deploymentId1)).isNotNull();
-        assertThat(repositoryManager.loadState(deploymentId1)).isEqualTo(AppDeploymentState.REQUESTED);
-        assertThat(repositoryManager.loadDomain(deploymentId1)).isEqualTo(DOMAIN);
+        assertThat(repositoryManager.load(DEPLOYMENT_ID_1)).isNotNull();
+        assertThat(repositoryManager.loadState(DEPLOYMENT_ID_1)).isEqualTo(AppDeploymentState.REQUESTED);
+        assertThat(repositoryManager.loadDomain(DEPLOYMENT_ID_1)).isEqualTo(DOMAIN);
         assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isZero();
 
-        repositoryManager.updateState(deploymentId1, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
-        assertThat(repositoryManager.loadState(deploymentId1)).isEqualTo(AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
+        repositoryManager.updateState(DEPLOYMENT_ID_1, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
+        assertThat(repositoryManager.loadState(DEPLOYMENT_ID_1)).isEqualTo(AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
         assertThat(repositoryManager.loadAllWaitingForDcn(DOMAIN).size()).isOne();
 
-        repositoryManager.updateApplicationId(deploymentId1, newApplicationId);
-        assertThat(repositoryManager.load(deploymentId1).getApplicationId()).isEqualTo(newApplicationId);
+        repositoryManager.updateApplicationId(DEPLOYMENT_ID_1, NEW_APPLICATION_ID);
+        assertThat(repositoryManager.load(DEPLOYMENT_ID_1).getApplicationId()).isEqualTo(NEW_APPLICATION_ID);
     }
 
 }

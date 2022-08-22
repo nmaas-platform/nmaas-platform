@@ -72,7 +72,7 @@ public class AppDeployment {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppConfiguration configuration;
 
-    /** Store all of deployment state changes */
+    /** Store all deployment state changes */
     @OneToMany(mappedBy = "app", orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default
     private List<AppDeploymentHistory> history = new ArrayList<>();

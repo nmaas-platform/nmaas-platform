@@ -451,7 +451,7 @@ public class AppInstanceController extends AppBaseController {
                         a.getUsername(),
                         a.getEmail(),
                         a.getFirstname() + " " + a.getLastname(),
-                        a.getSshKeys().stream().map(SSHKeyEntity::getKey).collect(Collectors.toList()),
+                        a.getSshKeys().stream().map(SSHKeyEntity::getKeyValue).collect(Collectors.toList()),
                         appInstance.getInternalId()
                 );
                 eventPublisher.publishEvent(event);

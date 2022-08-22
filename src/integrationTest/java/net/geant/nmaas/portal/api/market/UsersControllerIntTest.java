@@ -83,7 +83,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     private User userEntity;
     private User user3;
 
-    private Principal principal = mock(Principal.class);
+    private final Principal principal = mock(Principal.class);
 
     @BeforeEach
     public void setUp() {
@@ -91,6 +91,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         when(principal.getName()).thenReturn("admin");
         when(captchaValidator.verifyToken(anyString())).thenReturn(true);
         domains.createGlobalDomain();
+
         domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
         domains.createDomain(new DomainRequest(DOMAIN2, DOMAIN2, true));
 

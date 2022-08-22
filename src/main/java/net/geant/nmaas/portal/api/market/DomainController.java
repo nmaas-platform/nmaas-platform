@@ -44,11 +44,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
-	private DomainService domainService;
+	private final DomainService domainService;
 
-	private ApplicationEventPublisher eventPublisher;
+	private final ApplicationEventPublisher eventPublisher;
 
-	private ApplicationStatePerDomainService applicationStatePerDomainService;
+	private final ApplicationStatePerDomainService applicationStatePerDomainService;
 
 	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
 	private static final String DOMAIN_NOT_FOUND = "Domain not found.";

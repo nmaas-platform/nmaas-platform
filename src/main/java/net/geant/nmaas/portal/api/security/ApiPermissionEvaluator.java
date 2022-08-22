@@ -1,11 +1,10 @@
 package net.geant.nmaas.portal.api.security;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.AclService;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -16,18 +15,12 @@ import java.util.Optional;
 import java.util.Set;
 
 @Component
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class ApiPermissionEvaluator implements PermissionEvaluator {
 	
-	private UserService users;
+	private final UserService users;
 	
-	private AclService aclService;
-
-	@Autowired
-	public ApiPermissionEvaluator(UserService userService, AclService aclService) {
-		this.users = userService;
-		this.aclService = aclService;
-	}
+	private final AclService aclService;
 
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -45,7 +38,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 		String permissionStr = (String) permission;
 
 		Optional<User> user = users.findByUsername(authentication.getName());
-		if(!user.isPresent()) {
+		if(user.isEmpty()) {
 			return false;
 		}
 

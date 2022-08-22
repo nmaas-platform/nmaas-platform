@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -12,7 +13,6 @@ import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,17 +29,13 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Configuration
+@RequiredArgsConstructor
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
 @Log4j2
 public class PortalConfig {
 
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-	@Autowired
-	public PortalConfig(PasswordEncoder passwordEncoder){
-		this.passwordEncoder = passwordEncoder;
-	}
-	
 	@Bean
 	public InitializingBean insertDefaultUsers() {
 		return new InitializingBean() {
@@ -65,7 +61,7 @@ public class PortalConfig {
 				domains.createGlobalDomain();				
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
-				if(!admin.isPresent()) {
+				if(admin.isEmpty()) {
 					addUser("admin", adminPassword, adminEmail, Role.ROLE_SYSTEM_ADMIN);
 				}
 			}
@@ -97,25 +93,25 @@ public class PortalConfig {
 			@Transactional
 			public void afterPropertiesSet() {
 				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
-				if(!defaultTermsOfUse.isPresent()){
+				if(defaultTermsOfUse.isEmpty()){
 					try {
 						addContentToDatabase("tos", "Terms of use", readContent("classpath:tos.txt"));
-					}catch (IOException err){
+					}catch (IOException err) {
 						throw new ProcessingException(err.getMessage());
 					}
 				}
 				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("pp");
-				if(!defaultPrivacyPolicy.isPresent()){
+				if(defaultPrivacyPolicy.isEmpty()){
 					try {
 						addContentToDatabase("pp", "Privacy Policy", readContent("classpath:pp.txt"));
-					}catch (IOException err){
+					} catch (IOException err) {
 						throw new ProcessingException(err.getMessage());
 					}
 				}
 			}
 
 			private String readContent(String file) throws IOException {
-				return IOUtils.toString(resourceLoader.getResource(file).getInputStream(), StandardCharsets.UTF_8);
+				return new String(resourceLoader.getResource(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 			}
 
 			private void addContentToDatabase(String name, String title, String content){

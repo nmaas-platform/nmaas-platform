@@ -22,7 +22,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -37,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -56,7 +54,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @MockBean
     private DomainService domainService;
 
-    @SpyBean
+    @MockBean
     private UserService userService;
 
     @MockBean
@@ -68,10 +66,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @Autowired
     private ModelMapper modelMapper;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setup(){
+    void setup() {
         mvc = createMVC();
         when(domainService.getDomains()).thenReturn(Arrays.asList(getDefaultDomain(), getGlobalDomain()));
         when(domainService.findDomain(DEF_DOM_ID)).thenReturn(Optional.of(getDefaultDomain()));
@@ -79,7 +77,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldCreateDomain() throws Exception {
+    void shouldCreateDomain() throws Exception {
         when(domainService.existsDomain(DEF_DOM_NAME)).thenReturn(false);
         when(domainService.createDomain(any())).thenReturn(getDefaultDomain());
         MvcResult result = mvc.perform(post("/api/domains")
@@ -93,7 +91,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotCreateDomainWhenNameIsTaken() throws Exception {
+    void shouldNotCreateDomainWhenNameIsTaken() throws Exception {
         when(domainService.existsDomain("GLOBAL")).thenReturn(true);
         DomainRequest domainRequest = getDefaultDomainRequest("test");
         domainRequest.setCodename("GLOBAL");
@@ -109,7 +107,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateDomain() throws Exception {
+    void shouldUpdateDomain() throws Exception {
         Domain request = getDefaultDomain();
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
         request.setApplicationStatePerDomain(new ArrayList<>());
@@ -134,11 +132,11 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
                 .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(domainService, times(1)).updateDomain(any());
+        verify(domainService).updateDomain(any());
     }
 
     @Test
-    public void shouldNotUpdateDomainWhenIdIsIncorrect() {
+    void shouldNotUpdateDomainWhenIdIsIncorrect() {
         DomainView request = modelMapper.map(getDefaultDomainRequest("test"), DomainView.class);
         request.setId(999L);
         assertDoesNotThrow(() -> {
@@ -152,7 +150,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateWithExternalServiceDomainSpecified() throws Exception {
+    void shouldUpdateWithExternalServiceDomainSpecified() throws Exception {
         Domain request = getDefaultDomain();
         request.getDomainTechDetails().setExternalServiceDomain("external-domain");
         request.setApplicationStatePerDomain(new ArrayList<>());
@@ -167,7 +165,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateDomainTechDetails() throws Exception {
+    void shouldUpdateDomainTechDetails() throws Exception {
         Domain request = getDefaultDomain();
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
         request.setApplicationStatePerDomain(new ArrayList<>());
@@ -182,7 +180,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotUpdateDomainTechDetailsAsDomainAdmin() throws Exception {
+    void shouldNotUpdateDomainTechDetailsAsDomainAdmin() throws Exception {
         Domain request = UsersHelper.DOMAIN1;
         DomainTechDetails techDetails = new DomainTechDetails();
         techDetails.setKubernetesNamespace("namespace");
@@ -199,7 +197,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotUpdateTechDetailsWithCorruptedId() {
+    void shouldNotUpdateTechDetailsWithCorruptedId() {
         Domain domain = getDefaultDomain();
         domain.setApplicationStatePerDomain(new ArrayList<>());
         DomainView request = modelMapper.map(domain, DomainView.class);
@@ -216,7 +214,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldChangeDomainState() {
+    void shouldChangeDomainState() {
         assertDoesNotThrow(() -> {
             mvc.perform(patch("/api/domains/" + DEF_DOM_ID + "/state?active=false")
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -226,31 +224,31 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldEnableDcnConfiguredFlag() throws Exception {
+    void shouldEnableDcnConfiguredFlag() throws Exception {
         when(domainService.changeDcnConfiguredFlag(DEF_DOM_ID, true)).thenReturn(getDefaultDomain());
         MvcResult result = mvc.perform(patch("/api/domains/" + DEF_DOM_ID + "/dcn?configured=true")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        verify(domainService, times(1)).changeDcnConfiguredFlag(DEF_DOM_ID, true);
+        verify(domainService).changeDcnConfiguredFlag(DEF_DOM_ID, true);
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
     }
 
     @Test
-    public void shouldDisableDcnConfiguredFlag() throws Exception {
+    void shouldDisableDcnConfiguredFlag() throws Exception {
         when(domainService.changeDcnConfiguredFlag(DEF_DOM_ID, false)).thenReturn(getDefaultDomain());
         MvcResult result = mvc.perform(patch("/api/domains/" + DEF_DOM_ID + "/dcn?configured=false")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        verify(domainService, times(1)).changeDcnConfiguredFlag(DEF_DOM_ID, false);
+        verify(domainService).changeDcnConfiguredFlag(DEF_DOM_ID, false);
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
     }
 
     @Test
-    public void shouldDeleteDomain() {
+    void shouldDeleteDomain() {
         when(domainService.removeDomain(DEF_DOM_ID)).thenReturn(true);
         assertDoesNotThrow(() -> {
             mvc.perform(delete("/api/domains/" + DEF_DOM_ID)
@@ -261,7 +259,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotDeleteDomain() {
+    void shouldNotDeleteDomain() {
         assertDoesNotThrow(() -> {
             mvc.perform(delete("/api/domains/" + 1234)
                     .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
@@ -271,7 +269,9 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldGetDomain() throws Exception {
+    void shouldGetDomain() throws Exception {
+        when(userService.findByUsername(ADMIN_USERNAME)).thenReturn(Optional.of(UsersHelper.ADMIN));
+        when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
         MvcResult result = mvc.perform(get("/api/domains/{domainId}", DEF_DOM_ID)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
@@ -282,7 +282,9 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotGetDomain() throws Exception {
+    void shouldNotGetDomain() {
+        when(userService.findByUsername(ADMIN_USERNAME)).thenReturn(Optional.of(UsersHelper.ADMIN));
+        when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
         when(domainService.findDomain(2345L)).thenReturn(Optional.empty());
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/domains/{domainId}", 2345)
@@ -293,7 +295,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldGetDomains() throws Exception {
+    void shouldGetDomains() throws Exception {
         MvcResult result = mvc.perform(get("/api/domains")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON))
@@ -304,7 +306,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldGetMyDomains() throws Exception {
+    void shouldGetMyDomains() throws Exception {
         User user = new User("testUser");
         user.setId(1L);
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
@@ -333,7 +335,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         return domain;
     }
 
-    private DomainRequest getDefaultDomainRequest(String name){
+    private DomainRequest getDefaultDomainRequest(String name) {
         DomainRequest domain = new DomainRequest(name, name, true);
         domain.getDomainDcnDetails().setDcnDeploymentType(DcnDeploymentType.NONE);
         domain.getDomainDcnDetails().setDcnConfigured(false);

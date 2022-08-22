@@ -89,7 +89,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
         } else {
             appDeploymentOwner.setName(appDeploymentOwner.getUsername());
         }
-        appDeploymentOwner.setSshKeys(ownerSshKeys.stream().map(SSHKeyEntity::getKey).collect(Collectors.toList()));
+        appDeploymentOwner.setSshKeys(ownerSshKeys.stream().map(SSHKeyEntity::getKeyValue).collect(Collectors.toList()));
         return appDeploymentOwner;
     }
 
