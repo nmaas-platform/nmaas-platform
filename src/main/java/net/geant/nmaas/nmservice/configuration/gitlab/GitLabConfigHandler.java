@@ -85,7 +85,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
                         false
                 );
             }
-            if (userSshKeys != null && !userSshKeys.isEmpty()) {
+            if (userSshKeys != null) {
                 replaceUserSshKeys(gitLabUsername, userSshKeys);
             }
         } catch (GitLabApiException e) {
