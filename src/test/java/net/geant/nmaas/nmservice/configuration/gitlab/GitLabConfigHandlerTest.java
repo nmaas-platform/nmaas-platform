@@ -8,32 +8,37 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.ProjectApi;
+import org.gitlab4j.api.UserApi;
 import org.gitlab4j.api.models.Project;
+import org.gitlab4j.api.models.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class GitLabConfigHandlerTest {
 
-    private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
-    private GitLabManager gitLabManager = mock(GitLabManager.class);
+    private final KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
+    private final GitLabManager gitLabManager = mock(GitLabManager.class);
 
     private GitLabConfigHandler handler;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         handler = new GitLabConfigHandler(repositoryManager, null, gitLabManager);
     }
 
     @Test
-    public void shouldBuildHttpUrlToRepo() throws InvalidDeploymentIdException, GitLabApiException {
+    void shouldBuildHttpUrlToRepo() throws InvalidDeploymentIdException, GitLabApiException {
         ProjectApi projectApi = mock(ProjectApi.class);
         Project project = mock(Project.class);
         when(projectApi.getProject(anyInt())).thenReturn(project);
@@ -41,28 +46,47 @@ public class GitLabConfigHandlerTest {
         when(gitLabManager.getGitlabServer()).thenReturn("test-server");
         when(gitLabManager.getGitlabPort()).thenReturn(80);
         when(gitLabManager.projects()).thenReturn(projectApi);
+
         String result = handler.getHttpUrlToRepo(1);
-        assertThat(result, is("http://test-server:80/group/project.git"));
+
+        assertThat(result).isEqualTo("http://test-server:80/group/project.git");
     }
 
     @Test
-    public void shouldBuildSshUrlToRepo() throws GitLabApiException {
+    void shouldBuildSshUrlToRepo() throws GitLabApiException {
         ProjectApi projectApi = mock(ProjectApi.class);
         Project project = mock(Project.class);
         when(projectApi.getProject(anyInt())).thenReturn(project);
         when(project.getSshUrlToRepo()).thenReturn("git@gitlab.nmaas.eu:groups-pllab/pllab-oxidized-142.git");
         when(gitLabManager.projects()).thenReturn(projectApi);
+
         String result = handler.getSshUrlToRepo(1);
-        assertThat(result, is("git@gitlab.nmaas.eu/groups-pllab/pllab-oxidized-142.git"));
+
+        assertThat(result).isEqualTo("git@gitlab.nmaas.eu/groups-pllab/pllab-oxidized-142.git");
     }
 
     @Test
-    public void shouldRetrieveRepositoryCloneUrl() {
+    void shouldRetrieveRepositoryCloneUrl() {
         Identifier deploymentId = Identifier.newInstance(1L);
         GitLabProject gitLabProject = new GitLabProject(deploymentId, "", "", "", "testCloneUrl", null);
         when(repositoryManager.loadGitLabProject(deploymentId)).thenReturn(Optional.of(gitLabProject));
+
         AppConfigRepositoryAccessDetails repositoryAccessDetails = handler.configRepositoryAccessDetails(deploymentId);
-        assertThat(repositoryAccessDetails.getCloneUrl(), is("testCloneUrl"));
+
+        assertThat(repositoryAccessDetails.getCloneUrl()).isEqualTo("testCloneUrl");
+    }
+
+    @Test
+    void shouldCreateNewUser() throws GitLabApiException {
+        UserApi userApi = mock(UserApi.class);
+        when(userApi.getOptionalUser("test_user.eu")).thenReturn(Optional.empty());
+        when(gitLabManager.users()).thenReturn(userApi);
+
+        handler.createUser("test@user.eu", "test@user.eu", "test@user.eu", null);
+
+        ArgumentCaptor<User> gitLabUserRequest = ArgumentCaptor.forClass(User.class);
+        verify(gitLabManager.users()).createUser(gitLabUserRequest.capture(), anyString(), anyBoolean());
+        assertThat(gitLabUserRequest.getValue().getUsername()).isEqualTo("test_user.eu");
     }
     
 }

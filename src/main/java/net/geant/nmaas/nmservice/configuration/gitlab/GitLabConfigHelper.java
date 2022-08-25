@@ -17,11 +17,35 @@ public class GitLabConfigHelper {
 
     static final String GROUPS_PATH_PREFIX = "groups";
     static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
+    static final String DEFAULT_REPLACEMENT_FOR_INCORRECT_CHARACTER = "_";
+    static final String FORBIDDEN_USERNAME_SUFFIX1 = ".git";
+    static final String FORBIDDEN_USERNAME_SUFFIX2 = ".atom";
+
     static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int DEFAULT_WEBHOOK_TOKEN_LENGTH = 30;
 
+    /**
+     * Applies specific rules for the GitLab user username
+     *
+     * @param username Username from the user account
+     * @return correct username to be used in GitLab
+     */
+    static String prepareGitLabUsername(String username) {
+        if (username.endsWith(FORBIDDEN_USERNAME_SUFFIX1)) {
+            username = username.substring(0, username.length() - FORBIDDEN_USERNAME_SUFFIX1.length());
+        }
+        if (username.endsWith(FORBIDDEN_USERNAME_SUFFIX2)) {
+            username = username.substring(0, username.length() - FORBIDDEN_USERNAME_SUFFIX2.length());
+        }
+        return username
+                .replace("@", DEFAULT_REPLACEMENT_FOR_INCORRECT_CHARACTER)
+                .replace("#", DEFAULT_REPLACEMENT_FOR_INCORRECT_CHARACTER)
+                .stripTrailing()
+                .toLowerCase();
+    }
+
     static User createStandardUser(String username, String email, String name) {
-        if(name == null || name.isEmpty() || name.trim().isEmpty()) {
+        if (name == null || name.isEmpty() || name.trim().isEmpty()) {
             name = username;
         }
         User user = new User();
@@ -74,7 +98,7 @@ public class GitLabConfigHelper {
         RepositoryFile file = new RepositoryFile();
         if (StringUtils.isNotEmpty(configuration.getConfigFileDirectory())) {
             file.setFilePath(configuration.getConfigFileDirectory() + "/" + configuration.getConfigFileName());
-        } else{
+        } else {
             file.setFilePath(configuration.getConfigFileName());
         }
         file.setContent(configuration.getConfigFileContent());
