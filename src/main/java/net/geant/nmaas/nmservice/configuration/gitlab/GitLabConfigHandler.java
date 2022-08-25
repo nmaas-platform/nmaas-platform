@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabNotFoundException;
@@ -39,6 +40,7 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.generateWebhookId;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.groupName;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.groupPath;
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.prepareGitLabUsername;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.projectName;
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.updateCommitMessage;
 
@@ -49,26 +51,21 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
  */
 @Component
 @Profile("env_kubernetes")
+@RequiredArgsConstructor
 @Log4j2
 public class GitLabConfigHandler implements GitConfigHandler {
 
-    private KubernetesRepositoryManager repositoryManager;
-    private NmServiceConfigFileRepository configurations;
-    private GitLabManager gitLabManager;
+    private final KubernetesRepositoryManager repositoryManager;
+    private final NmServiceConfigFileRepository configurations;
+    private final GitLabManager gitLabManager;
 
     private static final String LOG_PREFIX = "GITLAB: ";
-
-    public GitLabConfigHandler(KubernetesRepositoryManager repositoryManager, NmServiceConfigFileRepository configurations, GitLabManager gitLabManager) {
-        this.repositoryManager = repositoryManager;
-        this.configurations = configurations;
-        this.gitLabManager = gitLabManager;
-    }
 
     @Value("${nmaas.platform.webhooks.baseurl}")
     private String webhooksBaseUrl;
 
     /**
-     * Creates a new GitLab user if one with given email does not exist already and add / replaces his SSH keys
+     * Creates a new GitLab user if one with given username does not exist already and adds / replaces his SSH keys
      *
      * @param userUsername username of the new user
      * @param userEmail email of the new user
@@ -80,21 +77,24 @@ public class GitLabConfigHandler implements GitConfigHandler {
     @Loggable(LogLevel.DEBUG)
     public void createUser(String userUsername, String userEmail, String userName, List<String> userSshKeys) {
         try {
-            if (!gitLabManager.users().getOptionalUser(userUsername).isPresent()) {
+            String gitLabUsername = prepareGitLabUsername(userUsername);
+            if (gitLabManager.users().getOptionalUser(gitLabUsername).isEmpty()) {
                 gitLabManager.users().createUser(
-                        createStandardUser(userUsername, userEmail, userName),
+                        createStandardUser(gitLabUsername, userEmail, userName),
                         generateRandomPassword(),
                         false
                 );
             }
-            replaceUserSshKeys(userUsername, userSshKeys);
+            if (userSshKeys != null && !userSshKeys.isEmpty()) {
+                replaceUserSshKeys(gitLabUsername, userSshKeys);
+            }
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
     }
 
     private void replaceUserSshKeys(String username, List<String> sshKeys) throws GitLabApiException {
-        Integer userId = getUserId(username);
+        Integer userId = getUserId(prepareGitLabUsername(username));
         gitLabManager.users().getSshKeys(userId).forEach(k -> {
             try {
                 gitLabManager.users().deleteSshKey(userId, k.getId());
@@ -113,7 +113,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     /**
      * Creates a new GitLab repository dedicated for the client requesting the deployment.
-     * If an account for this client does not yet exists it is created.
+     * If an account for this client does not yet exist it is created.
      * Information on how to access the repository is stored in {@link GitLabProject} object.
      *
      * @param deploymentId unique identifier of service deployment
@@ -144,12 +144,12 @@ public class GitLabConfigHandler implements GitConfigHandler {
         repositoryManager.updateGitLabProject(deploymentId, project);
     }
 
-    private Integer getUserId(String username) {
+    private Integer getUserId(String gitLabUsername) {
         try {
             return gitLabManager.users()
-                    .getOptionalUser(username)
+                    .getOptionalUser(gitLabUsername)
                     .orElseThrow(
-                            () -> new GitLabNotFoundException(String.format("User [%s] not found with gitlab", username))
+                            () -> new GitLabNotFoundException(String.format("User [%s] not found with gitlab", gitLabUsername))
                     ).getId();
         } catch (GitLabNotFoundException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
@@ -212,7 +212,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     @Override
     public void addMemberToProject(Integer gitLabProjectId, String username) {
-        Integer userId = getUserId(username);
+        Integer userId = getUserId(prepareGitLabUsername(username));
         this.addMemberToProject(gitLabProjectId, userId);
     }
 
@@ -227,7 +227,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     @Override
     public void removeMemberFromProject(Integer gitLabProjectId, String username) {
-        Integer userId = getUserId(username);
+        Integer userId = getUserId(prepareGitLabUsername(username));
         this.removeMemberFromProject(gitLabProjectId, userId);
 
     }

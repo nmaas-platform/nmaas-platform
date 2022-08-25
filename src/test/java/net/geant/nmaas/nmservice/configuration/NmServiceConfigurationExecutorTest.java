@@ -16,20 +16,20 @@ import static org.mockito.Mockito.when;
 
 public class NmServiceConfigurationExecutorTest {
 
-    private ConfigFilePreparer filePreparer = mock(ConfigFilePreparer.class);
-    private GitConfigHandler configHandler = mock(GitConfigHandler.class);
-    private JanitorService janitorService = mock(JanitorService.class);
-    private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+    private final ConfigFilePreparer filePreparer = mock(ConfigFilePreparer.class);
+    private final GitConfigHandler configHandler = mock(GitConfigHandler.class);
+    private final JanitorService janitorService = mock(JanitorService.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
     private NmServiceConfigurationExecutor executor;
 
     @BeforeEach
-    public void init() {
+    void init() {
         executor = new NmServiceConfigurationExecutor(filePreparer, configHandler, janitorService, eventPublisher);
     }
 
     @Test
-    public void shouldCreateRepositoryAndCommitFiles() {
+    void shouldCreateRepositoryAndCommitFiles() {
         NmServiceDeployment nsd = NmServiceDeployment.builder()
                 .configFileRepositoryRequired(true)
                 .configUpdateEnabled(false)
@@ -42,7 +42,7 @@ public class NmServiceConfigurationExecutorTest {
     }
 
     @Test
-    public void shouldCreateRepositoryAndCommitFilesSinceUpdateEnabled() {
+    void shouldCreateRepositoryAndCommitFilesSinceUpdateEnabled() {
         NmServiceDeployment nsd = NmServiceDeployment.builder()
                 .configFileRepositoryRequired(true)
                 .configUpdateEnabled(true)
@@ -54,14 +54,14 @@ public class NmServiceConfigurationExecutorTest {
     }
 
     @Test
-    public void shouldNotInteractWithGitLab() {
+    void shouldNotInteractWithGitLab() {
         NmServiceDeployment nsd = NmServiceDeployment.builder().configFileRepositoryRequired(false).build();
         executor.configureNmService(nsd);
         verifyNoMoreInteractions(configHandler);
     }
 
     @Test
-    public void shouldCreateRepositoryButDoNotCommitSinceNotFileAndUpdateNotEnabled() {
+    void shouldCreateRepositoryButDoNotCommitSinceNotFileAndUpdateNotEnabled() {
         NmServiceDeployment nsd = NmServiceDeployment.builder().configFileRepositoryRequired(true).build();
         executor.configureNmService(nsd);
         verify(configHandler, times(1)).createUser(any(), any(), any(), any());

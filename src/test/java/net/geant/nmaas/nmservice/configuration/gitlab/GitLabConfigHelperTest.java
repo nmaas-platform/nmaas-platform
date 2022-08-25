@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class GitLabConfigHelperTest {
 
     @Test
-    public void shouldCreateCommittedFile() {
+    void shouldCreateCommittedFile() {
         NmServiceConfiguration configuration = new NmServiceConfiguration(
                 "configId",
                 "configFileName",
@@ -23,7 +23,7 @@ public class GitLabConfigHelperTest {
     }
 
     @Test
-    public void shouldCreateCommittedFileWithoutDirectory() {
+    void shouldCreateCommittedFileWithoutDirectory() {
         NmServiceConfiguration configuration = new NmServiceConfiguration(
                 "configId",
                 "configFileName",
@@ -46,7 +46,13 @@ public class GitLabConfigHelperTest {
     }
 
     @Test
-    public void shouldCreateUserObject() {
+    void shouldPrepareGitLabUsername() {
+        assertEquals("user_name", GitLabConfigHelper.prepareGitLabUsername("user@name.git"));
+        assertEquals("__user_name", GitLabConfigHelper.prepareGitLabUsername("@#user#name.atom"));
+    }
+
+    @Test
+    void shouldCreateUserObject() {
         User result = GitLabConfigHelper.createStandardUser("username", "email", "name");
         assertEquals("username", result.getUsername());
         assertEquals("email", result.getEmail());
@@ -54,7 +60,7 @@ public class GitLabConfigHelperTest {
     }
 
     @Test
-    public void shouldCreateUserObjectWhenNameNotProvided() {
+    void shouldCreateUserObjectWhenNameNotProvided() {
         User result1 = GitLabConfigHelper.createStandardUser("username", "email", "");
         assertEquals("username", result1.getUsername());
         assertEquals("email", result1.getEmail());
