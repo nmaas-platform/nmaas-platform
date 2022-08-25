@@ -30,11 +30,11 @@ gitProperties {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.19.4"
+        artifact = "com.google.protobuf:protoc:3.21.5"
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.44.1'
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.48.0'
         }
     }
     generateProtoTasks {
@@ -95,8 +95,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-log4j2')
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
-    implementation('org.springdoc:springdoc-openapi-ui:1.6.9')
-    implementation('io.micrometer:micrometer-registry-prometheus:1.9.2')
+    implementation('org.springdoc:springdoc-openapi-ui:1.6.10')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.9.3')
 
     implementation('org.modelmapper:modelmapper:3.1.0')
     implementation('org.modelmapper.extensions:modelmapper-spring:3.1.0')
@@ -115,12 +115,12 @@ dependencies {
     implementation('io.fabric8:kubernetes-client:4.11.2')
     implementation('com.vdurmont:semver4j:3.1.0')
 
-    implementation('com.google.protobuf:protobuf-java:3.19.4')
-    implementation('io.grpc:grpc-netty-shaded:1.44.1')
-    implementation('io.grpc:grpc-protobuf:1.44.1')
-    implementation('io.grpc:grpc-stub:1.44.1')
+    implementation('com.google.protobuf:protobuf-java:3.21.5')
+    implementation('io.grpc:grpc-netty-shaded:1.48.1')
+    implementation('io.grpc:grpc-protobuf:1.48.0')
+    implementation('io.grpc:grpc-stub:1.48.1')
 
-    testImplementation('org.mockito:mockito-inline:4.6.1')
+    testImplementation('org.mockito:mockito-inline:4.7.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
