@@ -52,20 +52,18 @@ notifications.from-address=${SMTP_FROM}
 db.standalone.jdbc-url=jdbc:postgresql://${POSTGRESQL_HOST}:5432/${POSTGRESQL_DBNAME}
 db.standalone.username=${POSTGRESQL_USERNAME}
 db.standalone.password=${POSTGRESQL_PASSWORD}
-#FlywayDB settings
+# FlywayDB settings
+spring.flyway.enabled=true
 spring.flyway.locations=classpath:/db/migration
 spring.flyway.out-of-order=true
 
 # Common
-spring.h2.console.enabled=true
 spring.jpa.properties.hibernate.show_sql=false
 spring.jpa.properties.hibernate.format_sql=false
 spring.jpa.properties.hibernate.connection.autocommit=false
 spring.jpa.hibernate.ddl-auto=none
 spring.jpa.show-sql=true
 spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
-spring.mvc.favicon.enabled=false
-spring.devtools.add-properties=false
 
 # -------------------------------------------------------- #
 # NMaaS application deployment and configuration processes #
@@ -106,6 +104,8 @@ captcha.secret=${CAPTCHA_SECRET}
 spring.data.web.pageable.default-page-size=1000
 management.info.git.mode=full
 management.health.mail.enabled=false
+spring.mvc.favicon.enabled=false
+spring.devtools.add-properties=false
 
 # ------------------------ #
 # SAML proxy configuration #
