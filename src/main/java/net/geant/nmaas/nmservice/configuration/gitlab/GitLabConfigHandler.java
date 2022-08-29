@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
+import net.geant.nmaas.nmservice.configuration.exceptions.GitRepositoryOperationException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
@@ -84,29 +85,32 @@ public class GitLabConfigHandler implements GitConfigHandler {
                         generateRandomPassword(),
                         false
                 );
+            } else {
+                log.debug("User already created in GitLab. No action needed.");
             }
             if (userSshKeys != null) {
+                log.debug("Refreshing user's SSH keys.");
                 replaceUserSshKeys(gitLabUsername, userSshKeys);
             }
         } catch (GitLabApiException e) {
-            throw new FileTransferException(e.getClass().getName() + e.getMessage());
+            throw new GitRepositoryOperationException(e.getClass().getName() + e.getMessage());
         }
     }
 
-    private void replaceUserSshKeys(String username, List<String> sshKeys) throws GitLabApiException {
+    private void replaceUserSshKeys(String username, List<String> sshKeys) throws GitRepositoryOperationException, GitLabApiException {
         Integer userId = getUserId(prepareGitLabUsername(username));
         gitLabManager.users().getSshKeys(userId).forEach(k -> {
             try {
                 gitLabManager.users().deleteSshKey(userId, k.getId());
             } catch (GitLabApiException e) {
-                throw new FileTransferException(e.getMessage());
+                throw new GitRepositoryOperationException(e.getClass().getName() + e.getMessage());
             }
         });
         sshKeys.forEach(k -> {
             try {
                 gitLabManager.users().addSshKey(userId, LocalTime.now().toString(), k);
             } catch (GitLabApiException e) {
-                throw new FileTransferException(e.getMessage());
+                throw new GitRepositoryOperationException(e.getClass().getName() + e.getMessage());
             }
         });
     }
