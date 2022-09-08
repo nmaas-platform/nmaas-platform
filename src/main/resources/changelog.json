@@ -1,12 +1,22 @@
 {"versions" : [
   {
     "verNo" : "1.5.1",
-    "date" : "(2022/08/26)",
+    "date" : "(2022/09/09)",
     "topic" : [
       {
-        "title" : "...",
-        "tags" : "[New Feature]",
-        "description" : "..."
+        "title" : "Improved application configuration",
+        "tags" : "[Enhancement]",
+        "description" : "Added support for new parameters passed as environment variables."
+      },
+      {
+        "title" : "Fixed issues with email notifications",
+        "tags" : "[Bugfix]",
+        "description" : "Fixed issue with generating application upgrade possibility notifications."
+      },
+      {
+        "title" : "Major upgrade of project dependencies",
+        "tags" : "[Enhancement]",
+        "description" : "Most of the used dependencies were updated to most recent versions."
       }
     ]
   },
