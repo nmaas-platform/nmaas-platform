@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-version = '1.5.1'
+version = '1.5.2-SNAPSHOT'
 group = 'net.geant.nmaas'
 
 java {

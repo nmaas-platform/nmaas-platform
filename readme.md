@@ -17,7 +17,7 @@ Platform exposes a REST API consumed by the NMaaS Portal GUI.
 
 ### Running NMaaS Platform on local machine
 
-#### Prerequisites 
+#### Prerequisites
 Install Java 11 jdk
 
 #### Running the software
