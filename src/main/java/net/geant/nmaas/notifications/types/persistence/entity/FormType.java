@@ -16,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 public class FormType {
+
     private static final String SPLIT_CHAR = ";";
 
     @Id

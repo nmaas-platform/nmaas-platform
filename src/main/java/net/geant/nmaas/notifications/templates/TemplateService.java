@@ -52,13 +52,13 @@ public class TemplateService {
                 .collect(Collectors.toList());
     }
 
-    void saveMailTemplate(MailTemplateView mailTemplate){
+    void saveMailTemplate(MailTemplateView mailTemplate) {
         checkArgument(!repository.existsByMailType(mailTemplate.getMailType()),"Mail template already exists");
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         repository.save(modelMapper.map(mailTemplate, MailTemplate.class));
     }
 
-    void updateMailTemplate(MailTemplateView mailTemplate){
+    void updateMailTemplate(MailTemplateView mailTemplate) {
         MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         mailTemplateEntity.getTemplates().clear();
@@ -66,7 +66,7 @@ public class TemplateService {
         repository.save(mailTemplateEntity);
     }
 
-    void storeHTMLTemplate(MultipartFile file){
+    void storeHTMLTemplate(MultipartFile file) {
         checkArgument(file != null && !file.isEmpty(), "HTML template cannot be null or empty");
         checkArgument(Objects.equals(file.getContentType(), MailTemplateElements.HTML_TYPE), "HTML template must be in html format");
         checkArgument(fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE).isEmpty(), "Only one HTML template is supported.");
@@ -75,7 +75,7 @@ public class TemplateService {
 
     void updateHTMLTemplate(MultipartFile file){
         FileInfo fileInfo = getHTMLTemplateFileInfo();
-        if(fileStorageService.remove(fileInfo)){
+        if (fileStorageService.remove(fileInfo)) {
             storeHTMLTemplate(file);
         }
     }
@@ -85,12 +85,12 @@ public class TemplateService {
         return new Template(template.getName(), new FileReader(template), new Configuration(Configuration.VERSION_2_3_28));
     }
 
-    private FileInfo getHTMLTemplateFileInfo(){
+    private FileInfo getHTMLTemplateFileInfo() {
         List<FileInfo> template = fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE);
-        if(template.size() == 1){
+        if (template.size() == 1) {
             return template.get(0);
         }
-        throw new IllegalArgumentException(String.format("Only one html template supported (actually got %d)", template.size()));
+        throw new IllegalArgumentException(String.format("Exactly one html template supported (actually got %d)", template.size()));
     }
 
 }

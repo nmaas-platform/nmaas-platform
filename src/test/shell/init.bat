@@ -43,11 +43,9 @@ echo %token%
 echo ----------------------
 echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
-echo.
+echo
 
-echo.
 echo ---------------------
-echo.
 echo Add Domain One with codename domain1
 curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
 echo.
@@ -55,9 +53,7 @@ echo Add Domain Two with codename domain2
 curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain2.json
 echo.
 
-echo.
 echo ---------------------
-echo.
 echo Create common mail template
 curl -X POST %API_URL%/mail/templates/html --header "Authorization: Bearer %token%" -F "file=@data\mails\html-template\template.html;type=text/html"
 echo.
@@ -103,7 +99,6 @@ echo.
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\appUpgradeSummaryMail.json
 echo.
 
-echo.
 echo App1
 curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app01-librenms.json
 echo.
