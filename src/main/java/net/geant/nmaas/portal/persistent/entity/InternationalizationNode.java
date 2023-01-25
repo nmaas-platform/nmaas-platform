@@ -1,8 +1,13 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
@@ -17,5 +22,7 @@ public class InternationalizationNode {
     private String key;
 
     @NotNull
+    @Lob
     private String content;
+
 }

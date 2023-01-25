@@ -1,8 +1,7 @@
 package net.geant.nmaas.notifications.templates;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,16 +14,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/mail/templates")
 public class TemplateController {
 
-    private TemplateService templateService;
-
-    @Autowired
-    public TemplateController(TemplateService templateService){
-        this.templateService = templateService;
-    }
+    private final TemplateService templateService;
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
@@ -39,9 +36,8 @@ public class TemplateController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
     public void updateTemplates(@RequestBody List<MailTemplateView> mailTemplates){
-        mailTemplates.forEach(template -> this.templateService.updateMailTemplate(template));
+        mailTemplates.forEach(this.templateService::updateMailTemplate);
     }
-
 
     @PatchMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
