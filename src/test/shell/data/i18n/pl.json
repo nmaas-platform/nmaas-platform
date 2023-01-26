@@ -429,9 +429,7 @@
     "MEMBERS_LIST": "Użytkownicy",
     "TABLE": {
       "USERNAME": "Nazwa użytkownika",
-      "FIRSTNAME": "Imię",
-      "LASTNAME": "Nazwisko",
-      "EMAIL": "Email"
+      "NAME" : "Imię i nazwisko"
     },
     "SUBMIT_BUTTON": "Zatwierdź",
     "HIDE_BUTTON": "Anuluj"

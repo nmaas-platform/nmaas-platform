@@ -429,9 +429,7 @@
     "MEMBERS_LIST": "Selected members",
     "TABLE": {
       "USERNAME": "Username",
-      "FIRSTNAME": "First name",
-      "LASTNAME": "Last name",
-      "EMAIL": "Email"
+      "Name" : "Name"
     },
     "SUBMIT_BUTTON": "Submit",
     "HIDE_BUTTON": "Cancel"
