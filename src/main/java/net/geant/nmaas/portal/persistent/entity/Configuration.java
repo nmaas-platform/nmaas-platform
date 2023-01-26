@@ -41,11 +41,15 @@ public class Configuration {
     @Setter(value = AccessLevel.PRIVATE)
     private String appInstanceFailureEmails = "";
 
+    @Column(nullable = false)
+    private boolean registrationDomainSelectionEnabled = true;
+
     public Configuration(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance){
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
         this.defaultLanguage = defaultLanguage;
         this.testInstance = testInstance;
+
     }
 
     public void setAppInstanceFailureEmailList(List<String> emails) {
@@ -62,7 +66,8 @@ public class Configuration {
             String defaultLanguage,
             boolean testInstance,
             boolean sendAppInstanceFailureEmails,
-            List<String> appInstanceFailureEmailList
+            List<String> appInstanceFailureEmailList,
+            boolean registrationDomainSelectionEnabled
     ){
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
@@ -70,6 +75,7 @@ public class Configuration {
         this.testInstance = testInstance;
         this.sendAppInstanceFailureEmails = sendAppInstanceFailureEmails;
         this.setAppInstanceFailureEmailList(appInstanceFailureEmailList);
+        this.registrationDomainSelectionEnabled = registrationDomainSelectionEnabled;
     }
 
 }
