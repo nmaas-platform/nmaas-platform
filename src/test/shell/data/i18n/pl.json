@@ -272,7 +272,8 @@
     "LANGUAGE_DISABLED": "Nieaktywny",
     "TEST_INSTANCE": "Oznacz jako instancję testową NMaaS",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Wyślij email gdy instalacja aplikacji nie powiedzie się",
-    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Lista adresów email"
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Lista adresów email",
+    "DOMAIN_SELECTION_ENABLED" : "Wybór domeny podczas rejestracji"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
