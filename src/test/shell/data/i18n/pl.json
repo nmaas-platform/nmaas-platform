@@ -17,7 +17,8 @@
     "BACK": "Wróć do strony głównej",
     "LANGUAGES": "Języki",
     "NOTIFICATION": "Wyślij wiadomość",
-    "ALL_USERS": "Do wszystkich"
+    "ALL_USERS": "Do wszystkich",
+    "EXPIRED_TIME" : "Koniec sesji"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",

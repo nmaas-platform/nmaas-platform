@@ -17,7 +17,8 @@
     "BACK": "Back to Home Page",
     "LANGUAGES": "Languages",
     "NOTIFICATION": "Send notification",
-    "ALL_USERS": "To all users"
+    "ALL_USERS": "To all users",
+    "EXPIRED_TIME" : "Session expired"
   },
   "WELCOME": {
     "LOGIN": "Login",
