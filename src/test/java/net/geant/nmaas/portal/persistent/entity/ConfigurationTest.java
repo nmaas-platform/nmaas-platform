@@ -15,7 +15,7 @@ public class ConfigurationTest {
     public void shouldCreateConfigurationWithEmailList() {
         List<String> emails = Lists.newArrayList("admin@email.com", "user@email.com");
 
-        Configuration configuration = new Configuration(true, true, "en", true, true, emails);
+        Configuration configuration = new Configuration(true, true, "en", true, true, emails, true);
 
         assertEquals(2, configuration.getAppInstanceFailureEmailList().size());
     }
@@ -26,7 +26,7 @@ public class ConfigurationTest {
 
         List<String> emails = Lists.newArrayList("admin@email.com", "user@email.com");
 
-        Configuration configuration = new Configuration(true, true, "en", true, true, emails);
+        Configuration configuration = new Configuration(true, true, "en", true, true, emails, true);
 
         ConfigurationView configurationView = mm.map(configuration, ConfigurationView.class);
 

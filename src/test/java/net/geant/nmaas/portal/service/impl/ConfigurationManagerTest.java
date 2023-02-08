@@ -43,9 +43,9 @@ public class ConfigurationManagerTest {
     @BeforeEach
     public void setup(){
         this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository);
-        this.config = new Configuration(1L, false, false, "en", false, false, "");
+        this.config = new Configuration(1L, false, false, "en", false, false, "", true);
         this.internationalization = new InternationalizationView("pl", true, "{\"test\":\"test\"}");
-        this.configView = new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>());
+        this.configView = new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>(), true);
     }
 
     @Test
@@ -56,6 +56,7 @@ public class ConfigurationManagerTest {
         assertEquals(config.isMaintenance(), configView.isMaintenance());
         assertEquals(config.isSsoLoginAllowed(), configView.isSsoLoginAllowed());
         assertEquals(config.getDefaultLanguage(), configView.getDefaultLanguage());
+        assertEquals(config.isRegistrationDomainSelectionEnabled(), configView.isRegistrationDomainSelectionEnabled());
     }
 
     @Test

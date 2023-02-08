@@ -272,7 +272,8 @@
     "LANGUAGE_DISABLED": "Désactivé",
     "TEST_INSTANCE": "Marquer comme instance de test NMaaS",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
-    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list"
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list",
+    "DOMAIN_SELECTION_ENABLED" : "Sélection de domaine lors de l'enregistrement"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
@@ -429,9 +430,7 @@
     "MEMBERS_LIST": "Selected members",
     "TABLE": {
       "USERNAME": "Username",
-      "FIRSTNAME": "First name",
-      "LASTNAME": "Last name",
-      "EMAIL": "Email"
+      "NAME" : "Name"
     },
     "SUBMIT_BUTTON": "Submit",
     "HIDE_BUTTON": "Cancel"

@@ -36,6 +36,9 @@ public class ConfigurationView {
     @Builder.Default
     private List<@Email String> appInstanceFailureEmailList = new ArrayList<>();
 
+    @Builder.Default
+    private boolean registrationDomainSelectionEnabled = true;
+
     public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance, boolean sendAppInstanceFailureEmails, List<String> appInstanceFailureEmailList) {
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
