@@ -273,7 +273,7 @@
     "TEST_INSTANCE": "Mark as test NMaaS instance",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
     "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list",
-    "DOMAIN_SELECTION_ENABLED" : "Registration domain selection"
+    "DOMAIN_SELECTION_ENABLED" : "Domain selection during registration"
 
   },
   "DOMAIN_DETAILS": {

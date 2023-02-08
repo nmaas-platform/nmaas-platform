@@ -273,7 +273,7 @@
     "TEST_INSTANCE": "Marquer comme instance de test NMaaS",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
     "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list",
-    "DOMAIN_SELECTION_ENABLED" : "Sélection du domaine d'enregistrement"
+    "DOMAIN_SELECTION_ENABLED" : "Sélection de domaine lors de l'enregistrement"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
