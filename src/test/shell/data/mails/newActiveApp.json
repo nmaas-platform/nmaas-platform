@@ -1,0 +1,55 @@
+{
+  "mailType": "NEW_ACTIVE_APP",
+  "globalInformation": {
+    "LOGO_LINK": "https://www.geant.org/Style%20Library/Geant/Images/logo.png",
+    "LOGO_ALT": "Geant logo",
+    "PORTAL_LOGO_ALT": "NMaaS logo",
+    "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
+  },
+  "templates": [
+    {
+      "language": "en",
+      "subject": "NMaaS: A new application has been activated",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "A new application ${app_name} in version ${app_version} is now available in NMaaS app market.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "fr",
+      "subject": "NMaaS: A new application has been activated",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "A new application ${app_name} in version ${app_version} is now available in NMaaS app market.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "de",
+      "subject": "NMaaS: A new application has been activated",
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "A new application ${app_name} in version ${app_version} is now available in NMaaS app market.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "pl",
+      "subject": "NMaaS: Nowa aplikacja została aktywowana",
+      "template": {
+        "HEADER": "Drogi ${username},",
+        "CONTENT": "Nowa aplikacja ${app_name} w wersji ${app_version} jest już dostępna w systemie NMaaS.",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
+        "SENDER_POLICY": ""
+      }
+    }
+  ]
+}

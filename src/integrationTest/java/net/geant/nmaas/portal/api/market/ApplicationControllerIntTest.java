@@ -287,7 +287,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         long id = this.testApp1.getId();
         mvc.perform(patch("/api/apps/state/" + id)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.DISABLED, "reason")))
+                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.DISABLED, "reason", false)))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
