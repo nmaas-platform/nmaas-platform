@@ -666,7 +666,8 @@
     "NEW_TAB": "New",
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
     "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
-    "ADD_NEW_VERSION_BUTTON": "Add new version"
+    "ADD_NEW_VERSION_BUTTON": "Add new version",
+    "SEND_NOTIFICATION": "Send email notification to all users"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",

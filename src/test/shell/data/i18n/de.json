@@ -667,7 +667,8 @@
     "NEW_TAB": "Neu",
     "NO_REJECTED_APPS_MESSAGE": "Es gibt keine abgelehnten Anwendungen",
     "NO_NEW_APPS_MESSAGE": "Es gibt unbestätigten Anwendungen",
-    "ADD_NEW_VERSION_BUTTON": "Add new version"
+    "ADD_NEW_VERSION_BUTTON": "Add new version",
+    "SEND_NOTIFICATION": "Send email notification to all users"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "Diese Seite ist nur eine Vorschau der eingereichten Anwendung",
