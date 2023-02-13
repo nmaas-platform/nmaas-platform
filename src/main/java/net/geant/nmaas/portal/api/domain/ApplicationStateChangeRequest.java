@@ -1,9 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 
 @Getter
@@ -15,4 +12,11 @@ public class ApplicationStateChangeRequest {
     private ApplicationState state;
 
     private String reason;
+
+    @Getter(AccessLevel.NONE)
+    private boolean shouldSendNotification;
+
+    public boolean shouldSendNotification() {
+        return shouldSendNotification;
+    }
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
+import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
@@ -18,11 +19,7 @@ import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
@@ -130,7 +127,7 @@ public class ApplicationController extends AppBaseController {
 	/*
 	 * Application part
 	 */
-	
+
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
@@ -219,7 +216,7 @@ public class ApplicationController extends AppBaseController {
 		base.getVersions().add(version);
 		appBaseService.update(base);
 
-		this.sendMail(application, new ApplicationStateChangeRequest(application.getState(), ""));
+		this.sendMail(application, new ApplicationStateChangeRequest(application.getState(), "", false));
 	}
 
 	@PatchMapping(value = "/version")
@@ -304,7 +301,12 @@ public class ApplicationController extends AppBaseController {
 	/*
 	 * Utilities
 	 */
-	private void sendMail(Application app, ApplicationStateChangeRequest stateChangeRequest){
+	private void sendMail(Application app, ApplicationStateChangeRequest stateChangeRequest) {
+		MailAttributes mailAttributes = this.prepareMailAttributes(app, stateChangeRequest);
+		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+	}
+
+	private MailAttributes prepareMailAttributes(Application app, ApplicationStateChangeRequest stateChangeRequest) {
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.mailType(stateChangeRequest.getState().getMailType())
 				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason() == null? "": stateChangeRequest.getReason()))
@@ -314,7 +316,16 @@ public class ApplicationController extends AppBaseController {
 			UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
 			mailAttributes.setAddressees(Collections.singletonList(owner));
 		}
-		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+		if (stateChangeRequest.shouldSendNotification()) {
+			List<UserView> users = userService.findAll()
+					.stream()
+					.filter(User::isEnabled)
+					.map(user -> modelMapper.map(user, UserView.class))
+					.collect(Collectors.toList());
+			mailAttributes.setAddressees(users);
+			mailAttributes.setMailType(MailType.NEW_ACTIVE_APP);
+		}
+		return mailAttributes;
 	}
 
 

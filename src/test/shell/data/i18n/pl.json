@@ -666,7 +666,8 @@
     "NEW_TAB": "Nowe",
     "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
     "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
-    "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje"
+    "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje",
+    "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
