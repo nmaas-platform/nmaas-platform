@@ -9,10 +9,10 @@
   "templates": [
     {
       "language": "en",
-      "subject": "NMaaS: A new application has been activated",
+      "subject": "NMaaS: New application version available in the portfolio",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "A new application ${app_name} in version ${app_version} is now available in NMaaS app market.",
+        "CONTENT": "${appName} application in version ${appVersion} was added to the portfolio and is now available for deployment.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -20,10 +20,10 @@
     },
     {
       "language": "fr",
-      "subject": "NMaaS: A new application has been activated",
+      "subject": "NMaaS: New application version available in the portfolio",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "A new application ${app_name} in version ${app_version} is now available in NMaaS app market.",
+        "CONTENT": "${appName} application in version ${appVersion} was added to the portfolio and is now available for deployment.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -31,10 +31,10 @@
     },
     {
       "language": "de",
-      "subject": "NMaaS: A new application has been activated",
+      "subject": "NMaaS: New application version available in the portfolio",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "A new application ${app_name} in version ${app_version} is now available in NMaaS app market.",
+        "CONTENT": "${appName} application in version ${appVersion} was added to the portfolio and is now available for deployment.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -42,10 +42,10 @@
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Nowa aplikacja została aktywowana",
+      "subject": "NMaaS: Nowa wersja aplikacji jest dostępna w portfolio",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "Nowa aplikacja ${app_name} w wersji ${app_version} jest już dostępna w systemie NMaaS.",
+        "CONTENT": "Aplikacja ${app_name} w wersji ${app_version} została dostana do portfolio.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
