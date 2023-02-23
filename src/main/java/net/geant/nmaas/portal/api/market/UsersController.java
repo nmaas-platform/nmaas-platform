@@ -7,13 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.api.domain.PasswordChange;
-import net.geant.nmaas.portal.api.domain.PasswordReset;
-import net.geant.nmaas.portal.api.domain.UserBase;
-import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.api.domain.UserRoleView;
-import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -39,34 +33,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
+import static net.geant.nmaas.portal.persistent.entity.Role.*;
 
 @RestController
 @RequestMapping("/api")
@@ -211,7 +185,7 @@ public class UsersController {
     public void deleteUser(@PathVariable("userId") Long userId) {
         User user = this.userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
         Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")).getId();
-        if(user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
+        if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
             throw new ProcessingException("Cannot delete SYSTEM ADMIN");
         }
         List<UserRole> notGuestInGlobalDomainRole = user.getRoles().stream()
@@ -401,7 +375,14 @@ public class UsersController {
 
     @GetMapping("/domains/{domainId}/users")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    public List<UserView> getDomainUsers(@PathVariable Long domainId) {
+    public List<UserViewMinimal> getDomainUsers(@PathVariable Long domainId) {
+        log.error(domainService.getMembers(domainId).stream().map(this::mapMinimalUser).collect(Collectors.toList()));
+        return domainService.getMembers(domainId).stream().map(this::mapMinimalUser).collect(Collectors.toList());
+    }
+
+    @GetMapping("/domains/{domainId}/users/admin")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    public List<UserView> getDomainUsersAsAdmin(@PathVariable Long domainId) {
         /* reads all users first and last successful login, transforms it to map*/
         Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
                 .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
@@ -579,6 +560,22 @@ public class UsersController {
         this.userService.setUserLanguage(userId, defaultLanguage);
     }
 
+    @GetMapping(value = "/users/search", params = {"searchPart", "domainId"})
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+    public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
+        List<UserViewMinimal> result = new ArrayList<>();
+        String search = searchPart.toLowerCase();
+
+        List<User> allUsers = this.userService.findAll();
+        result = allUsers.stream().
+                filter(user -> user.getEmail().toLowerCase().contentEquals(search)
+                || user.getUsername().toLowerCase().contentEquals(search))
+                .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
+                .map(this::mapMinimalUser).collect(Collectors.toList());
+        return result;
+    }
+
+
     private Role convertRole(String userRole) {
         Role role;
         try {
@@ -666,6 +663,10 @@ public class UsersController {
             uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
         }
         return uv;
+    }
+
+    private UserViewMinimal mapMinimalUser(User user) {
+        return modelMapper.map(user, UserViewMinimal.class);
     }
 
 }

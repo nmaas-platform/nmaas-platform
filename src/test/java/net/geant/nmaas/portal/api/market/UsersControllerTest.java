@@ -1,10 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
-import net.geant.nmaas.portal.api.domain.PasswordChange;
-import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.api.domain.UserRoleView;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -274,7 +271,7 @@ public class UsersControllerTest {
 	public void shouldGetDomainUsers(){
 		Long domainId = 1L;
 		when(domainService.getMembers(domainId)).thenReturn(userList);
-		List<UserView> users = usersController.getDomainUsers(domainId);
+		List<UserViewMinimal> users = usersController.getDomainUsers(domainId);
 		assertThat("List size mismatch", users.size() == userList.size());
 	}
 
