@@ -18,7 +18,7 @@
     "LANGUAGES": "Langages",
     "NOTIFICATION": "Send notification",
     "ALL_USERS": "To all users",
-    "EXPIRED_TIME" : "Session expired"
+    "EXPIRED_TIME" : "Session expires in"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
