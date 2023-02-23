@@ -12,7 +12,7 @@
       "subject": "NMaaS: Your application instance is ready to be upgraded",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${appVersion} to version ${appVersionNew} (chart version: ${appVersionNewChart}).",
+        "CONTENT": "The ${app_name} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${app_version} to version ${app_versionNew} (chart version: ${app_versionNewChart}).",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -23,7 +23,7 @@
       "subject": "NMaaS: Your application instance is ready to be upgraded",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${appVersion} to version ${appVersionNew} (chart version: ${appVersionNewChart}).",
+        "CONTENT": "The ${app_name} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${app_version} to version ${app_versionNew} (chart version: ${app_versionNewChart}).",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -34,7 +34,7 @@
       "subject": "NMaaS: Your application instance is ready to be upgraded",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${appVersion} to version ${appVersionNew} (chart version: ${appVersionNewChart}).",
+        "CONTENT": "The ${app_name} instance ${appInstanceName} in domain ${domainName} is ready to be upgraded from current version ${app_version} to version ${app_versionNew} (chart version: ${app_versionNewChart}).",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -45,7 +45,7 @@
       "subject": "NMaaS: Twoja aplikacja jest gotowa do zaktualizacji",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest gotowa to aktualizacji z obecnej wersji ${appVersion} do wersji ${appVersionNew} (wersja chartu: ${appVersionNewChart}).",
+        "CONTENT": "Instancja aplikacji ${app_name} o nazwie ${appInstanceName} w domenie ${domainName} jest gotowa to aktualizacji z obecnej wersji ${app_version} do wersji ${app_versionNew} (wersja chartu: ${app_versionNewChart}).",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""

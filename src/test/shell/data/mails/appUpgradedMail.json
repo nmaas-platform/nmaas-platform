@@ -12,7 +12,7 @@
       "subject": "NMaaS: Your application instance was upgraded",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} was upgraded to version ${appVersion} (previous version was ${appVersionPrevious}).",
+        "CONTENT": "The ${app_name} instance ${appInstanceName} in domain ${domainName} was upgraded to version ${app_version} (previous version was ${app_versionPrevious}).",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -23,7 +23,7 @@
       "subject": "NMaaS: Your application instance was upgraded",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} was upgraded to version ${appVersion} (previous version was ${appVersionPrevious}).",
+        "CONTENT": "The ${app_name} instance ${appInstanceName} in domain ${domainName} was upgraded to version ${app_version} (previous version was ${app_versionPrevious}).",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -34,7 +34,7 @@
       "subject": "NMaaS: Your application instance was upgraded",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} was upgraded to version ${appVersion} (previous version was ${appVersionPrevious}).",
+        "CONTENT": "The ${app_name} instance ${appInstanceName} in domain ${domainName} was upgraded to version ${app_version} (previous version was ${app_versionPrevious}).",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -45,7 +45,7 @@
       "subject": "NMaaS: Twoja aplikacja została zaktualizowana",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} została zaktualizowana do wersji ${appVersion} (poprzednia wersja to ${appVersionPrevious}).",
+        "CONTENT": "Instancja aplikacji ${app_name} o nazwie ${appInstanceName} w domenie ${domainName} została zaktualizowana do wersji ${app_version} (poprzednia wersja to ${app_versionPrevious}).",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
