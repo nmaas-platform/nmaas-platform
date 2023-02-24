@@ -1,7 +1,11 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.PasswordChange;
+import net.geant.nmaas.portal.api.domain.UserRequest;
+import net.geant.nmaas.portal.api.domain.UserRoleView;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -20,14 +24,21 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UsersControllerTest {
 

@@ -62,7 +62,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.geant.nmaas.portal.persistent.entity.Role.*;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 
 @RestController
 @RequestMapping("/api")
@@ -590,7 +595,7 @@ public class UsersController {
         List<User> allUsers = this.userService.findAll().stream().filter(User::isEnabled).collect(Collectors.toList());
         result = allUsers.stream().
                 filter(user -> user.getEmail().toLowerCase().contentEquals(search)
-                || user.getUsername().toLowerCase().contentEquals(search))
+                        || user.getUsername().toLowerCase().contentEquals(search))
                 .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
                 .map(this::mapMinimalUser).collect(Collectors.toList());
         return result;
