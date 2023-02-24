@@ -30,7 +30,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     @Override
-    public Long setConfiguration (ConfigurationView configurationView) {
+    public Long setConfiguration(ConfigurationView configurationView) {
         if (repository.count() > 0) {
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
