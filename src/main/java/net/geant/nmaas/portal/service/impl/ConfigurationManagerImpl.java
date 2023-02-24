@@ -10,7 +10,6 @@ import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
 
@@ -25,21 +24,17 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private final ModelMapper modelMapper;
     private final InternationalizationSimpleRepository internationalizationRepository;
 
-    @Value("${portal.config.showDomainRegistrationSelector}")
-    public boolean showDomainRegistrationSelector;
-
     @Override
     public ConfigurationView getConfiguration() {
         return modelMapper.map(this.loadSingleConfiguration(), ConfigurationView.class);
     }
 
     @Override
-    public Long setConfiguration (ConfigurationView configurationView) {
+    public Long setConfiguration(ConfigurationView configurationView) {
         if (repository.count() > 0) {
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
         Configuration configuration = modelMapper.map(configurationView, Configuration.class);
-        configuration.setRegistrationDomainSelectionEnabled(showDomainRegistrationSelector);
         this.repository.save(configuration);
         return configuration.getId();
     }
