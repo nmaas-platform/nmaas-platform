@@ -198,7 +198,7 @@
     "LAST_SUCCESSFUL_LOGIN": "Data ostatniego udanego logowania",
     "ITEMS_PER_PAGE": "Ilość wyświetlanych uzytkowników na stronie",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Nadaj rolę USER",
-    "ADD_TO_DOMAIN_BUTTON": "Dodaj uzytkowników do domeny",
+    "ADD_TO_DOMAIN_BUTTON": "Dodaj użytkownika do domeny",
     "GO_BACK_BUTTON": "Wróć"
   },
   "DOMAINS": {

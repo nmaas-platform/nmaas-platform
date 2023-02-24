@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -211,7 +212,7 @@ public class UsersController {
     public void deleteUser(@PathVariable("userId") Long userId) {
         User user = this.userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
         Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")).getId();
-        if(user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
+        if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
             throw new ProcessingException("Cannot delete SYSTEM ADMIN");
         }
         List<UserRole> notGuestInGlobalDomainRole = user.getRoles().stream()
@@ -401,7 +402,13 @@ public class UsersController {
 
     @GetMapping("/domains/{domainId}/users")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    public List<UserView> getDomainUsers(@PathVariable Long domainId) {
+    public List<UserViewMinimal> getDomainUsers(@PathVariable Long domainId) {
+        return domainService.getMembers(domainId).stream().map(this::mapMinimalUser).collect(Collectors.toList());
+    }
+
+    @GetMapping("/domains/{domainId}/users/admin")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    public List<UserView> getDomainUsersAsAdmin(@PathVariable Long domainId) {
         /* reads all users first and last successful login, transforms it to map*/
         Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
                 .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
@@ -579,6 +586,22 @@ public class UsersController {
         this.userService.setUserLanguage(userId, defaultLanguage);
     }
 
+    @GetMapping(value = "/users/search", params = {"searchPart", "domainId"})
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+    public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
+        List<UserViewMinimal> result = new ArrayList<>();
+        String search = searchPart.toLowerCase();
+
+        List<User> allUsers = this.userService.findAll().stream().filter(User::isEnabled).collect(Collectors.toList());
+        result = allUsers.stream().
+                filter(user -> user.getEmail().toLowerCase().contentEquals(search)
+                        || user.getUsername().toLowerCase().contentEquals(search))
+                .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
+                .map(this::mapMinimalUser).collect(Collectors.toList());
+        return result;
+    }
+
+
     private Role convertRole(String userRole) {
         Role role;
         try {
@@ -666,6 +689,10 @@ public class UsersController {
             uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
         }
         return uv;
+    }
+
+    private UserViewMinimal mapMinimalUser(User user) {
+        return modelMapper.map(user, UserViewMinimal.class);
     }
 
 }

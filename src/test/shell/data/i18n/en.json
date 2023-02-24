@@ -198,7 +198,7 @@
     "LAST_SUCCESSFUL_LOGIN": "Last successful login",
     "ITEMS_PER_PAGE": "Users per page",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Grant USER role",
-    "ADD_TO_DOMAIN_BUTTON": "Add users to domain",
+    "ADD_TO_DOMAIN_BUTTON": "Add user to domain",
     "GO_BACK_BUTTON": "Back"
   },
   "DOMAINS": {
