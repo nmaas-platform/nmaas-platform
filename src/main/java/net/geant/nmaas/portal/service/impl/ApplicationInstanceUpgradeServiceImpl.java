@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.vdurmont.semver4j.Semver;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.service.ApplicationInstanceUpgradeService;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class ApplicationInstanceUpgradeServiceImpl implements ApplicationInstanceUpgradeService {
 
     /**
@@ -23,6 +25,7 @@ public class ApplicationInstanceUpgradeServiceImpl implements ApplicationInstanc
                 .map(Semver::new)
                 .sorted()
                 .filter(v -> v.isGreaterThan(current) && !v.diff(current).equals(Semver.VersionDiff.MAJOR))
+                .filter(v -> v.diff(current).equals(Semver.VersionDiff.MINOR) || v.diff(current).equals(Semver.VersionDiff.PATCH))
                 .map(Semver::getOriginalValue)
                 .findFirst();
         return next.map(allVersions::get);
