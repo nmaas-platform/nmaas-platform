@@ -143,7 +143,7 @@ public class PortalConfig {
 			@Value("${portal.config.appInstanceFailureEmailList}")
 			private String appInstanceFailureEmailList;
 
-			@Value("${portal.config.showDomainRegistrationSelector}")
+			@Value("${portal.config.showDomainRegistrationSelector:true}")
 			private boolean showDomainRegistrationSelector;
 
 			@Autowired
