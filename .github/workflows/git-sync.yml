@@ -4,7 +4,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: git-sync
-        uses: korvoj/git-sync@5eacd8ac78ae91a984f3aa430b09a0051abb2dc0
+        uses: korvoj/git-sync@branch-removal-debug
         with:
           source_repo: 'git@github.com:nmaas-platform/nmaas-platform.git'
           source_branch: 'refs/remotes/source/*'
