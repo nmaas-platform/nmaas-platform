@@ -27,6 +27,8 @@ public class AppDeploymentSpecView {
 
     private boolean allowSshAccess;
 
+    private boolean allowLogAccess;
+
     private boolean exposesWebUI;
 
     @NotNull
