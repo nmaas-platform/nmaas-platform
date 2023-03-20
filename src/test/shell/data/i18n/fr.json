@@ -18,7 +18,9 @@
     "LANGUAGES": "Langages",
     "NOTIFICATION": "Send notification",
     "ALL_USERS": "To all users",
-    "EXPIRED_TIME" : "Session expires in"
+    "EXPIRED_TIME" : "Session expires in",
+    "ADVANCED" : "Advanced",
+    "BULK_DEPLOYMENT" : "Bulk application deployment"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
