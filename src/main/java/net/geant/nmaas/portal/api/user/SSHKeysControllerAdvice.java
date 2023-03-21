@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.user;
 
 import net.geant.nmaas.portal.api.exception.ValidationError;
 import net.geant.nmaas.portal.api.exception.ValidationErrorBuilder;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 
 @ControllerAdvice(assignableTypes = SSHKeysController.class)
 public class SSHKeysControllerAdvice extends ResponseEntityExceptionHandler {
@@ -22,4 +21,5 @@ public class SSHKeysControllerAdvice extends ResponseEntityExceptionHandler {
         ValidationError error = ValidationErrorBuilder.fromBindingErrors(exception.getBindingResult());
         return super.handleExceptionInternal(exception, error, headers, status, request);
     }
+
 }

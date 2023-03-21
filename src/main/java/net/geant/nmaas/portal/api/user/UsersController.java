@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.user;
 
 import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
@@ -178,17 +178,20 @@ public class UsersController {
     public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) {
         User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 
-        if (userRequest == null)
+        if (userRequest == null) {
             throw new MissingElementException("User request is null");
+        }
         if (!userDetails.getUsername().equals(principal.getName()) && !userService.canUpdateData(principal.getName(), userDetails.getRoles())) {
             throw new ProcessingException(principal.getName() + " was trying to edit data of user " + userDetails.getUsername() + " without required role.");
         }
         String message = getMessageWhenUserUpdated(userDetails, userRequest);
         final String userRoles = getRoleAsString(userDetails.getRoles());
-        if (userRequest.getFirstname() != null)
+        if (userRequest.getFirstname() != null) {
             userDetails.setFirstname(userRequest.getFirstname());
-        if (userRequest.getLastname() != null)
+        }
+        if (userRequest.getLastname() != null) {
             userDetails.setLastname(userRequest.getLastname());
+        }
         if (userRequest.getEmail() != null && !userRequest.getEmail().equalsIgnoreCase(userDetails.getEmail())) {
             if (userService.existsByEmail(userRequest.getEmail())) {
                 throw new ProcessingException("User with mail " + userRequest.getEmail() + " already exists.");
@@ -385,8 +388,9 @@ public class UsersController {
     }
 
     private void checkPassword(User user, String password) {
-        if (!passwordEncoder.matches(password, user.getPassword()))
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ProcessingException("Password mismatch");
+        }
     }
 
     private void changePassword(User user, String password) {
@@ -395,8 +399,9 @@ public class UsersController {
     }
 
     private void checkSSOUser(User user) {
-        if (StringUtils.isNotEmpty(user.getSamlToken()))
+        if (StringUtils.isNotEmpty(user.getSamlToken())) {
             throw new ProcessingException("SSO user cannot change or reset password");
+        }
     }
 
     @GetMapping("/domains/{domainId}/users")
@@ -432,9 +437,7 @@ public class UsersController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void removeDomainUser(@PathVariable Long domainId, @PathVariable Long userId) {
         Domain domain = getDomain(domainId);
-
         User user = getUser(userId);
-
         try {
             domainService.removeMember(domain.getId(), user.getId());
         } catch (ObjectNotFoundException e) {
@@ -446,9 +449,7 @@ public class UsersController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     public Set<Role> getUserRoles(@PathVariable Long domainId, @PathVariable Long userId) {
         Domain domain = getDomain(domainId);
-
         User user = getUser(userId);
-
         try {
             return domainService.getMemberRoles(domain.getId(), user.getId());
         } catch (ObjectNotFoundException e) {
@@ -465,17 +466,17 @@ public class UsersController {
                             @RequestBody final UserRoleView userRole,
                             final Principal principal) {
 
-        if (userRole == null)
+        if (userRole == null) {
             throw new MissingElementException("Empty request");
-
-        if (userRole.getRole() == null)
+        }
+        if (userRole.getRole() == null) {
             throw new MissingElementException("Missing role");
-
+        }
         Role role = userRole.getRole();
 
-        if (!domainId.equals(userRole.getDomainId()))
+        if (!domainId.equals(userRole.getDomainId())) {
             throw new ProcessingException("Invalid request domain");
-
+        }
         final Domain domain = getDomain(domainId);
         final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 
