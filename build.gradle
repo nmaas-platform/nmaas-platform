@@ -2,9 +2,9 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.7.3'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id "com.gorylenko.gradle-git-properties" version "2.2.3"
+    id 'org.springframework.boot' version '2.7.9'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id "com.gorylenko.gradle-git-properties" version "2.2.4"
     id "org.sonarqube" version "3.2.0"
     id 'com.google.protobuf' version "0.8.18"
 }
@@ -109,11 +109,15 @@ dependencies {
     implementation('org.flywaydb:flyway-core')
 
     implementation('io.jsonwebtoken:jjwt:0.9.1')
-    implementation('com.hierynomus:sshj:0.32.0')
     implementation('org.freemarker:freemarker:2.3.31')
     implementation('org.gitlab4j:gitlab4j-api:4.19.0')
-    implementation('io.fabric8:kubernetes-client:4.13.3')
     implementation('com.vdurmont:semver4j:3.1.0')
+
+    // SSH library
+    implementation('com.hierynomus:sshj:0.32.0')
+
+    // Kubernetes API client
+    implementation('io.fabric8:kubernetes-client:4.13.3')
 
     implementation('com.google.protobuf:protobuf-java:3.21.5')
     implementation('io.grpc:grpc-netty-shaded:1.49.0')
