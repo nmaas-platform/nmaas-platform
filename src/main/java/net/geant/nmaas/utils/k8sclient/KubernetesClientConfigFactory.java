@@ -35,7 +35,7 @@ public class KubernetesClientConfigFactory {
      * @return KubernetesClient instance
      */
     public synchronized KubernetesClient getClient() {
-        if(this.client == null) {
+        if (this.client == null) {
             this.client = new DefaultKubernetesClient(getConfig());
         }
         return this.client;
@@ -46,7 +46,7 @@ public class KubernetesClientConfigFactory {
      * @return KubernetesClient configuration
      */
     private Config getConfig() {
-        if(this.config == null) {
+        if (this.config == null) {
             this.config = makeConfig();
         }
         return this.config;

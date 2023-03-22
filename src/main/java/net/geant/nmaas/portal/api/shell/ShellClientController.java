@@ -3,11 +3,11 @@ package net.geant.nmaas.portal.api.shell;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,19 +33,12 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 @Log4j2
 public class ShellClientController {
 
     private final ShellSessionsStorage storage;
-
     private final KubernetesConnectorHelper connectorHelper;
-
-    @Autowired
-    public ShellClientController(ShellSessionsStorage storage,
-                                 KubernetesConnectorHelper connectorHelper){
-        this.storage = storage;
-        this.connectorHelper = connectorHelper;
-    }
 
     /**
      * initialize connection if not exists
