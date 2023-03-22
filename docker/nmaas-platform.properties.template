@@ -172,5 +172,6 @@ portal.config.ssoLoginAllowed=${PORTAL_SSO_ALLOWED_FLAG}
 portal.config.defaultLanguage=${PORTAL_DEFAULT_LANG}
 portal.config.testInstance=${PORTAL_TEST_INSTANCE_FLAG}
 portal.config.sendAppInstanceFailureEmails=${PORTAL_SEND_FAILURE_NOTIF_FLAG}
+portal.config.showDomainRegistrationSelector=true
 # string - list of emails with ':' as a separator, e.g. admin1@nmaas.eu;admin2@nmaas.eu
 portal.config.appInstanceFailureEmailList=${ADMIN_EMAIL}

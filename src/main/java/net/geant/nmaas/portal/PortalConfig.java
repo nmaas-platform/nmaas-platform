@@ -143,6 +143,9 @@ public class PortalConfig {
 			@Value("${portal.config.appInstanceFailureEmailList}")
 			private String appInstanceFailureEmailList;
 
+			@Value("${portal.config.showDomainRegistrationSelector:true}")
+			private boolean showDomainRegistrationSelector;
+
 			@Autowired
 			private ConfigurationManager configurationManager;
 
@@ -155,6 +158,7 @@ public class PortalConfig {
 						.testInstance(this.testInstance)
 						.sendAppInstanceFailureEmails(this.sendAppInstanceFailureEmails)
 						.appInstanceFailureEmailList(Arrays.asList(this.appInstanceFailureEmailList.split(";")))
+						.registrationDomainSelectionEnabled(this.showDomainRegistrationSelector)
 						.build();
 				try {
 					this.configurationManager.setConfiguration(configurationView);

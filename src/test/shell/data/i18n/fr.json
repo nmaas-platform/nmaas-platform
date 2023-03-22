@@ -17,7 +17,8 @@
     "BACK": "Retour à la page d'accueil",
     "LANGUAGES": "Langages",
     "NOTIFICATION": "Send notification",
-    "ALL_USERS": "To all users"
+    "ALL_USERS": "To all users",
+    "EXPIRED_TIME" : "Session expires in"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -48,7 +49,8 @@
     "WEB_PORTAL_TEXT": "",
     "KUBERNETES_HEADER": "Déploiement de Kubernetes",
     "KUBERNETES_TEXT": "",
-    "TECHNOLOGIES_USED_HEADER": "Technologies utilisés"
+    "TECHNOLOGIES_USED_HEADER": "Technologies utilisés",
+    "TIME_EXPIRED": "Logged out due to inactivity. To continue your work log in again."
   },
   "REGISTRATION": {
     "USERNAME": "Nom d'utilisateur",
@@ -196,7 +198,7 @@
     "LAST_SUCCESSFUL_LOGIN": "Last successful login",
     "ITEMS_PER_PAGE": "Users per page",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Grant USER role",
-    "ADD_TO_DOMAIN_BUTTON": "Add users to domain",
+    "ADD_TO_DOMAIN_BUTTON": "Add user to domain",
     "GO_BACK_BUTTON": "Back"
   },
   "DOMAINS": {

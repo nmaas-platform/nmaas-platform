@@ -17,7 +17,8 @@
     "BACK": "Wróć do strony głównej",
     "LANGUAGES": "Języki",
     "NOTIFICATION": "Wyślij wiadomość",
-    "ALL_USERS": "Do wszystkich"
+    "ALL_USERS": "Do wszystkich",
+    "EXPIRED_TIME" : "Koniec sesji za"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -48,7 +49,8 @@
     "WEB_PORTAL_TEXT": "Dostęp do funkcjonalności NMaaS jest realizowany przez nowoczesny, reaktywny i przyjazny portal webowy.",
     "KUBERNETES_HEADER": "Kubernetes",
     "KUBERNETES_TEXT": "Aplikacje użytkowników są uruchamiane w klastrze Kubernetesa skonfigurowanym na dedykowanej infrastrukturze fizycznej w celu zapewnienia wysokiej wydajności i niezawodności.",
-    "TECHNOLOGIES_USED_HEADER": "Użyte technologie"
+    "TECHNOLOGIES_USED_HEADER": "Użyte technologie",
+    "TIME_EXPIRED": "Wylogowano z powodu braku aktywności. Aby kontynuować pracę zaloguj się ponownie."
   },
   "REGISTRATION": {
     "USERNAME": "Nazwa użytkownika",
@@ -196,7 +198,7 @@
     "LAST_SUCCESSFUL_LOGIN": "Data ostatniego udanego logowania",
     "ITEMS_PER_PAGE": "Ilość wyświetlanych uzytkowników na stronie",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Nadaj rolę USER",
-    "ADD_TO_DOMAIN_BUTTON": "Dodaj uzytkowników do domeny",
+    "ADD_TO_DOMAIN_BUTTON": "Dodaj użytkownika do domeny",
     "GO_BACK_BUTTON": "Wróć"
   },
   "DOMAINS": {
