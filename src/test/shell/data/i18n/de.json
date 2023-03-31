@@ -779,6 +779,8 @@
     "EXPOSE_WEB_UI_TOOLTIP": "Überprüfen Sie, ob die Anwendung die Webbenutzeroberfläche verfügbar macht",
     "ALLOW_SSH_ACCESS": "Allow SSH Access",
     "ALLOW_SSH_ACCESS_TOOLTIP": "Check if application allows SSH access",
+    "ALLOW_LOG_ACCESS": "Allow log Access",
+    "ALLOW_LOG_ACCESS_TOOLTIP": "Check if application allows log access",
     "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
     "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}",
     "STORAGE_VOLUMES": "Storage volumes",
