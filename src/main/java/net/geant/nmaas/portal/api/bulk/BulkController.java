@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.csv;
+package net.geant.nmaas.portal.api.bulk;
 
 
 import lombok.AllArgsConstructor;
@@ -16,20 +16,20 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/csv")
-public class CsvReaderController {
+@RequestMapping("/api/bulks")
+public class BulkController {
 
     private CsvDeserializer csvDeserializer;
 
-    @PostMapping("/upload/users")
+    @PostMapping("/users")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<CsvBean>> uploadUser(@RequestParam("file")MultipartFile file) {
+    public ResponseEntity<List<CsvReplay>> uploadUser(@RequestParam("file")MultipartFile file) {
 
-        List<CsvBean> result = new ArrayList<>();
+        List<CsvReplay> result = new ArrayList<>();
 
         if(csvDeserializer.isCSVFormat(file)) {
             try {
-                result = this.csvDeserializer.deserializeCSV(file, CsvUser.class);
+                result = this.csvDeserializer.deserializeCSV(file, CsvDomain.class);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -37,11 +37,11 @@ public class CsvReaderController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/upload/app")
+    @PostMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<CsvBean>> uploadApp(@RequestParam("file")MultipartFile file) {
+    public ResponseEntity<List<CsvReplay>> uploadApp(@RequestParam("file")MultipartFile file) {
 
-        List<CsvBean> result = new ArrayList<>();
+        List<CsvReplay> result = new ArrayList<>();
 
         if(csvDeserializer.isCSVFormat(file)) {
             try {

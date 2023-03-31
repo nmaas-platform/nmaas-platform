@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.csv;
+package net.geant.nmaas.portal.api.bulk;
 
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;

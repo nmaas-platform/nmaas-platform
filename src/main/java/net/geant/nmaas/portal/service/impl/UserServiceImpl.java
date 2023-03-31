@@ -7,6 +7,7 @@ import java.util.Base64;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -167,7 +168,32 @@ public class UserServiceImpl implements UserService {
 
 		return newUser;
 	}
-	
+
+	@Override
+	public User registerBulk(CsvDomain userCSV, Domain globalDomain, Domain domain) {
+		if(userRepo.existsByUsername(userCSV.getAdminUserName()) || userRepo.existsByEmail(userCSV.getEmail())){
+			throw new SignupException("User already exists");
+		}
+		byte[] array = new byte[16]; // random password
+		new SecureRandom().nextBytes(array);
+		String generatedString = Base64.getEncoder().encodeToString(array);
+		log.error("user - " + userCSV.getAdminUserName() + " haslo " + generatedString);
+		User newUser = new User(userCSV.getAdminUserName(), false,  passwordEncoder.encode(generatedString), globalDomain, Role.ROLE_GUEST);
+		newUser.setEmail(userCSV.getEmail());
+		newUser.setEnabled(true);
+		newUser.setSelectedLanguage(this.configurationManager.getConfiguration().getDefaultLanguage());
+
+		newUser.setTermsOfUseAccepted(true);
+		newUser.setPrivacyPolicyAccepted(true);
+
+		if(domain != null){
+			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
+		}
+		userRepo.save(newUser);
+
+		return newUser;
+	}
+
 	@Override
 	public void update(User user) {
 		checkParam(user);
