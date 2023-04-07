@@ -16,4 +16,6 @@ public class DomainView extends DomainBase {
 	DomainTechDetailsView domainTechDetails;
 	DomainDcnDetailsView domainDcnDetails;
 
+	List<DomainGroupViewS> groups;
+
 }

@@ -1,0 +1,12 @@
+-- create table domain_group (
+--     id bigint not null,
+--     codename varchar(10)not null,
+--     name varchar(255) not null,
+--     primary key(id)
+-- );
+--
+-- create table domain_group_relation(
+--
+-- )
+--
+--

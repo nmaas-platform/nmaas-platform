@@ -68,7 +68,7 @@ public class CsvDeserializerImpl implements CsvDeserializer {
             resultInClass.forEach(x -> System.out.println(x.toString()));
 
             if (givenClass.equals(CsvDomain.class)) {
-               return this.createUser(resultInClass);
+               return this.createDomainAndUser(resultInClass);
             }
             return null;
         } catch (Exception e) {
@@ -87,7 +87,7 @@ public class CsvDeserializerImpl implements CsvDeserializer {
         }
     }
 
-    private List<CsvReplay> createUser(List<CsvBean> source) {
+    private List<CsvReplay> createDomainAndUser(List<CsvBean> source) {
         log.error("in user creation");
 
         List<CsvReplay> result = new ArrayList<>();

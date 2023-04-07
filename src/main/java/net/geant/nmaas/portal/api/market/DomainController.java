@@ -205,4 +205,53 @@ public class DomainController extends AppBaseController {
 		}
 	}
 
+	@PostMapping("/group")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public Id createDomainGroup(@RequestBody(required=true) DomainGroupView domainGroup) {
+		if(domainService.existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
+			throw new ProcessingException("Domain group already exists.");
+		}
+		try {
+			DomainGroupView domainGroupView = domainService.createDomainGroup(domainGroup);
+
+			return new Id(domainGroupView.getId());
+		} catch (InvalidDomainException e) {
+			throw new ProcessingException(e.getMessage());
+		}
+	}
+
+	@DeleteMapping("/group/{domainGroupId}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public void deleteDomainGroup(@PathVariable Long domainGroupId){
+		this.domainService.deleteDomainGroup(domainGroupId);
+	}
+
+	@GetMapping("/group")
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public List<DomainGroupView> getDomainGroups() {
+		return this.domainService.getAllDomainGroups();
+	}
+
+	@GetMapping("/group/{domainGroupId}")
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public DomainGroupView getDomainGroup(@PathVariable Long domainGroupId) {
+		return this.domainService.getDomainGroup(domainGroupId);
+	}
+
+	@PostMapping("/group/{domainGroupCodeName}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public DomainGroupView addDomainsToGroup(@PathVariable String domainGroupCodeName,
+											 @RequestBody List<Long> domainIds) {
+		return this.domainService.addDomainsToGroup(domainIds,domainGroupCodeName);
+	}
+
+
+
+
+
 }

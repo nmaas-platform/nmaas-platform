@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
@@ -52,6 +53,8 @@ public class DomainServiceTest {
 
     DomainRepository domainRepository = mock(DomainRepository.class);
 
+    DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
+
     DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
 
     UserService userService = mock(UserService.class);
@@ -70,6 +73,7 @@ public class DomainServiceTest {
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
+                domainGroupRepository,
                 domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
                 new ModelMapper(), applicationStatePerDomainService);
