@@ -416,12 +416,14 @@ public class DomainServiceImpl implements DomainService {
 		return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
 	}
 
-	public DomainGroupView deleteDomainFromGroup(Long domainId, String domainGroupCodeName) {
-		if(domainGroupRepository.findByCodename(domainGroupCodeName).isEmpty()){
+	public DomainGroupView deleteDomainFromGroup(Long domainId, Long domainGroupId) {
+		if(domainGroupRepository.findById(domainGroupId).isEmpty()){
 			throw new MissingElementException("Domains group not found");
 		}
-		DomainGroup domainGroup = domainGroupRepository.findByCodename(domainGroupCodeName).get();
-		domainGroup.setDomains(domainGroup.getDomains().stream().filter(val -> !Objects.equals(val.getId(), domainId)).collect(Collectors.toList()));
+		DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).get();
+		Domain foundDomain = getDomain(domainId);
+//		domainGroup.setDomains(domainGroup.getDomains().stream().filter(val -> !Objects.equals(val.getId(), domainId)).collect(Collectors.toList()));
+		domainGroup.removeDomain(foundDomain);
 
 		return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
 	}

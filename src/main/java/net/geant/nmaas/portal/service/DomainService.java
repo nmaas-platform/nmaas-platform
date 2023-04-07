@@ -60,7 +60,7 @@ public interface DomainService {
 
 	DomainGroupView addDomainsToGroup(List<Long> domains, String groupCodeName);
 
-	DomainGroupView deleteDomainFromGroup(Long domainId, String domainGroupCodeName);
+	DomainGroupView deleteDomainFromGroup(Long domainId, Long domainGroupCodeName);
 
 	void deleteDomainGroup(Long domainGroupId);
 

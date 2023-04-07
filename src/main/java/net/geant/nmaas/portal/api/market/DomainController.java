@@ -250,6 +250,14 @@ public class DomainController extends AppBaseController {
 		return this.domainService.addDomainsToGroup(domainIds,domainGroupCodeName);
 	}
 
+	@PatchMapping("/group/{domainGroupId}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public DomainGroupView deleteDomainFromGroup(@PathVariable Long domainGroupId,
+												  @RequestBody Long domainId) {
+		return this.domainService.deleteDomainFromGroup(domainId, domainGroupId);
+	}
+
 
 
 

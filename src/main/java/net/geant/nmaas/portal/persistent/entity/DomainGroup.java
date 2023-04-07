@@ -54,4 +54,9 @@ public class DomainGroup implements Serializable {
         domain.getGroups().add(this);
     }
 
+    public void removeDomain(Domain domain) {
+        this.domains.remove(domain);
+        domain.getGroups().remove(this);
+    }
+
 }
