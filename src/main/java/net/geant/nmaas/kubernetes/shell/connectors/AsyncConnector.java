@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.shell.connectors;
+package net.geant.nmaas.kubernetes.shell.connectors;
 
 import java.io.InputStream;
 import java.io.Serializable;

@@ -1,7 +1,8 @@
 package net.geant.nmaas.portal.api.shell;
 
+import net.geant.nmaas.kubernetes.shell.ShellSessionsStorage;
+import net.geant.nmaas.kubernetes.shell.connectors.KubernetesConnectorHelper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

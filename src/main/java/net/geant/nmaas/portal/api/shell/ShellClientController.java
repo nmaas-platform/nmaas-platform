@@ -1,13 +1,10 @@
 package net.geant.nmaas.portal.api.shell;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
+import net.geant.nmaas.portal.api.domain.K8sPodInfo;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
+import net.geant.nmaas.portal.service.K8sShellService;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +19,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller for handling SSH Shell over SSE
@@ -32,87 +28,70 @@ import java.util.stream.Collectors;
  * - close connections
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/shell")
 @RequiredArgsConstructor
 @Log4j2
 public class ShellClientController {
 
-    private final ShellSessionsStorage storage;
-    private final KubernetesConnectorHelper connectorHelper;
+    private final K8sShellService k8sShellService;
 
     /**
-     * initialize connection if not exists
-     * FUTURE: possibly allows generating multiple connections to the same instance
-     * @param principal
-     * @param id - target app instance id
+     * Initializes connection if not exists
+     * @param principal - principal
+     * @param appInstanceId - target application instance identifier
      * @param podName - name of target connection kubernetes pod
-     * @return - session id
+     * @return session identifier
      */
-    @PostMapping(value = "/shell/{id}/init/{podName}", produces = MediaType.TEXT_PLAIN_VALUE)
-    @PreAuthorize("hasPermission(#id, 'appInstance', 'OWNER')")
-    public String init(Principal principal, @PathVariable Long id, @PathVariable String podName) {
-        return this.storage.createSession(id, podName);
+    @PostMapping(value = "/shell/{appInstanceId}/init/{podName}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public String init(Principal principal, @PathVariable Long appInstanceId, @PathVariable String podName) {
+        return k8sShellService.createNewShellSession(appInstanceId, podName);
     }
 
     /**
      * Returns stream of events happening on the shell
-     * @param principal
-     * @param id - session id (returned by init)
+     * @param principal - principal
+     * @param sessionId - session identifier
      * @return SSE stream of events
      */
     @CrossOrigin
-    @GetMapping(value = "/shell/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter getShell(Principal principal, @PathVariable String id){
-        return this.storage.getObserver(id).getEmitter();
+    @GetMapping(value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter getShell(Principal principal, @PathVariable String sessionId) {
+        return k8sShellService.getEmitterForShellSession(sessionId);
     }
 
     /**
-     * This is function is responsible for sending commands to the shell
-     * @param principal
-     * @param id session id (returned by init)
-     * @param commandRequest command or signal to be executed
+     * Sending commands to the shell
+     * @param principal - principal
+     * @param sessionId - session identifier
+     * @param commandRequest - command or signal to be executed
      */
-    @PostMapping(value = "/shell/{id}/command")
-    public void execute(Principal principal, @PathVariable String id, @RequestBody ShellCommandRequest commandRequest) {
-        this.storage.executeCommand(id, commandRequest);
+    @PostMapping(value = "/{id}/command")
+    public void execute(Principal principal, @PathVariable String sessionId, @RequestBody K8sShellCommandRequest commandRequest) {
+        k8sShellService.executeShellCommand(sessionId, commandRequest);
     }
 
     /**
      * This method is responsible for completing session, closing and removing connection
-     * @param principal
-     * @param id session id
+     * @param principal - principal
+     * @param sessionId - session identifier
      */
-    @DeleteMapping(value = "/shell/{id}")
-    public void complete(Principal principal, @PathVariable String id) {
-        this.storage.completeSession(id);
+    @DeleteMapping(value = "/{id}")
+    public void complete(Principal principal, @PathVariable String sessionId) {
+        k8sShellService.teardownShellSession(sessionId);
     }
 
     /**
-     * Retrieves pod names for an AppInstance
-     * @param principal
-     * @param id identifier of AppInstance to retrieve pod names
-     * @return map of names of pods and corresponding service names (to be displayed to the user)
+     * Retrieves pod names for given application instance
+     * @param principal - principal
+     * @param appInstanceId - identifier of application instance
+     * @return names of pods and corresponding service names (to be displayed to the user)
      */
-    @GetMapping(value = "/shell/{id}/podnames")
-    @PreAuthorize("hasPermission(#id, 'appInstance', 'OWNER')")
-    public List<PodInfo> getPodNames(Principal principal, @PathVariable Long id) {
-        if (!this.connectorHelper.checkAppInstanceSupportsSshAccess(id)) {
-            throw new ProcessingException(String.format("Can't retrieve pod names for application instance %s", id));
-        }
-        return this.connectorHelper.getPodNamesForAppInstance(id).entrySet().stream()
-                .map(entry -> new PodInfo(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    static class PodInfo {
-
-        private String name;
-        private String displayName;
-
+    @GetMapping(value = "/{appInstanceId}/podnames")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public List<K8sPodInfo> getPodNames(Principal principal, @PathVariable Long appInstanceId) {
+        log.debug("Retrieving list of pods for application instance {}", appInstanceId);
+        return k8sShellService.getPodNames(appInstanceId);
     }
 
 }

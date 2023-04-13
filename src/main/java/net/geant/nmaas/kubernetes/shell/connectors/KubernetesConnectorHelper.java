@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.shell.connectors;
+package net.geant.nmaas.kubernetes.shell.connectors;
 
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -7,7 +7,7 @@ import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.utils.k8sclient.KubernetesClientConfigFactory;
+import net.geant.nmaas.kubernetes.client.KubernetesClientConfigFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

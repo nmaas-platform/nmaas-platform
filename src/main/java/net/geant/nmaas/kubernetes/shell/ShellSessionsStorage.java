@@ -1,12 +1,13 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.kubernetes.shell;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnectorFactory;
-import net.geant.nmaas.portal.api.shell.observable.GenericShellSessionObservable;
-import net.geant.nmaas.portal.api.shell.observable.SshConnectionShellSessionObservable;
-import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
+import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnector;
+import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
+import net.geant.nmaas.kubernetes.shell.observable.SshConnectionShellSessionObservable;
+import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,7 @@ public class ShellSessionsStorage {
      * @param sessionId shell session id
      * @param commandRequest command to be executed
      */
-    public void executeCommand(String sessionId, ShellCommandRequest commandRequest) {
+    public void executeCommand(String sessionId, K8sShellCommandRequest commandRequest) {
         isSessionAvailable(sessionId);
         this.storage.get(sessionId).getObservable().executeCommandAsync(commandRequest);
     }

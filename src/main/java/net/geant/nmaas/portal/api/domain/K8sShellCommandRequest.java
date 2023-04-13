@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ShellCommandRequest {
+public class K8sShellCommandRequest {
     private String command;
     private String signal;
 }

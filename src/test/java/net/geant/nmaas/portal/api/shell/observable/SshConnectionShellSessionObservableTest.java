@@ -2,7 +2,8 @@ package net.geant.nmaas.portal.api.shell.observable;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
+import net.geant.nmaas.kubernetes.shell.observable.SshConnectionShellSessionObservable;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.utils.ssh.SshSessionConnector;
 import net.geant.nmaas.utils.ssh.SshSessionConnectorDefaultData;
 import org.junit.jupiter.api.Test;
@@ -71,13 +72,13 @@ public class SshConnectionShellSessionObservableTest {
         underTest.addObserver(to);
 
         String line1 = "some result line\r\n";
-        underTest.executeCommand(new ShellCommandRequest(line1, ""));
+        underTest.executeCommand(new K8sShellCommandRequest(line1, ""));
         String line2 = "host@localhost:~/ $ \n";
-        underTest.executeCommand(new ShellCommandRequest(line2, ""));
+        underTest.executeCommand(new K8sShellCommandRequest(line2, ""));
         String line3 = "continuation\r\n";
-        underTest.executeCommand(new ShellCommandRequest(line3, ""));
+        underTest.executeCommand(new K8sShellCommandRequest(line3, ""));
         String line4 = "some another line\r\n";
-        underTest.executeCommand(new ShellCommandRequest(line4, ""));
+        underTest.executeCommand(new K8sShellCommandRequest(line4, ""));
 
         assertEquals(4*3, to.getMessages().size());
 
@@ -106,13 +107,13 @@ public class SshConnectionShellSessionObservableTest {
 
 
         String line1 = "some result line\r\n";
-        underTest.executeCommandAsync(new ShellCommandRequest(line1, ""));
+        underTest.executeCommandAsync(new K8sShellCommandRequest(line1, ""));
         String line2 = "host@localhost:~/ $ \n";
-        underTest.executeCommandAsync(new ShellCommandRequest(line2, ""));
+        underTest.executeCommandAsync(new K8sShellCommandRequest(line2, ""));
         String line3 = "continuation\r\n";
-        underTest.executeCommandAsync(new ShellCommandRequest(line3, ""));
+        underTest.executeCommandAsync(new K8sShellCommandRequest(line3, ""));
         String line4 = "some another line\r\n";
-        underTest.executeCommandAsync(new ShellCommandRequest(line4, ""));
+        underTest.executeCommandAsync(new K8sShellCommandRequest(line4, ""));
 
         Thread.sleep(100);
 

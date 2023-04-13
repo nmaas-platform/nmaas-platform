@@ -1,11 +1,11 @@
-package net.geant.nmaas.utils.k8sclient;
+package net.geant.nmaas.kubernetes.client;
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecListener;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
+import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnector;
 import okhttp3.Response;
 
 import java.io.IOException;

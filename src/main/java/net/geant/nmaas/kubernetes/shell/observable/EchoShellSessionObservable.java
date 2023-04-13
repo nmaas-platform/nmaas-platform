@@ -1,9 +1,9 @@
-package net.geant.nmaas.portal.api.shell.observable;
+package net.geant.nmaas.kubernetes.shell.observable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,7 +23,7 @@ public class EchoShellSessionObservable extends GenericShellSessionObservable im
         this.sessionId = sessionId;
     }
 
-    public void executeCommand(ShellCommandRequest commandRequest) {
+    public void executeCommand(K8sShellCommandRequest commandRequest) {
         Map<String, Object> map = new HashMap<>();
         map.put("session", this.sessionId);
         map.put("date", LocalDateTime.now());
@@ -40,7 +40,7 @@ public class EchoShellSessionObservable extends GenericShellSessionObservable im
     }
 
     @Override
-    public void executeCommandAsync(ShellCommandRequest commandRequest) {
+    public void executeCommandAsync(K8sShellCommandRequest commandRequest) {
         this.executeCommand(commandRequest);
     }
 

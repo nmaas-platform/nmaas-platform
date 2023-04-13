@@ -37,7 +37,7 @@
     "application": {
         "id": null,
         "name": "Bastion",
-        "version": "18.04",
+        "version": "2.1.3",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -61,11 +61,83 @@
                                                 "type": "textfield",
                                                 "input": true,
                                                 "key": "env#ssh_keys",
+                                                "tab": 0,
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Enable SSH key management application",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "key": "pubkeyManagement#app#enabled",
+                                                "inputFormat": "plain",
+                                                "description": ""
+                                            },
+                                            {
+                                                "label": "Application admin username",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "pubkeyManagement#adminUsername",
+                                                "tab": 0,
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "pubkeyManagement#app#enabled",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Application admin password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "pubkeyManagement#adminPassword",
+                                                "tab": 0,
                                                 "inputFormat": "plain",
                                                 "validate": {
                                                     "required": true
                                                 },
-                                                "tab": 0
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "pubkeyManagement#app#enabled",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Application admin email address",
+                                                "type": "email",
+                                                "input": true,
+                                                "key": "pubkeyManagement#adminEmail",
+                                                "tab": 0,
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "pubkeyManagement#app#enabled",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Enable task scheduling",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "key": "pubkeyManagement#scheduling#enabled",
+                                                "tab": 0,
+                                                "inputFormat": "plain",
+                                                "description": "",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "pubkeyManagement#app#enabled",
+                                                    "eq": true
+                                                }
                                             }
                                         ]
                                     }
@@ -120,7 +192,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-bastion",
-                    "version": "2.1.0"
+                    "version": "2.1.3"
                 }
             },
             "storageVolumes": [
@@ -138,7 +210,11 @@
             "deployParameters": {
                 "DOMAIN_CODENAME": "metallb.subnet_name"
             },
-            "exposesWebUI": false,
+            "globalDeployParameters": {
+                "pubkeyManagement.secret": "%RANDOM_STRING_12%",
+                "pubkeyManagement.authorizedKeysPath": "/home/netops/.ssh/authorized_keys"
+            },
+            "exposesWebUI": true,
             "accessMethods": [
                 {
                     "type": "INTERNAL",
@@ -146,6 +222,18 @@
                     "tag": "bastion",
                     "deployParameters": {
                         "K8S_SERVICE_PORT": "22"
+                    }
+                },
+                {
+                    "type": "DEFAULT",
+                    "name": "pubkeyApp",
+                    "tag": "pubkeyapp",
+                    "deployParameters": {
+                        "INGRESS_ENABLED": "pubkeyManagement.app.ingress.enabled",
+                        "INGRESS_CLASS": "pubkeyManagement.app.ingress.class",
+                        "INGRESS_HOSTS": "pubkeyManagement.app.ingress.hosts",
+                        "INGRESS_TLS_ENABLED": "pubkeyManagement.app.ingress.tls.enabled",
+                        "INGRESS_TLS_HOSTS": "pubkeyManagement.appHost=%VALUE%"
                     }
                 }
             ]

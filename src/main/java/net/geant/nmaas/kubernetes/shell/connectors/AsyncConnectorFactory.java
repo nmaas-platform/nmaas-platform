@@ -1,10 +1,10 @@
-package net.geant.nmaas.portal.api.shell.connectors;
+package net.geant.nmaas.kubernetes.shell.connectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.utils.k8sclient.KubernetesClientConfigFactory;
-import net.geant.nmaas.utils.k8sclient.KubernetesConnector;
+import net.geant.nmaas.kubernetes.client.KubernetesClientConfigFactory;
+import net.geant.nmaas.kubernetes.client.KubernetesConnector;
 import org.springframework.stereotype.Component;
 
 /**

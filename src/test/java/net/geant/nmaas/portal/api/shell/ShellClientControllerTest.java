@@ -1,39 +1,37 @@
 package net.geant.nmaas.portal.api.shell;
 
-import net.geant.nmaas.portal.api.shell.connectors.KubernetesConnectorHelper;
-import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
+import net.geant.nmaas.portal.service.K8sShellService;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ShellClientControllerTest {
 
     @Test
-    public void shouldCallProperMethods() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        ShellSessionsStorage storage = mock(ShellSessionsStorage.class);
-        ShellSessionObserver observer = mock(ShellSessionObserver.class);
+    public void shouldCallProperMethods() {
+        K8sShellService k8sShellService = mock(K8sShellService.class);
         SseEmitter emitter = mock(SseEmitter.class);
-        when(observer.getEmitter()).thenReturn(emitter);
-        when(storage.getObserver(anyString())).thenReturn(observer);
+        when(k8sShellService.getEmitterForShellSession(anyString())).thenReturn(emitter);
 
-        KubernetesConnectorHelper connectorHelper = mock(KubernetesConnectorHelper.class);
-
-        ShellClientController controller = new ShellClientController(storage, connectorHelper);
+        ShellClientController controller = new ShellClientController(k8sShellService);
 
         controller.init(null, 12L, "podName");
-        verify(storage, times(1)).createSession(anyLong(), anyString());
+        verify(k8sShellService).createNewShellSession(12L, "podName");
 
         controller.getShell(null, "sessionId");
-        verify(storage, times(1)).getObserver(anyString());
+        verify(k8sShellService).getEmitterForShellSession("sessionId");
 
-        controller.execute(null, "", new ShellCommandRequest("",""));
-        verify(storage, times(1)).executeCommand(anyString(), any());
+        controller.execute(null, "", new K8sShellCommandRequest("",""));
+        verify(k8sShellService).executeShellCommand(anyString(), any());
 
         controller.complete(null, "sessionId");
-        verify(storage, times(1)).completeSession(anyString());
+        verify(k8sShellService).teardownShellSession("sessionId");
     }
+
 }

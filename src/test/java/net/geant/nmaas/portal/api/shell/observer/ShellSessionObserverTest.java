@@ -1,8 +1,9 @@
 package net.geant.nmaas.portal.api.shell.observer;
 
-import net.geant.nmaas.portal.api.shell.ShellCommandRequest;
-import net.geant.nmaas.portal.api.shell.observable.EchoShellSessionObservable;
-import net.geant.nmaas.portal.api.shell.observable.GenericShellSessionObservable;
+import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
+import net.geant.nmaas.kubernetes.shell.observable.EchoShellSessionObservable;
+import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -34,7 +35,7 @@ public class ShellSessionObserverTest {
 
         observable.addObserver(observer);
 
-        observable.executeCommand(new ShellCommandRequest("some command", ""));
+        observable.executeCommand(new K8sShellCommandRequest("some command", ""));
 
         // one heartbeat and one message
         verify(mockEmitter, timeout(200).times(2)).send(any());

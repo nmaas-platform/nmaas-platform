@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.shell;
 
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnector;
+import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnectorFactory;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

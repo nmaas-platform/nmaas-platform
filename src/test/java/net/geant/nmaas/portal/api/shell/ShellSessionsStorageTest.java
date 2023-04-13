@@ -1,9 +1,11 @@
 package net.geant.nmaas.portal.api.shell;
 
+import net.geant.nmaas.kubernetes.shell.ShellSessionsStorage;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnector;
-import net.geant.nmaas.portal.api.shell.connectors.AsyncConnectorFactory;
-import net.geant.nmaas.portal.api.shell.observer.ShellSessionObserver;
+import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnector;
+import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
@@ -82,7 +84,7 @@ public class ShellSessionsStorageTest {
     @Test
     public void shouldThrowExceptionWhenRetrievingNotExistingConnection() {
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            storage.executeCommand("sessionId", new ShellCommandRequest("command",""));
+            storage.executeCommand("sessionId", new K8sShellCommandRequest("command",""));
         });
 
         assertEquals("Session with id: sessionId does not exist", ex.getMessage());
@@ -102,7 +104,7 @@ public class ShellSessionsStorageTest {
 
         verify(connectorFactory, times(1)).prepareConnection(any());
 
-        storage.executeCommand(sessionId, new ShellCommandRequest("command", ""));
+        storage.executeCommand(sessionId, new K8sShellCommandRequest("command", ""));
         verify(connector, times(1)).executeCommand(anyString());
 
         ShellSessionObserver observer = storage.getObserver(sessionId);
