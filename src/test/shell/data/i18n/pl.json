@@ -780,6 +780,8 @@
     "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interfejs użytkownika",
     "ALLOW_SSH_ACCESS": "Allow SSH Access",
     "ALLOW_SSH_ACCESS_TOOLTIP": "Check if application allows SSH access",
+    "ALLOW_LOG_ACCESS": "Allow log access",
+    "ALLOW_LOG_ACCESS_TOOLTIP": "Check if application allows log access",
     "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
     "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}",
     "STORAGE_VOLUMES": "Wolumen danych",
