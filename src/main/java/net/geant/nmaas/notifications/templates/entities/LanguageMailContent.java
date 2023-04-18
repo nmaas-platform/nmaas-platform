@@ -14,7 +14,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import java.util.Map;
 
 @Getter
@@ -35,7 +34,7 @@ public class LanguageMailContent {
     private String subject;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Lob
+    @Column(length = 4096)
     @Fetch(FetchMode.SELECT)
     private Map<String, String> template;
 
