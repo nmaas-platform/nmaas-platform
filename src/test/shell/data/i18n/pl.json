@@ -21,7 +21,8 @@
     "EXPIRED_TIME" : "Koniec sesji za",
     "ADVANCED" : "Zaawansowane",
     "BULK_DEPLOYMENT" : "Grupowe uruchomienie aplikacji",
-    "BULK_DEPLOYMENT_DOMAIN" : "Grupowe utworzenie domen"
+    "BULK_DEPLOYMENT_DOMAIN" : "Grupowe utworzenie domen",
+    "DOMAIN_GROUPS" : "Grupy domen"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -213,7 +214,15 @@
     "EDIT_BUTTON": "Edytuj",
     "DISABLE_BUTTON": "Dezaktywuj",
     "ENABLE_BUTTON": "Aktywuj",
-    "ADD_BUTTON": "Dodaj"
+    "ADD_BUTTON": "Dodaj",
+    "LIST" : {
+      "GROUPS" : "Grupy domen",
+      "GROUP" : "Grupa domen",
+      "DOMAIN_NAME" : "Nazwa domeny",
+      "DOMAIN_CODE_NAME" : "Skrót domeny",
+      "DELETE" : "Usuń domene z grupy",
+      "ADD" : "Dodaj domene do grupy"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Instancje aplikacji",

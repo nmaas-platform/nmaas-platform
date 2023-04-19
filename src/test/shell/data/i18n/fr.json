@@ -21,7 +21,8 @@
     "EXPIRED_TIME" : "Session expires in",
     "ADVANCED" : "Advanced",
     "BULK_DEPLOYMENT" : "Bulk application deployment",
-    "BULK_DEPLOYMENT_DOMAIN" : "Bulk domain deployment"
+    "BULK_DEPLOYMENT_DOMAIN" : "Bulk domain deployment",
+    "DOMAIN_GROUPS" : "Domain groups"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -213,7 +214,15 @@
     "EDIT_BUTTON": "Modifier",
     "DISABLE_BUTTON": "Disable",
     "ENABLE_BUTTON": "Enable",
-    "ADD_BUTTON": "Add"
+    "ADD_BUTTON": "Add",
+    "LIST" : {
+      "GROUPS" : "Domains groups",
+      "GROUP" : "Domain group",
+      "DOMAIN_NAME" : "Domain Name",
+      "DOMAIN_CODE_NAME" : "Domain Codename",
+      "DELETE" : "Remove domain from group",
+      "ADD" : "Add domain to group"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Instances",
