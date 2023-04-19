@@ -29,7 +29,6 @@ public interface UserService {
 
 	User register(Registration registration, Domain globalDomain, Domain domain);
 	User register(UserSSOLogin userSSO, Domain globalDomain);
-
 	User registerBulk(CsvDomain userCSV, Domain globalDomain, Domain domain);
 	
 	List<User> findAll();
