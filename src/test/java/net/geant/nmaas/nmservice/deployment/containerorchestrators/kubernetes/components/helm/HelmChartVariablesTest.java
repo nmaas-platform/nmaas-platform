@@ -78,7 +78,7 @@ public class HelmChartVariablesTest {
         serviceAccessMethod.setUrl("default.url");
         Map<HelmChartIngressVariable, String> ingressVariables = new HashMap<>();
         ingressVariables.put(HelmChartIngressVariable.INGRESS_ENABLED, "ingress.enabled");
-        ingressVariables.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.host");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.host,app.fqdn=%VALUE%");
         ingressVariables.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class");
         ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_ENABLED, "ingress.tls");
         ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_HOSTS, "ingress.tls.host");
@@ -92,17 +92,18 @@ public class HelmChartVariablesTest {
                 false,
                 "issuer",
                 true);
-        assertThat(variables.size(), is(4));
+        assertThat(variables.size(), is(5));
         assertTrue(variables.entrySet().containsAll(Arrays.asList(
                 Maps.immutableEntry("ingress.enabled", "true"),
                 Maps.immutableEntry("ingress.host", "{default.url}"),
+                Maps.immutableEntry("app.fqdn=%VALUE%", "default.url"),
                 Maps.immutableEntry("ingress.class", "iClassTest"),
                 Maps.immutableEntry("ingress.tls", "false")
         )));
     }
 
     @Test
-    public void shouldGenerateProperIngressVariablesForDefaultAccessMethodWithCustomValuePacement() {
+    public void shouldGenerateProperIngressVariablesForDefaultAccessMethodWithCustomValuePlacement() {
         ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
         serviceAccessMethod.setType(ServiceAccessMethodType.DEFAULT);
         serviceAccessMethod.setName("default");
@@ -142,7 +143,7 @@ public class HelmChartVariablesTest {
         Map<HelmChartIngressVariable, String> ingressVariables = new HashMap<>();
         ingressVariables.put(HelmChartIngressVariable.INGRESS_ENABLED, "ingress.enabled");
         ingressVariables.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.hosts");
-        ingressVariables.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class");
+        ingressVariables.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class,app.label");
         serviceAccessMethod.setDeployParameters(ingressVariables);
 
         Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
@@ -153,11 +154,12 @@ public class HelmChartVariablesTest {
                 true,
                 "issuer",
                 true);
-        assertThat(variables.size(), is(3));
+        assertThat(variables.size(), is(4));
         assertTrue(variables.entrySet().containsAll(Arrays.asList(
                 Maps.immutableEntry("ingress.enabled", "true"),
                 Maps.immutableEntry("ingress.hosts", "{public.url}"),
-                Maps.immutableEntry("ingress.class", "publicIngressClassTest")
+                Maps.immutableEntry("ingress.class", "publicIngressClassTest"),
+                Maps.immutableEntry("app.label", "publicIngressClassTest")
         )));
     }
 

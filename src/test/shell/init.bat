@@ -219,17 +219,17 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 
 echo.
 echo App9
-curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app09-booked.json
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app09-librebooking.json
 echo.
 echo App9 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\booked.png;type=image/png" %API_URL%/apps/9/logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\librebooking.png;type=image/png" %API_URL%/apps/9/logo
 echo.
 echo App9 screenshots
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked1.png;type=image/png" %API_URL%/apps/9/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\librebooking\librebooking1.png;type=image/png" %API_URL%/apps/9/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked2.png;type=image/png" %API_URL%/apps/9/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\librebooking\librebooking2.png;type=image/png" %API_URL%/apps/9/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\booked\booked3.png;type=image/png" %API_URL%/apps/9/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\librebooking\librebooking3.png;type=image/png" %API_URL%/apps/9/screenshots
 
 echo.
 echo App10

@@ -1,511 +1,533 @@
-{"versions" : [
-  {
-    "verNo" : "1.5.1",
-    "date" : "(2022/09/13)",
-    "topic" : [
-      {
-        "title" : "Improved application configuration",
-        "tags" : "[Enhancement]",
-        "description" : "Added support for new parameters passed as environment variables."
-      },
-      {
-        "title" : "Fixed issues with email notifications",
-        "tags" : "[Bugfix]",
-        "description" : "Fixed issue with generating application upgrade possibility notifications."
-      },
-      {
-        "title" : "Major upgrade of project dependencies",
-        "tags" : "[Enhancement]",
-        "description" : "Most of the used dependencies were updated to most recent versions."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.5.0",
-    "date" : "(2022/04/13)",
-    "topic" : [
-      {
-        "title" : "Manual application upgrade",
-        "tags" : "[New Feature]",
-        "description" : "If upgrade is possible, users may trigger application instance upgrade process manually from the application instance details page."
-      },
-      {
-        "title" : "Fully automated application upgrade",
-        "tags" : "[New Feature]",
-        "description" : "Users may choose to upgrade application instance automatically once upgrade possibility becomes available."
-      },
-      {
-        "title" : "Email notifications related with application upgrade process",
-        "tags" : "[New Feature]",
-        "description" : "New email notifications are sent out to domain administrators once application instance upgrade becomes available and once application instance gets automatically upgraded as well as to system administrators with a summary of automatic upgrades that took place over night."
-      },
-      {
-        "title" : "REST API documentation endpoint",
-        "tags" : "[New Feature]",
-        "description" : "Enabled Swagger and OpenAPI specification endpoints to document NMaaS Platform API."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.4.5",
-    "date" : "(2022/01/03)",
-    "topic" : [
-      {
-        "title" : "Dependency upgrade",
-        "tags" : "[Enhancement]",
-        "description" : "Upgraded Spring Boot library version to mitigate Log4j related security vulnerability."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.4.4",
-    "date" : "(2021/09/27)",
-    "topic" : [
-      {
-        "title" : "Enhanced support for application management",
-        "tags" : "[Enhancement]",
-        "description" : "Added possibility to set users as application owners with specific set of permissions within the Portal."
-      },
-      {
-        "title" : "Support for local NMaaS deployments",
-        "tags" : "[Enhancement]",
-        "description" : "Added set of improvements to support local NMaaS deployments."
-      },
-      {
-        "title" : "Advanced support for specifying Helm chart repositories",
-        "tags" : "[Enhancement]",
-        "description" : "Added possibility to specify the URL of Helm chart repository for each application."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.4.3",
-    "date" : "(2021/07/20)",
-    "topic" : [
-      {
-        "title" : "Enhanced application instance public access method",
-        "tags" : "[Enhancement]",
-        "description" : "Application public access URL includes custom instance name instead of the random UUID."
-      },
-      {
-        "title" : "Enhanced administrator views for adding new applications",
-        "tags" : "[Enhancement]",
-        "description" : "Introduced advanced option for configuration wizard definition."
-      },
-      {
-        "title" : "Enhanced new domain request form",
-        "tags" : "[Enhancement]",
-        "description" : "Added new VPN-setup related fields to the new domain request form."
-      },
-      {
-        "title" : "Fixed issue with application version selection",
-        "tags" : "[Bugfix]",
-        "description" : "Fixed issue related with allowing only active application versions to be deployed."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.4.2",
-    "date" : "(2021/05/11)",
-    "topic" : [
-      {
-        "title" : "Added support for enforcing users to acknowledge terms before application deployment",
-        "tags" : "[Enhancement]",
-        "description" : "If given application requires users to explicitly accept terms of use before deployment, this will be enforced on the configuration wizard level."
-      },
-      {
-        "title" : "Fixed issue with users not visible in the Portal",
-        "tags" : "[Bugfix]",
-        "description" : "Fixed issue with users not visible in the Portal."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.4.1",
-    "date" : "(2021/03/18)",
-    "topic" : [
-      {
-        "title" : "Improved user management views",
-        "tags" : "[Enhancement]",
-        "description" : "Introduced multiple enhancements to the user administrator view."
-      },
-      {
-        "title" : "Enhanced NMaaS configuration process",
-        "tags" : "[Enhancement]",
-        "description" : "Refactored Platform source code in order to load additional configuration parameters from properties file."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.4.0",
-    "date" : "(2021/01/12)",
-    "topic" : [
-      {
-        "title" : "Enhanced application deployment process",
-        "tags" : "[Enhancement]",
-        "description" : "Introduced separation between the application deployment, first time configuration and activation processes."
-      },
-      {
-        "title" : "Assigning users to running application instances",
-        "tags" : "[Enhancement]",
-        "description" : "Added possibility to manage the list of users with access to particular running application instance."
-      },
-      {
-        "title" : "Synchronisation of user SSH-keys with GitLab account",
-        "tags" : "[Enhancement]",
-        "description" : "Added new functionality to sync user GitLab accounts with keys provided on the user Profile page."
-      },
-      {
-        "title" : "Predefined contact form messages",
-        "tags" : "[Enhancement]",
-        "description" : "Added a set of message types to choose from when submitting the contact form."
-      },
-      {
-        "title" : "New application list sorting options",
-        "tags" : "[Enhancement]",
-        "description" : "Added the possibility to sort available applications by name, rating and popularity."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.7",
-    "date" : "(2020/10/06)",
-    "topic" : [
-      {
-        "title" : "User option to select between public/VPN access to service",
-        "tags" : "[Enhancement]",
-        "description" : "For any service defined by application manager as public, user during deployment can select either public or VPN-protected access."
-      },
-      {
-        "title" : "Fixed Portal actions and layout",
-        "tags" : "[Bugfix]",
-        "description" : "Fixed several front-end issues"
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.6",
-    "date" : "(2020/09/21)",
-    "topic" : [
-      {
-        "title" : "More user friendly interface",
-        "tags" : "[Enhancement]",
-        "description" : "The application market and instances views were altered in order to improve the ease of use."
-      },
-      {
-        "title" : "Minor improvements to enable WiFiMon application support",
-        "tags" : "[Enhancement]",
-        "description" : "Implemented support for passing auto-generated parameters during application deployment."
-      },
-      {
-        "title" : "Janitor support for Kubernetes 1.16",
-        "tags" : "[Enhancement]",
-        "description" : "Implemented necessary changes in Janitor component to allow for use of newer versions of Kubernetes clusters."
-      },
-      {
-        "title" : "Added support for public services",
-        "tags" : "[New Feature]",
-        "description" : "Enabled particular services, if required by given application, to be reachable directly from public Internet (without any VPN)."
-      },
-      {
-        "title" : "Platform API redesign and third-party library upgrades",
-        "tags" : "[Enhancement]",
-        "description" : "Implemented several changes in order to improve maintainability and security of the software."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.5",
-    "date" : "(2020/07/29)",
-    "topic" : [
-      {
-        "title" : "Added support for shell access to running applications",
-        "tags" : "[New Feature]",
-        "description" : "A shell window was integrated into the Portal view allowing for SSH-like access to running application instances."
-      },
-      {
-        "title" : "Added support for advanced configuration using Git repository",
-        "tags" : "[New Feature]",
-        "description" : "Enhanced both the NMaaS core components and Janitor to allow for creation of multiple ConfigMaps based on the content of Git repository of a given application instance."
-      },
-      {
-        "title" : "Added missing SSH key notification",
-        "tags" : "[Enhancement]",
-        "description" : "A modal window is displayed for domain administrators if they have not provided their SSH keys yet. Without the key, users will not be able to modify application configuration files through Git repository."
-      },
-      {
-        "title" : "Improved data exchange between the backend and user Portal",
-        "tags" : "[Enhancement]",
-        "description" : "A technical optimisation was applied in order to minimize the amount of data exchanged between the central database and user Portal."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.4",
-    "date" : "(2020/06/23)",
-    "topic" : [
-      {
-        "title" : "Minor improvements to enable ELK Stack support",
-        "tags" : "[Enhancement]",
-        "description" : "Implemented required changes like support for multiple internal access methods in order to enable ELK Stack tool deployment."
-      },
-      {
-        "title" : "User role-based access policy updated",
-        "tags" : "[Enhancement]",
-        "description" : "Domain user read/write permissions updated based on user feedback."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.3",
-    "date" : "(2020/05/27)",
-    "topic" : [
-      {
-        "title" : "Added support for global Helm deployment parameters",
-        "tags" : "[New Feature]",
-        "description" : "The possibility to define static parameters to be passed during application installation allowed for integration of new tools."
-      },
-      {
-        "title" : "Janitor enhancements",
-        "tags" : "[Enhancement]",
-        "description" : "Improved the way Janitor is handling ConfigMap creation and added support for StatefulSets."
-      },
-      {
-        "title" : "Portal layout improvements",
-        "tags" : "[Enhancement]",
-        "description" : "Added GÉANT logo and EU funding clause in the footer."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.2",
-    "date" : "(2020/05/13)",
-    "topic" : [
-      {
-        "title" : "Advanced application deployment support",
-        "tags" : "[Enhancement]",
-        "description" : "Additional application deployment specification parameters were added in order to support more complex deployments."
-      },
-      {
-        "title" : "Advanced support for using Git repository for configuration updates",
-        "tags" : "[New Feature]",
-        "description" : "Users are given SSH based access to Git repositories in order to apply changes in configuration files."
-      },
-      {
-        "title" : "Uploading user SSH keys",
-        "tags" : "[New Feature]",
-        "description" : "Users are able to upload their SSH public keys on the Profile view."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.1",
-    "date" : "(2020/04/08)",
-    "topic" : [
-      {
-        "title" : "Domain administrator can add users to his domain",
-        "tags" : "[New Feature]",
-        "description" : "Now the local domain admin can add users to his domain from the list of all users registered in the system."
-      },
-      {
-        "title" : "Enhanced user role assignment",
-        "tags" : "[Enhancement]",
-        "description" : "Several improvements in how user related actions can be performed by administrators."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.3.0",
-    "date" : "(2020/04/01)",
-    "topic" : [
-      {
-        "title" : "Single application can have multiple access methods",
-        "tags" : "[New Feature]",
-        "description" : "Advanced support for application that may expose multiple UIs or other access methods like SSH."
-      },
-      {
-        "title" : "Support for multiple versions of a single application",
-        "tags" : "[New Feature]",
-        "description" : "Added possibility to add and deploy multiple versions of an application."
-      },
-      {
-        "title" : "Janitor able to retrieve service IP address from K8s API",
-        "tags" : "[New Feature]",
-        "description" : "NMaaS Janitor component is able to retrieve particular service IP address assigned by the MetalLB load balancer."
-      },
-      {
-        "title" : "Enhanced user management",
-        "tags" : "[Enhancement]",
-        "description" : "Added tracking of user first and latest login. Added email notification when user logs in with SSO for the first time."
-      },
-      {
-        "title" : "User interface improvements",
-        "tags" : "[Enhancement]",
-        "description" : "Several enhancements making the user interface more appealing."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.2.5",
-    "date" : "(2020/03/10)",
-    "topic" : [
-      {
-        "title" : "Adding support for new application",
-        "tags" : "[Enhancement]",
-        "description" : "Applied some changes in order to support new application."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.2.4",
-    "date" : "(2020/02/19)",
-    "topic" : [
-      {
-        "title" : "Adding support for new application",
-        "tags" : "[Enhancement]",
-        "description" : "Applied some changes in order to support new application."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.2.3",
-    "date" : "(2020/01/10)",
-    "topic" : [
-      {
-        "title" : "Displaying and filtering application instances",
-        "tags" : "[Bugfix]",
-        "description" : "Applied fix in how application instances are displayed and filtered by domain and given user."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.2.2",
-    "date" : "(2019/12/10)",
-    "topic" : [
-      {
-        "title" : "Updating application basic auth credentials",
-        "tags" : "[Bugfix]",
-        "description" : "The configuration update wizard form will allow to change basic auth credentials for given application instance."
-      },
-      {
-        "title" : "Admin area user interface enhancements",
-        "tags" : "[Enhancement]",
-        "description" : "Set of UI improvements mainly on the administrator views."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.2.1",
-    "date" : "(2019/11/08)",
-    "topic" : [
-      {
-        "title" : "Human readable Helm release names",
-        "tags" : "[Enhancement]",
-        "description" : "Application instances deployed with release names allowing for easy identification."
-      },
-      {
-        "title" : "Ability to mark NMaaS installation as a test instance",
-        "tags" : "[Enhancement]",
-        "description" : "When user logs in on a test NMaaS instance a popup window is deployed with appropriate information."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.2.0",
-    "date" : "(2019/05/17)",
-    "topic" : [
-      {
-        "title" : "Application management added",
-        "tags" : "[New Feature]",
-        "description" : "New functionality and dedicated view in the UI allows for adding and maintaining information about NMaaS applications."
-      },
-      {
-        "title" : "Language management added",
-        "tags" : "[New Feature]",
-        "description" : "New functionality and dedicated view in the UI allows for maintaining translations of labels and texts displayed in the UI and the content of emails in all supported languages."
-      },
-      {
-        "title" : "About page added",
-        "tags" : "[New Feature]",
-        "description" : "Added dedicated About page with information about current and previous versions of NMaaS and a contact form."
-      },
-      {
-        "title" : "Extended nmaas-janitor to use readiness probes",
-        "tags" : "[Enhancement]",
-        "description" : "A deployed application instance transits to running state when application is actually ready."
-      },
-      {
-        "title" : "Setting basic authentication details for application instances",
-        "tags" : "[Enhancement]",
-        "description" : "Configuration wizards for applications that do not come with build in user management were extended to allow for setting custom user and password on per application instance basis."
-      },
-      {
-        "title" : "Layout and translation improvements",
-        "tags" : "[Enhancement]",
-        "description" : "Several modifications were introduced in order to improve user experience including reworked application comments view and support for application description texts displayed in different languages."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.1.0",
-    "date" : "(2019/01/24)",
-    "topic" : [
-      {
-        "title" : "New nmaas-janitor component added",
-        "tags" : "[New Feature]",
-        "description" : "New component added in order to improve the application instance configuration process to use ConfigMaps."
-      },
-      {
-        "title" : "Added support for configuration updates",
-        "tags" : "[New Feature]",
-        "description" : "It is now possible to update configuration of already running application instances."
-      },
-      {
-        "title" : "New library used for configuration wizard forms generation",
-        "tags" : "[Enhancement]",
-        "description" : "New library offers many interesting features and is actively developed."
-      },
-      {
-        "title" : "Implemented new version of the NMaaS notification service",
-        "tags" : "[Enhancement]",
-        "description" : "The nmaas-notification component is no longer used. Email templates have been improved."
-      },
-      {
-        "title" : "Implemented new application view",
-        "tags" : "[Enhancement]",
-        "description" : "New version of application view and rating system added to NMaaS."
-      },
-      {
-        "title": "During deployment of Prometheus application, user cannot remove added targets",
-        "tags": "[Bugfix]",
-        "description": "There were some problems with old configuration wizard form generation library. Solved with new library to control that."
-      },
-      {
-        "title" : "Removed support for Docker Compose deployment",
-        "tags" : "[Removed]",
-        "description" : "In the current version only container deployment in Kubernetes is supported. Application source code has been cleaned and optimized."
-      }
-    ]
-  },
-  {
-    "verNo" : "1.0.0",
-    "date" : "(2018/12/31)",
-    "topic" : [
-      {
-        "title" : "Support for Docker Compose and Kubernetes deployment environments",
-        "tags" : "[New Feature]",
-        "description" : "NMaaS supports deployment of applications in two container orchestration environments."
-      },
-      {
-        "title" : "Support for 6 network management applications",
-        "tags" : "[New Feature]",
-        "description" : "Six network management applications were integrated and added to NMaaS portfolio."
-      },
-      {
-        "title" : "Support for configuration files storage on GitLab repository",
-        "tags" : "[New Feature]",
-        "description" : "Application instance configuration files are stored in dedicated repositories on GitLab."
-      }
-    ]
-  }
+{
+  "versions" : [
+    {
+      "verNo" : "1.5.2",
+      "date" : "(2023/04/18)",
+      "topic" : [
+        {
+          "title" : "Improved auto logout handling",
+          "tags" : "[Enhancement]",
+          "description" : "User is properly notified that he was automatically logged out due to inactivity."
+        },
+        {
+          "title" : "Portal layout improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Optimized several views including those related with user administration within a domain."
+        },
+        {
+          "title" : "Optional email notification on new application version",
+          "tags" : "[Enhancement]",
+          "description" : "Added possibility of notifying all users about a new application version that becomes active."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.5.1",
+      "date" : "(2022/09/13)",
+      "topic" : [
+        {
+          "title" : "Improved application configuration",
+          "tags" : "[Enhancement]",
+          "description" : "Added support for new parameters passed as environment variables."
+        },
+        {
+          "title" : "Fixed issues with email notifications",
+          "tags" : "[Bugfix]",
+          "description" : "Fixed issue with generating application upgrade possibility notifications."
+        },
+        {
+          "title" : "Major upgrade of project dependencies",
+          "tags" : "[Enhancement]",
+          "description" : "Most of the used dependencies were updated to most recent versions."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.5.0",
+      "date" : "(2022/04/13)",
+      "topic" : [
+        {
+          "title" : "Manual application upgrade",
+          "tags" : "[New Feature]",
+          "description" : "If upgrade is possible, users may trigger application instance upgrade process manually from the application instance details page."
+        },
+        {
+          "title" : "Fully automated application upgrade",
+          "tags" : "[New Feature]",
+          "description" : "Users may choose to upgrade application instance automatically once upgrade possibility becomes available."
+        },
+        {
+          "title" : "Email notifications related with application upgrade process",
+          "tags" : "[New Feature]",
+          "description" : "New email notifications are sent out to domain administrators once application instance upgrade becomes available and once application instance gets automatically upgraded as well as to system administrators with a summary of automatic upgrades that took place over night."
+        },
+        {
+          "title" : "REST API documentation endpoint",
+          "tags" : "[New Feature]",
+          "description" : "Enabled Swagger and OpenAPI specification endpoints to document NMaaS Platform API."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.4.5",
+      "date" : "(2022/01/03)",
+      "topic" : [
+        {
+          "title" : "Dependency upgrade",
+          "tags" : "[Enhancement]",
+          "description" : "Upgraded Spring Boot library version to mitigate Log4j related security vulnerability."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.4.4",
+      "date" : "(2021/09/27)",
+      "topic" : [
+        {
+          "title" : "Enhanced support for application management",
+          "tags" : "[Enhancement]",
+          "description" : "Added possibility to set users as application owners with specific set of permissions within the Portal."
+        },
+        {
+          "title" : "Support for local NMaaS deployments",
+          "tags" : "[Enhancement]",
+          "description" : "Added set of improvements to support local NMaaS deployments."
+        },
+        {
+          "title" : "Advanced support for specifying Helm chart repositories",
+          "tags" : "[Enhancement]",
+          "description" : "Added possibility to specify the URL of Helm chart repository for each application."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.4.3",
+      "date" : "(2021/07/20)",
+      "topic" : [
+        {
+          "title" : "Enhanced application instance public access method",
+          "tags" : "[Enhancement]",
+          "description" : "Application public access URL includes custom instance name instead of the random UUID."
+        },
+        {
+          "title" : "Enhanced administrator views for adding new applications",
+          "tags" : "[Enhancement]",
+          "description" : "Introduced advanced option for configuration wizard definition."
+        },
+        {
+          "title" : "Enhanced new domain request form",
+          "tags" : "[Enhancement]",
+          "description" : "Added new VPN-setup related fields to the new domain request form."
+        },
+        {
+          "title" : "Fixed issue with application version selection",
+          "tags" : "[Bugfix]",
+          "description" : "Fixed issue related with allowing only active application versions to be deployed."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.4.2",
+      "date" : "(2021/05/11)",
+      "topic" : [
+        {
+          "title" : "Added support for enforcing users to acknowledge terms before application deployment",
+          "tags" : "[Enhancement]",
+          "description" : "If given application requires users to explicitly accept terms of use before deployment, this will be enforced on the configuration wizard level."
+        },
+        {
+          "title" : "Fixed issue with users not visible in the Portal",
+          "tags" : "[Bugfix]",
+          "description" : "Fixed issue with users not visible in the Portal."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.4.1",
+      "date" : "(2021/03/18)",
+      "topic" : [
+        {
+          "title" : "Improved user management views",
+          "tags" : "[Enhancement]",
+          "description" : "Introduced multiple enhancements to the user administrator view."
+        },
+        {
+          "title" : "Enhanced NMaaS configuration process",
+          "tags" : "[Enhancement]",
+          "description" : "Refactored Platform source code in order to load additional configuration parameters from properties file."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.4.0",
+      "date" : "(2021/01/12)",
+      "topic" : [
+        {
+          "title" : "Enhanced application deployment process",
+          "tags" : "[Enhancement]",
+          "description" : "Introduced separation between the application deployment, first time configuration and activation processes."
+        },
+        {
+          "title" : "Assigning users to running application instances",
+          "tags" : "[Enhancement]",
+          "description" : "Added possibility to manage the list of users with access to particular running application instance."
+        },
+        {
+          "title" : "Synchronisation of user SSH-keys with GitLab account",
+          "tags" : "[Enhancement]",
+          "description" : "Added new functionality to sync user GitLab accounts with keys provided on the user Profile page."
+        },
+        {
+          "title" : "Predefined contact form messages",
+          "tags" : "[Enhancement]",
+          "description" : "Added a set of message types to choose from when submitting the contact form."
+        },
+        {
+          "title" : "New application list sorting options",
+          "tags" : "[Enhancement]",
+          "description" : "Added the possibility to sort available applications by name, rating and popularity."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.7",
+      "date" : "(2020/10/06)",
+      "topic" : [
+        {
+          "title" : "User option to select between public/VPN access to service",
+          "tags" : "[Enhancement]",
+          "description" : "For any service defined by application manager as public, user during deployment can select either public or VPN-protected access."
+        },
+        {
+          "title" : "Fixed Portal actions and layout",
+          "tags" : "[Bugfix]",
+          "description" : "Fixed several front-end issues"
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.6",
+      "date" : "(2020/09/21)",
+      "topic" : [
+        {
+          "title" : "More user friendly interface",
+          "tags" : "[Enhancement]",
+          "description" : "The application market and instances views were altered in order to improve the ease of use."
+        },
+        {
+          "title" : "Minor improvements to enable WiFiMon application support",
+          "tags" : "[Enhancement]",
+          "description" : "Implemented support for passing auto-generated parameters during application deployment."
+        },
+        {
+          "title" : "Janitor support for Kubernetes 1.16",
+          "tags" : "[Enhancement]",
+          "description" : "Implemented necessary changes in Janitor component to allow for use of newer versions of Kubernetes clusters."
+        },
+        {
+          "title" : "Added support for public services",
+          "tags" : "[New Feature]",
+          "description" : "Enabled particular services, if required by given application, to be reachable directly from public Internet (without any VPN)."
+        },
+        {
+          "title" : "Platform API redesign and third-party library upgrades",
+          "tags" : "[Enhancement]",
+          "description" : "Implemented several changes in order to improve maintainability and security of the software."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.5",
+      "date" : "(2020/07/29)",
+      "topic" : [
+        {
+          "title" : "Added support for shell access to running applications",
+          "tags" : "[New Feature]",
+          "description" : "A shell window was integrated into the Portal view allowing for SSH-like access to running application instances."
+        },
+        {
+          "title" : "Added support for advanced configuration using Git repository",
+          "tags" : "[New Feature]",
+          "description" : "Enhanced both the NMaaS core components and Janitor to allow for creation of multiple ConfigMaps based on the content of Git repository of a given application instance."
+        },
+        {
+          "title" : "Added missing SSH key notification",
+          "tags" : "[Enhancement]",
+          "description" : "A modal window is displayed for domain administrators if they have not provided their SSH keys yet. Without the key, users will not be able to modify application configuration files through Git repository."
+        },
+        {
+          "title" : "Improved data exchange between the backend and user Portal",
+          "tags" : "[Enhancement]",
+          "description" : "A technical optimisation was applied in order to minimize the amount of data exchanged between the central database and user Portal."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.4",
+      "date" : "(2020/06/23)",
+      "topic" : [
+        {
+          "title" : "Minor improvements to enable ELK Stack support",
+          "tags" : "[Enhancement]",
+          "description" : "Implemented required changes like support for multiple internal access methods in order to enable ELK Stack tool deployment."
+        },
+        {
+          "title" : "User role-based access policy updated",
+          "tags" : "[Enhancement]",
+          "description" : "Domain user read/write permissions updated based on user feedback."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.3",
+      "date" : "(2020/05/27)",
+      "topic" : [
+        {
+          "title" : "Added support for global Helm deployment parameters",
+          "tags" : "[New Feature]",
+          "description" : "The possibility to define static parameters to be passed during application installation allowed for integration of new tools."
+        },
+        {
+          "title" : "Janitor enhancements",
+          "tags" : "[Enhancement]",
+          "description" : "Improved the way Janitor is handling ConfigMap creation and added support for StatefulSets."
+        },
+        {
+          "title" : "Portal layout improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Added GÉANT logo and EU funding clause in the footer."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.2",
+      "date" : "(2020/05/13)",
+      "topic" : [
+        {
+          "title" : "Advanced application deployment support",
+          "tags" : "[Enhancement]",
+          "description" : "Additional application deployment specification parameters were added in order to support more complex deployments."
+        },
+        {
+          "title" : "Advanced support for using Git repository for configuration updates",
+          "tags" : "[New Feature]",
+          "description" : "Users are given SSH based access to Git repositories in order to apply changes in configuration files."
+        },
+        {
+          "title" : "Uploading user SSH keys",
+          "tags" : "[New Feature]",
+          "description" : "Users are able to upload their SSH public keys on the Profile view."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.1",
+      "date" : "(2020/04/08)",
+      "topic" : [
+        {
+          "title" : "Domain administrator can add users to his domain",
+          "tags" : "[New Feature]",
+          "description" : "Now the local domain admin can add users to his domain from the list of all users registered in the system."
+        },
+        {
+          "title" : "Enhanced user role assignment",
+          "tags" : "[Enhancement]",
+          "description" : "Several improvements in how user related actions can be performed by administrators."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.3.0",
+      "date" : "(2020/04/01)",
+      "topic" : [
+        {
+          "title" : "Single application can have multiple access methods",
+          "tags" : "[New Feature]",
+          "description" : "Advanced support for application that may expose multiple UIs or other access methods like SSH."
+        },
+        {
+          "title" : "Support for multiple versions of a single application",
+          "tags" : "[New Feature]",
+          "description" : "Added possibility to add and deploy multiple versions of an application."
+        },
+        {
+          "title" : "Janitor able to retrieve service IP address from K8s API",
+          "tags" : "[New Feature]",
+          "description" : "NMaaS Janitor component is able to retrieve particular service IP address assigned by the MetalLB load balancer."
+        },
+        {
+          "title" : "Enhanced user management",
+          "tags" : "[Enhancement]",
+          "description" : "Added tracking of user first and latest login. Added email notification when user logs in with SSO for the first time."
+        },
+        {
+          "title" : "User interface improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Several enhancements making the user interface more appealing."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.2.5",
+      "date" : "(2020/03/10)",
+      "topic" : [
+        {
+          "title" : "Adding support for new application",
+          "tags" : "[Enhancement]",
+          "description" : "Applied some changes in order to support new application."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.2.4",
+      "date" : "(2020/02/19)",
+      "topic" : [
+        {
+          "title" : "Adding support for new application",
+          "tags" : "[Enhancement]",
+          "description" : "Applied some changes in order to support new application."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.2.3",
+      "date" : "(2020/01/10)",
+      "topic" : [
+        {
+          "title" : "Displaying and filtering application instances",
+          "tags" : "[Bugfix]",
+          "description" : "Applied fix in how application instances are displayed and filtered by domain and given user."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.2.2",
+      "date" : "(2019/12/10)",
+      "topic" : [
+        {
+          "title" : "Updating application basic auth credentials",
+          "tags" : "[Bugfix]",
+          "description" : "The configuration update wizard form will allow to change basic auth credentials for given application instance."
+        },
+        {
+          "title" : "Admin area user interface enhancements",
+          "tags" : "[Enhancement]",
+          "description" : "Set of UI improvements mainly on the administrator views."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.2.1",
+      "date" : "(2019/11/08)",
+      "topic" : [
+        {
+          "title" : "Human readable Helm release names",
+          "tags" : "[Enhancement]",
+          "description" : "Application instances deployed with release names allowing for easy identification."
+        },
+        {
+          "title" : "Ability to mark NMaaS installation as a test instance",
+          "tags" : "[Enhancement]",
+          "description" : "When user logs in on a test NMaaS instance a popup window is deployed with appropriate information."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.2.0",
+      "date" : "(2019/05/17)",
+      "topic" : [
+        {
+          "title" : "Application management added",
+          "tags" : "[New Feature]",
+          "description" : "New functionality and dedicated view in the UI allows for adding and maintaining information about NMaaS applications."
+        },
+        {
+          "title" : "Language management added",
+          "tags" : "[New Feature]",
+          "description" : "New functionality and dedicated view in the UI allows for maintaining translations of labels and texts displayed in the UI and the content of emails in all supported languages."
+        },
+        {
+          "title" : "About page added",
+          "tags" : "[New Feature]",
+          "description" : "Added dedicated About page with information about current and previous versions of NMaaS and a contact form."
+        },
+        {
+          "title" : "Extended nmaas-janitor to use readiness probes",
+          "tags" : "[Enhancement]",
+          "description" : "A deployed application instance transits to running state when application is actually ready."
+        },
+        {
+          "title" : "Setting basic authentication details for application instances",
+          "tags" : "[Enhancement]",
+          "description" : "Configuration wizards for applications that do not come with build in user management were extended to allow for setting custom user and password on per application instance basis."
+        },
+        {
+          "title" : "Layout and translation improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Several modifications were introduced in order to improve user experience including reworked application comments view and support for application description texts displayed in different languages."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.1.0",
+      "date" : "(2019/01/24)",
+      "topic" : [
+        {
+          "title" : "New nmaas-janitor component added",
+          "tags" : "[New Feature]",
+          "description" : "New component added in order to improve the application instance configuration process to use ConfigMaps."
+        },
+        {
+          "title" : "Added support for configuration updates",
+          "tags" : "[New Feature]",
+          "description" : "It is now possible to update configuration of already running application instances."
+        },
+        {
+          "title" : "New library used for configuration wizard forms generation",
+          "tags" : "[Enhancement]",
+          "description" : "New library offers many interesting features and is actively developed."
+        },
+        {
+          "title" : "Implemented new version of the NMaaS notification service",
+          "tags" : "[Enhancement]",
+          "description" : "The nmaas-notification component is no longer used. Email templates have been improved."
+        },
+        {
+          "title" : "Implemented new application view",
+          "tags" : "[Enhancement]",
+          "description" : "New version of application view and rating system added to NMaaS."
+        },
+        {
+          "title": "During deployment of Prometheus application, user cannot remove added targets",
+          "tags": "[Bugfix]",
+          "description": "There were some problems with old configuration wizard form generation library. Solved with new library to control that."
+        },
+        {
+          "title" : "Removed support for Docker Compose deployment",
+          "tags" : "[Removed]",
+          "description" : "In the current version only container deployment in Kubernetes is supported. Application source code has been cleaned and optimized."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.0.0",
+      "date" : "(2018/12/31)",
+      "topic" : [
+        {
+          "title" : "Support for Docker Compose and Kubernetes deployment environments",
+          "tags" : "[New Feature]",
+          "description" : "NMaaS supports deployment of applications in two container orchestration environments."
+        },
+        {
+          "title" : "Support for 6 network management applications",
+          "tags" : "[New Feature]",
+          "description" : "Six network management applications were integrated and added to NMaaS portfolio."
+        },
+        {
+          "title" : "Support for configuration files storage on GitLab repository",
+          "tags" : "[New Feature]",
+          "description" : "Application instance configuration files are stored in dedicated repositories on GitLab."
+        }
+      ]
+    }
 ]}

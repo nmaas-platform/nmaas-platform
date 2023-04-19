@@ -1,0 +1,1 @@
+alter table app_deployment_spec add column allow_log_access boolean default false;

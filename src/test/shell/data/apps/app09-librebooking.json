@@ -1,12 +1,12 @@
 {
     "applicationBase": {
         "id": null,
-        "name": "Booked",
+        "name": "LibreBooking",
         "license": "GPL 3.0",
         "licenseUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
         "wwwUrl": "https://www.bookedscheduler.com",
-        "sourceUrl": "https://sourceforge.net/p/phpscheduleit/code/HEAD/tree",
-        "issuesUrl": "https://sourceforge.net/p/phpscheduleit/bugs",
+        "sourceUrl": "https://github.com/LibreBooking/app",
+        "issuesUrl": "https://github.com/LibreBooking/app/issues",
         "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Booked",
         "descriptions": [
             {
@@ -31,13 +31,14 @@
             }
         ],
         "tags": [
-            "management"
+            "management",
+            "calendar"
         ]
     },
     "application": {
         "id": null,
-        "name": "Booked",
-        "version": "2.7.7",
+        "name": "LibreBooking",
+        "version": "2.8.5",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -57,7 +58,7 @@
                                         "key": "mandatoryParameters",
                                         "components": [
                                             {
-                                                "label": "Administrator email address",
+                                                "label": "Administrator user email address",
                                                 "type": "email",
                                                 "input": true,
                                                 "key": "booked#config#BOOKED_ADMIN_EMAIL",
@@ -68,9 +69,15 @@
                                                 "tab": 0
                                             },
                                             {
+                                                "type": "htmlelement",
+                                                "input": false,
+                                                "content": "<p>Default credentials for administrator user are: admin/password</p>",
+                                                "tab": 0
+                                            },
+                                            {
                                                 "label": "Enable email notifications",
                                                 "type": "checkbox",
-                                                "defaultValue": false,
+                                                "defaultValue": true,
                                                 "input": true,
                                                 "key": "booked#config#BOOKED_ENABLE_EMAIL",
                                                 "inputFormat": "plain",
@@ -147,7 +154,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-booked",
-                    "version": "2.0.1"
+                    "version": "3.0.0"
                 }
             },
             "storageVolumes": [
