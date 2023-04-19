@@ -221,7 +221,8 @@
       "DOMAIN_NAME" : "Domain Name",
       "DOMAIN_CODE_NAME" : "Domain Codename",
       "DELETE" : "Remove domain from group",
-      "ADD" : "Add domain to group"
+      "ADD" : "Add domain to group",
+      "ADD_INFO" : "Select domains to add them to group"
     }
   },
   "APP_INSTANCES": {
