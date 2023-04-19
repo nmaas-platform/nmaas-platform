@@ -67,4 +67,6 @@ public interface DomainService {
 	DomainGroupView getDomainGroup(Long domainGroupId);
 
 	List<DomainGroupView> getAllDomainGroups();
+
+	DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view);
 }

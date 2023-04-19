@@ -445,6 +445,21 @@ public class DomainServiceImpl implements DomainService {
 		return domainGroupRepository.findAll().stream().map(g -> modelMapper.map(g, DomainGroupView.class)).collect(Collectors.toList());
 	}
 
+	public DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view) {
+		if(!domainGroupId.equals(view.getId())){
+			throw new ProcessingException("Wrong domain group Id");
+		}
+		if(domainGroupRepository.findById(domainGroupId).isPresent()) {
+			DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
+			domainGroup.setCodename(view.getCodename());
+			domainGroup.setName(view.getName());
+			this.domainGroupRepository.save(domainGroup);
+			return modelMapper.map(domainGroup, DomainGroupView.class);
+		} else {
+			throw new MissingElementException("Domain group not found");
+		}
+	}
+
 
 	
 }

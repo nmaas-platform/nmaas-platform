@@ -9,6 +9,7 @@ import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.bulk.CsvReplay;
+import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -108,6 +109,18 @@ public class CsvDeserializerImpl implements CsvDeserializer {
                 details.put("domain", domain.getId().toString());
                 details.put("domainName", domain.getName());
                 result.add(new CsvReplay(false, String.format("Domain %s already existed", domain.getName()), details, BulkType.DOMAIN));
+            }
+            // domain groups creation
+            String[] groups = usr.getDomainGroups().split(",");
+            for(int g = 0; g < groups.length; g++) {
+                String groupCodeName = groups[g];
+                log.error(groupCodeName);
+                if(!this.domainService.existDomainGroup(groupCodeName, groupCodeName)) {
+                    this.domainService.createDomainGroup(new DomainGroupView(null, groupCodeName, groupCodeName, null));
+                    this.domainService.addDomainsToGroup(List.of(domain.getId()), groupCodeName);
+                } else {
+                    this.domainService.addDomainsToGroup(List.of(domain.getId()), groupCodeName);
+                }
             }
             // if user exist update role in domain to domain admin
             if(this.userService.existsByUsername(usr.getAdminUserName()) || this.userService.existsByEmail(usr.getEmail())) {
