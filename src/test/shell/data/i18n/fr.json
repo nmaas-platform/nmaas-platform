@@ -1067,5 +1067,11 @@
   },
   "JSON_EDIT": {
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
+  },
+  "BULK" : {
+    "DOMAIN" : {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments"
+    }
   }
 }
