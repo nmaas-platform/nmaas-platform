@@ -6,14 +6,16 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
-import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.*;
-import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
@@ -31,7 +33,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,48 +50,36 @@ public class DomainServiceImpl implements DomainService {
 		boolean valid(String codename);
 	}
 
-	private CodenameValidator validator;
+	private final CodenameValidator validator;
+	private final CodenameValidator namespaceValidator;
+	private final DomainRepository domainRepository;
+	private final DomainTechDetailsRepository domainTechDetailsRepository;
+	private final UserService userService;
+	private final UserRoleRepository userRoleRepository;
+	private final DcnRepositoryManager dcnRepositoryManager;
+	private final ModelMapper modelMapper;
+	private final ApplicationStatePerDomainService applicationStatePerDomainService;
 
-	private CodenameValidator namespaceValidator;
-	
 	@Value("${domain.global:GLOBAL}")
 	String globalDomain;
-
-	private DomainRepository domainRepo;
-
-	private DomainGroupRepository domainGroupRepository;
-
-	private DomainTechDetailsRepository domainTechDetailsRepo;
-
-	private UserService users;
-
-	private UserRoleRepository userRoleRepo;
-
-	private DcnRepositoryManager dcnRepositoryManager;
-
-	private ModelMapper modelMapper;
-
-	private ApplicationStatePerDomainService applicationStatePerDomainService;
 
 	@Autowired
 	public DomainServiceImpl(CodenameValidator validator,
 							 @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
-							 DomainRepository domainRepo,
-							 DomainGroupRepository domainGroupRepository,
-							 DomainTechDetailsRepository domainTechDetailsRepo,
-							 UserService users,
-							 UserRoleRepository userRoleRepo,
+							 DomainRepository domainRepository,
+							 DomainTechDetailsRepository domainTechDetailsRepository,
+							 UserService userService,
+							 UserRoleRepository userRoleRepository,
 							 DcnRepositoryManager dcnRepositoryManager,
 							 ModelMapper modelMapper,
 							 ApplicationStatePerDomainService applicationStatePerDomainService
 	){
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
-		this.domainRepo = domainRepo;
-		this.domainGroupRepository = domainGroupRepository;
-		this.domainTechDetailsRepo = domainTechDetailsRepo;
-		this.users = users;
-		this.userRoleRepo = userRoleRepo;
+		this.domainRepository = domainRepository;
+		this.domainTechDetailsRepository = domainTechDetailsRepository;
+		this.userService = userService;
+		this.userRoleRepository = userRoleRepository;
 		this.dcnRepositoryManager = dcnRepositoryManager;
 		this.modelMapper = modelMapper;
 		this.applicationStatePerDomainService = applicationStatePerDomainService;
@@ -98,7 +87,7 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public List<Domain> getDomains() {		
-		return domainRepo.findAll().stream().map(val -> {
+		return domainRepository.findAll().stream().map(val -> {
 			log.error("Domains groups - "+ val.getGroups().size());
 			val.getGroups().stream().map(group -> {
 				log.error("Domain - " + val.getName() + " group -" + group.getName());
@@ -110,7 +99,7 @@ public class DomainServiceImpl implements DomainService {
 	
 	@Override
 	public Page<Domain> getDomains(Pageable pageable) {		
-		return domainRepo.findAll(pageable);
+		return domainRepository.findAll(pageable);
 	}
 
 	@Override
@@ -121,28 +110,26 @@ public class DomainServiceImpl implements DomainService {
 	
 	@Override
 	public Optional<Domain> getGlobalDomain() {		
-		return domainRepo.findByName(globalDomain);
+		return domainRepository.findByName(globalDomain);
 	}
-	
-	
+
 	@Override
 	public boolean existsDomain(String name) {
 		checkParam(name);
-		return domainRepo.existsByName(name);
+		return domainRepository.existsByName(name);
 	}
 	
 	@Override
 	public boolean existsDomainByCodename(String codename) {
 		checkParam(codename);
-		return domainRepo.existsByCodename(codename);
+		return domainRepository.existsByCodename(codename);
 	}
 
 	@Override
 	public boolean existsDomainByExternalServiceDomain(String externalServiceDomain) {
-		return domainTechDetailsRepo.existsByExternalServiceDomain(externalServiceDomain);
+		return domainTechDetailsRepository.existsByExternalServiceDomain(externalServiceDomain);
 	}
 
-	
 	@Override
 	public Domain createDomain(DomainRequest request) {
 		checkParam(request.getName());
@@ -161,14 +148,14 @@ public class DomainServiceImpl implements DomainService {
 			request.getDomainTechDetails().setKubernetesIngressClass(request.getCodename());
 		}
 		if(StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())){
-			checkArgument(!domainTechDetailsRepo.existsByExternalServiceDomain(request.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
+			checkArgument(!domainTechDetailsRepository.existsByExternalServiceDomain(request.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 		}
 		this.setCodenames(request);
 		try {
 			List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomain();
 			Domain newDomain = modelMapper.map(request, Domain.class);
 			newDomain.setApplicationStatePerDomain(applicationStatePerDomainList);
-			return domainRepo.save(newDomain);
+			return domainRepository.save(newDomain);
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
@@ -199,17 +186,17 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public Optional<Domain> findDomain(String name) {
-		return domainRepo.findByName(name);
+		return domainRepository.findByName(name);
 	}
 	
 	@Override
 	public Optional<Domain> findDomain(Long id) {		
-		return domainRepo.findById(id);
+		return domainRepository.findById(id);
 	}
 	
 	@Override
 	public Optional<Domain> findDomainByCodename(String codename) {		
-		return domainRepo.findByCodename(codename);
+		return domainRepository.findByCodename(codename);
 	}
 
 	@Override
@@ -224,7 +211,7 @@ public class DomainServiceImpl implements DomainService {
 		if(!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace())){
 			throw new ProcessingException("Kubernetes namespace is not valid.");
 		}
-		domainRepo.save(domain);
+		domainRepository.save(domain);
 	}
 
 	@Override
@@ -233,7 +220,7 @@ public class DomainServiceImpl implements DomainService {
 		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
 		domain.getDomainDcnDetails().setDcnConfigured(dcnConfigured);
-		return domainRepo.save(domain);
+		return domainRepository.save(domain);
 	}
 
 	@Override
@@ -242,17 +229,18 @@ public class DomainServiceImpl implements DomainService {
 		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
 		domain.setActive(active);
-		domainRepo.save(domain);
+		domainRepository.save(domain);
 	}
 
 	@Override
 	public boolean removeDomain(Long id) {
-		return findDomain(id).map(toRemove -> {checkGlobal(toRemove);domainRepo.delete(toRemove); return true;}).orElse(false);
+		return findDomain(id).map(toRemove -> {checkGlobal(toRemove);
+			domainRepository.delete(toRemove); return true;}).orElse(false);
 	}
 
 	@Override
 	public List<User> getMembers(Long id) {
-		return userRoleRepo.findDomainMembers(id);		
+		return userRoleRepository.findDomainMembers(id);
 	}
 
 	public void addMemberRole(Long domainId, Long userId, Role role) {
@@ -260,19 +248,18 @@ public class DomainServiceImpl implements DomainService {
 		checkParams(role);
 			
 		Domain domain = getDomain(domainId);
-		
 		User user = getUser(userId);
 
-		if(userRoleRepo.findByDomainAndUserAndRole(domain, user, role) == null) {
+		if (userRoleRepository.findByDomainAndUserAndRole(domain, user, role) == null) {
 			removePreviousRoleInDomain(domain, user);
-			userRoleRepo.save(new UserRole(user, domain, role));
+			userRoleRepository.save(new UserRole(user, domain, role));
 		}
 	}
 
 	@Override
 	public void addGlobalGuestUserRoleIfMissing(Long userId) {
 		Optional<Domain> globalDomainOptional = this.getGlobalDomain();
-		if(globalDomainOptional.isPresent()){
+		if (globalDomainOptional.isPresent()){
 			Long globalId = globalDomainOptional.get().getId();
 			try{
 				if(this.getMemberRoles(globalId, userId).isEmpty()){
@@ -288,11 +275,11 @@ public class DomainServiceImpl implements DomainService {
 		user.getRoles().stream()
 				.filter(value -> value.getDomain().getId().equals(domain.getId()))
 				.findAny()
-				.ifPresent(value -> userRoleRepo.deleteBy(user.getId(), domain.getId(), value.getRole()));
+				.ifPresent(value -> userRoleRepository.deleteBy(user.getId(), domain.getId(), value.getRole()));
 	}
 
 	private User getUser(Long userId) {
-		return users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
+		return userService.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
 	}
 
 	private Domain getDomain(Long domainId) {
@@ -303,25 +290,25 @@ public class DomainServiceImpl implements DomainService {
 	public void removeMemberRole(Long domainId, Long userId, Role role) {
 		checkParams(domainId, userId);
 		checkParams(role);
-		userRoleRepo.deleteBy(userId, domainId, role);
+		userRoleRepository.deleteBy(userId, domainId, role);
 	}
 
 	@Override
 	public void removeMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		userRoleRepo.deleteBy(userId, domainId);
+		userRoleRepository.deleteBy(userId, domainId);
 	}
 
 	@Override
 	public Set<Role> getMemberRoles(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		return userRoleRepo.findRolesByDomainAndUser(domainId, userId);
+		return userRoleRepository.findRolesByDomainAndUser(domainId, userId);
 	}
 
 	@Override
 	public User getMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		return userRoleRepo.findDomainMember(domainId, userId)
+		return userRoleRepository.findDomainMember(domainId, userId)
 				.orElseThrow(() -> new ProcessingException("User is not domain member"));
 	}
 
@@ -335,131 +322,49 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public List<UserView> findUsersWithDomainAdminRole(String domain){
-		return this.userRoleRepo.findDomainMembers(domain).stream()
+		return this.userRoleRepository.findDomainMembers(domain).stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
 				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 
 	protected void checkParam(String name) {
-		if(StringUtils.isEmpty(name)) {
+		if (StringUtils.isEmpty(name)) {
 			throw new IllegalArgumentException("Name is null");
 		}
 	}
 	
 	protected void checkParam(Domain domain) {
-		if(domain == null) {
+		if (domain == null) {
 			throw new IllegalArgumentException("Domain is null");
 		}
 	}
 	
 	private void checkParams(Long id) {
-		if(id == null) {
+		if (id == null) {
 			throw new IllegalArgumentException("id is null");
 		}
 	}
 	
 	private void checkParams(Role role) {
-		if(role == null) {
+		if (role == null) {
 			throw new IllegalArgumentException("role is null");
 		}
 	}
 	
 	private void checkParams(Long domainId, Long userId) {
-		if(domainId == null) {
+		if (domainId == null) {
 			throw new IllegalArgumentException("domainId is null");
 		}
-		if(userId == null) {
+		if (userId == null) {
 			throw new IllegalArgumentException("userId is null");
 		}
 	}
 
 	private void checkGlobal(Domain domain){
-		if(domain.getCodename().equals(globalDomain)) {
+		if (domain.getCodename().equals(globalDomain)) {
 			throw new IllegalArgumentException("Global domain can't be updated or removed");
 		}
 	}
 
-	//Groups
-
-	public Boolean existDomainGroup(String name, String codeName) {
-		if(this.domainGroupRepository.existsByName(name)) {
-			return true;
-		}
-		if(this.domainGroupRepository.existsByCodename(codeName)) {
-			return true;
-		}
-		return false;
-	}
-
-	public DomainGroupView createDomainGroup(DomainGroupView domainGroup) {
-		//validation
-
-		//creation
-		DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
-		domainGroupEntity = this.domainGroupRepository.save(domainGroupEntity);
-		return modelMapper.map(domainGroupEntity, DomainGroupView.class);
-	}
-
-	public DomainGroupView addDomainsToGroup(List<Long> domains, String groupCodeName) {
-		if(domainGroupRepository.findByCodename(groupCodeName).isEmpty()){
-			throw new MissingElementException("Domains group not found");
-		}
-		DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).get();
-		domains.forEach(domain -> {
-			log.error("domain - "+ domain.toString());
-			Domain foundDomain = getDomain(domain);
-			if(!domainGroup.getDomains().contains(foundDomain)) {
-				domainGroup.addDomain(foundDomain);
-			}
-		});
-		return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
-	}
-
-	public DomainGroupView deleteDomainFromGroup(Long domainId, Long domainGroupId) {
-		if(domainGroupRepository.findById(domainGroupId).isEmpty()){
-			throw new MissingElementException("Domains group not found");
-		}
-		DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).get();
-		Domain foundDomain = getDomain(domainId);
-//		domainGroup.setDomains(domainGroup.getDomains().stream().filter(val -> !Objects.equals(val.getId(), domainId)).collect(Collectors.toList()));
-		domainGroup.removeDomain(foundDomain);
-
-		return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
-	}
-
-	public void deleteDomainGroup(Long domainGroupId){
-	 this.domainGroupRepository.deleteById(domainGroupId);
-	}
-
-	public DomainGroupView getDomainGroup(Long domainGroupId) {
-		if(domainGroupRepository.findById(domainGroupId).isPresent()) {
-			DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
-			return modelMapper.map(domainGroup, DomainGroupView.class);
-		} else {
-			throw new MissingElementException("Domain group not found");
-		}
-	}
-
-	public List<DomainGroupView> getAllDomainGroups() {
-		return domainGroupRepository.findAll().stream().map(g -> modelMapper.map(g, DomainGroupView.class)).collect(Collectors.toList());
-	}
-
-	public DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view) {
-		if(!domainGroupId.equals(view.getId())){
-			throw new ProcessingException("Wrong domain group Id");
-		}
-		if(domainGroupRepository.findById(domainGroupId).isPresent()) {
-			DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
-			domainGroup.setCodename(view.getCodename());
-			domainGroup.setName(view.getName());
-			this.domainGroupRepository.save(domainGroup);
-			return modelMapper.map(domainGroup, DomainGroupView.class);
-		} else {
-			throw new MissingElementException("Domain group not found");
-		}
-	}
-
-
-	
 }

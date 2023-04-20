@@ -27,4 +27,5 @@ public class CsvDomain extends CsvBean {
     public String toString() {
         return String.format("Bulk deployment for domain  %s with admin %s %s. Networks: %s, DomainGroups: %s", domainName, email, adminUserName, DCNetworks, domainGroups);
     }
+
 }

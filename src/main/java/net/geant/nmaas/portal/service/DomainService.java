@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
-import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -54,19 +53,4 @@ public interface DomainService {
 
 	List<UserView> findUsersWithDomainAdminRole(String domain);
 
-	Boolean existDomainGroup(String name, String codeName);
-
-	DomainGroupView createDomainGroup(DomainGroupView domainGroup);
-
-	DomainGroupView addDomainsToGroup(List<Long> domains, String groupCodeName);
-
-	DomainGroupView deleteDomainFromGroup(Long domainId, Long domainGroupCodeName);
-
-	void deleteDomainGroup(Long domainGroupId);
-
-	DomainGroupView getDomainGroup(Long domainGroupId);
-
-	List<DomainGroupView> getAllDomainGroups();
-
-	DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view);
 }
