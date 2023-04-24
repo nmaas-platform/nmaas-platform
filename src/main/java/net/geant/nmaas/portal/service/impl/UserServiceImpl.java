@@ -158,8 +158,7 @@ public class UserServiceImpl implements UserService {
 			throw new SignupException("User already exists");
 		}
 		String temporaryPassword = RandomStringUtils.random(16);
-		// TODO remove this log
-		log.info("Creating user {} with temporary password {}", userCSV.getAdminUserName(), temporaryPassword);
+		log.info("Creating user {} with temporary password", userCSV.getAdminUserName());
 		User newUser = new User(userCSV.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
 		newUser.setEmail(userCSV.getEmail());
 		newUser.setEnabled(true);

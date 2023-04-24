@@ -89,9 +89,10 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public List<Domain> getDomains() {		
 		return domainRepository.findAll().stream().map(val -> {
-			log.error("Domains groups - "+ val.getGroups().size());
+			// TODO remove this debug log when no longer required
+			log.debug("Domains groups - "+ val.getGroups().size());
 			val.getGroups().stream().map(group -> {
-				log.error("Domain - " + val.getName() + " group -" + group.getName());
+				log.debug("Domain - " + val.getName() + " group -" + group.getName());
 				return group;
 			}).collect(Collectors.toList());
 			return val;
@@ -136,19 +137,19 @@ public class DomainServiceImpl implements DomainService {
 		checkParam(request.getName());
 		checkParam(request.getCodename());
 
-		if(!Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isPresent()){
+		if (!Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isPresent()) {
 			throw new ProcessingException("Domain codename is not valid");
 		}
-		if(StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())){
+		if (StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())) {
 			request.getDomainTechDetails().setKubernetesNamespace(request.getCodename());
 		}
-		if(!namespaceValidator.valid(request.getDomainTechDetails().getKubernetesNamespace())){
+		if (!namespaceValidator.valid(request.getDomainTechDetails().getKubernetesNamespace())) {
 			throw new ProcessingException("Kubernetes namespace is not valid");
 		}
-		if(StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesIngressClass())){
+		if (StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesIngressClass())) {
 			request.getDomainTechDetails().setKubernetesIngressClass(request.getCodename());
 		}
-		if(StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())){
+		if (StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())) {
 			checkArgument(!domainTechDetailsRepository.existsByExternalServiceDomain(request.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 		}
 		this.setCodenames(request);
@@ -162,7 +163,7 @@ public class DomainServiceImpl implements DomainService {
 		}
 	}
 
-	private void setCodenames(DomainRequest request){
+	private void setCodenames(DomainRequest request) {
 		request.getDomainTechDetails().setDomainCodename(request.getCodename());
 		request.getDomainDcnDetails().setDomainCodename(request.getCodename());
 	}
@@ -181,7 +182,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-    public void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType){
+    public void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType) {
 	    this.dcnRepositoryManager.updateDcnDeploymentType(domain, dcnDeploymentType);
     }
 
@@ -204,19 +205,20 @@ public class DomainServiceImpl implements DomainService {
 	public void updateDomain(Domain domain) {		
 		checkParam(domain);
 		checkGlobal(domain);
-		if(domain.getId() == null)
+		if (domain.getId() == null) {
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
-		if(StringUtils.isEmpty(domain.getDomainTechDetails().getKubernetesNamespace())){
+		}
+		if (StringUtils.isEmpty(domain.getDomainTechDetails().getKubernetesNamespace())) {
 			domain.getDomainTechDetails().setKubernetesNamespace(domain.getCodename());
 		}
-		if(!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace())){
+		if (!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace())) {
 			throw new ProcessingException("Kubernetes namespace is not valid.");
 		}
 		domainRepository.save(domain);
 	}
 
 	@Override
-	public Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured){
+	public Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured) {
 		checkParams(domainId);
 		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
@@ -225,7 +227,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public void changeDomainState(Long domainId, boolean active){
+	public void changeDomainState(Long domainId, boolean active) {
 		checkParams(domainId);
 		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
@@ -235,8 +237,11 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public boolean removeDomain(Long id) {
-		return findDomain(id).map(toRemove -> {checkGlobal(toRemove);
-			domainRepository.delete(toRemove); return true;}).orElse(false);
+		return findDomain(id).map(toRemove -> {
+				checkGlobal(toRemove);
+				domainRepository.delete(toRemove);
+				return true;
+			}).orElse(false);
 	}
 
 	@Override
@@ -260,19 +265,19 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public void addGlobalGuestUserRoleIfMissing(Long userId) {
 		Optional<Domain> globalDomainOptional = this.getGlobalDomain();
-		if (globalDomainOptional.isPresent()){
+		if (globalDomainOptional.isPresent()) {
 			Long globalId = globalDomainOptional.get().getId();
 			try{
 				if(this.getMemberRoles(globalId, userId).isEmpty()){
 					this.addMemberRole(globalId, userId, ROLE_GUEST);
 				}
-			} catch(ObjectNotFoundException e){
+			} catch(ObjectNotFoundException e) {
 				throw new MissingElementException(e.getMessage());
 			}
 		}
 	}
 
-	private void removePreviousRoleInDomain(Domain domain, User user){
+	private void removePreviousRoleInDomain(Domain domain, User user) {
 		user.getRoles().stream()
 				.filter(value -> value.getDomain().getId().equals(domain.getId()))
 				.findAny()
@@ -322,7 +327,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public List<UserView> findUsersWithDomainAdminRole(String domain){
+	public List<UserView> findUsersWithDomainAdminRole(String domain) {
 		return this.userRoleRepository.findDomainMembers(domain).stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
 				.map(user -> modelMapper.map(user, UserView.class))

@@ -32,10 +32,10 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public Boolean existDomainGroup(String name, String codeName) {
-        if (this.domainGroupRepository.existsByName(name)) {
+        if (domainGroupRepository.existsByName(name)) {
             return true;
         }
-        return this.domainGroupRepository.existsByCodename(codeName);
+        return domainGroupRepository.existsByCodename(codeName);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     @Override
     public DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName) {
         if (domainGroupRepository.findByCodename(groupCodeName).isEmpty()) {
-            throw new MissingElementException("Domains group not found");
+            throw new MissingElementException("Domain group not found");
         }
         DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).get();
         domains.forEach( domain -> {
-            log.error("domain - "+ domain.toString());
-            if(!domainGroup.getDomains().contains(domain)) {
+            log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), groupCodeName);
+            if (!domainGroup.getDomains().contains(domain)) {
                 domainGroup.addDomain(domain);
             }
         });
@@ -70,8 +70,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupId) {
-        if (domainGroupRepository.findById(domainGroupId).isEmpty()){
-            throw new MissingElementException("Domains group not found");
+        if (domainGroupRepository.findById(domainGroupId).isEmpty()) {
+            throw new MissingElementException("Domain group not found");
         }
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).get();
         domainGroup.removeDomain(domain);
@@ -101,7 +101,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     @Override
     public DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view) {
         if (!domainGroupId.equals(view.getId())) {
-            throw new ProcessingException("Wrong domain group Id");
+            throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
         if (domainGroupRepository.findById(domainGroupId).isPresent()) {
             DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
@@ -123,7 +123,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     protected void checkParam(DomainGroupView domainGroup) {
         if (StringUtils.isEmpty(domainGroup.getName()) || StringUtils.isEmpty(domainGroup.getCodename())) {
-            throw new IllegalArgumentException("Name is null");
+            throw new IllegalArgumentException("Name is null or empty");
         }
     }
 
