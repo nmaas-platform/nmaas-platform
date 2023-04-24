@@ -63,7 +63,10 @@ public class DomainController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public List<DomainView> getDomains() {
 		return domainService.getDomains().stream()
-				.map(d -> modelMapper.map(d, DomainView.class))
+				.map(d -> {
+					d = domainService.getAppStatesFromGroups(d);
+					return modelMapper.map(d, DomainView.class);
+				})
 				.collect(Collectors.toList());
 	}
 
@@ -74,6 +77,11 @@ public class DomainController extends AppBaseController {
 		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		// if is system admin or domain admin than return full view
+
+		// check groups status of app
+		domain = this.domainService.getAppStatesFromGroups(domain);
+
+
 		if(user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
 				|| user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
 				&& role.getRole() == Role.ROLE_DOMAIN_ADMIN)) {

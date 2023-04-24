@@ -53,4 +53,6 @@ public interface DomainService {
 
 	List<UserView> findUsersWithDomainAdminRole(String domain);
 
+	Domain getAppStatesFromGroups(Domain domain);
+
 }

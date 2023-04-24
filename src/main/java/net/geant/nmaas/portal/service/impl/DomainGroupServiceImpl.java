@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -106,6 +107,13 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
             domainGroup.setCodename(view.getCodename());
             domainGroup.setName(view.getName());
+            for(ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()){
+                for(ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
+                    if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
+                        appState.applyChangedState(appStateView);
+                    }
+                }
+            }
             this.domainGroupRepository.save(domainGroup);
             return modelMapper.map(domainGroup, DomainGroupView.class);
         } else {
