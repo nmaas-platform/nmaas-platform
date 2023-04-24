@@ -1,12 +1,18 @@
 package net.geant.nmaas.portal.api.market;
 
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.DomainBase;
+import net.geant.nmaas.portal.api.domain.DomainBaseWithState;
+import net.geant.nmaas.portal.api.domain.DomainGroupView;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.DomainView;
+import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -15,10 +21,9 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,25 +46,17 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
-
-	private final DomainService domainService;
-
-	private final ApplicationEventPublisher eventPublisher;
-
-	private final ApplicationStatePerDomainService applicationStatePerDomainService;
 
 	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
 	private static final String DOMAIN_NOT_FOUND = "Domain not found.";
 
-	@Autowired
-	public DomainController(UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher, ApplicationStatePerDomainService applicationStatePerDomainService){
-		this.userService = userService;
-		this.domainService = domainService;
-		this.eventPublisher = eventPublisher;
-		this.applicationStatePerDomainService = applicationStatePerDomainService;
-	}
+	private final DomainService domainService;
+	private final DomainGroupService domainGroupService;
+	private final ApplicationEventPublisher eventPublisher;
+	private final ApplicationStatePerDomainService applicationStatePerDomainService;
 
 	@GetMapping
 	@Transactional(readOnly = true)
@@ -203,6 +200,69 @@ public class DomainController extends AppBaseController {
 		if(!domainService.removeDomain(domainId)) {
 			throw new MissingElementException("Unable to delete domain");
 		}
+	}
+
+	@PostMapping("/group")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public Id createDomainGroup(@RequestBody(required=true) DomainGroupView domainGroup) {
+		if(domainGroupService.existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
+			throw new ProcessingException("Domain group already exists.");
+		}
+		try {
+			DomainGroupView domainGroupView = domainGroupService.createDomainGroup(domainGroup);
+
+			return new Id(domainGroupView.getId());
+		} catch (InvalidDomainException e) {
+			throw new ProcessingException(e.getMessage());
+		}
+	}
+
+	@DeleteMapping("/group/{domainGroupId}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public void deleteDomainGroup(@PathVariable Long domainGroupId){
+		this.domainGroupService.deleteDomainGroup(domainGroupId);
+	}
+
+	@GetMapping("/group")
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public List<DomainGroupView> getDomainGroups() {
+		return domainGroupService.getAllDomainGroups();
+	}
+
+	@GetMapping("/group/{domainGroupId}")
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public DomainGroupView getDomainGroup(@PathVariable Long domainGroupId) {
+		return domainGroupService.getDomainGroup(domainGroupId);
+	}
+
+	@PostMapping("/group/{domainGroupCodeName}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public DomainGroupView addDomainsToGroup(@PathVariable String domainGroupCodeName,
+											 @RequestBody List<Long> domainIds) {
+		return domainGroupService.addDomainsToGroup(
+				domainService.getDomains().stream().filter(d -> domainIds.contains(d.getId())).collect(Collectors.toList()),
+				domainGroupCodeName);
+	}
+
+	@PatchMapping("/group/{domainGroupId}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public DomainGroupView deleteDomainFromGroup(@PathVariable Long domainGroupId, @RequestBody Long domainId) {
+		return domainGroupService.deleteDomainFromGroup(
+				domainService.findDomain(domainId).orElseThrow(() -> new IllegalArgumentException(String.format("Domain with id %s doesn't exist", domainId))),
+				domainGroupId);
+	}
+
+	@PutMapping("/group/{domainGroupId}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public Id updateDomainGroup(@PathVariable Long domainGroupId, @RequestBody DomainGroupView domainGroupView) {
+		 return new Id(domainGroupService.updateDomainGroup(domainGroupId, domainGroupView).getId());
 	}
 
 }

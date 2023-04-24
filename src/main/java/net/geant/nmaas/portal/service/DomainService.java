@@ -52,4 +52,5 @@ public interface DomainService {
 	Set<Domain> getUserDomains(Long userId);
 
 	List<UserView> findUsersWithDomainAdminRole(String domain);
+
 }

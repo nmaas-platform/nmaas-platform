@@ -53,6 +53,14 @@ public class Domain implements Serializable {
 	@ElementCollection(fetch = FetchType.LAZY)
 	private List<ApplicationStatePerDomain> applicationStatePerDomain = new ArrayList<>();
 
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+	@JoinTable(
+			name = "domains_groups",
+			joinColumns = { @JoinColumn(name = "domain_id") },
+			inverseJoinColumns = { @JoinColumn(name = "group_id") }
+	)
+	private List<DomainGroup> groups = new ArrayList<>();
+
 	public Domain(String name, String codename) {
 		super();
 		this.name = name;
@@ -88,6 +96,11 @@ public class Domain implements Serializable {
 				.map(ApplicationBase::getId).collect(Collectors.toList()).contains(appState.getApplicationBase().getId())){
 			this.applicationStatePerDomain.add(appState);
 		}
+	}
+
+	public void addGroup(DomainGroup group) {
+		this.groups.add(group);
+		group.getDomains().add(this);
 	}
 
 }
