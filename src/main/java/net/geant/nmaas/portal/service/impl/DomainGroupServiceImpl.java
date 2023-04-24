@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -25,6 +27,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     private final DomainGroupRepository domainGroupRepository;
     private final ModelMapper modelMapper;
 
+    private final ApplicationStatePerDomainService applicationStatePerDomainService;
+
     @Override
     public Boolean existDomainGroup(String name, String codeName) {
         if (this.domainGroupRepository.existsByName(name)) {
@@ -41,7 +45,9 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new IllegalArgumentException("Domain group with given name or codename already exists");
         }
         //creation
+        List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomain();
         DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
+        domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = this.domainGroupRepository.save(domainGroupEntity);
         return modelMapper.map(domainGroupEntity, DomainGroupView.class);
     }

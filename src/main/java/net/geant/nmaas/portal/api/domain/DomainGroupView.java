@@ -25,4 +25,7 @@ public class DomainGroupView {
     private String codename;
 
     private List<DomainBase> domains;
+
+    private List<ApplicationStatePerDomainView> applicationStatePerDomain;
+
 }

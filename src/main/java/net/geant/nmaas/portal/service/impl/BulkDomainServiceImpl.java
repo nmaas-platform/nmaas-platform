@@ -78,7 +78,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         groupNames.forEach( groupName -> {
             log.info("Adding domain {} to group {}", domain.getName(), groupName);
             if (!domainGroupService.existDomainGroup(groupName, groupName)) {
-                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null));
+                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null));
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
             } else {
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);

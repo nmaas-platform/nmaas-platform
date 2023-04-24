@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="domain_group", uniqueConstraints = {
@@ -46,6 +48,9 @@ public class DomainGroup implements Serializable {
     @Column(nullable = false, unique = true)
     private String codename;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<ApplicationStatePerDomain> applicationStatePerDomain = new ArrayList<>();
+
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
     private List<Domain> domains = new ArrayList<>();
 
@@ -57,6 +62,21 @@ public class DomainGroup implements Serializable {
     public void removeDomain(Domain domain) {
         this.domains.remove(domain);
         domain.getGroups().remove(this);
+    }
+
+    public void addApplicationState(ApplicationBase applicationBase){
+        this.addApplicationState(applicationBase, true);
+    }
+
+    public void addApplicationState(ApplicationBase applicationBase, boolean enabled){
+        this.addApplicationState(new ApplicationStatePerDomain(applicationBase, enabled));
+    }
+
+    public void addApplicationState(ApplicationStatePerDomain appState) {
+        if(!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
+                .map(ApplicationBase::getId).collect(Collectors.toList()).contains(appState.getApplicationBase().getId())){
+            this.applicationStatePerDomain.add(appState);
+        }
     }
 
 }
