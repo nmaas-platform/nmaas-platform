@@ -349,6 +349,7 @@ public class DomainServiceImpl implements DomainService {
 				domain.getApplicationStatePerDomain().stream().map( app -> {
 					List<ApplicationStatePerDomain> tmp = result.stream().filter( val -> val.getApplicationBase().equals(app.getApplicationBase())).collect(Collectors.toList());
 					app.setEnabled(tmp.stream().anyMatch(ApplicationStatePerDomain::isEnabled));
+					//TODO add validation before get
 					app.setPvStorageSizeLimit(tmp.stream().map(ApplicationStatePerDomain::getPvStorageSizeLimit).max(Long::compareTo).get());
 					return app;
 				}).collect(Collectors.toList())

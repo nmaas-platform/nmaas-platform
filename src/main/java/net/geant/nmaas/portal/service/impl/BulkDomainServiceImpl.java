@@ -102,9 +102,10 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             result.add(new CsvProcessorResponse(true, false, details, BulkType.USER));
         } else {//if not create user
             User user = this.userService.registerBulk(csvDomain, this.domainService.getGlobalDomain().get(), domain);
+            log.error(user.toString());
             Map<String, String> details = new HashMap<>();
-            details.put("userId", user.getId().toString());
             details.put("userName", user.getUsername());
+            details.put("userId", user.getId().toString());
             details.put("email", user.getEmail());
             result.add(new CsvProcessorResponse(true, true, details, BulkType.USER));
         }
