@@ -44,4 +44,17 @@ public class BulkControllerTest {
         ResponseEntity<List<CsvProcessorResponse>> response = bulkController.uploadDomains(file);
         assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    void shouldHandleMissingFileApp() {
+        ResponseEntity<List<CsvProcessorResponse>> response = bulkController.uploadApplications(null);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldHandleBadExtensionApp() {
+        MultipartFile file = new MockMultipartFile("test.txt", "test.txt", "text/plain", "invalid content".getBytes());
+        ResponseEntity<List<CsvProcessorResponse>> response = bulkController.uploadApplications(file);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    }
 }
