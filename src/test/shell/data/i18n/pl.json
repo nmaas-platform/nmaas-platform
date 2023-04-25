@@ -1070,9 +1070,26 @@
     "INVALID_JSON": "Niewłaściwy format JSON. Zmiany wprowadzone do zawartości formularza nie zostaną zapisane."
   },
   "BULK" : {
-    "DOMAIN" : {
+    "LIST": {
+      "ID": "Id",
+      "CREATOR": "Twórca",
+      "CREATION_DATE": "Data utworzenia",
+      "STATE": "Stan",
+      "DETAILS": "Detale",
+      "CONTINUE" : "Kontynuuj",
+      "CREATED" : "Utworzenie obiektu",
+      "SUCCESSFUL" : "Powodzenie operacji"
+    },
+    "DOMAIN": {
+      "INFO": "Additional information will be added later",
+      "SUMMARY": "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER": "Tworzenie wielu domen"
+    },
+    "APP": {
       "INFO" : "Additional information will be added later",
-      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments"
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Uruchamianie wielu aplikacji"
     }
   }
+
 }
