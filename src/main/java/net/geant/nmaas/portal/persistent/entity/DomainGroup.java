@@ -63,7 +63,7 @@ public class DomainGroup implements Serializable {
         domain.getGroups().remove(this);
     }
 
-    public void addApplicationState(ApplicationBase applicationBase){
+    public void addApplicationState(ApplicationBase applicationBase) {
         this.addApplicationState(applicationBase, true);
     }
 
@@ -72,8 +72,8 @@ public class DomainGroup implements Serializable {
     }
 
     public void addApplicationState(ApplicationStatePerDomain appState) {
-        if(!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
-                .map(ApplicationBase::getId).collect(Collectors.toList()).contains(appState.getApplicationBase().getId())){
+        if (!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
+                .map(ApplicationBase::getId).collect(Collectors.toList()).contains(appState.getApplicationBase().getId())) {
             this.applicationStatePerDomain.add(appState);
         }
     }

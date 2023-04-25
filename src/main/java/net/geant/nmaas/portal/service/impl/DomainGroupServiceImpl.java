@@ -26,9 +26,8 @@ import java.util.stream.Collectors;
 public class DomainGroupServiceImpl implements DomainGroupService {
 
     private final DomainGroupRepository domainGroupRepository;
-    private final ModelMapper modelMapper;
-
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
+    private final ModelMapper modelMapper;
 
     @Override
     public Boolean existDomainGroup(String name, String codeName) {
@@ -49,7 +48,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomain();
         DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
-        domainGroupEntity = this.domainGroupRepository.save(domainGroupEntity);
+        domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
         return modelMapper.map(domainGroupEntity, DomainGroupView.class);
     }
 
@@ -107,14 +106,14 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
             domainGroup.setCodename(view.getCodename());
             domainGroup.setName(view.getName());
-            for(ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()){
-                for(ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
+            for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
+                for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
                     if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
                         appState.applyChangedState(appStateView);
                     }
                 }
             }
-            this.domainGroupRepository.save(domainGroup);
+            domainGroupRepository.save(domainGroup);
             return modelMapper.map(domainGroup, DomainGroupView.class);
         } else {
             throw new MissingElementException("Domain group not found");

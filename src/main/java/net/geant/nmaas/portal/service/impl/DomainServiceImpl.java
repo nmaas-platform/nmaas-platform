@@ -337,24 +337,25 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public Domain getAppStatesFromGroups(Domain domain) {
 		log.error("fire group filter for domain " + domain.getName());
-		if(domain.getGroups().isEmpty()) return domain;
-		else {
-			List<ApplicationStatePerDomain> result = new ArrayList<>();
-			domain.getGroups().forEach( group -> {
-				result.addAll(group.getApplicationStatePerDomain());
-			});
-
-			domain.setApplicationStatePerDomain( domain.getApplicationStatePerDomain().stream().map( app -> {
-				List<ApplicationStatePerDomain> tmp = result.stream().filter( val -> val.getApplicationBase().equals(app.getApplicationBase())).collect(Collectors.toList());
-				app.setEnabled(tmp.stream().anyMatch(ApplicationStatePerDomain::isEnabled));
-				app.setPvStorageSizeLimit(tmp.stream().map(ApplicationStatePerDomain::getPvStorageSizeLimit).max(Long::compareTo).get());
-				return app;
-			}).collect(Collectors.toList()));
-
+		if (domain.getGroups().isEmpty()) {
 			return domain;
 		}
-	}
+		List<ApplicationStatePerDomain> result = new ArrayList<>();
+		domain.getGroups().forEach( group -> {
+			result.addAll(group.getApplicationStatePerDomain());
+		});
 
+		domain.setApplicationStatePerDomain(
+				domain.getApplicationStatePerDomain().stream().map( app -> {
+					List<ApplicationStatePerDomain> tmp = result.stream().filter( val -> val.getApplicationBase().equals(app.getApplicationBase())).collect(Collectors.toList());
+					app.setEnabled(tmp.stream().anyMatch(ApplicationStatePerDomain::isEnabled));
+					app.setPvStorageSizeLimit(tmp.stream().map(ApplicationStatePerDomain::getPvStorageSizeLimit).max(Long::compareTo).get());
+					return app;
+				}).collect(Collectors.toList())
+		);
+
+		return domain;
+	}
 
 	protected void checkParam(String name) {
 		if (StringUtils.isEmpty(name)) {
