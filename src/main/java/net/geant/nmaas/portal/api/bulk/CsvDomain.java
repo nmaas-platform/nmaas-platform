@@ -1,11 +1,13 @@
 package net.geant.nmaas.portal.api.bulk;
 
 import com.opencsv.bean.CsvBindByName;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class CsvDomain extends CsvBean {
 
     @CsvBindByName(column = "domain")

@@ -53,6 +53,12 @@ public class DomainGroup implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
     private List<Domain> domains = new ArrayList<>();
 
+    public DomainGroup(String name, String codename) {
+        super();
+        this.name = name;
+        this.codename = name;
+    }
+
     public void addDomain(Domain domain) {
         this.domains.add(domain);
         domain.getGroups().add(this);

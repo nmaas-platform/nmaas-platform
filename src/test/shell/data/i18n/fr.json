@@ -1069,9 +1069,25 @@
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   },
   "BULK" : {
+    "LIST" : {
+      "ID" : "Id",
+      "CREATOR" : "Creator",
+      "CREATION_DATE" : "Creation date",
+      "STATE" : "State",
+      "DETAILS" : "Details",
+      "CONTINUE" : "Continue",
+      "CREATED" : "Created",
+      "SUCCESSFUL" : "Successful"
+    },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
-      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments"
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Bulk domain deployments"
+    },
+    "APP": {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Bulk application deployments"
     }
   }
 }
