@@ -75,6 +75,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
 
     private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain) {
         List<String> groupNames = Arrays.stream(csvDomain.getDomainGroups().replaceAll("\\s", "").split(",")).collect(Collectors.toList());
+        groupNames.removeAll(Arrays.asList("", null));
         groupNames.forEach( groupName -> {
             log.info("Adding domain {} to group {}", domain.getName(), groupName);
             if (!domainGroupService.existDomainGroup(groupName, groupName)) {
