@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -331,6 +332,29 @@ public class DomainServiceImpl implements DomainService {
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
 				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public Domain getAppStatesFromGroups(Domain domain) {
+		log.error("fire group filter for domain " + domain.getName());
+		if (domain.getGroups().isEmpty()) {
+			return domain;
+		}
+		List<ApplicationStatePerDomain> result = new ArrayList<>();
+		domain.getGroups().forEach( group -> {
+			result.addAll(group.getApplicationStatePerDomain());
+		});
+
+		domain.setApplicationStatePerDomain(
+				domain.getApplicationStatePerDomain().stream().map( app -> {
+					List<ApplicationStatePerDomain> tmp = result.stream().filter( val -> val.getApplicationBase().equals(app.getApplicationBase())).collect(Collectors.toList());
+					app.setEnabled(tmp.stream().anyMatch(ApplicationStatePerDomain::isEnabled));
+					app.setPvStorageSizeLimit(tmp.stream().map(ApplicationStatePerDomain::getPvStorageSizeLimit).max(Long::compareTo).get());
+					return app;
+				}).collect(Collectors.toList())
+		);
+
+		return domain;
 	}
 
 	protected void checkParam(String name) {
