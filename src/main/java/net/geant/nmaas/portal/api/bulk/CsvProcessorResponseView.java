@@ -11,14 +11,12 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CsvProcessorResponse {
+public class CsvProcessorResponseView {
 
     private Boolean successful;
 
     private Boolean created;
 
     private Map<String, String> details;
-
-    private BulkType type;
 
 }

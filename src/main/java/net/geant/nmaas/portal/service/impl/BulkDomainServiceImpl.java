@@ -3,12 +3,11 @@ package net.geant.nmaas.portal.service.impl;
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.bulk.CsvProcessorResponse;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.persistent.entity.CsvProcessorResponse;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -43,6 +42,8 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         List<CsvProcessorResponse> result = new ArrayList<>();
         List<CsvDomain> csvDomains = input.stream().map(d -> (CsvDomain) d).collect(Collectors.toList());
 
+
+
         csvDomains.forEach( csvDomain -> {
             Domain domain = createDomainIfNotExists(result, csvDomain);
             // domain groups creation and domain assignment
@@ -62,13 +63,13 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
-            result.add(new CsvProcessorResponse(true, false, details, BulkType.DOMAIN));
+//            result.add(new CsvProcessorResponse(true, false, details));
         } else {
             domain = domainService.createDomain(new DomainRequest(csvDomain.getDomainName(), csvDomain.getDomainName(), true));
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
-            result.add(new CsvProcessorResponse(true, true, details, BulkType.DOMAIN));
+//            result.add(new CsvProcessorResponse(true, true, details));
         }
         return domain;
     }
@@ -98,14 +99,14 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             details.put("userId", user.getId().toString());
             details.put("userName", user.getUsername());
             details.put("email", user.getEmail());
-            result.add(new CsvProcessorResponse(true, false, details, BulkType.USER));
+//            result.add(new CsvProcessorResponse(true, false, details));
         } else {//if not create user
             User user = this.userService.registerBulk(csvDomain, this.domainService.getGlobalDomain().get(), domain);
             Map<String, String> details = new HashMap<>();
             details.put("userId", user.getId().toString());
             details.put("userName", user.getUsername());
             details.put("email", user.getEmail());
-            result.add(new CsvProcessorResponse(true, true, details, BulkType.USER));
+//            result.add(new CsvProcessorResponse(true, true, details));
         }
     }
     
