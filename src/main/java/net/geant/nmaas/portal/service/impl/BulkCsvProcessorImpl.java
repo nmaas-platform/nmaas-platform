@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -33,9 +34,7 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
      */
     public List<CsvBean> process(MultipartFile file, Class givenClass) throws IOException {
 
-        // CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
-        // TODO add dynamic path
-        File tempFile = new File("src/tmp.csv");
+        File tempFile = File.createTempFile("Nmaas", "-csv");
         try (OutputStream os = new FileOutputStream(tempFile)) {
             os.write(file.getBytes());
         }

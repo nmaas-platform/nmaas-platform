@@ -2,12 +2,15 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -23,14 +26,15 @@ import java.util.stream.Collectors;
 public class DomainGroupServiceImpl implements DomainGroupService {
 
     private final DomainGroupRepository domainGroupRepository;
+    private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ModelMapper modelMapper;
 
     @Override
     public Boolean existDomainGroup(String name, String codeName) {
-        if (this.domainGroupRepository.existsByName(name)) {
+        if (domainGroupRepository.existsByName(name)) {
             return true;
         }
-        return this.domainGroupRepository.existsByCodename(codeName);
+        return domainGroupRepository.existsByCodename(codeName);
     }
 
     @Override
@@ -41,20 +45,22 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new IllegalArgumentException("Domain group with given name or codename already exists");
         }
         //creation
+        List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomain();
         DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
-        domainGroupEntity = this.domainGroupRepository.save(domainGroupEntity);
+        domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
+        domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
         return modelMapper.map(domainGroupEntity, DomainGroupView.class);
     }
 
     @Override
     public DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName) {
         if (domainGroupRepository.findByCodename(groupCodeName).isEmpty()) {
-            throw new MissingElementException("Domains group not found");
+            throw new MissingElementException("Domain group not found");
         }
         DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).get();
         domains.forEach( domain -> {
-            log.error("domain - "+ domain.toString());
-            if(!domainGroup.getDomains().contains(domain)) {
+            log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), groupCodeName);
+            if (!domainGroup.getDomains().contains(domain)) {
                 domainGroup.addDomain(domain);
             }
         });
@@ -63,8 +69,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupId) {
-        if (domainGroupRepository.findById(domainGroupId).isEmpty()){
-            throw new MissingElementException("Domains group not found");
+        if (domainGroupRepository.findById(domainGroupId).isEmpty()) {
+            throw new MissingElementException("Domain group not found");
         }
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).get();
         domainGroup.removeDomain(domain);
@@ -94,13 +100,20 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     @Override
     public DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view) {
         if (!domainGroupId.equals(view.getId())) {
-            throw new ProcessingException("Wrong domain group Id");
+            throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
         if (domainGroupRepository.findById(domainGroupId).isPresent()) {
             DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
             domainGroup.setCodename(view.getCodename());
             domainGroup.setName(view.getName());
-            this.domainGroupRepository.save(domainGroup);
+            for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
+                for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
+                    if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
+                        appState.applyChangedState(appStateView);
+                    }
+                }
+            }
+            domainGroupRepository.save(domainGroup);
             return modelMapper.map(domainGroup, DomainGroupView.class);
         } else {
             throw new MissingElementException("Domain group not found");
@@ -109,7 +122,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     protected void checkParam(DomainGroupView domainGroup) {
         if (StringUtils.isEmpty(domainGroup.getName()) || StringUtils.isEmpty(domainGroup.getCodename())) {
-            throw new IllegalArgumentException("Name is null");
+            throw new IllegalArgumentException("Name is null or empty");
         }
     }
 

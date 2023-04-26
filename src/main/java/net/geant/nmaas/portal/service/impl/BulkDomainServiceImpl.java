@@ -76,10 +76,11 @@ public class BulkDomainServiceImpl implements BulkDomainService {
 
     private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain) {
         List<String> groupNames = Arrays.stream(csvDomain.getDomainGroups().replaceAll("\\s", "").split(",")).collect(Collectors.toList());
+        groupNames.removeAll(Arrays.asList("", null));
         groupNames.forEach( groupName -> {
             log.info("Adding domain {} to group {}", domain.getName(), groupName);
             if (!domainGroupService.existDomainGroup(groupName, groupName)) {
-                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null));
+                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null));
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
             } else {
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
@@ -103,8 +104,8 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         } else {//if not create user
             User user = this.userService.registerBulk(csvDomain, this.domainService.getGlobalDomain().get(), domain);
             Map<String, String> details = new HashMap<>();
-            details.put("userId", user.getId().toString());
             details.put("userName", user.getUsername());
+            details.put("userId", user.getId().toString());
             details.put("email", user.getEmail());
 //            result.add(new CsvProcessorResponse(true, true, details));
         }

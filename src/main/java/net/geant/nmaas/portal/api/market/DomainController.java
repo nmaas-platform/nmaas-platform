@@ -63,7 +63,10 @@ public class DomainController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public List<DomainView> getDomains() {
 		return domainService.getDomains().stream()
-				.map(d -> modelMapper.map(d, DomainView.class))
+				.map(d -> {
+					d = domainService.getAppStatesFromGroups(d);
+					return modelMapper.map(d, DomainView.class);
+				})
 				.collect(Collectors.toList());
 	}
 
@@ -74,7 +77,11 @@ public class DomainController extends AppBaseController {
 		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		// if is system admin or domain admin than return full view
-		if(user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
+
+		// check groups status of app
+		domain = domainService.getAppStatesFromGroups(domain);
+
+		if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
 				|| user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
 				&& role.getRole() == Role.ROLE_DOMAIN_ADMIN)) {
 
@@ -99,7 +106,7 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) {
-		if(domainService.existsDomain(domainRequest.getName())) {
+		if (domainService.existsDomain(domainRequest.getName())) {
 			throw new ProcessingException("Domain already exists.");
 		}
 
@@ -107,7 +114,7 @@ public class DomainController extends AppBaseController {
 			Domain domain = domainService.createDomain(domainRequest);
 			this.domainService.storeDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 
-			if(domain.getDomainDcnDetails().isDcnConfigured()){
+			if (domain.getDomainDcnDetails().isDcnConfigured()) {
 				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
 				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
 			}
@@ -136,7 +143,7 @@ public class DomainController extends AppBaseController {
 		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
 		domain.getDomainDcnDetails().getCustomerNetworks().clear();
 		domainUpdate.getDomainDcnDetails().getCustomerNetworks().stream().map(CustomerNetwork::of).forEach(net -> domain.getDomainDcnDetails().getCustomerNetworks().add(net));
-		if(StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())){
+		if (StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())) {
 			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		} else if(!domainUpdate.getDomainTechDetails().getExternalServiceDomain().equalsIgnoreCase(domain.getDomainTechDetails().getExternalServiceDomain())){
 			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
@@ -206,12 +213,11 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id createDomainGroup(@RequestBody(required=true) DomainGroupView domainGroup) {
-		if(domainGroupService.existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
+		if (domainGroupService.existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
 			throw new ProcessingException("Domain group already exists.");
 		}
 		try {
 			DomainGroupView domainGroupView = domainGroupService.createDomainGroup(domainGroup);
-
 			return new Id(domainGroupView.getId());
 		} catch (InvalidDomainException e) {
 			throw new ProcessingException(e.getMessage());
