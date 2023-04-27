@@ -41,7 +41,7 @@ public class BulkController {
 
     @PostMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<BulkDeploymentView> uploadDomains(@NotNull Principal principal,
+    public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal,
                                                             @RequestParam("file") MultipartFile file) {
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
@@ -50,7 +50,7 @@ public class BulkController {
                         .orElseThrow();
                 UserViewMinimal userMinimal = modelMapper.map(user, UserViewMinimal.class);
                 List<CsvProcessorResponseView> csvResponses = bulkDomainService.handleBulkCreation(csvDomains);
-                return ResponseEntity.ok(modelMapper.map(bulkHistoryService.createEntityFromCsvResponse(csvResponses, userMinimal), BulkDeploymentView.class));
+                return ResponseEntity.ok(modelMapper.map(bulkHistoryService.createEntityFromCsvResponse(csvResponses, userMinimal), BulkDeploymentViewS.class));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
