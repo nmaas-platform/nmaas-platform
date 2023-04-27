@@ -1078,7 +1078,11 @@
       "DETAILS": "Detale",
       "CONTINUE" : "Kontynuuj",
       "CREATED" : "Utworzenie obiektu",
-      "SUCCESSFUL" : "Powodzenie operacji"
+      "SUCCESSFUL" : "Powodzenie operacji",
+      "TYPE" : "Typ obiektu",
+      "MOVE_DOMAIN" : "Przejdź do domeny",
+      "MOVE_USER" : "Przejdź do użytkownika",
+      "MOVE_APP" : "Przejdź do aplikacji"
     },
     "DOMAIN": {
       "INFO": "Additional information will be added later",
