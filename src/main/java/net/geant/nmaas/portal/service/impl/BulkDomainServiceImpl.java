@@ -31,7 +31,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final DomainGroupService domainGroupService;
     private final UserService userService;
 
-    public List<CsvProcessorResponseView>  handleBulkCreation(List<CsvBean> input) {
+    public List<CsvProcessorResponseView> handleBulkCreation(List<CsvBean> input) {
         log.info("Handling bulk domain creation with {} entries", input.size());
 
         List<CsvProcessorResponseView> result = new ArrayList<>();
