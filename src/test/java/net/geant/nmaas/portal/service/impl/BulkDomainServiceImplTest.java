@@ -3,10 +3,9 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.bulk.CsvProcessorResponse;
+import net.geant.nmaas.portal.api.bulk.CsvProcessorResponseView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
-import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
@@ -14,12 +13,10 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import java.util.List;
 import java.util.Optional;
 
-import static javax.management.Query.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,7 +53,7 @@ public class BulkDomainServiceImplTest {
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
         when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
-        List<CsvProcessorResponse> responses = bulkDomainService.handleBulkCreation(input);
+        List<CsvProcessorResponseView> responses = bulkDomainService.handleBulkCreation(input);
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), false);
         assertEquals(responses.get(0).getSuccessful(), true);
@@ -84,7 +81,7 @@ public class BulkDomainServiceImplTest {
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
         when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
-        List<CsvProcessorResponse> responses = bulkDomainService.handleBulkCreation(input);
+        List<CsvProcessorResponseView> responses = bulkDomainService.handleBulkCreation(input);
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), true);
         assertEquals(responses.get(0).getSuccessful(), true);
@@ -111,7 +108,7 @@ public class BulkDomainServiceImplTest {
         user.setId(10L);
         user.setEmail("user1@test.com");
         when(userService.registerBulk(any(), any(), any())).thenReturn(user);
-        List<CsvProcessorResponse> responses = bulkDomainService.handleBulkCreation(input);
+        List<CsvProcessorResponseView> responses = bulkDomainService.handleBulkCreation(input);
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), true);
         assertEquals(responses.get(0).getSuccessful(), true);
