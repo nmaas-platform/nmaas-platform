@@ -2,16 +2,16 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkType;
-import net.geant.nmaas.portal.api.bulk.CsvProcessorResponseView;
 import net.geant.nmaas.portal.api.domain.BulkDeploymentView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
-import net.geant.nmaas.portal.persistent.entity.CsvProcessorResponse;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
+import net.geant.nmaas.portal.service.BulkDeploymentEntryService;
 import net.geant.nmaas.portal.service.BulkHistoryService;
-import net.geant.nmaas.portal.service.CsvProcessorResponseService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -25,17 +25,17 @@ import java.util.stream.Collectors;
 public class BulkHistoryServiceImpl implements BulkHistoryService {
 
     private final BulkDeploymentRepository repository;
+    private final BulkDeploymentEntryService bulkDeploymentEntryService;
     private final ModelMapper modelMapper;
-    private final CsvProcessorResponseService csvResponseService;
 
     @Override
-    public BulkDeployment createEntityFromCsvResponse(List<CsvProcessorResponseView> csvResponses, UserViewMinimal creator) {
+    public BulkDeployment createFromEntries(List<BulkDeploymentEntryView> entries, UserViewMinimal creator) {
         BulkDeploymentView bulkDeploymentView = createBulkDeployment(creator);
-        List<CsvProcessorResponse> csvResponseEntities = csvResponseService.saveAll(csvResponses.stream()
-                .map(response -> modelMapper.map(response, CsvProcessorResponse.class))
+        List<BulkDeploymentEntry> bulkDeploymentEntries = bulkDeploymentEntryService.saveAll(entries.stream()
+                .map(response -> modelMapper.map(response, BulkDeploymentEntry.class))
                 .collect(Collectors.toList()));
         BulkDeployment entity = modelMapper.map(bulkDeploymentView, BulkDeployment.class);
-        entity.setCsvResponses(csvResponseEntities);
+        entity.setEntries(bulkDeploymentEntries);
         return repository.save(entity);
     }
 
@@ -44,7 +44,6 @@ public class BulkHistoryServiceImpl implements BulkHistoryService {
         BulkDeployment entity = modelMapper.map(bulk, BulkDeployment.class);
         return repository.save(entity);
     }
-
 
     @Override
     public List<BulkDeployment> findAll() {
@@ -63,9 +62,7 @@ public class BulkHistoryServiceImpl implements BulkHistoryService {
         return repository.findById(id).orElseThrow(RuntimeException::new);
     }
 
-    private BulkDeploymentView createBulkDeployment(
-            UserViewMinimal creator
-    ) {
+    private BulkDeploymentView createBulkDeployment(UserViewMinimal creator) {
         BulkDeploymentView bulkDeploymentView = new BulkDeploymentView();
         bulkDeploymentView.setType(BulkType.DOMAIN);
         bulkDeploymentView.setState(BulkDeploymentState.FINISHED);
@@ -73,4 +70,5 @@ public class BulkHistoryServiceImpl implements BulkHistoryService {
         bulkDeploymentView.setCreationDate(OffsetDateTime.now());
         return bulkDeploymentView;
     }
+
 }

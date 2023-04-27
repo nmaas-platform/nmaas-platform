@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.bulk.CsvProcessorResponseView;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -53,7 +53,7 @@ public class BulkDomainServiceImplTest {
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
         when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
-        List<CsvProcessorResponseView> responses = bulkDomainService.handleBulkCreation(input);
+        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), false);
         assertEquals(responses.get(0).getSuccessful(), true);
@@ -81,7 +81,7 @@ public class BulkDomainServiceImplTest {
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
         when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
-        List<CsvProcessorResponseView> responses = bulkDomainService.handleBulkCreation(input);
+        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), true);
         assertEquals(responses.get(0).getSuccessful(), true);
@@ -108,7 +108,7 @@ public class BulkDomainServiceImplTest {
         user.setId(10L);
         user.setEmail("user1@test.com");
         when(userService.registerBulk(any(), any(), any())).thenReturn(user);
-        List<CsvProcessorResponseView> responses = bulkDomainService.handleBulkCreation(input);
+        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), true);
         assertEquals(responses.get(0).getSuccessful(), true);

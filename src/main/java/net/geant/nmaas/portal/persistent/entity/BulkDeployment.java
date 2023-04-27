@@ -31,6 +31,6 @@ public class BulkDeployment {
     private BulkType type;
 
     @OneToMany
-    private List<CsvProcessorResponse> csvResponses;
+    private List<BulkDeploymentEntry> entries;
 
 }

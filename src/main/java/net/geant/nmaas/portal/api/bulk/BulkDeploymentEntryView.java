@@ -11,7 +11,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CsvProcessorResponseView {
+public class BulkDeploymentEntryView {
 
     private Boolean successful;
 

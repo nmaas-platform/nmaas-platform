@@ -20,4 +20,5 @@ public class BulkDeploymentViewS {
     private OffsetDateTime creationDate;
     private BulkDeploymentState state;
     private BulkType type;
+
 }

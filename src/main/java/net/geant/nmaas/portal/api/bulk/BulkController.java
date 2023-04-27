@@ -46,11 +46,14 @@ public class BulkController {
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
                 List<CsvBean> csvDomains = bulkCsvProcessor.process(file, CsvDomain.class);
-                User user = userService.findByUsername(principal.getName())
-                        .orElseThrow();
-                UserViewMinimal userMinimal = modelMapper.map(user, UserViewMinimal.class);
-                List<CsvProcessorResponseView> csvResponses = bulkDomainService.handleBulkCreation(csvDomains);
-                return ResponseEntity.ok(modelMapper.map(bulkHistoryService.createEntityFromCsvResponse(csvResponses, userMinimal), BulkDeploymentViewS.class));
+                User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
+                UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+                List<BulkDeploymentEntryView> entries = bulkDomainService.handleBulkCreation(csvDomains);
+                return ResponseEntity.ok(
+                        modelMapper.map(
+                                bulkHistoryService.createFromEntries(entries, user),
+                                BulkDeploymentViewS.class)
+                );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -62,7 +65,7 @@ public class BulkController {
 
     @PostMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<CsvProcessorResponseView>> uploadApplications(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<List<BulkDeploymentEntryView>> uploadApplications(@RequestParam("file") MultipartFile file) {
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
                 List<CsvBean> csvApplications = bulkCsvProcessor.process(file, CsvApplication.class);
@@ -107,7 +110,6 @@ public class BulkController {
                 })
                 .collect(Collectors.toList()));
     }
-
 
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
