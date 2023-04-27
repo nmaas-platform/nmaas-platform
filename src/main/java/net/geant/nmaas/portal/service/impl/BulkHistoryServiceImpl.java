@@ -68,7 +68,7 @@ public class BulkHistoryServiceImpl implements BulkHistoryService {
     ) {
         BulkDeploymentView bulkDeploymentView = new BulkDeploymentView();
         bulkDeploymentView.setType(BulkType.DOMAIN);
-        bulkDeploymentView.setState(BulkDeploymentState.PROCESSING);
+        bulkDeploymentView.setState(BulkDeploymentState.FINISHED);
         bulkDeploymentView.setCreator(creator);
         bulkDeploymentView.setCreationDate(OffsetDateTime.now());
         return bulkDeploymentView;

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.api.bulk.BulkType;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -27,6 +28,8 @@ public class CsvProcessorResponse {
     private Long id;
     private Boolean successful;
     private Boolean created;
+    private BulkType type;
+
     @ElementCollection
     @CollectionTable(name = "details",
             joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")})

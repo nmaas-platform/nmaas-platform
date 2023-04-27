@@ -1078,6 +1078,10 @@
       "CONTINUE" : "Continue",
       "CREATED" : "Created",
       "SUCCESSFUL" : "Successful",
+      "TYPE" : "Object type",
+      "MOVE_DOMAIN" : "Domain information",
+      "MOVE_USER" : "User information",
+      "MOVE_APP" : "Application information"
     },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",

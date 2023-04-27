@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.bulk.CsvProcessorResponseView;
@@ -58,13 +59,13 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
-            result.add(new CsvProcessorResponseView(true, false, details));
+            result.add(new CsvProcessorResponseView(true, false, details, BulkType.DOMAIN));
         } else {
             domain = domainService.createDomain(new DomainRequest(csvDomain.getDomainName(), csvDomain.getDomainName(), true));
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
-            result.add(new CsvProcessorResponseView(true, true, details));
+            result.add(new CsvProcessorResponseView(true, true, details, BulkType.DOMAIN));
         }
         return domain;
     }
@@ -95,14 +96,14 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             details.put("userId", user.getId().toString());
             details.put("userName", user.getUsername());
             details.put("email", user.getEmail());
-            result.add(new CsvProcessorResponseView(true, false, details));
+            result.add(new CsvProcessorResponseView(true, false, details, BulkType.USER));
         } else {//if not create user
             User user = this.userService.registerBulk(csvDomain, this.domainService.getGlobalDomain().get(), domain);
             Map<String, String> details = new HashMap<>();
             details.put("userName", user.getUsername());
             details.put("userId", user.getId().toString());
             details.put("email", user.getEmail());
-            result.add(new CsvProcessorResponseView(true, true, details));
+            result.add(new CsvProcessorResponseView(true, true, details, BulkType.USER));
         }
     }
     

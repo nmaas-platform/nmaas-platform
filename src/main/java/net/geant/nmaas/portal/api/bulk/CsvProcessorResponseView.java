@@ -19,4 +19,6 @@ public class CsvProcessorResponseView {
 
     private Map<String, String> details;
 
+    private BulkType type;
+
 }

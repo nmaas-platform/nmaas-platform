@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.api.bulk;
 
+import net.geant.nmaas.portal.api.domain.BulkDeploymentView;
+import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
 import net.geant.nmaas.portal.service.BulkDomainService;
@@ -46,7 +48,7 @@ public class BulkControllerTest {
     void shouldHandleIncorrectFileFormatForBulkDomainRequest() {
         MultipartFile file = new MockMultipartFile("test.txt", "test.txt", "text/plain", "invalid content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(false);
-        ResponseEntity<List<CsvProcessorResponseView>> response = bulkController.uploadDomains(principalMock, file);
+        ResponseEntity<BulkDeploymentView> response = bulkController.uploadDomains(principalMock, file);
         verifyNoInteractions(bulkDomainService);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -61,7 +63,7 @@ public class BulkControllerTest {
         when(principalMock.getName()).thenReturn("user");
         when(userService.findByUsername("user")).thenReturn(Optional.of(user));
 
-        ResponseEntity<List<CsvProcessorResponseView>> response = bulkController.uploadDomains(principalMock, file);
+        ResponseEntity<BulkDeploymentView> response = bulkController.uploadDomains(principalMock, file);
         verify(bulkCsvProcessor).process(any(), any());
         verify(bulkDomainService).handleBulkCreation(any());
         assertEquals(HttpStatus.OK, response.getStatusCode());
