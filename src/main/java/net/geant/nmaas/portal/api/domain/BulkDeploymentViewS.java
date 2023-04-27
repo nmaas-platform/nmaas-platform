@@ -17,7 +17,7 @@ public class BulkDeploymentViewS {
 
     private Long id;
     private UserViewMinimal creator;
-    private OffsetDateTime date;
+    private OffsetDateTime creationDate;
     private BulkDeploymentState state;
     private BulkType type;
 }

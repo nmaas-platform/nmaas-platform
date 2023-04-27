@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.persistent.entity.CsvProcessorResponse;
+import net.geant.nmaas.portal.api.bulk.CsvProcessorResponseView;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ import java.util.List;
 @Setter
 public class BulkDeploymentView extends BulkDeploymentViewS {
 
-    private List<CsvProcessorResponse> processorResponses;
+    private List<CsvProcessorResponseView> csvResponses;
 }

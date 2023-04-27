@@ -8,7 +8,7 @@ import lombok.Setter;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity
@@ -22,8 +22,8 @@ public class BulkDeployment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long creatorId;
-    private Date startDate;
-    private BulkDeploymentState status;
+    private OffsetDateTime creationDate;
+    private BulkDeploymentState state;
     private BulkType type;
 
     @OneToMany

@@ -6,21 +6,15 @@ import net.geant.nmaas.portal.api.domain.BulkDeploymentView;
 import net.geant.nmaas.portal.api.domain.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
-import net.geant.nmaas.portal.persistent.entity.CsvProcessorResponse;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
-import net.geant.nmaas.portal.service.BulkHistoryService;
 import net.geant.nmaas.portal.service.BulkDomainService;
+import net.geant.nmaas.portal.service.BulkHistoryService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
@@ -50,7 +44,7 @@ public class BulkController {
                 User user = userService.findByUsername(principal.getName())
                         .orElseThrow();
                 UserViewMinimal userMinimal = modelMapper.map(user, UserViewMinimal.class);
-                List<CsvProcessorResponse> csvResponses = bulkDomainService.handleBulkCreation(csvDomains);
+                List<CsvProcessorResponseView> csvResponses = bulkDomainService.handleBulkCreation(csvDomains);
                 bulkHistoryService.createEntityFromCsvResponse(csvResponses, userMinimal);
                 return ResponseEntity.ok(csvResponses.stream()
                         .map(response -> modelMapper.map(response, CsvProcessorResponseView.class))
@@ -93,7 +87,10 @@ public class BulkController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
-        return ResponseEntity.ok(modelMapper.map(bulkHistoryService.find(id), BulkDeploymentView.class));
+        BulkDeployment bulk = bulkHistoryService.find(id);
+        BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
+        bulkView.setCreator(getUserView(bulk.getId()));
+        return ResponseEntity.ok(bulkView);
     }
 
     @GetMapping("/domains")
@@ -101,10 +98,13 @@ public class BulkController {
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords() {
         return ResponseEntity.ok(bulkHistoryService.findAllByType(BulkType.DOMAIN)
                 .stream()
-                .map(bulk -> modelMapper.map(bulk, BulkDeploymentViewS.class))
+                .map(bulk -> {
+                    BulkDeploymentViewS bulkView = modelMapper.map(bulk, BulkDeploymentViewS.class);
+                    bulkView.setCreator(getUserView(bulk.getCreatorId()));
+                    return bulkView;
+                })
                 .collect(Collectors.toList()));
     }
-
 
 
     @GetMapping("/apps")
@@ -114,6 +114,12 @@ public class BulkController {
                 .stream()
                 .map(bulk -> modelMapper.map(bulk, BulkDeploymentViewS.class))
                 .collect(Collectors.toList()));
+    }
+
+    private UserViewMinimal getUserView(Long id) {
+        User user = userService.findById(id)
+                .orElseThrow();
+        return modelMapper.map(user, UserViewMinimal.class);
     }
 
 }

@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.bulk.CsvProcessorResponseView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.persistent.entity.CsvProcessorResponse;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -17,12 +17,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
@@ -36,10 +31,10 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final DomainGroupService domainGroupService;
     private final UserService userService;
 
-    public List<CsvProcessorResponse> handleBulkCreation(List<CsvBean> input) {
+    public List<CsvProcessorResponseView>  handleBulkCreation(List<CsvBean> input) {
         log.info("Handling bulk domain creation with {} entries", input.size());
 
-        List<CsvProcessorResponse> result = new ArrayList<>();
+        List<CsvProcessorResponseView> result = new ArrayList<>();
         List<CsvDomain> csvDomains = input.stream().map(d -> (CsvDomain) d).collect(Collectors.toList());
 
 
@@ -54,7 +49,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         return result;
     }
 
-    private Domain createDomainIfNotExists(List<CsvProcessorResponse> result, CsvDomain csvDomain) {
+    private Domain createDomainIfNotExists(List<CsvProcessorResponseView> result, CsvDomain csvDomain) {
         log.info("Processing csvDomain {}", csvDomain.getDomainName());
         Domain domain = null;
         Optional<Domain> domainFromDb = domainService.findDomain(csvDomain.getDomainName());
@@ -63,13 +58,13 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
-//            result.add(new CsvProcessorResponse(true, false, details));
+            result.add(new CsvProcessorResponseView(true, false, details));
         } else {
             domain = domainService.createDomain(new DomainRequest(csvDomain.getDomainName(), csvDomain.getDomainName(), true));
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
-//            result.add(new CsvProcessorResponse(true, true, details));
+            result.add(new CsvProcessorResponseView(true, true, details));
         }
         return domain;
     }
@@ -88,7 +83,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         });
     }
 
-    private void createUserAccountIfNotExists(List<CsvProcessorResponse> result, CsvDomain csvDomain, Domain domain) {
+    private void createUserAccountIfNotExists(List<CsvProcessorResponseView> result, CsvDomain csvDomain, Domain domain) {
         if (userService.existsByUsername(csvDomain.getAdminUserName()) || this.userService.existsByEmail(csvDomain.getEmail())) {
             log.info("User {} with email {} already exists in database", csvDomain.getAdminUserName(), csvDomain.getEmail());
             User user = userService.findByUsername(csvDomain.getAdminUserName()).orElseGet(() -> this.userService.findByEmail(csvDomain.getEmail()));
@@ -100,14 +95,14 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             details.put("userId", user.getId().toString());
             details.put("userName", user.getUsername());
             details.put("email", user.getEmail());
-//            result.add(new CsvProcessorResponse(true, false, details));
+            result.add(new CsvProcessorResponseView(true, false, details));
         } else {//if not create user
             User user = this.userService.registerBulk(csvDomain, this.domainService.getGlobalDomain().get(), domain);
             Map<String, String> details = new HashMap<>();
             details.put("userName", user.getUsername());
             details.put("userId", user.getId().toString());
             details.put("email", user.getEmail());
-//            result.add(new CsvProcessorResponse(true, true, details));
+            result.add(new CsvProcessorResponseView(true, true, details));
         }
     }
     
