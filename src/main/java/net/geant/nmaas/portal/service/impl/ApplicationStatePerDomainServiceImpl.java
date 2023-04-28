@@ -48,6 +48,18 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
     }
 
     @Override
+    public List<ApplicationStatePerDomain> generateListOfDefaultApplicationStatesPerDomainDisabled() {
+        return applicationBaseRepository.findAll().stream()
+                .map(appBase -> {
+                    ApplicationStatePerDomain appState = new ApplicationStatePerDomain(appBase);
+                    appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);
+                    appState.setEnabled(false);
+                    return appState;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ApplicationStatePerDomain> updateDomain(DomainView changes) {
         Domain updatedDomain = domainRepository.getReferenceById(changes.getId());
         List<ApplicationStatePerDomain> list = updatedDomain.getApplicationStatePerDomain();
