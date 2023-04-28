@@ -48,6 +48,7 @@ public class BulkController {
                 List<CsvBean> csvDomains = bulkCsvProcessor.process(file, CsvDomain.class);
                 User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+                log.warn("User creator - " +user.getFirstname() + " " + user.getLastname() + " " + user.getId() + " " + user.getUsername() );
                 List<BulkDeploymentEntryView> entries = bulkDomainService.handleBulkCreation(csvDomains);
                 return ResponseEntity.ok(
                         modelMapper.map(
@@ -94,7 +95,7 @@ public class BulkController {
     public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
         BulkDeployment bulk = bulkHistoryService.find(id);
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
-        bulkView.setCreator(getUserView(bulk.getId()));
+        bulkView.setCreator(getUserView(bulk.getCreatorId()));
         return ResponseEntity.ok(bulkView);
     }
 
