@@ -94,7 +94,7 @@ public class BulkController {
     public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
         BulkDeployment bulk = bulkHistoryService.find(id);
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
-        bulkView.setCreator(getUserView(bulk.getId()));
+        bulkView.setCreator(getUserView(bulk.getCreatorId()));
         return ResponseEntity.ok(bulkView);
     }
 

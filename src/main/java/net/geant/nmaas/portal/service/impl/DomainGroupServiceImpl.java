@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,7 +47,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new IllegalArgumentException("Domain group with given name or codename already exists");
         }
         //creation
-        List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomain();
+        List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomainDisabled();
         DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
@@ -79,7 +81,20 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public void deleteDomainGroup(Long domainGroupId) {
-        this.domainGroupRepository.deleteById(domainGroupId);
+        if(domainGroupRepository.findById(domainGroupId).isPresent()) {
+            DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).get();
+            List<Domain> toRemove = new ArrayList<>(domainGroup.getDomains());
+            Iterator<Domain> iterator = toRemove.iterator();
+            while (iterator.hasNext()) {
+                Domain domain = iterator.next();
+                deleteDomainFromGroup(domain, domainGroupId);
+                iterator.remove();
+            }
+            domainGroupRepository.deleteById(domainGroupId);
+        }
+        else {
+            throw new MissingElementException("Domain group not found");
+        }
     }
 
     @Override

@@ -65,7 +65,7 @@ public class BulkHistoryServiceImpl implements BulkHistoryService {
     private BulkDeploymentView createBulkDeployment(UserViewMinimal creator) {
         BulkDeploymentView bulkDeploymentView = new BulkDeploymentView();
         bulkDeploymentView.setType(BulkType.DOMAIN);
-        bulkDeploymentView.setState(BulkDeploymentState.FINISHED);
+        bulkDeploymentView.setState(BulkDeploymentState.COMPLETED);
         bulkDeploymentView.setCreator(creator);
         bulkDeploymentView.setCreationDate(OffsetDateTime.now());
         return bulkDeploymentView;
