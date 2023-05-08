@@ -1,0 +1,119 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "CTFd",
+        "license": "Apache License 2.0",
+        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+        "wwwUrl": "https://ctfd.io/",
+        "sourceUrl": "https://github.com/CTFd/CTFd",
+        "issuesUrl": "https://github.com/CTFd/CTFd/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-CTFD",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "CTFs as you need them",
+                "fullDescription": "CTFd is a Capture The Flag framework focusing on ease of use and customizability. It comes with everything you need to run a CTF and it's easy to customize with plugins and themes."
+            },
+            {
+                "language": "de",
+                "briefDescription": "CTFs as you need them",
+                "fullDescription": "CTFd is a Capture The Flag framework focusing on ease of use and customizability. It comes with everything you need to run a CTF and it's easy to customize with plugins and themes."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "CTFs as you need them",
+                "fullDescription": "CTFd is a Capture The Flag framework focusing on ease of use and customizability. It comes with everything you need to run a CTF and it's easy to customize with plugins and themes."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "CTFs as you need them",
+                "fullDescription": "CTFd is a Capture The Flag framework focusing on ease of use and customizability. It comes with everything you need to run a CTF and it's easy to customize with plugins and themes."
+            }
+        ],
+        "tags": [
+            "CTF",
+            "virtual lab",
+            "competition",
+            "capture the flag"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "CTFd",
+        "version": "3.5.1",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "type": "htmlelement",
+                                        "input": false,
+                                        "content": "<p>No configuration parameters are required.</p><p>Click <i>Apply configuration</i> button to proceed</p>",
+                                        "tab": 0
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    }, {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-ctfd",
+                    "version": "1.0.1"
+                },
+                "mainDeploymentName": "nmaas-ctfd"
+            },
+            "deployParameters": {},
+            "globalDeployParameters": {
+                "mariadb.auth.rootPassword": "%RANDOM_STRING_12%",
+                "mariadb.auth.password": "%RANDOM_STRING_12%",
+                "ingress.hosts[0].paths[0].path": "/",
+                "ingress.hosts[0].paths[0].pathType": "ImplementationSpecific"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "CTFd",
+                    "tag": "ctfd",
+                    "deployParameters": {
+                        "INGRESS_CLASS": "ingress.className,ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+                        "INGRESS_HOSTS": "ingress.hosts[0].host=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "ingress.tls[0].hosts[0]=%VALUE%"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}

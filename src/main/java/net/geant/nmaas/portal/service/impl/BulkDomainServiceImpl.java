@@ -1,14 +1,13 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableSet;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
@@ -20,6 +19,8 @@ import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,15 +34,27 @@ import java.util.stream.Collectors;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class BulkDomainServiceImpl implements BulkDomainService {
 
     private final DomainService domainService;
     private final DomainGroupService domainGroupService;
     private final UserService userService;
-
     private final KubernetesClusterIngressManager kubernetesClusterIngressManager;
+
+    private final int domainCodenameMaxLength;
+
+    public BulkDomainServiceImpl(DomainService domainService,
+                                 DomainGroupService domainGroupService,
+                                 UserService userService,
+                                 KubernetesClusterIngressManager kubernetesClusterIngressManager,
+                                 @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength) {
+        this.domainService = domainService;
+        this.domainGroupService = domainGroupService;
+        this.userService = userService;
+        this.kubernetesClusterIngressManager = kubernetesClusterIngressManager;
+        this.domainCodenameMaxLength = domainCodenameMaxLength;
+    }
 
     public List<BulkDeploymentEntryView> handleBulkCreation(List<CsvBean> input) {
         log.info("Handling bulk domain creation with {} entries", input.size());
@@ -68,38 +81,62 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
+            details.put("domainCodename", domain.getCodename());
             result.add(new BulkDeploymentEntryView(true, false, details, BulkType.DOMAIN));
         } else {
-//            domain = domainService.createDomain(new DomainRequest(csvDomain.getDomainName(), csvDomain.getDomainName(), true));
-            DomainTechDetailsView domainTechDetailsView;
-            if(kubernetesClusterIngressManager.getIngressPerDomain()) {
-                domainTechDetailsView = DomainTechDetailsView.builder()
-                        .domainCodename(csvDomain.getDomainName())
-                        .externalServiceDomain(csvDomain.getDomainName()+"."+ kubernetesClusterIngressManager.getExternalServiceDomain())
-                        .kubernetesIngressClass(csvDomain.getDomainName())
-                        .kubernetesNamespace(csvDomain.getDomainName())
-                        .build();
+            String domainCodename = prepareCorrectAndUniqueDomainCodename(csvDomain.getDomainName());
+            DomainTechDetailsView domainTechDetails = DomainTechDetailsView.builder()
+                    .domainCodename(domainCodename)
+                    .kubernetesNamespace(domainCodename)
+                    .externalServiceDomain(domainCodename + "." + kubernetesClusterIngressManager.getExternalServiceDomain())
+                    .build();
+            if (kubernetesClusterIngressManager.getIngressPerDomain()) {
+                domainTechDetails.setKubernetesIngressClass(domainCodename);
             } else {
-                domainTechDetailsView = DomainTechDetailsView.builder()
-                        .domainCodename(csvDomain.getDomainName())
-                        .kubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass())
-                        .kubernetesNamespace(csvDomain.getDomainName())
-                        .build();
+                domainTechDetails.setKubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass());
             }
-            domain = domainService.createDomain(DomainRequest.builder()
-                    .codename(csvDomain.getDomainName())
-                    .name(csvDomain.getDomainName())
-                    .active(true)
-                    .domainDcnDetails(new DomainDcnDetailsView(null,csvDomain.getDomainName(), true, DcnDeploymentType.MANUAL, null ))
-                    .domainTechDetails(domainTechDetailsView)
-                    .build());
+            DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, csvDomain.getDomainName(), true, DcnDeploymentType.MANUAL, null);
+            domain = domainService.createDomain(
+                    DomainRequest.builder()
+                            .codename(domainCodename)
+                            .name(csvDomain.getDomainName())
+                            .active(true)
+                            .domainDcnDetails(domainDcnDetails)
+                            .domainTechDetails(domainTechDetails)
+                            .build());
 
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
             details.put("domainName", domain.getName());
+            details.put("domainCodename", domain.getCodename());
             result.add(new BulkDeploymentEntryView(true, true, details, BulkType.DOMAIN));
         }
         return domain;
+    }
+
+    private String prepareCorrectAndUniqueDomainCodename(String domainName) {
+        String codeName = domainName.trim().toLowerCase().replaceAll("[^a-z0-9]", "");
+        codeName = StringUtils.substring(codeName, 0, domainCodenameMaxLength);
+        if (domainService.existsDomainByCodename(codeName)) {
+            boolean unique = false;
+            int index = 1;
+            while (!unique && index < 10) {
+                codeName = StringUtils.substring(codeName, 0, -1);
+                codeName = codeName + index;
+                unique = !domainService.existsDomainByCodename(codeName);
+                index++;
+            }
+            if (!unique) {
+                index = 10;
+                while (!unique && index < 100) {
+                    codeName = StringUtils.substring(codeName, 0, -2);
+                    codeName = codeName + index;
+                    unique = !domainService.existsDomainByCodename(codeName);
+                    index++;
+                }
+            }
+        }
+        return codeName;
     }
 
     private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain) {

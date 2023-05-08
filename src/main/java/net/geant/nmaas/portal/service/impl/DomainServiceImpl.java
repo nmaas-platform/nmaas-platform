@@ -137,9 +137,11 @@ public class DomainServiceImpl implements DomainService {
 		checkParam(request.getName());
 		checkParam(request.getCodename());
 
-		if (!Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isPresent()) {
-			throw new ProcessingException("Domain codename is not valid");
+		if (Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isEmpty()) {
+			throw new ProcessingException(String.format("Domain codename is not valid (%s / %s)", request.getName(), request.getCodename()));
 		}
+		checkArgument(!existsDomainByCodename(request.getCodename()),
+				String.format("Domain codename is not unique (provided value: %s)", request.getCodename()));
 		if (StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())) {
 			request.getDomainTechDetails().setKubernetesNamespace(request.getCodename());
 		}
@@ -150,7 +152,9 @@ public class DomainServiceImpl implements DomainService {
 			request.getDomainTechDetails().setKubernetesIngressClass(request.getCodename());
 		}
 		if (StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())) {
-			checkArgument(!domainTechDetailsRepository.existsByExternalServiceDomain(request.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
+			checkArgument(!domainTechDetailsRepository.existsByExternalServiceDomain(
+					request.getDomainTechDetails().getExternalServiceDomain()),
+					String.format("External service domain is not unique (provided value: %s)", request.getDomainTechDetails().getExternalServiceDomain()));
 		}
 		this.setCodenames(request);
 		try {
