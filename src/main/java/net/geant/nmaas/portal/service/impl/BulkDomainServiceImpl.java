@@ -3,6 +3,8 @@ package net.geant.nmaas.portal.service.impl;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkType;
@@ -95,7 +97,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             } else {
                 domainTechDetails.setKubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass());
             }
-            DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, csvDomain.getDomainName(), true, DcnDeploymentType.MANUAL, null);
+            DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, domainCodename, true, DcnDeploymentType.MANUAL, null);
             domain = domainService.createDomain(
                     DomainRequest.builder()
                             .codename(domainCodename)
@@ -104,6 +106,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                             .domainDcnDetails(domainDcnDetails)
                             .domainTechDetails(domainTechDetails)
                             .build());
+            domainService.storeDcnInfo(prepareDcnInfo(domain));
 
             Map<String, String> details = new HashMap<>();
             details.put("domainId", domain.getId().toString());
@@ -137,6 +140,15 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             }
         }
         return codeName;
+    }
+
+    private DcnInfo prepareDcnInfo(Domain domain) {
+        DcnInfo dcnInfo = new DcnInfo();
+        dcnInfo.setDomain(domain.getCodename());
+        dcnInfo.setName(domain.getCodename() + "-" + System.nanoTime());
+        dcnInfo.setDcnDeploymentType(domain.getDomainDcnDetails().getDcnDeploymentType());
+        dcnInfo.setState(DcnDeploymentState.VERIFIED);
+        return dcnInfo;
     }
 
     private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain) {

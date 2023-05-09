@@ -42,18 +42,18 @@ public class BulkDomainServiceIntTest {
 
     @Test
     void shouldHandleBulkCreationOfDomainWithManyUniqueCodenames() {
-        CsvDomain csvDomain1 = new CsvDomain("Test.Domain#User154", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain2 = new CsvDomain("Test.Domain#User324", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain3 = new CsvDomain("Test.Domain#User453", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain4 = new CsvDomain("Test.Domain#User236", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain5 = new CsvDomain("Test.Domain#User753", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain6 = new CsvDomain("Test.Domain#User823", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain7 = new CsvDomain("Test.Domain#User156", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain8 = new CsvDomain("Test.Domain#User754", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain9 = new CsvDomain("Test.Domain#User865", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain10 = new CsvDomain("Test.Domain#User933", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain11 = new CsvDomain("Test.Domain#User944", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain12 = new CsvDomain("Test.Domain#User966", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain1 = new CsvDomain("Test2.Domain#User154", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain2 = new CsvDomain("Test2.Domain#User324", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain3 = new CsvDomain("Test2.Domain#User453", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain4 = new CsvDomain("Test2.Domain#User236", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain5 = new CsvDomain("Test2.Domain#User753", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain6 = new CsvDomain("Test2.Domain#User823", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain7 = new CsvDomain("Test2.Domain#User156", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain8 = new CsvDomain("Test2.Domain#User754", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain9 = new CsvDomain("Test2.Domain#User865", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain10 = new CsvDomain("Test2.Domain#User933", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain11 = new CsvDomain("Test2.Domain#User944", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain12 = new CsvDomain("Test2.Domain#User966", "user1", "user1@test.com", null, "group1");
         List<CsvBean> input =
                 List.of(csvDomain1, csvDomain2, csvDomain3, csvDomain4, csvDomain5, csvDomain6,
                         csvDomain7, csvDomain8, csvDomain9, csvDomain10, csvDomain11, csvDomain12);
@@ -61,18 +61,18 @@ public class BulkDomainServiceIntTest {
         List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
 
         assertEquals(24, responses.size());
-        assertEquals("testdomainus", responses.get(0).getDetails().get("domainCodename"));
-        assertEquals("testdomainu1", responses.get(2).getDetails().get("domainCodename"));
-        assertEquals("testdomainu2", responses.get(4).getDetails().get("domainCodename"));
-        assertEquals("testdomainu3", responses.get(6).getDetails().get("domainCodename"));
-        assertEquals("testdomainu4", responses.get(8).getDetails().get("domainCodename"));
-        assertEquals("testdomainu5", responses.get(10).getDetails().get("domainCodename"));
-        assertEquals("testdomainu6", responses.get(12).getDetails().get("domainCodename"));
-        assertEquals("testdomainu7", responses.get(14).getDetails().get("domainCodename"));
-        assertEquals("testdomainu8", responses.get(16).getDetails().get("domainCodename"));
-        assertEquals("testdomainu9", responses.get(18).getDetails().get("domainCodename"));
-        assertEquals("testdomain10", responses.get(20).getDetails().get("domainCodename"));
-        assertEquals("testdomain11", responses.get(22).getDetails().get("domainCodename"));
+        assertEquals("test2domainu", responses.get(0).getDetails().get("domainCodename"));
+        assertEquals("test2domain1", responses.get(2).getDetails().get("domainCodename"));
+        assertEquals("test2domain2", responses.get(4).getDetails().get("domainCodename"));
+        assertEquals("test2domain3", responses.get(6).getDetails().get("domainCodename"));
+        assertEquals("test2domain4", responses.get(8).getDetails().get("domainCodename"));
+        assertEquals("test2domain5", responses.get(10).getDetails().get("domainCodename"));
+        assertEquals("test2domain6", responses.get(12).getDetails().get("domainCodename"));
+        assertEquals("test2domain7", responses.get(14).getDetails().get("domainCodename"));
+        assertEquals("test2domain8", responses.get(16).getDetails().get("domainCodename"));
+        assertEquals("test2domain9", responses.get(18).getDetails().get("domainCodename"));
+        assertEquals("test2domai10", responses.get(20).getDetails().get("domainCodename"));
+        assertEquals("test2domai11", responses.get(22).getDetails().get("domainCodename"));
     }
 
 }

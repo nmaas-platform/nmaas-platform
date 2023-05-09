@@ -186,6 +186,11 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
+	public void storeDcnInfo(DcnInfo dcnInfo) {
+		this.dcnRepositoryManager.storeDcnInfo(dcnInfo);
+	}
+
+	@Override
     public void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType) {
 	    this.dcnRepositoryManager.updateDcnDeploymentType(domain, dcnDeploymentType);
     }

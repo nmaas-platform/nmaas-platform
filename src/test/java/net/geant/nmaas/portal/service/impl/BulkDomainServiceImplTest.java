@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
+import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkType;
@@ -70,6 +72,7 @@ public class BulkDomainServiceImplTest {
         CsvDomain csvDomain = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1");
         List<CsvBean> input = List.of(csvDomain);
         Domain domain = new Domain(1L,"domain1", "domain1");
+        domain.setDomainDcnDetails(new DomainDcnDetails(10L, "domain1", true, DcnDeploymentType.MANUAL, null));
         Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
         when(domainService.findDomain(anyString())).thenReturn(Optional.empty());
         when(domainService.createDomain(any())).thenReturn(domain);
@@ -99,6 +102,7 @@ public class BulkDomainServiceImplTest {
         CsvDomain csvDomain = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1");
         List<CsvBean> input = List.of(csvDomain);
         Domain domain = new Domain(1L,"domain1", "domain1");
+        domain.setDomainDcnDetails(new DomainDcnDetails(10L, "domain1", true, DcnDeploymentType.MANUAL, null));
         Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
         when(domainService.findDomain(anyString())).thenReturn(Optional.empty());
         when(domainService.createDomain(any())).thenReturn(domain);
