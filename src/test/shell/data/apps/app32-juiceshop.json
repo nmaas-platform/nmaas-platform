@@ -83,7 +83,8 @@
                 "chart": {
                     "name": "nmaas-juiceshop",
                     "version": "1.0.0"
-                }
+                },
+                "mainDeploymentName": "nmaas-juiceshop"
             },
             "deployParameters": {},
             "globalDeployParameters": {
