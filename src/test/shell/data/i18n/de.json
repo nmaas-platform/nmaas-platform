@@ -6,6 +6,7 @@
     "MANAGEMENT": "Management",
     "DOMAINS": "Domains",
     "USERS": "Benutzer",
+    "DOMAIN_USERS" : "Domain Benutzer",
     "INVENTORY": "Externe Komponenten",
     "MONITOR": "Monitoring",
     "SETTINGS": "Einstellungen",
@@ -22,7 +23,9 @@
     "ADVANCED" : "Advanced",
     "BULK_DEPLOYMENT" : "Bulk application deployment",
     "BULK_DEPLOYMENT_DOMAIN" : "Bulk domain deployment",
-    "DOMAIN_GROUPS" : "Domain groups"
+    "DOMAIN_GROUPS" : "Domain groups",
+    "PAST_BULK_DOMAIN" : "Past domains bulk",
+    "PAST_BULK_APP" : "Past application bulk"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -1093,5 +1096,8 @@
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk application deployments"
     }
+  },
+  "SHARED" : {
+    "TOGGLE" : "Toggle all"
   }
 }

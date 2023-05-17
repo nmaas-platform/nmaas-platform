@@ -6,6 +6,7 @@
     "MANAGEMENT": "Zarządzanie",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
+    "DOMAIN_USERS" : "Użytkownicy w domenie",
     "INVENTORY": "Zewnętrzne komponenty",
     "MONITOR": "Monitoring",
     "SETTINGS": "Ustawienia",
@@ -22,7 +23,9 @@
     "ADVANCED" : "Zaawansowane",
     "BULK_DEPLOYMENT" : "Grupowe uruchomienie aplikacji",
     "BULK_DEPLOYMENT_DOMAIN" : "Grupowe utworzenie domen",
-    "DOMAIN_GROUPS" : "Grupy domen"
+    "DOMAIN_GROUPS" : "Grupy domen",
+    "PAST_BULK_DOMAIN" : "Historia grupowego utworzenia domen",
+    "PAST_BULK_APP" : "Historia grupowego uruchomienia aplikacji"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -1094,5 +1097,8 @@
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Uruchamianie wielu aplikacji"
     }
+  },
+  "SHARED" : {
+    "TOGGLE" : "Toggle all"
   }
 }
