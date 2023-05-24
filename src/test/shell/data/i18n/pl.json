@@ -215,6 +215,7 @@
     "DISABLE_BUTTON": "Dezaktywuj",
     "ENABLE_BUTTON": "Aktywuj",
     "ADD_BUTTON": "Dodaj",
+    "DELETE_BUTTON": "Usuń",
     "LIST" : {
       "GROUPS" : "Grupy domen",
       "GROUP" : "Grupa domen",
