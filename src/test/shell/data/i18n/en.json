@@ -686,7 +686,12 @@
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
     "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
     "ADD_NEW_VERSION_BUTTON": "Add new version",
-    "SEND_NOTIFICATION": "Send email notification to all users"
+    "SEND_NOTIFICATION": "Send email notification to all users",
+    "ADD_JSON" : "Add application using JSON file",
+    "ADD_JSON_INFO" : "Select JSON file in uploader",
+    "ADD_JSON_TEXTAREA" : "or copy json-text in textarea",
+    "SEND_JSON" : "Send JSON text",
+    "ADD_JSON_VERSION" : "Add application version using JSON file",
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",

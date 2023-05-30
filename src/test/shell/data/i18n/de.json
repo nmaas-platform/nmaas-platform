@@ -685,7 +685,11 @@
     "NO_REJECTED_APPS_MESSAGE": "Es gibt keine abgelehnten Anwendungen",
     "NO_NEW_APPS_MESSAGE": "Es gibt unbestätigten Anwendungen",
     "ADD_NEW_VERSION_BUTTON": "Add new version",
-    "SEND_NOTIFICATION": "Send email notification to all users"
+    "SEND_NOTIFICATION": "Send email notification to all users",
+    "ADD_JSON" : "Add application using JSON file",
+    "ADD_JSON_INFO" : "Select JSON file in uploader",
+    "ADD_JSON_TEXTAREA" : "or copy json-text in textarea",
+    "SEND_JSON" : "Send JSON text"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "Diese Seite ist nur eine Vorschau der eingereichten Anwendung",
