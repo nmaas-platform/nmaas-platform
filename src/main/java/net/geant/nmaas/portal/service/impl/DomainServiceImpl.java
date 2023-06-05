@@ -89,7 +89,10 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public List<Domain> getDomains() {
-		return domainRepository.findAll().stream().map(val -> {
+		return domainRepository.findAll()
+				.stream()
+				.filter(domain -> !domain.isDeleted())
+				.map(val -> {
 			// TODO remove this debug log when no longer required
 			log.debug("Domains groups - "+ val.getGroups().size());
 			val.getGroups().stream().map(group -> {
