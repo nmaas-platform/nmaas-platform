@@ -203,7 +203,13 @@ public class DomainController extends AppBaseController {
 	@DeleteMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public void deleteDomain(@PathVariable Long domainId) {		
+	public void deleteDomain(@PathVariable Long domainId, @RequestParam(required = false, name = "softDelete") Boolean softDelete) {
+		if (softDelete != null && softDelete) {
+			if(!domainService.softDeleteDomain(domainId)) {
+				throw new MissingElementException("Unable to soft delete domain");
+			}
+			return;
+		}
 		if(!domainService.removeDomain(domainId)) {
 			throw new MissingElementException("Unable to delete domain");
 		}

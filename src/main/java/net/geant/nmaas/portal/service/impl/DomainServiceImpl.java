@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +88,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public List<Domain> getDomains() {		
+	public List<Domain> getDomains() {
 		return domainRepository.findAll().stream().map(val -> {
 			// TODO remove this debug log when no longer required
 			log.debug("Domains groups - "+ val.getGroups().size());
@@ -98,9 +99,9 @@ public class DomainServiceImpl implements DomainService {
 			return val;
 		}).collect(Collectors.toList());
 	}
-	
+
 	@Override
-	public Page<Domain> getDomains(Pageable pageable) {		
+	public Page<Domain> getDomains(Pageable pageable) {
 		return domainRepository.findAll(pageable);
 	}
 
@@ -109,9 +110,9 @@ public class DomainServiceImpl implements DomainService {
 	public Domain createGlobalDomain() {
 		return getGlobalDomain().orElseGet(() -> createDomain(new DomainRequest(this.globalDomain, this.globalDomain.toLowerCase(), true)));
 	}
-	
+
 	@Override
-	public Optional<Domain> getGlobalDomain() {		
+	public Optional<Domain> getGlobalDomain() {
 		return domainRepository.findByName(globalDomain);
 	}
 
@@ -120,7 +121,7 @@ public class DomainServiceImpl implements DomainService {
 		checkParam(name);
 		return domainRepository.existsByName(name);
 	}
-	
+
 	@Override
 	public boolean existsDomainByCodename(String codename) {
 		checkParam(codename);
@@ -199,19 +200,19 @@ public class DomainServiceImpl implements DomainService {
 	public Optional<Domain> findDomain(String name) {
 		return domainRepository.findByName(name);
 	}
-	
+
 	@Override
-	public Optional<Domain> findDomain(Long id) {		
+	public Optional<Domain> findDomain(Long id) {
 		return domainRepository.findById(id);
 	}
-	
+
 	@Override
-	public Optional<Domain> findDomainByCodename(String codename) {		
+	public Optional<Domain> findDomainByCodename(String codename) {
 		return domainRepository.findByCodename(codename);
 	}
 
 	@Override
-	public void updateDomain(Domain domain) {		
+	public void updateDomain(Domain domain) {
 		checkParam(domain);
 		checkGlobal(domain);
 		if (domain.getId() == null) {
@@ -254,6 +255,28 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
+	public boolean softDeleteDomain(Long domainId) {
+		return findDomain(domainId).map(domain -> {
+			checkGlobal(domain);
+			domain.setDeleted(true);
+            domain.setName(domain.getName() + "_DELETED_" + OffsetDateTime.now());
+			removeAllUsersFromDomain(domain);
+            triggerApplicationsUninstall();
+			domainRepository.save(domain);
+			return true;
+		}).orElse(false);
+	}
+
+	@Override
+	public void removeAllUsersFromDomain(Domain domain) {
+		getMembers(domain.getId()).forEach(member -> removePreviousRoleInDomain(domain, member));
+	}
+
+	private void triggerApplicationsUninstall() {
+
+    }
+
+    @Override
 	public List<User> getMembers(Long id) {
 		return userRoleRepository.findDomainMembers(id);
 	}
@@ -261,7 +284,7 @@ public class DomainServiceImpl implements DomainService {
 	public void addMemberRole(Long domainId, Long userId, Role role) {
 		checkParams(domainId, userId);
 		checkParams(role);
-			
+
 		Domain domain = getDomain(domainId);
 		User user = getUser(userId);
 
@@ -376,25 +399,25 @@ public class DomainServiceImpl implements DomainService {
 			throw new IllegalArgumentException("Name is null");
 		}
 	}
-	
+
 	protected void checkParam(Domain domain) {
 		if (domain == null) {
 			throw new IllegalArgumentException("Domain is null");
 		}
 	}
-	
+
 	private void checkParams(Long id) {
 		if (id == null) {
 			throw new IllegalArgumentException("id is null");
 		}
 	}
-	
+
 	private void checkParams(Role role) {
 		if (role == null) {
 			throw new IllegalArgumentException("role is null");
 		}
 	}
-	
+
 	private void checkParams(Long domainId, Long userId) {
 		if (domainId == null) {
 			throw new IllegalArgumentException("domainId is null");
