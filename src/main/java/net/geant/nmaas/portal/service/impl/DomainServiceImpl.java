@@ -258,7 +258,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public boolean softDeleteDomain(Long domainId) {
+	public boolean softRemoveDomain(Long domainId) {
 		return findDomain(domainId).map(domain -> {
 			checkGlobal(domain);
 			domain.setDeleted(true);

@@ -341,7 +341,15 @@
     "APP_STATUS": "Application properties",
     "APP_NAME": "Nom de l'application",
     "APP_ENABLED": "Activé",
-    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "MODAL": {
+      "HEADER": "Domain removal confirmation",
+      "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
+      "BUTTONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel"
+      }
+    }
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",
