@@ -218,6 +218,7 @@
     "DISABLE_BUTTON": "Disable",
     "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Add",
+    "DELETE_BUTTON": "Remove",
     "LIST" : {
       "GROUPS" : "Domains groups",
       "GROUP" : "Domain group",
@@ -341,7 +342,15 @@
     "APP_STATUS": "Application properties",
     "APP_NAME": "Application name",
     "APP_ENABLED": "Enabled",
-    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "MODAL": {
+      "HEADER": "Domain removal confirmation",
+      "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
+      "BUTTONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel"
+      }
+    }
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",
@@ -691,7 +700,7 @@
     "ADD_JSON_INFO" : "Select JSON file in uploader",
     "ADD_JSON_TEXTAREA" : "or copy json-text in textarea",
     "SEND_JSON" : "Send JSON text",
-    "ADD_JSON_VERSION" : "Add application version using JSON file",
+    "ADD_JSON_VERSION" : "Add application version using JSON file"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",

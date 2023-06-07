@@ -218,6 +218,7 @@
     "DISABLE_BUTTON": "Deaktivieren",
     "ENABLE_BUTTON": "Aktivieren",
     "ADD_BUTTON": "Hinzufügen",
+    "DELETE_BUTTON": "Remove",
     "LIST" : {
       "GROUPS" : "Domains groups",
       "GROUP" : "Domain group",
@@ -340,7 +341,15 @@
     "APP_STATUS": "Application properties",
     "APP_NAME": "Anwendungsname",
     "APP_ENABLED": "Aktiviert",
-    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "MODAL": {
+      "HEADER": "Domain removal confirmation",
+      "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
+      "BUTTONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel"
+      }
+    }
   },
   "GIT_INFO": {
     "HEADER": "NMaaS Versionsinformation",

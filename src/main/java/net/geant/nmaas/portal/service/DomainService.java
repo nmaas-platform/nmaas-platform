@@ -57,4 +57,7 @@ public interface DomainService {
 
 	Domain getAppStatesFromGroups(Domain domain);
 
+	boolean softRemoveDomain(Long domainId);
+
+	void removeAllUsersFromDomain(Domain domain);
 }
