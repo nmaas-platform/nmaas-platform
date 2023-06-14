@@ -40,7 +40,7 @@
     "application": {
         "id": null,
         "name": "Uptime Kuma",
-        "version": "1.10.2",
+        "version": "1.21.3",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -59,6 +59,54 @@
                                         "tab": 0,
                                         "key": "additionalParameters",
                                         "components": [
+                                            {
+                                                "label": "Enable API",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "tab": 0,
+                                                "key": "api#enabled",
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Username for the Uptimekuma web user",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "tab": 0,
+                                                "key": "properties#uptimeKumaUsername",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "api#enabled",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Password for the Uptimekuma web user",
+                                                "type": "password",
+                                                "input": true,
+                                                "tab": 0,
+                                                "key": "properties#uptimeKumaPassword",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "api#enabled",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Password for the Uptimekuma API",
+                                                "type": "password",
+                                                "input": true,
+                                                "tab": 0,
+                                                "key": "api#properties#apiAdminPassword",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "api#enabled",
+                                                    "eq": true
+                                                }
+                                            },
                                             {
                                                 "label": "Allocated storage space",
                                                 "type": "textfield",
@@ -100,7 +148,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-uptimekuma",
-                    "version": "1.0.0"
+                    "version": "2.0.0"
                 }
             },
             "deployParameters": {
@@ -116,8 +164,17 @@
                     "name": "UptimeKuma",
                     "tag": "uptimekuma",
                     "deployParameters": {
-                        "INGRESS_HOSTS": "ingress.hosts",
+                        "INGRESS_HOSTS": "ingress.hosts,api.properties.uptimeKumaUrl=https://%VALUE%",
                         "INGRESS_CLASS": "ingress.class"
+                    }
+                },
+                {
+                    "type": "EXTERNAL",
+                    "name": "UptimeKuma API",
+                    "tag": "api",
+                    "deployParameters": {
+                        "INGRESS_HOSTS": "api.ingress.hosts",
+                        "INGRESS_CLASS": "api.ingress.class"
                     }
                 }
             ]
