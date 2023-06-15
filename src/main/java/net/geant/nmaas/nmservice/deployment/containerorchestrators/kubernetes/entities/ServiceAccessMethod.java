@@ -46,6 +46,10 @@ public class ServiceAccessMethod {
 
     private String protocol;
 
+    private String condition;
+
+    private Boolean enabled;
+
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<HelmChartIngressVariable, String> deployParameters;

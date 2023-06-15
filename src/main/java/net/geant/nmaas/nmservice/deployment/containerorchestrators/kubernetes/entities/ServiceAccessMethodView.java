@@ -23,8 +23,10 @@ public class ServiceAccessMethodView {
 
     private String url;
 
+    private String condition;
+
     public static ServiceAccessMethodView fromServiceAccessMethod(ServiceAccessMethod accessMethod) {
-        return new ServiceAccessMethodView(accessMethod.getType(), accessMethod.getName(), accessMethod.getProtocol(), accessMethod.getUrl());
+        return new ServiceAccessMethodView(accessMethod.getType(), accessMethod.getName(), accessMethod.getProtocol(), accessMethod.getUrl(), accessMethod.getCondition());
     }
 
 }
