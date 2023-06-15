@@ -1105,7 +1105,8 @@
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
-      "HEADER" : "Bulk domain deployments"
+      "HEADER" : "Bulk domain deployments",
+      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress..."
     },
     "APP": {
       "INFO" : "Additional information will be added later",

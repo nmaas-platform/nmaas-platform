@@ -1103,7 +1103,8 @@
     "DOMAIN": {
       "INFO": "Additional information will be added later",
       "SUMMARY": "Table present summary of your bulk domains and domain admin deployments",
-      "HEADER": "Tworzenie wielu domen"
+      "HEADER": "Tworzenie wielu domen",
+      "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen..."
     },
     "APP": {
       "INFO" : "Additional information will be added later",
