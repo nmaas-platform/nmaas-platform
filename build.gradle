@@ -97,7 +97,7 @@ dependencies {
 
     implementation('org.springdoc:springdoc-openapi-ui:1.6.15')
 
-    implementation('io.micrometer:micrometer-registry-prometheus:1.9.5')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.11.1')
 
     implementation('org.modelmapper:modelmapper:3.1.1')
     implementation('org.modelmapper.extensions:modelmapper-spring:3.1.1')
