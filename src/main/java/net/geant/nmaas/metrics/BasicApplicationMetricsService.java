@@ -2,13 +2,14 @@ package net.geant.nmaas.metrics;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class BasicApplicationMetricsService extends BaseMetricService {
 
     private static final String APPLICATION_COUNT_METRIC_NAME = "nmaas_applications_count";
@@ -25,14 +26,9 @@ public class BasicApplicationMetricsService extends BaseMetricService {
 
     private static final String BASE_UNIT_NUMBER = "number";
 
-    @Autowired
-    private ApplicationBaseRepository applicationBaseRepository;
-
-    @Autowired
-    private AppInstanceRepository appInstanceRepository;
-
-    @Autowired
-    private ApplicationSubscriptionRepository applicationSubscriptionRepository;
+    private final ApplicationBaseRepository applicationBaseRepository;
+    private final AppInstanceRepository appInstanceRepository;
+    private final ApplicationSubscriptionRepository applicationSubscriptionRepository;
 
     @Override
     public void registerMetric(MeterRegistry registry) {
