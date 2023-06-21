@@ -219,6 +219,8 @@
     "ENABLE_BUTTON": "Aktivieren",
     "ADD_BUTTON": "Hinzufügen",
     "DELETE_BUTTON": "Remove",
+    "ITEMS_PER_PAGE" : "Domains per page",
+    "NOTACTIVE": "Show not active domains",
     "LIST" : {
       "GROUPS" : "Domains groups",
       "GROUP" : "Domain group",

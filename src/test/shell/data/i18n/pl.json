@@ -219,6 +219,8 @@
     "ENABLE_BUTTON": "Aktywuj",
     "ADD_BUTTON": "Dodaj",
     "DELETE_BUTTON": "Usuń",
+    "ITEMS_PER_PAGE" : "Liczba domen na liście",
+    "NOTACTIVE": "Pokaż nieaktywne domeny",
     "LIST" : {
       "GROUPS" : "Grupy domen",
       "GROUP" : "Grupa domen",
