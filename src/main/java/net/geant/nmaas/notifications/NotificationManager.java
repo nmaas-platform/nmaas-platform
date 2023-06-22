@@ -18,6 +18,7 @@ import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
@@ -76,6 +77,9 @@ public class NotificationManager {
         this.getAllAddressees(mailAttributes);
 
         for (UserView user : mailAttributes.getAddressees()) {
+            if (!isUserValidForBroadcastMail(user)) {
+                continue;
+            }
             try {
                 LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
                 customizeMessage(mailContent, mailAttributes);
@@ -90,6 +94,14 @@ public class NotificationManager {
             }
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
+    }
+
+    private boolean isUserValidForBroadcastMail(UserView user) {
+        if (user.getEmail().isEmpty()) {
+            log.error(String.format("User: [%s] does not have an email address", user.getUsername()));
+            return false;
+        }
+        return user.getRoles().stream().noneMatch(roleView -> roleView.getRole().equals(Role.ROLE_INCOMPLETE));
     }
 
     private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage) {
