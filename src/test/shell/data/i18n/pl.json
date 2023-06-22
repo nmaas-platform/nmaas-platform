@@ -6,6 +6,7 @@
     "MANAGEMENT": "Zarządzanie",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
+    "DOMAIN_USERS" : "Użytkownicy w domenie",
     "INVENTORY": "Zewnętrzne komponenty",
     "MONITOR": "Monitoring",
     "SETTINGS": "Ustawienia",
@@ -18,7 +19,13 @@
     "LANGUAGES": "Języki",
     "NOTIFICATION": "Wyślij wiadomość",
     "ALL_USERS": "Do wszystkich",
-    "EXPIRED_TIME" : "Koniec sesji za"
+    "EXPIRED_TIME" : "Koniec sesji za",
+    "ADVANCED" : "Zaawansowane",
+    "BULK_DEPLOYMENT" : "Grupowe uruchomienie aplikacji",
+    "BULK_DEPLOYMENT_DOMAIN" : "Grupowe utworzenie domen",
+    "DOMAIN_GROUPS" : "Grupy domen",
+    "PAST_BULK_DOMAIN" : "Historia grupowego utworzenia domen",
+    "PAST_BULK_APP" : "Historia grupowego uruchomienia aplikacji"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -210,7 +217,19 @@
     "EDIT_BUTTON": "Edytuj",
     "DISABLE_BUTTON": "Dezaktywuj",
     "ENABLE_BUTTON": "Aktywuj",
-    "ADD_BUTTON": "Dodaj"
+    "ADD_BUTTON": "Dodaj",
+    "DELETE_BUTTON": "Usuń",
+    "ITEMS_PER_PAGE" : "Liczba domen na liście",
+    "NOTACTIVE": "Pokaż nieaktywne domeny",
+    "LIST" : {
+      "GROUPS" : "Grupy domen",
+      "GROUP" : "Grupa domen",
+      "DOMAIN_NAME" : "Nazwa domeny",
+      "DOMAIN_CODE_NAME" : "Skrót domeny",
+      "DELETE" : "Usuń domene z grupy",
+      "ADD" : "Dodaj domene do grupy",
+      "ADD_INFO" : "Wybierz domeny do dodania do grupy"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Instancje aplikacji",
@@ -324,7 +343,15 @@
     "APP_STATUS": "Właściwości aplikacji",
     "APP_NAME": "Nazwa aplikacji",
     "APP_ENABLED": "Dostępna",
-    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "MODAL": {
+      "HEADER": "Domain removal confirmation",
+      "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
+      "BUTTONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel"
+      }
+    }
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
@@ -669,7 +696,12 @@
     "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
     "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
     "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje",
-    "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników"
+    "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników",
+    "ADD_JSON" : "Dodanie aplikacji przez plik JSON",
+    "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
+    "ADD_JSON_TEXTAREA" : "lub skopiuj jego zawartość poniżej",
+    "SEND_JSON" : "Wyślij plik tekstowy jako JSON",
+    "JSON_ERROR" : "Błąd formatowania pliku JSON - sprawdź poprawność pliku"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -1055,5 +1087,35 @@
   },
   "JSON_EDIT": {
     "INVALID_JSON": "Niewłaściwy format JSON. Zmiany wprowadzone do zawartości formularza nie zostaną zapisane."
+  },
+  "BULK" : {
+    "LIST": {
+      "ID": "Id",
+      "CREATOR": "Twórca",
+      "CREATION_DATE": "Data utworzenia",
+      "STATE": "Stan",
+      "DETAILS": "Detale",
+      "CONTINUE" : "Kontynuuj",
+      "CREATED" : "Utworzenie obiektu",
+      "SUCCESSFUL" : "Powodzenie operacji",
+      "TYPE" : "Typ obiektu",
+      "MOVE_DOMAIN" : "Przejdź do domeny",
+      "MOVE_USER" : "Przejdź do użytkownika",
+      "MOVE_APP" : "Przejdź do aplikacji"
+    },
+    "DOMAIN": {
+      "INFO": "Additional information will be added later",
+      "SUMMARY": "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER": "Tworzenie wielu domen",
+      "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen..."
+    },
+    "APP": {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Uruchamianie wielu aplikacji"
+    }
+  },
+  "SHARED" : {
+    "TOGGLE" : "Toggle all"
   }
 }

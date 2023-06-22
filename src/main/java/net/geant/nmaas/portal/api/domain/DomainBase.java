@@ -13,4 +13,5 @@ public class DomainBase {
     String name;
     String codename;
     boolean active;
+    boolean deleted;
 }

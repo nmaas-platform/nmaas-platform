@@ -47,25 +47,18 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 public class DomainServiceTest {
 
     DomainServiceImpl.CodenameValidator validator;
-
     DomainServiceImpl.CodenameValidator namespaceValidator;
-
     DomainRepository domainRepository = mock(DomainRepository.class);
-
     DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
-
     UserService userService = mock(UserService.class);
-
     UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
-
     DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
+    ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
 
     DomainService domainService;
 
-    ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
-
     @BeforeEach
-    public void setup(){
+    void setup() {
         validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
         domainService = new DomainServiceImpl(validator,
@@ -77,7 +70,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldCreateGlobalDomain(){
+    void shouldCreateGlobalDomain() {
         when(domainRepository.findByName(anyString())).thenReturn(Optional.empty());
         Domain domain = new Domain("GLOBAL", "global");
         when(domainRepository.save(domain)).thenReturn(domain);
@@ -86,7 +79,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldGetGlobalDomain(){
+    void shouldGetGlobalDomain() {
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         when(domainRepository.findByName(anyString())).thenReturn(Optional.of(domain));
         Domain result = this.domainService.createGlobalDomain();
@@ -94,7 +87,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldCreateDomain(){
+    void shouldCreateDomain() {
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(name, codename);
@@ -105,7 +98,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotCreateDomainWithInvalidCodename(){
+    void shouldNotCreateDomainWithInvalidCodename() {
         assertThrows(ProcessingException.class, () -> {
             String name = "testdomain";
             String codename = "test-domain-too-long";
@@ -116,7 +109,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotCreateDomainWithNullName(){
+    void shouldNotCreateDomainWithNullName() {
         assertThrows(IllegalArgumentException.class, () -> {
             String codename = "test-domain";
             this.domainService.createDomain(new DomainRequest(null, codename,true));
@@ -124,7 +117,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldCreateDomainWithFalseActiveFlag(){
+    void shouldCreateDomainWithFalseActiveFlag() {
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(name, codename, false);
@@ -135,7 +128,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldCreateDomainWithOwnParams(){
+    void shouldCreateDomainWithOwnParams() {
         String name = "testdomain";
         String codename = "testdom";
         String kubernetesNamespace = "default-namespace";
@@ -161,7 +154,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldUpdateDomain(){
+    void shouldUpdateDomain() {
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(1L, name, codename, true);
@@ -172,7 +165,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotUpdateNonExistingDomain(){
+    void shouldNotUpdateNonExistingDomain() {
         assertThrows(ProcessingException.class, () -> {
             String name = "testdomain";
             String codename = "testdom";
@@ -181,7 +174,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotUpdateGlobalDomain(){
+    void shouldNotUpdateGlobalDomain() {
         assertThrows(IllegalArgumentException.class, () -> {
             String name = "GLOBAL";
             String codename = "GLOBAL";
@@ -190,14 +183,14 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotUpdateNullDomain(){
+    void shouldNotUpdateNullDomain() {
         assertThrows(IllegalArgumentException.class, () -> {
             this.domainService.updateDomain(null);
         });
     }
 
     @Test
-    public void shouldRemoveDomain(){
+    void shouldRemoveDomain() {
         Domain domain = new Domain(1L, "testdom", "testdom");
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         assertTrue(this.domainService.removeDomain(1L));
@@ -205,7 +198,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotRemoveGlobalDomain(){
+    void shouldNotRemoveGlobalDomain() {
         assertThrows(IllegalArgumentException.class, () -> {
             Domain domain = new Domain(1L, "GLOBAL", "GLOBAL");
             when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
@@ -214,7 +207,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldAddMemberRole(){
+    void shouldAddMemberRole() {
         Long domainId = 1L;
         Long userId = 1L;
         Role role = Role.ROLE_OPERATOR;
@@ -228,28 +221,28 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotAddMemberRoleWithNullDomainId(){
+    void shouldNotAddMemberRoleWithNullDomainId() {
         assertThrows(IllegalArgumentException.class, () -> {
             this.domainService.addMemberRole(null, 1L, Role.ROLE_OPERATOR);
         });
     }
 
     @Test
-    public void shouldNotAddMemberRoleWithNullUserId(){
+    void shouldNotAddMemberRoleWithNullUserId() {
         assertThrows(IllegalArgumentException.class, () -> {
             this.domainService.addMemberRole(1L, null, Role.ROLE_OPERATOR);
         });
     }
 
     @Test
-    public void shouldNotAddMemberRoleWithEmptyRole(){
+    void shouldNotAddMemberRoleWithEmptyRole() {
         assertThrows(IllegalArgumentException.class, () -> {
             this.domainService.addMemberRole(1L, 1L, null);
         });
     }
 
     @Test
-    public void shouldRemoveMemberRole(){
+    void shouldRemoveMemberRole() {
         Long domainId = 1L;
         Long userId = 1L;
         Role role = Role.ROLE_OPERATOR;
@@ -263,7 +256,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldRemoveMember(){
+    void shouldRemoveMember() {
         Long domainId = 1L;
         Long userId = 1L;
         Domain domain = new Domain(domainId, "testdom", "testdom", true);
@@ -276,7 +269,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldGetMemberRoles(){
+    void shouldGetMemberRoles() {
         Long domainId = 1L;
         Long userId = 1L;
         Domain domain = new Domain(domainId, "testdom", "testdom", true);
@@ -290,7 +283,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldGetMember(){
+    void shouldGetMember() {
         Long domainId = 1L;
         Long userId = 1L;
         Domain domain = new Domain(domainId, "testdom", "testdom", true);
@@ -305,7 +298,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotGetMember(){
+    void shouldNotGetMember() {
         assertThrows(ProcessingException.class, () -> {
             Long domainId = 1L;
             Long userId = 1L;
@@ -319,7 +312,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldNotGetMemberWithEmptyUser(){
+    void shouldNotGetMemberWithEmptyUser() {
         assertThrows(ProcessingException.class, () -> {
             Long domainId = 1L;
             Domain domain = new Domain(domainId, "testdom", "testdom");
@@ -330,7 +323,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldThrowAnExceptionWhenGetMemberWithNullDomain(){
+    void shouldThrowAnExceptionWhenGetMemberWithNullDomain() {
         assertThrows(ProcessingException.class, () -> {
             Long userId = 1L;
             User user = new User("user");
@@ -341,7 +334,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldGetUserDomains(){
+    void shouldGetUserDomains() {
         Long userId = 1L;
         User user = new User("user");
         Domain domain = new Domain(1L, "testdom", "testdom");
@@ -352,7 +345,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void  shouldFindUsersWithDomainAdminRole(){
+    void  shouldFindUsersWithDomainAdminRole() {
         Domain domain = new Domain(1L, "testdom", "testdom");
 
         User user1 = new User("user1");

@@ -40,7 +40,7 @@
     "application": {
         "id": null,
         "name": "NetBox",
-        "version": "3.2.8",
+        "version": "3.5.2",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -153,13 +153,10 @@
             ],
             "kubernetesTemplate": {
                 "chart": {
-                    "name": "netbox/netbox",
-                    "version": "4.1.1"
+                    "name": "nmaas-netbox",
+                    "version": "6.0.0"
                 },
-                "helmChartRepository": {
-                    "name": "netbox",
-                    "url": "https://charts.boo.tc"
-                }
+                "mainDeploymentName": "nmaas-netbox"
             },
             "deployParameters": {
                 "RELEASE_NAME_HOUSEKEEPING": "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].values[0]=%VALUE%",
@@ -171,13 +168,13 @@
             },
             "globalDeployParameters": {
                 "updateStrategy.type": "Recreate",
-                "image.tag": "v3.2.8",
                 "loginPersistence": "true",
                 "timeZone": "Europe/Warsaw",
                 "postgresql.enabled": "true",
                 "postgresql.postgresqlDatabase": "netbox",
                 "postgresql.postgresqlUsername": "netbox",
                 "postgresql.postgresqlPassword": "%RANDOM_STRING_12%",
+                "postgresql.postgresqlPostgresPassword": "%RANDOM_STRING_12%",
                 "redis.enabled": "true",
                 "redis.architecture": "standalone",
                 "redis.auth.password": "%RANDOM_STRING_12%",

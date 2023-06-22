@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ public interface UserService {
 
 	User register(Registration registration, Domain globalDomain, Domain domain);
 	User register(UserSSOLogin userSSO, Domain globalDomain);
+	User registerBulk(CsvDomain userCSV, Domain globalDomain, Domain domain);
 	
 	List<User> findAll();
 	Page<User> findAll(Pageable pageable);

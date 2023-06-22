@@ -6,6 +6,7 @@
     "MANAGEMENT": "Management",
     "DOMAINS": "Domains",
     "USERS": "Users",
+    "DOMAIN_USERS" : "Domains users",
     "INVENTORY": "External components",
     "MONITOR": "Monitoring",
     "SETTINGS": "Settings",
@@ -18,7 +19,13 @@
     "LANGUAGES": "Languages",
     "NOTIFICATION": "Send notification",
     "ALL_USERS": "To all users",
-    "EXPIRED_TIME" : "Session expires in"
+    "EXPIRED_TIME" : "Session expires in",
+    "ADVANCED" : "Advanced",
+    "BULK_DEPLOYMENT" : "Deploy bulk application",
+    "BULK_DEPLOYMENT_DOMAIN" : "Deploy bulk domains",
+    "DOMAIN_GROUPS" : "Domain groups",
+    "PAST_BULK_DOMAIN" : "Past domains bulk",
+    "PAST_BULK_APP" : "Past application bulk"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -210,7 +217,19 @@
     "EDIT_BUTTON": "Edit",
     "DISABLE_BUTTON": "Disable",
     "ENABLE_BUTTON": "Enable",
-    "ADD_BUTTON": "Add"
+    "ADD_BUTTON": "Add",
+    "DELETE_BUTTON": "Remove",
+    "ITEMS_PER_PAGE" : "Domains per page",
+    "NOTACTIVE": "Show not active domains",
+    "LIST" : {
+      "GROUPS" : "Domains groups",
+      "GROUP" : "Domain group",
+      "DOMAIN_NAME" : "Domain Name",
+      "DOMAIN_CODE_NAME" : "Domain Codename",
+      "DELETE" : "Remove domain from group",
+      "ADD" : "Add domain to group",
+      "ADD_INFO" : "Select domains to add them to group"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Application instances",
@@ -325,7 +344,15 @@
     "APP_STATUS": "Application properties",
     "APP_NAME": "Application name",
     "APP_ENABLED": "Enabled",
-    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "MODAL": {
+      "HEADER": "Domain removal confirmation",
+      "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
+      "BUTTONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel"
+      }
+    }
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",
@@ -670,7 +697,13 @@
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
     "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
     "ADD_NEW_VERSION_BUTTON": "Add new version",
-    "SEND_NOTIFICATION": "Send email notification to all users"
+    "SEND_NOTIFICATION": "Send email notification to all users",
+    "ADD_JSON" : "Add application using JSON file",
+    "ADD_JSON_INFO" : "Select JSON file in uploader",
+    "ADD_JSON_TEXTAREA" : "or copy json-text in textarea",
+    "SEND_JSON" : "Send JSON text",
+    "ADD_JSON_VERSION" : "Add application version using JSON file",
+    "JSON_ERROR" : "JSON formatting validation error - please check the JSON"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -1056,5 +1089,35 @@
   },
   "JSON_EDIT": {
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
+  },
+  "BULK" : {
+    "LIST" : {
+      "ID" : "Id",
+      "CREATOR" : "Creator",
+      "CREATION_DATE" : "Creation date",
+      "STATE" : "State",
+      "DETAILS" : "Details",
+      "CONTINUE" : "Continue",
+      "CREATED" : "Created",
+      "SUCCESSFUL" : "Successful",
+      "TYPE" : "Object type",
+      "MOVE_DOMAIN" : "Domain information",
+      "MOVE_USER" : "User information",
+      "MOVE_APP" : "Application information"
+    },
+    "DOMAIN" : {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Bulk domain deployments",
+      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress..."
+    },
+    "APP": {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Bulk application deployments"
+    }
+  },
+  "SHARED" : {
+    "TOGGLE" : "Toggle all"
   }
 }
