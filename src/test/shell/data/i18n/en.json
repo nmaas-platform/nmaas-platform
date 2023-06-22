@@ -702,7 +702,8 @@
     "ADD_JSON_INFO" : "Select JSON file in uploader",
     "ADD_JSON_TEXTAREA" : "or copy json-text in textarea",
     "SEND_JSON" : "Send JSON text",
-    "ADD_JSON_VERSION" : "Add application version using JSON file"
+    "ADD_JSON_VERSION" : "Add application version using JSON file",
+    "JSON_ERROR" : "JSON formatting validation error - please check the JSON"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",

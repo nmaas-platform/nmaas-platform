@@ -700,7 +700,8 @@
     "ADD_JSON" : "Add application using JSON file",
     "ADD_JSON_INFO" : "Select JSON file in uploader",
     "ADD_JSON_TEXTAREA" : "or copy json-text in textarea",
-    "SEND_JSON" : "Send JSON text"
+    "SEND_JSON" : "Send JSON text",
+    "JSON_ERROR" : "JSON formatting validation error - please check the JSON"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "Diese Seite ist nur eine Vorschau der eingereichten Anwendung",

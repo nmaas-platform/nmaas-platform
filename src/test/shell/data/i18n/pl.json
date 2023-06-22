@@ -700,7 +700,8 @@
     "ADD_JSON" : "Dodanie aplikacji przez plik JSON",
     "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
     "ADD_JSON_TEXTAREA" : "lub skopiuj jego zawartość poniżej",
-    "SEND_JSON" : "Send JSON text"
+    "SEND_JSON" : "Wyślij plik tekstowy jako JSON",
+    "JSON_ERROR" : "Błąd formatowania pliku JSON - sprawdź poprawność pliku"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
