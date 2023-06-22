@@ -12,7 +12,12 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class FormTypeServiceTest {
 
@@ -21,12 +26,12 @@ public class FormTypeServiceTest {
     private FormTypeService underTest;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.underTest = new FormTypeService(repository);
     }
 
     @Test
-    public void createShouldPersistNewEntityIfKeyDoesNotExist() {
+    void createShouldPersistNewEntityIfKeyDoesNotExist() {
         when(repository.existsById(anyString())).thenReturn(false);
         FormTypeRequest ftr = new FormTypeRequest("CONTACT", "", "", new ArrayList<>(), "");
         this.underTest.create(ftr);
@@ -35,7 +40,7 @@ public class FormTypeServiceTest {
     }
 
     @Test
-    public void createShouldNotPersistIfKeyAlreadyExists() {
+    void createShouldNotPersistIfKeyAlreadyExists() {
         when(repository.existsById(anyString())).thenReturn(true);
         FormTypeRequest ftr = new FormTypeRequest("CONTACT", "", "", new ArrayList<>(), "");
 
@@ -45,7 +50,7 @@ public class FormTypeServiceTest {
     }
 
     @Test
-    public void getAllShouldCallProperRepositoryMethod() {
+    void getAllShouldCallProperRepositoryMethod() {
         when(repository.findAll()).thenReturn(
                 Arrays.asList(
                         new FormType("CONTACT", "", "", new ArrayList<>(), ""),
@@ -59,12 +64,12 @@ public class FormTypeServiceTest {
     }
 
     @Test
-    public void findOneShouldCallProperRepositoryMethod() {
+    void findOneShouldCallProperRepositoryMethod() {
         when(repository.findById(anyString())).thenReturn(Optional.of(new FormType("CONTACT", "", "", new ArrayList<>(), "")));
 
         underTest.findOne("CONTACT");
 
         verify(repository, times(1)).findById(anyString());
-
     }
+
 }

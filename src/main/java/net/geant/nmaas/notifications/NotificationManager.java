@@ -93,14 +93,6 @@ public class NotificationManager {
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
     }
 
-    private boolean isUserValidForBroadcastMail(UserView user) {
-        if (user.getEmail().isEmpty()) {
-            log.error(String.format("User: [%s] does not have an email address", user.getUsername()));
-            return false;
-        }
-        return user.getRoles().stream().noneMatch(roleView -> roleView.getRole().equals(Role.ROLE_INCOMPLETE));
-    }
-
     private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage) {
         return mailContentList.stream()
                 .filter(mailContent -> mailContent.getLanguage().equalsIgnoreCase(selectedLanguage))
@@ -143,8 +135,9 @@ public class NotificationManager {
         if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
             mailAttributes.setAddressees(userService.findAll().stream()
                     .filter(User::isEnabled)
-                    .map(user -> modelMapper.map(user, UserView.class))
-                    .filter(this::isUserValidForBroadcastMail)
+                    .filter(u -> !Strings.isNullOrEmpty(u.getEmail()))
+                    .filter(u -> u.getRoles().stream().noneMatch(r -> r.getRole().equals(Role.ROLE_INCOMPLETE)))
+                    .map(u -> modelMapper.map(u, UserView.class))
                     .collect(Collectors.toList()));
         }
         if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST)
