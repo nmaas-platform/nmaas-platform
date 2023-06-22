@@ -77,9 +77,6 @@ public class NotificationManager {
         this.getAllAddressees(mailAttributes);
 
         for (UserView user : mailAttributes.getAddressees()) {
-            if (!isUserValidForBroadcastMail(user)) {
-                continue;
-            }
             try {
                 LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
                 customizeMessage(mailContent, mailAttributes);
@@ -147,6 +144,7 @@ public class NotificationManager {
             mailAttributes.setAddressees(userService.findAll().stream()
                     .filter(User::isEnabled)
                     .map(user -> modelMapper.map(user, UserView.class))
+                    .filter(this::isUserValidForBroadcastMail)
                     .collect(Collectors.toList()));
         }
         if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST)
