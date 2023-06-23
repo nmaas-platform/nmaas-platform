@@ -10,7 +10,10 @@ import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -65,13 +68,13 @@ public class NotificationManagerTest {
                         .map(user -> modelMapper.map(user, UserView.class))
                         .collect(Collectors.toList())
         );
-        when(userService.findAll()).thenReturn(this.getDefaultUserList());
+        when(userService.findAll()).thenReturn(getDefaultUserList());
         when(domainService.findUsersWithDomainAdminRole("domainName")).thenReturn(
                 this.getAdminUserList().stream()
                         .map(u -> this.modelMapper.map(u, UserView.class))
                         .collect(Collectors.toList())
         );
-        when(userService.findByUsername("ordinary")).thenReturn(Optional.of(this.getDefaultUserList().get(1)));
+        when(userService.findByUsername("ordinary")).thenReturn(Optional.of(getDefaultUserList().get(1)));
 
         MailTemplateView mt = this.getDefaultMailTemplateView();
         when(templateService.getMailTemplate(any())).thenReturn(mt);
@@ -115,6 +118,23 @@ public class NotificationManagerTest {
 
     @Test
     void shouldSendBroadcastEmail() {
+        List<User> users = getDefaultUserList();
+        User userWithNoEmailAddress = new User("userWithNoEmailAddress", true);
+        userWithNoEmailAddress.setEmail(null);
+        userWithNoEmailAddress.setSelectedLanguage("en");
+        User userWithEmptyEmailAddress = new User("userWithEmptyEmailAddress", true);
+        userWithEmptyEmailAddress.setEmail("");
+        userWithEmptyEmailAddress.setSelectedLanguage("en");
+        User anotherCorrectUser = new User("anotherCorrectUser", true);
+        anotherCorrectUser.setEmail("anotherCorrectUser@email.com");
+        anotherCorrectUser.setSelectedLanguage("en");
+        User userWithIncompleteRole = new User("userWithIncompleteRole", true);
+        userWithIncompleteRole.setEmail("userWithIncompleteRoleUser@email.com");
+        userWithIncompleteRole.setSelectedLanguage("en");
+        userWithIncompleteRole.setRoles(List.of(new UserRole(userWithIncompleteRole, new Domain("", ""), Role.ROLE_INCOMPLETE)));
+        users.addAll(List.of(userWithNoEmailAddress, userWithEmptyEmailAddress, anotherCorrectUser, userWithIncompleteRole));
+        when(userService.findAll()).thenReturn(users);
+
         MailAttributes ma = new MailAttributes();
         ma.setMailType(MailType.BROADCAST);
         ma.setOtherAttributes(new HashMap<>() {{
@@ -125,7 +145,7 @@ public class NotificationManagerTest {
 
         notificationManager.prepareAndSendMail(ma);
 
-        verify(notificationService, times(2))
+        verify(notificationService, times(3))
                 .sendMail(any(String.class), eq("Some Title"), any(String.class));
     }
 
@@ -217,7 +237,6 @@ public class NotificationManagerTest {
 
         List<User> adminUsers = this.getAdminUserList();
         adminUsers.get(0).setSelectedLanguage("fr");
-
         when(userService.findAllUsersWithAdminRole()).thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).collect(Collectors.toList()));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> notificationManager.prepareAndSendMail(ma));
@@ -268,7 +287,6 @@ public class NotificationManagerTest {
 
         when(userService.findByEmail(adminUsers.get(0).getEmail())).thenReturn(adminUsers.get(0));
         when(userService.findByEmail(external)).thenThrow(new IllegalArgumentException("test message"));
-
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(true, true, "en", true, true, emails));
 
         notificationManager.prepareAndSendMail(ma);
@@ -286,7 +304,6 @@ public class NotificationManagerTest {
             put("owner", "ordinary");
             put("domainName", "domainName");
         }});
-
         when(templateService.getHTMLTemplate()).thenThrow(new IOException());
 
         assertThrows(ProcessingException.class, () -> notificationManager.prepareAndSendMail(ma));
@@ -320,7 +337,7 @@ public class NotificationManagerTest {
         return mt;
     }
 
-    private List<User> getDefaultUserList() {
+    private static List<User> getDefaultUserList() {
         User user0 = new User("admin", true);
         user0.setEmail("admin@admin.eu");
         user0.setSelectedLanguage("en");
@@ -334,7 +351,7 @@ public class NotificationManagerTest {
         }};
     }
 
-    private List<User> getAdminUserList() {
+    private static List<User> getAdminUserList() {
         User user0 = new User("admin", true);
         user0.setEmail("admin@admin.eu");
         user0.setFirstname("");
