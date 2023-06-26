@@ -212,16 +212,17 @@
     "ENABLE_BUTTON": "Aktivieren",
     "ADD_BUTTON": "Hinzufügen",
     "DELETE_BUTTON": "Remove",
-    "ITEMS_PER_PAGE" : "Domains per page",
+    "ITEMS_PER_PAGE": "Domains per page",
     "NOTACTIVE": "Show not active domains",
-    "LIST" : {
-      "GROUPS" : "Domains groups",
-      "GROUP" : "Domain group",
-      "DOMAIN_NAME" : "Domain Name",
-      "DOMAIN_CODE_NAME" : "Domain Codename",
-      "DELETE" : "Remove domain from group",
-      "ADD" : "Add domain to group",
-      "ADD_INFO" : "Select domains to add them to group"
+    "LIST": {
+      "GROUPS": "Domains groups",
+      "GROUP": "Domain group",
+      "DOMAIN_NAME": "Domain Name",
+      "DOMAIN_CODE_NAME": "Domain Codename",
+      "DELETE": "Remove domain from group",
+      "ADD": "Add domain to group",
+      "ADD_INFO": "Select domains to add them to group"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Anwendungs-Instanzen",
@@ -1009,7 +1010,7 @@
       "CLOSE_BUTTON": "Schließen",
       "HEADER": "Fehler"
     },
-    "TITLE": "Sprachverwaltung",
+    "TITLE": "Übersetzungsmanagement",
     "LANGUAGE": "Sprache",
     "RAW_MODE_ENABLED": "Der Raw-Modus ist aktiviert",
     "RAW_MODE_DISABLED": "Der Raw-Modus ist deaktiviert"

@@ -15,7 +15,7 @@
     "LANGUAGE": "Translations",
     "ABOUT": "About",
     "BACK": "Back to Home Page",
-    "LANGUAGES": "Languages",
+    "LANGUAGES": "Translations",
     "NOTIFICATION": "Send notification",
     "ALL_USERS": "To all users",
     "EXPIRED_TIME" : "Session expires in"
@@ -1012,7 +1012,7 @@
       "CLOSE_BUTTON": "Close",
       "HEADER": "Error"
     },
-    "TITLE": "Language management",
+    "TITLE": "Translations management",
     "LANGUAGE": "Language",
     "RAW_MODE_ENABLED": "Raw mode is enabled",
     "RAW_MODE_DISABLED": "Raw mode is disabled"

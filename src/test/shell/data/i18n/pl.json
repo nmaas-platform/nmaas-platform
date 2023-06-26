@@ -15,7 +15,7 @@
     "LANGUAGE": "Tłumaczenia",
     "ABOUT": "O nas",
     "BACK": "Wróć do strony głównej",
-    "LANGUAGES": "Języki",
+    "LANGUAGES": "Tłumaczenia",
     "NOTIFICATION": "Wyślij wiadomość",
     "ALL_USERS": "Do wszystkich",
     "EXPIRED_TIME" : "Koniec sesji za"
@@ -1012,7 +1012,7 @@
       "CLOSE_BUTTON": "Zamknij",
       "HEADER": "Nagłówek"
     },
-    "TITLE": "Zarządzanie językami",
+    "TITLE": "Zarządzanie tłumaczeniami",
     "LANGUAGE": "Język",
     "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
     "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"
