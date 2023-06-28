@@ -1,6 +1,17 @@
 {
   "versions" : [
     {
+      "verNo" : "1.5.3",
+      "date" : "(2023/06/xx)",
+      "topic" : [
+        {
+          "title": "TDB",
+          "tags": "[Bugfix]",
+          "description": "TBD"
+        }
+      ]
+    },
+    {
       "verNo" : "1.5.2",
       "date" : "(2023/04/18)",
       "topic" : [

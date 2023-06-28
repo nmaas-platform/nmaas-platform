@@ -12,7 +12,7 @@
     "PROFILE": "Profil",
     "LOGOUT": "Ausloggen",
     "LOGIN_REGISTER": "Einloggen | Registrieren",
-    "LANGUAGE": "Sprache",
+    "LANGUAGE": "Übersetzungen",
     "ABOUT": "Über",
     "BACK": "Zurück zur Startseite",
     "LANGUAGES": "Sprachen",
@@ -210,7 +210,19 @@
     "EDIT_BUTTON": "Bearbeiten",
     "DISABLE_BUTTON": "Deaktivieren",
     "ENABLE_BUTTON": "Aktivieren",
-    "ADD_BUTTON": "Hinzufügen"
+    "ADD_BUTTON": "Hinzufügen",
+    "DELETE_BUTTON": "Remove",
+    "ITEMS_PER_PAGE": "Domains per page",
+    "NOTACTIVE": "Show not active domains",
+    "LIST": {
+      "GROUPS": "Domains groups",
+      "GROUP": "Domain group",
+      "DOMAIN_NAME": "Domain Name",
+      "DOMAIN_CODE_NAME": "Domain Codename",
+      "DELETE": "Remove domain from group",
+      "ADD": "Add domain to group",
+      "ADD_INFO": "Select domains to add them to group"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Anwendungs-Instanzen",
@@ -669,7 +681,13 @@
     "NO_REJECTED_APPS_MESSAGE": "Es gibt keine abgelehnten Anwendungen",
     "NO_NEW_APPS_MESSAGE": "Es gibt unbestätigten Anwendungen",
     "ADD_NEW_VERSION_BUTTON": "Add new version",
-    "SEND_NOTIFICATION": "Send email notification to all users"
+    "SEND_NOTIFICATION": "Send email notification to all users",
+    "ADD_JSON" : "Add application using JSON file",
+    "ADD_JSON_INFO" : "Select JSON file for upload",
+    "ADD_JSON_TEXTAREA" : "or enter JSON content below",
+    "SEND_JSON" : "Upload JSON content",
+    "ADD_JSON_VERSION" : "Add application version using JSON file",
+    "JSON_ERROR" : "JSON content is not valid - please verify the syntax"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "Diese Seite ist nur eine Vorschau der eingereichten Anwendung",
@@ -992,7 +1010,7 @@
       "CLOSE_BUTTON": "Schließen",
       "HEADER": "Fehler"
     },
-    "TITLE": "Sprachverwaltung",
+    "TITLE": "Übersetzungsmanagement",
     "LANGUAGE": "Sprache",
     "RAW_MODE_ENABLED": "Der Raw-Modus ist aktiviert",
     "RAW_MODE_DISABLED": "Der Raw-Modus ist deaktiviert"

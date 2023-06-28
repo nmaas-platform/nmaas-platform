@@ -12,10 +12,10 @@
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
-    "LANGUAGE": "Język",
+    "LANGUAGE": "Tłumaczenia",
     "ABOUT": "O nas",
     "BACK": "Wróć do strony głównej",
-    "LANGUAGES": "Języki",
+    "LANGUAGES": "Tłumaczenia",
     "NOTIFICATION": "Wyślij wiadomość",
     "ALL_USERS": "Do wszystkich",
     "EXPIRED_TIME" : "Koniec sesji za"
@@ -210,7 +210,19 @@
     "EDIT_BUTTON": "Edytuj",
     "DISABLE_BUTTON": "Dezaktywuj",
     "ENABLE_BUTTON": "Aktywuj",
-    "ADD_BUTTON": "Dodaj"
+    "ADD_BUTTON": "Dodaj",
+    "DELETE_BUTTON": "Usuń",
+    "ITEMS_PER_PAGE" : "Liczba domen na liście",
+    "NOTACTIVE": "Pokaż nieaktywne domeny",
+    "LIST" : {
+      "GROUPS" : "Grupy domen",
+      "GROUP" : "Grupa domen",
+      "DOMAIN_NAME" : "Nazwa domeny",
+      "DOMAIN_CODE_NAME" : "Skrót domeny",
+      "DELETE" : "Usuń domene z grupy",
+      "ADD" : "Dodaj domene do grupy",
+      "ADD_INFO" : "Wybierz domeny do dodania do grupy"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Instancje aplikacji",
@@ -669,7 +681,14 @@
     "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
     "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
     "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje",
-    "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników"
+    "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników",
+    "ADD_JSON" : "Dodanie aplikacji przez plik JSON",
+    "ADD_JSON_VERSION" : "Dodanie wersji aplikacji przez plik JSON",
+    "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
+    "ADD_JSON_TEXTAREA" : "lub skopiuj jego zawartość poniżej",
+    "SEND_JSON" : "Wyślij JSON",
+    "JSON_ERROR" : "JSON jest niepoprawny - sprawdź poprawność składni"
+
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -993,7 +1012,7 @@
       "CLOSE_BUTTON": "Zamknij",
       "HEADER": "Nagłówek"
     },
-    "TITLE": "Zarządzanie językami",
+    "TITLE": "Zarządzanie tłumaczeniami",
     "LANGUAGE": "Język",
     "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
     "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"

@@ -22,25 +22,24 @@ import static org.mockito.Mockito.when;
 public class TemplateServiceTest {
 
     private MailTemplateRepository repository = mock(MailTemplateRepository.class);
-
     private LocalFileStorageService fileStorageService = mock(LocalFileStorageService.class);
 
     private TemplateService templateService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.templateService = new TemplateService(repository, fileStorageService, new ModelMapper());
     }
 
     @Test
-    public void shouldThrowExceptionOnMissingHtmlTemplate() {
+    void shouldThrowExceptionOnMissingHtmlTemplate() {
         assertThrows(IllegalArgumentException.class, () -> {
             templateService.getHTMLTemplate();
         });
     }
 
     @Test
-    public void shouldReturnAllMailTemplates() {
+    void shouldReturnAllMailTemplates() {
         when(repository.findAll()).thenReturn(Arrays.asList(
                 new MailTemplate(1L, MailType.ACCOUNT_ACTIVATED, null, null),
                 new MailTemplate(2L, MailType.ACCOUNT_BLOCKED, null, null)
@@ -49,7 +48,7 @@ public class TemplateServiceTest {
     }
 
     @Test
-    public void shouldReturnMailTemplateOfGivenType() {
+    void shouldReturnMailTemplateOfGivenType() {
         when(repository.findByMailType(MailType.ACCOUNT_ACTIVATED))
                 .thenReturn(Optional.of(new MailTemplate(1L, MailType.ACCOUNT_ACTIVATED, null, null)));
         assertNotNull(templateService.getMailTemplate(MailType.ACCOUNT_ACTIVATED));
@@ -59,7 +58,7 @@ public class TemplateServiceTest {
     }
 
     @Test
-    public void shouldHandleHtmlTemplateStorage() {
+    void shouldHandleHtmlTemplateStorage() {
         assertThrows(IllegalArgumentException.class, () -> {
             templateService.storeHTMLTemplate(null);
         });
@@ -72,7 +71,7 @@ public class TemplateServiceTest {
     }
 
     @Test
-    public void shouldUpdateHtmlTemplate() {
+    void shouldUpdateHtmlTemplate() {
         assertThrows(IllegalArgumentException.class, () -> {
             templateService.updateHTMLTemplate(null);
         });

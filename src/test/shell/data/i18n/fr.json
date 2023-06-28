@@ -12,7 +12,7 @@
     "PROFILE": "Profil",
     "LOGOUT": "Déconnexion",
     "LOGIN_REGISTER": "Connexion | S'inscrire",
-    "LANGUAGE": "Language",
+    "LANGUAGE": "Traductions",
     "ABOUT": "A propos",
     "BACK": "Retour à la page d'accueil",
     "LANGUAGES": "Langages",
@@ -210,7 +210,19 @@
     "EDIT_BUTTON": "Modifier",
     "DISABLE_BUTTON": "Disable",
     "ENABLE_BUTTON": "Enable",
-    "ADD_BUTTON": "Add"
+    "ADD_BUTTON": "Add",
+    "DELETE_BUTTON": "Remove",
+    "ITEMS_PER_PAGE" : "Domains per page",
+    "NOTACTIVE": "Show not active domains",
+    "LIST" : {
+      "GROUPS" : "Domains groups",
+      "GROUP" : "Domain group",
+      "DOMAIN_NAME" : "Domain Name",
+      "DOMAIN_CODE_NAME" : "Domain Codename",
+      "DELETE" : "Remove domain from group",
+      "ADD" : "Add domain to group",
+      "ADD_INFO" : "Select domains to add them to group"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Instances",
@@ -668,7 +680,13 @@
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
     "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
     "ADD_NEW_VERSION_BUTTON": "Add new version",
-    "SEND_NOTIFICATION": "Send email notification to all users"
+    "SEND_NOTIFICATION": "Send email notification to all users",
+    "ADD_JSON" : "Add application using JSON file",
+    "ADD_JSON_INFO" : "Select JSON file for upload",
+    "ADD_JSON_TEXTAREA" : "or enter JSON content below",
+    "SEND_JSON" : "Upload JSON content",
+    "ADD_JSON_VERSION" : "Add application version using JSON file",
+    "JSON_ERROR" : "JSON content is not valid - please verify the syntax"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -992,7 +1010,7 @@
       "CLOSE_BUTTON": "Fermer",
       "HEADER": "Header"
     },
-    "TITLE": "Language mangement",
+    "TITLE": "Traductions mangement",
     "LANGUAGE": "Language",
     "RAW_MODE_ENABLED": "Raw mode is enabled",
     "RAW_MODE_DISABLED": "Raw mode is disabled"
