@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import javax.persistence.Enumerated;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ServiceAccessMethodView {
 
     @Enumerated(EnumType.STRING)
@@ -23,10 +25,8 @@ public class ServiceAccessMethodView {
 
     private String url;
 
-    private String condition;
-
     public static ServiceAccessMethodView fromServiceAccessMethod(ServiceAccessMethod accessMethod) {
-        return new ServiceAccessMethodView(accessMethod.getType(), accessMethod.getName(), accessMethod.getProtocol(), accessMethod.getUrl(), accessMethod.getCondition());
+        return new ServiceAccessMethodView(accessMethod.getType(), accessMethod.getName(), accessMethod.getProtocol(), accessMethod.getUrl());
     }
 
 }

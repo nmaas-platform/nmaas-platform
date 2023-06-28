@@ -31,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
+    private static final String URL_PREFIX = "/api/configuration";
+
     @Autowired
     private ConfigurationRepository repository;
 
@@ -42,10 +44,8 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     private User user;
 
-    private static String URL_PREFIX = "/api/configuration";
-
     @BeforeEach
-    public void init(){
+    void init() {
         mvc = createMVC();
         user = UsersHelper.ADMIN;
         if(intRepo.findAll().stream().noneMatch(lang -> lang.getLanguage().equalsIgnoreCase("en"))){
@@ -54,7 +54,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     }
 
     @AfterEach
-    public void tearDown(){
+    void tearDown() {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setSsoLoginAllowed(false);
         config.setMaintenance(false);
@@ -63,7 +63,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldAddNewConfiguration() throws Exception {
+    void shouldAddNewConfiguration() throws Exception {
         repository.deleteAll();
         ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>());
         mvc.perform(post(URL_PREFIX)
@@ -79,7 +79,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateConfiguration() throws Exception {
+    void shouldUpdateConfiguration() throws Exception {
         Long id = repository.findAll().get(0).getId();
         ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>());
         configuration.setId(id);

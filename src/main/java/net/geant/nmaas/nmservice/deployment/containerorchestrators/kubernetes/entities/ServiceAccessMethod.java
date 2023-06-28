@@ -20,6 +20,8 @@ import javax.persistence.Id;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.geant.nmaas.orchestration.entities.AppAccessMethod.ConditionType.DEPLOYMENT_PARAMETER;
+
 /**
  * This class represents single access method to NMAAS service
  */
@@ -48,7 +50,7 @@ public class ServiceAccessMethod {
 
     private String condition;
 
-    private Boolean enabled;
+    private Boolean enabled = true;
 
     @ElementCollection
     @Fetch(FetchMode.SELECT)
@@ -71,6 +73,9 @@ public class ServiceAccessMethod {
         serviceAccessMethod.setType(appAccessMethod.getType());
         serviceAccessMethod.setName(appAccessMethod.getTag());
         serviceAccessMethod.setProtocol(appAccessMethod.getName());
+        serviceAccessMethod.setCondition(
+                DEPLOYMENT_PARAMETER.equals(appAccessMethod.getConditionType()) ? appAccessMethod.getCondition() : null
+        );
         serviceAccessMethod.setUrl(null);
         serviceAccessMethod.deployParameters = new HashMap<>();
         if (appAccessMethod.getDeployParameters() != null) {

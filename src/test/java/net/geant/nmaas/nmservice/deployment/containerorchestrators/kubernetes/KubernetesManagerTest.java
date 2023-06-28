@@ -25,6 +25,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificat
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod.ConditionType;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -171,7 +172,10 @@ public class KubernetesManagerTest {
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
                 .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
-                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag", null)))
+                .accessMethods(Sets.newHashSet(
+                        AppAccessMethod.builder()
+                                .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.NONE).condition("redundant")
+                                .build()))
                 .build();
         ArgumentCaptor<KubernetesNmServiceInfo> serviceInfo = ArgumentCaptor.forClass(KubernetesNmServiceInfo.class);
 
@@ -185,6 +189,7 @@ public class KubernetesManagerTest {
         assertTrue(accessMethod.get().isOfType(ServiceAccessMethodType.EXTERNAL));
         assertEquals("tag", accessMethod.get().getName());
         assertNull(accessMethod.get().getUrl());
+        assertNull(accessMethod.get().getCondition());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
         assertTrue(serviceInfo.getValue().getAdditionalParameters().isEmpty());
     }
@@ -200,7 +205,10 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag", null)))
+                .accessMethods(Sets.newHashSet(
+                        AppAccessMethod.builder()
+                                .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.DEPLOYMENT_PARAMETER).condition("valid")
+                                .build()))
                 .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .globalDeployParameters(getStringStringMap())
                 .deployParameters(getParameterTypeStringMap())
@@ -211,6 +219,9 @@ public class KubernetesManagerTest {
 
         verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
         assertEquals(DEPLOYMENT_ID, serviceInfo.getValue().getDeploymentId());
+        Optional<ServiceAccessMethod> accessMethod = serviceInfo.getValue().getAccessMethods().stream().findFirst();
+        assertTrue(accessMethod.isPresent());
+        assertEquals("valid", accessMethod.get().getCondition());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
         assertEquals(15, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
