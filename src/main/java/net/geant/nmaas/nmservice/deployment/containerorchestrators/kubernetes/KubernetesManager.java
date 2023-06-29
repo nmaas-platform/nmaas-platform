@@ -251,7 +251,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     if (am.isOfType(PUBLIC)) {
                         if (!shouldRemainPublic(service.getAdditionalParameters(), am)) {
                             log.info(String.format("%s access will remain public: no", am.getName()));
-                            return new ServiceAccessMethod(am.getId(), EXTERNAL, am.getName(), am.getUrl(), am.getProtocol(), am.getCondition(), false, am.getDeployParameters() );
+                            return new ServiceAccessMethod(am.getId(), EXTERNAL, am.getName(), am.getUrl(), am.getProtocol(), am.getCondition(), am.isEnabled(), am.getDeployParameters());
                         }
                         log.info(String.format("%s access will remain public: yes", am.getName()));
                     }

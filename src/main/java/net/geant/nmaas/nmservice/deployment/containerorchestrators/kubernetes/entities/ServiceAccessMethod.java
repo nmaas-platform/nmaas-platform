@@ -52,8 +52,7 @@ public class ServiceAccessMethod {
 
     private String condition;
 
-    @Builder.Default
-    private boolean enabled = true;
+    private boolean enabled;
 
     @ElementCollection
     @Fetch(FetchMode.SELECT)
@@ -64,6 +63,7 @@ public class ServiceAccessMethod {
         this.name = name;
         this.url = url;
         this.protocol = protocol;
+        this.enabled = true;
         this.deployParameters = deployParameters;
     }
 
@@ -79,6 +79,7 @@ public class ServiceAccessMethod {
         serviceAccessMethod.setCondition(
                 DEPLOYMENT_PARAMETER.equals(appAccessMethod.getConditionType()) ? appAccessMethod.getCondition() : null
         );
+        serviceAccessMethod.setEnabled(true);
         serviceAccessMethod.setUrl(null);
         serviceAccessMethod.deployParameters = new HashMap<>();
         if (appAccessMethod.getDeployParameters() != null) {

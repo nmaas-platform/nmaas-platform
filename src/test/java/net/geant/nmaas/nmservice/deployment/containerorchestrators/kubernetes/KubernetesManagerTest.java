@@ -30,7 +30,6 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -111,6 +110,7 @@ public class KubernetesManagerTest {
                         .url(null)
                         .protocol("Web")
                         .condition("ws.enabled")
+                        .enabled(true)
                         .build()
         );
         accessMethods.add(
@@ -120,6 +120,7 @@ public class KubernetesManagerTest {
                         .url(null)
                         .protocol("Web")
                         .condition("ws1.enabled")
+                        .enabled(true)
                         .build()
         );
         accessMethods.add(
@@ -129,6 +130,7 @@ public class KubernetesManagerTest {
                         .url(null)
                         .protocol("Web")
                         .condition("ws2.enabled")
+                        .enabled(true)
                         .build()
         );
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
@@ -166,7 +168,7 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyDeploymentWithNotSupportedEnv() {
-        AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Lists.emptyList()).build();
+        AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.emptyList()).build();
         NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
