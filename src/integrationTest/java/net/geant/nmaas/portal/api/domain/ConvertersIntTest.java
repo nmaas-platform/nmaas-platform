@@ -48,7 +48,7 @@ public class ConvertersIntTest {
     ApplicationBaseRepository appBaseRepo;
 
     @Test
-    public void testConvertAppToAppView(){
+    void testConvertAppToAppView(){
         ApplicationBase defaultAppBase = getDefaultAppBase();
         appBaseRepo.save(defaultAppBase);
         ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
@@ -58,7 +58,7 @@ public class ConvertersIntTest {
     }
 
     @Test
-    public void testConvertAppViewToAppBase(){
+    void testConvertAppViewToAppBase(){
         ApplicationBaseView appView = getDefaultAppBaseView();
         ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
         assertEquals(appView.getId(), appBase.getId());
@@ -67,7 +67,7 @@ public class ConvertersIntTest {
     }
 
     @Test
-    public void testConvertAppBaseToAppBaseView(){
+    void testConvertAppBaseToAppBaseView(){
         ApplicationBase appBase = getDefaultAppBase();
         ApplicationBaseView applicationBaseView = modelMapper.map(appBase, ApplicationBaseView.class);
         assertEquals(appBase.getName(), applicationBaseView.getName());
@@ -78,7 +78,7 @@ public class ConvertersIntTest {
     }
 
     @Test
-    public void testConvertAppViewToApp(){
+    void testConvertAppViewToApp(){
         ApplicationView appView = getDefaultAppView();
         Application app = modelMapper.map(appView, Application.class);
         assertEquals(appView.getState(), app.getState());
@@ -89,7 +89,7 @@ public class ConvertersIntTest {
     }
 
 	@Test
-	public void testConvertAppBaseViewToAppBase() {
+	void testConvertAppBaseViewToAppBase() {
         tagRepo.save(new Tag("network"));
 
         ApplicationBaseView appDto = new ApplicationBaseView();
