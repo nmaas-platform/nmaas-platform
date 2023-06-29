@@ -624,23 +624,23 @@ public class AppInstanceController extends AppBaseController {
 
     private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
 
-        this.addAppInstanceBaseProperties(ai, appInstance);
+        addAppInstanceBaseProperties(ai, appInstance);
 
         Identifier identifier = appInstance.getInternalId();
         try {
-            ai.setServiceAccessMethods(this.appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
+            ai.setServiceAccessMethods(appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
         } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
             ai.setServiceAccessMethods(null);
         }
 
         try {
-            ai.setAppConfigRepositoryAccessDetails(this.appDeploymentMonitor.configRepositoryAccessDetails(identifier));
+            ai.setAppConfigRepositoryAccessDetails(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
         } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
             ai.setAppConfigRepositoryAccessDetails(null);
         }
 
         try {
-            ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
+            ai.setDescriptiveDeploymentId(appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
         } catch (InvalidDeploymentIdException e) {
             ai.setDescriptiveDeploymentId(null);
         }

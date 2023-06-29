@@ -443,11 +443,19 @@ public class KubernetesManagerTest {
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", "app1.nmaas.eu", "Web", null));
+        accessMethods.add(ServiceAccessMethod.builder()
+                .type(ServiceAccessMethodType.EXTERNAL)
+                .name("web-service-disabled")
+                .url("app2.nmaas.eu")
+                .protocol("Web")
+                .enabled(false)
+                .build());
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", "192.168.1.1", "SSH", null));
         service.setAccessMethods(accessMethods);
         when(repositoryManager.loadService(DEPLOYMENT_ID)).thenReturn(service);
 
         AppUiAccessDetails appUiAccessDetails = manager.serviceAccessDetails(DEPLOYMENT_ID);
+
         assertEquals(2, appUiAccessDetails.getServiceAccessMethods().size());
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
             m.getType().equals(ServiceAccessMethodType.EXTERNAL)
