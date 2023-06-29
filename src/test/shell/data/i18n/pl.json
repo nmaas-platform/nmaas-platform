@@ -850,7 +850,9 @@
     "REJECT_CHANGES": "Odrzuć",
     "APPLY_CHANGES": "Apply changes to deploy parameters",
     "CHANGES_TOOLTIP": "Accept or reject changes in deployment parameters",
-    "REMOVE_TOOLTIP": "Usuń metodę dostępu"
+    "REMOVE_TOOLTIP": "Usuń metodę dostępu",
+    "CONDITION_TYPE" : "Typ warunku",
+    "CONDITION" : "Warunek"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
