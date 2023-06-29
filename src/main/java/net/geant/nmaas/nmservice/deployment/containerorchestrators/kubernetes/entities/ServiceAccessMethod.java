@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ import static net.geant.nmaas.orchestration.entities.AppAccessMethod.ConditionTy
 @NoArgsConstructor
 @Entity
 @EqualsAndHashCode
+@Builder
 public class ServiceAccessMethod {
 
     public static final String DEFAULT_INTERNAL_SSH_ACCESS_USERNAME = "netops";
@@ -50,7 +52,8 @@ public class ServiceAccessMethod {
 
     private String condition;
 
-    private Boolean enabled = true;
+    @Builder.Default
+    private boolean enabled = true;
 
     @ElementCollection
     @Fetch(FetchMode.SELECT)

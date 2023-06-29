@@ -104,7 +104,33 @@ public class KubernetesManagerTest {
         service.setDescriptiveDeploymentId(Identifier.newInstance("deploymentId"));
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", null));
+        accessMethods.add(
+                ServiceAccessMethod.builder()
+                        .type(ServiceAccessMethodType.EXTERNAL)
+                        .name("web-service")
+                        .url(null)
+                        .protocol("Web")
+                        .condition("ws.enabled")
+                        .build()
+        );
+        accessMethods.add(
+                ServiceAccessMethod.builder()
+                        .type(ServiceAccessMethodType.EXTERNAL)
+                        .name("web-service-conditional-1")
+                        .url(null)
+                        .protocol("Web")
+                        .condition("ws1.enabled")
+                        .build()
+        );
+        accessMethods.add(
+                ServiceAccessMethod.builder()
+                        .type(ServiceAccessMethodType.EXTERNAL)
+                        .name("web-service-conditional-2")
+                        .url(null)
+                        .protocol("Web")
+                        .condition("ws2.enabled")
+                        .build()
+        );
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
         Map<HelmChartIngressVariable, String> sshAccessDeploymentParameters = new HashMap<>();
         sshAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_PORT, "22");
@@ -115,6 +141,10 @@ public class KubernetesManagerTest {
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service", null, "DATA", dataAccessDeploymentParameters));
         service.setAccessMethods(accessMethods);
         service.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart(null, null), null, "subcomponent"));
+        Map<String, String> additionalParameters = new HashMap<>();
+        additionalParameters.put("ws1.enabled", "True");
+        additionalParameters.put("ws2.enabled", "FALSE");
+        service.setAdditionalParameters(additionalParameters);
         when(repositoryManager.loadService(any())).thenReturn(service);
     }
 
@@ -190,6 +220,7 @@ public class KubernetesManagerTest {
         assertEquals("tag", accessMethod.get().getName());
         assertNull(accessMethod.get().getUrl());
         assertNull(accessMethod.get().getCondition());
+        assertTrue(accessMethod.get().isEnabled());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
         assertTrue(serviceInfo.getValue().getAdditionalParameters().isEmpty());
     }
@@ -222,6 +253,7 @@ public class KubernetesManagerTest {
         Optional<ServiceAccessMethod> accessMethod = serviceInfo.getValue().getAccessMethods().stream().findFirst();
         assertTrue(accessMethod.isPresent());
         assertEquals("valid", accessMethod.get().getCondition());
+        assertTrue(accessMethod.get().isEnabled());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
         assertEquals(15, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
@@ -301,7 +333,7 @@ public class KubernetesManagerTest {
         manager.deployNmService(DEPLOYMENT_ID);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-        assertEquals(6, accessMethodsArg.getValue().size());
+        assertEquals(8, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
@@ -311,7 +343,20 @@ public class KubernetesManagerTest {
                 m.isOfType(ServiceAccessMethodType.EXTERNAL)
                         && m.getName().equals("web-service")
                         && m.getProtocol().equals("Web")
-                        && m.getUrl().equals("web-service-base.url")));
+                        && m.getUrl().equals("web-service-base.url")
+                        && m.isEnabled()));
+        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.EXTERNAL)
+                        && m.getName().equals("web-service-conditional-1")
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("web-service-conditional-1-base.url")
+                        && m.isEnabled()));
+        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.EXTERNAL)
+                        && m.getName().equals("web-service-conditional-2")
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("web-service-conditional-2-base.url")
+                        && !m.isEnabled()));
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                 m.isOfType(ServiceAccessMethodType.PUBLIC)
                         && m.getName().equals("public-service")
@@ -341,7 +386,7 @@ public class KubernetesManagerTest {
 
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
             verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(6, accessMethodsArg.getValue().size());
+            assertEquals(8, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")

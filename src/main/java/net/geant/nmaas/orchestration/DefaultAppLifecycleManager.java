@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
@@ -44,14 +44,14 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  * Default {@link AppLifecycleManager} implementation.
  */
 @Service
+@RequiredArgsConstructor
 @Log4j2
-@AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
-    private AppDeploymentRepositoryManager deploymentRepositoryManager;
-    private ApplicationEventPublisher eventPublisher;
-    private NmServiceRepositoryManager serviceRepositoryManager;
-    private JanitorService janitorService;
+    private final AppDeploymentRepositoryManager deploymentRepositoryManager;
+    private final ApplicationEventPublisher eventPublisher;
+    private final NmServiceRepositoryManager serviceRepositoryManager;
+    private final JanitorService janitorService;
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
 
