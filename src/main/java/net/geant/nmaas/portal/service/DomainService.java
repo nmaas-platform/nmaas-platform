@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -28,6 +29,7 @@ public interface DomainService {
 	Domain createDomain(DomainRequest request);
 
 	void storeDcnInfo(String domain, DcnDeploymentType dcnDeploymentType);
+	void storeDcnInfo(DcnInfo dcnInfo);
 	void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType);
 
 	Optional<Domain> findDomain(String name);
@@ -52,4 +54,10 @@ public interface DomainService {
 	Set<Domain> getUserDomains(Long userId);
 
 	List<UserView> findUsersWithDomainAdminRole(String domain);
+
+	Domain getAppStatesFromGroups(Domain domain);
+
+	boolean softRemoveDomain(Long domainId);
+
+	void removeAllUsersFromDomain(Domain domain);
 }

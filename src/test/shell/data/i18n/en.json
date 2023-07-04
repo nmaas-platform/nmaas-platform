@@ -6,6 +6,7 @@
     "MANAGEMENT": "Management",
     "DOMAINS": "Domains",
     "USERS": "Users",
+    "DOMAIN_USERS" : "Domains users",
     "INVENTORY": "External components",
     "MONITOR": "Monitoring",
     "SETTINGS": "Settings",
@@ -18,7 +19,13 @@
     "LANGUAGES": "Translations",
     "NOTIFICATION": "Send notification",
     "ALL_USERS": "To all users",
-    "EXPIRED_TIME" : "Session expires in"
+    "EXPIRED_TIME" : "Session expires in",
+    "ADVANCED" : "Advanced",
+    "BULK_DEPLOYMENT" : "Deploy bulk application",
+    "BULK_DEPLOYMENT_DOMAIN" : "Deploy bulk domains",
+    "DOMAIN_GROUPS" : "Domain groups",
+    "PAST_BULK_DOMAIN" : "Past domains bulk",
+    "PAST_BULK_APP" : "Past application bulk"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -338,7 +345,15 @@
     "APP_STATUS": "Application properties",
     "APP_NAME": "Application name",
     "APP_ENABLED": "Enabled",
-    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "MODAL": {
+      "HEADER": "Domain removal confirmation",
+      "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
+      "BUTTONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel"
+      }
+    }
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",
@@ -1077,5 +1092,35 @@
   },
   "JSON_EDIT": {
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
+  },
+  "BULK" : {
+    "LIST" : {
+      "ID" : "Id",
+      "CREATOR" : "Creator",
+      "CREATION_DATE" : "Creation date",
+      "STATE" : "State",
+      "DETAILS" : "Details",
+      "CONTINUE" : "Continue",
+      "CREATED" : "Created",
+      "SUCCESSFUL" : "Successful",
+      "TYPE" : "Object type",
+      "MOVE_DOMAIN" : "Domain information",
+      "MOVE_USER" : "User information",
+      "MOVE_APP" : "Application information"
+    },
+    "DOMAIN" : {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Bulk domain deployments",
+      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress..."
+    },
+    "APP": {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Bulk application deployments"
+    }
+  },
+  "SHARED" : {
+    "TOGGLE" : "Toggle all"
   }
 }

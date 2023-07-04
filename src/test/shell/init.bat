@@ -554,6 +554,52 @@ echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\healthchecks\healthchecks7.png;type=image/png" %API_URL%/apps/30/screenshots
 
 echo.
+echo App31
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app31-ctfd.json
+echo.
+echo App31 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\ctfd.png;type=image/png" %API_URL%/apps/31/logo
+echo.
+echo App31 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\ctfd\ctfd1.png;type=image/png" %API_URL%/apps/31/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\ctfd\ctfd2.png;type=image/png" %API_URL%/apps/31/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\ctfd\ctfd3.png;type=image/png" %API_URL%/apps/31/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\ctfd\ctfd4.png;type=image/png" %API_URL%/apps/31/screenshots
+
+echo.
+echo App32
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app32-juiceshop.json
+echo.
+echo App32 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\juiceshop.png;type=image/png" %API_URL%/apps/32/logo
+echo.
+echo App32 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\juiceshop\juiceshop1.png;type=image/png" %API_URL%/apps/32/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\juiceshop\juiceshop2.png;type=image/png" %API_URL%/apps/32/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\juiceshop\juiceshop3.png;type=image/png" %API_URL%/apps/32/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\juiceshop\juiceshop4.png;type=image/png" %API_URL%/apps/32/screenshots
+
+echo.
+echo App33
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app33-adminer.json
+echo.
+echo App33 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\adminer.png;type=image/png" %API_URL%/apps/32/logo
+echo.
+echo App33 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\adminer\adminer1.png;type=image/png" %API_URL%/apps/32/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\adminer\adminer2.png;type=image/png" %API_URL%/apps/32/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\adminer\adminer3.png;type=image/png" %API_URL%/apps/32/screenshots
+
+echo.
 echo ---------------------
 echo Activate apps
 curl -X PATCH %API_URL%/apps/state/1 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
@@ -588,6 +634,7 @@ curl -X PATCH %API_URL%/apps/state/29 --header "Authorization: Bearer %token%" -
 curl -X PATCH %API_URL%/apps/state/30 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/31 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 curl -X PATCH %API_URL%/apps/state/32 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
+curl -X PATCH %API_URL%/apps/state/33 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\activations\active.json
 
 echo.
 echo ---------------------

@@ -13,26 +13,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ApplicationStatePerDomainServiceImplTest {
 
-    private DomainRepository domains = mock(DomainRepository.class);
-    private ApplicationBaseRepository applications = mock(ApplicationBaseRepository.class);
+    private final DomainRepository domains = mock(DomainRepository.class);
+    private final ApplicationBaseRepository applications = mock(ApplicationBaseRepository.class);
 
     private ApplicationStatePerDomainServiceImpl appState;
 
-    private Domain domain1 = mock(Domain.class);
-    private ApplicationBase app1 = mock(ApplicationBase.class);
+    private final Domain domain1 = mock(Domain.class);
+    private final ApplicationBase app1 = mock(ApplicationBase.class);
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         appState = new ApplicationStatePerDomainServiceImpl(domains, applications);
     }
 
     @Test
-    public void shouldGenerateListOfDefaultApplicationStatesWithDefaults() {
+    void shouldGenerateListOfDefaultApplicationStatesWithDefaults() {
         when(applications.findAll()).thenReturn(new ArrayList<ApplicationBase>() {{
             add(app1);
         }});
@@ -47,7 +54,7 @@ public class ApplicationStatePerDomainServiceImplTest {
     }
 
     @Test
-    public void shouldUpdateAllDomainWithNewApplicationBase() {
+    void shouldUpdateAllDomainWithNewApplicationBase() {
         when(domains.findAll()).thenReturn(new ArrayList<Domain>() {{
             add(domain1);
         }});
@@ -57,11 +64,10 @@ public class ApplicationStatePerDomainServiceImplTest {
         verify(domains, times(1)).findAll();
         verify(domains, times(1)).saveAll(any());
         verify(domain1, times(1)).addApplicationState(any(ApplicationStatePerDomain.class));
-
     }
 
     @Test
-    public void shouldReturnTrueIfApplicationIsEnabledInDomain() {
+    void shouldReturnTrueIfApplicationIsEnabledInDomain() {
         String mockName="test";
         Application app = mock(Application.class);
         when(app.getName()).thenReturn(mockName);
@@ -79,7 +85,7 @@ public class ApplicationStatePerDomainServiceImplTest {
     }
 
     @Test
-    public void shouldReturnFalseIfApplicationIsEnabledInDomain() {
+    void shouldReturnFalseIfApplicationIsEnabledInDomain() {
         String mockName="test";
         Application app = mock(Application.class);
         when(app.getName()).thenReturn(mockName);
@@ -97,7 +103,7 @@ public class ApplicationStatePerDomainServiceImplTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhereThereIsNoAppBaseMatchingApplication() {
+    void shouldThrowExceptionWhereThereIsNoAppBaseMatchingApplication() {
         String mockName="test";
         Application app = mock(Application.class);
         when(app.getName()).thenReturn(mockName);
@@ -107,8 +113,7 @@ public class ApplicationStatePerDomainServiceImplTest {
             appState.isApplicationEnabledInDomain(domain1, app);
         });
 
-        assertEquals("Application name not found", thrown.getMessage());
+        assertEquals("Application with given name not found", thrown.getMessage());
     }
-
 
 }
