@@ -199,7 +199,8 @@
     "ITEMS_PER_PAGE": "Users per page",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Grant USER role",
     "ADD_TO_DOMAIN_BUTTON": "Add user to domain",
-    "GO_BACK_BUTTON": "Back"
+    "GO_BACK_BUTTON": "Back",
+    "SEARCH" : "Search users by their full email address"
   },
   "DOMAINS": {
     "TITLE": "Organisation",
