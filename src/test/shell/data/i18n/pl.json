@@ -13,10 +13,10 @@
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
-    "LANGUAGE": "Język",
+    "LANGUAGE": "Tłumaczenia",
     "ABOUT": "O nas",
     "BACK": "Wróć do strony głównej",
-    "LANGUAGES": "Języki",
+    "LANGUAGES": "Tłumaczenia",
     "NOTIFICATION": "Wyślij wiadomość",
     "ALL_USERS": "Do wszystkich",
     "EXPIRED_TIME" : "Koniec sesji za",
@@ -206,7 +206,8 @@
     "ITEMS_PER_PAGE": "Ilość wyświetlanych uzytkowników na stronie",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Nadaj rolę USER",
     "ADD_TO_DOMAIN_BUTTON": "Dodaj użytkownika do domeny",
-    "GO_BACK_BUTTON": "Wróć"
+    "GO_BACK_BUTTON": "Wróć",
+    "SEARCH" : "Wyszukaj użytkowników po całym adresie email"
   },
   "DOMAINS": {
     "TITLE": "Domeny",
@@ -698,9 +699,12 @@
     "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje",
     "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników",
     "ADD_JSON" : "Dodanie aplikacji przez plik JSON",
+    "ADD_JSON_VERSION" : "Dodanie wersji aplikacji przez plik JSON",
     "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
     "ADD_JSON_TEXTAREA" : "lub skopiuj jego zawartość poniżej",
-    "SEND_JSON" : "Send JSON text"
+    "SEND_JSON" : "Wyślij JSON",
+    "JSON_ERROR" : "JSON jest niepoprawny - sprawdź poprawność składni"
+
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -862,7 +866,9 @@
     "REJECT_CHANGES": "Odrzuć",
     "APPLY_CHANGES": "Apply changes to deploy parameters",
     "CHANGES_TOOLTIP": "Accept or reject changes in deployment parameters",
-    "REMOVE_TOOLTIP": "Usuń metodę dostępu"
+    "REMOVE_TOOLTIP": "Usuń metodę dostępu",
+    "CONDITION_TYPE" : "Typ warunku",
+    "CONDITION" : "Warunek"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
@@ -1024,7 +1030,7 @@
       "CLOSE_BUTTON": "Zamknij",
       "HEADER": "Nagłówek"
     },
-    "TITLE": "Zarządzanie językami",
+    "TITLE": "Zarządzanie tłumaczeniami",
     "LANGUAGE": "Język",
     "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
     "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"

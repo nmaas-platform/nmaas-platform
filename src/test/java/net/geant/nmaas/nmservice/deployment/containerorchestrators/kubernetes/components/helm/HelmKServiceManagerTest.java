@@ -16,6 +16,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,9 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,15 +67,29 @@ public class HelmKServiceManagerTest {
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "persistence.size");
         storageVolumes.add(new ServiceStorageVolume(ServiceStorageVolumeType.MAIN, 2, pvMap));
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
-        Map<HelmChartIngressVariable, String> ivMap = new HashMap<>();
-        ivMap.put(HelmChartIngressVariable.INGRESS_ENABLED, "ingress.enabled");
-        ivMap.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class");
-        ivMap.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.hosts");
-        ivMap.put(HelmChartIngressVariable.INGRESS_LETSENCRYPT, "ingress.tls.acme");
-        ivMap.put(HelmChartIngressVariable.INGRESS_TLS_ENABLED, "ingress.tls.enabled");
-        ivMap.put(HelmChartIngressVariable.INGRESS_WILDCARD_OR_ISSUER, "ingress.tls.certOrIssuer");
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", ivMap));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", ivMap));
+        Map<HelmChartIngressVariable, String> ivMapDefault = new HashMap<>();
+        ivMapDefault.put(HelmChartIngressVariable.INGRESS_ENABLED, "ingress.enabled");
+        ivMapDefault.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class");
+        ivMapDefault.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress.hosts");
+        ivMapDefault.put(HelmChartIngressVariable.INGRESS_LETSENCRYPT, "ingress.tls.acme");
+        ivMapDefault.put(HelmChartIngressVariable.INGRESS_TLS_ENABLED, "ingress.tls.enabled");
+        ivMapDefault.put(HelmChartIngressVariable.INGRESS_WILDCARD_OR_ISSUER, "ingress.tls.certOrIssuer");
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", ivMapDefault));
+        Map<HelmChartIngressVariable, String> ivMapExternal1 = new HashMap<>();
+        ivMapExternal1.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress-ex1.class");
+        ivMapExternal1.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress-ex1.hosts");
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", ivMapExternal1));
+        Map<HelmChartIngressVariable, String> ivMapExternal2 = new HashMap<>();
+        ivMapExternal2.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress-ex2.class");
+        ivMapExternal2.put(HelmChartIngressVariable.INGRESS_HOSTS, "ingress-ex2.hosts");
+        accessMethods.add(ServiceAccessMethod.builder()
+                .type(ServiceAccessMethodType.EXTERNAL)
+                .name("web-service-2")
+                .url(null)
+                .protocol("Web")
+                .enabled(false)
+                .deployParameters(ivMapExternal2)
+                .build());
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
         service.setStorageVolumes(storageVolumes);
         service.setAccessMethods(accessMethods);
@@ -96,15 +109,30 @@ public class HelmKServiceManagerTest {
         when(ingressManager.getTlsSupported()).thenReturn(true);
         when(ingressManager.getIssuerOrWildcardName()).thenReturn("testIssuerName");
         when(ingressManager.getCertificateConfigOption()).thenReturn(IngressCertificateConfigOption.USE_LETSENCRYPT);
+
         manager.deployService(deploymentId);
 
+        ArgumentCaptor<KubernetesTemplate> k8sTemplateArg = ArgumentCaptor.forClass(KubernetesTemplate.class);
+        ArgumentCaptor<Map<String, String>> argumentsArg = ArgumentCaptor.forClass(HashMap.class);
         verify(helmCommandExecutor, times(1)).executeHelmRepoUpdateCommand();
         verify(helmCommandExecutor, times(1)).executeHelmInstallCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
-                isNotNull(),
-                anyMap()
+                k8sTemplateArg.capture(),
+                argumentsArg.capture()
         );
+        assertThat(argumentsArg.getValue()).isNotEmpty();
+        System.out.printf(argumentsArg.getValue().toString());
+        assertThat(argumentsArg.getValue().size()).isEqualTo(11);
+    }
+
+    @Test
+    void shouldRetrieveServiceExternalAccessMethods() {
+        Set<ServiceAccessMethod> allAccessMethods = new HashSet<>();
+        allAccessMethods.add(ServiceAccessMethod.builder().type(ServiceAccessMethodType.EXTERNAL).enabled(true).build());
+        allAccessMethods.add(ServiceAccessMethod.builder().type(ServiceAccessMethodType.EXTERNAL).enabled(false).build());
+        allAccessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", null));
+        assertThat(HelmKServiceManager.serviceExternalAccessMethods(allAccessMethods).size()).isEqualTo(2);
     }
 
     @Test
