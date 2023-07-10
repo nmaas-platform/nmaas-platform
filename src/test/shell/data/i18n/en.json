@@ -13,10 +13,10 @@
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
     "LOGIN_REGISTER": "Login | Register",
-    "LANGUAGE": "Language",
+    "LANGUAGE": "Translations",
     "ABOUT": "About",
     "BACK": "Back to Home Page",
-    "LANGUAGES": "Languages",
+    "LANGUAGES": "Translations",
     "NOTIFICATION": "Send notification",
     "ALL_USERS": "To all users",
     "EXPIRED_TIME" : "Session expires in",
@@ -206,7 +206,8 @@
     "ITEMS_PER_PAGE": "Users per page",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Grant USER role",
     "ADD_TO_DOMAIN_BUTTON": "Add user to domain",
-    "GO_BACK_BUTTON": "Back"
+    "GO_BACK_BUTTON": "Back",
+    "SEARCH" : "Search users by their full email address"
   },
   "DOMAINS": {
     "TITLE": "Domains",
@@ -699,11 +700,11 @@
     "ADD_NEW_VERSION_BUTTON": "Add new version",
     "SEND_NOTIFICATION": "Send email notification to all users",
     "ADD_JSON" : "Add application using JSON file",
-    "ADD_JSON_INFO" : "Select JSON file in uploader",
-    "ADD_JSON_TEXTAREA" : "or copy json-text in textarea",
-    "SEND_JSON" : "Send JSON text",
+    "ADD_JSON_INFO" : "Select JSON file for upload",
+    "ADD_JSON_TEXTAREA" : "or enter JSON content below",
+    "SEND_JSON" : "Upload JSON content",
     "ADD_JSON_VERSION" : "Add application version using JSON file",
-    "JSON_ERROR" : "JSON formatting validation error - please check the JSON"
+    "JSON_ERROR" : "JSON content is not valid - please verify the syntax"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -865,7 +866,9 @@
     "REJECT_CHANGES": "Reject",
     "APPLY_CHANGES": "Apply changes to deploy parameters",
     "CHANGES_TOOLTIP": "Accept or reject changes in deployment parameters",
-    "REMOVE_TOOLTIP": "Remove access method"
+    "REMOVE_TOOLTIP": "Remove access method",
+    "CONDITION_TYPE" : "Condition type",
+    "CONDITION" : "Condition"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",
@@ -1027,7 +1030,7 @@
       "CLOSE_BUTTON": "Close",
       "HEADER": "Error"
     },
-    "TITLE": "Language management",
+    "TITLE": "Translations management",
     "LANGUAGE": "Language",
     "RAW_MODE_ENABLED": "Raw mode is enabled",
     "RAW_MODE_DISABLED": "Raw mode is disabled"

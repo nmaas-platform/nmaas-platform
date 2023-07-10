@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,8 @@ import javax.persistence.Id;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.geant.nmaas.orchestration.entities.AppAccessMethod.ConditionType.DEPLOYMENT_PARAMETER;
+
 /**
  * This class represents single access method to NMAAS service
  */
@@ -29,6 +32,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Entity
 @EqualsAndHashCode
+@Builder
 public class ServiceAccessMethod {
 
     public static final String DEFAULT_INTERNAL_SSH_ACCESS_USERNAME = "netops";
@@ -46,6 +50,10 @@ public class ServiceAccessMethod {
 
     private String protocol;
 
+    private String condition;
+
+    private boolean enabled;
+
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<HelmChartIngressVariable, String> deployParameters;
@@ -55,6 +63,7 @@ public class ServiceAccessMethod {
         this.name = name;
         this.url = url;
         this.protocol = protocol;
+        this.enabled = true;
         this.deployParameters = deployParameters;
     }
 
@@ -67,6 +76,10 @@ public class ServiceAccessMethod {
         serviceAccessMethod.setType(appAccessMethod.getType());
         serviceAccessMethod.setName(appAccessMethod.getTag());
         serviceAccessMethod.setProtocol(appAccessMethod.getName());
+        serviceAccessMethod.setCondition(
+                DEPLOYMENT_PARAMETER.equals(appAccessMethod.getConditionType()) ? appAccessMethod.getCondition() : null
+        );
+        serviceAccessMethod.setEnabled(true);
         serviceAccessMethod.setUrl(null);
         serviceAccessMethod.deployParameters = new HashMap<>();
         if (appAccessMethod.getDeployParameters() != null) {

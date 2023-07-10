@@ -1,6 +1,11 @@
 package net.geant.nmaas.orchestration.entities;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -13,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,6 +26,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 @Entity
 public class AppAccessMethod implements Serializable {
 
@@ -34,9 +41,16 @@ public class AppAccessMethod implements Serializable {
 
     private String tag;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ConditionType conditionType = ConditionType.NONE;
+
+    private String condition;
+
     @ElementCollection
     @Fetch(FetchMode.SELECT)
-    private Map<String, String> deployParameters;
+    @Builder.Default
+    private Map<String, String> deployParameters = new HashMap<>();
 
     public AppAccessMethod(ServiceAccessMethodType type, String name, String tag, Map<String, String> deployParameters) {
         this.type = type;
@@ -58,5 +72,12 @@ public class AppAccessMethod implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public enum ConditionType {
+
+        NONE,
+        DEPLOYMENT_PARAMETER;
+
     }
 }

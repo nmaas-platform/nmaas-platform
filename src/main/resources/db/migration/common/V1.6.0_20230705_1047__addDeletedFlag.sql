@@ -1,0 +1,1 @@
+alter table domain add column deleted boolean default false;

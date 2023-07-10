@@ -21,12 +21,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mvc = createMVC();
     }
 	
     @Test
-    public void testSuccessfulLogin() {
+    void shouldLoginSuccessfully() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/auth/basic/login")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -37,7 +37,7 @@ public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testUnsuccessfulLoginWithWrongCredentials() {
+    void shouldNotLoginWithWrongCredentials() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/auth/basic/login")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -48,7 +48,7 @@ public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testSuccessAuthPing() {
+    void shouldAuthPingSuccessfully() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/auth/basic/ping")
@@ -59,7 +59,7 @@ public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
     }
 	
     @Test
-    public void testFailedAuthPing() {
+    void shouldNotAuthPing() {
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/auth/basic/ping"))
                     .andExpect(status().is4xxClientError());
