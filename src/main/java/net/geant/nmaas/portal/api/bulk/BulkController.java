@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.api.domain.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.BulkHistoryService;
@@ -35,6 +36,8 @@ public class BulkController {
 
     private final BulkCsvProcessor bulkCsvProcessor;
     private final BulkDomainService bulkDomainService;
+
+    private final BulkApplicationService bulkApplicationService;
     private final BulkHistoryService bulkHistoryService;
     private final UserService userService;
     private final ModelMapper modelMapper;
@@ -65,10 +68,13 @@ public class BulkController {
 
     @PostMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentEntryView>> uploadApplications(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<List<BulkDeploymentEntryView>> uploadApplications(@RequestParam("file") MultipartFile file, @NotNull Principal principal) {
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
                 List<CsvBean> csvApplications = bulkCsvProcessor.process(file, CsvApplication.class);
+                User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
+                List<BulkDeploymentEntryView> entries = bulkApplicationService.handleBulkCreation(csvApplications);
+
                 // TODO trigger bulk application deployment
                 return ResponseEntity.noContent().build();
             } catch (Exception e) {

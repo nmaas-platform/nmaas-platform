@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.bulk;
 import net.geant.nmaas.portal.api.domain.BulkDeploymentViewS;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.BulkHistoryService;
@@ -31,6 +32,8 @@ public class BulkControllerTest {
 
     private final BulkCsvProcessor bulkCsvProcessor = mock(BulkCsvProcessor.class);
     private final BulkDomainService bulkDomainService = mock(BulkDomainService.class);
+
+    private final BulkApplicationService bulkApplicationService = mock(BulkApplicationService.class);
     private final ModelMapper modelMapper = new ModelMapper();
     private final BulkHistoryService bulkHistoryService = mock(BulkHistoryService.class);
     private final UserService userService = mock(UserService.class);
@@ -40,7 +43,7 @@ public class BulkControllerTest {
 
     @BeforeEach
     void setup() {
-        this.bulkController = new BulkController(bulkCsvProcessor, bulkDomainService, bulkHistoryService,
+        this.bulkController = new BulkController(bulkCsvProcessor, bulkDomainService,bulkApplicationService, bulkHistoryService,
                 userService, modelMapper);
     }
 
@@ -72,7 +75,8 @@ public class BulkControllerTest {
     void shouldHandleIncorrectFileFormatForBulkApplicationRequest() {
         MultipartFile file = new MockMultipartFile("test.txt", "test.txt", "text/plain", "invalid content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(false);
-        ResponseEntity<List<BulkDeploymentEntryView>> response = bulkController.uploadApplications(file);
+        when(principalMock.getName()).thenReturn("user");
+        ResponseEntity<List<BulkDeploymentEntryView>> response = bulkController.uploadApplications(file, principalMock);
         verifyNoInteractions(bulkDomainService);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -81,7 +85,8 @@ public class BulkControllerTest {
     void shouldProcessBulkApplicationRequest() throws IOException {
         MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
-        ResponseEntity<List<BulkDeploymentEntryView>> response = bulkController.uploadApplications(file);
+        when(principalMock.getName()).thenReturn("user");
+        ResponseEntity<List<BulkDeploymentEntryView>> response = bulkController.uploadApplications(file, principalMock);
         verify(bulkCsvProcessor).process(any(), any());
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }

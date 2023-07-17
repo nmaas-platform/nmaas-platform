@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -24,6 +25,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping(value = "/api/apps/instances")
+@Slf4j
 public class AppConfigurationController {
 
     private static final String INSTANCE_NOT_FOUND_MESSAGE = "App instance not found";
@@ -59,6 +61,7 @@ public class AppConfigurationController {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         boolean valid = validJSON(configuration.getJsonInput());
+        log.error("Configuration = " + configuration.getJsonInput());
         if (!valid) {
             throw new ProcessingException("Configuration is not in valid JSON format");
         }
