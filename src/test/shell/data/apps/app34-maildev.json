@@ -1,0 +1,157 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "MailDev",
+        "license": "Dan Farrelly",
+        "licenseUrl": "https://raw.githubusercontent.com/maildev/maildev/master/LICENSE",
+        "wwwUrl": "https://maildev.github.io/maildev/",
+        "sourceUrl": "https://github.com/maildev/maildev",
+        "issuesUrl": "https://github.com/maildev/maildev/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-MailDev",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "SMTP Server + Web Interface for viewing and testing emails during development.",
+                "fullDescription": "MailDev is a simple way to test your project's generated email during development, with an easy to use web interface that runs on NMaaS, built on top of Node.js."
+            },
+            {
+                "language": "de",
+                "briefDescription": "SMTP Server + Web Interface for viewing and testing emails during development.",
+                "fullDescription": "MailDev is a simple way to test your project's generated email during development, with an easy to use web interface that runs on NMaaS, built on top of Node.js."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "SMTP Server + Web Interface for viewing and testing emails during development.",
+                "fullDescription": "MailDev is a simple way to test your project's generated email during development, with an easy to use web interface that runs on NMaaS, built on top of Node.js."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "SMTP Server + Web Interface for viewing and testing emails during development.",
+                "fullDescription": "MailDev is a simple way to test your project's generated email during development, with an easy to use web interface that runs on NMaaS, built on top of Node.js."
+            }
+        ],
+        "tags": [
+            "email server",
+            "virtual lab",
+            "development",
+            "sandbox"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "MailDev",
+        "version": "2.0.5",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Additional Parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "additionalParameters",
+                                        "components": [
+                                            {
+                                                "label": "Enable Web Authentication",
+                                                "type": "checkbox",
+                                                "defaultValue": false,
+                                                "input": true,
+                                                "tab": 0,
+                                                "key": "auth#enabled",
+                                                "inputFormat": "plain"
+                                            },
+                                            {
+                                                "label": "Web user",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "tab": 0,
+                                                "key": "properties#webUser",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "auth#enabled",
+                                                    "eq": true
+                                                }
+                                            },
+                                            {
+                                                "label": "Password for the web user",
+                                                "type": "password",
+                                                "input": true,
+                                                "tab": 0,
+                                                "key": "properties#webPassword",
+                                                "inputFormat": "plain",
+                                                "conditional": {
+                                                    "show": true,
+                                                    "when": "auth#enabled",
+                                                    "eq": true
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-maildev",
+                    "version": "1.0.0"
+                },
+                "mainDeploymentName": "nmaas-maildev"
+            },
+            "deployParameters": { },
+            "globalDeployParameters": {
+                "ingress.hosts[0].paths[0].path": "/",
+                "ingress.hosts[0].paths[0].pathType": "ImplementationSpecific"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "MailDev",
+                    "tag": "maildev",
+                    "deployParameters": {
+                        "INGRESS_CLASS": "ingress.className",
+                        "INGRESS_HOSTS": "ingress.hosts[0].host=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "ingress.tls[0].hosts[0]=%VALUE%"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}

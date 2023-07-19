@@ -19,7 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @ContextConfiguration(classes = {ApiSecurityConfig.class, ConvertersConfig.class, PersistentConfig.class})
@@ -55,12 +54,12 @@ public class BaseControllerTestSetup {
 	
 	protected void prepareSecurity() {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();		
-		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, Arrays.asList(new SimpleGrantedAuthority(Role.ROLE_SYSTEM_ADMIN.authority()))));
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, List.of(new SimpleGrantedAuthority(Role.ROLE_SYSTEM_ADMIN.authority()))));
 		SecurityContextHolder.setContext(context);
 	}
 	
     protected String getValidUserTokenFor(Role role) {
-		List<Role> roles = new ArrayList<Role>();
+		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		User admin = new User(ADMIN_USERNAME, true, ADMIN_PASSWORD, domains.getGlobalDomain().get(), roles);
 		return tokenService.getToken(admin);

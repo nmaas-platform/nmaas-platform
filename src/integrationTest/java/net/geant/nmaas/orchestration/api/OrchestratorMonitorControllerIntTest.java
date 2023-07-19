@@ -86,7 +86,7 @@ public class OrchestratorMonitorControllerIntTest {
 
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
         accessDetails = new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "http://testurl:8080");
+            ServiceAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("Default").protocol("Web").url("http://testurl:8080").build();
         }});
         mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
     }

@@ -4,7 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
@@ -12,7 +16,12 @@ import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.TagView;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
@@ -27,7 +36,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,7 +67,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     private ApplicationBaseRepository appBaseRepo;
 
     @BeforeEach
-    public void setup(){
+    void setup() {
         this.mvc = createMVC();
 
         ModelMapper modelMapper = new ModelMapper();
@@ -84,19 +98,19 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     }
 
     @AfterEach
-    public void teardown(){
+    void teardown(){
         this.appRepository.deleteAll();
         this.appBaseRepo.deleteAll();
         this.tagRepository.deleteAll();
     }
 
     @Test
-    public void thereShouldBeTwoTagsInRepositoryAfterSetup() {
+    void thereShouldBeTwoTagsInRepositoryAfterSetup() {
         assertEquals(2, tagRepository.count());
     }
 
     @Test
-    public void shouldGetAllTags() throws Exception{
+    void shouldGetAllTags() throws Exception{
         MvcResult result = mvc.perform(get("/api/tags")
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
@@ -107,7 +121,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldGetAppByTagWhenThereAreActiveApplications() throws Exception {
+    void shouldGetAppByTagWhenThereAreActiveApplications() throws Exception {
         MvcResult result = mvc.perform(get("/api/tags/tag1")
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
@@ -117,7 +131,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldGetEmptyCollection() throws Exception {
+    void shouldGetEmptyCollection() throws Exception {
         MvcResult result = mvc.perform(get("/api/tags/deprecated")
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
@@ -148,9 +162,9 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
         List<AppStorageVolume> svList = new ArrayList<>();
         svList.add(new AppStorageVolume(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         List<AppAccessMethod> mvList = new ArrayList<>();
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.DEFAULT).name("name1").tag("tag1").build());
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.EXTERNAL).name("name2").tag("tag2").build());
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.INTERNAL).name("name3").tag("tag3").build());
         Application application = new Application();
         application.setName(name);
         application.setVersion("1.0.0");
