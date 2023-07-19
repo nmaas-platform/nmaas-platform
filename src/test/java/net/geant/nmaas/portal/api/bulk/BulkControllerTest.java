@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,8 +31,8 @@ public class BulkControllerTest {
 
     private final BulkCsvProcessor bulkCsvProcessor = mock(BulkCsvProcessor.class);
     private final BulkDomainService bulkDomainService = mock(BulkDomainService.class);
-
     private final BulkApplicationService bulkApplicationService = mock(BulkApplicationService.class);
+
     private final ModelMapper modelMapper = new ModelMapper();
     private final BulkHistoryService bulkHistoryService = mock(BulkHistoryService.class);
     private final UserService userService = mock(UserService.class);
@@ -43,7 +42,7 @@ public class BulkControllerTest {
 
     @BeforeEach
     void setup() {
-        this.bulkController = new BulkController(bulkCsvProcessor, bulkDomainService,bulkApplicationService, bulkHistoryService,
+        this.bulkController = new BulkController(bulkCsvProcessor, bulkDomainService, bulkApplicationService, bulkHistoryService,
                 userService, modelMapper);
     }
 
@@ -51,7 +50,9 @@ public class BulkControllerTest {
     void shouldHandleIncorrectFileFormatForBulkDomainRequest() {
         MultipartFile file = new MockMultipartFile("test.txt", "test.txt", "text/plain", "invalid content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(false);
+
         ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadDomains(principalMock, file);
+
         verifyNoInteractions(bulkDomainService);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -66,7 +67,7 @@ public class BulkControllerTest {
 
         ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadDomains(principalMock, file);
 
-        verify(bulkCsvProcessor).process(any(), any());
+        verify(bulkCsvProcessor).processDomainSpecs(any());
         verify(bulkDomainService).handleBulkCreation(any());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -76,8 +77,10 @@ public class BulkControllerTest {
         MultipartFile file = new MockMultipartFile("test.txt", "test.txt", "text/plain", "invalid content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(false);
         when(principalMock.getName()).thenReturn("user");
-        ResponseEntity<List<BulkDeploymentEntryView>> response = bulkController.uploadApplications(file, principalMock);
-        verifyNoInteractions(bulkDomainService);
+
+        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", file);
+
+        verifyNoInteractions(bulkApplicationService);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
@@ -86,9 +89,14 @@ public class BulkControllerTest {
         MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
         when(principalMock.getName()).thenReturn("user");
-        ResponseEntity<List<BulkDeploymentEntryView>> response = bulkController.uploadApplications(file, principalMock);
-        verify(bulkCsvProcessor).process(any(), any());
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
+        when(bulkHistoryService.createFromEntries(any(), any())).thenReturn(new BulkDeployment());
+
+        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", file);
+
+        verify(bulkCsvProcessor).processApplicationSpecs(any());
+        verify(bulkApplicationService).handleBulkCreation(any(), any(), any());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
 }

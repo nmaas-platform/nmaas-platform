@@ -5,7 +5,6 @@ import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkType;
-import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -42,7 +41,6 @@ public class BulkDomainServiceImplTest {
     @Test
     void shouldHandleBulkCreationWhenAllCreated() {
         CsvDomain csvDomain = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1");
-        List<CsvBean> input = List.of(csvDomain);
         Domain domain = new Domain(1L,"domain1", "domain1");
         Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
         when(domainService.findDomain(anyString())).thenReturn(Optional.of(domain));
@@ -56,7 +54,7 @@ public class BulkDomainServiceImplTest {
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
         when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
 
-        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
+        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(List.of(csvDomain));
 
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), false);
@@ -70,7 +68,6 @@ public class BulkDomainServiceImplTest {
     @Test
     void shouldHandleBulkCreationWhenDomainsCreated() {
         CsvDomain csvDomain = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1");
-        List<CsvBean> input = List.of(csvDomain);
         Domain domain = new Domain(1L,"domain1", "domain1");
         domain.setDomainDcnDetails(new DomainDcnDetails(10L, "domain1", true, DcnDeploymentType.MANUAL, null));
         Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
@@ -86,7 +83,7 @@ public class BulkDomainServiceImplTest {
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
         when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
 
-        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
+        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(List.of(csvDomain));
 
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), true);
@@ -100,7 +97,6 @@ public class BulkDomainServiceImplTest {
     @Test
     void shouldHandleBulkCreationWhenUserCreated() {
         CsvDomain csvDomain = new CsvDomain("domain1", "user1", "user1@test.com", null, "group1");
-        List<CsvBean> input = List.of(csvDomain);
         Domain domain = new Domain(1L,"domain1", "domain1");
         domain.setDomainDcnDetails(new DomainDcnDetails(10L, "domain1", true, DcnDeploymentType.MANUAL, null));
         Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
@@ -115,7 +111,7 @@ public class BulkDomainServiceImplTest {
         user.setEmail("user1@test.com");
         when(userService.registerBulk(any(), any(), any())).thenReturn(user);
 
-        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
+        List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(List.of(csvDomain));
 
         assertEquals(responses.size(), 2);
         assertEquals(responses.get(0).getCreated(), true);

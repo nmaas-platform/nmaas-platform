@@ -77,7 +77,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Override
 	public AppInstance create(Domain domain, Application application, String name, boolean autoUpgradesEnabled) {
 		checkParam(domain);
-		if(!domain.isActive()) {
+		if (!domain.isActive()) {
 			throw new IllegalArgumentException("Domain is inactive");
 		}
 		checkParam(application);
@@ -87,10 +87,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             throw new IllegalArgumentException("Application is disabled in domain settings");
         }
 
-		if(applicationSubscriptions.isActive(application.getName(), domain))
+		if (applicationSubscriptions.isActive(application.getName(), domain)) {
 			return appInstanceRepo.save(new AppInstance(application, domain, name, autoUpgradesEnabled));
-		else
+		} else {
 			throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
+		}
 	}
 
     @Override
@@ -98,9 +99,10 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
         Domain domain = appInstance.getDomain();
         Application app = appInstance.getApplication();
 
-        ApplicationStatePerDomain appStatePerDomain = domain.getApplicationStatePerDomain().stream().filter(appState ->
-            appState.getApplicationBase().getName().equals(app.getName())
-        ).findAny().orElseThrow(() -> new IllegalArgumentException("Application state not found"));
+        ApplicationStatePerDomain appStatePerDomain = domain.getApplicationStatePerDomain().stream()
+				.filter(appState -> appState.getApplicationBase().getName().equals(app.getName()))
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("Application state not found"));
 
         return this.applicationStatePerDomainService.validateAppConfigurationAgainstState(appConfigurationView, appStatePerDomain);
     }
@@ -122,10 +124,10 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	public void updateApplication(Identifier internalId, Long applicationId) {
 		checkParam(internalId);
 		checkParam(applicationId);
-		final AppInstance instance = findByInternalId(internalId).orElseThrow(() ->
-				new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
-		final Application application = applications.findApplication(applicationId).orElseThrow(() ->
-				new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
+		final AppInstance instance = findByInternalId(internalId)
+				.orElseThrow(() -> new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
+		final Application application = applications.findApplication(applicationId)
+				.orElseThrow(() -> new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
 		appInstanceRepo.updateApplication(instance.getId(), instance.getApplication().getId(), application);
 	}
 

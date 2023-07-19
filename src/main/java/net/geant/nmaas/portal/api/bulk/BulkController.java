@@ -35,20 +35,21 @@ import java.util.stream.Collectors;
 public class BulkController {
 
     private final BulkCsvProcessor bulkCsvProcessor;
-    private final BulkDomainService bulkDomainService;
 
+    private final BulkDomainService bulkDomainService;
     private final BulkApplicationService bulkApplicationService;
+
     private final BulkHistoryService bulkHistoryService;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
     @PostMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal,
-                                                            @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
+        log.info("Processing new bulk domain deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
-                List<CsvBean> csvDomains = bulkCsvProcessor.process(file, CsvDomain.class);
+                List<CsvDomain> csvDomains = bulkCsvProcessor.processDomainSpecs(file);
                 User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
                 List<BulkDeploymentEntryView> entries = bulkDomainService.handleBulkCreation(csvDomains);
@@ -68,15 +69,22 @@ public class BulkController {
 
     @PostMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentEntryView>> uploadApplications(@RequestParam("file") MultipartFile file, @NotNull Principal principal) {
+    public ResponseEntity<BulkDeploymentViewS> uploadApplications(
+            @NotNull Principal principal,
+            @RequestParam("appName") String applicationName,
+            @RequestParam("file") MultipartFile file) {
+        log.info("Processing new bulk application deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
-                List<CsvBean> csvApplications = bulkCsvProcessor.process(file, CsvApplication.class);
+                List<CsvApplication> csvApplications = bulkCsvProcessor.processApplicationSpecs(file);
                 User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
-                List<BulkDeploymentEntryView> entries = bulkApplicationService.handleBulkCreation(csvApplications);
-
-                // TODO trigger bulk application deployment
-                return ResponseEntity.noContent().build();
+                UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+                List<BulkDeploymentEntryView> entries = bulkApplicationService.handleBulkCreation(user.getUsername(), applicationName, csvApplications);
+                return ResponseEntity.ok(
+                        modelMapper.map(
+                                bulkHistoryService.createFromEntries(entries, user),
+                                BulkDeploymentViewS.class)
+                );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -86,7 +94,7 @@ public class BulkController {
         }
     }
 
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAllDeploymentRecords() {
         return ResponseEntity.ok(bulkHistoryService.findAll()

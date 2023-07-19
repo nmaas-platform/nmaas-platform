@@ -8,7 +8,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkType;
-import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
@@ -46,11 +45,12 @@ public class BulkDomainServiceImpl implements BulkDomainService {
 
     private final int domainCodenameMaxLength;
 
-    public BulkDomainServiceImpl(DomainService domainService,
-                                 DomainGroupService domainGroupService,
-                                 UserService userService,
-                                 KubernetesClusterIngressManager kubernetesClusterIngressManager,
-                                 @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength) {
+    public BulkDomainServiceImpl(
+            DomainService domainService,
+            DomainGroupService domainGroupService,
+            UserService userService,
+            KubernetesClusterIngressManager kubernetesClusterIngressManager,
+            @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength) {
         this.domainService = domainService;
         this.domainGroupService = domainGroupService;
         this.userService = userService;
@@ -58,18 +58,17 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         this.domainCodenameMaxLength = domainCodenameMaxLength;
     }
 
-    public List<BulkDeploymentEntryView> handleBulkCreation(List<CsvBean> input) {
-        log.info("Handling bulk domain creation with {} entries", input.size());
+    public List<BulkDeploymentEntryView> handleBulkCreation(List<CsvDomain> domainSpecs) {
+        log.info("Handling bulk domain creation with {} entries", domainSpecs.size());
 
         List<BulkDeploymentEntryView> result = new ArrayList<>();
-        List<CsvDomain> csvDomains = input.stream().map(d -> (CsvDomain) d).collect(Collectors.toList());
 
-        csvDomains.forEach( csvDomain -> {
-            Domain domain = createDomainIfNotExists(result, csvDomain);
+        domainSpecs.forEach( domainSpec -> {
+            Domain domain = createDomainIfNotExists(result, domainSpec);
             // domain groups creation and domain assignment
-            createMissingGroupsAndAssignDomain(csvDomain, domain);
+            createMissingGroupsAndAssignDomain(domainSpec, domain);
             // if user exist update role in domain to domain admin
-            createUserAccountIfNotExists(result, csvDomain, domain);
+            createUserAccountIfNotExists(result, domainSpec, domain);
         });
         return result;
     }

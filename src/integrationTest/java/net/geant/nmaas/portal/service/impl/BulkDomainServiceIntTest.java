@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
-import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ public class BulkDomainServiceIntTest {
         CsvDomain csvDomain1 = new CsvDomain("Test.Domain.100", "user1", "user1@test.com", null, "group1");
         CsvDomain csvDomain2 = new CsvDomain("Test.Domain.101", "user1", "user1@test.com", null, "group1");
         CsvDomain csvDomain3 = new CsvDomain("Test.Domain.102", "user1", "user1@test.com", null, "group1");
-        List<CsvBean> input = List.of(csvDomain1, csvDomain2, csvDomain3);
+        List<CsvDomain> input = List.of(csvDomain1, csvDomain2, csvDomain3);
 
         List<BulkDeploymentEntryView> responses = bulkDomainService.handleBulkCreation(input);
 
@@ -54,7 +53,7 @@ public class BulkDomainServiceIntTest {
         CsvDomain csvDomain10 = new CsvDomain("Test2.Domain#User933", "user1", "user1@test.com", null, "group1");
         CsvDomain csvDomain11 = new CsvDomain("Test2.Domain#User944", "user1", "user1@test.com", null, "group1");
         CsvDomain csvDomain12 = new CsvDomain("Test2.Domain#User966", "user1", "user1@test.com", null, "group1");
-        List<CsvBean> input =
+        List<CsvDomain> input =
                 List.of(csvDomain1, csvDomain2, csvDomain3, csvDomain4, csvDomain5, csvDomain6,
                         csvDomain7, csvDomain8, csvDomain9, csvDomain10, csvDomain11, csvDomain12);
 
