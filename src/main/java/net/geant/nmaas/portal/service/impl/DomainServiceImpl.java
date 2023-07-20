@@ -263,6 +263,7 @@ public class DomainServiceImpl implements DomainService {
 			checkGlobal(domain);
 			domain.setDeleted(true);
             domain.setName(domain.getName() + "_DELETED_" + OffsetDateTime.now());
+            domain.setCodename(domain.getCodename() + "_DELETED_" + OffsetDateTime.now());
 			removeAllUsersFromDomain(domain);
             triggerApplicationsUninstall();
 			domainRepository.save(domain);
