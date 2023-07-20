@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -17,13 +17,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 @Log4j2
-@AllArgsConstructor
 public class AppDcnRequestOrVerificationTask {
 
-    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
-
-    private DcnDeploymentProvidersManager providersManager;
+    private final DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private final DcnDeploymentProvidersManager providersManager;
 
     /**
      * Checks current state of DCN for given client and depending on the result requests new DCN deployment
@@ -36,7 +35,7 @@ public class AppDcnRequestOrVerificationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) {
-        try{
+        try {
             final Identifier deploymentId = event.getRelatedTo();
             final String domain = appDeploymentRepositoryManager.loadDomain(deploymentId);
             switch(providersManager.getDcnDeploymentProvider(domain).checkState(domain)) {
@@ -48,7 +47,7 @@ public class AppDcnRequestOrVerificationTask {
                 case PROCESSED:
                     return noEvent();
             }
-        } catch(Exception ex){
+        } catch(Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }

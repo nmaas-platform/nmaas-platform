@@ -28,7 +28,7 @@ public class AppConfigurationVerificationTask {
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = appDeploymentRepositoryManager.load(deploymentId);
-            if(appDeployment.getConfiguration() != null) {
+            if (appDeployment.getConfiguration() != null) {
                 eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
             }
         } catch(Exception e) {
