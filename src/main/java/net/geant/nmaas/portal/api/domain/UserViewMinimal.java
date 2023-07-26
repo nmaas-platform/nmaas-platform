@@ -23,7 +23,7 @@ public class UserViewMinimal extends UserBase implements Serializable {
     @Builder.Default
     private Set<UserRoleView> roles = new HashSet<>();
 
-    protected Boolean haveSshKeys;
+    protected Boolean hasSshKeys;
 
 
 }
