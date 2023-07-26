@@ -603,8 +603,7 @@ public class UsersController {
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .collect(Collectors.toList());
         result = allUsers.stream().
-                filter(user -> user.getEmail().toLowerCase().contentEquals(search)
-                        || user.getUsername().toLowerCase().contentEquals(search))
+                filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                 .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
                 .map(this::mapMinimalUser).collect(Collectors.toList());
         return result;
