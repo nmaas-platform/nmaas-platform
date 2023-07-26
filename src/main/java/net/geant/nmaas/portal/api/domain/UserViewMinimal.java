@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.domain;
 
 import lombok.*;
+import net.geant.nmaas.portal.persistent.entity.User;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -19,7 +20,7 @@ public class UserViewMinimal extends UserBase implements Serializable {
     @Builder.Default
     private Set<UserRoleView> roles = new HashSet<>();
 
-    @Builder.Default
-    private Set<SSHKeyView> sshKeys = new HashSet<>();
+    protected Boolean haveSsh;
+
 
 }
