@@ -700,7 +700,7 @@ public class UsersController {
 
     private UserViewMinimal mapMinimalUser(User user) {
         UserViewMinimal userViewMinimal = modelMapper.map(user, UserViewMinimal.class);
-        userViewMinimal.setHaveSsh(!user.getSshKeys().isEmpty());
+        userViewMinimal.setHasSshKeys(!user.getSshKeys().isEmpty());
         return userViewMinimal;
     }
 
