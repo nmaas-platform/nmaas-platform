@@ -1092,6 +1092,8 @@
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   },
   "BULK" : {
+    "UPLOAD" : "Upload bulk specification",
+    "UPLOAD_BUTTON" : "Upload csv content",
     "LIST" : {
       "ID" : "Id",
       "CREATOR" : "Creator",
@@ -1110,7 +1112,12 @@
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk domain deployments",
-      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress..."
+      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
+      "NAVIGATION" : "New bulk domain deployment",
+      "DEPLOYMENTS" : "Domain deployments"
+    },
+    "USER" : {
+      "DEPLOYMENTS" : "User deployments"
     },
     "APP": {
       "INFO" : "Additional information will be added later",
