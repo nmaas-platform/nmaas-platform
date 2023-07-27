@@ -1113,7 +1113,7 @@
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk domain deployments",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
-      "NAVIGATION" : "New bulk domain navigation",
+      "NAVIGATION" : "New bulk domain deployment",
       "DEPLOYMENTS" : "Domain deployments"
     },
     "USER" : {

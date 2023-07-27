@@ -1095,7 +1095,7 @@
   },
   "BULK" : {
     "UPLOAD" : "Upload bulk specification",
-    "UPLOAD_BUTTON" : "Upload csv text",
+    "UPLOAD_BUTTON" : "Upload csv content",
     "LIST" : {
       "ID" : "Id",
       "CREATOR" : "Creator",
