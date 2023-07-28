@@ -2,19 +2,21 @@ package net.geant.nmaas.orchestration.events.app;
 
 import lombok.Getter;
 import net.geant.nmaas.orchestration.Identifier;
-import org.apache.commons.collections4.MultiValuedMap;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
 public class AppAutoDeploymentTriggeredEvent extends ApplicationEvent {
 
+    private final Identifier bulkDeploymentId;
     private final Identifier deploymentId;
-    private final MultiValuedMap<String, String> configurationParameters;
+    private final AppConfigurationView appConfigurationView;
 
-    public AppAutoDeploymentTriggeredEvent(Object source, Identifier deploymentId, MultiValuedMap<String, String> configurationParameters) {
+    public AppAutoDeploymentTriggeredEvent(Object source, Identifier bulkDeploymentId, Identifier deploymentId, AppConfigurationView appConfigurationView) {
         super(source);
+        this.bulkDeploymentId = bulkDeploymentId;
         this.deploymentId = deploymentId;
-        this.configurationParameters = configurationParameters;
+        this.appConfigurationView = appConfigurationView;
     }
 
 }

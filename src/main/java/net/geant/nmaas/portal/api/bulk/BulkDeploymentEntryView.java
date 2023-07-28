@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 
 import java.util.Map;
 
@@ -15,12 +16,22 @@ import java.util.Map;
 @Builder
 public class BulkDeploymentEntryView {
 
-    private Boolean successful;
+    public static final String BULK_ENTRY_DETAIL_KEY_DOMAIN_ID = "domainId";
+    public static final String BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME = "domainName";
+    public static final String BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME = "domainCodename";
 
-    private Boolean created;
+    public static final String BULK_ENTRY_DETAIL_KEY_USER_ID = "userId";
+    public static final String BULK_ENTRY_DETAIL_KEY_USER_NAME = "userName";
+    public static final String BULK_ENTRY_DETAIL_KEY_USER_EMAIL = "email";
 
-    private Map<String, String> details;
+    public static final String BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID = "appInstanceId";
+    public static final String BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME = "appInstanceName";
+
+    public static final String BULK_ENTRY_DETAIL_KEY_STATUS = "status";
 
     private BulkType type;
+    private BulkDeploymentState state;
+    private Boolean created;
+    private Map<String, String> details;
 
 }

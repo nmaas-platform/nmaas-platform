@@ -1,14 +1,11 @@
 package net.geant.nmaas.portal.api.bulk;
 
-import net.geant.nmaas.portal.api.domain.BulkDeploymentViewS;
-import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
 import net.geant.nmaas.portal.service.BulkDomainService;
-import net.geant.nmaas.portal.service.BulkHistoryService;
 import net.geant.nmaas.portal.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -33,18 +30,14 @@ public class BulkControllerTest {
     private final BulkDomainService bulkDomainService = mock(BulkDomainService.class);
     private final BulkApplicationService bulkApplicationService = mock(BulkApplicationService.class);
 
-    private final ModelMapper modelMapper = new ModelMapper();
-    private final BulkHistoryService bulkHistoryService = mock(BulkHistoryService.class);
+    private final BulkDeploymentRepository bulkDeploymentRepository = mock(BulkDeploymentRepository.class);
     private final UserService userService = mock(UserService.class);
     private final Principal principalMock = mock(Principal.class);
 
-    private BulkController bulkController;
+    private final ModelMapper modelMapper = new ModelMapper();
 
-    @BeforeEach
-    void setup() {
-        this.bulkController = new BulkController(bulkCsvProcessor, bulkDomainService, bulkApplicationService, bulkHistoryService,
-                userService, modelMapper);
-    }
+    private final BulkController bulkController = new BulkController(bulkCsvProcessor, bulkDomainService, bulkApplicationService,
+            bulkDeploymentRepository, userService, modelMapper);
 
     @Test
     void shouldHandleIncorrectFileFormatForBulkDomainRequest() {
@@ -62,13 +55,12 @@ public class BulkControllerTest {
         MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
         when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
-        when(bulkHistoryService.createFromEntries(any(), any())).thenReturn(new BulkDeployment());
         when(principalMock.getName()).thenReturn("user");
 
         ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadDomains(principalMock, file);
 
         verify(bulkCsvProcessor).processDomainSpecs(any());
-        verify(bulkDomainService).handleBulkCreation(any());
+        verify(bulkDomainService).handleBulkCreation(any(), any());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -90,12 +82,11 @@ public class BulkControllerTest {
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
         when(principalMock.getName()).thenReturn("user");
         when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
-        when(bulkHistoryService.createFromEntries(any(), any())).thenReturn(new BulkDeployment());
 
         ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", file);
 
         verify(bulkCsvProcessor).processApplicationSpecs(any());
-        verify(bulkApplicationService).handleBulkCreation(any(), any(), any());
+        verify(bulkApplicationService).handleBulkDeployment(any(), any(), any());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
