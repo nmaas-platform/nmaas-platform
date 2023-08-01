@@ -1,8 +1,12 @@
-name: Scheduled test job
+name: Build and run integration tests with coverage
 
 on:
-  schedule:
-    - cron: '20 9 * * *'
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   test-job-scheduled:
@@ -24,4 +28,4 @@ jobs:
         run: ./gradlew build
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew integrationTest jacocoTestCoverageVerification
