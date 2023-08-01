@@ -9,7 +9,7 @@ on:
       - develop
 
 jobs:
-  test-job-scheduled:
+  build-and-run-integration-tests:
     runs-on: ubuntu-latest
 
     steps:
