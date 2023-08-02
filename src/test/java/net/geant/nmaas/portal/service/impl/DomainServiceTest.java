@@ -360,4 +360,17 @@ public class DomainServiceTest {
         assertThat("Result mismatch", filteredUsers.size() == 2);
     }
 
+    @Test
+    void shouldSoftRemoveDomain() {
+        Domain domain = new Domain(1L, "testdom", "testdom");
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+        domainService.softRemoveDomain(1L);
+        verify(domainRepository, times(1)).save(domain);
+        Optional<Domain> deletedDomain = domainService.findDomain(1L);
+
+        assertTrue(deletedDomain.isPresent());
+        assertTrue(deletedDomain.get().isDeleted());
+        assertTrue(deletedDomain.get().getName().contains("DELETED"));
+    }
+
 }

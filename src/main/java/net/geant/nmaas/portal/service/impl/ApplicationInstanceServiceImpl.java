@@ -25,6 +25,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -144,12 +146,20 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
 	@Override
 	public List<AppInstance> findAll() {
-		return appInstanceRepo.findAll();
+		return appInstanceRepo.findAll()
+				.stream()
+				.filter(appInstance -> !appInstance.getDomain().isDeleted())
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Page<AppInstance> findAll(Pageable pageable) {
-		return appInstanceRepo.findAll(pageable);
+		Page<AppInstance> page = appInstanceRepo.findAll(pageable);
+		List<AppInstance> filtered = page.getContent()
+				.stream()
+				.filter(appInstance -> !appInstance.getDomain().isDeleted())
+				.collect(Collectors.toList());
+		return new PageImpl<>(filtered, pageable, filtered.size());
 	}
 
 	@Override
