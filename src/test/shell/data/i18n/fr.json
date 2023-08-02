@@ -223,13 +223,15 @@
     "ITEMS_PER_PAGE" : "Domains per page",
     "NOTACTIVE": "Show not active domains",
     "LIST" : {
-      "GROUPS" : "Domains groups",
+      "GROUPS" : "Domain groups",
       "GROUP" : "Domain group",
       "DOMAIN_NAME" : "Domain Name",
       "DOMAIN_CODE_NAME" : "Domain Codename",
       "DELETE" : "Remove domain from group",
       "ADD" : "Add domain to group",
-      "ADD_INFO" : "Select domains to add them to group"
+      "ADD_INFO" : "Select domains to add them to group",
+      "LIST" : "Domains in group",
+      "ACTIVE" : "Active"
     }
   },
   "APP_INSTANCES": {
@@ -1092,6 +1094,8 @@
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   },
   "BULK" : {
+    "UPLOAD" : "Upload bulk specification",
+    "UPLOAD_BUTTON" : "Upload csv content",
     "LIST" : {
       "ID" : "Id",
       "CREATOR" : "Creator",
@@ -1110,7 +1114,12 @@
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk domain deployments",
-      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress..."
+      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
+      "NAVIGATION" : "New bulk domain deployment",
+      "DEPLOYMENTS" : "Domain deployments"
+    },
+    "USER" : {
+      "DEPLOYMENTS" : "User deployments"
     },
     "APP": {
       "INFO" : "Additional information will be added later",

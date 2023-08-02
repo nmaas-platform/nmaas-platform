@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CsvDomain extends CsvBean {
+public class CsvDomain {
 
     @CsvBindByName(column = "domain")
     private String domainName;

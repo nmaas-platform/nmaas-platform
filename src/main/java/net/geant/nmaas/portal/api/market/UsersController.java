@@ -603,8 +603,7 @@ public class UsersController {
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .collect(Collectors.toList());
         result = allUsers.stream().
-                filter(user -> user.getEmail().toLowerCase().contentEquals(search)
-                        || user.getUsername().toLowerCase().contentEquals(search))
+                filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                 .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
                 .map(this::mapMinimalUser).collect(Collectors.toList());
         return result;
@@ -700,7 +699,9 @@ public class UsersController {
     }
 
     private UserViewMinimal mapMinimalUser(User user) {
-        return modelMapper.map(user, UserViewMinimal.class);
+        UserViewMinimal userViewMinimal = modelMapper.map(user, UserViewMinimal.class);
+        userViewMinimal.setHasSshKeys(!user.getSshKeys().isEmpty());
+        return userViewMinimal;
     }
 
 }

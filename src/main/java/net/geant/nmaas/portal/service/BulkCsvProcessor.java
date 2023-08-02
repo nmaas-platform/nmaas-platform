@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.api.bulk.CsvBean;
+import net.geant.nmaas.portal.api.bulk.CsvApplication;
+import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -10,6 +11,8 @@ public interface BulkCsvProcessor {
 
     boolean isCSVFormat(MultipartFile file);
 
-    List<CsvBean> process(MultipartFile file, Class givenClass) throws IOException;
+    List<CsvDomain> processDomainSpecs(MultipartFile file) throws IOException;
+
+    List<CsvApplication> processApplicationSpecs(MultipartFile file) throws IOException;
 
 }

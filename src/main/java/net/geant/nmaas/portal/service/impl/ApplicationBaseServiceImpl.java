@@ -39,7 +39,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
             log.error("Cannot add ApplicationBase - id not null");
             throw new ProcessingException("Created application id must be null");
         }
-        if(appBaseRepository.existsByName(applicationBase.getName())) {
+        if (appBaseRepository.existsByName(applicationBase.getName())) {
             log.error("Cannot add ApplicationBase - application already exists");
             throw new ProcessingException("Application base with given name must not exist");
         }
@@ -61,7 +61,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     @Override
     @Transactional
     public ApplicationBase update(ApplicationBase applicationBase) {
-        if(applicationBase.getId() == null) {
+        if (applicationBase.getId() == null) {
             throw new ProcessingException("Updated entity id must not be null");
         }
         applicationBase.validate();
@@ -77,7 +77,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .ifPresent(appVersion -> appVersion.setState(state));
         appBase.validate();
         appBaseRepository.save(appBase);
-        if(state.equals(ApplicationState.ACTIVE)) {
+        if (state.equals(ApplicationState.ACTIVE)) {
             eventPublisher.publishEvent(new ApplicationActivatedEvent(this, name, version));
         }
     }
@@ -110,16 +110,21 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return appBaseRepository.findByName(name).orElseThrow(() -> new MissingElementException(name + " app base not found"));
     }
 
+    @Override
+    public boolean exists(String name) {
+        return appBaseRepository.existsByName(name);
+    }
+
     private void setMissingDescriptions(ApplicationBase app){
         AppDescription appDescription = app.getDescriptions().stream()
                 .filter(description -> description.getLanguage().equals("en"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));
         app.getDescriptions()
-                .forEach(description ->{
-                    if(StringUtils.isEmpty(description.getBriefDescription())){
+                .forEach(description -> {
+                    if (StringUtils.isEmpty(description.getBriefDescription())){
                         description.setBriefDescription(appDescription.getBriefDescription());
                     }
-                    if(StringUtils.isEmpty(description.getFullDescription())){
+                    if (StringUtils.isEmpty(description.getFullDescription())){
                         description.setFullDescription(appDescription.getFullDescription());
                     }
                 });

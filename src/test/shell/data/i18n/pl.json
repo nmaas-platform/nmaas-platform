@@ -229,7 +229,9 @@
       "DOMAIN_CODE_NAME" : "Skrót domeny",
       "DELETE" : "Usuń domene z grupy",
       "ADD" : "Dodaj domene do grupy",
-      "ADD_INFO" : "Wybierz domeny do dodania do grupy"
+      "ADD_INFO" : "Wybierz domeny do dodania do grupy",
+      "LIST" : "Domeny w grupie",
+      "ACTIVE" : "Aktywna"
     }
   },
   "APP_INSTANCES": {
@@ -1093,6 +1095,8 @@
     "INVALID_JSON": "Niewłaściwy format JSON. Zmiany wprowadzone do zawartości formularza nie zostaną zapisane."
   },
   "BULK" : {
+    "UPLOAD" : "Uzupełnij specyfikacje",
+    "UPLOAD_BUTTON" : "Wyślij plik csv",
     "LIST": {
       "ID": "Id",
       "CREATOR": "Twórca",
@@ -1111,7 +1115,12 @@
       "INFO": "Additional information will be added later",
       "SUMMARY": "Table present summary of your bulk domains and domain admin deployments",
       "HEADER": "Tworzenie wielu domen",
+      "NAVIGATION" : "Tworzenie grupowe domen ",
+      "DEPLOYMENTS" : "Utworzone domeny",
       "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen..."
+    },
+    "USER" : {
+      "DEPLOYMENTS" : "Utworzeni użytkownicy"
     },
     "APP": {
       "INFO" : "Additional information will be added later",

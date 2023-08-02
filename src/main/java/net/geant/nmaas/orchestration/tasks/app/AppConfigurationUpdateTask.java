@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.NmServiceDeployment;
@@ -17,13 +17,12 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 
 @Component
+@RequiredArgsConstructor
 @Log4j2
-@AllArgsConstructor
 public class AppConfigurationUpdateTask {
 
-    private NmServiceConfigurationProvider configurationProvider;
-
-    private DefaultAppDeploymentRepositoryManager repositoryManager;
+    private final NmServiceConfigurationProvider configurationProvider;
+    private final DefaultAppDeploymentRepositoryManager repositoryManager;
 
     @EventListener
     @Transactional

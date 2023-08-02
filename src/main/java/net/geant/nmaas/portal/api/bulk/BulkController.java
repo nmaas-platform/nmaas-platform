@@ -2,14 +2,13 @@ package net.geant.nmaas.portal.api.bulk;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.domain.BulkDeploymentView;
-import net.geant.nmaas.portal.api.domain.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
+import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
 import net.geant.nmaas.portal.service.BulkDomainService;
-import net.geant.nmaas.portal.service.BulkHistoryService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -34,26 +33,24 @@ import java.util.stream.Collectors;
 public class BulkController {
 
     private final BulkCsvProcessor bulkCsvProcessor;
+
     private final BulkDomainService bulkDomainService;
-    private final BulkHistoryService bulkHistoryService;
+    private final BulkApplicationService bulkApplicationService;
+
+    private final BulkDeploymentRepository bulkDeploymentRepository;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
     @PostMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal,
-                                                            @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
+        log.info("Processing new bulk domain deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
-                List<CsvBean> csvDomains = bulkCsvProcessor.process(file, CsvDomain.class);
+                List<CsvDomain> csvDomains = bulkCsvProcessor.processDomainSpecs(file);
                 User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
-                List<BulkDeploymentEntryView> entries = bulkDomainService.handleBulkCreation(csvDomains);
-                return ResponseEntity.ok(
-                        modelMapper.map(
-                                bulkHistoryService.createFromEntries(entries, user),
-                                BulkDeploymentViewS.class)
-                );
+                return ResponseEntity.ok(bulkDomainService.handleBulkCreation(csvDomains, user));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -65,12 +62,17 @@ public class BulkController {
 
     @PostMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentEntryView>> uploadApplications(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<BulkDeploymentViewS> uploadApplications(
+            @NotNull Principal principal,
+            @RequestParam("appName") String applicationName,
+            @RequestParam("file") MultipartFile file) {
+        log.info("Processing new bulk application deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
             try {
-                List<CsvBean> csvApplications = bulkCsvProcessor.process(file, CsvApplication.class);
-                // TODO trigger bulk application deployment
-                return ResponseEntity.noContent().build();
+                List<CsvApplication> csvApplications = bulkCsvProcessor.processApplicationSpecs(file);
+                User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
+                UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+                return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -80,10 +82,10 @@ public class BulkController {
         }
     }
 
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAllDeploymentRecords() {
-        return ResponseEntity.ok(bulkHistoryService.findAll()
+        return ResponseEntity.ok(bulkDeploymentRepository.findAll()
                 .stream()
                 .map(bulk -> modelMapper.map(bulk, BulkDeploymentViewS.class))
                 .collect(Collectors.toList()));
@@ -92,7 +94,7 @@ public class BulkController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
-        BulkDeployment bulk = bulkHistoryService.find(id);
+        BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
         bulkView.setCreator(getUserView(bulk.getCreatorId()));
         return ResponseEntity.ok(bulkView);
@@ -101,7 +103,7 @@ public class BulkController {
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords() {
-        return ResponseEntity.ok(bulkHistoryService.findAllByType(BulkType.DOMAIN)
+        return ResponseEntity.ok(bulkDeploymentRepository.findByType(BulkType.DOMAIN)
                 .stream()
                 .map(bulk -> {
                     BulkDeploymentViewS bulkView = modelMapper.map(bulk, BulkDeploymentViewS.class);
@@ -114,8 +116,7 @@ public class BulkController {
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords() {
-        return ResponseEntity.ok(bulkHistoryService.findAllByType(BulkType.APPLICATION)
-                .stream()
+        return ResponseEntity.ok(bulkDeploymentRepository.findByType(BulkType.APPLICATION).stream()
                 .map(bulk -> modelMapper.map(bulk, BulkDeploymentViewS.class))
                 .collect(Collectors.toList()));
     }

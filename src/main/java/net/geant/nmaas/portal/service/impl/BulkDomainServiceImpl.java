@@ -6,25 +6,31 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
-import net.geant.nmaas.portal.api.bulk.CsvBean;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,6 +39,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_ID;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_EMAIL;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_ID;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_NAME;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
 
 @Service
@@ -44,47 +56,58 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final UserService userService;
     private final KubernetesClusterIngressManager kubernetesClusterIngressManager;
 
+    private final BulkDeploymentRepository bulkDeploymentRepository;
+    private final ModelMapper modelMapper;
+
     private final int domainCodenameMaxLength;
 
-    public BulkDomainServiceImpl(DomainService domainService,
-                                 DomainGroupService domainGroupService,
-                                 UserService userService,
-                                 KubernetesClusterIngressManager kubernetesClusterIngressManager,
-                                 @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength) {
+    public BulkDomainServiceImpl(
+            DomainService domainService,
+            DomainGroupService domainGroupService,
+            UserService userService,
+            BulkDeploymentRepository bulkDeploymentRepository,
+            KubernetesClusterIngressManager kubernetesClusterIngressManager,
+            ModelMapper modelMapper,
+            @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength) {
         this.domainService = domainService;
         this.domainGroupService = domainGroupService;
         this.userService = userService;
         this.kubernetesClusterIngressManager = kubernetesClusterIngressManager;
+        this.bulkDeploymentRepository = bulkDeploymentRepository;
+        this.modelMapper = modelMapper;
         this.domainCodenameMaxLength = domainCodenameMaxLength;
     }
 
-    public List<BulkDeploymentEntryView> handleBulkCreation(List<CsvBean> input) {
-        log.info("Handling bulk domain creation with {} entries", input.size());
+    public BulkDeploymentViewS handleBulkCreation(List<CsvDomain> domainSpecs, UserViewMinimal creator) {
+        log.info("Handling bulk domain creation with {} entries", domainSpecs.size());
+        BulkDeployment bulkDeployment = createBulkDeployment(creator);
 
-        List<BulkDeploymentEntryView> result = new ArrayList<>();
-        List<CsvDomain> csvDomains = input.stream().map(d -> (CsvDomain) d).collect(Collectors.toList());
+        List<BulkDeploymentEntry> bulkDeploymentEntries = new ArrayList<>();
 
-        csvDomains.forEach( csvDomain -> {
-            Domain domain = createDomainIfNotExists(result, csvDomain);
+        domainSpecs.forEach( domainSpec -> {
+            Domain domain = createDomainIfNotExists(bulkDeploymentEntries, domainSpec);
             // domain groups creation and domain assignment
-            createMissingGroupsAndAssignDomain(csvDomain, domain);
+            createMissingGroupsAndAssignDomain(domainSpec, domain);
             // if user exist update role in domain to domain admin
-            createUserAccountIfNotExists(result, csvDomain, domain);
+            createUserAccountIfNotExists(bulkDeploymentEntries, domainSpec, domain);
         });
-        return result;
+
+        bulkDeployment.setEntries(bulkDeploymentEntries);
+        if (bulkDeploymentEntries.stream().allMatch(entry -> entry.getState().equals(BulkDeploymentState.COMPLETED))) {
+            bulkDeployment.setState(BulkDeploymentState.COMPLETED);
+        } else if (bulkDeploymentEntries.stream().anyMatch(entry -> entry.getState().equals(BulkDeploymentState.FAILED))) {
+            bulkDeployment.setState(BulkDeploymentState.FAILED);
+        }
+        return modelMapper.map(bulkDeploymentRepository.save(bulkDeployment), BulkDeploymentViewS.class);
     }
 
-    private Domain createDomainIfNotExists(List<BulkDeploymentEntryView> result, CsvDomain csvDomain) {
+    private Domain createDomainIfNotExists(List<BulkDeploymentEntry> result, CsvDomain csvDomain) {
         log.info("Processing csvDomain {}", csvDomain.getDomainName());
         Domain domain = null;
         Optional<Domain> domainFromDb = domainService.findDomain(csvDomain.getDomainName());
         if (domainFromDb.isPresent()) {
             domain = domainFromDb.get();
-            Map<String, String> details = new HashMap<>();
-            details.put("domainId", domain.getId().toString());
-            details.put("domainName", domain.getName());
-            details.put("domainCodename", domain.getCodename());
-            result.add(new BulkDeploymentEntryView(true, false, details, BulkType.DOMAIN));
+            result.add(BulkDeploymentEntry.builder().type(BulkType.DOMAIN).state(BulkDeploymentState.COMPLETED).created(false).details(prepareBulkDomainDeploymentDetailsMap(domain)).build());
         } else {
             String domainCodename = prepareCorrectAndUniqueDomainCodename(csvDomain.getDomainName());
             DomainTechDetailsView domainTechDetails = DomainTechDetailsView.builder()
@@ -107,12 +130,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                             .domainTechDetails(domainTechDetails)
                             .build());
             domainService.storeDcnInfo(prepareDcnInfo(domain));
-
-            Map<String, String> details = new HashMap<>();
-            details.put("domainId", domain.getId().toString());
-            details.put("domainName", domain.getName());
-            details.put("domainCodename", domain.getCodename());
-            result.add(new BulkDeploymentEntryView(true, true, details, BulkType.DOMAIN));
+            result.add(BulkDeploymentEntry.builder().type(BulkType.DOMAIN).state(BulkDeploymentState.COMPLETED).created(true).details(prepareBulkDomainDeploymentDetailsMap(domain)).build());
         }
         return domain;
     }
@@ -165,27 +183,44 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         });
     }
 
-    private void createUserAccountIfNotExists(List<BulkDeploymentEntryView> result, CsvDomain csvDomain, Domain domain) {
-        if (userService.existsByUsername(csvDomain.getAdminUserName()) || this.userService.existsByEmail(csvDomain.getEmail())) {
+    private void createUserAccountIfNotExists(List<BulkDeploymentEntry> result, CsvDomain csvDomain, Domain domain) {
+        if (userService.existsByUsername(csvDomain.getAdminUserName()) || userService.existsByEmail(csvDomain.getEmail())) {
             log.info("User {} with email {} already exists in database", csvDomain.getAdminUserName(), csvDomain.getEmail());
-            User user = userService.findByUsername(csvDomain.getAdminUserName()).orElseGet(() -> this.userService.findByEmail(csvDomain.getEmail()));
+            User user = userService.findByUsername(csvDomain.getAdminUserName()).orElseGet(() -> userService.findByEmail(csvDomain.getEmail()));
             if (!userService.hasPrivilege(user, domain, ROLE_DOMAIN_ADMIN)) {
                 user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, ROLE_DOMAIN_ADMIN)));
                 userService.update(user);
             }
-            Map<String, String> details = new HashMap<>();
-            details.put("userId", user.getId().toString());
-            details.put("userName", user.getUsername());
-            details.put("email", user.getEmail());
-            result.add(new BulkDeploymentEntryView(true, false, details, BulkType.USER));
-        } else { //if not create user
-            User user = this.userService.registerBulk(csvDomain, this.domainService.getGlobalDomain().get(), domain);
-            Map<String, String> details = new HashMap<>();
-            details.put("userName", user.getUsername());
-            details.put("userId", user.getId().toString());
-            details.put("email", user.getEmail());
-            result.add(new BulkDeploymentEntryView(true, true, details, BulkType.USER));
+            result.add(BulkDeploymentEntry.builder().type(BulkType.USER).state(BulkDeploymentState.COMPLETED).created(false).details(prepareBulkUserCreationDetailsMap(user)).build());
+        } else {
+            User user = userService.registerBulk(csvDomain, domainService.getGlobalDomain().get(), domain);
+            result.add(BulkDeploymentEntry.builder().type(BulkType.USER).state(BulkDeploymentState.COMPLETED).created(true).details(prepareBulkUserCreationDetailsMap(user)).build());
         }
     }
-    
+
+    private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
+        BulkDeployment bulkDeployment = new BulkDeployment();
+        bulkDeployment.setType(BulkType.DOMAIN);
+        bulkDeployment.setState(BulkDeploymentState.PENDING);
+        bulkDeployment.setCreatorId(creator.getId());
+        bulkDeployment.setCreationDate(OffsetDateTime.now());
+        return bulkDeployment;
+    }
+
+    private static Map<String, String> prepareBulkDomainDeploymentDetailsMap(Domain domain) {
+        Map<String, String> details = new HashMap<>();
+        details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_ID, domain.getId().toString());
+        details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, domain.getName());
+        details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME, domain.getCodename());
+        return details;
+    }
+
+    private static Map<String, String> prepareBulkUserCreationDetailsMap(User user) {
+        Map<String, String> details = new HashMap<>();
+        details.put(BULK_ENTRY_DETAIL_KEY_USER_ID, user.getId().toString());
+        details.put(BULK_ENTRY_DETAIL_KEY_USER_NAME, user.getUsername());
+        details.put(BULK_ENTRY_DETAIL_KEY_USER_EMAIL, user.getEmail());
+        return details;
+    }
+
 }
