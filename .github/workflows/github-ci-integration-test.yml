@@ -50,4 +50,4 @@ jobs:
       - name: Run Sonar
         env:
           SONAR_LOGIN_TOKEN: ${{ secrets.SONAR_LOGIN_TOKEN }}
-        run: ./gradlew sonarqube -Dsonar.login=${SONAR_LOGIN_TOKEN} --stacktrace
+        run: ./gradlew -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube --stacktrace
