@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class UserBase {
+
 	@NotNull
 	protected Long id;
 	

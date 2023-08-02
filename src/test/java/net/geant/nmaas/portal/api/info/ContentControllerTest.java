@@ -4,7 +4,6 @@ import net.geant.nmaas.portal.api.domain.ContentView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
@@ -17,34 +16,27 @@ import static org.mockito.Mockito.when;
 
 public class ContentControllerTest {
 
-    private ContentRepository repository = mock(ContentRepository.class);
+    private final static Content CONTENT = new Content(1L, "Test name", "Test content", "Test title");
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ContentRepository repository = mock(ContentRepository.class);
+    private final ModelMapper modelMapper = new ModelMapper();
 
-    private ContentController contentController;
-
-    private Content content;
-
-    @BeforeEach
-    public void setup(){
-        this.contentController = new ContentController(repository, modelMapper);
-        this.content = new Content(1L, "Test name", "Test content", "Test title");
-    }
+    private final ContentController contentController = new ContentController(repository, modelMapper);
 
     @Test
     public void shouldGetContent(){
-        when(repository.findByName(content.getName())).thenReturn(Optional.of(content));
-        ContentView contentView = this.contentController.getContent(content.getName());
-        assertEquals(content.getName(), contentView.getName());
-        assertEquals(content.getContent(), contentView.getContent());
-        assertEquals(content.getTitle(), contentView.getTitle());
+        when(repository.findByName(CONTENT.getName())).thenReturn(Optional.of(CONTENT));
+        ContentView contentView = this.contentController.getContent(CONTENT.getName());
+        assertEquals(CONTENT.getName(), contentView.getName());
+        assertEquals(CONTENT.getContent(), contentView.getContent());
+        assertEquals(CONTENT.getTitle(), contentView.getTitle());
     }
 
     @Test
     public void shouldThrowAnExceptionWhenContentNotFound(){
         assertThrows(ProcessingException.class, () -> {
-            when(repository.findByName(content.getName())).thenReturn(Optional.empty());
-            contentController.getContent(content.getName());
+            when(repository.findByName(CONTENT.getName())).thenReturn(Optional.empty());
+            contentController.getContent(CONTENT.getName());
         });
     }
 

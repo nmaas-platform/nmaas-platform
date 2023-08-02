@@ -223,13 +223,15 @@
     "ITEMS_PER_PAGE" : "Domains per page",
     "NOTACTIVE": "Show not active domains",
     "LIST" : {
-      "GROUPS" : "Domains groups",
+      "GROUPS" : "Domain groups",
       "GROUP" : "Domain group",
       "DOMAIN_NAME" : "Domain Name",
       "DOMAIN_CODE_NAME" : "Domain Codename",
       "DELETE" : "Remove domain from group",
       "ADD" : "Add domain to group",
-      "ADD_INFO" : "Select domains to add them to group"
+      "ADD_INFO" : "Select domains to add them to group",
+      "LIST" : "Domains in group",
+      "ACTIVE" : "Active"
     }
   },
   "APP_INSTANCES": {

@@ -229,7 +229,9 @@
       "DOMAIN_CODE_NAME" : "Skrót domeny",
       "DELETE" : "Usuń domene z grupy",
       "ADD" : "Dodaj domene do grupy",
-      "ADD_INFO" : "Wybierz domeny do dodania do grupy"
+      "ADD_INFO" : "Wybierz domeny do dodania do grupy",
+      "LIST" : "Domeny w grupie",
+      "ACTIVE" : "Aktywna"
     }
   },
   "APP_INSTANCES": {

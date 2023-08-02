@@ -32,8 +32,8 @@ import static net.geant.nmaas.orchestration.AppUpgradeStatus.FAILURE;
 import static net.geant.nmaas.orchestration.AppUpgradeStatus.SUCCESS;
 
 @Component
-@Log4j2
 @RequiredArgsConstructor
+@Log4j2
 public class AppUpgradeTask {
 
     private final NmServiceDeploymentProvider serviceDeployment;

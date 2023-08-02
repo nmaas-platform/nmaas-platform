@@ -34,7 +34,7 @@ public interface AppLifecycleManager {
      * @param configuration configuration provided by user in application deployment wizard
      * @param initiator username of a user who triggered this action
      */
-    void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator) throws Throwable;
+    void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration, String initiator);
 
     /**
      * Removes deployed application from the system.
