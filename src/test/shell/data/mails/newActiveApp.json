@@ -12,7 +12,7 @@
       "subject": "NMaaS: New application version available in the portfolio",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "${appName} application in version ${appVersion} was added to the portfolio and is now available for deployment.",
+        "CONTENT": "${app_name} application in version ${app_version} was added to the portfolio and is now available for deployment.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -23,7 +23,7 @@
       "subject": "NMaaS: New application version available in the portfolio",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "${appName} application in version ${appVersion} was added to the portfolio and is now available for deployment.",
+        "CONTENT": "${app_name} application in version ${app_version} was added to the portfolio and is now available for deployment.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -34,7 +34,7 @@
       "subject": "NMaaS: New application version available in the portfolio",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "${appName} application in version ${appVersion} was added to the portfolio and is now available for deployment.",
+        "CONTENT": "${app_name} application in version ${app_version} was added to the portfolio and is now available for deployment.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""

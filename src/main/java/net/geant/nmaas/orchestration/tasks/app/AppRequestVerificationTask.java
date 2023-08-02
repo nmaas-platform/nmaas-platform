@@ -19,14 +19,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Log4j2
 @AllArgsConstructor
+@Log4j2
 public class AppRequestVerificationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
-
     private AppDeploymentRepository repository;
-
     private ApplicationRepository appRepository;
 
     @EventListener

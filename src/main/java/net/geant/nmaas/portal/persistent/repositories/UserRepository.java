@@ -1,13 +1,12 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import java.util.Optional;
-
+import net.geant.nmaas.portal.persistent.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import net.geant.nmaas.portal.persistent.entity.User;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -20,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update User u set u.enabled = ?2 where u.id = ?1")
-    void setEnabledFlag(Long userId,  boolean isEnabledFlag);
+    void setEnabledFlag(Long userId, boolean isEnabledFlag);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update User u set u.selectedLanguage = ?2 where u.id = ?1")
@@ -35,6 +34,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
 
     @Query("SELECT count(distinct u.id) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id != 1")
-    int countWithoutDomain();
+    int countWithDomain();
 
 }

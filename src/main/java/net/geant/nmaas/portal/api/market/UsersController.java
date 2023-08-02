@@ -53,10 +53,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -122,7 +124,7 @@ public class UsersController {
 
         User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
                 () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
-        /* when user is not system admin, than return only basic information about users */
+        /* when user is not system admin, then return only basic information about users */
         if (owner.getRoles().stream().noneMatch(role -> role.getRole() == ROLE_SYSTEM_ADMIN)) {
             return userService.findAll(pageable).getContent().stream()
                     .filter(user -> user.getRoles().stream().anyMatch( // select only users with guest role in global domain
@@ -178,17 +180,20 @@ public class UsersController {
     public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) {
         User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 
-        if (userRequest == null)
+        if (userRequest == null) {
             throw new MissingElementException("User request is null");
+        }
         if (!userDetails.getUsername().equals(principal.getName()) && !userService.canUpdateData(principal.getName(), userDetails.getRoles())) {
             throw new ProcessingException(principal.getName() + " was trying to edit data of user " + userDetails.getUsername() + " without required role.");
         }
         String message = getMessageWhenUserUpdated(userDetails, userRequest);
         final String userRoles = getRoleAsString(userDetails.getRoles());
-        if (userRequest.getFirstname() != null)
+        if (userRequest.getFirstname() != null) {
             userDetails.setFirstname(userRequest.getFirstname());
-        if (userRequest.getLastname() != null)
+        }
+        if (userRequest.getLastname() != null) {
             userDetails.setLastname(userRequest.getLastname());
+        }
         if (userRequest.getEmail() != null && !userRequest.getEmail().equalsIgnoreCase(userDetails.getEmail())) {
             if (userService.existsByEmail(userRequest.getEmail())) {
                 throw new ProcessingException("User with mail " + userRequest.getEmail() + " already exists.");
@@ -211,7 +216,7 @@ public class UsersController {
     public void deleteUser(@PathVariable("userId") Long userId) {
         User user = this.userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
         Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")).getId();
-        if(user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
+        if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
             throw new ProcessingException("Cannot delete SYSTEM ADMIN");
         }
         List<UserRole> notGuestInGlobalDomainRole = user.getRoles().stream()
@@ -395,13 +400,22 @@ public class UsersController {
     }
 
     private void checkSSOUser(User user) {
-        if (StringUtils.isNotEmpty(user.getSamlToken()))
+        if (StringUtils.isNotEmpty(user.getSamlToken())) {
             throw new ProcessingException("SSO user cannot change or reset password");
+        }
     }
 
     @GetMapping("/domains/{domainId}/users")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-    public List<UserView> getDomainUsers(@PathVariable Long domainId) {
+    public List<UserViewMinimal> getDomainUsers(@PathVariable Long domainId) {
+        return domainService.getMembers(domainId).stream()
+                .map(this::mapMinimalUser)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/domains/{domainId}/users/admin")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    public List<UserView> getDomainUsersAsAdmin(@PathVariable Long domainId) {
         /* reads all users first and last successful login, transforms it to map*/
         Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
                 .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
@@ -465,16 +479,17 @@ public class UsersController {
                             @RequestBody final UserRoleView userRole,
                             final Principal principal) {
 
-        if (userRole == null)
+        if (userRole == null) {
             throw new MissingElementException("Empty request");
-
-        if (userRole.getRole() == null)
+        }
+        if (userRole.getRole() == null) {
             throw new MissingElementException("Missing role");
-
+        }
         Role role = userRole.getRole();
 
-        if (!domainId.equals(userRole.getDomainId()))
+        if (!domainId.equals(userRole.getDomainId())) {
             throw new ProcessingException("Invalid request domain");
+        }
 
         final Domain domain = getDomain(domainId);
         final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
@@ -524,9 +539,7 @@ public class UsersController {
 
         try {
             domainService.removeMemberRole(domain.getId(), user.getId(), role);
-
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
-
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
             log.info(String.format("User [%s] with role [%s] removed role [%s] of user name [%s] in domain [%d].",
@@ -577,6 +590,23 @@ public class UsersController {
     @Transactional
     public void setDefaultLanguage(@PathVariable Long userId, @RequestParam("defaultLanguage") final String defaultLanguage) {
         this.userService.setUserLanguage(userId, defaultLanguage);
+    }
+
+    @GetMapping(value = "/users/search", params = {"searchPart", "domainId"})
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+    public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
+        List<UserViewMinimal> result = new ArrayList<>();
+        String search = searchPart.toLowerCase();
+
+        List<User> allUsers = this.userService.findAll().stream()
+                .filter(User::isEnabled)
+                .filter(user -> Objects.nonNull(user.getEmail()))
+                .collect(Collectors.toList());
+        result = allUsers.stream().
+                filter(user -> user.getEmail().toLowerCase().contentEquals(search))
+                .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
+                .map(this::mapMinimalUser).collect(Collectors.toList());
+        return result;
     }
 
     private Role convertRole(String userRole) {
@@ -666,6 +696,12 @@ public class UsersController {
             uv.setFirstLoginDate(userLoginDateMap.get(uv.getId()).getMinLoginDate());
         }
         return uv;
+    }
+
+    private UserViewMinimal mapMinimalUser(User user) {
+        UserViewMinimal userViewMinimal = modelMapper.map(user, UserViewMinimal.class);
+        userViewMinimal.setHasSshKeys(!user.getSshKeys().isEmpty());
+        return userViewMinimal;
     }
 
 }

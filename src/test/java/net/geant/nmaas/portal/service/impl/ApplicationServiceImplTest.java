@@ -45,17 +45,17 @@ public class ApplicationServiceImplTest {
     ApplicationServiceImpl applicationService;
 
     @BeforeEach
-    public void setup(){
+    void setup(){
         applicationService = new ApplicationServiceImpl(applicationRepository, eventPublisher);
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToNullPassedAsParameter(){
+    void updateMethodShouldThrowExceptionDueToNullPassedAsParameter(){
         assertThrows(IllegalArgumentException.class, () -> applicationService.update(null));
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToEmptyName(){
+    void updateMethodShouldThrowExceptionDueToEmptyName(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setName("");
@@ -64,7 +64,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToEmptyVersion(){
+    void updateMethodShouldThrowExceptionDueToEmptyVersion(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setVersion("");
@@ -73,7 +73,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToNullAppDeploymentSpec(){
+    void updateMethodShouldThrowExceptionDueToNullAppDeploymentSpec(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setAppDeploymentSpec(null);
@@ -82,7 +82,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToNullConfigTemplate(){
+    void updateMethodShouldThrowExceptionDueToNullConfigTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setConfigWizardTemplate(null);
@@ -91,7 +91,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToEmptyConfigTemplate(){
+    void updateMethodShouldThrowExceptionDueToEmptyConfigTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setConfigWizardTemplate(new ConfigWizardTemplate(""));
@@ -100,7 +100,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToNullKubernetesTemplate(){
+    void updateMethodShouldThrowExceptionDueToNullKubernetesTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.getAppDeploymentSpec().setKubernetesTemplate(null);
@@ -109,7 +109,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToNullKubernetesChart(){
+    void updateMethodShouldThrowExceptionDueToNullKubernetesChart(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.getAppDeploymentSpec().getKubernetesTemplate().setChart(null);
@@ -127,7 +127,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldReturnApplicationObject(){
+    void updateMethodShouldReturnApplicationObject(){
         Application application = new Application("test", "testversion");
         application.setId(1L);
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
@@ -149,12 +149,12 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void deleteMethodShouldTrowExceptionDueToNullPassedAsId(){
+    void deleteMethodShouldTrowExceptionDueToNullPassedAsId(){
         assertThrows(IllegalArgumentException.class, () -> applicationService.delete(null));
     }
 
     @Test
-    public void deleteMethodShouldSetApplicationAsDeleted(){
+    void deleteMethodShouldSetApplicationAsDeleted(){
         Application application = new Application("test", "testversion");
         application.setId((long) 0);
         application.setState(ApplicationState.ACTIVE);
@@ -169,12 +169,12 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void findApplicationShouldThrowExceptionDueToNullId(){
+    void findApplicationShouldThrowExceptionDueToNullId(){
         assertThrows(IllegalArgumentException.class, () -> applicationService.findApplication(null));
     }
 
     @Test
-    public void findApplicationShouldReturnApplicationObject(){
+    void findApplicationShouldReturnApplicationObject(){
         Application application = new Application("test", "testversion");
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         Optional<Application> result = applicationService.findApplication((long) 0);
@@ -182,7 +182,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void findAllShouldReturnList() {
+    void findAllShouldReturnList() {
         List<Application> testList = new ArrayList<>();
         Application test = new Application("test", "testversion");
         testList.add(test);
@@ -193,7 +193,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void shouldChangeApplicationState() {
+    void shouldChangeApplicationState() {
         Application app = getDefaultApplication();
         app.setState(ApplicationState.NEW);
         applicationService.changeApplicationState(app, ApplicationState.ACTIVE);
@@ -201,7 +201,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void shouldNotChangeApplicationStateDueToForbiddenStateChange(){
+    void shouldNotChangeApplicationStateDueToForbiddenStateChange(){
         assertThrows(IllegalStateException.class, () -> {
             Application app = getDefaultApplication();
             app.setState(ApplicationState.DELETED);
@@ -222,7 +222,7 @@ public class ApplicationServiceImplTest {
                 new HelmChartRepositoryEmbeddable("test", "http://test"))
         );
         appDeploymentSpec.setStorageVolumes(ImmutableSet.of(new AppStorageVolume(12L, ServiceStorageVolumeType.MAIN, 2, null)));
-        appDeploymentSpec.setAccessMethods(ImmutableSet.of(new AppAccessMethod(13L, ServiceAccessMethodType.DEFAULT, "name", "tag", null)));
+        appDeploymentSpec.setAccessMethods(ImmutableSet.of(new AppAccessMethod(13L, ServiceAccessMethodType.DEFAULT, "name", "tag", AppAccessMethod.ConditionType.NONE, null, null)));
         application.setAppDeploymentSpec(appDeploymentSpec);
         application.setConfigWizardTemplate(new ConfigWizardTemplate(1L, "template"));
         AppConfigurationSpec appConfigurationSpec = new AppConfigurationSpec();

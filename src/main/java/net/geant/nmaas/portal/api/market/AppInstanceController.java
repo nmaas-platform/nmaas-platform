@@ -74,19 +74,13 @@ import java.util.stream.Collectors;
 public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
-
     private static final String MISSING_USER_MESSAGE = "User not found";
 
     private final AppLifecycleManager appLifecycleManager;
-
     private final AppDeploymentMonitor appDeploymentMonitor;
-
     private final ApplicationInstanceService instanceService;
-
     private final DomainService domainService;
-
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
-
     private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
@@ -146,11 +140,13 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstanceBase> getAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
-        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+        Domain domain = domainService.findDomain(domainId)
+                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+        User user = this.userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
         // system admin on global view has an overall view over all instances
-        if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
+        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             List<AppInstance> source = pageable == null ? instanceService.findAll() : instanceService.findAll(pageable).getContent();
             return source.stream()
                     .map(this::mapAppInstanceBase)
@@ -165,7 +161,8 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/running/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, @NotNull Principal principal) {
+    public List<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
+                                                        @NotNull Principal principal) {
         Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         return getAllRunningByDomain(domain);
     }
@@ -180,12 +177,14 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping(value = "/domain/{domainId}/my")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public List<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
+    public List<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId,
+                                                   @NotNull Principal principal,
+                                                   Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
-        if(this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
+        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
             return instanceService.findAllByOwner(user, pageable).getContent().stream()
                     .map(this::mapAppInstanceBase)
                     .collect(Collectors.toList());
@@ -197,7 +196,9 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/domain/{domainId}/user/{username}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
-    public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable){
+    public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
+                                                     @PathVariable String username,
+                                                     Pageable pageable){
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         return getUserDomainAppInstances(domainId, username, pageable);
@@ -227,14 +228,15 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
     public Id createAppInstance(@RequestBody AppInstanceRequest appInstanceRequest,
-                                @NotNull Principal principal, @PathVariable Long domainId) {
+                                @NotNull Principal principal,
+                                @PathVariable Long domainId) {
         Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
         AppInstance appInstance;
         /*
         check name uniqueness
-        forbidden names - names of all app instances in domain, where state is different than done
+        forbidden names - names of all app instances in domain, where state is different from 'DONE' and 'REMOVED'
          */
         Set<String> forbiddenNames = instanceService.findAllByDomain(domain).stream() // get all app instances in domain
                 .filter(appInst -> {
@@ -243,7 +245,7 @@ public class AppInstanceController extends AppBaseController {
                 })
                 .map(AppInstance::getName) // take names only
                 .collect(Collectors.toSet());
-        if(forbiddenNames.contains(appInstanceRequest.getName())) {
+        if (forbiddenNames.contains(appInstanceRequest.getName())) {
             throw new IllegalArgumentException("Name is already taken");
         }
 
@@ -278,7 +280,7 @@ public class AppInstanceController extends AppBaseController {
         return new Id(appInstance.getId());
     }
 
-    private Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
+    public static Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
         return Identifier.newInstance(
                 String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
         );
@@ -496,7 +498,7 @@ public class AppInstanceController extends AppBaseController {
                 .build();
     }
 
-    private AppInstanceState mapAppInstanceState(AppLifecycleState state) {
+    public static AppInstanceState mapAppInstanceState(AppLifecycleState state) {
         AppInstanceState appInstanceState;
         switch (state) {
             case REQUESTED:
@@ -624,23 +626,23 @@ public class AppInstanceController extends AppBaseController {
 
     private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
 
-        this.addAppInstanceBaseProperties(ai, appInstance);
+        addAppInstanceBaseProperties(ai, appInstance);
 
         Identifier identifier = appInstance.getInternalId();
         try {
-            ai.setServiceAccessMethods(this.appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
+            ai.setServiceAccessMethods(appDeploymentMonitor.userAccessDetails(identifier).getServiceAccessMethods());
         } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
             ai.setServiceAccessMethods(null);
         }
 
         try {
-            ai.setAppConfigRepositoryAccessDetails(this.appDeploymentMonitor.configRepositoryAccessDetails(identifier));
+            ai.setAppConfigRepositoryAccessDetails(appDeploymentMonitor.configRepositoryAccessDetails(identifier));
         } catch (InvalidAppStateException | InvalidDeploymentIdException e) {
             ai.setAppConfigRepositoryAccessDetails(null);
         }
 
         try {
-            ai.setDescriptiveDeploymentId(this.appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
+            ai.setDescriptiveDeploymentId(appDeploymentRepositoryManager.load(appInstance.getInternalId()).getDescriptiveDeploymentId().value());
         } catch (InvalidDeploymentIdException e) {
             ai.setDescriptiveDeploymentId(null);
         }
@@ -688,11 +690,11 @@ public class AppInstanceController extends AppBaseController {
         boolean isSystemAdmin = false;
         boolean isDomainGlobal = false;
 
-        if(user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
+        if (user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             isSystemAdmin = true;
         }
 
-        if(domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
+        if (domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
             isDomainGlobal = true;
         }
 
@@ -700,7 +702,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private Pageable pageableValidator(Pageable pageable) {
-        if(!this.isPageableValidForAppInstance(pageable)) {
+        if (!this.isPageableValidForAppInstance(pageable)) {
             return null;
         }
         return pageable;

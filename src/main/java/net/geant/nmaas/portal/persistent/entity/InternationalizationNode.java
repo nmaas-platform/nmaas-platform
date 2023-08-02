@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
@@ -22,7 +21,7 @@ public class InternationalizationNode {
     private String key;
 
     @NotNull
-    @Lob
+    @Column(length = 1024)
     private String content;
 
 }

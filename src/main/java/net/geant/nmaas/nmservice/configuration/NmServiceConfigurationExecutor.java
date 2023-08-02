@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
@@ -29,13 +29,13 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
  * Default implementation of the {@link NmServiceConfigurationProvider} interface.
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NmServiceConfigurationExecutor implements NmServiceConfigurationProvider {
 
-    private ConfigFilePreparer filePreparer;
-    private GitConfigHandler configHandler;
-    private JanitorService janitorService;
-    private ApplicationEventPublisher eventPublisher;
+    private final ConfigFilePreparer filePreparer;
+    private final GitConfigHandler configHandler;
+    private final JanitorService janitorService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -47,7 +47,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             if(nsd.isConfigFileRepositoryRequired()) {
                 configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
-                if((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
+                if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
                     configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
                 }
                 janitorService.createOrReplaceConfigMap(nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
@@ -61,7 +61,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateNmService(NmServiceDeployment nmServiceDeployment){
+    public void updateNmService(NmServiceDeployment nmServiceDeployment) {
         Identifier deploymentId = nmServiceDeployment.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
@@ -71,7 +71,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                 janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
             }
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
-        } catch(Exception e){
+        } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
@@ -84,7 +84,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_INITIATED);
             janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
             notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATED);
-        } catch(Exception e){
+        } catch (Exception e) {
             notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
@@ -93,7 +93,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     @Override
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) {
-        try{
+        try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_INITIATED);
             configHandler.removeConfigFiles(deploymentId);
             notifyStateChangeListenersWithDelay(deploymentId, CONFIGURATION_REMOVED, 1000);

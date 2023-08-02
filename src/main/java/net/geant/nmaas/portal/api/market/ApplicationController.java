@@ -19,7 +19,12 @@ import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
@@ -192,7 +197,7 @@ public class ApplicationController extends AppBaseController {
 		boolean hasVersion = base.getVersions().stream().anyMatch(v -> v.getVersion().equals(view.getVersion()));
 		// application specified name and version must not exist
 		boolean exists = applicationService.exists(view.getName(), view.getVersion());
-		if(hasVersion || exists) {
+		if (hasVersion || exists) {
 			log.error("Cannot add application version, object already exists");
 			throw new ObjectAlreadyExistsException("App version already exists");
 		}
@@ -216,13 +221,13 @@ public class ApplicationController extends AppBaseController {
 		base.getVersions().add(version);
 		appBaseService.update(base);
 
-		this.sendMail(application, new ApplicationStateChangeRequest(application.getState(), "", false));
+		this.sendMails(application, new ApplicationStateChangeRequest(application.getState(), "", false));
 	}
 
 	@PatchMapping(value = "/version")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void updateApplicationVersion(@RequestBody @Valid ApplicationView view, Principal principal){
+	public void updateApplicationVersion(@RequestBody @Valid ApplicationView view, Principal principal) {
 
 		this.applicationBaseOwnerCheck(view.getName(), principal);
 
@@ -277,11 +282,11 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping(value = "/state/{id}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
-	public void changeApplicationState(@PathVariable long id, @RequestBody ApplicationStateChangeRequest stateChangeRequest){
+	public void changeApplicationState(@PathVariable long id, @RequestBody ApplicationStateChangeRequest stateChangeRequest) {
 		Application app = getApp(id);
 		applicationService.changeApplicationState(app, stateChangeRequest.getState());
 		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
-		this.sendMail(app, stateChangeRequest);
+		this.sendMails(app, stateChangeRequest);
 	}
 
 	/**
@@ -291,7 +296,7 @@ public class ApplicationController extends AppBaseController {
 	@DeleteMapping(value="/{id}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void deleteApplication(@PathVariable long id, Principal principal){
+	public void deleteApplication(@PathVariable long id, Principal principal) {
 		Application app = getApp(id);
 		this.applicationBaseOwnerCheck(app.getName(), principal);
 		applicationService.delete(id);
@@ -301,41 +306,40 @@ public class ApplicationController extends AppBaseController {
 	/*
 	 * Utilities
 	 */
-	private void sendMail(Application app, ApplicationStateChangeRequest stateChangeRequest) {
-		MailAttributes mailAttributes = this.prepareMailAttributes(app, stateChangeRequest);
-		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
-	}
-
-	private MailAttributes prepareMailAttributes(Application app, ApplicationStateChangeRequest stateChangeRequest) {
-		MailAttributes mailAttributes = MailAttributes.builder()
-				.mailType(stateChangeRequest.getState().getMailType())
-				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason() == null? "": stateChangeRequest.getReason()))
-				.build();
-		ApplicationBase applicationBase = appBaseService.findByName(app.getName());
-		if(!stateChangeRequest.getState().equals(ApplicationState.NEW)){
+	private void sendMails(Application app, ApplicationStateChangeRequest stateChangeRequest) {
+		ImmutableMap<String, Object> attributes = ImmutableMap.of(
+				"app_name", app.getName(),
+				"app_version", app.getVersion(),
+				"reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason());
+		if (!stateChangeRequest.getState().equals(ApplicationState.NEW)) {
+			ApplicationBase applicationBase = appBaseService.findByName(app.getName());
 			UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
-			mailAttributes.setAddressees(Collections.singletonList(owner));
+			MailAttributes mailAttributes = MailAttributes.builder()
+					.mailType(stateChangeRequest.getState().getMailType())
+					.addressees(Collections.singletonList(owner))
+					.otherAttributes(attributes)
+					.build();
+			this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 		}
-		if (stateChangeRequest.shouldSendNotification()) {
+		if (stateChangeRequest.getState().equals(ApplicationState.ACTIVE) && stateChangeRequest.shouldSendNotification()) {
 			List<UserView> users = userService.findAll()
 					.stream()
 					.filter(User::isEnabled)
 					.map(user -> modelMapper.map(user, UserView.class))
 					.collect(Collectors.toList());
-			mailAttributes.setAddressees(users);
-			mailAttributes.setMailType(MailType.NEW_ACTIVE_APP);
+			MailAttributes mailAttributes = MailAttributes.builder()
+					.mailType(MailType.NEW_ACTIVE_APP)
+					.addressees(users)
+					.otherAttributes(attributes)
+					.build();
+			this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 		}
-		return mailAttributes;
 	}
 
-
 	private void applicationBaseOwnerCheck(ApplicationBase applicationBase, Principal principal) {
-
 		boolean isSystemAdmin = this.getUser(principal.getName()).getRoles().stream()
 				.anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
-
 		boolean isOwner = applicationBase.getOwner().equals(principal.getName());
-
 		if (!isOwner && !isSystemAdmin) {
 			throw new MarketException("The user is not application owner");
 		}

@@ -75,6 +75,7 @@ nmaas.service.upgrade-summary.cron=${APP_UPGRADE_SUMMARY_CRON}
 nmaas.service.upgrade-summary.interval=${APP_UPGRADE_SUMMARY_INTERVAL}
 
 nmaas.portal.domains.codename.pattern=[a-z0-9-]{2,12}
+nmaas.portal.domains.codename.length=12
 nmaas.portal.modals.appinstall.pattern=[a-zA-Z0-9-]{3,10}
 nmaas.portal.domains.namespace.pattern=[a-z0-9-]{0,64}
 
@@ -172,5 +173,6 @@ portal.config.ssoLoginAllowed=${PORTAL_SSO_ALLOWED_FLAG}
 portal.config.defaultLanguage=${PORTAL_DEFAULT_LANG}
 portal.config.testInstance=${PORTAL_TEST_INSTANCE_FLAG}
 portal.config.sendAppInstanceFailureEmails=${PORTAL_SEND_FAILURE_NOTIF_FLAG}
+portal.config.showDomainRegistrationSelector=${PORTAL_DOMAIN_REGISTRATION_SELECTOR}
 # string - list of emails with ':' as a separator, e.g. admin1@nmaas.eu;admin2@nmaas.eu
 portal.config.appInstanceFailureEmailList=${ADMIN_EMAIL}

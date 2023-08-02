@@ -6,19 +6,26 @@
     "MANAGEMENT": "Zarządzanie",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
+    "DOMAIN_USERS" : "Użytkownicy w domenie",
     "INVENTORY": "Zewnętrzne komponenty",
     "MONITOR": "Monitoring",
     "SETTINGS": "Ustawienia",
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
-    "LANGUAGE": "Język",
+    "LANGUAGE": "Tłumaczenia",
     "ABOUT": "O nas",
     "BACK": "Wróć do strony głównej",
-    "LANGUAGES": "Języki",
+    "LANGUAGES": "Tłumaczenia",
     "NOTIFICATION": "Wyślij wiadomość",
     "ALL_USERS": "Do wszystkich",
-    "EXPIRED_TIME" : "Koniec sesji"
+    "EXPIRED_TIME" : "Koniec sesji za",
+    "ADVANCED" : "Zaawansowane",
+    "BULK_DEPLOYMENT" : "Grupowe uruchomienie aplikacji",
+    "BULK_DEPLOYMENT_DOMAIN" : "Grupowe utworzenie domen",
+    "DOMAIN_GROUPS" : "Grupy domen",
+    "PAST_BULK_DOMAIN" : "Historia grupowego utworzenia domen",
+    "PAST_BULK_APP" : "Historia grupowego uruchomienia aplikacji"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -49,7 +56,8 @@
     "WEB_PORTAL_TEXT": "Dostęp do funkcjonalności NMaaS jest realizowany przez nowoczesny, reaktywny i przyjazny portal webowy.",
     "KUBERNETES_HEADER": "Kubernetes",
     "KUBERNETES_TEXT": "Aplikacje użytkowników są uruchamiane w klastrze Kubernetesa skonfigurowanym na dedykowanej infrastrukturze fizycznej w celu zapewnienia wysokiej wydajności i niezawodności.",
-    "TECHNOLOGIES_USED_HEADER": "Użyte technologie"
+    "TECHNOLOGIES_USED_HEADER": "Użyte technologie",
+    "TIME_EXPIRED": "Wylogowano z powodu braku aktywności. Aby kontynuować pracę zaloguj się ponownie."
   },
   "REGISTRATION": {
     "USERNAME": "Nazwa użytkownika",
@@ -197,8 +205,9 @@
     "LAST_SUCCESSFUL_LOGIN": "Data ostatniego udanego logowania",
     "ITEMS_PER_PAGE": "Ilość wyświetlanych uzytkowników na stronie",
     "GRANT_USER_ROLE_IN_CURRENT_DOMAIN_BUTTON": "Nadaj rolę USER",
-    "ADD_TO_DOMAIN_BUTTON": "Dodaj uzytkowników do domeny",
-    "GO_BACK_BUTTON": "Wróć"
+    "ADD_TO_DOMAIN_BUTTON": "Dodaj użytkownika do domeny",
+    "GO_BACK_BUTTON": "Wróć",
+    "SEARCH" : "Wyszukaj użytkowników po całym adresie email"
   },
   "DOMAINS": {
     "TITLE": "Domeny",
@@ -209,7 +218,21 @@
     "EDIT_BUTTON": "Edytuj",
     "DISABLE_BUTTON": "Dezaktywuj",
     "ENABLE_BUTTON": "Aktywuj",
-    "ADD_BUTTON": "Dodaj"
+    "ADD_BUTTON": "Dodaj",
+    "DELETE_BUTTON": "Usuń",
+    "ITEMS_PER_PAGE" : "Liczba domen na liście",
+    "NOTACTIVE": "Pokaż nieaktywne domeny",
+    "LIST" : {
+      "GROUPS" : "Grupy domen",
+      "GROUP" : "Grupa domen",
+      "DOMAIN_NAME" : "Nazwa domeny",
+      "DOMAIN_CODE_NAME" : "Skrót domeny",
+      "DELETE" : "Usuń domene z grupy",
+      "ADD" : "Dodaj domene do grupy",
+      "ADD_INFO" : "Wybierz domeny do dodania do grupy",
+      "LIST" : "Domeny w grupie",
+      "ACTIVE" : "Aktywna"
+    }
   },
   "APP_INSTANCES": {
     "TITLE": "Instancje aplikacji",
@@ -323,7 +346,15 @@
     "APP_STATUS": "Właściwości aplikacji",
     "APP_NAME": "Nazwa aplikacji",
     "APP_ENABLED": "Dostępna",
-    "PV_STORAGE_SIZE_LIMIT": "Storage size limit"
+    "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
+    "MODAL": {
+      "HEADER": "Domain removal confirmation",
+      "DESCRIPTION": "Do you want to completely remove this domain?\nNote that all running application instances within this domain will be deactivated and all domain users will have their roles removed as well.",
+      "BUTTONS": {
+        "CONFIRM": "Confirm",
+        "CANCEL": "Cancel"
+      }
+    }
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
@@ -668,7 +699,14 @@
     "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
     "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
     "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje",
-    "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników"
+    "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników",
+    "ADD_JSON" : "Dodanie aplikacji przez plik JSON",
+    "ADD_JSON_VERSION" : "Dodanie wersji aplikacji przez plik JSON",
+    "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
+    "ADD_JSON_TEXTAREA" : "lub skopiuj jego zawartość poniżej",
+    "SEND_JSON" : "Wyślij JSON",
+    "JSON_ERROR" : "JSON jest niepoprawny - sprawdź poprawność składni"
+
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -779,6 +817,8 @@
     "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interfejs użytkownika",
     "ALLOW_SSH_ACCESS": "Allow SSH Access",
     "ALLOW_SSH_ACCESS_TOOLTIP": "Check if application allows SSH access",
+    "ALLOW_LOG_ACCESS": "Allow log access",
+    "ALLOW_LOG_ACCESS_TOOLTIP": "Check if application allows log access",
     "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
     "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}",
     "STORAGE_VOLUMES": "Wolumen danych",
@@ -828,7 +868,9 @@
     "REJECT_CHANGES": "Odrzuć",
     "APPLY_CHANGES": "Apply changes to deploy parameters",
     "CHANGES_TOOLTIP": "Accept or reject changes in deployment parameters",
-    "REMOVE_TOOLTIP": "Usuń metodę dostępu"
+    "REMOVE_TOOLTIP": "Usuń metodę dostępu",
+    "CONDITION_TYPE" : "Typ warunku",
+    "CONDITION" : "Warunek"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
@@ -990,7 +1032,7 @@
       "CLOSE_BUTTON": "Zamknij",
       "HEADER": "Nagłówek"
     },
-    "TITLE": "Zarządzanie językami",
+    "TITLE": "Zarządzanie tłumaczeniami",
     "LANGUAGE": "Język",
     "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
     "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"
@@ -1052,5 +1094,42 @@
   },
   "JSON_EDIT": {
     "INVALID_JSON": "Niewłaściwy format JSON. Zmiany wprowadzone do zawartości formularza nie zostaną zapisane."
+  },
+  "BULK" : {
+    "UPLOAD" : "Uzupełnij specyfikacje",
+    "UPLOAD_BUTTON" : "Wyślij plik csv",
+    "LIST": {
+      "ID": "Id",
+      "CREATOR": "Twórca",
+      "CREATION_DATE": "Data utworzenia",
+      "STATE": "Stan",
+      "DETAILS": "Detale",
+      "CONTINUE" : "Kontynuuj",
+      "CREATED" : "Utworzenie obiektu",
+      "SUCCESSFUL" : "Powodzenie operacji",
+      "TYPE" : "Typ obiektu",
+      "MOVE_DOMAIN" : "Przejdź do domeny",
+      "MOVE_USER" : "Przejdź do użytkownika",
+      "MOVE_APP" : "Przejdź do aplikacji"
+    },
+    "DOMAIN": {
+      "INFO": "Additional information will be added later",
+      "SUMMARY": "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER": "Tworzenie wielu domen",
+      "NAVIGATION" : "Tworzenie grupowe domen ",
+      "DEPLOYMENTS" : "Utworzone domeny",
+      "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen..."
+    },
+    "USER" : {
+      "DEPLOYMENTS" : "Utworzeni użytkownicy"
+    },
+    "APP": {
+      "INFO" : "Additional information will be added later",
+      "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
+      "HEADER" : "Uruchamianie wielu aplikacji"
+    }
+  },
+  "SHARED" : {
+    "TOGGLE" : "Toggle all"
   }
 }

@@ -1,0 +1,118 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "OWASP JuiceShop",
+        "license": "MIT License",
+        "licenseUrl": "https://opensource.org/license/mit/",
+        "wwwUrl": "https://owasp-juice.shop/",
+        "sourceUrl": "https://github.com/juice-shop/juice-shop",
+        "issuesUrl": "https://github.com/juice-shop/juice-shop/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-JuiceShop",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Vulnerable Web Application for Training",
+                "fullDescription": "OWASP Juice Shop is probably the most modern and sophisticated insecure web application! It can be used in security trainings, awareness demos, CTFs and as a guinea pig for security tools! Juice Shop encompasses vulnerabilities from the entire [OWASP Top Ten](https://owasp.org/www-project-top-ten) along with many other security flaws found in real-world applications!"
+            },
+            {
+                "language": "de",
+                "briefDescription": "Vulnerable Web Application for Training",
+                "fullDescription": "OWASP Juice Shop is probably the most modern and sophisticated insecure web application! It can be used in security trainings, awareness demos, CTFs and as a guinea pig for security tools! Juice Shop encompasses vulnerabilities from the entire [OWASP Top Ten](https://owasp.org/www-project-top-ten) along with many other security flaws found in real-world applications!"
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Vulnerable Web Application for Training",
+                "fullDescription": "OWASP Juice Shop is probably the most modern and sophisticated insecure web application! It can be used in security trainings, awareness demos, CTFs and as a guinea pig for security tools! Juice Shop encompasses vulnerabilities from the entire [OWASP Top Ten](https://owasp.org/www-project-top-ten) along with many other security flaws found in real-world applications!"
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Vulnerable Web Application for Training",
+                "fullDescription": "OWASP Juice Shop is probably the most modern and sophisticated insecure web application! It can be used in security trainings, awareness demos, CTFs and as a guinea pig for security tools! Juice Shop encompasses vulnerabilities from the entire [OWASP Top Ten](https://owasp.org/www-project-top-ten) along with many other security flaws found in real-world applications!"
+            }
+        ],
+        "tags": [
+            "owasp top 10",
+            "security vulnerability",
+            "training",
+            "capture the flag"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "OWASP JuiceShop",
+        "version": "14.5.1",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "type": "htmlelement",
+                                        "input": false,
+                                        "content": "<p>No configuration parameters are required.</p><p>Click <i>Apply configuration</i> button to proceed</p>",
+                                        "tab": 0
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    }, {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-juiceshop",
+                    "version": "1.0.0"
+                },
+                "mainDeploymentName": "nmaas-juiceshop"
+            },
+            "deployParameters": {},
+            "globalDeployParameters": {
+                "ingress.sablier.enabled": "true",
+                "ingress.hosts[0].paths[0].path": "/",
+                "ingress.hosts[0].paths[0].pathType": "ImplementationSpecific"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "JuiceShop",
+                    "tag": "juiceshop",
+                    "deployParameters": {
+                        "INGRESS_CLASS": "ingress.className",
+                        "INGRESS_HOSTS": "ingress.hosts[0].host=%VALUE%",
+                        "INGRESS_TLS_HOSTS": "ingress.tls[0].hosts[0]=%VALUE%"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}

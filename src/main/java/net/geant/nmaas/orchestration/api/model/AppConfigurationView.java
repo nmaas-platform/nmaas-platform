@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AppConfigurationView {
 
     @JsonProperty("jsonInput")
@@ -39,7 +41,13 @@ public class AppConfigurationView {
     }
 
     @JsonSetter("mandatoryParameters")
-    public void setMandatoryParameters(JsonNode data) { this.mandatoryParameters = data.toString();}
+    public void setMandatoryParameters(JsonNode data) {
+        this.mandatoryParameters = data.toString();
+    }
+
+    public void setMandatoryParameters(String data) {
+        this.mandatoryParameters = data;
+    }
 
     public void setStorageSpace(Integer storageSpace){
         this.storageSpace = storageSpace;

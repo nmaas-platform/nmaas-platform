@@ -40,7 +40,7 @@
     "application": {
         "id": null,
         "name": "NetBox",
-        "version": "3.0.11",
+        "version": "3.5.2",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -153,39 +153,50 @@
             ],
             "kubernetesTemplate": {
                 "chart": {
-                    "name": "netbox/netbox",
-                    "version": "4.0.1"
+                    "name": "nmaas-netbox",
+                    "version": "6.0.0"
                 },
-                "helmChartRepository": {
-                    "name": "netbox",
-                    "url": "https://charts.boo.tc"
-                }
+                "mainDeploymentName": "nmaas-netbox"
             },
             "deployParameters": {
+                "RELEASE_NAME_HOUSEKEEPING": "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].values[0]=%VALUE%",
+                "RELEASE_NAME_WORKER": "worker.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].values[0]=%VALUE%",
                 "SMTP_HOSTNAME": "email.server",
+                "SMTP_PASSWORD": "email.password",
                 "SMTP_PORT": "email.port",
-                "SMTP_USERNAME": "email.username",
-                "SMTP_PASSWORD": "email.password"
+                "SMTP_USERNAME": "email.username"
             },
             "globalDeployParameters": {
                 "updateStrategy.type": "Recreate",
-                "image.tag": "v3.1",
                 "loginPersistence": "true",
                 "timeZone": "Europe/Warsaw",
                 "postgresql.enabled": "true",
-                "postgresql.postgresqlPostgresPassword": "%RANDOM_STRING_12%",
-                "postgresql.postgresqlPassword": "%RANDOM_STRING_12%",
-                "postgresql.postgresqlUsername": "netbox",
                 "postgresql.postgresqlDatabase": "netbox",
+                "postgresql.postgresqlUsername": "netbox",
+                "postgresql.postgresqlPassword": "%RANDOM_STRING_12%",
+                "postgresql.postgresqlPostgresPassword": "%RANDOM_STRING_12%",
                 "redis.enabled": "true",
                 "redis.architecture": "standalone",
                 "redis.auth.password": "%RANDOM_STRING_12%",
                 "persistence.enabled": "true",
                 "persistence.accessMode": "ReadWriteOnce",
-                "housekeeping.enabled": "false",
                 "email.from": "netbox@nmaas.eu",
                 "ingress.hosts[0].paths": "{/}",
-                "worker.enabled": "false"
+                "worker.enabled": "true",
+                "worker.updateStrategy.type": "Recreate",
+                "worker.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].key": "app.kubernetes.io/component",
+                "worker.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].operator": "In",
+                "worker.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].values[0]": "netbox",
+                "worker.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].key": "app.kubernetes.io/instance",
+                "worker.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].operator": "In",
+                "worker.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].topologyKey": "\"kubernetes.io/hostname\"",
+                "housekeeping.enabled": "true",
+                "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].key": "app.kubernetes.io/component",
+                "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].operator": "In",
+                "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[0].values[0]": "netbox",
+                "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].key": "app.kubernetes.io/instance",
+                "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].labelSelector.matchExpressions[1].operator": "In",
+                "housekeeping.affinity.podAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].topologyKey": "\"kubernetes.io/hostname\""
             },
             "storageVolumes": [],
             "exposesWebUI": true,

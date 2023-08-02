@@ -35,7 +35,7 @@ public interface NmServiceDeploymentProvider {
      *
      * @param deploymentId unique identifier of service deployment
      * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
-     * @throws CouldNotPrepareEnvironmentException if environment could't be prepared for some reason
+     * @throws CouldNotPrepareEnvironmentException if environment couldn't be prepared for some reason
      */
     void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired);
 

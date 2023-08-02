@@ -62,8 +62,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional(value=TxType.REQUIRES_NEW)
 public class UsersControllerIntTest extends BaseControllerTestSetup {
 
-    final static String DOMAIN = "domtest";
-    final static String DOMAIN2 = "tetdom";
+    private static final String DOMAIN = "domtest";
+    private static final String DOMAIN2 = "tetdom";
 
     @Autowired
     private UserRepository userRepo;
@@ -86,7 +86,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     private final Principal principal = mock(Principal.class);
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         mvc = createMVC();
         when(principal.getName()).thenReturn("admin");
         when(captchaValidator.verifyToken(anyString())).thenReturn(true);
@@ -127,7 +127,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testDisableUser() throws Exception {
+    void testDisableUser() throws Exception {
         mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=false")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,7 +139,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testEnableUser() throws Exception {
+    void testEnableUser() throws Exception {
         mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=true")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -150,7 +150,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
+    void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
         mvc.perform(post("/api/users/terms/" + user3.getUsername())
                 .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -162,25 +162,25 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testGetUsers() {
+    void testGetUsers() {
         assertEquals(6, userController.getUsers(Pageable.unpaged(), principal).size());
     }
 
     @Test
-    public void testGetRoles() {
+    void testGetRoles() {
         assertEquals(8, userController.getRoles().size());
     }
 
     @Test
-    public void testGetUser() throws MissingElementException {
+    void testGetUser() throws MissingElementException {
         long id = userRepo.findByUsername("admin").get().getId();
         UserView user = (UserView)userController.retrieveUser(id, principal);
-        assertEquals(new Long(id), user.getId());
+        assertEquals(Long.valueOf(id), user.getId());
         assertEquals("admin", user.getUsername());
     }
 
     @Test
-    public void shouldUpdateUserWithNewFirstNameAndLastName() {
+    void shouldUpdateUserWithNewFirstNameAndLastName() {
         String newFirstName = "TestFirstName";
         String newLastName = "TestLastName";
         UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
@@ -194,7 +194,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateUserWithNewEmail(){
+    void shouldUpdateUserWithNewEmail() {
         String newEmail = "admin@testemail.com";
         UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
         userRequest.setEmail(newEmail);
@@ -205,7 +205,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotUpdateUserWithTakenEmail(){
+    void shouldNotUpdateUserWithTakenEmail() {
         assertThrows(ProcessingException.class, () -> {
             String newEmail = user3.getEmail();
             UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
@@ -215,7 +215,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldUpdateUserOwnData(){
+    void shouldUpdateUserOwnData() {
         when(principal.getName()).thenReturn(user3.getUsername());
         assertDoesNotThrow(() -> {
             String newEmail = "admin@test.com";
@@ -226,7 +226,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotUpdateOtherUserDataWithoutAdminRole(){
+    void shouldNotUpdateOtherUserDataWithoutAdminRole() {
         when(principal.getName()).thenReturn(user3.getUsername());
         assertThrows(ProcessingException.class, () -> {
             String newEmail = "stub@nottakenmail.com";
@@ -237,7 +237,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotUpdateUserWithoutDomainAdminRoleInUserDomain(){
+    void shouldNotUpdateUserWithoutDomainAdminRoleInUserDomain() {
         when(principal.getName()).thenReturn("domAdmin");
         assertThrows(ProcessingException.class, () -> {
             String newEmail = "stub@nottakenmail.com";
@@ -248,20 +248,17 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testDeleteUser() {
+    void testDeleteUser() {
         assertThrows(ProcessingException.class, () ->
             userController.deleteUser(userEntity.getId())
         );
     }
 
     @Test
-    public void testGetRolesAsString(){
-        Role role1 = ROLE_USER;
-        Role role2 = ROLE_SYSTEM_ADMIN;
-        Role role3 = ROLE_DOMAIN_ADMIN;
-        UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), role1);
-        UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), role2);
-        UserRole userRole3 = new UserRole(new User("TEST3"), new Domain("TEST", "TEST"), role3);
+    void testGetRolesAsString() {
+        UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), ROLE_USER);
+        UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), ROLE_SYSTEM_ADMIN);
+        UserRole userRole3 = new UserRole(new User("TEST3"), new Domain("TEST", "TEST"), ROLE_DOMAIN_ADMIN);
 
         List<UserRole> userRoles = new ArrayList<>();
         userRoles.add(userRole1);
@@ -272,21 +269,18 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testGetMessageWhenUserUpdated(){
-        Role role1 = ROLE_USER;
-        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
-
-        Role role2 = ROLE_TOOL_MANAGER;
-        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role2);
+    void testGetMessageWhenUserUpdated(){
+        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_USER);
+        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_TOOL_MANAGER);
 
         List<UserRole> userRoles1 = new ArrayList<>();
         userRoles1.add(userRole1);
         userRoles1.add(userRole2);
 
-        Role role3 = ROLE_DOMAIN_ADMIN;
         UserRoleView userRole3 = new UserRoleView();
-        userRole3.setRole(role3);
+        userRole3.setRole(ROLE_DOMAIN_ADMIN);
         userRole3.setDomainId(1L);
+
         Set<UserRoleView> userRoles3 = new HashSet<>();
         userRoles3.add(userRole3);
 
@@ -311,7 +305,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testGetMessageWhenUserUpdatedWithSameRolesInDifferentOrder(){
+    void testGetMessageWhenUserUpdatedWithSameRolesInDifferentOrder() {
         UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_USER);
         UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_TOOL_MANAGER);
 
@@ -339,15 +333,13 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testGetRoleWithDomainIdAsString(){
-        Role role1 = ROLE_USER;
+    void testGetRoleWithDomainIdAsString() {
         UserRoleView userRole1 = new UserRoleView();
-        userRole1.setRole(role1);
+        userRole1.setRole(ROLE_USER);
         userRole1.setDomainId(1L);
 
-        Role role2 = ROLE_GUEST;
         UserRoleView userRole2 = new UserRoleView();
-        userRole2.setRole(role2);
+        userRole2.setRole(ROLE_GUEST);
         userRole2.setDomainId(2L);
 
         Set<UserRoleView> userRoles = new LinkedHashSet<>();
@@ -355,11 +347,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         userRoles.add(userRole2);
 
         assertEquals("ROLE_USER@domain1, ROLE_GUEST@domain2", userController.getRoleWithDomainIdAsString(userRoles));
-
     }
 
     @Test
-    public void shouldValidateResetRequest() throws Exception {
+    void shouldValidateResetRequest() throws Exception {
         MvcResult result = mvc.perform(post("/api/users/reset/validate")
                 .content(jwtTokenService.getResetToken(user3.getEmail()))
                 .header("Authorization", "Bearer " + token)
@@ -371,7 +362,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotValidateResetRequest() {
+    void shouldNotValidateResetRequest() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset/validate")
                     .content(jwtTokenService.getResetToken("notexisting@email.co.uk"))
@@ -383,7 +374,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldResetPassword() {
+    void shouldResetPassword() {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken(user3.getEmail()), "test");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset?token=test-token")
@@ -396,7 +387,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotResetPassword() {
+    void shouldNotResetPassword() {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset?token=test-token")
@@ -409,13 +400,12 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @AfterEach
-    public void tearUp(){
+    void tearUp() {
         userRepo.findAll().stream()
                 .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                 .forEach(user -> userRepo.delete(user));
         domains.getDomains().stream()
                 .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
                 .forEach(domain -> domains.removeDomain(domain.getId()));
-
     }
 }

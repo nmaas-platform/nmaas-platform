@@ -4,11 +4,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: git-sync
-        uses: korvoj/git-sync@5eacd8ac78ae91a984f3aa430b09a0051abb2dc0
+        uses: korvoj/git-sync@branch-removal
         with:
           source_repo: 'git@github.com:nmaas-platform/nmaas-platform.git'
           source_branch: 'refs/remotes/source/*'
-          destination_repo: 'git@gitlab.geant.org:nmaas/nmaas-platform.git'
+          destination_repo: 'git@gitlab.software.geant.org:nmaas/nmaas-platform.git'
           destination_branch: 'refs/heads/*'
           source_ssh_private_key: ${{ secrets.SOURCE_SSH_PRIVATE_KEY }}
           destination_ssh_private_key: ${{ secrets.DESTINATION_SSH_PRIVATE_KEY }}
