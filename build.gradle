@@ -269,6 +269,6 @@ sonarqube {
         property "sonar.projectName", "nmaas-platform"
         property "sonar.projectKey", "net.geant.nmaas:reactor:nmaas-platform:develop"
         property "sonar.host.url", "https://sonarqube.software.geant.org"
-        property "sonar.login", "2d4e10117afbf4da97a6e95fa899a23469e838cf"
+        property "sonar.login", System.getenv("SONAR_LOGIN_TOKEN")
     }
 }
