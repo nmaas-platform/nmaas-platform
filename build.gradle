@@ -266,5 +266,9 @@ sonarqube {
     properties {
         property "sonar.coverage.exclusions", ["**/inventory/janitor/**","**/exception/**","**/exceptions/**"]
         properties["sonar.tests"] += sourceSets.integrationTest.allSource.srcDirs
+        property "sonar.projectName", "nmaas-platform"
+        property "sonar.projectKey", "net.geant.nmaas:reactor:nmaas-platform:develop"
+        property "sonar.host.url", "https://sonarqube.software.geant.org"
+        property "sonar.login", "2d4e10117afbf4da97a6e95fa899a23469e838cf"
     }
 }
