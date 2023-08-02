@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -40,9 +41,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,6 +59,8 @@ import static net.geant.nmaas.portal.api.market.AppInstanceController.mapAppInst
 @RequiredArgsConstructor
 @Slf4j
 public class BulkApplicationServiceImpl implements BulkApplicationService {
+
+    private final static int WAIT_INTERVAL_IN_SECONDS = 15;
 
     private final ApplicationBaseService applicationBaseService;
     private final ApplicationService applicationService;
@@ -130,8 +135,14 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
                 // store entry information in database
                 BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.save(
-                        BulkDeploymentEntry.builder().type(BulkType.APPLICATION).state(BulkDeploymentState.PROCESSING).created(true).details(prepareBulkApplicationDeploymentDetailsMap(instance)).build()
+                        BulkDeploymentEntry.builder()
+                                .type(BulkType.APPLICATION)
+                                .state(BulkDeploymentState.PROCESSING)
+                                .created(true)
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance))
+                                .build()
                 );
+
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
 
                 // triggering event for monitoring and processing of bulk deployment
@@ -145,7 +156,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             } catch (Exception e) {
                 log.warn("Exception thrown while deploying application {}:{} in domain {}", applicationName, applicationSpec.getApplicationVersion(), applicationSpec.getDomainName());
                 log.warn(e.getMessage());
-                bulkDeployment.getEntries().add(BulkDeploymentEntry.builder().type(BulkType.APPLICATION).state(BulkDeploymentState.FAILED).created(false).details(null).build());
+                bulkDeployment.getEntries().add(
+                        BulkDeploymentEntry.builder()
+                                .type(BulkType.APPLICATION)
+                                .state(BulkDeploymentState.FAILED)
+                                .created(false)
+                                .details(null)
+                                .build());
             }
         });
 
@@ -173,12 +190,40 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
     }
 
+    @Override
     @EventListener
     @Transactional
     @Loggable(LogLevel.INFO)
     public ApplicationEvent handleDeploymentStatusUpdate(AppAutoDeploymentStatusUpdateEvent event) {
         log.info("Status update for deployment {}", event.getDeploymentId());
-        return null;
+        BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.findById(event.getBulkDeploymentId().longValue()).orElseThrow();
+        try {
+            AppLifecycleState appLifecycleState = appDeploymentMonitor.state(event.getDeploymentId());
+            switch (appLifecycleState) {
+                case APPLICATION_DEPLOYMENT_VERIFIED:
+                    bulkDeploymentEntry.setState(BulkDeploymentState.COMPLETED);
+                    bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
+                    // TODO update state of the entire bulk object
+                    return null;
+                case APPLICATION_CONFIGURATION_FAILED:
+                case APPLICATION_DEPLOYMENT_FAILED:
+                case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
+                    bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
+                    bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
+                    // TODO update state of the entire bulk object
+                    return null;
+                default:
+                    Thread.sleep(event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
+                            event.getWaitIntervalBeforeNextCheckInMillis() : WAIT_INTERVAL_IN_SECONDS * 1000);
+                    return event;
+            }
+        } catch (InterruptedException e) {
+            log.warn("Thread interrupted while sleeping ... Resending the event");
+            return event;
+        } catch (NoSuchElementException e) {
+            log.warn("Received bulk status update request but entry was not found ({})", event.getBulkDeploymentId().toString());
+            return null;
+        }
     }
 
     private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
@@ -187,6 +232,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         bulkDeployment.setState(BulkDeploymentState.PROCESSING);
         bulkDeployment.setCreatorId(creator.getId());
         bulkDeployment.setCreationDate(OffsetDateTime.now());
+        bulkDeployment.setEntries(new ArrayList<>());
         return bulkDeployment;
     }
 

@@ -1,6 +1,17 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.0",
+      "date" : "(2023/xx/xx)",
+      "topic" : [
+        {
+          "title" : "Portal layout improvements",
+          "tags" : "[Enhancement]",
+          "description" : "..."
+        }
+      ]
+    },
+    {
       "verNo" : "1.5.3",
       "date" : "(2023/06/30)",
       "topic" : [

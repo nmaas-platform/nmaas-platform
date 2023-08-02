@@ -2,13 +2,17 @@ package net.geant.nmaas.portal.api.bulk;
 
 import com.opencsv.bean.CsvBindAndJoinByName;
 import com.opencsv.bean.CsvBindByName;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CsvApplication {
 
     @CsvBindByName(column = "domain")

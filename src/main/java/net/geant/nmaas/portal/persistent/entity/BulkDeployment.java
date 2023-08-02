@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,6 +42,6 @@ public class BulkDeployment {
     private BulkType type;
 
     @OneToMany
-    private List<BulkDeploymentEntry> entries;
+    private List<BulkDeploymentEntry> entries = new ArrayList<>();
 
 }
