@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.vdurmont.semver4j.Semver;
-import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.service.ApplicationInstanceUpgradeService;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@Log4j2
 public class ApplicationInstanceUpgradeServiceImpl implements ApplicationInstanceUpgradeService {
 
     /**
