@@ -95,7 +95,9 @@ public class AppUpgradeServiceTest {
         when(applicationInstanceService.findByInternalId(DEPLOYMENT_ID3)).thenReturn(Optional.of(APP_INSTANCE2));
         when(applicationInstanceService.findByInternalId(DEPLOYMENT_ID4)).thenReturn(Optional.of(APP_INSTANCE3));
         when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID1)).thenReturn(Boolean.TRUE);
+        when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID1, "newappversion1")).thenReturn(Boolean.FALSE);
         when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID2)).thenReturn(Boolean.TRUE);
+        when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID2, "newappversion1")).thenReturn(Boolean.TRUE);
         when(applicationInstanceService.checkUpgradePossible(APPINSTANCE_ID3)).thenReturn(Boolean.FALSE);
         when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE1.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
         when(applicationInstanceService.obtainUpgradeInfo(APP_INSTANCE2.getId())).thenReturn(new AppInstanceView.AppInstanceUpgradeInfo(APPLICATION_ID3, "appversion3", ""));
@@ -123,12 +125,8 @@ public class AppUpgradeServiceTest {
         service.notifyReadyForUpgrade(event);
 
         ArgumentCaptor<NotificationEvent> notificationEventArgumentCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
-        verify(applicationEventPublisher, times(2)).publishEvent(notificationEventArgumentCaptor.capture());
-        NotificationEvent result = notificationEventArgumentCaptor.getAllValues().get(0);
-        assertThat(result.getMailAttributes().getOtherAttributes().get("appName")).isEqualTo(APPLICATION1.getName());
-        assertThat(result.getMailAttributes().getOtherAttributes().get("appVersion")).isEqualTo(APPLICATION1.getVersion());
-        assertThat(result.getMailAttributes().getOtherAttributes().get("appVersionNew")).isEqualTo("appversion3");
-        result = notificationEventArgumentCaptor.getAllValues().get(1);
+        verify(applicationEventPublisher, times(1)).publishEvent(notificationEventArgumentCaptor.capture());
+        NotificationEvent result = notificationEventArgumentCaptor.getValue();
         assertThat(result.getMailAttributes().getOtherAttributes().get("appName")).isEqualTo(APPLICATION1.getName());
         assertThat(result.getMailAttributes().getOtherAttributes().get("appVersion")).isEqualTo(APPLICATION1.getVersion());
         assertThat(result.getMailAttributes().getOtherAttributes().get("appVersionNew")).isEqualTo("appversion3");

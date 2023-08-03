@@ -47,6 +47,7 @@ public interface ApplicationInstanceService {
 	boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView);
 
 	boolean checkUpgradePossible(Long appInstanceId);
+	boolean checkUpgradePossible(Long appInstanceId, String targetVersion);
     AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
 
 }
