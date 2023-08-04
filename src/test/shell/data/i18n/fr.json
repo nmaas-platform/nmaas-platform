@@ -1114,6 +1114,7 @@
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk domain deployments",
+      "VIEW_HEADER" : "Bulk application deployments",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "NAVIGATION" : "New bulk domain deployment",
       "DEPLOYMENTS" : "Domain deployments"
@@ -1127,13 +1128,17 @@
       "HEADER" : "Bulk application deployments",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "DEPLOYMENTS" : "Instances deployments",
-      "NAVIGATION" : "New bulk application deployment"
+      "NAVIGATION" : "New bulk application deployment",
+      "INSTANCE_ID" : "Instance Id",
+      "INSTANCE_NAME": "Instance name",
+      "DOMAIN" : "Domain"
     },
     "STATE" : {
       "PENDING" :  "Pending",
       "PROCESSING" :  "Processing",
       "COMPLETED" : "Completed",
-      "FAILED" : "Failed"
+      "FAILED" : "Failed",
+      "PARTIALLY_FAILED" : "Partially failed"
     }
   },
   "SHARED" : {
