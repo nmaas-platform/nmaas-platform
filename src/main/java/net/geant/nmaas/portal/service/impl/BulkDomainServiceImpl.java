@@ -107,7 +107,12 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         Optional<Domain> domainFromDb = domainService.findDomain(csvDomain.getDomainName());
         if (domainFromDb.isPresent()) {
             domain = domainFromDb.get();
-            result.add(BulkDeploymentEntry.builder().type(BulkType.DOMAIN).state(BulkDeploymentState.COMPLETED).created(false).details(prepareBulkDomainDeploymentDetailsMap(domain)).build());
+            result.add(BulkDeploymentEntry.builder()
+                    .type(BulkType.DOMAIN)
+                    .state(BulkDeploymentState.COMPLETED)
+                    .created(false)
+                    .details(prepareBulkDomainDeploymentDetailsMap(domain)).build()
+            );
         } else {
             String domainCodename = prepareCorrectAndUniqueDomainCodename(csvDomain.getDomainName());
             DomainTechDetailsView domainTechDetails = DomainTechDetailsView.builder()
@@ -130,7 +135,12 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                             .domainTechDetails(domainTechDetails)
                             .build());
             domainService.storeDcnInfo(prepareDcnInfo(domain));
-            result.add(BulkDeploymentEntry.builder().type(BulkType.DOMAIN).state(BulkDeploymentState.COMPLETED).created(true).details(prepareBulkDomainDeploymentDetailsMap(domain)).build());
+            result.add(BulkDeploymentEntry.builder()
+                    .type(BulkType.DOMAIN)
+                    .state(BulkDeploymentState.COMPLETED)
+                    .created(true)
+                    .details(prepareBulkDomainDeploymentDetailsMap(domain)).build()
+            );
         }
         return domain;
     }

@@ -52,6 +52,9 @@ import java.util.stream.Collectors;
 
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
 import static net.geant.nmaas.portal.api.market.AppInstanceController.createDescriptiveDeploymentId;
 import static net.geant.nmaas.portal.api.market.AppInstanceController.mapAppInstanceState;
 
@@ -88,6 +91,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         BulkDeployment bulkDeployment = createBulkDeployment(creator);
 
         appInstanceSpecs.forEach(applicationSpec -> {
+            AppInstance instance = null;
             try {
                 // loading requested application version
                 Application application = findApplication(applicationName, applicationSpec.getApplicationVersion());
@@ -103,7 +107,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 verifyIfInstanceNameIsAvailable(applicationSpec, domain);
 
                 // creating initial application instance entry
-                AppInstance instance = instanceService.create(domain, application, applicationSpec.getApplicationInstanceName(), false);
+                instance = instanceService.create(domain, application, applicationSpec.getApplicationInstanceName(), false);
 
                 // preparing and triggering new application deployment
                 AppDeployment appDeployment = AppDeployment.builder()
@@ -161,7 +165,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .type(BulkType.APPLICATION)
                                 .state(BulkDeploymentState.FAILED)
                                 .created(false)
-                                .details(null)
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, e.getMessage()))
                                 .build());
             }
         });
@@ -203,14 +207,14 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 case APPLICATION_DEPLOYMENT_VERIFIED:
                     bulkDeploymentEntry.setState(BulkDeploymentState.COMPLETED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
-                    // TODO update state of the entire bulk object
+                    reviewAndUpdateBulkStateIfRequired();
                     return null;
                 case APPLICATION_CONFIGURATION_FAILED:
                 case APPLICATION_DEPLOYMENT_FAILED:
                 case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
                     bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
-                    // TODO update state of the entire bulk object
+                    reviewAndUpdateBulkStateIfRequired();
                     return null;
                 default:
                     Thread.sleep(event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
@@ -236,11 +240,36 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return bulkDeployment;
     }
 
+    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, String errorMessage) {
+        Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance);
+        details.put(BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE, errorMessage);
+        return details;
+    }
+
     private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance) {
         Map<String, String> details = new HashMap<>();
-        details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID, appInstance.getId().toString());
-        details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, appInstance.getName());
+        if (Objects.nonNull(appInstance)) {
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID, appInstance.getId().toString());
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, appInstance.getName());
+            details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, appInstance.getDomain().getName());
+            details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME, appInstance.getDomain().getCodename());
+        }
         return details;
+    }
+
+    private void reviewAndUpdateBulkStateIfRequired() {
+        bulkDeploymentRepository.findByTypeAndState(BulkType.APPLICATION, BulkDeploymentState.PROCESSING).forEach(
+                d -> {
+                    if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(d.getState()))) {
+                        d.setState(BulkDeploymentState.COMPLETED);
+                    } else if (d.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.PARTIALLY_FAILED);
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.FAILED);
+                    }
+                    bulkDeploymentRepository.save(d);
+                }
+        );
     }
 
 }
