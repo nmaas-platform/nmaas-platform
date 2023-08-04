@@ -85,10 +85,7 @@ public class BulkController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAllDeploymentRecords() {
-        return ResponseEntity.ok(bulkDeploymentRepository.findAll()
-                .stream()
-                .map(bulk -> modelMapper.map(bulk, BulkDeploymentViewS.class))
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findAll()));
     }
 
     @GetMapping("/{id}")
@@ -103,22 +100,23 @@ public class BulkController {
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords() {
-        return ResponseEntity.ok(bulkDeploymentRepository.findByType(BulkType.DOMAIN)
-                .stream()
-                .map(bulk -> {
-                    BulkDeploymentViewS bulkView = modelMapper.map(bulk, BulkDeploymentViewS.class);
-                    bulkView.setCreator(getUserView(bulk.getCreatorId()));
-                    return bulkView;
-                })
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.DOMAIN)));
     }
 
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords() {
-        return ResponseEntity.ok(bulkDeploymentRepository.findByType(BulkType.APPLICATION).stream()
-                .map(bulk -> modelMapper.map(bulk, BulkDeploymentViewS.class))
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.APPLICATION)));
+    }
+
+    private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {
+        return deployments.stream()
+                .map(bulk -> {
+                    BulkDeploymentViewS bulkView = modelMapper.map(bulk, BulkDeploymentViewS.class);
+                    bulkView.setCreator(getUserView(bulk.getCreatorId()));
+                    return bulkView;
+                })
+                .collect(Collectors.toList());
     }
 
     private UserViewMinimal getUserView(Long id) {
