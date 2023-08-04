@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.service.impl.BulkCsvProcessorImpl;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CsvDomain {
+public class CsvDomain implements BulkCsvProcessorImpl.CsvBean {
 
     @CsvBindByName(column = "domain")
     private String domainName;

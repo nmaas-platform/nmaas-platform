@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.service.impl.BulkCsvProcessorImpl;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 
@@ -13,7 +14,7 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CsvApplication {
+public class CsvApplication implements BulkCsvProcessorImpl.CsvBean {
 
     @CsvBindByName(column = "domain")
     private String domainName;

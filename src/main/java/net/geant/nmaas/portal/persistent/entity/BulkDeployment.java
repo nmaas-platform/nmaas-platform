@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,7 +42,7 @@ public class BulkDeployment {
     @Enumerated(EnumType.STRING)
     private BulkType type;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<BulkDeploymentEntry> entries = new ArrayList<>();
 
 }
