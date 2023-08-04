@@ -578,6 +578,33 @@ public class ApplicationInstanceServiceTest {
     }
 
     @Test
+    void shouldCheckIfUpgradePossibleToTargetVersion() {
+        Domain domain = new Domain("test", "test");
+        domain.setId((long) 0);
+        Application testApp = new Application(1L, "test", "1.1.1");
+        KubernetesChart kubernetesChart = new KubernetesChart("testapp", "1.0.0");
+        KubernetesTemplate kubernetesTemplate = new KubernetesTemplate(kubernetesChart, null, null);
+        testApp.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(kubernetesTemplate).build());
+        Application testApp2 = new Application(2L, "test2", "1.2.0");
+        KubernetesChart kubernetesChart2 = new KubernetesChart("testapp", "1.1.0");
+        KubernetesTemplate kubernetesTemplate2 = new KubernetesTemplate(kubernetesChart2, null, null);
+        testApp2.setAppDeploymentSpec(AppDeploymentSpec.builder().kubernetesTemplate(kubernetesTemplate2).build());
+        AppInstance test1 = new AppInstance(100L, testApp, domain, "test1", true);
+
+        when(applications.findApplication(any())).thenReturn(Optional.of(testApp2));
+        when(appInstanceRepo.findById(100L)).thenReturn(Optional.of(test1));
+        when(applicationInstanceUpgradeService.getNextApplicationVersionForUpgrade(any(), any())).thenReturn(Optional.of(2L));
+
+        assertTrue(applicationInstanceService.checkUpgradePossible(test1.getId()));
+        assertTrue(applicationInstanceService.checkUpgradePossible(test1.getId(), "1.2.0"));
+
+        testApp2.setVersion("1.1.1");
+
+        assertTrue(applicationInstanceService.checkUpgradePossible(test1.getId()));
+        assertFalse(applicationInstanceService.checkUpgradePossible(test1.getId(), "1.2.0"));
+    }
+
+    @Test
     void shouldNotReturnAppInstanceIfDomainWasRemoved() {
         Domain domain1 = new Domain(1L, "domain one", "d1");
         domain1.setDeleted(true);

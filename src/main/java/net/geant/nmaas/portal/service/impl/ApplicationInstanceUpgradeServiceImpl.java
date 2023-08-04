@@ -23,6 +23,7 @@ public class ApplicationInstanceUpgradeServiceImpl implements ApplicationInstanc
                 .map(Semver::new)
                 .sorted()
                 .filter(v -> v.isGreaterThan(current) && !v.diff(current).equals(Semver.VersionDiff.MAJOR))
+                .filter(v -> v.diff(current).equals(Semver.VersionDiff.MINOR) || v.diff(current).equals(Semver.VersionDiff.PATCH))
                 .map(Semver::getOriginalValue)
                 .findFirst();
         return next.map(allVersions::get);

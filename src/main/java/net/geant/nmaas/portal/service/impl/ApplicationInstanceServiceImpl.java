@@ -245,13 +245,27 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Transactional
 	@Loggable(LogLevel.DEBUG)
 	public boolean checkUpgradePossible(Long appInstanceId) {
+		return obtainVersionForUpgrade(appInstanceId).isPresent();
+	}
+
+	@Override
+	@Transactional
+	@Loggable(LogLevel.DEBUG)
+	public boolean checkUpgradePossible(Long appInstanceId, String targetVersion) {
+        return obtainVersionForUpgrade(appInstanceId)
+				.map(application -> application.getVersion().equals(targetVersion))
+				.orElse(false);
+    }
+
+	private Optional<Application> obtainVersionForUpgrade(Long appInstanceId) {
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
 		if (appInstance.isPresent()) {
 			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
 			Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
-			return instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions).isPresent();
+			Optional<Long> versionForUpgrade = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
+			return versionForUpgrade.flatMap(applications::findApplication);
 		}
-		return false;
+		return Optional.empty();
 	}
 
 	@Override
