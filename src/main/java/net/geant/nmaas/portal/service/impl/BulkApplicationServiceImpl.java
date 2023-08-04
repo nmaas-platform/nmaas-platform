@@ -207,14 +207,14 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 case APPLICATION_DEPLOYMENT_VERIFIED:
                     bulkDeploymentEntry.setState(BulkDeploymentState.COMPLETED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
-                    // TODO update state of the entire bulk object
+                    reviewAndUpdateBulkStateIfRequired();
                     return null;
                 case APPLICATION_CONFIGURATION_FAILED:
                 case APPLICATION_DEPLOYMENT_FAILED:
                 case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
                     bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
-                    // TODO update state of the entire bulk object
+                    reviewAndUpdateBulkStateIfRequired();
                     return null;
                 default:
                     Thread.sleep(event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
@@ -255,6 +255,21 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME, appInstance.getDomain().getCodename());
         }
         return details;
+    }
+
+    private void reviewAndUpdateBulkStateIfRequired() {
+        bulkDeploymentRepository.findByTypeAndState(BulkType.APPLICATION, BulkDeploymentState.PROCESSING).forEach(
+                d -> {
+                    if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(d.getState()))) {
+                        d.setState(BulkDeploymentState.COMPLETED);
+                    } else if (d.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.PARTIALLY_FAILED);
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.FAILED);
+                    }
+                    bulkDeploymentRepository.save(d);
+                }
+        );
     }
 
 }
