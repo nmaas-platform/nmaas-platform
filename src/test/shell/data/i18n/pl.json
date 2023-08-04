@@ -1125,7 +1125,16 @@
     "APP": {
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
-      "HEADER" : "Uruchamianie wielu aplikacji"
+      "HEADER" : "Uruchamianie wielu aplikacji",
+      "DEPLOYMENT_IN_PROGRESS": "Uruchamianie aplikacji w toku...",
+      "DEPLOYMENTS" : "Uruchomione aplikacje",
+      "NAVIGATION" : "Nowe uruchamianie wielu aplikacji"
+    },
+    "STATE" : {
+      "PENDING" :  "Oczekuje",
+      "PROCESSING" :  "Przetwarzanie",
+      "COMPLETED" : "Zakończone",
+      "FAILED" : "Nieudane"
     }
   },
   "SHARED" : {
