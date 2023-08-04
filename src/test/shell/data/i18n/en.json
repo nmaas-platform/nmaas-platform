@@ -1106,7 +1106,6 @@
       "DETAILS" : "Details",
       "CONTINUE" : "Continue",
       "CREATED" : "Created",
-      "SUCCESSFUL" : "Successful",
       "TYPE" : "Object type",
       "MOVE_DOMAIN" : "Domain information",
       "MOVE_USER" : "User information",
@@ -1126,7 +1125,16 @@
     "APP": {
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
-      "HEADER" : "Bulk application deployments"
+      "HEADER" : "Bulk application deployments",
+      "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
+      "DEPLOYMENTS" : "Instances deployments",
+      "NAVIGATION" : "New bulk application deployment"
+    },
+    "STATE" : {
+      "PENDING" :  "Pending",
+      "PROCESSING" :  "Processing",
+      "COMPLETED" : "Completed",
+      "FAILED" : "Failed"
     }
   },
   "SHARED" : {
