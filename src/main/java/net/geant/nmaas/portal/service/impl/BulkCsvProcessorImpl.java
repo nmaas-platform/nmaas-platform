@@ -34,7 +34,7 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
 
     @Override
     public List<CsvApplication> processApplicationSpecs(MultipartFile file) throws IOException {
-        return process(file, CsvDomain.class).stream().map(d -> (CsvApplication) d).collect(Collectors.toList());
+        return process(file, CsvApplication.class).stream().map(d -> (CsvApplication) d).collect(Collectors.toList());
     }
 
     /**
