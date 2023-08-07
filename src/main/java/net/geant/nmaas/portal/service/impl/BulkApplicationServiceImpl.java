@@ -133,8 +133,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 if (Objects.nonNull(applicationSpec.getParameters())) {
                     String configJson = new ObjectMapper().writeValueAsString(applicationSpec.getParameters());
                     instance.setConfiguration(configJson);
+                    appConfigurationView.setJsonInput(configJson);
                     appConfigurationView.setMandatoryParameters(configJson);
                     instanceService.update(instance);
+                } else {
+                    appConfigurationView.setJsonInput("{}");
                 }
 
                 // store entry information in database
