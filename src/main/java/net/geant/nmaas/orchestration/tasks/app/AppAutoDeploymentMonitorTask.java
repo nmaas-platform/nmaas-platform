@@ -30,7 +30,7 @@ public class AppAutoDeploymentMonitorTask {
     public ApplicationEvent trigger(AppAutoDeploymentTriggeredEvent event) throws InterruptedException {
         try {
             AppLifecycleState appLifecycleState = appDeploymentMonitor.state(event.getDeploymentId());
-            if (AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARED.equals(appLifecycleState)) {
+            if (AppLifecycleState.MANAGEMENT_VPN_CONFIGURED.equals(appLifecycleState)) {
                 appLifecycleManager.applyConfiguration(event.getDeploymentId(), event.getAppConfigurationView(), null);
             } else {
                 Thread.sleep(15000);
