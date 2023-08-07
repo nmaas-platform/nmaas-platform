@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -25,6 +26,7 @@ import java.util.Map;
 @Setter
 @Entity
 @Builder
+@ToString
 public class BulkDeploymentEntry {
 
     @Id

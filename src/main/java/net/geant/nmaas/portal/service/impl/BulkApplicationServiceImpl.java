@@ -9,6 +9,7 @@ import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
@@ -31,8 +32,6 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.utils.logging.LogLevel;
-import net.geant.nmaas.utils.logging.Loggable;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -200,7 +199,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Override
     @EventListener
     @Transactional
-    @Loggable(LogLevel.INFO)
     public ApplicationEvent handleDeploymentStatusUpdate(AppAutoDeploymentStatusUpdateEvent event) {
         log.info("Status update for deployment {}", event.getDeploymentId());
         BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.findById(event.getBulkDeploymentId().longValue()).orElseThrow();
@@ -210,15 +208,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 case APPLICATION_DEPLOYMENT_VERIFIED:
                     bulkDeploymentEntry.setState(BulkDeploymentState.COMPLETED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
-                    reviewAndUpdateBulkStateIfRequired();
-                    return null;
+                    return new AppAutoDeploymentReviewEvent(this);
                 case APPLICATION_CONFIGURATION_FAILED:
                 case APPLICATION_DEPLOYMENT_FAILED:
                 case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
                     bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
-                    reviewAndUpdateBulkStateIfRequired();
-                    return null;
+                    return new AppAutoDeploymentReviewEvent(this);
                 default:
                     Thread.sleep(event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
                             event.getWaitIntervalBeforeNextCheckInMillis() : WAIT_INTERVAL_IN_SECONDS * 1000);
@@ -231,6 +227,34 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             log.warn("Received bulk status update request but entry was not found ({})", event.getBulkDeploymentId().toString());
             return null;
         }
+    }
+
+    @Override
+    @EventListener
+    @Transactional
+    public void handleDeploymentReview(AppAutoDeploymentReviewEvent event) {
+        log.info("Reviewing all processed bulk deployments");
+        List<BulkDeployment> deployments = bulkDeploymentRepository.findByTypeAndState(BulkType.APPLICATION, BulkDeploymentState.PROCESSING);
+        log.info("Loaded {} application bulk deployments", deployments.size());
+        deployments.forEach(
+                d -> {
+                    boolean stateChanged = false;
+                    if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.COMPLETED);
+                        stateChanged = true;
+                    } else if (d.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.PARTIALLY_FAILED);
+                        stateChanged = true;
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.FAILED);
+                        stateChanged = true;
+                    }
+                    if (stateChanged) {
+                        logBulkStateUpdate(d.getId(), d.getState().name());
+                        bulkDeploymentRepository.save(d);
+                    }
+                }
+        );
     }
 
     private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
@@ -260,19 +284,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return details;
     }
 
-    private void reviewAndUpdateBulkStateIfRequired() {
-        bulkDeploymentRepository.findByTypeAndState(BulkType.APPLICATION, BulkDeploymentState.PROCESSING).forEach(
-                d -> {
-                    if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(d.getState()))) {
-                        d.setState(BulkDeploymentState.COMPLETED);
-                    } else if (d.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
-                        d.setState(BulkDeploymentState.PARTIALLY_FAILED);
-                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
-                        d.setState(BulkDeploymentState.FAILED);
-                    }
-                    bulkDeploymentRepository.save(d);
-                }
-        );
+    private void logBulkStateUpdate(long bulkId, String state) {
+        log.debug("State of bulk {} set to {}", bulkId, state);
     }
 
 }

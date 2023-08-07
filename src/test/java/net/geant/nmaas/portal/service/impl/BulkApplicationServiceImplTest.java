@@ -5,16 +5,15 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
-import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
-import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentEntryRepository;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
@@ -31,13 +30,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static net.geant.nmaas.portal.api.bulk.BulkType.APPLICATION;
+import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.COMPLETED;
+import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PROCESSING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -93,11 +96,11 @@ public class BulkApplicationServiceImplTest {
         ArgumentCaptor<BulkDeployment> bulkDeploymentArgumentCaptor = ArgumentCaptor.forClass(BulkDeployment.class);
         verify(bulkDeploymentRepository).save(bulkDeploymentArgumentCaptor.capture());
         BulkDeployment bulkDeployment = bulkDeploymentArgumentCaptor.getValue();
-        assertEquals(BulkDeploymentState.PROCESSING, bulkDeployment.getState());
-        assertEquals(BulkType.APPLICATION, bulkDeployment.getType());
+        assertEquals(PROCESSING, bulkDeployment.getState());
+        assertEquals(APPLICATION, bulkDeployment.getType());
         assertEquals(testUser().getId(), bulkDeployment.getCreatorId());
         assertEquals(1, bulkDeployment.getEntries().size());
-        assertEquals(BulkDeploymentState.PROCESSING, bulkDeployment.getEntries().get(0).getState());
+        assertEquals(PROCESSING, bulkDeployment.getEntries().get(0).getState());
     }
 
     @Test
@@ -113,8 +116,8 @@ public class BulkApplicationServiceImplTest {
         ArgumentCaptor<BulkDeploymentEntry> bulkDeploymentEntryArgumentCaptor = ArgumentCaptor.forClass(BulkDeploymentEntry.class);
         verify(bulkDeploymentEntryRepository).save(bulkDeploymentEntryArgumentCaptor.capture());
         BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryArgumentCaptor.getValue();
-        assertEquals(BulkDeploymentState.COMPLETED, bulkDeploymentEntry.getState());
-        assertNull(result);
+        assertEquals(COMPLETED, bulkDeploymentEntry.getState());
+        assertInstanceOf(AppAutoDeploymentReviewEvent.class, result);
     }
 
     @Test
@@ -130,7 +133,28 @@ public class BulkApplicationServiceImplTest {
 
         verify(bulkDeploymentEntryRepository, times(0)).save(any(BulkDeploymentEntry.class));
         assertNotNull(result);
-        assertTrue(result instanceof AppAutoDeploymentStatusUpdateEvent);
+        assertInstanceOf(AppAutoDeploymentStatusUpdateEvent.class, result);
+    }
+
+    @Test
+    void shouldHandleDeploymentReview() {
+        Identifier bulkDeploymentId = Identifier.newInstance(1L);
+        AppAutoDeploymentReviewEvent event = new AppAutoDeploymentReviewEvent(this);
+        BulkDeployment bAppToBeCompleted = new BulkDeployment(
+                1L, 1L, OffsetDateTime.now(), PROCESSING, APPLICATION,
+                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))));
+        BulkDeployment bAppProcessing = new BulkDeployment(
+                2L, 1L, OffsetDateTime.now(), PROCESSING, APPLICATION,
+                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))));
+        when(bulkDeploymentRepository.findByTypeAndState(APPLICATION, PROCESSING))
+                .thenReturn(List.of(bAppToBeCompleted, bAppProcessing));
+
+        bulkApplicationService.handleDeploymentReview(event);
+
+        verify(bulkDeploymentRepository).findByTypeAndState(APPLICATION, PROCESSING);
+        ArgumentCaptor<BulkDeployment> bulkDeploymentArgumentCaptor = ArgumentCaptor.forClass(BulkDeployment.class);
+        verify(bulkDeploymentRepository, times(1)).save(bulkDeploymentArgumentCaptor.capture());
+        assertEquals(COMPLETED, bulkDeploymentArgumentCaptor.getValue().getState());
     }
 
     private static UserViewMinimal testUser() {

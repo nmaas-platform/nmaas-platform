@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 
 import javax.persistence.CascadeType;
@@ -24,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
+@ToString
 public class BulkDeployment {
 
     @Id
