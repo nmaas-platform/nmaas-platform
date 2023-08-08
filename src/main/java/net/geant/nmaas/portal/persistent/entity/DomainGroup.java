@@ -59,6 +59,12 @@ public class DomainGroup implements Serializable {
         this.codename = name;
     }
 
+    public DomainGroup(Long id, String name, String codename) {
+        this.id = id;
+        this.name = name;
+        this.codename = codename;
+    }
+
     public void addDomain(Domain domain) {
         this.domains.add(domain);
         domain.getGroups().add(this);

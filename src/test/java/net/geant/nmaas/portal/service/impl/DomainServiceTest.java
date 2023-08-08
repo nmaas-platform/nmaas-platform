@@ -13,12 +13,15 @@ import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
@@ -54,6 +57,10 @@ public class DomainServiceTest {
     UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
     DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
     ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+    ModelMapper modelMapper = new ModelMapper();
+
+    DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
+    DomainGroupService domainGroupService;
 
     DomainService domainService;
 
@@ -61,11 +68,12 @@ public class DomainServiceTest {
     void setup() {
         validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
                 domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
-                new ModelMapper(), applicationStatePerDomainService);
+                modelMapper, applicationStatePerDomainService, domainGroupService);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -371,6 +379,21 @@ public class DomainServiceTest {
         assertTrue(deletedDomain.isPresent());
         assertTrue(deletedDomain.get().isDeleted());
         assertTrue(deletedDomain.get().getName().contains("DELETED"));
+    }
+    
+    @Test
+    void shouldRemoveDomainFromAllGroupsOnSoftRemoval() {
+        Domain domain = new Domain(1L, "testdom", "testdom");
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+        DomainGroup group = new DomainGroup(1L, "group1", "g1");
+        group.setDomains(new ArrayList<>());
+        group.addDomain(domain);
+        when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(group));
+        when(domainGroupRepository.save(group)).thenReturn(group);
+        domainService.softRemoveDomain(1L);
+        var resultDomainGroup = domainGroupRepository.findById(1L);
+        assertTrue(resultDomainGroup.isPresent());
+        assertTrue(resultDomainGroup.get().getDomains().isEmpty());
     }
 
 }

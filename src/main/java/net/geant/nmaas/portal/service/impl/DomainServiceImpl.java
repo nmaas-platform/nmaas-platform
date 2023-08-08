@@ -19,6 +19,7 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,7 @@ public class DomainServiceImpl implements DomainService {
 	private final DcnRepositoryManager dcnRepositoryManager;
 	private final ModelMapper modelMapper;
 	private final ApplicationStatePerDomainService applicationStatePerDomainService;
+	private final DomainGroupService domainGroupService;
 
 	@Value("${domain.global:GLOBAL}")
 	String globalDomain;
@@ -74,7 +76,8 @@ public class DomainServiceImpl implements DomainService {
 							 UserRoleRepository userRoleRepository,
 							 DcnRepositoryManager dcnRepositoryManager,
 							 ModelMapper modelMapper,
-							 ApplicationStatePerDomainService applicationStatePerDomainService
+							 ApplicationStatePerDomainService applicationStatePerDomainService,
+							 DomainGroupService domainGroupService
 	){
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
@@ -85,6 +88,7 @@ public class DomainServiceImpl implements DomainService {
 		this.dcnRepositoryManager = dcnRepositoryManager;
 		this.modelMapper = modelMapper;
 		this.applicationStatePerDomainService = applicationStatePerDomainService;
+		this.domainGroupService = domainGroupService;
 	}
 
 	@Override
@@ -265,10 +269,19 @@ public class DomainServiceImpl implements DomainService {
             domain.setName(domain.getName() + "_DELETED_" + OffsetDateTime.now());
             domain.setCodename(domain.getCodename() + "_DELETED_" + OffsetDateTime.now());
 			removeAllUsersFromDomain(domain);
-            triggerApplicationsUninstall();
+			removeDomainFromAllGroups(domain);
+			triggerApplicationsUninstall();
 			domainRepository.save(domain);
 			return true;
 		}).orElse(false);
+	}
+
+	@Override
+	public void removeDomainFromAllGroups(Domain domain) {
+		for (int i = 0; i < domain.getGroups().size(); i++) {
+			domainGroupService.deleteDomainFromGroup(domain, domain.getGroups().get(i).getId());
+		}
+
 	}
 
 	@Override
