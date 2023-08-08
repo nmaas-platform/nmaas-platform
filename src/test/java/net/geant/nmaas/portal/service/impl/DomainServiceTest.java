@@ -386,14 +386,22 @@ public class DomainServiceTest {
         Domain domain = new Domain(1L, "testdom", "testdom");
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         DomainGroup group = new DomainGroup(1L, "group1", "g1");
-        group.setDomains(new ArrayList<>());
+        DomainGroup group2 = new DomainGroup(2L, "group2", "g2");
         group.addDomain(domain);
+        group2.addDomain(domain);
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(group));
+        when(domainGroupRepository.findById(2L)).thenReturn(Optional.of(group2));
         when(domainGroupRepository.save(group)).thenReturn(group);
+        when(domainGroupRepository.save(group2)).thenReturn(group2);
+
         domainService.softRemoveDomain(1L);
+
         var resultDomainGroup = domainGroupRepository.findById(1L);
+        var resultDomainGroup2 = domainGroupRepository.findById(2L);
         assertTrue(resultDomainGroup.isPresent());
         assertTrue(resultDomainGroup.get().getDomains().isEmpty());
+        assertTrue(resultDomainGroup2.isPresent());
+        assertTrue(resultDomainGroup2.get().getDomains().isEmpty());
     }
 
 }

@@ -280,8 +280,8 @@ public class DomainServiceImpl implements DomainService {
 	public void removeDomainFromAllGroups(Domain domain) {
 		for (int i = 0; i < domain.getGroups().size(); i++) {
 			domainGroupService.deleteDomainFromGroup(domain, domain.getGroups().get(i).getId());
+			i--;
 		}
-
 	}
 
 	@Override
