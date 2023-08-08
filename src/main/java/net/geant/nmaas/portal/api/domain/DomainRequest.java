@@ -21,10 +21,13 @@ public class DomainRequest {
 	@NotNull
 	private String codename;
 
+	@Builder.Default
 	private DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView();
 
+	@Builder.Default
 	private DomainTechDetailsView domainTechDetails = new DomainTechDetailsView();
-	
+
+	@Builder.Default
 	private boolean active = true;
 
 	public DomainRequest(String name, String codename, boolean active) {
@@ -32,4 +35,5 @@ public class DomainRequest {
 		this.codename = codename;
 		this.active = active;
 	}
+
 }

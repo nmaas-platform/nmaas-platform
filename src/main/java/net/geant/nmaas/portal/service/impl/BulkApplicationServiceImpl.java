@@ -167,7 +167,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .type(BulkType.APPLICATION)
                                 .state(BulkDeploymentState.FAILED)
                                 .created(false)
-                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, e.getMessage()))
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, applicationSpec, e.getMessage()))
                                 .build());
             }
         });
@@ -235,7 +235,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     public void handleDeploymentReview(AppAutoDeploymentReviewEvent event) {
         log.info("Reviewing all processed bulk deployments");
         List<BulkDeployment> deployments = bulkDeploymentRepository.findByTypeAndState(BulkType.APPLICATION, BulkDeploymentState.PROCESSING);
-        log.info("Loaded {} application bulk deployments", deployments.size());
+        log.debug("Loaded {} application bulk deployments", deployments.size());
         deployments.forEach(
                 d -> {
                     boolean stateChanged = false;
@@ -252,6 +252,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     if (stateChanged) {
                         logBulkStateUpdate(d.getId(), d.getState().name());
                         bulkDeploymentRepository.save(d);
+                    } else {
+                        log.debug("No status updates required");
                     }
                 }
         );
@@ -267,8 +269,12 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return bulkDeployment;
     }
 
-    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, String errorMessage) {
+    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage) {
         Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance);
+        if (Objects.isNull(appInstance)) {
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, applicationSpec.getApplicationInstanceName());
+            details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, applicationSpec.getDomainName());
+        }
         details.put(BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE, errorMessage);
         return details;
     }

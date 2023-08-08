@@ -269,7 +269,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	private void triggerApplicationsUninstall() {
-
+		// TODO
     }
 
     @Override
@@ -364,14 +364,11 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public Domain getAppStatesFromGroups(Domain domain) {
-		log.error("fire group filter for domain " + domain.getName());
 		if (domain.getGroups().isEmpty()) {
 			return domain;
 		}
 		List<ApplicationStatePerDomain> result = new ArrayList<>();
-		domain.getGroups().forEach( group -> {
-			result.addAll(group.getApplicationStatePerDomain());
-		});
+		domain.getGroups().forEach( group -> result.addAll(group.getApplicationStatePerDomain()));
 
 		domain.setApplicationStatePerDomain(
 				domain.getApplicationStatePerDomain().stream().map( app -> {
@@ -423,7 +420,7 @@ public class DomainServiceImpl implements DomainService {
 		}
 	}
 
-	private void checkGlobal(Domain domain){
+	private void checkGlobal(Domain domain) {
 		if (domain.getCodename().equals(globalDomain)) {
 			throw new IllegalArgumentException("Global domain can't be updated or removed");
 		}

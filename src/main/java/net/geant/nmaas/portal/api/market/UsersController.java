@@ -78,6 +78,7 @@ public class UsersController {
     private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
     private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found.";
     private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned.";
+    public static final String GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Global domain not found";
 
     @Value("${portal.address}")
     private String portalAddress;
@@ -215,7 +216,7 @@ public class UsersController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteUser(@PathVariable("userId") Long userId) {
         User user = this.userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
-        Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")).getId();
+        Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE)).getId();
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
             throw new ProcessingException("Cannot delete SYSTEM ADMIN");
         }
@@ -257,7 +258,7 @@ public class UsersController {
 
         Domain domain;
         if (userRole.getDomainId() == null) {
-            domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
+            domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         } else {
             domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         }
@@ -492,7 +493,7 @@ public class UsersController {
         }
 
         final Domain domain = getDomain(domainId);
-        final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
+        final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 
         if (domain.equals(globalDomain)) {
             if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST).noneMatch(allowed -> allowed == role))) {
@@ -705,4 +706,3 @@ public class UsersController {
     }
 
 }
-
