@@ -28,11 +28,11 @@ jobs:
         run: ./gradlew integrationTest jacocoTestCoverageVerification
 
       - name: Run Sonar update
-        if: ${{ vars.GITHUB_REF_NAME == 'develop' }}
+        if: ${{ github.ref_name == 'develop' }}
         env:
           SONAR_LOGIN_TOKEN: ${{ secrets.SONAR_LOGIN_TOKEN }}
           SONAR_HOST: ${{ vars.SONAR_HOST }}
           SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
           SONAR_PROJECT_NAME: ${{ vars.SONAR_PROJECT_NAME }}
-          SONAR_BRANCH: ${{ vars.GITHUB_REF_NAME }}
+          SONAR_BRANCH: github.ref_name
         run: ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=${SONAR_BRANCH} -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube --stacktrace
