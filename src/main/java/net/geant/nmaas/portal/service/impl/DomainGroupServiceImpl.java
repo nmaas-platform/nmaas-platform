@@ -56,10 +56,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName) {
-        if (domainGroupRepository.findByCodename(groupCodeName).isEmpty()) {
-            throw new MissingElementException("Domain group not found");
-        }
-        DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).get();
+        DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).orElseThrow();
         domains.forEach( domain -> {
             log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), groupCodeName);
             if (!domainGroup.getDomains().contains(domain)) {
@@ -71,30 +68,22 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupId) {
-        if (domainGroupRepository.findById(domainGroupId).isEmpty()) {
-            throw new MissingElementException("Domain group not found");
-        }
-        DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).get();
+        DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
         domainGroup.removeDomain(domain);
         return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
     }
 
     @Override
     public void deleteDomainGroup(Long domainGroupId) {
-        if(domainGroupRepository.findById(domainGroupId).isPresent()) {
-            DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).get();
-            List<Domain> toRemove = new ArrayList<>(domainGroup.getDomains());
-            Iterator<Domain> iterator = toRemove.iterator();
-            while (iterator.hasNext()) {
-                Domain domain = iterator.next();
-                deleteDomainFromGroup(domain, domainGroupId);
-                iterator.remove();
-            }
-            domainGroupRepository.deleteById(domainGroupId);
+        DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
+        List<Domain> toRemove = new ArrayList<>(domainGroup.getDomains());
+        Iterator<Domain> iterator = toRemove.iterator();
+        while (iterator.hasNext()) {
+            Domain domain = iterator.next();
+            deleteDomainFromGroup(domain, domainGroupId);
+            iterator.remove();
         }
-        else {
-            throw new MissingElementException("Domain group not found");
-        }
+        domainGroupRepository.deleteById(domainGroupId);
     }
 
     @Override
@@ -117,22 +106,18 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         if (!domainGroupId.equals(view.getId())) {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
-        if (domainGroupRepository.findById(domainGroupId).isPresent()) {
-            DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).get();
-            domainGroup.setCodename(view.getCodename());
-            domainGroup.setName(view.getName());
-            for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
-                for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
-                    if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
-                        appState.applyChangedState(appStateView);
-                    }
+        DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).orElseThrow();
+        domainGroup.setCodename(view.getCodename());
+        domainGroup.setName(view.getName());
+        for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
+            for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
+                if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
+                    appState.applyChangedState(appStateView);
                 }
             }
-            domainGroupRepository.save(domainGroup);
-            return modelMapper.map(domainGroup, DomainGroupView.class);
-        } else {
-            throw new MissingElementException("Domain group not found");
         }
+        domainGroupRepository.save(domainGroup);
+        return modelMapper.map(domainGroup, DomainGroupView.class);
     }
 
     protected void checkParam(DomainGroupView domainGroup) {
