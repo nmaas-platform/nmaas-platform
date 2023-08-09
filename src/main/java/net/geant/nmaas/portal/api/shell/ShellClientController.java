@@ -42,7 +42,7 @@ public class ShellClientController {
      * @param podName - name of target connection kubernetes pod
      * @return session identifier
      */
-    @PostMapping(value = "/shell/{appInstanceId}/init/{podName}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = "/{appInstanceId}/init/{podName}", produces = MediaType.TEXT_PLAIN_VALUE)
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     public String init(Principal principal, @PathVariable Long appInstanceId, @PathVariable String podName) {
         return k8sShellService.createNewShellSession(appInstanceId, podName);
