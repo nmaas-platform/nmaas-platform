@@ -265,6 +265,5 @@ jacocoTestCoverageVerification.finalizedBy(jacocoTestReport)
 sonarqube {
     properties {
         property "sonar.coverage.exclusions", ["**/inventory/janitor/**","**/exception/**","**/exceptions/**"]
-        properties["sonar.tests"] += sourceSets.integrationTest.allSource.srcDirs
     }
 }
