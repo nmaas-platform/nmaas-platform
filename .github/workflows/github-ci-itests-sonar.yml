@@ -28,6 +28,7 @@ jobs:
         run: ./gradlew integrationTest jacocoTestCoverageVerification
 
       - name: Run Sonar update
+        if: ${{ vars.GITHUB_REF_NAME == 'develop' }}
         env:
           SONAR_LOGIN_TOKEN: ${{ secrets.SONAR_LOGIN_TOKEN }}
           SONAR_HOST: ${{ vars.SONAR_HOST }}
