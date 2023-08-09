@@ -127,13 +127,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             }
             DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, domainCodename, true, DcnDeploymentType.MANUAL, null);
             domain = domainService.createDomain(
-                    DomainRequest.builder()
-                            .codename(domainCodename)
-                            .name(csvDomain.getDomainName())
-                            .active(true)
-                            .domainDcnDetails(domainDcnDetails)
-                            .domainTechDetails(domainTechDetails)
-                            .build());
+                    new DomainRequest(csvDomain.getDomainName(), domainCodename, domainDcnDetails, domainTechDetails, true));
             domainService.storeDcnInfo(prepareDcnInfo(domain));
             result.add(BulkDeploymentEntry.builder()
                     .type(BulkType.DOMAIN)
@@ -203,7 +197,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             }
             result.add(BulkDeploymentEntry.builder().type(BulkType.USER).state(BulkDeploymentState.COMPLETED).created(false).details(prepareBulkUserCreationDetailsMap(user)).build());
         } else {
-            User user = userService.registerBulk(csvDomain, domainService.getGlobalDomain().get(), domain);
+            User user = userService.registerBulk(csvDomain, domainService.getGlobalDomain().orElseThrow(), domain);
             result.add(BulkDeploymentEntry.builder().type(BulkType.USER).state(BulkDeploymentState.COMPLETED).created(true).details(prepareBulkUserCreationDetailsMap(user)).build());
         }
     }
