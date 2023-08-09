@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.profile;
+package net.geant.nmaas.portal.api.user;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.domain.UserView;

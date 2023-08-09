@@ -42,10 +42,10 @@ public class SshSessionConnector implements AsyncConnector {
 	 */
 	public SshSessionConnector(String hostname, int port, BasicCredentials credentials, KeyProvider keyProvider) {
 		connect(hostname, port);
-		if(isConnected()) {
+		if (isConnected()) {
 			authenticate(credentials, keyProvider);
 		}
-		if(isAuthenticated()) {
+		if (isAuthenticated()) {
 			openSession();
 		}
 	}
@@ -95,8 +95,9 @@ public class SshSessionConnector implements AsyncConnector {
 	}
 	
 	private void authenticate(BasicCredentials credentials, KeyProvider keyProvider) {
-		if (client == null || !isConnected())
+		if (client == null || !isConnected()) {
 			throw new SshConnectionException("Not connected.");
+		}
 		try {
 			client.authPublickey(credentials.getUsername(), keyProvider);
 		} catch(IOException ex) {
@@ -114,7 +115,6 @@ public class SshSessionConnector implements AsyncConnector {
 		}
 	}
 
-
 	private void closeSession() {
 		try {
 			this.session.close();
@@ -130,7 +130,7 @@ public class SshSessionConnector implements AsyncConnector {
 	 * @param command command to be executed
 	 */
 	public void executeCommand(String command) {
-		if(!isSessionOpened()){
+		if (!isSessionOpened()) {
 			throw new SshConnectionException("Session is not opened");
 		}
 		try {
@@ -144,7 +144,6 @@ public class SshSessionConnector implements AsyncConnector {
 		}
 	}
 
-
 	/**
 	 * Executes command SYNCHRONOUSLY in single scope - this should not affect shell session
 	 * Result is available immediately as String
@@ -152,8 +151,9 @@ public class SshSessionConnector implements AsyncConnector {
 	 * @return outcome of executed command
 	 */
 	public String executeSingleCommand(String command) {
-		if(!isAuthenticated())
+		if (!isAuthenticated()) {
 			throw new SshConnectionException("Not authenticated connection to " + client.getRemoteAddress());
+		}
 		try (Session ss = client.startSession()){
 			final Session.Command c = ss.exec(command);
 			String error = IOUtils.readFully(c.getErrorStream()).toString();
