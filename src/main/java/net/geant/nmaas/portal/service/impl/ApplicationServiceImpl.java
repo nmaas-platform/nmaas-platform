@@ -175,17 +175,17 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	public static void clearIds(Application app) {
-		if(app.getConfigWizardTemplate() != null) {
+		if (app.getConfigWizardTemplate() != null) {
 			app.getConfigWizardTemplate().setId(null);
 		}
-		if(app.getConfigUpdateWizardTemplate() != null) {
+		if (app.getConfigUpdateWizardTemplate() != null) {
 			app.getConfigUpdateWizardTemplate().setId(null);
 		}
-		if(app.getAppConfigurationSpec() != null) {
+		if (app.getAppConfigurationSpec() != null) {
 			app.getAppConfigurationSpec().setId(null);
 			app.getAppConfigurationSpec().getTemplates().forEach(a -> a.setId(null));
 		}
-		if(app.getAppDeploymentSpec() != null) {
+		if (app.getAppDeploymentSpec() != null) {
 			app.getAppDeploymentSpec().setId(null);
 			app.getAppDeploymentSpec().getAccessMethods().forEach(a -> a.setId(null));
 			app.getAppDeploymentSpec().getStorageVolumes().forEach(a -> a.setId(null));

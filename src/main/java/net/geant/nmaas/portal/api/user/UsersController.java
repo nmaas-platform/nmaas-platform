@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,6 +78,7 @@ public class UsersController {
     private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
     private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found.";
     private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned.";
+    public static final String GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Global domain not found";
 
     @Value("${portal.address}")
     private String portalAddress;
@@ -123,7 +125,7 @@ public class UsersController {
 
         User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
                 () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
-        /* when user is not system admin, than return only basic information about users */
+        /* when user is not system admin, then return only basic information about users */
         if (owner.getRoles().stream().noneMatch(role -> role.getRole() == ROLE_SYSTEM_ADMIN)) {
             return userService.findAll(pageable).getContent().stream()
                     .filter(user -> user.getRoles().stream().anyMatch( // select only users with guest role in global domain
@@ -214,7 +216,7 @@ public class UsersController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteUser(@PathVariable("userId") Long userId) {
         User user = this.userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
-        Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")).getId();
+        Long globalDomainId = this.domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE)).getId();
         if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(ROLE_SYSTEM_ADMIN))) {
             throw new ProcessingException("Cannot delete SYSTEM ADMIN");
         }
@@ -256,7 +258,7 @@ public class UsersController {
 
         Domain domain;
         if (userRole.getDomainId() == null) {
-            domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
+            domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         } else {
             domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
         }
@@ -408,7 +410,9 @@ public class UsersController {
     @GetMapping("/domains/{domainId}/users")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     public List<UserViewMinimal> getDomainUsers(@PathVariable Long domainId) {
-        return domainService.getMembers(domainId).stream().map(this::mapMinimalUser).collect(Collectors.toList());
+        return domainService.getMembers(domainId).stream()
+                .map(this::mapMinimalUser)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/domains/{domainId}/users/admin")
@@ -484,8 +488,9 @@ public class UsersController {
         if (!domainId.equals(userRole.getDomainId())) {
             throw new ProcessingException("Invalid request domain");
         }
+
         final Domain domain = getDomain(domainId);
-        final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
+        final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 
         if (domain.equals(globalDomain)) {
             if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST).noneMatch(allowed -> allowed == role))) {
@@ -532,9 +537,7 @@ public class UsersController {
 
         try {
             domainService.removeMemberRole(domain.getId(), user.getId(), role);
-
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
-
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
             log.info(String.format("User [%s] with role [%s] removed role [%s] of user name [%s] in domain [%d].",
@@ -593,15 +596,16 @@ public class UsersController {
         List<UserViewMinimal> result = new ArrayList<>();
         String search = searchPart.toLowerCase();
 
-        List<User> allUsers = this.userService.findAll().stream().filter(User::isEnabled).collect(Collectors.toList());
+        List<User> allUsers = this.userService.findAll().stream()
+                .filter(User::isEnabled)
+                .filter(user -> Objects.nonNull(user.getEmail()))
+                .collect(Collectors.toList());
         result = allUsers.stream().
-                filter(user -> user.getEmail().toLowerCase().contentEquals(search)
-                        || user.getUsername().toLowerCase().contentEquals(search))
+                filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                 .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
                 .map(this::mapMinimalUser).collect(Collectors.toList());
         return result;
     }
-
 
     private Role convertRole(String userRole) {
         Role role;
@@ -693,8 +697,9 @@ public class UsersController {
     }
 
     private UserViewMinimal mapMinimalUser(User user) {
-        return modelMapper.map(user, UserViewMinimal.class);
+        UserViewMinimal userViewMinimal = modelMapper.map(user, UserViewMinimal.class);
+        userViewMinimal.setHasSshKeys(!user.getSshKeys().isEmpty());
+        return userViewMinimal;
     }
 
 }
-

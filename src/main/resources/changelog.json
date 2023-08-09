@@ -1,6 +1,38 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.0",
+      "date" : "(2023/xx/xx)",
+      "topic" : [
+        {
+          "title" : "Portal layout improvements",
+          "tags" : "[Enhancement]",
+          "description" : "..."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.5.3",
+      "date" : "(2023/06/30)",
+      "topic" : [
+        {
+          "title": "Fixed issue with adding users to domain",
+          "tags": "[Bugfix]",
+          "description": "Fixed issue with searching for users by their email address."
+        },
+        {
+          "title" : "New applications specification via a JSON file",
+          "tags" : "[Enhancement]",
+          "description" : "Added possibility of adding definitions of new applications or new versions of existing applications by uploading raw JSON content."
+        },
+        {
+          "title" : "Portal layout improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Applied some layout improvements to several views mostly for system and domain administrator users."
+        }
+      ]
+    },
+    {
       "verNo" : "1.5.2",
       "date" : "(2023/04/18)",
       "topic" : [

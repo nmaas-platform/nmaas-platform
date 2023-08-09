@@ -1,0 +1,118 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "changedetectionio",
+        "license": "Apache License 2.0",
+        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+        "wwwUrl": "https://github.com/dgtlmoon/changedetection.io",
+        "sourceUrl": "https://github.com/dgtlmoon/changedetection.io",
+        "issuesUrl": "https://github.com/dgtlmoon/changedetection.io/issues",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-changedetection.io",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "Web Site Change Detection, Restock monitoring and notifications",
+                "fullDescription": "Detect website content changes and perform meaningful actions - trigger notifications via Discord, Email, Slack, Telegram, API calls and many more."
+            },
+            {
+                "language": "de",
+                "briefDescription": "Web Site Change Detection, Restock monitoring and notifications",
+                "fullDescription": "Detect website content changes and perform meaningful actions - trigger notifications via Discord, Email, Slack, Telegram, API calls and many more."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "Web Site Change Detection, Restock monitoring and notifications",
+                "fullDescription": "Detect website content changes and perform meaningful actions - trigger notifications via Discord, Email, Slack, Telegram, API calls and many more."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "Web Site Change Detection, Restock monitoring and notifications",
+                "fullDescription": "Detect website content changes and perform meaningful actions - trigger notifications via Discord, Email, Slack, Telegram, API calls and many more."
+            }
+        ],
+        "tags": [
+            "website monitoring",
+            "notifications",
+            "change detection",
+            "alerting"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "changedetectionio",
+        "version": "0.43.2",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "type": "htmlelement",
+                                        "input": false,
+                                        "content": "<p>No configuration parameters are required.</p><p>Click <i>Apply configuration</i> button to proceed</p>",
+                                        "tab": 0
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "nmaas-changedetection",
+                    "version": "1.0.1"
+                },
+                "mainDeploymentName": "nmaas-changedetection"
+            },
+            "deployParameters": { },
+            "globalDeployParameters": {
+                "ingress.hosts[0].paths[0].path": "/",
+                "ingress.hosts[0].paths[0].pathType": "ImplementationSpecific"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "DEFAULT",
+                    "name": "changedetection.io",
+                    "tag": "changedetection",
+                    "deployParameters": {
+                        "INGRESS_CLASS": "ingress.className",
+                        "INGRESS_HOSTS": "ingress.hosts[0].host=%VALUE%,properties.baseUrl=https://%VALUE%/",
+                        "INGRESS_TLS_HOSTS": "ingress.tls[0].hosts[0]=%VALUE%"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}

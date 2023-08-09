@@ -1,0 +1,38 @@
+name: Integration tests and Sonar update
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  itests-and-sonar:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set execute permissions for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Run integration tests
+        run: ./gradlew integrationTest jacocoTestCoverageVerification
+
+      - name: Run Sonar update
+        if: ${{ github.ref_name == 'develop' }}
+        env:
+          SONAR_LOGIN_TOKEN: ${{ secrets.SONAR_LOGIN_TOKEN }}
+          SONAR_HOST: ${{ vars.SONAR_HOST }}
+          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+          SONAR_PROJECT_NAME: ${{ vars.SONAR_PROJECT_NAME }}
+          SONAR_BRANCH: ${{ github.ref_name }}
+        run: ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=${SONAR_BRANCH} -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube --stacktrace

@@ -29,9 +29,9 @@ public class AppBaseController {
 	protected UserService userService;
 
     protected Application getApp(Long appId) {
-		if(appId == null)
+		if (appId == null) {
 			throw new MissingElementException("Missing application id.");
-		
+		}
 		return applicationService.findApplication(appId).orElseThrow(() -> new MissingElementException("Application id=" + appId + " not found."));
 	}
 
@@ -46,7 +46,6 @@ public class AppBaseController {
 		if (username == null) {
 			throw new MissingElementException("Missing username.");
 		}
-
 		return userService.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
 	}
 
@@ -54,7 +53,6 @@ public class AppBaseController {
 		if (userId == null) {
 			throw new MissingElementException("Missing username.");
 		}
-		
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
 	}
 

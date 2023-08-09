@@ -1,10 +1,11 @@
 package net.geant.nmaas.portal.api.domain;
 
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,12 +22,13 @@ public class DomainRequest {
 	private DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView();
 
 	private DomainTechDetailsView domainTechDetails = new DomainTechDetailsView();
-	
+
 	private boolean active = true;
 
-	public DomainRequest(String name, String codename, boolean active){
+	public DomainRequest(String name, String codename, boolean active) {
 		this.name = name;
 		this.codename = codename;
 		this.active = active;
 	}
+
 }

@@ -92,7 +92,7 @@ public class AppUpgradeService {
                 .map(deployment -> applicationInstanceService.findByInternalId(deployment.getDeploymentId()).orElse(null))
                 .filter(Objects::nonNull)
                 .filter(instance -> instance.getApplication().getName().equals(event.getName()))
-                .filter(instance -> applicationInstanceService.checkUpgradePossible(instance.getId()))
+                .filter(instance -> applicationInstanceService.checkUpgradePossible(instance.getId(), event.getVersion()))
                 .forEach(instance -> {
                     log.debug("Processing application instance: {}/{}", instance.getId(), instance.getInternalId());
                     AppInstanceView.AppInstanceUpgradeInfo upgradeInfo = applicationInstanceService.obtainUpgradeInfo(instance.getId());

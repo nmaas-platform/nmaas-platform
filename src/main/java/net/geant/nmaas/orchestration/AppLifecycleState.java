@@ -5,181 +5,181 @@ package net.geant.nmaas.orchestration;
  */
 public enum AppLifecycleState {
 
-    REQUESTED{
+    REQUESTED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DEPLOY_REQUESTED";
         }
     },
-    REQUEST_VALIDATION_IN_PROGRESS{
+    REQUEST_VALIDATION_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.VALIDATION_REQUEST";
         }
     },
-    REQUEST_VALIDATED{
+    REQUEST_VALIDATED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.REQUEST_VALIDATE";
         }
     },
-    REQUEST_VALIDATION_FAILED{
+    REQUEST_VALIDATION_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.VALIDATE_FAILED";
         }
     },
-    DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS{
+    DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DEPLOY_IN_PROGRESS";
         }
     },
-    DEPLOYMENT_ENVIRONMENT_PREPARED{
+    DEPLOYMENT_ENVIRONMENT_PREPARED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.ENV_READY";
         }
     },
-    DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED{
+    DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.ENV_FAILED";
         }
     },
-    MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS{
+    MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DCN_PROGRESS";
         }
     },
-    MANAGEMENT_VPN_CONFIGURED{
+    MANAGEMENT_VPN_CONFIGURED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DCN_SUCCESS";
         }
     },
-    MANAGEMENT_VPN_CONFIGURATION_FAILED{
+    MANAGEMENT_VPN_CONFIGURATION_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DCN_FAILED";
         }
     },
-    APPLICATION_CONFIGURATION_IN_PROGRESS{
+    APPLICATION_CONFIGURATION_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_CONFIG_PROGRESS";
         }
     },
-    APPLICATION_CONFIGURED{
+    APPLICATION_CONFIGURED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_CONFIG_SUCCESS";
         }
     },
-    APPLICATION_CONFIGURATION_FAILED{
+    APPLICATION_CONFIGURATION_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_CONFIG_FAILED";
         }
     },
-    APPLICATION_DEPLOYMENT_IN_PROGRESS{
+    APPLICATION_DEPLOYMENT_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_DEPLOY_PROGRESS";
         }
     },
-    APPLICATION_DEPLOYED{
+    APPLICATION_DEPLOYED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_DEPLOY_SUCCESS";
         }
     },
-    APPLICATION_DEPLOYMENT_FAILED{
+    APPLICATION_DEPLOYMENT_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_DEPLOY_FAILED";
         }
     },
-    APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS{
+    APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DEPLOY_VER_PROGRESS";
         }
     },
-    APPLICATION_DEPLOYMENT_VERIFIED{
+    APPLICATION_DEPLOYMENT_VERIFIED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DEPLOY_VER_SUCCESS";
         }
     },
-    APPLICATION_DEPLOYMENT_VERIFICATION_FAILED{
+    APPLICATION_DEPLOYMENT_VERIFICATION_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.DEPLOY_VER_FAILED";
         }
     },
-    APPLICATION_REMOVAL_IN_PROGRESS{
+    APPLICATION_REMOVAL_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_REMOVE_PROGRESS";
         }
     },
-    APPLICATION_REMOVED{
+    APPLICATION_REMOVED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_REMOVE_SUCCESS";
         }
     },
-    APPLICATION_REMOVAL_FAILED{
+    APPLICATION_REMOVAL_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_REMOVE_FAILED";
         }
     },
-    APPLICATION_RESTART_IN_PROGRESS{
+    APPLICATION_RESTART_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_RESTART_PROGRESS";
         }
     },
-    APPLICATION_RESTARTED{
+    APPLICATION_RESTARTED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_RESTART_SUCCESS";
         }
     },
-    APPLICATION_RESTART_FAILED{
+    APPLICATION_RESTART_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_RESTART_FAILED";
         }
     },
-    APPLICATION_UPGRADE_IN_PROGRESS{
+    APPLICATION_UPGRADE_IN_PROGRESS {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_UPGRADE_PROGRESS";
         }
     },
-    APPLICATION_UPGRADED{
+    APPLICATION_UPGRADED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_UPGRADE_SUCCESS";
         }
     },
-    APPLICATION_UPGRADE_FAILED{
+    APPLICATION_UPGRADE_FAILED {
         @Override
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.APP_UPGRADE_FAILED";
         }
     },
-    APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS{
+    APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS {
         @Override
         public String getUserFriendlyState() {
             return "APP_INSTANCE.PROGRESS.APP_UPDATE_PROGRESS";
         }
     },
-    APPLICATION_CONFIGURATION_UPDATED{
+    APPLICATION_CONFIGURATION_UPDATED {
         @Override
         public String getUserFriendlyState() {
             return "APP_INSTANCE.PROGRESS.APP_UPDATE_SUCCESS";
@@ -191,31 +191,31 @@ public enum AppLifecycleState {
             return "APP_INSTANCE.PROGRESS.APP_UPDATE_FAILED";
         }
     },
-    UNKNOWN{
+    UNKNOWN {
         @Override
-        public String getUserFriendlyState(){
+        public String getUserFriendlyState() {
             return "APP_INSTANCE.PROGRESS.UNKNOWN";
         }
     },
-    INTERNAL_ERROR{
+    INTERNAL_ERROR {
         @Override
-        public String getUserFriendlyState(){
+        public String getUserFriendlyState() {
             return "APP_INSTANCE.PROGRESS.ERROR";
         }
     },
-    FAILED_APPLICATION_REMOVED{
+    FAILED_APPLICATION_REMOVED {
         @Override
         public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.FAILED_APPLICATION_REMOVED"; }
     },
-    APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS{
+    APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS {
         @Override
         public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.APP_CONF_REMOVE_PROGRESS"; }
     },
-    APPLICATION_CONFIGURATION_REMOVED{
+    APPLICATION_CONFIGURATION_REMOVED {
         @Override
         public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.APP_CONF_REMOVE_SUCCESS"; }
     },
-    APPLICATION_CONFIGURATION_REMOVAL_FAILED{
+    APPLICATION_CONFIGURATION_REMOVAL_FAILED {
         @Override
         public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.APP_CONF_REMOVE_ERROR"; }
     };

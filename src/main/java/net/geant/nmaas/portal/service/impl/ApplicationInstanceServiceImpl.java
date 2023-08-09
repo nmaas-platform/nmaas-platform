@@ -25,6 +25,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -77,7 +79,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Override
 	public AppInstance create(Domain domain, Application application, String name, boolean autoUpgradesEnabled) {
 		checkParam(domain);
-		if(!domain.isActive()) {
+		if (!domain.isActive()) {
 			throw new IllegalArgumentException("Domain is inactive");
 		}
 		checkParam(application);
@@ -87,10 +89,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             throw new IllegalArgumentException("Application is disabled in domain settings");
         }
 
-		if(applicationSubscriptions.isActive(application.getName(), domain))
+		if (applicationSubscriptions.isActive(application.getName(), domain)) {
 			return appInstanceRepo.save(new AppInstance(application, domain, name, autoUpgradesEnabled));
-		else
+		} else {
 			throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
+		}
 	}
 
     @Override
@@ -98,9 +101,10 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
         Domain domain = appInstance.getDomain();
         Application app = appInstance.getApplication();
 
-        ApplicationStatePerDomain appStatePerDomain = domain.getApplicationStatePerDomain().stream().filter(appState ->
-            appState.getApplicationBase().getName().equals(app.getName())
-        ).findAny().orElseThrow(() -> new IllegalArgumentException("Application state not found"));
+        ApplicationStatePerDomain appStatePerDomain = domain.getApplicationStatePerDomain().stream()
+				.filter(appState -> appState.getApplicationBase().getName().equals(app.getName()))
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("Application state not found"));
 
         return this.applicationStatePerDomainService.validateAppConfigurationAgainstState(appConfigurationView, appStatePerDomain);
     }
@@ -122,10 +126,10 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	public void updateApplication(Identifier internalId, Long applicationId) {
 		checkParam(internalId);
 		checkParam(applicationId);
-		final AppInstance instance = findByInternalId(internalId).orElseThrow(() ->
-				new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
-		final Application application = applications.findApplication(applicationId).orElseThrow(() ->
-				new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
+		final AppInstance instance = findByInternalId(internalId)
+				.orElseThrow(() -> new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
+		final Application application = applications.findApplication(applicationId)
+				.orElseThrow(() -> new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
 		appInstanceRepo.updateApplication(instance.getId(), instance.getApplication().getId(), application);
 	}
 
@@ -144,12 +148,20 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
 	@Override
 	public List<AppInstance> findAll() {
-		return appInstanceRepo.findAll();
+		return appInstanceRepo.findAll()
+				.stream()
+				.filter(appInstance -> !appInstance.getDomain().isDeleted())
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Page<AppInstance> findAll(Pageable pageable) {
-		return appInstanceRepo.findAll(pageable);
+		Page<AppInstance> page = appInstanceRepo.findAll(pageable);
+		List<AppInstance> filtered = page.getContent()
+				.stream()
+				.filter(appInstance -> !appInstance.getDomain().isDeleted())
+				.collect(Collectors.toList());
+		return new PageImpl<>(filtered, pageable, filtered.size());
 	}
 
 	@Override
@@ -233,13 +245,27 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Transactional
 	@Loggable(LogLevel.DEBUG)
 	public boolean checkUpgradePossible(Long appInstanceId) {
+		return obtainVersionForUpgrade(appInstanceId).isPresent();
+	}
+
+	@Override
+	@Transactional
+	@Loggable(LogLevel.DEBUG)
+	public boolean checkUpgradePossible(Long appInstanceId, String targetVersion) {
+        return obtainVersionForUpgrade(appInstanceId)
+				.map(application -> application.getVersion().equals(targetVersion))
+				.orElse(false);
+    }
+
+	private Optional<Application> obtainVersionForUpgrade(Long appInstanceId) {
 		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
 		if (appInstance.isPresent()) {
 			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
 			Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
-			return instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions).isPresent();
+			Optional<Long> versionForUpgrade = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
+			return versionForUpgrade.flatMap(applications::findApplication);
 		}
-		return false;
+		return Optional.empty();
 	}
 
 	@Override

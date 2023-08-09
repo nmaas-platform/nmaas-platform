@@ -25,11 +25,11 @@ import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificat
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
+import net.geant.nmaas.orchestration.entities.AppAccessMethod.ConditionType;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -103,7 +103,36 @@ public class KubernetesManagerTest {
         service.setDescriptiveDeploymentId(Identifier.newInstance("deploymentId"));
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.DEFAULT, "Default", null, "Web", null));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", null, "Web", null));
+        accessMethods.add(
+                ServiceAccessMethod.builder()
+                        .type(ServiceAccessMethodType.EXTERNAL)
+                        .name("web-service")
+                        .url(null)
+                        .protocol("Web")
+                        .condition("ws.enabled")
+                        .enabled(true)
+                        .build()
+        );
+        accessMethods.add(
+                ServiceAccessMethod.builder()
+                        .type(ServiceAccessMethodType.EXTERNAL)
+                        .name("web-service-conditional-1")
+                        .url(null)
+                        .protocol("Web")
+                        .condition("ws1.enabled")
+                        .enabled(true)
+                        .build()
+        );
+        accessMethods.add(
+                ServiceAccessMethod.builder()
+                        .type(ServiceAccessMethodType.EXTERNAL)
+                        .name("web-service-conditional-2")
+                        .url(null)
+                        .protocol("Web")
+                        .condition("ws2.enabled")
+                        .enabled(true)
+                        .build()
+        );
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", null, "SSH", null));
         Map<HelmChartIngressVariable, String> sshAccessDeploymentParameters = new HashMap<>();
         sshAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_PORT, "22");
@@ -114,6 +143,10 @@ public class KubernetesManagerTest {
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service", null, "DATA", dataAccessDeploymentParameters));
         service.setAccessMethods(accessMethods);
         service.setKubernetesTemplate(new KubernetesTemplate(new KubernetesChart(null, null), null, "subcomponent"));
+        Map<String, String> additionalParameters = new HashMap<>();
+        additionalParameters.put("ws1.enabled", "True");
+        additionalParameters.put("ws2.enabled", "FALSE");
+        service.setAdditionalParameters(additionalParameters);
         when(repositoryManager.loadService(any())).thenReturn(service);
     }
 
@@ -135,7 +168,7 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyDeploymentWithNotSupportedEnv() {
-        AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Lists.emptyList()).build();
+        AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.emptyList()).build();
         NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
@@ -171,7 +204,10 @@ public class KubernetesManagerTest {
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
                 .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
-                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag", null)))
+                .accessMethods(Sets.newHashSet(
+                        AppAccessMethod.builder()
+                                .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.NONE).condition("redundant")
+                                .build()))
                 .build();
         ArgumentCaptor<KubernetesNmServiceInfo> serviceInfo = ArgumentCaptor.forClass(KubernetesNmServiceInfo.class);
 
@@ -185,6 +221,8 @@ public class KubernetesManagerTest {
         assertTrue(accessMethod.get().isOfType(ServiceAccessMethodType.EXTERNAL));
         assertEquals("tag", accessMethod.get().getName());
         assertNull(accessMethod.get().getUrl());
+        assertNull(accessMethod.get().getCondition());
+        assertTrue(accessMethod.get().isEnabled());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
         assertTrue(serviceInfo.getValue().getAdditionalParameters().isEmpty());
     }
@@ -200,7 +238,10 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .accessMethods(Sets.newHashSet(new AppAccessMethod(ServiceAccessMethodType.EXTERNAL, "name", "tag", null)))
+                .accessMethods(Sets.newHashSet(
+                        AppAccessMethod.builder()
+                                .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.DEPLOYMENT_PARAMETER).condition("valid")
+                                .build()))
                 .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .globalDeployParameters(getStringStringMap())
                 .deployParameters(getParameterTypeStringMap())
@@ -211,6 +252,10 @@ public class KubernetesManagerTest {
 
         verify(repositoryManager, times(1)).storeService(serviceInfo.capture());
         assertEquals(DEPLOYMENT_ID, serviceInfo.getValue().getDeploymentId());
+        Optional<ServiceAccessMethod> accessMethod = serviceInfo.getValue().getAccessMethods().stream().findFirst();
+        assertTrue(accessMethod.isPresent());
+        assertEquals("valid", accessMethod.get().getCondition());
+        assertTrue(accessMethod.get().isEnabled());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
         assertEquals(15, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
@@ -290,7 +335,7 @@ public class KubernetesManagerTest {
         manager.deployNmService(DEPLOYMENT_ID);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-        assertEquals(6, accessMethodsArg.getValue().size());
+        assertEquals(8, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
@@ -300,7 +345,20 @@ public class KubernetesManagerTest {
                 m.isOfType(ServiceAccessMethodType.EXTERNAL)
                         && m.getName().equals("web-service")
                         && m.getProtocol().equals("Web")
-                        && m.getUrl().equals("web-service-base.url")));
+                        && m.getUrl().equals("web-service-base.url")
+                        && m.isEnabled()));
+        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.EXTERNAL)
+                        && m.getName().equals("web-service-conditional-1")
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("web-service-conditional-1-base.url")
+                        && m.isEnabled()));
+        assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                m.isOfType(ServiceAccessMethodType.EXTERNAL)
+                        && m.getName().equals("web-service-conditional-2")
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("web-service-conditional-2-base.url")
+                        && !m.isEnabled()));
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                 m.isOfType(ServiceAccessMethodType.PUBLIC)
                         && m.getName().equals("public-service")
@@ -330,7 +388,7 @@ public class KubernetesManagerTest {
 
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
             verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(6, accessMethodsArg.getValue().size());
+            assertEquals(8, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")
@@ -385,11 +443,19 @@ public class KubernetesManagerTest {
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
         Set<ServiceAccessMethod> accessMethods = new HashSet<>();
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.EXTERNAL, "web-service", "app1.nmaas.eu", "Web", null));
+        accessMethods.add(ServiceAccessMethod.builder()
+                .type(ServiceAccessMethodType.EXTERNAL)
+                .name("web-service-disabled")
+                .url("app2.nmaas.eu")
+                .protocol("Web")
+                .enabled(false)
+                .build());
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service", "192.168.1.1", "SSH", null));
         service.setAccessMethods(accessMethods);
         when(repositoryManager.loadService(DEPLOYMENT_ID)).thenReturn(service);
 
         AppUiAccessDetails appUiAccessDetails = manager.serviceAccessDetails(DEPLOYMENT_ID);
+
         assertEquals(2, appUiAccessDetails.getServiceAccessMethods().size());
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
             m.getType().equals(ServiceAccessMethodType.EXTERNAL)

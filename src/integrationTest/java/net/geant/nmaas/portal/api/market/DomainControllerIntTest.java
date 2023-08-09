@@ -74,6 +74,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(domainService.getDomains()).thenReturn(Arrays.asList(getDefaultDomain(), getGlobalDomain()));
         when(domainService.findDomain(DEF_DOM_ID)).thenReturn(Optional.of(getDefaultDomain()));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(getGlobalDomain()));
+        when(domainService.getAppStatesFromGroups(getDefaultDomain())).thenReturn(getDefaultDomain());
+        when(domainService.getAppStatesFromGroups(getGlobalDomain())).thenReturn(getGlobalDomain());
     }
 
     @Test

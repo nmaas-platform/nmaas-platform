@@ -187,8 +187,10 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         applicationView.getAppDeploymentSpec().getAccessMethods().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
         applicationView.getAppDeploymentSpec().getStorageVolumes().iterator().next().getDeployParameters().putIfAbsent("NEW.PARAM", "value");
 
-        applicationView.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name4", "tag4", new HashMap<>()));
-        applicationView.getAppDeploymentSpec().getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name5", "tag5", new HashMap<>()));
+        applicationView.getAppDeploymentSpec().getAccessMethods().add(
+                AppAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("name4").tag("tag4").build());
+        applicationView.getAppDeploymentSpec().getAccessMethods().add(
+                AppAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("name5").tag("tag5").build());
         applicationView.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
         applicationView.getAppDeploymentSpec().getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.SHARED, 5, new HashMap<>()));
 
@@ -316,9 +318,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         appDeploymentSpec.setStorageVolumes(new ArrayList<>());
         appDeploymentSpec.getStorageVolumes().add(new AppStorageVolumeView(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         appDeploymentSpec.setAccessMethods(new ArrayList<>());
-        appDeploymentSpec.getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
-        appDeploymentSpec.getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
-        appDeploymentSpec.getAccessMethods().add(new AppAccessMethodView(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        appDeploymentSpec.getAccessMethods().add(AppAccessMethodView.builder().type(ServiceAccessMethodType.DEFAULT).name("name1").tag("tag1").build());
+        appDeploymentSpec.getAccessMethods().add(AppAccessMethodView.builder().type(ServiceAccessMethodType.EXTERNAL).name("name2").tag("tag2").build());
+        appDeploymentSpec.getAccessMethods().add(AppAccessMethodView.builder().type(ServiceAccessMethodType.INTERNAL).name("name3").tag("tag3").build());
 
         AppConfigurationSpecView appConfigurationSpec = new AppConfigurationSpecView();
         appConfigurationSpec.getTemplates().add(new ConfigFileTemplateView(null, null, "name", "dir", "content"));
@@ -366,9 +368,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         List<AppStorageVolume> svList = new ArrayList<>();
         svList.add(new AppStorageVolume(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         List<AppAccessMethod> mvList = new ArrayList<>();
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.DEFAULT).name("name1").tag("tag1").build());
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.EXTERNAL).name("name2").tag("tag2").build());
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.INTERNAL).name("name3").tag("tag3").build());
         Application application = new Application();
         application.setName(name);
         application.setVersion(version);
@@ -395,9 +397,9 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         List<AppStorageVolume> svList = new ArrayList<>();
         svList.add(new AppStorageVolume(null, ServiceStorageVolumeType.MAIN, 5, new HashMap<>()));
         List<AppAccessMethod> mvList = new ArrayList<>();
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.DEFAULT, "name1", "tag1", new HashMap<>()));
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.EXTERNAL, "name2", "tag2", new HashMap<>()));
-        mvList.add(new AppAccessMethod(null, ServiceAccessMethodType.INTERNAL, "name3", "tag3", new HashMap<>()));
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.DEFAULT).name("name1").tag("tag1").build());
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.EXTERNAL).name("name2").tag("tag2").build());
+        mvList.add(AppAccessMethod.builder().type(ServiceAccessMethodType.INTERNAL).name("name3").tag("tag3").build());
         Application application = new Application();
         application.setName(name);
         application.setVersion(version);

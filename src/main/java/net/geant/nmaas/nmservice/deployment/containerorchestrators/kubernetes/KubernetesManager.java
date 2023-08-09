@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.gitlab.GitLabManager;
@@ -105,10 +106,10 @@ public class KubernetesManager implements ContainerOrchestrator {
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
         Map<String, String> additionalParameters = new HashMap<>();
-        if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()) {
+        if (appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()) {
             additionalParameters.putAll(createAdditionalParametersMap(deploymentId, appDeploymentSpec.getDeployParameters()));
         }
-        if(appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
+        if (appDeploymentSpec.getGlobalDeployParameters() != null && !appDeploymentSpec.getGlobalDeployParameters().isEmpty()) {
             additionalParameters.putAll(createAdditionalGlobalParametersMap(appDeploymentSpec.getGlobalDeployParameters()));
         }
         serviceInfo.setAdditionalParameters(additionalParameters);
@@ -206,10 +207,10 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) {
         try {
-            if(configFileRepositoryRequired) {
+            if (configFileRepositoryRequired) {
                 gitLabManager.validateGitLabInstance();
             }
-            if(!ingressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
+            if (!ingressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }
@@ -233,6 +234,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             String servicePublicUrl = generateServicePublicUrl(service);
 
             Set<ServiceAccessMethod> accessMethods = retrieveAccessMethods(service);
+            disableAccessMethodsBasedOnCondition(accessMethods, service.getAdditionalParameters());
             accessMethods = populateAccessMethodsWithUrl(accessMethods, serviceExternalUrl, servicePublicUrl);
             repositoryManager.updateKServiceAccessMethods(accessMethods);
             serviceLifecycleManager.deployService(deploymentId);
@@ -243,26 +245,50 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private String generateServicePublicUrl(KubernetesNmServiceInfo service) {
-        return service.getDeploymentName().toLowerCase() + "-" + service.getDomain() + "." + ingressManager.getPublicServiceDomain();
-    }
-
     private Set<ServiceAccessMethod> retrieveAccessMethods(KubernetesNmServiceInfo service) {
-        return service.getAccessMethods().stream().map(am -> {
-            if (am.isOfType(PUBLIC)) {
-                if (!shouldRemainPublic(service.getAdditionalParameters(), am)) {
-                    log.info(String.format("%s access will remain public: no", am.getName()));
-                    return new ServiceAccessMethod(am.getId(), EXTERNAL, am.getName(), am.getUrl(), am.getProtocol(), am.getDeployParameters());
-                }
-                log.info(String.format("%s access will remain public: yes", am.getName()));
-            }
-            return am;
-        }).collect(Collectors.toSet());
+        return service.getAccessMethods().stream()
+                .map(am -> {
+                    if (am.isOfType(PUBLIC)) {
+                        if (!shouldRemainPublic(service.getAdditionalParameters(), am)) {
+                            log.info(String.format("%s access will remain public: no", am.getName()));
+                            return new ServiceAccessMethod(am.getId(), EXTERNAL, am.getName(), am.getUrl(), am.getProtocol(), am.getCondition(), am.isEnabled(), am.getDeployParameters());
+                        }
+                        log.info(String.format("%s access will remain public: yes", am.getName()));
+                    }
+                    return am;
+                }).collect(Collectors.toSet());
     }
 
     private boolean shouldRemainPublic(Map<String, String> parameters, ServiceAccessMethod accessMethod) {
         return parameters == null
                 || parameters.getOrDefault(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX + accessMethod.getName(), "yes").equals("yes");
+    }
+
+    private void disableAccessMethodsBasedOnCondition(Set<ServiceAccessMethod> accessMethods, Map<String, String> deploymentParameters) {
+        accessMethods.forEach(am -> {
+            if (shouldBeDisabled(am, deploymentParameters)) {
+                log.debug("Access method marked as disabled.");
+                am.setEnabled(false);
+            }
+        });
+    }
+
+    private boolean shouldBeDisabled(ServiceAccessMethod accessMethod, Map<String, String> deploymentParameters) {
+        if (Strings.isNullOrEmpty(accessMethod.getCondition())) {
+            return false;
+        }
+        log.debug("Access method is enabled conditionally (condition parameter key: {})", accessMethod.getCondition());
+        String conditionValue = deploymentParameters.get(accessMethod.getCondition());
+        if (Strings.isNullOrEmpty(conditionValue)) {
+            log.debug("Condition value is null or empty.");
+            return false;
+        } else {
+            return !conditionValue.equalsIgnoreCase("true");
+        }
+    }
+
+    private String generateServicePublicUrl(KubernetesNmServiceInfo service) {
+        return service.getDeploymentName().toLowerCase() + "-" + service.getDomain() + "." + ingressManager.getPublicServiceDomain();
     }
 
     private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(Set<ServiceAccessMethod> inputAccessMethods, String serviceExternalUrl, String servicePublicUrl) {
@@ -412,9 +438,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             retrieveOrUpdateInternalServiceIpAddress(repositoryManager.loadService(deploymentId));
             Set<ServiceAccessMethodView> serviceAccessMethodViewSet = new HashSet<>();
-            repositoryManager.loadService(deploymentId).getAccessMethods().forEach(
-                    m -> serviceAccessMethodViewSet.add(ServiceAccessMethodView.fromServiceAccessMethod(m))
-            );
+            repositoryManager.loadService(deploymentId).getAccessMethods().stream()
+                    .filter(ServiceAccessMethod::isEnabled)
+                    .forEach(m -> serviceAccessMethodViewSet.add(ServiceAccessMethodView.fromServiceAccessMethod(m)));
             return new AppUiAccessDetails(serviceAccessMethodViewSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
