@@ -294,4 +294,18 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         log.debug("State of bulk {} set to {}", bulkId, state);
     }
 
+    @Override
+    public String findApplicationNameByInstanceId(String instanceId) {
+        if(instanceService.find(Long.parseLong(instanceId)).isPresent()) {
+            return instanceService.find(Long.parseLong(instanceId)).get().getApplication().getName();
+        } else return null;
+    }
+
+    @Override
+    public Long findApplicationIdByInstanceId(String instanceId) {
+        if(instanceService.find(Long.parseLong(instanceId)).isPresent()) {
+            return instanceService.find(Long.parseLong(instanceId)).get().getApplication().getId();
+        } else return null;
+    }
+
 }

@@ -1104,11 +1104,15 @@
       "DETAILS" : "Details",
       "CONTINUE" : "Continue",
       "CREATED" : "Created",
-      "SUCCESSFUL" : "Successful",
       "TYPE" : "Object type",
       "MOVE_DOMAIN" : "Domain information",
       "MOVE_USER" : "User information",
-      "MOVE_APP" : "Application information"
+      "MOVE_APP" : "Application instance details",
+      "APP_NAME" : "Application name",
+      "INSTANCE_NO" : "Instances number",
+      "PER_PAGE" : "Bulk per page",
+      "DEPLOYED" : "Deployed application",
+      "REMOVE" : "Remove"
     },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
@@ -1122,7 +1126,8 @@
       "DEPLOYMENTS" : "User deployments"
     },
     "APP": {
-      "INFO" : "Additional information will be added later",
+      "INFO" : "Select application for bulk deployment",
+      "UPLOAD" : "New bulk deployment of",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk application deployments",
       "VIEW_HEADER" : "Bulk application deployment",
@@ -1131,7 +1136,8 @@
       "NAVIGATION" : "New bulk application deployment",
       "INSTANCE_ID" : "Instance Id",
       "INSTANCE_NAME": "Instance name",
-      "DOMAIN" : "Domain"
+      "DOMAIN" : "Domain",
+      "CHECK_STATE" : "Check state"
     },
     "STATE" : {
       "PENDING" :  "Pending",
@@ -1139,6 +1145,11 @@
       "COMPLETED" : "Completed",
       "FAILED" : "Failed",
       "PARTIALLY_FAILED" : "Partially failed"
+    },
+    "REMOVE" : {
+      "HEADER" : "Remove bulk deployment",
+      "APP" : "Do you want to remove all instances created by this bulk ? ",
+      "REMOVE" : "Remove"
     }
   },
   "SHARED" : {

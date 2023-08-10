@@ -1109,7 +1109,12 @@
       "TYPE" : "Typ obiektu",
       "MOVE_DOMAIN" : "Przejdź do domeny",
       "MOVE_USER" : "Przejdź do użytkownika",
-      "MOVE_APP" : "Przejdź do aplikacji"
+      "MOVE_APP" : "Przejdź do aplikacji",
+      "APP_NAME" : "Nazwa aplikacji",
+      "INSTANCE_NO" : "Liczba instancji",
+      "PER_PAGE" : "Liczba na strone",
+      "DEPLOYED" : "Uruchomiona aplikacji",
+      "REMOVE" : "Usuń"
     },
     "DOMAIN": {
       "INFO": "Additional information will be added later",
@@ -1123,7 +1128,8 @@
       "DEPLOYMENTS" : "Utworzeni użytkownicy"
     },
     "APP": {
-      "INFO" : "Additional information will be added later",
+      "INFO" : "Wybierz aplikacje dla grupowego uruchomienia",
+      "UPLOAD" : "Nowe grupowe uruchomienie aplikacji dla",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Uruchamianie wielu aplikacji",
       "VIEW_HEADER" : "Uruchomienie aplikacji",
@@ -1132,7 +1138,8 @@
       "NAVIGATION" : "Nowe uruchamianie wielu aplikacji",
       "INSTANCE_ID" : "Id instancji",
       "INSTANCE_NAME": "Nazwa instancji",
-      "DOMAIN" : "Domena"
+      "DOMAIN" : "Domena",
+      "CHECK_STATE" : "Sprawdź status"
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",
@@ -1140,6 +1147,11 @@
       "COMPLETED" : "Zakończone",
       "FAILED" : "Nieudane",
       "PARTIALLY_FAILED" : "Częściowo nieudane"
+    },
+    "REMOVE" : {
+      "HEADER" : "Remove bulk deployment",
+      "APP" : "Do you want to remove all instances created by this bulk ? ",
+      "REMOVE" : "Remove"
     }
   },
   "SHARED" : {

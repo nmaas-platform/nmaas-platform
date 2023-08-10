@@ -23,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -94,6 +96,7 @@ public class BulkController {
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
         bulkView.setCreator(getUserView(bulk.getCreatorId()));
+        mapDetails(bulk, bulkView);
         return ResponseEntity.ok(bulkView);
     }
 
@@ -114,10 +117,29 @@ public class BulkController {
                 .map(bulk -> {
                     BulkDeploymentViewS bulkView = modelMapper.map(bulk, BulkDeploymentViewS.class);
                     bulkView.setCreator(getUserView(bulk.getCreatorId()));
+                    mapDetails(bulk, bulkView);
                     return bulkView;
                 })
                 .collect(Collectors.toList());
     }
+
+    private BulkDeploymentViewS mapDetails(BulkDeployment deployment, BulkDeploymentViewS view) {
+        if(deployment.getType().equals(BulkType.APPLICATION)) {
+            Map<String, String> details = new HashMap<>();
+            if(!deployment.getEntries().isEmpty()) {
+                details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
+                if(deployment.getEntries().stream().findFirst().get().getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID)) {
+                    String instanceId = deployment.getEntries().stream().findFirst().get().getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID);
+                    details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, this.bulkApplicationService.findApplicationNameByInstanceId(instanceId));
+                    details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(this.bulkApplicationService.findApplicationIdByInstanceId(instanceId)));
+                }
+                view.setDetails(details);
+            }
+        }
+        return view;
+    }
+
+
 
     private UserViewMinimal getUserView(Long id) {
         User user = userService.findById(id)
