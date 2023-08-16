@@ -49,8 +49,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
@@ -91,9 +93,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
         appInstanceSpecs.forEach(applicationSpec -> {
             AppInstance instance = null;
+            Application application = null;
             try {
                 // loading requested application version
-                Application application = findApplication(applicationName, applicationSpec.getApplicationVersion());
+                application = findApplication(applicationName, applicationSpec.getApplicationVersion());
 
                 // loading target domain
                 Domain domain = domainService.findDomain(applicationSpec.getDomainName())
@@ -145,7 +148,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .type(BulkType.APPLICATION)
                                 .state(BulkDeploymentState.PROCESSING)
                                 .created(true)
-                                .details(prepareBulkApplicationDeploymentDetailsMap(instance))
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, application))
                                 .build()
                 );
 
@@ -167,7 +170,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .type(BulkType.APPLICATION)
                                 .state(BulkDeploymentState.FAILED)
                                 .created(false)
-                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, applicationSpec, e.getMessage()))
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, applicationSpec, e.getMessage(), application))
                                 .build());
             }
         });
@@ -269,8 +272,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return bulkDeployment;
     }
 
-    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage) {
-        Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance);
+    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage, Application application) {
+        Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance, application);
         if (Objects.isNull(appInstance)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, applicationSpec.getApplicationInstanceName());
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, applicationSpec.getDomainName());
@@ -279,13 +282,17 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return details;
     }
 
-    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance) {
+    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, Application application) {
         Map<String, String> details = new HashMap<>();
         if (Objects.nonNull(appInstance)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID, appInstance.getId().toString());
             details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, appInstance.getName());
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, appInstance.getDomain().getName());
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME, appInstance.getDomain().getCodename());
+        }
+        if (Objects.nonNull(application)) {
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_NAME, application.getName());
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(application.getId()));
         }
         return details;
     }
