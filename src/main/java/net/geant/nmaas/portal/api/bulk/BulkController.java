@@ -128,10 +128,11 @@ public class BulkController {
             Map<String, String> details = new HashMap<>();
             if(!deployment.getEntries().isEmpty()) {
                 details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
-                if(deployment.getEntries().stream().findFirst().get().getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID)) {
-                    String instanceId = deployment.getEntries().stream().findFirst().get().getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID);
-                    details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, this.bulkApplicationService.findApplicationNameByInstanceId(instanceId));
-                    details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(this.bulkApplicationService.findApplicationIdByInstanceId(instanceId)));
+                if(deployment.getEntries().stream().findFirst().get().getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID)) {
+                    details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_ID, deployment.getEntries().stream().findFirst().get().getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID));
+                }
+                if(deployment.getEntries().stream().findFirst().get().getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME)) {
+                    details.put(BulkDeploymentViewS.BULK_ENTRY_DETAIL_KEY_APP_NAME, deployment.getEntries().stream().findFirst().get().getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME));
                 }
                 view.setDetails(details);
             }

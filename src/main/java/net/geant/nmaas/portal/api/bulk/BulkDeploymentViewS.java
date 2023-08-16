@@ -17,7 +17,7 @@ import java.util.Map;
 public class BulkDeploymentViewS {
 
     public static final String BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NO = "appInstanceNo";
-    public static final String BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME = "appName";
+    public static final String BULK_ENTRY_DETAIL_KEY_APP_NAME = "appName";
     public static final String BULK_ENTRY_DETAIL_KEY_APP_ID = "appId";
 
     private Long id;

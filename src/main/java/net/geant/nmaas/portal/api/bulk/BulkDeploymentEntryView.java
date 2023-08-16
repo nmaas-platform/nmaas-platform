@@ -30,6 +30,12 @@ public class BulkDeploymentEntryView {
     public static final String BULK_ENTRY_DETAIL_KEY_STATUS = "status";
     public static final String BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE = "errorMessage";
 
+    public static final String BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NO = "appInstanceNo";
+
+    public static final String BULK_ENTRY_DETAIL_KEY_APP_NAME = "appName";
+
+    public static final String BULK_ENTRY_DETAIL_KEY_APP_ID = "appId";
+
     private BulkType type;
     private BulkDeploymentState state;
     private Boolean created;
