@@ -17,8 +17,4 @@ public interface BulkApplicationService {
 
     void handleDeploymentReview(AppAutoDeploymentReviewEvent event);
 
-    String findApplicationNameByInstanceId(String appInstanceId);
-
-    Long findApplicationIdByInstanceId(String appInstanceId);
-
 }

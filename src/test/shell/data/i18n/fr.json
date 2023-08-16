@@ -1110,7 +1110,7 @@
       "MOVE_APP" : "Application instance details",
       "APP_NAME" : "Application name",
       "INSTANCE_NO" : "Instances number",
-      "PER_PAGE" : "Bulk per page",
+      "PER_PAGE" : "Bulks per page",
       "DEPLOYED" : "Deployed application",
       "REMOVE" : "Remove"
     },

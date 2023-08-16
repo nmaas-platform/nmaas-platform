@@ -93,7 +93,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
         appInstanceSpecs.forEach(applicationSpec -> {
             AppInstance instance = null;
-            Application application= null;
+            Application application = null;
             try {
                 // loading requested application version
                 application = findApplication(applicationName, applicationSpec.getApplicationVersion());
@@ -170,7 +170,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .type(BulkType.APPLICATION)
                                 .state(BulkDeploymentState.FAILED)
                                 .created(false)
-                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, applicationSpec, e.getMessage(), application ))
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, applicationSpec, e.getMessage(), application))
                                 .build());
             }
         });
@@ -290,7 +290,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, appInstance.getDomain().getName());
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME, appInstance.getDomain().getCodename());
         }
-        if(Objects.nonNull(appInstance)) {
+        if (Objects.nonNull(application)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_NAME, application.getName());
             details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(application.getId()));
         }
@@ -299,20 +299,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
     private void logBulkStateUpdate(long bulkId, String state) {
         log.debug("State of bulk {} set to {}", bulkId, state);
-    }
-
-    @Override
-    public String findApplicationNameByInstanceId(String instanceId) {
-        if(instanceService.find(Long.parseLong(instanceId)).isPresent()) {
-            return instanceService.find(Long.parseLong(instanceId)).get().getApplication().getName();
-        } else return null;
-    }
-
-    @Override
-    public Long findApplicationIdByInstanceId(String instanceId) {
-        if(instanceService.find(Long.parseLong(instanceId)).isPresent()) {
-            return instanceService.find(Long.parseLong(instanceId)).get().getApplication().getId();
-        } else return null;
     }
 
 }
