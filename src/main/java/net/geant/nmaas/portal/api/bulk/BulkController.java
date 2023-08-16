@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
@@ -128,11 +129,12 @@ public class BulkController {
             Map<String, String> details = new HashMap<>();
             if(!deployment.getEntries().isEmpty()) {
                 details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
-                if(deployment.getEntries().stream().findFirst().get().getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID)) {
-                    details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_ID, deployment.getEntries().stream().findFirst().get().getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID));
+                BulkDeploymentEntry entry = deployment.getEntries().stream().findFirst().get();
+                if(entry.getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID)) {
+                    details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_ID, entry.getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID));
                 }
-                if(deployment.getEntries().stream().findFirst().get().getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME)) {
-                    details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_NAME, deployment.getEntries().stream().findFirst().get().getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME));
+                if(entry.getDetails().containsKey(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME)) {
+                    details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_NAME, entry.getDetails().get(BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME));
                 }
                 view.setDetails(details);
             }

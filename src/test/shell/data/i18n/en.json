@@ -1111,7 +1111,7 @@
       "MOVE_USER" : "User information",
       "MOVE_APP" : "Application instance details",
       "APP_NAME" : "Application name",
-      "INSTANCE_NO" : "Instances number",
+      "INSTANCE_NO" : "Number of instances",
       "PER_PAGE" : "Bulks per page",
       "DEPLOYED" : "Deployed application",
       "REMOVE" : "Remove"
