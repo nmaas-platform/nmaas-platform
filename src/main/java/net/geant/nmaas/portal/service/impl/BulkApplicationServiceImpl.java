@@ -272,7 +272,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return bulkDeployment;
     }
 
-    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage, Application application) {
+    private Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage, Application application) {
         Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance, application);
         if (Objects.isNull(appInstance)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, applicationSpec.getApplicationInstanceName());
@@ -282,7 +282,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return details;
     }
 
-    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, Application application) {
+    private Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, Application application) {
         Map<String, String> details = new HashMap<>();
         if (Objects.nonNull(appInstance)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID, appInstance.getId().toString());
@@ -292,9 +292,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
         if (Objects.nonNull(application)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_NAME, application.getName());
-            details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(application.getId()));
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, findApplicationBaseId(application) );
         }
         return details;
+    }
+
+    private String findApplicationBaseId(Application app) {
+        return String.valueOf(applicationBaseService.findByName(app.getName()).getId());
     }
 
     private void logBulkStateUpdate(long bulkId, String state) {
