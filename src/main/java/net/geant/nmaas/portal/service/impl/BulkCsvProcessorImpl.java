@@ -106,7 +106,7 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
         }
 
         if (Arrays.asList(headers).containsAll(requiredDomainHeader) || Arrays.asList(headers).containsAll(requireApplicationHeader)) {
-            log.debug("Nagłówki są poprawne");
+            log.debug("Csv headers are correct");
         } else {
             throw new ProcessingException("CSV headers missing required column");
         }
