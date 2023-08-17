@@ -383,14 +383,27 @@ public class DomainServiceTest {
     
     @Test
     void shouldRemoveDomainFromAllGroupsOnSoftRemoval() {
-        Domain domain = new Domain(1L, "testdom", "testdom");
-        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+        Domain domain1 = new Domain(1L, "testdom1", "testdom1");
+        Domain domain2 = new Domain(2L, "testdom2", "testdom2");
+        Domain domain3 = new Domain(3L, "testdom3", "testdom3");
+
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain1));
+        when(domainRepository.findById(2L)).thenReturn(Optional.of(domain2));
+        when(domainRepository.findById(3L)).thenReturn(Optional.of(domain3));
+
         DomainGroup group = new DomainGroup(1L, "group1", "g1");
         DomainGroup group2 = new DomainGroup(2L, "group2", "g2");
-        group.addDomain(domain);
-        group2.addDomain(domain);
+
+        group.addDomain(domain1);
+        group.addDomain(domain2);
+        group.addDomain(domain3);
+
+        group2.addDomain(domain1);
+        group2.addDomain(domain2);
+
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(domainGroupRepository.findById(2L)).thenReturn(Optional.of(group2));
+
         when(domainGroupRepository.save(group)).thenReturn(group);
         when(domainGroupRepository.save(group2)).thenReturn(group2);
 
@@ -399,9 +412,9 @@ public class DomainServiceTest {
         var resultDomainGroup = domainGroupRepository.findById(1L);
         var resultDomainGroup2 = domainGroupRepository.findById(2L);
         assertTrue(resultDomainGroup.isPresent());
-        assertTrue(resultDomainGroup.get().getDomains().isEmpty());
+        assertEquals(2, resultDomainGroup.get().getDomains().size());
         assertTrue(resultDomainGroup2.isPresent());
-        assertTrue(resultDomainGroup2.get().getDomains().isEmpty());
+        assertEquals(1, resultDomainGroup2.get().getDomains().size());
     }
 
 }

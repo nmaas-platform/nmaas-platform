@@ -72,7 +72,6 @@ public class DomainGroup implements Serializable {
 
     public void removeDomain(Domain domain) {
         this.domains.remove(domain);
-        domain.getGroups().remove(this);
     }
 
     public void addApplicationState(ApplicationBase applicationBase) {
