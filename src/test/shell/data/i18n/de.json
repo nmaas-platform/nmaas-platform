@@ -1137,7 +1137,8 @@
       "INSTANCE_ID" : "Instance Id",
       "INSTANCE_NAME": "Instance name",
       "DOMAIN" : "Domain",
-      "CHECK_STATE" : "Check state"
+      "CHECK_STATE" : "Check state",
+      "UPLOAD_TEXT" : "or enter CSV content below"
     },
     "STATE" : {
       "PENDING" :  "Pending",
