@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -75,7 +76,9 @@ public class BulkApplicationServiceImplTest {
         CsvApplication csvApplication = new CsvApplication("domain1", "testAppInstance", TEST_APP_VERSION, null);
         Domain domain = new Domain(1L,"domain1", "domain1");
         Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
+        ApplicationBase applicationBase = new ApplicationBase(110L, TEST_APP_NAME);
         when(applicationBaseService.exists(TEST_APP_NAME)).thenReturn(true);
+        when(applicationBaseService.findByName(TEST_APP_NAME)).thenReturn(applicationBase);
         Application application = new Application(1L, TEST_APP_NAME, TEST_APP_VERSION);
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         when(applicationService.findApplication(TEST_APP_NAME, TEST_APP_VERSION)).thenReturn(Optional.of(application));
@@ -89,6 +92,7 @@ public class BulkApplicationServiceImplTest {
 
         bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser());
 
+        verify(applicationSubscriptionService).subscribe(110L, domain.getId(), true);
         verify(appLifecycleManager).deployApplication(any());
         verify(applicationInstanceService, times(1)).update(any());
         verify(bulkDeploymentEntryRepository).save(any());
