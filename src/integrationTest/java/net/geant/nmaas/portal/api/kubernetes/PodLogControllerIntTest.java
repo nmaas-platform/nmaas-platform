@@ -1,7 +1,7 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.kubernetes;
 
-import net.geant.nmaas.kubernetes.shell.ShellSessionsStorage;
-import net.geant.nmaas.kubernetes.shell.connectors.KubernetesConnectorHelper;
+import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
+import net.geant.nmaas.kubernetes.KubernetesConnectorHelper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,16 +23,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class ShellClientControllerIntTest extends BaseControllerTestSetup {
+public class PodLogControllerIntTest extends BaseControllerTestSetup {
 
     @MockBean
-    private ShellSessionsStorage storage;
+    private PodSessionsStorage storage;
 
     @MockBean
     private KubernetesConnectorHelper connectorHelper;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         this.mvc = createMVC();
         Map<String, String> podNames = new HashMap<>();
         podNames.put("name1", "displayName1");
@@ -41,9 +41,9 @@ public class ShellClientControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldRetrievePodNames() throws Exception {
-        when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(true);
-        MvcResult result = mvc.perform(get("/api/shell/{id}/podnames", 1L)
+    void shouldRetrievePodNames() throws Exception {
+        when(connectorHelper.checkAppInstanceSupportsLogAccess(1L)).thenReturn(true);
+        MvcResult result = mvc.perform(get("/api/pods/log/{id}/podnames", 1L)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -53,14 +53,13 @@ public class ShellClientControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotRetrievePodNames() throws Exception {
-        when(connectorHelper.checkAppInstanceSupportsSshAccess(1L)).thenReturn(false);
-        mvc.perform(get("/api/shell/{id}/podnames", 1L)
+    void shouldNotRetrievePodNames() throws Exception {
+        when(connectorHelper.checkAppInstanceSupportsLogAccess(1L)).thenReturn(false);
+        mvc.perform(get("/api/pods/log/{id}/podnames", 1L)
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotAcceptable())
-                .andReturn();
+                .andExpect(status().isNotAcceptable());
     }
 
 }

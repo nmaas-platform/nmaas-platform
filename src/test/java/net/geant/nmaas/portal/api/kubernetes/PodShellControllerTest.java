@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.shell;
+package net.geant.nmaas.portal.api.kubernetes;
 
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.portal.service.K8sShellService;
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ShellClientControllerTest {
+public class PodShellControllerTest {
 
     @Test
     public void shouldCallProperMethods() {
@@ -19,7 +19,7 @@ public class ShellClientControllerTest {
         SseEmitter emitter = mock(SseEmitter.class);
         when(k8sShellService.getEmitterForShellSession(anyString())).thenReturn(emitter);
 
-        ShellClientController controller = new ShellClientController(k8sShellService);
+        PodShellController controller = new PodShellController(k8sShellService);
 
         controller.init(null, 12L, "podName");
         verify(k8sShellService).createNewShellSession(12L, "podName");

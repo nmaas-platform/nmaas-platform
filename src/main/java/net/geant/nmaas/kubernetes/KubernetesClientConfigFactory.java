@@ -1,4 +1,4 @@
-package net.geant.nmaas.kubernetes.client;
+package net.geant.nmaas.kubernetes;
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;

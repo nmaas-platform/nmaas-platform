@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.shell.observable;
+package net.geant.nmaas.portal.api.kubernetes.observable;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

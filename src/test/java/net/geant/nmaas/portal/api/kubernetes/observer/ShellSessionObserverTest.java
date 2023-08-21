@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.shell.observer;
+package net.geant.nmaas.portal.api.kubernetes.observer;
 
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;

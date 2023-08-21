@@ -3,7 +3,7 @@ package net.geant.nmaas.kubernetes.shell.observable;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
-import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnector;
+import net.geant.nmaas.kubernetes.AsyncConnector;
 
 import java.io.*;
 import java.util.concurrent.ExecutorService;

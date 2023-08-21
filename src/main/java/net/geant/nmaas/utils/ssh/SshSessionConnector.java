@@ -2,7 +2,7 @@ package net.geant.nmaas.utils.ssh;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.kubernetes.shell.connectors.AsyncConnector;
+import net.geant.nmaas.kubernetes.AsyncConnector;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.ConnectionException;
