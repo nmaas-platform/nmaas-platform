@@ -87,6 +87,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         if (!applicationBaseService.exists(applicationName)) {
             throw new IllegalArgumentException("Application with given name doesn't exist");
         }
+        Long applicationBaseId = findApplicationBaseId(applicationName);
 
         // create base bulk deployment record
         BulkDeployment bulkDeployment = createBulkDeployment(creator);
@@ -102,8 +103,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 Domain domain = domainService.findDomain(applicationSpec.getDomainName())
                         .orElseThrow(() -> new MissingElementException("Domain not found"));
 
-                // making new application subscription in given domain
-                applicationSubscriptionService.subscribe(application.getId(), domain.getId(), true);
+                // making new application subscription in given domain (if required)
+                if (!applicationSubscriptionService.existsSubscription(applicationBaseId, domain.getId())) {
+                    applicationSubscriptionService.subscribe(applicationBaseId, domain.getId(), true);
+                }
 
                 // verifying if desired instance name is still available
                 verifyIfInstanceNameIsAvailable(applicationSpec, domain);
@@ -292,13 +295,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
         if (Objects.nonNull(application)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_NAME, application.getName());
-            details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, findApplicationBaseId(application) );
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(findApplicationBaseId(application.getName())));
         }
         return details;
     }
 
-    private String findApplicationBaseId(Application app) {
-        return String.valueOf(applicationBaseService.findByName(app.getName()).getId());
+    private Long findApplicationBaseId(String applicationName) {
+        return applicationBaseService.findByName(applicationName).getId();
     }
 
     private void logBulkStateUpdate(long bulkId, String state) {
