@@ -16,6 +16,8 @@ import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 @NoArgsConstructor
 public class CsvApplication implements BulkCsvProcessorImpl.CsvBean {
 
+    public static final String PARAM_COLUMN_PREFIX = "param.";
+
     @CsvBindByName(column = "domain")
     private String domainName;
 
@@ -25,7 +27,7 @@ public class CsvApplication implements BulkCsvProcessorImpl.CsvBean {
     @CsvBindByName(column = "version")
     private String applicationVersion;
 
-    @CsvBindAndJoinByName(column = "param.*", elementType = String.class, mapType = HashSetValuedHashMap.class, required = false)
+    @CsvBindAndJoinByName(column = PARAM_COLUMN_PREFIX + "*", elementType = String.class, mapType = HashSetValuedHashMap.class, required = false)
     private MultiValuedMap<String, String> parameters;
 
 }

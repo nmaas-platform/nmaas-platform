@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -24,6 +26,7 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
@@ -34,6 +37,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static net.geant.nmaas.portal.api.bulk.BulkType.APPLICATION;
@@ -72,8 +76,10 @@ public class BulkApplicationServiceImplTest {
             bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, eventPublisher);
 
     @Test
-    void shouldHandleBulkDeployment() {
-        CsvApplication csvApplication = new CsvApplication("domain1", "testAppInstance", TEST_APP_VERSION, null);
+    void shouldHandleBulkDeployment() throws JsonProcessingException {
+        HashSetValuedHashMap<String, String> parameters = new HashSetValuedHashMap<>();
+        parameters.put("param.key1", "value1");
+        CsvApplication csvApplication = new CsvApplication("domain1", "testAppInstance", TEST_APP_VERSION, parameters);
         Domain domain = new Domain(1L,"domain1", "domain1");
         Domain global = new Domain(0L,"GLOBAL", "GLOBAL");
         ApplicationBase applicationBase = new ApplicationBase(110L, TEST_APP_NAME);
@@ -94,7 +100,12 @@ public class BulkApplicationServiceImplTest {
 
         verify(applicationSubscriptionService).subscribe(110L, domain.getId(), true);
         verify(appLifecycleManager).deployApplication(any());
-        verify(applicationInstanceService, times(1)).update(any());
+        ArgumentCaptor<AppInstance> appInstanceArgumentCaptor = ArgumentCaptor.forClass(AppInstance.class);
+        verify(applicationInstanceService, times(2)).update(appInstanceArgumentCaptor.capture());
+        Map<String, String> deploymentParametersMap = new ObjectMapper().readValue(
+                appInstanceArgumentCaptor.getAllValues().get(1).getConfiguration(), Map.class
+        );
+        assertEquals("value1", deploymentParametersMap.get("key1"));
         verify(bulkDeploymentEntryRepository).save(any());
         verify(eventPublisher).publishEvent(any(AppAutoDeploymentTriggeredEvent.class));
         ArgumentCaptor<BulkDeployment> bulkDeploymentArgumentCaptor = ArgumentCaptor.forClass(BulkDeployment.class);

@@ -32,6 +32,7 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -136,7 +137,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 // updating application instance information with custom configuration
                 AppConfigurationView appConfigurationView = new AppConfigurationView();
                 if (Objects.nonNull(applicationSpec.getParameters())) {
-                    String configJson = new ObjectMapper().writeValueAsString(applicationSpec.getParameters());
+                    String configJson = new ObjectMapper().writeValueAsString(
+                            mapToDeploymentParameters(applicationSpec.getParameters())
+                    );
                     instance.setConfiguration(configJson);
                     appConfigurationView.setJsonInput(configJson);
                     appConfigurationView.setMandatoryParameters(configJson);
@@ -179,6 +182,17 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         });
 
         return modelMapper.map(bulkDeploymentRepository.save(bulkDeployment), BulkDeploymentViewS.class);
+    }
+
+    private static Map<String, String> mapToDeploymentParameters(MultiValuedMap<String, String> parsedParameters) {
+        Map<String, String> deploymentParameters = new HashMap<>();
+        parsedParameters.keySet().forEach(parsedKey ->
+                deploymentParameters.put(
+                        parsedKey.replaceFirst(CsvApplication.PARAM_COLUMN_PREFIX, ""),
+                        parsedParameters.get(parsedKey).iterator().next()
+                )
+        );
+        return deploymentParameters;
     }
 
     private Application findApplication(String appName, String version) {
