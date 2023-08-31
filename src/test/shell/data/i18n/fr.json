@@ -1128,7 +1128,7 @@
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "NAVIGATION" : "New bulk domain deployment",
       "DEPLOYMENTS" : "Domain deployments",
-      "UPLOAD" : "Select csv file with domain and administrator specification for bulk deployment"
+      "UPLOAD" : "Select csv file with domain specification and domain administrator user information for bulk deployment"
     },
     "USER" : {
       "DEPLOYMENTS" : "User deployments"

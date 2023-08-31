@@ -1127,7 +1127,7 @@
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk domain deployments",
-      "UPLOAD" : "Select csv file with domains specification for bulk deployment",
+      "UPLOAD" : "Select csv file with domain specification and domain administrator user information for bulk deployment",
       "HEADER_VIEW" : "Bulk domain deployment",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "NAVIGATION" : "New bulk domain deployment",
