@@ -1097,6 +1097,7 @@
   "BULK" : {
     "UPLOAD" : "Uzupełnij specyfikacje",
     "UPLOAD_BUTTON" : "Wyślij plik csv",
+    "BUTTON" : "Upload file",
     "LIST": {
       "ID": "Id",
       "CREATOR": "Twórca",
@@ -1114,7 +1115,13 @@
       "INSTANCE_NO" : "Liczba instancji",
       "PER_PAGE" : "Liczba na strone",
       "DEPLOYED" : "Uruchomiona aplikacji",
-      "REMOVE" : "Usuń"
+      "REMOVE" : "Usuń",
+      "DOMAIN_ID" : "Id domeny",
+      "DOMAIN_NAME" : "Nazwa domeny",
+      "DOMAIN_CODENAME" : "Codename domeny",
+      "USER_ID" : "Id użytkownika",
+      "EMAIL" : "Email",
+      "USER_NAME" : "Nazwa użytkownika"
     },
     "DOMAIN": {
       "INFO": "Additional information will be added later",
@@ -1122,7 +1129,8 @@
       "HEADER": "Tworzenie wielu domen",
       "NAVIGATION" : "Tworzenie grupowe domen ",
       "DEPLOYMENTS" : "Utworzone domeny",
-      "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen..."
+      "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen...",
+      "UPLOAD" : "Wybierz plik csv z specyfikacją domeny i jej administratora dla grupowego uruchomienia"
     },
     "USER" : {
       "DEPLOYMENTS" : "Utworzeni użytkownicy"
