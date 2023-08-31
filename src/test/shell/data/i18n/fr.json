@@ -1096,6 +1096,7 @@
   "BULK" : {
     "UPLOAD" : "Upload bulk specification",
     "UPLOAD_BUTTON" : "Upload csv content",
+    "BUTTON" : "Upload file",
     "LIST" : {
       "ID" : "Id",
       "CREATOR" : "Creator",
@@ -1112,7 +1113,13 @@
       "INSTANCE_NO" : "Number of instances",
       "PER_PAGE" : "Bulks per page",
       "DEPLOYED" : "Deployed application",
-      "REMOVE" : "Remove"
+      "REMOVE" : "Remove",
+      "DOMAIN_ID" : "Domain id",
+      "DOMAIN_NAME" : "Domain name",
+      "DOMAIN_CODENAME" : "Domain codename",
+      "USER_ID" : "User id",
+      "EMAIL" : "Email",
+      "USER_NAME" : "User name"
     },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
@@ -1120,7 +1127,8 @@
       "HEADER" : "Bulk domain deployments",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "NAVIGATION" : "New bulk domain deployment",
-      "DEPLOYMENTS" : "Domain deployments"
+      "DEPLOYMENTS" : "Domain deployments",
+      "UPLOAD" : "Select csv file with domain specification and domain administrator user information for bulk deployment"
     },
     "USER" : {
       "DEPLOYMENTS" : "User deployments"
