@@ -80,6 +80,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         Iterator<Domain> iterator = toRemove.iterator();
         while (iterator.hasNext()) {
             Domain domain = iterator.next();
+            domain.getGroups().remove(domainGroup);
             deleteDomainFromGroup(domain, domainGroupId);
             iterator.remove();
         }
