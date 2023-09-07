@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
@@ -38,6 +39,7 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,6 +54,8 @@ public class DomainServiceTest {
     DomainServiceImpl.CodenameValidator validator;
     DomainServiceImpl.CodenameValidator namespaceValidator;
     DomainRepository domainRepository = mock(DomainRepository.class);
+
+    DomainDcnDetailsRepository domainDcnDetailsRepository = mock(DomainDcnDetailsRepository.class);
     DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
     UserService userService = mock(UserService.class);
     UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
@@ -71,7 +75,7 @@ public class DomainServiceTest {
         domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
-                domainTechDetailsRepository, userService,
+                domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
                 modelMapper, applicationStatePerDomainService, domainGroupService);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
@@ -353,7 +357,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    void  shouldFindUsersWithDomainAdminRole() {
+    void shouldFindUsersWithDomainAdminRole() {
         Domain domain = new Domain(1L, "testdom", "testdom");
 
         User user1 = new User("user1");
@@ -370,20 +374,38 @@ public class DomainServiceTest {
 
     @Test
     void shouldSoftRemoveDomain() {
+        DomainTechDetails domainTechDetails = new DomainTechDetails();
+        domainTechDetails.setId(100L);
+        domainTechDetails.setExternalServiceDomain("external@domain");
+        DomainDcnDetails domainDcnDetails = new DomainDcnDetails();
+        domainDcnDetails.setId(200L);
         Domain domain = new Domain(1L, "testdom", "testdom");
+        domain.setDomainDcnDetails(domainDcnDetails);
+        domain.setDomainTechDetails(domainTechDetails);
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+
         domainService.softRemoveDomain(1L);
+
         verify(domainRepository, times(1)).save(domain);
         Optional<Domain> deletedDomain = domainService.findDomain(1L);
 
         assertTrue(deletedDomain.isPresent());
         assertTrue(deletedDomain.get().isDeleted());
         assertTrue(deletedDomain.get().getName().contains("DELETED"));
+        assertTrue(deletedDomain.get().getCodename().contains("DELETED"));
+        assertNull(deletedDomain.get().getDomainTechDetails());
     }
     
     @Test
     void shouldRemoveDomainFromAllGroupsOnSoftRemoval() {
-        Domain domain1 = new Domain(1L, "testdom1", "testdom1");
+        DomainTechDetails domainTechDetails = new DomainTechDetails();
+        domainTechDetails.setId(100L);
+        domainTechDetails.setExternalServiceDomain("external@domain");
+        DomainDcnDetails domainDcnDetails = new DomainDcnDetails();
+        domainDcnDetails.setId(200L);
+        Domain domain1 = new Domain(1L, "testdom", "testdom");
+        domain1.setDomainDcnDetails(domainDcnDetails);
+        domain1.setDomainTechDetails(domainTechDetails);
         Domain domain2 = new Domain(2L, "testdom2", "testdom2");
         Domain domain3 = new Domain(3L, "testdom3", "testdom3");
 

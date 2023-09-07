@@ -5,6 +5,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
@@ -58,6 +59,7 @@ public class DomainServiceImpl implements DomainService {
 	private final CodenameValidator validator;
 	private final CodenameValidator namespaceValidator;
 	private final DomainRepository domainRepository;
+	private final DomainDcnDetailsRepository domainDcnDetailsRepository;
 	private final DomainTechDetailsRepository domainTechDetailsRepository;
 	private final UserService userService;
 	private final UserRoleRepository userRoleRepository;
@@ -73,6 +75,7 @@ public class DomainServiceImpl implements DomainService {
 	public DomainServiceImpl(CodenameValidator validator,
 							 @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
 							 DomainRepository domainRepository,
+							 DomainDcnDetailsRepository domainDcnDetailsRepository,
 							 DomainTechDetailsRepository domainTechDetailsRepository,
 							 UserService userService,
 							 UserRoleRepository userRoleRepository,
@@ -84,6 +87,7 @@ public class DomainServiceImpl implements DomainService {
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
 		this.domainRepository = domainRepository;
+		this.domainDcnDetailsRepository = domainDcnDetailsRepository;
 		this.domainTechDetailsRepository = domainTechDetailsRepository;
 		this.userService = userService;
 		this.userRoleRepository = userRoleRepository;
@@ -255,13 +259,21 @@ public class DomainServiceImpl implements DomainService {
 			}).orElse(false);
 	}
 
+	@Transactional
 	@Override
 	public boolean softRemoveDomain(Long domainId) {
+		String removedSuffix = "_DELETED_" + OffsetDateTime.now();
 		return findDomain(domainId).map(domain -> {
 			checkGlobal(domain);
 			domain.setDeleted(true);
-            domain.setName(domain.getName() + "_DELETED_" + OffsetDateTime.now());
-            domain.setCodename(domain.getCodename() + "_DELETED_" + OffsetDateTime.now());
+            domain.setName(domain.getName() + removedSuffix);
+            domain.setCodename(domain.getCodename() + removedSuffix);
+			Long domainDcnDetailsId = domain.getDomainDcnDetails().getId();
+			domain.setDomainDcnDetails(null);
+			domainDcnDetailsRepository.deleteById(domainDcnDetailsId);
+			Long domainTechDetailsId = domain.getDomainTechDetails().getId();
+			domain.setDomainTechDetails(null);
+			domainTechDetailsRepository.deleteById(domainTechDetailsId);
 			removeAllUsersFromDomain(domain);
 			removeDomainFromAllGroups(domain);
 			triggerApplicationsUninstall();
