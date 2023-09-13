@@ -405,6 +405,20 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
+    @PostMapping("/{appInstanceId}/version/{version}")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public void changeManualVersion(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                    @PathVariable(value = "version") String version) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            Application application = getApp(appInstance.getApplication().getName(), version);
+            appInstance.setApplication(application);
+            this.instanceService.update(appInstance);
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
     @PostMapping("/{appInstanceId}/members")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     public void updateMembers(@PathVariable(value = "appInstanceId") Long appInstanceId, @RequestBody @Valid List<UserBase> members) {

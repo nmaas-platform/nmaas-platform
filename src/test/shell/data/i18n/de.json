@@ -254,6 +254,11 @@
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
     "UNDEPLOYED_VISIBLE": "Show undeployed instances",
     "SORT": "Sort",
+    "MANUAL_UPDATE" : {
+      "HEADER" : "Manual version upgrade",
+      "BODY" : "Manual update instance version information. Select correct version below",
+      "YES_BUTTON" : "Update version"
+    },
     "SORT_MODE": {
       "NONE": "None",
       "NAME": "By name",

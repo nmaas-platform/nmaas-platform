@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -168,6 +169,12 @@ public class ApplicationController extends AppBaseController {
 				modelMapper.map(base, ApplicationBaseView.class),
 				modelMapper.map(app, ApplicationView.class)
 		);
+	}
+
+	@GetMapping(value="/versions/{id}")
+	@Transactional
+	public Set<ApplicationVersion> getApplicationVersion(@PathVariable Long id) {
+		return this.getVersions(id);
 	}
 
 	@GetMapping(value="/version/{id}")
