@@ -5,8 +5,9 @@
 
   <h3 align="center">NMaaS Platform</h3>
 
+  <h4 align="center">Open-source framework for orchestration of on-demand applications deployment in a cloud environment</h4>
+
   <p align="center">
-    Open-source framework for orchestration of on-demand applications deployment in a cloud environment
     <br />
     <a href="https://docs.nmaas.eu/">Explore documentation</a>
     ·
