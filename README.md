@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://docs.nmaas.eu/">
-    <img src="https://docs.nmaas.eu/img/NMaaS-logo-transparent-white.png" alt="Logo" width="206" height="48">
+    <img src="docs/NMaaS-logo-blue.png" alt="Logo" width="206" height="48">
   </a>
 
   <h3 align="center">NMaaS Platform</h3>
