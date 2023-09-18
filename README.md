@@ -41,10 +41,18 @@ NMaaS applications are containerized and deployed using [Helm charts](https://he
 ![Screenshot of about page](docs/images/nmaas-about.png "About page")
 
 
-## NMaaS Platform component 
+## NMaaS Platform Component 
 
 [NMaaS Platform](https://github.com/nmaas-platform/nmaas-platform) is the central NMaaS component, exposing a REST API consumed by the NMaaS Portal. It stores the application catalog, the users, as well as information about any deployed applications. Upon a new request for an application deployment, it connects to the NMaaS Helm component and executes the necessary Helm command via an SSH connection. It also communicates with a self-hosted instance of GitLab, in order to provision boilerplate configuration files for the deployed application instances by the users, allowing them to make any additional configuration changes exclusively through Git.
 
-### NMaaS Platform development
+### NMaaS Platform Development
 
 Explore the NMaaS Platform [development and deployment](docs/DEVELOPMENT.md) documentation.
+
+## Get in Touch
+
+Interested users can use the following mailing lists to subscribe to news about NMaaS, get in touch with the NMaaS development team, or other NMaaS users:
+
+- [nmaas-announce@lists.geant.org](mailto:nmaas-announce@lists.geant.org) - public mailing list for announcements shared by the NMaaS team with the community ([subscribe here](https://lists.geant.org/sympa/info/nmaas-announce))
+- [nmaas@lists.geant.org](mailto:nmaas@lists.geant.org) - private mailing list for contacting the NMaaS core team members
+- [nmaas-users@lists.geant.org](mailto:nmaas-users@lists.geant.org) - public mailing lists for discussions related to NMaaS usage and development ([subscribe here](https://lists.geant.org/sympa/info/nmaas-users))
