@@ -5,6 +5,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
@@ -13,12 +14,14 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -55,12 +59,14 @@ public class DomainServiceImpl implements DomainService {
 	private final CodenameValidator validator;
 	private final CodenameValidator namespaceValidator;
 	private final DomainRepository domainRepository;
+	private final DomainDcnDetailsRepository domainDcnDetailsRepository;
 	private final DomainTechDetailsRepository domainTechDetailsRepository;
 	private final UserService userService;
 	private final UserRoleRepository userRoleRepository;
 	private final DcnRepositoryManager dcnRepositoryManager;
 	private final ModelMapper modelMapper;
 	private final ApplicationStatePerDomainService applicationStatePerDomainService;
+	private final DomainGroupService domainGroupService;
 
 	@Value("${domain.global:GLOBAL}")
 	String globalDomain;
@@ -69,22 +75,26 @@ public class DomainServiceImpl implements DomainService {
 	public DomainServiceImpl(CodenameValidator validator,
 							 @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
 							 DomainRepository domainRepository,
+							 DomainDcnDetailsRepository domainDcnDetailsRepository,
 							 DomainTechDetailsRepository domainTechDetailsRepository,
 							 UserService userService,
 							 UserRoleRepository userRoleRepository,
 							 DcnRepositoryManager dcnRepositoryManager,
 							 ModelMapper modelMapper,
-							 ApplicationStatePerDomainService applicationStatePerDomainService
+							 ApplicationStatePerDomainService applicationStatePerDomainService,
+							 DomainGroupService domainGroupService
 	){
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
 		this.domainRepository = domainRepository;
+		this.domainDcnDetailsRepository = domainDcnDetailsRepository;
 		this.domainTechDetailsRepository = domainTechDetailsRepository;
 		this.userService = userService;
 		this.userRoleRepository = userRoleRepository;
 		this.dcnRepositoryManager = dcnRepositoryManager;
 		this.modelMapper = modelMapper;
 		this.applicationStatePerDomainService = applicationStatePerDomainService;
+		this.domainGroupService = domainGroupService;
 	}
 
 	@Override
@@ -249,18 +259,37 @@ public class DomainServiceImpl implements DomainService {
 			}).orElse(false);
 	}
 
+	@Transactional
 	@Override
 	public boolean softRemoveDomain(Long domainId) {
+		String removedSuffix = "_DELETED_" + OffsetDateTime.now();
 		return findDomain(domainId).map(domain -> {
 			checkGlobal(domain);
 			domain.setDeleted(true);
-            domain.setName(domain.getName() + "_DELETED_" + OffsetDateTime.now());
-            domain.setCodename(domain.getCodename() + "_DELETED_" + OffsetDateTime.now());
+            domain.setName(domain.getName() + removedSuffix);
+            domain.setCodename(domain.getCodename() + removedSuffix);
+			Long domainDcnDetailsId = domain.getDomainDcnDetails().getId();
+			domain.setDomainDcnDetails(null);
+			domainDcnDetailsRepository.deleteById(domainDcnDetailsId);
+			Long domainTechDetailsId = domain.getDomainTechDetails().getId();
+			domain.setDomainTechDetails(null);
+			domainTechDetailsRepository.deleteById(domainTechDetailsId);
 			removeAllUsersFromDomain(domain);
-            triggerApplicationsUninstall();
+			removeDomainFromAllGroups(domain);
+			triggerApplicationsUninstall();
 			domainRepository.save(domain);
 			return true;
 		}).orElse(false);
+	}
+
+	@Override
+	public void removeDomainFromAllGroups(Domain domain) {
+		Iterator<DomainGroup> iterator = domain.getGroups().iterator();
+		while (iterator.hasNext()) {
+			DomainGroup group = iterator.next();
+			domainGroupService.deleteDomainFromGroup(domain, group.getId());
+			iterator.remove();
+		}
 	}
 
 	@Override

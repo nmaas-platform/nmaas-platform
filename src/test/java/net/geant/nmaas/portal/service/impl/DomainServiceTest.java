@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
@@ -13,12 +14,15 @@ import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
@@ -35,6 +39,7 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,11 +54,17 @@ public class DomainServiceTest {
     DomainServiceImpl.CodenameValidator validator;
     DomainServiceImpl.CodenameValidator namespaceValidator;
     DomainRepository domainRepository = mock(DomainRepository.class);
+
+    DomainDcnDetailsRepository domainDcnDetailsRepository = mock(DomainDcnDetailsRepository.class);
     DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
     UserService userService = mock(UserService.class);
     UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
     DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
     ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+    ModelMapper modelMapper = new ModelMapper();
+
+    DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
+    DomainGroupService domainGroupService;
 
     DomainService domainService;
 
@@ -61,11 +72,12 @@ public class DomainServiceTest {
     void setup() {
         validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
-                domainTechDetailsRepository, userService,
+                domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
-                new ModelMapper(), applicationStatePerDomainService);
+                modelMapper, applicationStatePerDomainService, domainGroupService);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -345,7 +357,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    void  shouldFindUsersWithDomainAdminRole() {
+    void shouldFindUsersWithDomainAdminRole() {
         Domain domain = new Domain(1L, "testdom", "testdom");
 
         User user1 = new User("user1");
@@ -362,15 +374,69 @@ public class DomainServiceTest {
 
     @Test
     void shouldSoftRemoveDomain() {
+        DomainTechDetails domainTechDetails = new DomainTechDetails();
+        domainTechDetails.setId(100L);
+        domainTechDetails.setExternalServiceDomain("external@domain");
+        DomainDcnDetails domainDcnDetails = new DomainDcnDetails();
+        domainDcnDetails.setId(200L);
         Domain domain = new Domain(1L, "testdom", "testdom");
+        domain.setDomainDcnDetails(domainDcnDetails);
+        domain.setDomainTechDetails(domainTechDetails);
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+
         domainService.softRemoveDomain(1L);
+
         verify(domainRepository, times(1)).save(domain);
         Optional<Domain> deletedDomain = domainService.findDomain(1L);
 
         assertTrue(deletedDomain.isPresent());
         assertTrue(deletedDomain.get().isDeleted());
         assertTrue(deletedDomain.get().getName().contains("DELETED"));
+        assertTrue(deletedDomain.get().getCodename().contains("DELETED"));
+        assertNull(deletedDomain.get().getDomainTechDetails());
+    }
+    
+    @Test
+    void shouldRemoveDomainFromAllGroupsOnSoftRemoval() {
+        DomainTechDetails domainTechDetails = new DomainTechDetails();
+        domainTechDetails.setId(100L);
+        domainTechDetails.setExternalServiceDomain("external@domain");
+        DomainDcnDetails domainDcnDetails = new DomainDcnDetails();
+        domainDcnDetails.setId(200L);
+        Domain domain1 = new Domain(1L, "testdom", "testdom");
+        domain1.setDomainDcnDetails(domainDcnDetails);
+        domain1.setDomainTechDetails(domainTechDetails);
+        Domain domain2 = new Domain(2L, "testdom2", "testdom2");
+        Domain domain3 = new Domain(3L, "testdom3", "testdom3");
+
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain1));
+        when(domainRepository.findById(2L)).thenReturn(Optional.of(domain2));
+        when(domainRepository.findById(3L)).thenReturn(Optional.of(domain3));
+
+        DomainGroup group = new DomainGroup(1L, "group1", "g1");
+        DomainGroup group2 = new DomainGroup(2L, "group2", "g2");
+
+        group.addDomain(domain1);
+        group.addDomain(domain2);
+        group.addDomain(domain3);
+
+        group2.addDomain(domain1);
+        group2.addDomain(domain2);
+
+        when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(group));
+        when(domainGroupRepository.findById(2L)).thenReturn(Optional.of(group2));
+
+        when(domainGroupRepository.save(group)).thenReturn(group);
+        when(domainGroupRepository.save(group2)).thenReturn(group2);
+
+        domainService.softRemoveDomain(1L);
+
+        var resultDomainGroup = domainGroupRepository.findById(1L);
+        var resultDomainGroup2 = domainGroupRepository.findById(2L);
+        assertTrue(resultDomainGroup.isPresent());
+        assertEquals(2, resultDomainGroup.get().getDomains().size());
+        assertTrue(resultDomainGroup2.isPresent());
+        assertEquals(1, resultDomainGroup2.get().getDomains().size());
     }
 
 }

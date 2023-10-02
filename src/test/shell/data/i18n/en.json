@@ -1098,6 +1098,7 @@
   "BULK" : {
     "UPLOAD" : "Upload bulk specification",
     "UPLOAD_BUTTON" : "Upload csv content",
+    "BUTTON" : "Upload file",
     "LIST" : {
       "ID" : "Id",
       "CREATOR" : "Creator",
@@ -1109,12 +1110,25 @@
       "TYPE" : "Object type",
       "MOVE_DOMAIN" : "Domain information",
       "MOVE_USER" : "User information",
-      "MOVE_APP" : "Application information"
+      "MOVE_APP" : "Application instance details",
+      "APP_NAME" : "Application name",
+      "INSTANCE_NO" : "Number of instances",
+      "PER_PAGE" : "Bulks per page",
+      "DEPLOYED" : "Deployed application",
+      "REMOVE" : "Remove",
+      "DOMAIN_ID" : "Domain id",
+      "DOMAIN_NAME" : "Domain name",
+      "DOMAIN_CODENAME" : "Domain codename",
+      "USER_ID" : "User id",
+      "EMAIL" : "Email",
+      "USER_NAME" : "User name"
     },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk domain deployments",
+      "UPLOAD" : "Select csv file with domain specification and domain administrator user information for bulk deployment",
+      "HEADER_VIEW" : "Bulk domain deployment",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "NAVIGATION" : "New bulk domain deployment",
       "DEPLOYMENTS" : "Domain deployments"
@@ -1123,7 +1137,9 @@
       "DEPLOYMENTS" : "User deployments"
     },
     "APP": {
-      "INFO" : "Additional information will be added later",
+      "INFO" : "Select application for bulk deployment",
+      "UPLOAD" : "New bulk deployment of",
+      "UPLOAD_INFO" : "Select csv file with application instances specification for bulk deployment",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk application deployments",
       "VIEW_HEADER" : "Bulk application deployment",
@@ -1132,7 +1148,9 @@
       "NAVIGATION" : "New bulk application deployment",
       "INSTANCE_ID" : "Instance Id",
       "INSTANCE_NAME": "Instance name",
-      "DOMAIN" : "Domain"
+      "DOMAIN" : "Domain",
+      "CHECK_STATE" : "Check state",
+      "UPLOAD_TEXT" : "or enter the csv content below"
     },
     "STATE" : {
       "PENDING" :  "Pending",
@@ -1140,6 +1158,11 @@
       "COMPLETED" : "Completed",
       "FAILED" : "Failed",
       "PARTIALLY_FAILED" : "Partially failed"
+    },
+    "REMOVE" : {
+      "HEADER" : "Remove bulk deployment",
+      "APP" : "Do you want to remove all instances created by this bulk ? ",
+      "REMOVE" : "Remove"
     }
   },
   "SHARED" : {

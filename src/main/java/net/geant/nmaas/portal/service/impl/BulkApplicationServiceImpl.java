@@ -32,6 +32,7 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -49,8 +50,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME;
+import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
@@ -85,22 +88,26 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         if (!applicationBaseService.exists(applicationName)) {
             throw new IllegalArgumentException("Application with given name doesn't exist");
         }
+        Long applicationBaseId = findApplicationBaseId(applicationName);
 
         // create base bulk deployment record
         BulkDeployment bulkDeployment = createBulkDeployment(creator);
 
         appInstanceSpecs.forEach(applicationSpec -> {
             AppInstance instance = null;
+            Application application = null;
             try {
                 // loading requested application version
-                Application application = findApplication(applicationName, applicationSpec.getApplicationVersion());
+                application = findApplication(applicationName, applicationSpec.getApplicationVersion());
 
                 // loading target domain
                 Domain domain = domainService.findDomain(applicationSpec.getDomainName())
                         .orElseThrow(() -> new MissingElementException("Domain not found"));
 
-                // making new application subscription in given domain
-                applicationSubscriptionService.subscribe(application.getId(), domain.getId(), true);
+                // making new application subscription in given domain (if required)
+                if (!applicationSubscriptionService.existsSubscription(applicationBaseId, domain.getId())) {
+                    applicationSubscriptionService.subscribe(applicationBaseId, domain.getId(), true);
+                }
 
                 // verifying if desired instance name is still available
                 verifyIfInstanceNameIsAvailable(applicationSpec, domain);
@@ -130,7 +137,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 // updating application instance information with custom configuration
                 AppConfigurationView appConfigurationView = new AppConfigurationView();
                 if (Objects.nonNull(applicationSpec.getParameters())) {
-                    String configJson = new ObjectMapper().writeValueAsString(applicationSpec.getParameters());
+                    String configJson = new ObjectMapper().writeValueAsString(
+                            mapToDeploymentParameters(applicationSpec.getParameters())
+                    );
                     instance.setConfiguration(configJson);
                     appConfigurationView.setJsonInput(configJson);
                     appConfigurationView.setMandatoryParameters(configJson);
@@ -145,7 +154,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .type(BulkType.APPLICATION)
                                 .state(BulkDeploymentState.PROCESSING)
                                 .created(true)
-                                .details(prepareBulkApplicationDeploymentDetailsMap(instance))
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, application))
                                 .build()
                 );
 
@@ -167,12 +176,23 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .type(BulkType.APPLICATION)
                                 .state(BulkDeploymentState.FAILED)
                                 .created(false)
-                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, applicationSpec, e.getMessage()))
+                                .details(prepareBulkApplicationDeploymentDetailsMap(instance, applicationSpec, e.getMessage(), application))
                                 .build());
             }
         });
 
         return modelMapper.map(bulkDeploymentRepository.save(bulkDeployment), BulkDeploymentViewS.class);
+    }
+
+    private static Map<String, String> mapToDeploymentParameters(MultiValuedMap<String, String> parsedParameters) {
+        Map<String, String> deploymentParameters = new HashMap<>();
+        parsedParameters.keySet().forEach(parsedKey ->
+                deploymentParameters.put(
+                        parsedKey.replaceFirst(CsvApplication.PARAM_COLUMN_PREFIX, ""),
+                        parsedParameters.get(parsedKey).iterator().next()
+                )
+        );
+        return deploymentParameters;
     }
 
     private Application findApplication(String appName, String version) {
@@ -269,8 +289,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return bulkDeployment;
     }
 
-    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage) {
-        Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance);
+    private Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage, Application application) {
+        Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance, application);
         if (Objects.isNull(appInstance)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, applicationSpec.getApplicationInstanceName());
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, applicationSpec.getDomainName());
@@ -279,7 +299,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return details;
     }
 
-    private static Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance) {
+    private Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, Application application) {
         Map<String, String> details = new HashMap<>();
         if (Objects.nonNull(appInstance)) {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID, appInstance.getId().toString());
@@ -287,7 +307,15 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, appInstance.getDomain().getName());
             details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME, appInstance.getDomain().getCodename());
         }
+        if (Objects.nonNull(application)) {
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_NAME, application.getName());
+            details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(findApplicationBaseId(application.getName())));
+        }
         return details;
+    }
+
+    private Long findApplicationBaseId(String applicationName) {
+        return applicationBaseService.findByName(applicationName).getId();
     }
 
     private void logBulkStateUpdate(long bulkId, String state) {

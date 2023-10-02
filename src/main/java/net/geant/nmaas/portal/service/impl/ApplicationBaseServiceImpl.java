@@ -96,7 +96,8 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public ApplicationBase getBaseApp(Long id) {
-        return appBaseRepository.findById(id).orElseThrow(() -> new MissingElementException("App cannot be found"));
+        return appBaseRepository.findById(id)
+                .orElseThrow(() -> new MissingElementException(String.format("App base with id: %d cannot be found", id)));
     }
 
     @Override
@@ -106,7 +107,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
-    public ApplicationBase findByName(String name){
+    public ApplicationBase findByName(String name) {
         return appBaseRepository.findByName(name).orElseThrow(() -> new MissingElementException(name + " app base not found"));
     }
 
@@ -115,16 +116,15 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return appBaseRepository.existsByName(name);
     }
 
-    private void setMissingDescriptions(ApplicationBase app){
+    private void setMissingDescriptions(ApplicationBase app) {
         AppDescription appDescription = app.getDescriptions().stream()
                 .filter(description -> description.getLanguage().equals("en"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));
-        app.getDescriptions()
-                .forEach(description -> {
-                    if (StringUtils.isEmpty(description.getBriefDescription())){
+        app.getDescriptions().forEach(description -> {
+                    if (StringUtils.isEmpty(description.getBriefDescription())) {
                         description.setBriefDescription(appDescription.getBriefDescription());
                     }
-                    if (StringUtils.isEmpty(description.getFullDescription())){
+                    if (StringUtils.isEmpty(description.getFullDescription())) {
                         description.setFullDescription(appDescription.getFullDescription());
                     }
                 });

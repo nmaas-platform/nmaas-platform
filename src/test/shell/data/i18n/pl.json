@@ -1097,6 +1097,7 @@
   "BULK" : {
     "UPLOAD" : "Uzupełnij specyfikacje",
     "UPLOAD_BUTTON" : "Wyślij plik csv",
+    "BUTTON" : "Upload file",
     "LIST": {
       "ID": "Id",
       "CREATOR": "Twórca",
@@ -1109,7 +1110,18 @@
       "TYPE" : "Typ obiektu",
       "MOVE_DOMAIN" : "Przejdź do domeny",
       "MOVE_USER" : "Przejdź do użytkownika",
-      "MOVE_APP" : "Przejdź do aplikacji"
+      "MOVE_APP" : "Przejdź do aplikacji",
+      "APP_NAME" : "Nazwa aplikacji",
+      "INSTANCE_NO" : "Liczba instancji",
+      "PER_PAGE" : "Liczba na strone",
+      "DEPLOYED" : "Uruchomiona aplikacji",
+      "REMOVE" : "Usuń",
+      "DOMAIN_ID" : "Id domeny",
+      "DOMAIN_NAME" : "Nazwa domeny",
+      "DOMAIN_CODENAME" : "Codename domeny",
+      "USER_ID" : "Id użytkownika",
+      "EMAIL" : "Email",
+      "USER_NAME" : "Nazwa użytkownika"
     },
     "DOMAIN": {
       "INFO": "Additional information will be added later",
@@ -1117,13 +1129,15 @@
       "HEADER": "Tworzenie wielu domen",
       "NAVIGATION" : "Tworzenie grupowe domen ",
       "DEPLOYMENTS" : "Utworzone domeny",
-      "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen..."
+      "DEPLOYMENT_IN_PROGRESS": "Trwa tworzenie domen...",
+      "UPLOAD" : "Wybierz plik csv z specyfikacją domeny i jej administratora dla grupowego uruchomienia"
     },
     "USER" : {
       "DEPLOYMENTS" : "Utworzeni użytkownicy"
     },
     "APP": {
-      "INFO" : "Additional information will be added later",
+      "INFO" : "Wybierz aplikacje dla grupowego uruchomienia",
+      "UPLOAD" : "Nowe grupowe uruchomienie aplikacji dla",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Uruchamianie wielu aplikacji",
       "VIEW_HEADER" : "Uruchomienie aplikacji",
@@ -1132,7 +1146,9 @@
       "NAVIGATION" : "Nowe uruchamianie wielu aplikacji",
       "INSTANCE_ID" : "Id instancji",
       "INSTANCE_NAME": "Nazwa instancji",
-      "DOMAIN" : "Domena"
+      "DOMAIN" : "Domena",
+      "CHECK_STATE" : "Sprawdź status",
+      "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej"
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",
@@ -1140,6 +1156,11 @@
       "COMPLETED" : "Zakończone",
       "FAILED" : "Nieudane",
       "PARTIALLY_FAILED" : "Częściowo nieudane"
+    },
+    "REMOVE" : {
+      "HEADER" : "Remove bulk deployment",
+      "APP" : "Do you want to remove all instances created by this bulk ? ",
+      "REMOVE" : "Remove"
     }
   },
   "SHARED" : {

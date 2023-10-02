@@ -131,7 +131,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         String domain = repositoryManager.loadDomain(deploymentId);
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         log.info(String.format("Retrieving or creating user %s", member));
-        Integer gitLabUserId = getUserId(member);
+        Integer gitLabUserId = getUserId(prepareGitLabUsername(member));
         log.info(String.format("Retrieving or creating group %s", domain));
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
         log.info(String.format("Creating project %s within the group %s", descriptiveDeploymentId, domain));
@@ -233,7 +233,6 @@ public class GitLabConfigHandler implements GitConfigHandler {
     public void removeMemberFromProject(Integer gitLabProjectId, String username) {
         Integer userId = getUserId(prepareGitLabUsername(username));
         this.removeMemberFromProject(gitLabProjectId, userId);
-
     }
 
     private void addWebhookToProject(Integer gitLabProjectId, String webhookId, String webhookToken) {
@@ -298,7 +297,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
      */
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void removeConfigFiles(Identifier deploymentId){
+    public void removeConfigFiles(Identifier deploymentId) {
         loadGitlabProject(deploymentId).ifPresent(p -> removeProject(p.getProjectId()));
     }
 
@@ -325,7 +324,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         throw new ConfigRepositoryAccessDetailsNotFoundException("Could not find GitLab project for deployment or cloneUrl is empty");
     }
 
-    private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId){
+    private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId) {
         return repositoryManager.loadGitLabProject(deploymentId);
     }
 

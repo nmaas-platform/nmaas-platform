@@ -7,8 +7,10 @@ import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.GroupApi;
 import org.gitlab4j.api.ProjectApi;
 import org.gitlab4j.api.UserApi;
+import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.models.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +19,9 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 
+import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyInt;
@@ -87,6 +91,32 @@ public class GitLabConfigHandlerTest {
         ArgumentCaptor<User> gitLabUserRequest = ArgumentCaptor.forClass(User.class);
         verify(gitLabManager.users()).createUser(gitLabUserRequest.capture(), anyString(), anyBoolean());
         assertThat(gitLabUserRequest.getValue().getUsername()).isEqualTo("test_user.eu");
+    }
+
+    @Test
+    void shouldCreateRepository() throws GitLabApiException {
+        Identifier deploymentId = Identifier.newInstance("deploymentId");
+        Identifier descriptiveDeploymentId = Identifier.newInstance("descriptiveDeploymentId");
+        User gitLabUser = new User().withId(120).withUsername("test_user.eu");
+        UserApi userApi = mock(UserApi.class);
+        when(userApi.getOptionalUser("test_user.eu")).thenReturn(Optional.of(gitLabUser));
+        when(gitLabManager.users()).thenReturn(userApi);
+        GroupApi groupApi = mock(GroupApi.class);
+        when(groupApi.getOptionalGroup(any())).thenReturn(Optional.of(new Group().withId(220)));
+        when(gitLabManager.groups()).thenReturn(groupApi);
+        ProjectApi projectApi = mock(ProjectApi.class);
+        Project project = new Project().withId(350);
+        project.setHttpUrlToRepo("https://repo.url.pl/DOMAIN/PROJECT");
+        when(projectApi.createProject(220, descriptiveDeploymentId.value())).thenReturn(project);
+        when(projectApi.getProject(350)).thenReturn(project);
+        when(gitLabManager.projects()).thenReturn(projectApi);
+        when(repositoryManager.loadDescriptiveDeploymentId(deploymentId)).thenReturn(descriptiveDeploymentId);
+        when(repositoryManager.loadDomain(deploymentId)).thenReturn("DOMAIN");
+
+        handler.createRepository(deploymentId,"test@user.eu");
+
+        verify(userApi).getOptionalUser("test_user.eu");
+        verify(projectApi).addMember(350, 120, PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL);
     }
     
 }

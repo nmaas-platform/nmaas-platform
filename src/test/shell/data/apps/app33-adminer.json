@@ -12,22 +12,22 @@
             {
                 "language": "en",
                 "briefDescription": "Web Database Management",
-                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consist of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
+                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consists of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
             },
             {
                 "language": "de",
                 "briefDescription": "Web Database Management",
-                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consist of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
+                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consists of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
             },
             {
                 "language": "fr",
                 "briefDescription": "Web Database Management",
-                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consist of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
+                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consists of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
             },
             {
                 "language": "pl",
                 "briefDescription": "Web Database Management",
-                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consist of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
+                "fullDescription": "Adminer (formerly phpMinAdmin) is a full-featured database management tool written in PHP. Conversely to phpMyAdmin, it consists of a single file ready to deploy to the target server. Adminer is available for MySQL, MariaDB, PostgreSQL, SQLite, MS SQL, Oracle, Elasticsearch, MongoDB and others via plugin."
             }
         ],
         "tags": [
@@ -103,7 +103,7 @@
                     "tag": "adminer",
                     "deployParameters": {
                         "INGRESS_ENABLED": "ingress.enabled",
-                        "INGRESS_CLASS": "ingress.className,ingress.annotations.\"kubernetes\\.io/ingress\\.class\"=%VALUE%",
+                        "INGRESS_CLASS": "ingress.className",
                         "INGRESS_HOSTS": "ingress.hosts[0].host=%VALUE%",
                         "INGRESS_TLS_HOSTS": "ingress.tls[0].hosts[0]=%VALUE%",
                         "INGRESS_WILDCARD_OR_ISSUER": "ingress.tls[0].secretName=%VALUE%"

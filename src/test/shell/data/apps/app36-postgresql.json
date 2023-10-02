@@ -1,0 +1,177 @@
+{
+    "applicationBase": {
+        "id": null,
+        "name": "PostgreSQL",
+        "license": "PostgreSQL License",
+        "licenseUrl": "https://opensource.org/license/postgresql/",
+        "wwwUrl": "https://www.postgresql.org/",
+        "sourceUrl": "https://github.com/postgres/postgres",
+        "issuesUrl": "https://www.postgresql.org/list/",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#PostgreSQL",
+        "descriptions": [
+            {
+                "language": "en",
+                "briefDescription": "PostgreSQL is a popular, open-source, database management system",
+                "fullDescription": "PostgreSQL (Postgres) is an open source object-relational database known for reliability and data integrity. ACID-compliant, it supports foreign keys, joins, views, triggers and stored procedures."
+            },
+            {
+                "language": "de",
+                "briefDescription": "PostgreSQL is a popular, open-source, database management system",
+                "fullDescription": "PostgreSQL (Postgres) is an open source object-relational database known for reliability and data integrity. ACID-compliant, it supports foreign keys, joins, views, triggers and stored procedures."
+            },
+            {
+                "language": "fr",
+                "briefDescription": "PostgreSQL is a popular, open-source, database management system",
+                "fullDescription": "PostgreSQL (Postgres) is an open source object-relational database known for reliability and data integrity. ACID-compliant, it supports foreign keys, joins, views, triggers and stored procedures."
+            },
+            {
+                "language": "pl",
+                "briefDescription": "PostgreSQL is a popular, open-source, database management system",
+                "fullDescription": "PostgreSQL (Postgres) is an open source object-relational database known for reliability and data integrity. ACID-compliant, it supports foreign keys, joins, views, triggers and stored procedures."
+            }
+        ],
+        "tags": [
+            "DBMS",
+            "Relational Database",
+            "SQL",
+            "Development Tools"
+        ]
+    },
+    "application": {
+        "id": null,
+        "name": "PostgreSQL",
+        "version": "14.3.0",
+        "configWizardTemplate": {
+            "template": {
+                "components": [
+                    {
+                        "label": "Tabs",
+                        "components": [
+                            {
+                                "label": "Base",
+                                "key": "configTab",
+                                "components": [
+                                    {
+                                        "label": "Additional Parameters",
+                                        "hideLabel": true,
+                                        "type": "container",
+                                        "input": true,
+                                        "tab": 0,
+                                        "key": "additionalParameters",
+                                        "components": [
+                                            {
+                                                "label": "Root password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "global#postgresql#auth#postgresPassword",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "tab": 0
+                                            },
+                                            {
+                                                "label": "Database user",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "global#postgresql#auth#username",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "tab": 0
+                                            },
+                                            {
+                                                "label": "Database user password",
+                                                "type": "password",
+                                                "input": true,
+                                                "key": "global#postgresql#auth#password",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "tab": 0
+                                            },
+                                            {
+                                                "label": "Database name",
+                                                "type": "textfield",
+                                                "input": true,
+                                                "key": "global#postgresql#auth#database",
+                                                "inputFormat": "plain",
+                                                "validate": {
+                                                    "required": true
+                                                },
+                                                "tab": 0
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "tabs",
+                        "input": false,
+                        "key": "tabs"
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
+        },
+        "configUpdateWizardTemplate": null,
+        "appDeploymentSpec": {
+            "supportedDeploymentEnvironments": [
+                "KUBERNETES"
+            ],
+            "kubernetesTemplate": {
+                "chart": {
+                    "name": "helm-mirror/postgresql",
+                    "version": "11.5.0"
+                },
+                "helmChartRepository": {
+                    "name": "helm-mirror",
+                    "url": "https://artifactory.software.geant.org/artifactory/nmaas-helm-mirror"
+                }
+            },
+            "deployParameters": {
+                "DOMAIN_CODENAME": "primary.service.annotations.\"metallb\\.universe\\.tf/address-pool\"=%VALUE%"
+            },
+            "globalDeployParameters": {
+                "primary.persistence.size": "8Gi",
+                "primary.service.type": "LoadBalancer"
+            },
+            "storageVolumes": [],
+            "exposesWebUI": true,
+            "allowSshAccess": false,
+            "accessMethods": [
+                {
+                    "type": "INTERNAL",
+                    "name": "ip",
+                    "tag": "postgresql",
+                    "deployParameters": {
+                        "K8S_SERVICE_PORT": "22"
+                    }
+                },
+                {
+                    "type": "LOCAL",
+                    "name": "service",
+                    "tag": "postgresql",
+                    "deployParameters": {
+                        "K8S_SERVICE_PORT": "22"
+                    }
+                }
+            ]
+        },
+        "appConfigurationSpec": {
+            "configFileRepositoryRequired": false,
+            "configUpdateEnabled": false,
+            "termsAcceptanceRequired": false,
+            "templates": []
+        }
+    }
+}
