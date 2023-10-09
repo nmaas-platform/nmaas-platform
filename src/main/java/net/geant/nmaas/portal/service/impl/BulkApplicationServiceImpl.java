@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -12,6 +13,8 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
+import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
@@ -42,7 +45,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -80,6 +85,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final BulkDeploymentEntryRepository bulkDeploymentEntryRepository;
     private final ModelMapper modelMapper;
     private final ApplicationEventPublisher eventPublisher;
+
 
     @Override
     public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator) {
@@ -320,6 +326,49 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
     private void logBulkStateUpdate(long bulkId, String state) {
         log.debug("State of bulk {} set to {}", bulkId, state);
+    }
+
+    public List<BulkAppDetails> getAppsBulkDetails(BulkDeploymentView view) {
+
+        List<BulkAppDetails> result = new ArrayList<>();
+
+        view.getEntries().forEach(deployment -> {
+            Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+            AppInstance instance = this.instanceService.find(instanceId).get();
+            Map<String, String> configuration = new HashMap<>();
+            String[] configurationStrings = instance.getConfiguration().replace("{", "").replace("}", "").split(",");
+            Arrays.stream(configurationStrings).forEach(string -> {
+                String[] keyValue = string.split(":");
+                configuration.put(keyValue[0], keyValue[1]);
+            });
+
+            Map<String, String> accessMethod = new HashMap<>();
+            Set<ServiceAccessMethodView> accessMethodViews = new HashSet<>();
+
+            if(appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED){
+             accessMethodViews = appDeploymentMonitor.userAccessDetails(instance.getInternalId()).getServiceAccessMethods();
+            }
+
+            accessMethodViews.forEach(access -> {
+                accessMethod.put(access.getName(), access.getUrl());
+            });
+
+            BulkAppDetails details = BulkAppDetails.builder().userName(instance.getOwner().getUsername())
+                    .appInstanceName(instance.getName())
+                    .appName(instance.getApplication().getName())
+                    .domainCodeName(instance.getDomain().getCodename())
+                    .appVersion(instance.getApplication().getVersion())
+                    .parameters(configuration)
+                    .accessMethod(accessMethod)
+                    .build();
+            result.add(details);
+        });
+
+        result.forEach(x -> {
+            log.error("Details = {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
+        });
+
+        return result;
     }
 
 }

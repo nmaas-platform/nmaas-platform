@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
+import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
@@ -16,5 +18,7 @@ public interface BulkApplicationService {
     ApplicationEvent handleDeploymentStatusUpdate(AppAutoDeploymentStatusUpdateEvent event);
 
     void handleDeploymentReview(AppAutoDeploymentReviewEvent event);
+
+    List<BulkAppDetails> getAppsBulkDetails(BulkDeploymentView view);
 
 }
