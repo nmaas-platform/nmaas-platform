@@ -127,76 +127,9 @@ public class BulkController {
         headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=csvDetails");
         headers.set(HttpHeaders.CONTENT_TYPE, "text/csv");
 
-        File file = new File("tmpFile" );
-        try {
-            FileWriter outputfile = new FileWriter(file);
+        InputStreamResource inputStreamResource = bulkApplicationService.getInputStreamAppBulkDetails(list);
 
-            // create CSVWriter object filewriter object as parameter
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
-            CSVWriter csvWriter = new CSVWriter(writer);
-
-            //static header
-            List<String> header = new ArrayList<>();
-            header.addAll(List.of("domainCodeName", "appName", "appInstanceName", "userName", "appVersion"));
-
-            //config param header
-            Set<String> params = list.get(0).getParameters().keySet();
-            List<String> param = new ArrayList<>();
-            params.forEach(x -> {
-                x = x.replace("\"", "");
-                x = "param." + x;
-                param.add(x);
-            });
-            header.addAll(param);
-
-
-            //accessMethod header
-            Set<String> connection = list.get(0).getAccessMethod().keySet();
-            List<String> connectionHeader = new ArrayList<>();
-            connection.forEach( con -> {
-                connectionHeader.add("connection." + con);
-                connectionHeader.add("url." + con);
-            });
-            header.addAll(connectionHeader);
-            csvWriter.writeNext(header.toArray(new String[0]));
-
-            //
-            list.forEach( bulkDetails -> {
-                List<String> valuesInOrder = new ArrayList<>();
-                valuesInOrder.add(bulkDetails.getDomainCodeName());
-                valuesInOrder.add(bulkDetails.getAppName());
-                valuesInOrder.add(bulkDetails.getAppInstanceName());
-                valuesInOrder.add(bulkDetails.getUserName());
-                valuesInOrder.add(bulkDetails.getAppVersion());
-                bulkDetails.getParameters().forEach((key, value) -> {
-                    if(value == "") {
-                        valuesInOrder.add("value");
-                    } else {
-                        valuesInOrder.add(value.replace("\"", ""));
-                    }
-                });
-                bulkDetails.getAccessMethod().forEach((key, value) -> {
-                    valuesInOrder.add(key);
-                    valuesInOrder.add(value);
-                });
-                csvWriter.writeNext(valuesInOrder.toArray(new String[0]));
-            });
-
-            csvWriter.close();
-            writer.close();
-            byte[] bytes = byteArrayOutputStream.toByteArray();
-
-            InputStreamResource inputStreamResource = new InputStreamResource(new ByteArrayInputStream(bytes));
-            return ResponseEntity.ok().headers(headers)
-                    .body(inputStreamResource);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-
-
+        return ResponseEntity.ok().headers(headers).body(inputStreamResource);
     }
 
     @GetMapping("/domains")

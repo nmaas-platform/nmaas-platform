@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
@@ -40,9 +41,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -371,4 +380,72 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return result;
     }
 
+
+    public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> list ){
+        File file = new File("tmpFile" );
+        try {
+            FileWriter outputfile = new FileWriter(file);
+
+            // create CSVWriter object filewriter object as parameter
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
+            CSVWriter csvWriter = new CSVWriter(writer);
+
+            //static header
+            List<String> header = new ArrayList<>(List.of("domainCodeName", "appName", "appInstanceName", "userName", "appVersion"));
+
+            //config param header
+            Set<String> params = list.get(0).getParameters().keySet();
+            List<String> param = new ArrayList<>();
+            params.forEach(x -> {
+                x = x.replace("\"", "");
+                x = "param." + x;
+                param.add(x);
+            });
+            header.addAll(param);
+
+
+            //accessMethod header
+            Set<String> connection = list.get(0).getAccessMethod().keySet();
+            List<String> connectionHeader = new ArrayList<>();
+            connection.forEach( con -> {
+                connectionHeader.add("connection." + con);
+                connectionHeader.add("url." + con);
+            });
+            header.addAll(connectionHeader);
+            csvWriter.writeNext(header.toArray(new String[0]));
+
+            //
+            list.forEach( bulkDetails -> {
+                List<String> valuesInOrder = new ArrayList<>();
+                valuesInOrder.add(bulkDetails.getDomainCodeName());
+                valuesInOrder.add(bulkDetails.getAppName());
+                valuesInOrder.add(bulkDetails.getAppInstanceName());
+                valuesInOrder.add(bulkDetails.getUserName());
+                valuesInOrder.add(bulkDetails.getAppVersion());
+                bulkDetails.getParameters().forEach((key, value) -> {
+                    if(value == "") {
+                        valuesInOrder.add("value");
+                    } else {
+                        valuesInOrder.add(value.replace("\"", ""));
+                    }
+                });
+                bulkDetails.getAccessMethod().forEach((key, value) -> {
+                    valuesInOrder.add(key);
+                    valuesInOrder.add(value);
+                });
+                csvWriter.writeNext(valuesInOrder.toArray(new String[0]));
+            });
+
+            csvWriter.close();
+            writer.close();
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+
+            return new InputStreamResource(new ByteArrayInputStream(bytes));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
 }
