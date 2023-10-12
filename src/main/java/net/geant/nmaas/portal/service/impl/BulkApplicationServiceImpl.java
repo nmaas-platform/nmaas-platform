@@ -374,7 +374,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         });
 
         result.forEach(x -> {
-            log.error("Details = {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
+            log.debug("Details = {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
         });
 
         return result;

@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.api.bulk;
 
-import com.google.common.io.Files;
-import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
@@ -26,21 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -156,7 +144,7 @@ public class BulkController {
     }
 
     private void mapDetails(BulkDeployment deployment, BulkDeploymentViewS view) {
-        if(deployment.getType().equals(BulkType.APPLICATION)) {
+        if (deployment.getType().equals(BulkType.APPLICATION)) {
             Map<String, String> details = new HashMap<>();
             if (!deployment.getEntries().isEmpty()) {
                 details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
