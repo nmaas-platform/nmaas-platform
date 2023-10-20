@@ -1153,7 +1153,8 @@
       "INSTANCE_NAME": "Nazwa instancji",
       "DOMAIN" : "Domena",
       "CHECK_STATE" : "Sprawdź status",
-      "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej"
+      "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej",
+      "DOWNLOAD_CSV" : "Pobierz CSV"
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",

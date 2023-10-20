@@ -1151,7 +1151,8 @@
       "INSTANCE_NAME": "Instance name",
       "DOMAIN" : "Domain",
       "CHECK_STATE" : "Check state",
-      "UPLOAD_TEXT" : "or enter CSV content below"
+      "UPLOAD_TEXT" : "or enter CSV content below",
+      "DOWNLOAD_CSV" : "Download CSV"
     },
     "STATE" : {
       "PENDING" :  "Pending",
