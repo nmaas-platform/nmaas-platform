@@ -106,17 +106,17 @@ public class BulkController {
     @GetMapping(value = "/app/csv/{id}", produces = "text/csv")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<InputStreamResource> getDeploymentDetailsInCSV(@PathVariable Long id) {
+        log.info("Processing bulk application deployment details request");
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
         bulkView.setCreator(getUserView(bulk.getCreatorId()));
         mapDetails(bulk, bulkView);
-        List<BulkAppDetails> list = this.bulkApplicationService.getAppsBulkDetails(bulkView);
+        List<BulkAppDetails> details = bulkApplicationService.getAppsBulkDetails(bulkView);
+        InputStreamResource inputStreamResource = bulkApplicationService.getInputStreamAppBulkDetails(details);
+
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=csvDetails");
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BulkDetailsCsv");
         headers.set(HttpHeaders.CONTENT_TYPE, "text/csv");
-
-        InputStreamResource inputStreamResource = bulkApplicationService.getInputStreamAppBulkDetails(list);
-
         return ResponseEntity.ok().headers(headers).body(inputStreamResource);
     }
 

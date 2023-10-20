@@ -42,14 +42,11 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
@@ -345,17 +342,22 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
             AppInstance instance = this.instanceService.find(instanceId).get();
             Map<String, String> configuration = new HashMap<>();
-            String[] configurationStrings = instance.getConfiguration().replace("{", "").replace("}", "").split(",");
-            Arrays.stream(configurationStrings).forEach(string -> {
-                String[] keyValue = string.split(":");
-                configuration.put(keyValue[0], keyValue[1]);
-            });
+
+            if (!Objects.isNull(instance.getConfiguration())) {
+                Arrays.stream(instance.getConfiguration()
+                        .replace("{", "").replace("}", "")
+                        .split(","))
+                        .forEach(string -> {
+                            String[] keyValue = string.split(":");
+                            configuration.put(keyValue[0], keyValue[1]);
+                        });
+            }
 
             Map<String, String> accessMethod = new HashMap<>();
             Set<ServiceAccessMethodView> accessMethodViews = new HashSet<>();
 
-            if(appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED){
-             accessMethodViews = appDeploymentMonitor.userAccessDetails(instance.getInternalId()).getServiceAccessMethods();
+            if (appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED) {
+                accessMethodViews = appDeploymentMonitor.userAccessDetails(instance.getInternalId()).getServiceAccessMethods();
             }
 
             accessMethodViews.forEach(access -> {
@@ -374,28 +376,24 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         });
 
         result.forEach(x -> {
-            log.debug("Details = {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
+            log.debug("Deployment entry details = {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
         });
 
         return result;
     }
 
-
-    public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> list ){
-        File file = new File("tmpFile" );
+    public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> details) {
         try {
-            FileWriter outputfile = new FileWriter(file);
-
             // create CSVWriter object filewriter object as parameter
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
             CSVWriter csvWriter = new CSVWriter(writer);
 
-            //static header
+            // static header
             List<String> header = new ArrayList<>(List.of("domainCodeName", "appName", "appInstanceName", "userName", "appVersion"));
 
             //config param header
-            Set<String> params = list.get(0).getParameters().keySet();
+            Set<String> params = details.get(0).getParameters().keySet();
             List<String> param = new ArrayList<>();
             params.forEach(x -> {
                 x = x.replace("\"", "");
@@ -404,9 +402,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             });
             header.addAll(param);
 
-
-            //accessMethod header
-            Set<String> connection = list.get(0).getAccessMethod().keySet();
+            // accessMethod header
+            Set<String> connection = details.get(0).getAccessMethod().keySet();
             List<String> connectionHeader = new ArrayList<>();
             connection.forEach( con -> {
                 connectionHeader.add("connection." + con);
@@ -416,7 +413,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             csvWriter.writeNext(header.toArray(new String[0]));
 
             //
-            list.forEach( bulkDetails -> {
+            details.forEach( bulkDetails -> {
                 List<String> valuesInOrder = new ArrayList<>();
                 valuesInOrder.add(bulkDetails.getDomainCodeName());
                 valuesInOrder.add(bulkDetails.getAppName());
@@ -424,7 +421,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 valuesInOrder.add(bulkDetails.getUserName());
                 valuesInOrder.add(bulkDetails.getAppVersion());
                 bulkDetails.getParameters().forEach((key, value) -> {
-                    if(value == "") {
+                    if (Objects.equals(value, "")) {
                         valuesInOrder.add("value");
                     } else {
                         valuesInOrder.add(value.replace("\"", ""));
@@ -448,4 +445,5 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             throw new RuntimeException(e);
         }
     }
+
 }
