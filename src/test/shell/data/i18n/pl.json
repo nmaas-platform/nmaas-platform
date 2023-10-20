@@ -254,6 +254,11 @@
     "HIDE_UNDEPLOYED": "Ukryj zatrzymane instancje",
     "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
+    "MANUAL_UPDATE" : {
+      "HEADER" : "Ręczna zmiana wersji",
+      "BODY" : "Aktualizacja wersji aplikacji dla instacji zgodnie z procesem aktualizacji przeprowadzonym ręcznie. Wybierz odpowiednią wersję z poniższej listy.",
+      "YES_BUTTON" : "Zaktualizuj wersję"
+    },
     "SORT_MODE": {
       "NONE": "Brak",
       "NAME": "Nazwa",

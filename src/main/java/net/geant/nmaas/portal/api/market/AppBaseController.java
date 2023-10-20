@@ -5,12 +5,15 @@ import lombok.NoArgsConstructor;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +38,13 @@ public class AppBaseController {
 		return applicationService.findApplication(appId).orElseThrow(() -> new MissingElementException("Application id=" + appId + " not found."));
 	}
 
+	protected Application getApp(String appName, String version) {
+		if (appName == null) {
+			throw new MissingElementException("Missing application id.");
+		}
+		return applicationService.findApplication(appName, version).orElseThrow(() -> new MissingElementException("Application name=" + appName + " version=" + version +" not found."));
+	}
+
 	protected ApplicationBase getBaseApp(Long appBaseId) {
 		if (appBaseId == null) {
 			throw new MissingElementException("Missing application id.");
@@ -54,6 +64,13 @@ public class AppBaseController {
 			throw new MissingElementException("Missing username.");
 		}
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
+	}
+
+	protected Set<ApplicationVersion> getVersions(Long appBaseId) {
+		if (appBaseId == null) {
+			throw new MissingElementException("Missing application id.");
+		}
+		return appBaseService.getBaseApp(appBaseId).getVersions();
 	}
 
 }
