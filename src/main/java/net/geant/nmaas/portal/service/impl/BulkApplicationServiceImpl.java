@@ -47,7 +47,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -379,17 +378,19 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         });
 
         result.forEach(x -> {
-            log.debug("Deployment entry details = {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
+            log.debug("Deployment entry details: {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
         });
 
         return result;
     }
 
     public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> bulkDeploymentDetails) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try (CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(byteArrayOutputStream))) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(byteArrayOutputStream));
             // add header row
             List<String> header = createHeaderRow(bulkDeploymentDetails);
+            log.debug("Header row: {}", header);
             csvWriter.writeNext(header.toArray(new String[0]));
 
             // add data rows
@@ -404,12 +405,14 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 valuesInOrder.addAll(bulkDetails.getAccessMethod().values());
                 // config parameters
                 valuesInOrder.addAll(bulkDetails.getParameters().values());
+                log.debug("Data row: {}", valuesInOrder);
                 csvWriter.writeNext(valuesInOrder.toArray(new String[0]));
             });
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            log.debug("Csv content size: {} bytes", byteArray.length);
+            return new InputStreamResource(new ByteArrayInputStream(byteArray));
 
-            return new InputStreamResource(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Exception while preparing bulk deployment details CSV content", e);
             throw new RuntimeException(e);
         }
