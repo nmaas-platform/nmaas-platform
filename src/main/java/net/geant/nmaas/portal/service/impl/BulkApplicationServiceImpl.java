@@ -387,7 +387,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> bulkDeploymentDetails) {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(byteArrayOutputStream));
+            OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
+            CSVWriter csvWriter = new CSVWriter(writer);
             // add header row
             List<String> header = createHeaderRow(bulkDeploymentDetails);
             log.debug("Header row: {}", header);
@@ -408,7 +409,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 log.debug("Data row: {}", valuesInOrder);
                 csvWriter.writeNext(valuesInOrder.toArray(new String[0]));
             });
+
+            csvWriter.close();
+            writer.close();
             byte[] byteArray = byteArrayOutputStream.toByteArray();
+
             log.debug("Csv content size: {} bytes", byteArray.length);
             return new InputStreamResource(new ByteArrayInputStream(byteArray));
 
