@@ -77,6 +77,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
     private final static int WAIT_INTERVAL_IN_SECONDS = 15;
     private final static String CSV_HEADER_PARAM_PREFIX = "param.";
+    private final static String EMPTY_VALUE = "<EMPTY>";
 
     private final ApplicationBaseService applicationBaseService;
     private final ApplicationService applicationService;
@@ -344,11 +345,15 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             Map<String, String> configurationParameters = new HashMap<>();
             if (!Objects.isNull(instance.getConfiguration())) {
                 Arrays.stream(instance.getConfiguration()
-                        .replace("{", "").replace("}", "")
-                        .split(","))
+                                .replace("{", "")
+                                .replace("}", "")
+                                .split(","))
                         .forEach(string -> {
                             String[] keyValue = string.split(":");
-                            configurationParameters.put(keyValue[0], keyValue[1]);
+                            configurationParameters.put(
+                                    keyValue[0],
+                                    Objects.isNull(keyValue[1]) || Objects.equals(keyValue[1], "") ? EMPTY_VALUE : keyValue[1].replace("\"", "")
+                            );
                         });
             }
 
@@ -357,7 +362,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 appDeploymentMonitor.userAccessDetails(instance.getInternalId()).getServiceAccessMethods()
                         .forEach(accessMethod ->
                                 accessMethodParameters.put(
-                                        accessMethod.getName() + "." + accessMethod.getProtocol(), accessMethod.getUrl())
+                                        accessMethod.getName() + "." + accessMethod.getProtocol(),
+                                        Objects.isNull(accessMethod.getUrl()) || Objects.equals(accessMethod.getUrl(), "") ? EMPTY_VALUE : accessMethod.getUrl())
                         );
             }
 
@@ -397,9 +403,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 // access methods
                 valuesInOrder.addAll(bulkDetails.getAccessMethod().values());
                 // config parameters
-                bulkDetails.getParameters().values().forEach(v ->
-                        valuesInOrder.add(Objects.equals(v, "") ? "<EMPTY>" : v.replace("\"", ""))
-                );
+                valuesInOrder.addAll(bulkDetails.getParameters().values());
                 csvWriter.writeNext(valuesInOrder.toArray(new String[0]));
             });
 
