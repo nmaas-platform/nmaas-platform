@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Declares a method to retrieve the current state of application being deployed using {@link AppLifecycleManager} API
@@ -66,5 +67,7 @@ public interface AppDeploymentMonitor {
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
     List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId);
+
+    Map<String, String> retrieveDeployParameters(Identifier deploymentId);
 
 }

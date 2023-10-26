@@ -15,6 +15,8 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
+import java.util.Map;
+
 /**
  * Defines a set of methods to manage service deployment lifecycle.
  */
@@ -90,5 +92,7 @@ public interface NmServiceDeploymentProvider {
      * @throws CouldNotUpgradeKubernetesServiceException if service couldn't be upgraded for some reason
      */
     void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate);
+
+    Map<String, String> retrieveDeployParameters(Identifier deploymentId);
 
 }

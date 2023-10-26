@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_INITIATED;
@@ -190,5 +192,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
+
+    @Override
+    public Map<String, String> retrieveDeployParameters(Identifier deploymentId) {
+        return this.orchestrator.retrieveDeployParameters(deploymentId);
+    };
 
 }

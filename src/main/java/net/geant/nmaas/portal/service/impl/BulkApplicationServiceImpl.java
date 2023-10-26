@@ -342,19 +342,26 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             AppInstance instance = instanceService.find(instanceId).orElseThrow();
 
             Map<String, String> configurationParameters = new HashMap<>();
-            if (!Objects.isNull(instance.getConfiguration())) {
-                Arrays.stream(instance.getConfiguration()
-                                .replace("{", "")
-                                .replace("}", "")
-                                .split(","))
-                        .forEach(string -> {
-                            String[] keyValue = string.split(":");
-                            configurationParameters.put(
-                                    keyValue[0],
-                                    Objects.isNull(keyValue[1]) || Objects.equals(keyValue[1], "") ? EMPTY_VALUE : keyValue[1].replace("\"", "")
-                            );
-                        });
-            }
+//            if (!Objects.isNull(instance.getConfiguration())) {
+//                Arrays.stream(instance.getConfiguration()
+//                                .replace("{", "")
+//                                .replace("}", "")
+//                                .split(","))
+//                        .forEach(string -> {
+//                            String[] keyValue = string.split(":");
+//                            configurationParameters.put(
+//                                    keyValue[0],
+//                                    Objects.isNull(keyValue[1]) || Objects.equals(keyValue[1], "") ? EMPTY_VALUE : keyValue[1].replace("\"", "")
+//                            );
+//                        });
+//            }
+
+            //deploy ?
+            Map<String, String> params = appDeploymentMonitor.retrieveDeployParameters(instance.getInternalId());
+            params.forEach( (key, value) -> {
+                configurationParameters.put(key,  Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
+                log.error("Params = {} - {}", key, value);
+            });
 
             Map<String, String> accessMethodParameters = new HashMap<>();
             if (appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED) {
