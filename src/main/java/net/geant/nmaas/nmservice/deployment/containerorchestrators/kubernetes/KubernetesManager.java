@@ -452,7 +452,6 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public Map<String, String> retrieveDeployParameters(Identifier deploymentId) {
         try {
-            retrieveOrUpdateInternalServiceIpAddress(repositoryManager.loadService(deploymentId));
             Map<String, String> params = repositoryManager.loadService(deploymentId).getAdditionalParameters();
             return params;
         } catch (Exception e) {
