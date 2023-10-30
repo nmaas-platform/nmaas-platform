@@ -254,6 +254,11 @@
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
     "UNDEPLOYED_VISIBLE": "Show undeployed instances",
     "SORT": "Sort",
+    "MANUAL_UPDATE" : {
+      "HEADER" : "Manual version update",
+      "BODY" : "Update the current application version for this application instance based on an upgrade process that was performed manually. Select the new correct version from the list below.",
+      "YES_BUTTON" : "Update version"
+    },
     "SORT_MODE": {
       "NONE": "None",
       "NAME": "By name",
@@ -1154,7 +1159,8 @@
       "INSTANCE_NAME": "Instance name",
       "DOMAIN" : "Domain",
       "CHECK_STATE" : "Check state",
-      "UPLOAD_TEXT" : "or enter CSV content below"
+      "UPLOAD_TEXT" : "or enter CSV content below",
+      "DOWNLOAD_CSV" : "Download CSV"
     },
     "STATE" : {
       "PENDING" :  "Pending",

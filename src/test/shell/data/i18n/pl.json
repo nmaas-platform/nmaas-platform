@@ -254,6 +254,11 @@
     "HIDE_UNDEPLOYED": "Ukryj zatrzymane instancje",
     "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
+    "MANUAL_UPDATE" : {
+      "HEADER" : "Ręczna zmiana wersji",
+      "BODY" : "Aktualizacja wersji aplikacji dla instacji zgodnie z procesem aktualizacji przeprowadzonym ręcznie. Wybierz odpowiednią wersję z poniższej listy.",
+      "YES_BUTTON" : "Zaktualizuj wersję"
+    },
     "SORT_MODE": {
       "NONE": "Brak",
       "NAME": "Nazwa",
@@ -1156,7 +1161,8 @@
       "INSTANCE_NAME": "Nazwa instancji",
       "DOMAIN" : "Domena",
       "CHECK_STATE" : "Sprawdź status",
-      "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej"
+      "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej",
+      "DOWNLOAD_CSV" : "Pobierz CSV"
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",

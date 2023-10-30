@@ -12,6 +12,8 @@ import net.geant.nmaas.portal.service.BulkCsvProcessor;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,6 +103,23 @@ public class BulkController {
         return ResponseEntity.ok(bulkView);
     }
 
+    @GetMapping(value = "/app/csv/{id}", produces = "text/csv")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    public ResponseEntity<InputStreamResource> getDeploymentDetailsInCSV(@PathVariable Long id) {
+        log.info("Processing bulk application deployment details request");
+        BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
+        BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
+        bulkView.setCreator(getUserView(bulk.getCreatorId()));
+        mapDetails(bulk, bulkView);
+        List<BulkAppDetails> details = bulkApplicationService.getAppsBulkDetails(bulkView);
+        InputStreamResource inputStreamResource = bulkApplicationService.getInputStreamAppBulkDetails(details);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BulkDetailsCsv");
+        headers.set(HttpHeaders.CONTENT_TYPE, "text/csv");
+        return ResponseEntity.ok().headers(headers).body(inputStreamResource);
+    }
+
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords() {
@@ -125,7 +144,7 @@ public class BulkController {
     }
 
     private void mapDetails(BulkDeployment deployment, BulkDeploymentViewS view) {
-        if(deployment.getType().equals(BulkType.APPLICATION)) {
+        if (deployment.getType().equals(BulkType.APPLICATION)) {
             Map<String, String> details = new HashMap<>();
             if (!deployment.getEntries().isEmpty()) {
                 details.put(BulkDeploymentViewS.BULK_DETAIL_KEY_APP_INSTANCE_NO, String.valueOf(deployment.getEntries().size()));
