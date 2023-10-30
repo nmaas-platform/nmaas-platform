@@ -710,7 +710,8 @@
     "ADD_JSON_TEXTAREA" : "or enter JSON content below",
     "SEND_JSON" : "Upload JSON content",
     "ADD_JSON_VERSION" : "Add application version using JSON file",
-    "JSON_ERROR" : "JSON content is not valid - please verify the syntax"
+    "JSON_ERROR" : "JSON content is not valid - please verify the syntax",
+    "EXPORT_JSON" : "Export to JSON"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "Diese Seite ist nur eine Vorschau der eingereichten Anwendung",
