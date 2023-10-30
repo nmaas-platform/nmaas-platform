@@ -242,6 +242,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
+	public List<AppInstance> findAllByApplication(Application application) {
+		return appInstanceRepo.findAllByApplication(application);
+	}
+
+	@Override
 	@Transactional
 	@Loggable(LogLevel.DEBUG)
 	public boolean checkUpgradePossible(Long appInstanceId) {

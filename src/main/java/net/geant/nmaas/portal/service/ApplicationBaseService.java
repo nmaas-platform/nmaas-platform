@@ -21,4 +21,5 @@ public interface ApplicationBaseService {
     boolean exists(String name);
     boolean isAppActive(ApplicationBase application);
 
+    void deleteAppBase(ApplicationBase base);
 }
