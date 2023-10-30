@@ -85,7 +85,10 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public List<ApplicationBase> findAll() {
-        return appBaseRepository.findAll();
+        return appBaseRepository.findAll()
+                .stream()
+                .filter(app -> !app.getName().contains("_DELETED_"))
+                .collect(Collectors.toList());
     }
 
     @Override
