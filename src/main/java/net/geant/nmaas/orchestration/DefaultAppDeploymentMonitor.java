@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,17 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
             return retrieveAccessDetails(deploymentId);
         else
             throw new InvalidAppStateException("Application deployment process didn't finish yet.");
+    }
+
+    @Override
+    @Loggable(LogLevel.TRACE)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Map<String, String> appDeploymentParameters(Identifier deploymentId) {
+        try {
+            return serviceDeployment.serviceDeployParameters(deploymentId);
+        } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {
+            throw new InvalidDeploymentIdException(e.getMessage());
+        }
     }
 
     @Override

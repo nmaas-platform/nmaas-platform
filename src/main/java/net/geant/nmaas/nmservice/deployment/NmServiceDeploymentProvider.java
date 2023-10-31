@@ -15,6 +15,8 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
+import java.util.Map;
+
 /**
  * Defines a set of methods to manage service deployment lifecycle.
  */
@@ -63,6 +65,14 @@ public interface NmServiceDeploymentProvider {
      * @throws CouldNotRetrieveNmServiceAccessDetailsException if access details are not available for any reason
      */
     AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
+
+    /**
+     * Retrieves various parameters of the deployed service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return map of deployment parameters with their key and value
+     */
+    Map<String, String> serviceDeployParameters(Identifier deploymentId);
 
     /**
      * Coordinates service removal (delegates tasks to attached {@link ContainerOrchestrator}).

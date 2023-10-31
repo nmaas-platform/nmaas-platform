@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_INITIATED;
@@ -137,6 +139,12 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (ContainerOrchestratorInternalErrorException e) {
             throw new CouldNotRetrieveNmServiceAccessDetailsException("Exception thrown during access details retrieval -> " + e.getMessage());
         }
+    }
+
+    @Override
+    @Loggable(LogLevel.TRACE)
+    public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
+        return orchestrator.serviceDeployParameters(deploymentId);
     }
 
     @Override

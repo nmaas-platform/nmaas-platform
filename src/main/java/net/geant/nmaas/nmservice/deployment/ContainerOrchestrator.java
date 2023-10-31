@@ -14,6 +14,8 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
+import java.util.Map;
+
 /**
  * Defines a set of methods each container orchestrator has to implement in order to support NM service deployment.
  */
@@ -84,6 +86,14 @@ public interface ContainerOrchestrator {
      * @throws ContainerOrchestratorInternalErrorException if access details are not available for any reason
      */
     AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
+
+    /**
+     * Retrieves various parameters of the deployed service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return Map of deployment parameters with their key and value
+     */
+    Map<String, String> serviceDeployParameters(Identifier deploymentId);
 
     /**
      * Triggers all the required actions to remove given NM service from the system.

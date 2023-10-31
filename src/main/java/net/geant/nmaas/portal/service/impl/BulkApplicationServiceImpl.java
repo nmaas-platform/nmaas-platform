@@ -50,7 +50,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -342,19 +341,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             AppInstance instance = instanceService.find(instanceId).orElseThrow();
 
             Map<String, String> configurationParameters = new HashMap<>();
-            if (!Objects.isNull(instance.getConfiguration())) {
-                Arrays.stream(instance.getConfiguration()
-                                .replace("{", "")
-                                .replace("}", "")
-                                .split(","))
-                        .forEach(string -> {
-                            String[] keyValue = string.split(":");
-                            configurationParameters.put(
-                                    keyValue[0],
-                                    Objects.isNull(keyValue[1]) || Objects.equals(keyValue[1], "") ? EMPTY_VALUE : keyValue[1].replace("\"", "")
-                            );
-                        });
-            }
+
+            //deploy
+            Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
+            params.forEach( (key, value) -> {
+                configurationParameters.put(key,  Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
+                log.debug("Params = {} - {}", key, value);
+            });
 
             Map<String, String> accessMethodParameters = new HashMap<>();
             if (appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED) {
