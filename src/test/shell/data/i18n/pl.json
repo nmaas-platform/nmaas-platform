@@ -710,7 +710,8 @@
     "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
     "ADD_JSON_TEXTAREA" : "lub skopiuj jego zawartość poniżej",
     "SEND_JSON" : "Wyślij JSON",
-    "JSON_ERROR" : "JSON jest niepoprawny - sprawdź poprawność składni"
+    "JSON_ERROR" : "JSON jest niepoprawny - sprawdź poprawność składni",
+    "EXPORT_JSON" : "Eksport do JSONa"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
