@@ -87,7 +87,13 @@ public interface ContainerOrchestrator {
      */
     AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
 
-    Map<String, String> retrieveDeployParameters(Identifier deploymentId);
+    /**
+     * Retrieves various parameters of the deployed service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return Map of deployment parameters with their key and value
+     */
+    Map<String, String> serviceDeployParameters(Identifier deploymentId);
 
     /**
      * Triggers all the required actions to remove given NM service from the system.

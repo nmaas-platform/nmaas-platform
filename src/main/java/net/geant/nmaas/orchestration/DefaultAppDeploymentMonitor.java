@@ -66,6 +66,17 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     }
 
     @Override
+    @Loggable(LogLevel.TRACE)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Map<String, String> appDeploymentParameters(Identifier deploymentId) {
+        try {
+            return serviceDeployment.serviceDeployParameters(deploymentId);
+        } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {
+            throw new InvalidDeploymentIdException(e.getMessage());
+        }
+    }
+
+    @Override
     @Loggable(LogLevel.INFO)
     public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
         try {
@@ -93,14 +104,5 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
             throw new InvalidDeploymentIdException(e.getMessage());
         }
     }
-
-   public Map<String, String> retrieveDeployParameters(Identifier deploymentId) {
-        try {
-            return serviceDeployment.retrieveDeployParameters(deploymentId);
-        } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {
-            throw new InvalidDeploymentIdException(e.getMessage());
-        }
-    };
-
 
 }

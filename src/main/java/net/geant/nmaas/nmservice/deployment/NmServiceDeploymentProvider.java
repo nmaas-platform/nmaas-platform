@@ -67,6 +67,14 @@ public interface NmServiceDeploymentProvider {
     AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
 
     /**
+     * Retrieves various parameters of the deployed service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return map of deployment parameters with their key and value
+     */
+    Map<String, String> serviceDeployParameters(Identifier deploymentId);
+
+    /**
      * Coordinates service removal (delegates tasks to attached {@link ContainerOrchestrator}).
      *
      * @param deploymentId unique identifier of service deployment
@@ -92,7 +100,5 @@ public interface NmServiceDeploymentProvider {
      * @throws CouldNotUpgradeKubernetesServiceException if service couldn't be upgraded for some reason
      */
     void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate);
-
-    Map<String, String> retrieveDeployParameters(Identifier deploymentId);
 
 }

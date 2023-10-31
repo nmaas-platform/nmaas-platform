@@ -51,6 +51,15 @@ public interface AppDeploymentMonitor {
     AppUiAccessDetails userAccessDetails(Identifier deploymentId);
 
     /**
+     * Retrieves map of application deployment parameters that can be further exposed to the user.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @return map of deployment parameters with their key and value
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    Map<String, String> appDeploymentParameters(Identifier deploymentId);
+
+    /**
      * Retrieves the URL that should be used in order to clone the Git repository that contains configuration files
      * of the deployed application.
      *
@@ -63,11 +72,9 @@ public interface AppDeploymentMonitor {
      * Retrieves information about application deployment state transitions.
      *
      * @param deploymentId unique identifier of the deployed user application
-     * @return all of state changes of the application
+     * @return all state changes of the application
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
     List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId);
-
-    Map<String, String> retrieveDeployParameters(Identifier deploymentId);
 
 }

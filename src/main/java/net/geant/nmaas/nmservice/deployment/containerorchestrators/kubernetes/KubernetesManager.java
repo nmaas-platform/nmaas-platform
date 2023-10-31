@@ -37,7 +37,6 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -450,9 +449,10 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    public Map<String, String> retrieveDeployParameters(Identifier deploymentId) {
+    public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
         try {
             Map<String, String> params = repositoryManager.loadService(deploymentId).getAdditionalParameters();
+            // TODO filter only relevant parameters
             return params;
         } catch (Exception e) {
             throw new ProcessingException("Cant find additional parameters for " + deploymentId.value());

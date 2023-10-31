@@ -50,7 +50,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -344,7 +343,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             Map<String, String> configurationParameters = new HashMap<>();
 
             //deploy
-            Map<String, String> params = appDeploymentMonitor.retrieveDeployParameters(instance.getInternalId());
+            Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
             params.forEach( (key, value) -> {
                 configurationParameters.put(key,  Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
                 log.debug("Params = {} - {}", key, value);

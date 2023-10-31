@@ -142,6 +142,12 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
+    @Loggable(LogLevel.TRACE)
+    public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
+        return orchestrator.serviceDeployParameters(deploymentId);
+    }
+
+    @Override
     @Loggable(LogLevel.INFO)
     public void removeService(Identifier deploymentId) {
         try {
@@ -192,10 +198,5 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
-
-    @Override
-    public Map<String, String> retrieveDeployParameters(Identifier deploymentId) {
-        return this.orchestrator.retrieveDeployParameters(deploymentId);
-    };
 
 }
