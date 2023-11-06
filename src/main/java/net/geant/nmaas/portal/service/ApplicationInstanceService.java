@@ -44,6 +44,8 @@ public interface ApplicationInstanceService {
 	Page<AppInstance> findAllByDomain(Long domainId, Pageable pageable);
 	Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
 
+	List<AppInstance> findAllByApplication(Application application);
+
 	boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView);
 
 	boolean checkUpgradePossible(Long appInstanceId);

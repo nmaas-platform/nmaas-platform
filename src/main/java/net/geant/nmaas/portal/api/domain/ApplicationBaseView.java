@@ -1,6 +1,10 @@
 package net.geant.nmaas.portal.api.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
@@ -22,6 +26,8 @@ public class ApplicationBaseView {
     protected Long id;
     @NotEmpty
     protected String name;
+
+//    protected boolean deleted;
 
     protected String license;
     protected String licenseUrl;

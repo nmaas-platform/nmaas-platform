@@ -696,6 +696,14 @@
     "ADD_BUTTON": "Hinzufügen",
     "VIEW_BUTTON": "Anzeigen",
     "EDIT_BUTTON": "Bearbeiten",
+    "DELETE_BUTTON": "Remove",
+    "CONFIRM_REMOVAL" : {
+      "HEADER": "Confirm app removal",
+      "DESCRIPTION": "Do you want to completely remove this application?\nNote that all versions of this application will be removed as well.",
+      "CANCEL" : "Cancel",
+      "CONFIRM": "Confirm",
+      "DISABLED": "This application still has some running instances, therefore it cannot be removed."
+    },
     "CHANGE_STATE_BUTTON": "Änderungsstatus",
     "CHANGE_OWNER_BUTTON": "Change owner",
     "APPROVED_TAB": "Bestätigt",
