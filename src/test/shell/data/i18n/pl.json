@@ -699,10 +699,10 @@
     "DELETE_BUTTON": "Usuń",
     "CONFIRM_REMOVAL" : {
       "HEADER": "Potwierdź usunięcie aplikacji",
-      "DESCRIPTION": "Czy na pewno chcesz całkowicie usunąć tą aplikację?\nWszystkie wersje tej aplikacji także zostaną usunięte.",
+      "DESCRIPTION": "Czy na pewno chcesz całkowicie usunąć tą aplikację z katalogu razem ze wszystkimi wersjami?",
       "CANCEL" : "Anuluj",
       "CONFIRM": "Potwierdź",
-      "DISABLED": "Nie możesz usunąć tej aplikacji dopóki ma ona działające instancje."
+      "DISABLED": "Nie możesz usunąć tej ponieważ ma aktualnie uruchomione instancje. Odinstaluj te instancje i ponów próbę usunięcia aplikacji."
     },
     "CHANGE_STATE_BUTTON": "Zmień stan",
     "CHANGE_OWNER_BUTTON": "Zmień właściciela",

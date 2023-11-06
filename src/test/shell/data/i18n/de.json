@@ -698,11 +698,11 @@
     "EDIT_BUTTON": "Bearbeiten",
     "DELETE_BUTTON": "Remove",
     "CONFIRM_REMOVAL" : {
-      "HEADER": "Confirm app removal",
-      "DESCRIPTION": "Do you want to completely remove this application?\nNote that all versions of this application will be removed as well.",
+      "HEADER": "Confirm application removal",
+      "DESCRIPTION": "Do you want to completely remove this application from the catalogue along with all its versions?",
       "CANCEL" : "Cancel",
       "CONFIRM": "Confirm",
-      "DISABLED": "This application still has some running instances, therefore it cannot be removed."
+      "DISABLED": "This application still has some currently running instances. Please undeploy them and proceed with the removal."
     },
     "CHANGE_STATE_BUTTON": "Änderungsstatus",
     "CHANGE_OWNER_BUTTON": "Change owner",
