@@ -1,13 +1,14 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import java.util.Arrays;
 import net.geant.nmaas.notifications.templates.MailType;
+
+import java.util.Arrays;
 
 public enum ApplicationState {
     NEW{
         @Override
         public boolean isChangeAllowed(ApplicationState newState){
-            return Arrays.asList(ACTIVE, REJECTED).contains(newState);
+            return Arrays.asList(ACTIVE, REJECTED, DELETED).contains(newState);
         }
 
         @Override
