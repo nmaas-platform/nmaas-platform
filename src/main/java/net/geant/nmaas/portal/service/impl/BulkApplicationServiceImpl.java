@@ -229,7 +229,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Override
     @EventListener
     @Transactional
-    public ApplicationEvent handleDeploymentStatusUpdate(AppAutoDeploymentStatusUpdateEvent event) {
+    public ApplicationEvent  (AppAutoDeploymentStatusUpdateEvent event) {
         log.info("Status update for deployment {}", event.getDeploymentId());
         BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.findById(event.getBulkDeploymentId().longValue()).orElseThrow();
         try {
@@ -246,8 +246,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
                     return new AppAutoDeploymentReviewEvent(this);
                 default:
-                    Thread.sleep(event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
-                            event.getWaitIntervalBeforeNextCheckInMillis() : WAIT_INTERVAL_IN_SECONDS * 1000);
+                    int seconds = event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
+                            event.getWaitIntervalBeforeNextCheckInMillis() : WAIT_INTERVAL_IN_SECONDS * 1000;
+                    Thread.sleep(seconds);
+                    event.setEventTimeOutMinutes(event.getEventTimeOutMinutes() - (seconds / 60));
                     return event;
             }
         } catch (InterruptedException e) {
