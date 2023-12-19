@@ -712,6 +712,7 @@
     "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
     "ADD_NEW_VERSION_BUTTON": "Add new version",
     "SEND_NOTIFICATION": "Send email notification to all users",
+    "NOTIFICATION_CONTENT" : "You can provide additional information for application users",
     "ADD_JSON" : "Add application using JSON file",
     "ADD_JSON_INFO" : "Select JSON file for upload",
     "ADD_JSON_TEXTAREA" : "or enter JSON content below",
