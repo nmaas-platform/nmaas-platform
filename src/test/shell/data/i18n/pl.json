@@ -713,6 +713,7 @@
     "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
     "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje",
     "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników",
+    "NOTIFICATION_CONTENT" : "Dodatkowe informacja dla użytkowników aplikacji",
     "ADD_JSON" : "Dodanie aplikacji przez plik JSON",
     "ADD_JSON_VERSION" : "Dodanie wersji aplikacji przez plik JSON",
     "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
