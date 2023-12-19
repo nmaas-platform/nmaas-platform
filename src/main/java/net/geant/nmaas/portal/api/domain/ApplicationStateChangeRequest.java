@@ -16,7 +16,16 @@ public class ApplicationStateChangeRequest {
     @Getter(AccessLevel.NONE)
     private boolean shouldSendNotification;
 
+    private String notificationText;
+
     public boolean shouldSendNotification() {
         return shouldSendNotification;
+    }
+
+    public ApplicationStateChangeRequest(ApplicationState state, String reason, boolean shouldSendNotification) {
+        this.state = state;
+        this.reason = reason;
+        this.shouldSendNotification = shouldSendNotification;
+        this.notificationText = "";
     }
 }

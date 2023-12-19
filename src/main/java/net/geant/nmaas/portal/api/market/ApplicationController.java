@@ -342,7 +342,8 @@ public class ApplicationController extends AppBaseController {
 		ImmutableMap<String, Object> attributes = ImmutableMap.of(
 				"app_name", appBaseName,
 				"app_version", app.getVersion(),
-				"reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason());
+				"reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason(),
+				"message", stateChangeRequest.getNotificationText() == null ? "" : stateChangeRequest.getNotificationText());
 		if (!stateChangeRequest.getState().equals(ApplicationState.NEW)) {
 			ApplicationBase applicationBase = appBaseService.findByName(appBaseName);
 			UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
