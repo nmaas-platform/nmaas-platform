@@ -1,6 +1,17 @@
 {
   "versions" : [
     {
+      "verNo" : "1.5.4",
+      "date" : "(2023/12/27)",
+      "topic" : [
+        {
+          "title" : "Optimized execution of Helm repo updates",
+          "tags" : "[Enhancement]",
+          "description" : "Added possibility to execute Helm repo updates asynchronously in order to speed up application instance deployment process."
+        }
+      ]
+    },
+    {
       "verNo" : "1.5.3",
       "date" : "(2023/06/30)",
       "topic" : [
