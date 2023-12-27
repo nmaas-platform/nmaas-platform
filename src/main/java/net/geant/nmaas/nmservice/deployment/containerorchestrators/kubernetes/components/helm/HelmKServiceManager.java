@@ -60,7 +60,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         }
     }
 
-    private void updateHelmRepo() {
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public void updateHelmRepo() {
         helmCommandExecutor.executeHelmRepoUpdateCommand();
     }
 

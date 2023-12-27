@@ -7,31 +7,34 @@ import java.util.function.Predicate;
 @Log4j2
 public class SingleCommandExecutor {
 
-	private String hostname;
+	private final String hostname;
 
-	private int port;
+	private final int port;
 
-	private BasicCredentials credentials;
+	private final BasicCredentials credentials;
 
 	private SshConnector connector = null;
 
 	private static SingleCommandExecutor defaultExecutor;
 
     public static SingleCommandExecutor getExecutor(String hostname, String username) {
-        if (defaultExecutor != null)
+        if (defaultExecutor != null) {
             return defaultExecutor;
+        }
         return new SingleCommandExecutor(hostname, 22, new BasicCredentials(username, null));
     }
 
 	public static SingleCommandExecutor getExecutor(String hostname, BasicCredentials credentials) {
-        if (defaultExecutor != null)
+        if (defaultExecutor != null) {
             return defaultExecutor;
+        }
 		return new SingleCommandExecutor(hostname, 22, credentials);
 	}
 
     public static SingleCommandExecutor getExecutor(String hostname, int port, BasicCredentials credentials) {
-        if (defaultExecutor != null)
+        if (defaultExecutor != null) {
             return defaultExecutor;
+        }
         return new SingleCommandExecutor(hostname, port, credentials);
     }
 
@@ -72,12 +75,13 @@ public class SingleCommandExecutor {
     }
 
     void validateOutput(String output, Predicate<String> isOutputCorrect) {
-        if (isOutputCorrect.negate().test(output))
+        if (isOutputCorrect.negate().test(output)) {
             throw new CommandExecutionException("Identified problem with command execution based on output -> details: " + output + ")");
+        }
     }
 
 	private void disconnect() {
-		if(connector != null) {
+		if (connector != null) {
 			connector.close();
 			connector = null;
 		}
