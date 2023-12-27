@@ -122,8 +122,29 @@ public class HelmKServiceManagerTest {
                 argumentsArg.capture()
         );
         assertThat(argumentsArg.getValue()).isNotEmpty();
-        System.out.printf(argumentsArg.getValue().toString());
         assertThat(argumentsArg.getValue().size()).isEqualTo(11);
+    }
+
+    @Test
+    void shouldDeployServiceWithoutRepoUpdate() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(ingressManager.getResourceConfigOption()).thenReturn(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        when(ingressManager.getIngressPerDomain()).thenReturn(false);
+        when(ingressManager.getSupportedIngressClass()).thenReturn("testIngressClass");
+        when(ingressManager.getTlsSupported()).thenReturn(true);
+        when(ingressManager.getIssuerOrWildcardName()).thenReturn("testIssuerName");
+        when(ingressManager.getCertificateConfigOption()).thenReturn(IngressCertificateConfigOption.USE_LETSENCRYPT);
+        manager.setHelmRepoUpdateAsyncEnabled(true);
+
+        manager.deployService(deploymentId);
+
+        verify(helmCommandExecutor, times(0)).executeHelmRepoUpdateCommand();
+        verify(helmCommandExecutor, times(1)).executeHelmInstallCommand(
+                eq("namespace"),
+                eq("descriptiveDeploymentId"),
+                any(),
+                any()
+        );
     }
 
     @Test

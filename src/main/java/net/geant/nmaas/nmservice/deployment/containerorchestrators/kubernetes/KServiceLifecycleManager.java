@@ -13,4 +13,6 @@ public interface KServiceLifecycleManager {
 
     void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion);
 
+    void updateHelmRepo();
+
 }
