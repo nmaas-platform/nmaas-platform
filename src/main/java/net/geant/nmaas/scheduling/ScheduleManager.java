@@ -62,7 +62,7 @@ public class ScheduleManager {
                             .inTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault())))
                     .usingJobData("cron", jobCron)
                     .build();
-            log.info("Scheduling job: {}", jobName);
+            log.info("Scheduling job: {} (cron: {})", jobName, jobCron);
             scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), true);
         } catch (SchedulerException e) {
             throw new IllegalStateException(e.getMessage());
@@ -74,21 +74,21 @@ public class ScheduleManager {
         validateJobDescriptor(jobDescriptor);
         try{
             Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()));
-            if(trigger != null){
+            if (trigger != null) {
                 trigger = jobDescriptor.buildTrigger();
                 scheduler.rescheduleJob(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()), trigger);
                 if(!monitorEntryView.isActive()){
                     this.pauseJob(trigger.getJobKey().getName());
                 }
             }
-        } catch (SchedulerException e){
+        } catch (SchedulerException e) {
             throw new IllegalStateException("Updating job failed due to " + e.getMessage());
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteJob(String name){
-        try{
+        try {
             scheduler.deleteJob(jobKey(name));
         } catch (SchedulerException e){
             throw new IllegalStateException("Deleting scheduled job failed due to " + e.getMessage());
