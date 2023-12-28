@@ -9,12 +9,14 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmService
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -101,4 +103,11 @@ public interface NmServiceDeploymentProvider {
      */
     void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate);
 
+    /**
+     * Retrieves components of the deployed service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return list of {@link AppComponentDetails} objects
+     */
+    List<AppComponentDetails> serviceComponents(Identifier deploymentId);
 }

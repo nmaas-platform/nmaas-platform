@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
@@ -26,14 +26,12 @@ import java.util.stream.Collectors;
  * Default {@link AppDeploymentMonitor} implementation.
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
-    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
-
-    private NmServiceDeploymentProvider serviceDeployment;
-
-    private NmServiceConfigurationProvider serviceConfiguration;
+    private final DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private final NmServiceDeploymentProvider serviceDeployment;
+    private final NmServiceConfigurationProvider serviceConfiguration;
 
     @Override
     public AppLifecycleState state(Identifier deploymentId) {
@@ -44,7 +42,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     public AppLifecycleState previousState(Identifier deploymentId) {
         Optional<AppDeploymentHistory> history = appDeploymentRepositoryManager.loadStateHistory(deploymentId).stream()
                 .max(Comparator.comparing(AppDeploymentHistory::getTimestamp));
-        if(history.isPresent() && history.get().getPreviousState() != null){
+        if (history.isPresent() && history.get().getPreviousState() != null) {
             return history.get().getPreviousState().lifecycleState();
         }
         return AppLifecycleState.UNKNOWN;
@@ -59,10 +57,24 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     @Loggable(LogLevel.TRACE)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AppUiAccessDetails userAccessDetails(Identifier deploymentId) {
-        if (AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED.equals(retrieveCurrentState(deploymentId)))
+        if (AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED.equals(retrieveCurrentState(deploymentId))) {
             return retrieveAccessDetails(deploymentId);
-        else
+        }
+        else {
             throw new InvalidAppStateException("Application deployment process didn't finish yet.");
+        }
+    }
+
+    private AppLifecycleState retrieveCurrentState(Identifier deploymentId) {
+        return appDeploymentRepositoryManager.loadState(deploymentId).lifecycleState();
+    }
+
+    private AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) {
+        try {
+            return serviceDeployment.serviceAccessDetails(deploymentId);
+        } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {
+            throw new InvalidDeploymentIdException(e.getMessage());
+        }
     }
 
     @Override
@@ -93,16 +105,14 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
                 .collect(Collectors.toList());
     }
 
-    private AppLifecycleState retrieveCurrentState(Identifier deploymentId) {
-        return appDeploymentRepositoryManager.loadState(deploymentId).lifecycleState();
+    @Override
+    public List<AppComponentDetails> appComponents(Identifier deploymentId) {
+        return serviceDeployment.serviceComponents(deploymentId);
     }
 
-    private AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) {
-        try {
-            return serviceDeployment.serviceAccessDetails(deploymentId);
-        } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {
-            throw new InvalidDeploymentIdException(e.getMessage());
-        }
+    @Override
+    public AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName) {
+        return null;
     }
 
 }

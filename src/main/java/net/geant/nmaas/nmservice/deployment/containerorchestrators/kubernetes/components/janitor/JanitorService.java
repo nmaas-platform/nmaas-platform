@@ -3,12 +3,14 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.InformationServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager;
+import net.geant.nmaas.externalservices.inventory.janitor.PodServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
@@ -17,19 +19,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
 public class JanitorService {
 
-    private KubernetesClusterNamespaceService namespaceService;
-
-    private ManagedChannel channel;
-
-    protected JanitorService(KubernetesClusterNamespaceService namespaceService, ManagedChannel channel) {
-        this.namespaceService = namespaceService;
-        this.channel = channel;
-    }
+    private final KubernetesClusterNamespaceService namespaceService;
+    private final ManagedChannel channel;
 
     @Autowired
     public JanitorService(KubernetesClusterNamespaceService namespaceService, Environment env) {
@@ -152,6 +150,19 @@ public class JanitorService {
         switch (response.getStatus()) {
             case OK:
                 return;
+            case FAILED:
+            default:
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
+    }
+
+    public List<JanitorManager.PodInfo> getPodNames(Identifier deploymentId, String domain) {
+        log.info(String.format("Retrieving list of pods for %s in domain %s", deploymentId.value(), domain));
+        PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
+        JanitorManager.PodListResponse response = stub.retrievePodList(buildInstanceRequest(deploymentId, domain));
+        switch (response.getStatus()) {
+            case OK:
+                return response.getPodsList();
             case FAILED:
             default:
                 throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));

@@ -77,4 +77,22 @@ public interface AppDeploymentMonitor {
      */
     List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId);
 
+    /**
+     * Retrieves list of application deployment components.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @return list of deployment components
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    List<AppComponentDetails> appComponents(Identifier deploymentId);
+
+    /**
+     * Retrieves logs from specified application deployment component.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @param appComponentName name of the component which logs should be collected
+     * @return objects representing logs from application component
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName);
 }
