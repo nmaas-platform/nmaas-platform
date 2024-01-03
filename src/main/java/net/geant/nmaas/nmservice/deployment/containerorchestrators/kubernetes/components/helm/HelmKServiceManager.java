@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
@@ -18,6 +19,7 @@ import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -35,32 +37,40 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.PUBLIC;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Profile("env_kubernetes")
 public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "domain";
     static final String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
 
-    private KubernetesRepositoryManager repositoryManager;
-    private KubernetesClusterNamespaceService namespaceService;
-    private KubernetesClusterDeploymentManager deploymentManager;
-    private KubernetesClusterIngressManager ingressManager;
-    private HelmCommandExecutor helmCommandExecutor;
-    private DomainTechDetailsRepository domainTechDetailsRepository;
+    private final KubernetesRepositoryManager repositoryManager;
+    private final KubernetesClusterNamespaceService namespaceService;
+    private final KubernetesClusterDeploymentManager deploymentManager;
+    private final KubernetesClusterIngressManager ingressManager;
+    private final HelmCommandExecutor helmCommandExecutor;
+    private final DomainTechDetailsRepository domainTechDetailsRepository;
+
+    @Setter
+    @Value("${helm.update.async.enabled}")
+    private boolean helmRepoUpdateAsyncEnabled;
 
     @Override
     @Loggable(LogLevel.DEBUG)
     public void deployService(Identifier deploymentId) {
         try {
-            updateHelmRepo();
+            if (!helmRepoUpdateAsyncEnabled) {
+                updateHelmRepo();
+            }
             installHelmChart(repositoryManager.loadService(deploymentId));
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 
-    private void updateHelmRepo() {
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public void updateHelmRepo() {
         helmCommandExecutor.executeHelmRepoUpdateCommand();
     }
 
@@ -172,7 +182,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     public void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion) {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
-            updateHelmRepo();
+            if (!helmRepoUpdateAsyncEnabled) {
+                updateHelmRepo();
+            }
             helmCommandExecutor.executeHelmUpgradeCommand(
                     namespaceService.namespace(serviceInfo.getDomain()),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
