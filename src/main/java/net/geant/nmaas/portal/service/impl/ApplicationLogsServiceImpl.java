@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ApplicationLogsServiceImpl implements ApplicationLogsService {
 
-    private ApplicationInstanceService applicationInstanceService;
-    private AppDeploymentMonitor appDeploymentMonitor;
+    private final ApplicationInstanceService applicationInstanceService;
+    private final AppDeploymentMonitor appDeploymentMonitor;
 
     @Override
     public boolean isLogAccessEnabled(Long appInstanceId) {

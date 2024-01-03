@@ -28,14 +28,14 @@ public class NmServiceVerificationTest {
     private NmServiceDeploymentCoordinator provider;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         provider = new NmServiceDeploymentCoordinator(orchestrator, applicationEventPublisher);
         provider.serviceDeploymentCheckMaxWaitTime = 5;
         provider.serviceDeploymentCheckInternal = 1;
     }
 
     @Test
-    public void shouldVerifyDeploymentSuccessRightAway() {
+    void shouldVerifyDeploymentSuccessRightAway() {
         assertDoesNotThrow(() -> {
             when(orchestrator.checkService(any())).thenReturn(true);
             provider.verifyService(Identifier.newInstance("id"));
@@ -43,7 +43,7 @@ public class NmServiceVerificationTest {
     }
 
     @Test
-    public void shouldVerifyDeploymentSuccessAfterThirdAttempt() {
+    void shouldVerifyDeploymentSuccessAfterThirdAttempt() {
         assertDoesNotThrow(() -> {
             when(orchestrator.checkService(any()))
                     .thenReturn(false)
@@ -54,7 +54,7 @@ public class NmServiceVerificationTest {
     }
 
     @Test
-    public void shouldVerifyDeploymentFailure(){
+    void shouldVerifyDeploymentFailure() {
         assertThrows(CouldNotVerifyNmServiceException.class, () -> {
             when(orchestrator.checkService(any()))
                     .thenReturn(false)
@@ -67,7 +67,7 @@ public class NmServiceVerificationTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenUnexpectedErrorOccurs(){
+    void shouldThrowExceptionWhenUnexpectedErrorOccurs() {
         assertThrows(CouldNotVerifyNmServiceException.class, () -> {
             when(orchestrator.checkService(any())).thenThrow(new ContainerCheckFailedException(""));
             provider.verifyService(Identifier.newInstance("id"));

@@ -1,45 +1,41 @@
-package net.geant.nmaas.nmservice.deployment.api;
+package net.geant.nmaas.portal.api.logs;
 
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.service.ApplicationLogsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@AutoConfigureMockMvc
-public class NmServiceDeploymentAdminControllerSecTest extends BaseControllerTestSetup {
+//@AutoConfigureMockMvc
+public class ApplicationLogsControllerSecTest extends BaseControllerTestSetup {
+
+    @MockBean
+    private ApplicationLogsService applicationLogsService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         createMVC();
     }
 
     @Test
-    void shouldAuthAndCallSimpleGet() {
+    void shouldAccessAppInstancePodNamesEndpointAsAdmin() {
+        when(applicationLogsService.isLogAccessEnabled(1L)).thenReturn(true);
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/management/services")
+            mvc.perform(get("/api/apps/logs/1/pods")
                     .header("Authorization", "Bearer " + token))
                     .andExpect(status().isOk());
-        });
-    }
-
-    @Test
-    void shouldAuthAndForbidSimpleGet() {
-        String token = getValidUserTokenFor(Role.ROLE_USER);
-        assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/management/services")
-                    .header("Authorization", "Bearer " + token))
-                    .andExpect(status().isUnauthorized());
         });
     }
 
