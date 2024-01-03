@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetes
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppComponentDetails;
+import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
@@ -110,4 +111,14 @@ public interface NmServiceDeploymentProvider {
      * @return list of {@link AppComponentDetails} objects
      */
     List<AppComponentDetails> serviceComponents(Identifier deploymentId);
+
+    /**
+     * Retrieves logs from given service component.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @param appComponentName name of service component from which logs should be retrieved
+     * @return {@link AppComponentLogs} object containing application logs
+     */
+    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String appComponentName);
+
 }

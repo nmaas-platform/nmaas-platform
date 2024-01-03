@@ -59,8 +59,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     public AppUiAccessDetails userAccessDetails(Identifier deploymentId) {
         if (AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED.equals(retrieveCurrentState(deploymentId))) {
             return retrieveAccessDetails(deploymentId);
-        }
-        else {
+        } else {
             throw new InvalidAppStateException("Application deployment process didn't finish yet.");
         }
     }
@@ -81,11 +80,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     @Loggable(LogLevel.TRACE)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Map<String, String> appDeploymentParameters(Identifier deploymentId) {
-        try {
-            return serviceDeployment.serviceDeployParameters(deploymentId);
-        } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {
-            throw new InvalidDeploymentIdException(e.getMessage());
-        }
+        return serviceDeployment.serviceDeployParameters(deploymentId);
     }
 
     @Override
@@ -112,7 +107,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Override
     public AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName) {
-        return null;
+        return serviceDeployment.serviceComponentLogs(deploymentId, appComponentName);
     }
 
 }

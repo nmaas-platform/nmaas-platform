@@ -169,7 +169,33 @@ public class JanitorService {
         }
     }
 
-    private static String janitorExceptionMessage(String message) {
-        return "JANITOR: " + message;
+    public List<String> getPodLogs(Identifier deploymentId, String podName, String domain) {
+        PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
+        JanitorManager.PodLogsResponse response = stub.retrievePodLogs(
+                JanitorManager.PodRequest.newBuilder()
+                        .setApi("v1")
+                        .setDeployment(
+                                JanitorManager.Instance.newBuilder().
+                                        setNamespace(namespaceService.namespace(domain)).
+                                        setUid(deploymentId.value()).
+                                        setDomain(domain).build()
+                        )
+                        .setPod(
+                                JanitorManager.PodInfo.newBuilder().
+                                        setName(podName).
+                                        setDisplayName(podName).build()
+                        ).build());
+        switch (response.getStatus()) {
+            case OK:
+                return response.getLinesList();
+            case FAILED:
+            default:
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
     }
+
+    private static String janitorExceptionMessage(String message) {
+        return "Error response from Janitor: " + message;
+    }
+
 }

@@ -11,10 +11,13 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentLogsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppComponentDetails;
+import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
@@ -150,6 +153,24 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
+    public List<AppComponentDetails> serviceComponents(Identifier deploymentId) {
+        try {
+            return orchestrator.serviceComponents(deploymentId);
+        } catch (ContainerOrchestratorInternalErrorException e) {
+            throw new CouldNotRetrieveNmServiceComponentsException("Exception thrown during components retrieval -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String appComponentName) {
+        try {
+            return orchestrator.serviceComponentLogs(deploymentId, appComponentName);
+        } catch (ContainerOrchestratorInternalErrorException e) {
+            throw new CouldNotRetrieveNmServiceComponentLogsException("Exception thrown during component logs retrieval -> " + e.getMessage());
+        }
+    }
+
+    @Override
     @Loggable(LogLevel.INFO)
     public void removeService(Identifier deploymentId) {
         try {
@@ -191,11 +212,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, UPGRADE_FAILED, e.getMessage());
             throw new CouldNotUpgradeKubernetesServiceException("NM Service upgrade failed -> " + e.getMessage());
         }
-    }
-
-    @Override
-    public List<AppComponentDetails> serviceComponents(Identifier deploymentId) {
-        return null;
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
