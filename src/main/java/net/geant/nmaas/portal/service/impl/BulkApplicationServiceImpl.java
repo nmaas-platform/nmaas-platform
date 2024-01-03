@@ -249,8 +249,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     int seconds = event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
                             event.getWaitIntervalBeforeNextCheckInMillis() : WAIT_INTERVAL_IN_SECONDS * 1000;
                     Thread.sleep(seconds);
-                    event.setEventTimeOutMinutes(event.getEventTimeOutMinutes() - (seconds / 60));
-                    if(event.getEventTimeOutMinutes() >0 ) return event;
+                    event.setEventTimeOutMinutes(event.getEventTimeOutSeconds() - seconds);
+                    log.debug("Event {} timeout left {}", event.getBulkDeploymentId(), event.getEventTimeOutSeconds());
+                    if(event.getEventTimeOutSeconds() >0 ) return event;
                     return null;
             }
         } catch (InterruptedException e) {

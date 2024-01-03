@@ -12,7 +12,7 @@ public class AppAutoDeploymentStatusUpdateEvent extends ApplicationEvent {
 
     private int waitIntervalBeforeNextCheckInMillis = 0;
 
-    private int eventTimeOutMinutes = 60;
+    private int eventTimeOutSeconds = 3600;
 
     public AppAutoDeploymentStatusUpdateEvent(Object source, Identifier bulkDeploymentId,  Identifier deploymentId) {
         super(source);
@@ -24,7 +24,7 @@ public class AppAutoDeploymentStatusUpdateEvent extends ApplicationEvent {
         super(source);
         this.bulkDeploymentId = bulkDeploymentId;
         this.deploymentId = deploymentId;
-        this.eventTimeOutMinutes = eventTimeOutMinutes;
+        this.eventTimeOutSeconds = eventTimeOutMinutes;
     }
 
     public void setWaitIntervalBeforeNextCheckInMillis(int waitIntervalBeforeNextCheckInMillis) {
@@ -32,7 +32,7 @@ public class AppAutoDeploymentStatusUpdateEvent extends ApplicationEvent {
     }
 
     public void setEventTimeOutMinutes(int eventTimeOutMinutes) {
-        this.eventTimeOutMinutes = eventTimeOutMinutes;
+        this.eventTimeOutSeconds = eventTimeOutMinutes;
     }
 
 }
