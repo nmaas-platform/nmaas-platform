@@ -73,7 +73,7 @@ import static net.geant.nmaas.portal.api.market.AppInstanceController.mapAppInst
 @Slf4j
 public class BulkApplicationServiceImpl implements BulkApplicationService {
 
-    private final static int WAIT_INTERVAL_IN_SECONDS = 15;
+    private final static int DEFAULT_DELAY_IN_SECONDS = 15;
     private final static String CSV_HEADER_PARAM_PREFIX = "param.";
     private final static String EMPTY_VALUE = "<EMPTY>";
 
@@ -229,7 +229,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Override
     @EventListener
     @Transactional
-    public ApplicationEvent handleDeploymentStatusUpdate (AppAutoDeploymentStatusUpdateEvent event) {
+    public ApplicationEvent handleDeploymentStatusUpdate(AppAutoDeploymentStatusUpdateEvent event) {
         log.info("Status update for deployment {}", event.getDeploymentId());
         BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.findById(event.getBulkDeploymentId().longValue()).orElseThrow();
         try {
@@ -246,13 +246,19 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
                     return new AppAutoDeploymentReviewEvent(this);
                 default:
-                    int seconds = event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
-                            event.getWaitIntervalBeforeNextCheckInMillis() : WAIT_INTERVAL_IN_SECONDS * 1000;
-                    Thread.sleep(seconds);
-                    event.setEventTimeOutMinutes(event.getEventTimeOutSeconds() - seconds);
-                    log.debug("Event {} timeout left {}", event.getBulkDeploymentId(), event.getEventTimeOutSeconds());
-                    if(event.getEventTimeOutSeconds() >0 ) return event;
-                    return null;
+                    int delayInSeconds = event.getWaitIntervalBeforeNextCheckInSeconds() > 0 ?
+                            event.getWaitIntervalBeforeNextCheckInSeconds() : DEFAULT_DELAY_IN_SECONDS;
+                    log.debug("Waiting for {} seconds before next check", delayInSeconds);
+                    Thread.sleep(delayInSeconds * 1000L);
+                    event.setEventTimeOutInSeconds(event.getEventTimeOutInSeconds() - delayInSeconds);
+                    log.debug("Event {} timeout left {}", event.getBulkDeploymentId(), event.getEventTimeOutInSeconds());
+                    if (event.getEventTimeOutInSeconds() > 0) {
+                        return event;
+                    }
+                    log.warn("Bulk deployment timeout reached. Setting status to FAILED.");
+                    bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
+                    bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
+                    return new AppAutoDeploymentReviewEvent(this);
             }
         } catch (InterruptedException e) {
             log.warn("Thread interrupted while sleeping ... Resending the event");
