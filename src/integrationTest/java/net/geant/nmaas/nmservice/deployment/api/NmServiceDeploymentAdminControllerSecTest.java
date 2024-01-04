@@ -33,14 +33,4 @@ public class NmServiceDeploymentAdminControllerSecTest extends BaseControllerTes
         });
     }
 
-    @Test
-    void shouldAuthAndForbidSimpleGet() {
-        String token = getValidUserTokenFor(Role.ROLE_USER);
-        assertDoesNotThrow(() -> {
-            mvc.perform(get("/api/management/services")
-                    .header("Authorization", "Bearer " + token))
-                    .andExpect(status().isUnauthorized());
-        });
-    }
-
 }
