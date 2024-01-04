@@ -7,6 +7,7 @@ public class MailTemplateElements {
     public static final String SENDER = "SENDER";
     public static final String NOREPLY = "NOREPLY";
     public static final String SENDER_POLICY = "SENDER_POLICY";
+    public static final String ADDITIONAL = "ADDITIONAL";
     public static final String TITLE = "TITLE";
     public static final String HTML_TYPE = "text/html";
 
