@@ -26,7 +26,9 @@ public class BulkAppDetails {
 
     private String appVersion;
 
+    @Builder.Default
     private Map<String, String> parameters = new HashMap<>();
 
+    @Builder.Default
     private Map<String, String> accessMethod = new HashMap<>();
 }

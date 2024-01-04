@@ -21,9 +21,20 @@ message Credentials {
     string password = 2;
 }
 
+message PodInfo {
+    string name = 1;
+    string displayName = 2;
+}
+
 message InstanceRequest {
     string api = 1;
     Instance deployment = 2;
+}
+
+message PodRequest {
+    string api = 1;
+    Instance deployment = 2;
+    PodInfo pod = 3;
 }
 
 message ServiceResponse {
@@ -43,6 +54,20 @@ message InstanceCredentialsRequest {
     string api = 1;
     Instance instance = 2;
     Credentials credentials = 3;
+}
+
+message PodListResponse {
+    string api = 1;
+    Status status = 2;
+    string message = 3;
+    repeated PodInfo pods = 4;
+}
+
+message PodLogsResponse {
+    string api = 1;
+    Status status = 2;
+    string message = 3;
+    repeated string lines = 4;
 }
 
 service ConfigService {
@@ -66,4 +91,9 @@ service ReadinessService {
 service InformationService {
     rpc RetrieveServiceIp(InstanceRequest) returns (InfoServiceResponse);
     rpc CheckServiceExists(InstanceRequest) returns (InfoServiceResponse);
+}
+
+service PodService {
+    rpc RetrievePodList(InstanceRequest) returns (PodListResponse);
+    rpc RetrievePodLogs(PodRequest) returns (PodLogsResponse);
 }

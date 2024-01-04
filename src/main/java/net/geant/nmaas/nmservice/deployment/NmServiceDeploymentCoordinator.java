@@ -11,9 +11,13 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentLogsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppComponentDetails;
+import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
@@ -25,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYED;
@@ -145,6 +150,24 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.TRACE)
     public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
         return orchestrator.serviceDeployParameters(deploymentId);
+    }
+
+    @Override
+    public List<AppComponentDetails> serviceComponents(Identifier deploymentId) {
+        try {
+            return orchestrator.serviceComponents(deploymentId);
+        } catch (ContainerOrchestratorInternalErrorException e) {
+            throw new CouldNotRetrieveNmServiceComponentsException("Exception thrown during components retrieval -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String appComponentName) {
+        try {
+            return orchestrator.serviceComponentLogs(deploymentId, appComponentName);
+        } catch (ContainerOrchestratorInternalErrorException e) {
+            throw new CouldNotRetrieveNmServiceComponentLogsException("Exception thrown during component logs retrieval -> " + e.getMessage());
+        }
     }
 
     @Override

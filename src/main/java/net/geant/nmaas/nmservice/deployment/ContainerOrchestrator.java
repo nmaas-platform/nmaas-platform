@@ -9,11 +9,14 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppComponentDetails;
+import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -94,6 +97,25 @@ public interface ContainerOrchestrator {
      * @return Map of deployment parameters with their key and value
      */
     Map<String, String> serviceDeployParameters(Identifier deploymentId);
+
+    /**
+     * Retrieves deployed service components details.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return service components details
+     * @throws ContainerOrchestratorInternalErrorException if access details are not available for any reason
+     */
+    List<AppComponentDetails> serviceComponents(Identifier deploymentId);
+
+    /**
+     * Retrieves logs from deployed service component.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @param serviceComponentName name of service component from which logs should be retrieved
+     * @return service component logs
+     * @throws ContainerOrchestratorInternalErrorException if access details are not available for any reason
+     */
+    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName);
 
     /**
      * Triggers all the required actions to remove given NM service from the system.
