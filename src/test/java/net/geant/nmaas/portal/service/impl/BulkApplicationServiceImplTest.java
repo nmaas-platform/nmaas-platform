@@ -140,7 +140,7 @@ public class BulkApplicationServiceImplTest {
         Identifier bulkDeploymentId = Identifier.newInstance(1L);
         Identifier deploymentId = Identifier.newInstance(2L);
         AppAutoDeploymentStatusUpdateEvent event = new AppAutoDeploymentStatusUpdateEvent(this, bulkDeploymentId, deploymentId);
-        event.setWaitIntervalBeforeNextCheckInMillis(100);
+        event.setWaitIntervalBeforeNextCheckInSeconds(20);
         when(bulkDeploymentEntryRepository.findById(bulkDeploymentId.longValue())).thenReturn(Optional.of(new BulkDeploymentEntry()));
         when(appDeploymentMonitor.state(deploymentId)).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
 
