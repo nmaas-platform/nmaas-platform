@@ -1,0 +1,23 @@
+name: Run integration tests
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  run-integration-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Run integration tests with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew integrationTest
