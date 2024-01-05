@@ -1,0 +1,31 @@
+name: Build docker image with tag latest
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build_docker_image:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Artifactory
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.DOCKER_REPOSITORY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build image and push to Artifactory
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REPOSITORY_LOCAL }}:latest
