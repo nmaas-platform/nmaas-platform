@@ -26,6 +26,7 @@ jobs:
       - name: Build image and push to Artifactory
         uses: docker/build-push-action@v3
         with:
+          context: .
           push: true
           tags: |
             ${{ secrets.DOCKER_REPOSITORY_LOCAL }}:latest
