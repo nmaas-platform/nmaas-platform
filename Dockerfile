@@ -1,5 +1,7 @@
 FROM openjdk:11-jdk-slim as builder
 
+RUN ls --all
+
 COPY . /build/
 WORKDIR /build/
 
