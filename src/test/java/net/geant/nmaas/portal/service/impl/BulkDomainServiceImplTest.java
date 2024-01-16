@@ -54,7 +54,7 @@ public class BulkDomainServiceImplTest {
         user.setId(1L);
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
-        when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
+        when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
 
         bulkDomainService.handleBulkCreation(List.of(csvDomain), testUser());
@@ -83,7 +83,7 @@ public class BulkDomainServiceImplTest {
         user.setId(1L);
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
-        when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
+        when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
 
         bulkDomainService.handleBulkCreation(List.of(csvDomain), testUser());

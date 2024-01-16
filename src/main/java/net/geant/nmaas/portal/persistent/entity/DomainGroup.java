@@ -6,6 +6,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewAccess;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -52,6 +56,9 @@ public class DomainGroup implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
     private List<Domain> domains = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<UserViewAccess> accessUsers = new ArrayList<>();
 
     public DomainGroup(String name, String codename) {
         super();

@@ -4,14 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
+import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     private final DomainGroupRepository domainGroupRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
+
+
     private final ModelMapper modelMapper;
 
     @Override
@@ -108,8 +114,10 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
         DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).orElseThrow();
+//        updateRolesInDomainsByUsers(view);
         domainGroup.setCodename(view.getCodename());
         domainGroup.setName(view.getName());
+        domainGroup.setAccessUsers(view.getAccessUsers());
         for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
@@ -117,6 +125,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
                 }
             }
         }
+
         domainGroupRepository.save(domainGroup);
         return modelMapper.map(domainGroup, DomainGroupView.class);
     }
@@ -126,5 +135,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new IllegalArgumentException("Name is null or empty");
         }
     }
+
+
 
 }

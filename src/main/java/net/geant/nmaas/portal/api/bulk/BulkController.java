@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.bulk;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -47,7 +48,7 @@ public class BulkController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/domains")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
         log.info("Processing new bulk domain deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
@@ -66,7 +67,7 @@ public class BulkController {
     }
 
     @PostMapping("/apps")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> uploadApplications(
             @NotNull Principal principal,
             @RequestParam("appName") String applicationName,
@@ -94,7 +95,7 @@ public class BulkController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
@@ -104,7 +105,7 @@ public class BulkController {
     }
 
     @GetMapping(value = "/app/csv/{id}", produces = "text/csv")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<InputStreamResource> getDeploymentDetailsInCSV(@PathVariable Long id) {
         log.info("Processing bulk application deployment details request");
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
@@ -126,10 +127,28 @@ public class BulkController {
         return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.DOMAIN)));
     }
 
+    @GetMapping("/domains/vl")
+    @PreAuthorize("hasRole('ROLE_VL_MANAGER')")
+    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
+
+        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).stream()
+                    .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
+    }
+
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords() {
         return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.APPLICATION)));
+    }
+
+    @GetMapping("/apps/vl")
+    @PreAuthorize("hasRole('ROLE_VL_MANAGER')")
+    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
+
+        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).stream()
+                .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
     }
 
     private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {

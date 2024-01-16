@@ -13,6 +13,9 @@ import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
+import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewAccess;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
@@ -87,7 +90,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         domainSpecs.forEach( domainSpec -> {
             Domain domain = createDomainIfNotExists(bulkDeploymentEntries, domainSpec);
             // domain groups creation and domain assignment
-            createMissingGroupsAndAssignDomain(domainSpec, domain);
+            createMissingGroupsAndAssignDomain(domainSpec, domain, creator);
             // if user exist update role in domain to domain admin
             createUserAccountIfNotExists(bulkDeploymentEntries, domainSpec, domain);
         });
@@ -173,13 +176,13 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         return dcnInfo;
     }
 
-    private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain) {
+    private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain, UserViewMinimal creator) {
         List<String> groupNames = Arrays.stream(csvDomain.getDomainGroups().replaceAll("\\s", "").split(",")).collect(Collectors.toList());
         groupNames.removeAll(Arrays.asList("", null));
         groupNames.forEach( groupName -> {
             log.info("Adding domain {} to group {}", domain.getName(), groupName);
             if (!domainGroupService.existDomainGroup(groupName, groupName)) {
-                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null));
+                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null, List.of(getUserViewAccess(creator))));
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
             } else {
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
@@ -225,6 +228,15 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         details.put(BULK_ENTRY_DETAIL_KEY_USER_NAME, user.getUsername());
         details.put(BULK_ENTRY_DETAIL_KEY_USER_EMAIL, user.getEmail());
         return details;
+    }
+
+    private static UserViewAccess getUserViewAccess(UserViewMinimal user) {
+        UserViewAccess view = new UserViewAccess();
+        view.setId(user.getId());
+        view.setFirstname(user.getFirstname());
+        view.setLastname(user.getLastname());
+        view.setUsername(user.getUsername());
+        return view;
     }
 
 }

@@ -6,7 +6,9 @@ import java.util.Optional;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewAccess;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,9 @@ import net.geant.nmaas.portal.persistent.entity.User;
 
 public interface UserService {
 	boolean hasPrivilege(User user, Domain domain, Role role);
+
+	boolean hasPrivilege(UserViewAccess user, DomainBase domain, Role role);
+
 	boolean canUpdateData(String username, List<UserRole> userRoles);
 	Optional<User> findByUsername(String username);
 	Optional<User> findById(Long id);

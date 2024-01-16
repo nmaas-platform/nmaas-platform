@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -27,5 +28,8 @@ public class DomainGroupView {
     private List<DomainBase> domains;
 
     private List<ApplicationStatePerDomainView> applicationStatePerDomain;
+
+    private List<UserViewAccess> accessUsers = new ArrayList<>();
+
 
 }
