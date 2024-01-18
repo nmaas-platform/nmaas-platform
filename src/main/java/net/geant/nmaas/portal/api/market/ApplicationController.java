@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -129,6 +130,25 @@ public class ApplicationController extends AppBaseController {
 		appBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
 	}
 
+	@DeleteMapping(value = "/base/{id}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void deleteApplicationBase(@PathVariable Long id, Principal principal) {
+		ApplicationBase base = appBaseService.getBaseApp(id);
+		// only system admin and owner can update application base
+		this.applicationBaseOwnerCheck(base.getName(), principal);
+		ApplicationState state = ApplicationState.DELETED;
+		base.getVersions().forEach(v -> {
+			if (!v.isDeleted()) {
+				Application app = getApp(v.getAppVersionId());
+				applicationService.changeApplicationState(app, state);
+				appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), state);
+			}
+		});
+
+		appBaseService.deleteAppBase(base);
+	}
+
 	/*
 	 * Application part
 	 */
@@ -170,6 +190,12 @@ public class ApplicationController extends AppBaseController {
 		);
 	}
 
+	@GetMapping(value="/versions/{id}")
+	@Transactional
+	public Set<ApplicationVersion> getApplicationVersion(@PathVariable Long id) {
+		return this.getVersions(id);
+	}
+
 	@GetMapping(value="/version/{id}")
 	@Transactional
 	public ApplicationView getApplication(@PathVariable Long id) {
@@ -194,10 +220,12 @@ public class ApplicationController extends AppBaseController {
 		// application base with given name must exist
 		ApplicationBase base = appBaseService.findByName(view.getName());
 		// specified version for this application base must not exist
-		boolean hasVersion = base.getVersions().stream().anyMatch(v -> v.getVersion().equals(view.getVersion()));
+		boolean hasVersion = base.getVersions()
+				.stream()
+				.anyMatch(v -> v.getVersion().equals(view.getVersion())
+						&& !v.isDeleted());
 		// application specified name and version must not exist
-		boolean exists = applicationService.exists(view.getName(), view.getVersion());
-		if (hasVersion || exists) {
+		if (hasVersion) {
 			log.error("Cannot add application version, object already exists");
 			throw new ObjectAlreadyExistsException("App version already exists");
 		}
@@ -307,12 +335,17 @@ public class ApplicationController extends AppBaseController {
 	 * Utilities
 	 */
 	private void sendMails(Application app, ApplicationStateChangeRequest stateChangeRequest) {
+		String appBaseName = app.getName().contains("_DELETED_")
+                ? app.getName().substring(0, app.getName().indexOf("_DELETED_"))
+                : app.getName();
+
 		ImmutableMap<String, Object> attributes = ImmutableMap.of(
-				"app_name", app.getName(),
+				"app_name", appBaseName,
 				"app_version", app.getVersion(),
-				"reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason());
+				"reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason(),
+				"message", stateChangeRequest.getNotificationText() == null ? "" : stateChangeRequest.getNotificationText());
 		if (!stateChangeRequest.getState().equals(ApplicationState.NEW)) {
-			ApplicationBase applicationBase = appBaseService.findByName(app.getName());
+			ApplicationBase applicationBase = appBaseService.findByName(appBaseName);
 			UserView owner = modelMapper.map(userService.findByUsername(applicationBase.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
 			MailAttributes mailAttributes = MailAttributes.builder()
 					.mailType(stateChangeRequest.getState().getMailType())

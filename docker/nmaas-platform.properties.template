@@ -119,6 +119,8 @@ sso.key=${SSO_KEY}
 # ------------------ #
 # Helm configuration #
 # ------------------ #
+helm.update.async.enabled=${HELM_UPDATE_ASYNC_ENABLED}
+helm.update.async.cron=${HELM_UPDATE_ASYNC_CRON}
 helm.address=${HELM_ADDRESS}
 helm.username=${HELM_USERNAME}
 helm.useLocalCharts=${HELM_USELOCALCHARTS}

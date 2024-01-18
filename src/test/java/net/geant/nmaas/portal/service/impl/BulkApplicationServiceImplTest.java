@@ -17,6 +17,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentEntryRepository;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
@@ -49,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,6 +97,7 @@ public class BulkApplicationServiceImplTest {
         when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
         when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
         when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
+        doNothing().when(eventPublisher).publishEvent(any(ApplicationEvent.class));
 
         bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser());
 
@@ -140,7 +143,7 @@ public class BulkApplicationServiceImplTest {
         Identifier bulkDeploymentId = Identifier.newInstance(1L);
         Identifier deploymentId = Identifier.newInstance(2L);
         AppAutoDeploymentStatusUpdateEvent event = new AppAutoDeploymentStatusUpdateEvent(this, bulkDeploymentId, deploymentId);
-        event.setWaitIntervalBeforeNextCheckInMillis(100);
+        event.setWaitIntervalBeforeNextCheckInSeconds(1);
         when(bulkDeploymentEntryRepository.findById(bulkDeploymentId.longValue())).thenReturn(Optional.of(new BulkDeploymentEntry()));
         when(appDeploymentMonitor.state(deploymentId)).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
 
@@ -152,8 +155,25 @@ public class BulkApplicationServiceImplTest {
     }
 
     @Test
-    void shouldHandleDeploymentReview() {
+    void shouldHandleDeploymentStatusUpdateAndTimeout() {
         Identifier bulkDeploymentId = Identifier.newInstance(1L);
+        Identifier deploymentId = Identifier.newInstance(2L);
+        AppAutoDeploymentStatusUpdateEvent event = new AppAutoDeploymentStatusUpdateEvent(this, bulkDeploymentId, deploymentId);
+        event.setEventTimeOutInSeconds(1);
+        event.setWaitIntervalBeforeNextCheckInSeconds(2);
+        when(bulkDeploymentEntryRepository.findById(bulkDeploymentId.longValue())).thenReturn(Optional.of(new BulkDeploymentEntry()));
+        when(appDeploymentMonitor.state(deploymentId)).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
+
+        ApplicationEvent result = bulkApplicationService.handleDeploymentStatusUpdate(event);
+
+        ArgumentCaptor<BulkDeploymentEntry> argumentCaptor = ArgumentCaptor.forClass(BulkDeploymentEntry.class);
+        verify(bulkDeploymentEntryRepository).save(argumentCaptor.capture());
+        assertEquals(BulkDeploymentState.FAILED, argumentCaptor.getValue().getState());
+        assertInstanceOf(AppAutoDeploymentReviewEvent.class, result);
+    }
+
+    @Test
+    void shouldHandleDeploymentReview() {
         AppAutoDeploymentReviewEvent event = new AppAutoDeploymentReviewEvent(this);
         BulkDeployment bAppToBeCompleted = new BulkDeployment(
                 1L, 1L, OffsetDateTime.now(), PROCESSING, APPLICATION,

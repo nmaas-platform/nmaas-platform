@@ -7,11 +7,11 @@ import java.util.function.Predicate;
 @Log4j2
 public class SingleCommandExecutor {
 
-	private String hostname;
+	private final String hostname;
 
-	private int port;
+	private final int port;
 
-	private BasicCredentials credentials;
+	private final BasicCredentials credentials;
 
 	private SshConnector connector = null;
 

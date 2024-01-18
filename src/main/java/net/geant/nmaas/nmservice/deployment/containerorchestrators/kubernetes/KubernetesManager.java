@@ -28,6 +28,8 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppComponentDetails;
+import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
@@ -37,6 +39,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -46,6 +49,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -444,6 +448,46 @@ public class KubernetesManager implements ContainerOrchestrator {
             return new AppUiAccessDetails(serviceAccessMethodViewSet);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        }
+    }
+
+    @Override
+    public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
+        try {
+            Map<String, String> params = repositoryManager.loadService(deploymentId).getAdditionalParameters();
+            // TODO filter only relevant parameters
+            return params;
+        } catch (Exception e) {
+            throw new ProcessingException("Cant find additional parameters for " + deploymentId.value());
+        }
+    }
+
+    @Override
+    public List<AppComponentDetails> serviceComponents(Identifier deploymentId) {
+        try {
+            KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+            return janitorService.getPodNames(service.getDescriptiveDeploymentId(), service.getDomain()).stream()
+                    .map(p -> new AppComponentDetails(p.getName(), p.getDisplayName()))
+                    .collect(Collectors.toList());
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (JanitorResponseException je) {
+            throw new ContainerOrchestratorInternalErrorException("Problem with retrieving service components", je);
+        }
+    }
+
+    @Override
+    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName) {
+        try {
+            KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+            return new AppComponentLogs(
+                    serviceComponentName,
+                    janitorService.getPodLogs(service.getDescriptiveDeploymentId(), serviceComponentName, service.getDomain())
+            );
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (JanitorResponseException je) {
+            throw new ContainerOrchestratorInternalErrorException("Problem with retrieving service component logs", je);
         }
     }
 

@@ -9,11 +9,16 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmService
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.AppComponentDetails;
+import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Defines a set of methods to manage service deployment lifecycle.
@@ -65,6 +70,14 @@ public interface NmServiceDeploymentProvider {
     AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
 
     /**
+     * Retrieves various parameters of the deployed service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return map of deployment parameters with their key and value
+     */
+    Map<String, String> serviceDeployParameters(Identifier deploymentId);
+
+    /**
      * Coordinates service removal (delegates tasks to attached {@link ContainerOrchestrator}).
      *
      * @param deploymentId unique identifier of service deployment
@@ -90,5 +103,22 @@ public interface NmServiceDeploymentProvider {
      * @throws CouldNotUpgradeKubernetesServiceException if service couldn't be upgraded for some reason
      */
     void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate);
+
+    /**
+     * Retrieves components of the deployed service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return list of {@link AppComponentDetails} objects
+     */
+    List<AppComponentDetails> serviceComponents(Identifier deploymentId);
+
+    /**
+     * Retrieves logs from given service component.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @param appComponentName name of service component from which logs should be retrieved
+     * @return {@link AppComponentLogs} object containing application logs
+     */
+    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String appComponentName);
 
 }

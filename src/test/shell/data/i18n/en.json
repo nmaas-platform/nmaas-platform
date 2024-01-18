@@ -254,6 +254,11 @@
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
     "UNDEPLOYED_VISIBLE": "Show undeployed instances",
     "SORT": "Sort",
+    "MANUAL_UPDATE" : {
+      "HEADER" : "Manual version update",
+      "BODY" : "Update the current application version for this application instance based on an upgrade process that was performed manually. Select the new correct version from the list below.",
+      "YES_BUTTON" : "Update version"
+    },
     "SORT_MODE": {
       "NONE": "None",
       "NAME": "By name",
@@ -700,6 +705,14 @@
     "ADD_BUTTON": "Add",
     "VIEW_BUTTON": "View",
     "EDIT_BUTTON": "Edit",
+    "DELETE_BUTTON": "Remove",
+    "CONFIRM_REMOVAL" : {
+      "HEADER": "Confirm application removal",
+      "DESCRIPTION": "Do you want to completely remove this application from the catalogue along with all its versions?",
+      "CANCEL" : "Cancel",
+      "CONFIRM": "Confirm",
+      "DISABLED": "This application still has some currently running instances. Please undeploy them and proceed with the removal."
+    },
     "CHANGE_STATE_BUTTON": "Change state",
     "CHANGE_OWNER_BUTTON": "Change owner",
     "APPROVED_TAB": "Approved",
@@ -709,12 +722,14 @@
     "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
     "ADD_NEW_VERSION_BUTTON": "Add new version",
     "SEND_NOTIFICATION": "Send email notification to all users",
+    "NOTIFICATION_CONTENT" : "You can provide additional information for application users",
     "ADD_JSON" : "Add application using JSON file",
     "ADD_JSON_INFO" : "Select JSON file for upload",
     "ADD_JSON_TEXTAREA" : "or enter JSON content below",
     "SEND_JSON" : "Upload JSON content",
     "ADD_JSON_VERSION" : "Add application version using JSON file",
-    "JSON_ERROR" : "JSON content is not valid - please verify the syntax"
+    "JSON_ERROR" : "JSON content is not valid - please verify the syntax",
+    "EXPORT_JSON" : "Export to JSON"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -1158,7 +1173,8 @@
       "INSTANCE_NAME": "Instance name",
       "DOMAIN" : "Domain",
       "CHECK_STATE" : "Check state",
-      "UPLOAD_TEXT" : "or enter the csv content below"
+      "UPLOAD_TEXT" : "or enter the csv content below",
+      "DOWNLOAD_CSV" : "Download CSV"
     },
     "STATE" : {
       "PENDING" :  "Pending",

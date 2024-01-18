@@ -27,6 +27,8 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 	Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
 	Page<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain, Pageable pageable);
 
+	List<AppInstance> findAllByApplication(Application application);
+
 	@Query("select count(ai.id) FROM AppInstance ai JOIN AppDeployment ad on ad.deploymentId = ai.internalId where ad.state = 'APPLICATION_DEPLOYMENT_VERIFIED'")
 	int countAllRunning();
 

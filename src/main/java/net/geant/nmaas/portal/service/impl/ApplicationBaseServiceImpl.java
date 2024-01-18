@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public void updateApplicationVersionState(String name, String version, ApplicationState state) {
-        ApplicationBase appBase = findByName(name);
+        ApplicationBase appBase = findByName(name.contains("_DELETED_") ? name.substring(0, name.indexOf("_DELETED_")) : name);
         appBase.getVersions().stream()
                 .filter(appVersion -> appVersion.getVersion().equals(version))
                 .findAny()
@@ -84,7 +85,10 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public List<ApplicationBase> findAll() {
-        return appBaseRepository.findAll();
+        return appBaseRepository.findAll()
+                .stream()
+                .filter(app -> !app.getName().contains("_DELETED_"))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -114,6 +118,12 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     @Override
     public boolean exists(String name) {
         return appBaseRepository.existsByName(name);
+    }
+
+    @Override
+    public void deleteAppBase(ApplicationBase base) {
+        base.setName(base.getName() + "_DELETED_" + OffsetDateTime.now());
+        appBaseRepository.save(base);
     }
 
     private void setMissingDescriptions(ApplicationBase app) {

@@ -3,8 +3,10 @@ FROM openjdk:11-jdk-slim as builder
 COPY . /build/
 WORKDIR /build/
 
+RUN ls --all
+
 RUN chmod +x ./gradlew
-RUN ./gradlew -Dorg.gradle.daemon=false build -x test -x integrationTest
+RUN ./gradlew -Dorg.gradle.daemon=false build
 
 FROM adoptopenjdk/openjdk11:jre-11.0.19_7-alpine
 MAINTAINER nmaas@lists.geant.org

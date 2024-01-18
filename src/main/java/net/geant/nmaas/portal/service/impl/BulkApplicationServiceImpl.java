@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -12,6 +13,8 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
+import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
@@ -33,13 +36,18 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.collections4.MultiValuedMap;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +73,9 @@ import static net.geant.nmaas.portal.api.market.AppInstanceController.mapAppInst
 @Slf4j
 public class BulkApplicationServiceImpl implements BulkApplicationService {
 
-    private final static int WAIT_INTERVAL_IN_SECONDS = 15;
+    private final static int DEFAULT_DELAY_IN_SECONDS = 15;
+    private final static String CSV_HEADER_PARAM_PREFIX = "param.";
+    private final static String EMPTY_VALUE = "<EMPTY>";
 
     private final ApplicationBaseService applicationBaseService;
     private final ApplicationService applicationService;
@@ -236,9 +246,19 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
                     return new AppAutoDeploymentReviewEvent(this);
                 default:
-                    Thread.sleep(event.getWaitIntervalBeforeNextCheckInMillis() > 0 ?
-                            event.getWaitIntervalBeforeNextCheckInMillis() : WAIT_INTERVAL_IN_SECONDS * 1000);
-                    return event;
+                    int delayInSeconds = event.getWaitIntervalBeforeNextCheckInSeconds() > 0 ?
+                            event.getWaitIntervalBeforeNextCheckInSeconds() : DEFAULT_DELAY_IN_SECONDS;
+                    log.debug("Waiting for {} seconds before next check", delayInSeconds);
+                    Thread.sleep(delayInSeconds * 1000L);
+                    event.setEventTimeOutInSeconds(event.getEventTimeOutInSeconds() - delayInSeconds);
+                    log.debug("Event {} timeout left {}", event.getBulkDeploymentId(), event.getEventTimeOutInSeconds());
+                    if (event.getEventTimeOutInSeconds() > 0) {
+                        return event;
+                    }
+                    log.warn("Bulk deployment timeout reached. Setting status to FAILED.");
+                    bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
+                    bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
+                    return new AppAutoDeploymentReviewEvent(this);
             }
         } catch (InterruptedException e) {
             log.warn("Thread interrupted while sleeping ... Resending the event");
@@ -320,6 +340,107 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
     private void logBulkStateUpdate(long bulkId, String state) {
         log.debug("State of bulk {} set to {}", bulkId, state);
+    }
+
+    public List<BulkAppDetails> getAppsBulkDetails(BulkDeploymentView bulkDeployment) {
+
+        List<BulkAppDetails> result = new ArrayList<>();
+
+        bulkDeployment.getEntries().forEach(deployment -> {
+            Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+            AppInstance instance = instanceService.find(instanceId).orElseThrow();
+
+            Map<String, String> configurationParameters = new HashMap<>();
+
+            //deploy
+            Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
+            params.forEach( (key, value) -> {
+                configurationParameters.put(key,  Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
+                log.debug("Params = {} - {}", key, value);
+            });
+
+            Map<String, String> accessMethodParameters = new HashMap<>();
+            if (appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED) {
+                appDeploymentMonitor.userAccessDetails(instance.getInternalId()).getServiceAccessMethods()
+                        .forEach(accessMethod ->
+                                accessMethodParameters.put(
+                                        accessMethod.getName() + "." + accessMethod.getProtocol(),
+                                        Objects.isNull(accessMethod.getUrl()) || Objects.equals(accessMethod.getUrl(), "") ? EMPTY_VALUE : accessMethod.getUrl())
+                        );
+            }
+
+            BulkAppDetails details = BulkAppDetails.builder().userName(instance.getOwner().getUsername())
+                    .appInstanceName(instance.getName())
+                    .appName(instance.getApplication().getName())
+                    .domainCodeName(instance.getDomain().getCodename())
+                    .appVersion(instance.getApplication().getVersion())
+                    .parameters(configurationParameters)
+                    .accessMethod(accessMethodParameters)
+                    .build();
+            result.add(details);
+        });
+
+        result.forEach(x -> {
+            log.debug("Deployment entry details: {} {} {} {} {} {} {}", x.getAppName(), x.getAppVersion(), x.getAppInstanceName(), x.getUserName(), x.getDomainCodeName(), x.getParameters(), x.getAccessMethod());
+        });
+
+        return result;
+    }
+
+    public InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> bulkDeploymentDetails) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
+            CSVWriter csvWriter = new CSVWriter(writer);
+            // add header row
+            List<String> header = createHeaderRow(bulkDeploymentDetails);
+            log.debug("Header row: {}", header);
+            csvWriter.writeNext(header.toArray(new String[0]));
+
+            // add data rows
+            bulkDeploymentDetails.forEach(bulkDetails -> {
+                List<String> valuesInOrder = new ArrayList<>();
+                valuesInOrder.add(bulkDetails.getDomainCodeName());
+                valuesInOrder.add(bulkDetails.getAppName());
+                valuesInOrder.add(bulkDetails.getAppInstanceName());
+                valuesInOrder.add(bulkDetails.getUserName());
+                valuesInOrder.add(bulkDetails.getAppVersion());
+                // access methods
+                valuesInOrder.addAll(bulkDetails.getAccessMethod().values());
+                // config parameters
+                valuesInOrder.addAll(bulkDetails.getParameters().values());
+                log.debug("Data row: {}", valuesInOrder);
+                csvWriter.writeNext(valuesInOrder.toArray(new String[0]));
+            });
+
+            csvWriter.close();
+            writer.close();
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+            log.debug("Csv content size: {} bytes", byteArray.length);
+            return new InputStreamResource(new ByteArrayInputStream(byteArray));
+
+        } catch (Exception e) {
+            log.error("Exception while preparing bulk deployment details CSV content", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @NotNull
+    private static List<String> createHeaderRow(List<BulkAppDetails> details) {
+        // default column names
+        List<String> header = new ArrayList<>(List.of("domainCodeName", "appName", "appInstanceName", "userName", "appVersion"));
+
+        // access methods header
+        header.addAll(details.get(0).getAccessMethod().keySet());
+
+        // config parameters header
+        details.get(0).getParameters().keySet().forEach(param -> {
+            param = param.replace("\"", "");
+            header.add(CSV_HEADER_PARAM_PREFIX + param);
+        });
+
+        return header;
     }
 
 }

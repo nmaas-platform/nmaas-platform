@@ -12,6 +12,7 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
+import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
@@ -190,11 +191,13 @@ public class NotificationManager {
     }
 
     private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserView user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
+        boolean showAdditional = mailAttributes.getOtherAttributes().get("message") != null;
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
                 .putAll(mailTemplate.getGlobalInformation())
                 .put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress)
                 .put(MailTemplateElements.HEADER, getHeader(langContent.getTemplate().get(MailTemplateElements.HEADER), user))
                 .put(MailTemplateElements.CONTENT, getContent(langContent.getTemplate().get(MailTemplateElements.CONTENT), mailAttributes.getOtherAttributes()))
+                .put(MailTemplateElements.ADDITIONAL, showAdditional ? getContent(langContent.getTemplate().get(MailTemplateElements.ADDITIONAL), mailAttributes.getOtherAttributes()) : "")
                 .put(MailTemplateElements.SENDER, langContent.getTemplate().get(MailTemplateElements.SENDER))
                 .put(MailTemplateElements.NOREPLY, langContent.getTemplate().get(MailTemplateElements.NOREPLY))
                 .put(MailTemplateElements.SENDER_POLICY, langContent.getTemplate().get(MailTemplateElements.SENDER_POLICY))

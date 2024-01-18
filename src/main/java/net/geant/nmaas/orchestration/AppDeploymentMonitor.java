@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Declares a method to retrieve the current state of application being deployed using {@link AppLifecycleManager} API
@@ -50,6 +51,15 @@ public interface AppDeploymentMonitor {
     AppUiAccessDetails userAccessDetails(Identifier deploymentId);
 
     /**
+     * Retrieves map of application deployment parameters that can be further exposed to the user.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @return map of deployment parameters with their key and value
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    Map<String, String> appDeploymentParameters(Identifier deploymentId);
+
+    /**
      * Retrieves the URL that should be used in order to clone the Git repository that contains configuration files
      * of the deployed application.
      *
@@ -62,9 +72,27 @@ public interface AppDeploymentMonitor {
      * Retrieves information about application deployment state transitions.
      *
      * @param deploymentId unique identifier of the deployed user application
-     * @return all of state changes of the application
+     * @return all state changes of the application
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
     List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId);
 
+    /**
+     * Retrieves list of application deployment components.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @return list of deployment components
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    List<AppComponentDetails> appComponents(Identifier deploymentId);
+
+    /**
+     * Retrieves logs from specified application deployment component.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @param appComponentName name of the component which logs should be collected
+     * @return objects representing logs from application component
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName);
 }

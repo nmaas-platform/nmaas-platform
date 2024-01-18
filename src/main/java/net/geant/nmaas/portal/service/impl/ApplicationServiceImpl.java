@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -131,6 +132,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 			checkTemplates(app);
 		}
 		app.setState(state);
+		if (state.equals(ApplicationState.DELETED)) {
+			String suffix = "_DELETED_" + OffsetDateTime.now();
+			app.setName(app.getName() + suffix);
+		}
 		applicationRepository.save(app);
 	}
 

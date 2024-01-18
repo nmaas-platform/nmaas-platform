@@ -167,11 +167,27 @@ public class AppInstanceController extends AppBaseController {
         return getAllRunningByDomain(domain);
     }
 
+    @GetMapping("/running/app/{id}")
+    @Transactional
+    public boolean hasRunningInstance(@PathVariable Long id) {
+        ApplicationBase appBase = appBaseService.getBaseApp(id);
+        return appBase.getVersions().stream()
+                .map(version -> applicationService.findApplication(version.getAppVersionId())
+                        .orElseThrow(() -> new RuntimeException("Application not found")))
+                .map(instanceService::findAllByApplication)
+                .flatMap(List::stream)
+                .anyMatch(this::isInstanceRunning);
+    }
+
     private List<AppInstanceView> getAllRunningByDomain(Domain domain) {
         return this.instanceService.findAllByDomain(domain).stream()
-                .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
+                .filter(this::isInstanceRunning)
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isInstanceRunning(AppInstance app) {
+        return appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
     }
 
     @GetMapping(value = "/domain/{domainId}/my")
@@ -400,6 +416,20 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.updateApplicationStatus(appInstance.getInternalId());
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
+    @PostMapping("/{appInstanceId}/version/{version}")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public void changeManualVersion(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                    @PathVariable(value = "version") String version) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            Application application = getApp(appInstance.getApplication().getName(), version);
+            appInstance.setApplication(application);
+            this.instanceService.update(appInstance);
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }

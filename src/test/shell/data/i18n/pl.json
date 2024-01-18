@@ -254,6 +254,11 @@
     "HIDE_UNDEPLOYED": "Ukryj zatrzymane instancje",
     "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
+    "MANUAL_UPDATE" : {
+      "HEADER" : "Ręczna zmiana wersji",
+      "BODY" : "Aktualizacja wersji aplikacji dla instacji zgodnie z procesem aktualizacji przeprowadzonym ręcznie. Wybierz odpowiednią wersję z poniższej listy.",
+      "YES_BUTTON" : "Zaktualizuj wersję"
+    },
     "SORT_MODE": {
       "NONE": "Brak",
       "NAME": "Nazwa",
@@ -699,6 +704,14 @@
     "ADD_BUTTON": "Dodaj",
     "VIEW_BUTTON": "Pokaż",
     "EDIT_BUTTON": "Edytuj",
+    "DELETE_BUTTON": "Usuń",
+    "CONFIRM_REMOVAL" : {
+      "HEADER": "Potwierdź usunięcie aplikacji",
+      "DESCRIPTION": "Czy na pewno chcesz całkowicie usunąć tą aplikację z katalogu razem ze wszystkimi wersjami?",
+      "CANCEL" : "Anuluj",
+      "CONFIRM": "Potwierdź",
+      "DISABLED": "Nie możesz usunąć tej ponieważ ma aktualnie uruchomione instancje. Odinstaluj te instancje i ponów próbę usunięcia aplikacji."
+    },
     "CHANGE_STATE_BUTTON": "Zmień stan",
     "CHANGE_OWNER_BUTTON": "Zmień właściciela",
     "APPROVED_TAB": "Zaakceptowane",
@@ -708,12 +721,14 @@
     "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
     "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje",
     "SEND_NOTIFICATION": "Wyślij powiadomienie mailowe do wszystkich użytkowników",
+    "NOTIFICATION_CONTENT" : "Dodatkowe informacja dla użytkowników aplikacji",
     "ADD_JSON" : "Dodanie aplikacji przez plik JSON",
     "ADD_JSON_VERSION" : "Dodanie wersji aplikacji przez plik JSON",
     "ADD_JSON_INFO" : "Wybierz plik JSON z aplikacją do dodania",
     "ADD_JSON_TEXTAREA" : "lub skopiuj jego zawartość poniżej",
     "SEND_JSON" : "Wyślij JSON",
-    "JSON_ERROR" : "JSON jest niepoprawny - sprawdź poprawność składni"
+    "JSON_ERROR" : "JSON jest niepoprawny - sprawdź poprawność składni",
+    "EXPORT_JSON" : "Eksport do JSONa"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -1156,7 +1171,8 @@
       "INSTANCE_NAME": "Nazwa instancji",
       "DOMAIN" : "Domena",
       "CHECK_STATE" : "Sprawdź status",
-      "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej"
+      "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej",
+      "DOWNLOAD_CSV" : "Pobierz CSV"
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",
