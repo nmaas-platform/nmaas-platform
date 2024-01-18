@@ -504,19 +504,19 @@
     "REDEPLOY_BUTTON": "Neuinstallieren",
     "ABORT_BUTTON": "Abbrechen",
     "VIEW_LOGS": "View logs",
+    "LOG_ACCESS": {
+      "HEADER": "Logs",
+      "POD": "Pod",
+      "DROPDOWN_PLACEHOLDER": "Choose a pod",
+      "REFRESH": "Refresh",
+      "DOWNLOAD": "Download"
+    },
     "UPDATE_CONFIG_BUTTON": "Konfigurieren",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades aktivieren",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades deaktivieren",
     "ADD_MEMBERS_BUTTON": "Add members",
     "ADDITIONAL_INFO": "Additional Information",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern.<br>Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
-    "LOG_ACCESS": {
-      "HEADER": "Logs",
-      "POD": "Pod",
-      "REFRESH": "Refresh",
-      "DOWNLOAD": "Download",
-      "DROPDOWN_PLACEHOLDER": "Choose a pod"
-    },
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installationsfortschritt",
       "STATE": "Status",
