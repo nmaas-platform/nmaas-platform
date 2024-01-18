@@ -499,11 +499,19 @@
     "CHECK_STATUS_BUTTON": "Check state",
     "REDEPLOY_BUTTON": "Redeploy",
     "ABORT_BUTTON": "Abort",
+    "VIEW_LOGS": "View logs",
     "ADD_MEMBERS_BUTTON": "Members",
     "UPDATE_CONFIG_BUTTON": "Configure",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Enable auto upgrades",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Disable auto upgrades",
     "DEPLOYMENT_IN_PROGRESS": "Application is being activated. This process may take up to several minutes. <br>You will be notified with an email once your instance is ready.",
+    "LOG_ACCESS": {
+      "HEADER": "Logs",
+      "POD": "Pod",
+      "REFRESH": "Refresh",
+      "DOWNLOAD": "Download",
+      "DROPDOWN_PLACEHOLDER": "Choose a pod"
+    },
     "ADDITIONAL_INFO": "Additional Information",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",

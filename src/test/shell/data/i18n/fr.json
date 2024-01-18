@@ -498,12 +498,20 @@
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Re-déployer",
     "ABORT_BUTTON": "Avorter",
+    "VIEW_LOGS": "View logs",
     "ADD_MEMBERS_BUTTON": "Add members",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Enable auto upgrades",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Disable auto upgrades",
     "ADDITIONAL_INFO": "Additional Information",
     "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes.<br>Vous recevrez une notification par e-mail une fois que votre instance est prête.",
+    "LOG_ACCESS": {
+      "HEADER": "Logs",
+      "POD": "Pod",
+      "REFRESH": "Refresh",
+      "DOWNLOAD": "Download",
+      "DROPDOWN_PLACEHOLDER": "Choose a pod"
+    },
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
       "STATE": "Etat",
