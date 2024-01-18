@@ -503,6 +503,14 @@
     "CHECK_STATUS_BUTTON": "Sprawdź stan",
     "REDEPLOY_BUTTON": "Restartuj",
     "ABORT_BUTTON": "Przerwij",
+    "VIEW_LOGS": "Sprawdź logi",
+    "LOG_ACCESS": {
+      "HEADER": "Logi",
+      "POD": "Pod",
+      "DROPDOWN_PLACEHOLDER": "Wybierz pod",
+      "REFRESH": "Odśwież",
+      "DOWNLOAD": "Pobierz"
+    },
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Wyłącz automatyczne aktualizacje",

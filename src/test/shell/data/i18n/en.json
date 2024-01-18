@@ -504,6 +504,14 @@
     "CHECK_STATUS_BUTTON": "Check state",
     "REDEPLOY_BUTTON": "Redeploy",
     "ABORT_BUTTON": "Abort",
+    "VIEW_LOGS": "View logs",
+    "LOG_ACCESS": {
+      "HEADER": "Logs",
+      "POD": "Pod",
+      "DROPDOWN_PLACEHOLDER": "Choose a pod",
+      "REFRESH": "Refresh",
+      "DOWNLOAD": "Download"
+    },
     "ADD_MEMBERS_BUTTON": "Members",
     "UPDATE_CONFIG_BUTTON": "Configure",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Enable auto upgrades",
