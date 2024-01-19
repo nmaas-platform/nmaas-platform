@@ -11,6 +11,8 @@ import net.geant.nmaas.portal.service.ApplicationLogsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +45,15 @@ public class ApplicationLogsServiceImpl implements ApplicationLogsService {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(IllegalArgumentException::new);
         AppComponentLogs appComponentLogs = appDeploymentMonitor.appComponentLogs(appInstance.getInternalId(), podName);
-        return new PodLogs(appComponentLogs.getName(), appComponentLogs.getLines());
+        return new PodLogs(appComponentLogs.getName(), processLogs(appComponentLogs.getLines()));
+    }
+
+    private List<String> processLogs(List<String> lines) {
+        return lines.stream().map(line -> {
+            String ansiEscapeCodePattern = "\u001B\\[[;\\d]*m";
+            Pattern pattern = Pattern.compile(ansiEscapeCodePattern);
+            Matcher matcher = pattern.matcher(line);
+            return matcher.replaceAll("");
+        }).collect(Collectors.toList());
     }
 }
