@@ -515,6 +515,14 @@
     "CHECK_STATUS_BUTTON": "Check status",
     "REDEPLOY_BUTTON": "Re-déployer",
     "ABORT_BUTTON": "Avorter",
+    "VIEW_LOGS": "View logs",
+    "LOG_ACCESS": {
+      "HEADER": "Logs",
+      "POD": "Pod",
+      "DROPDOWN_PLACEHOLDER": "Choose a pod",
+      "REFRESH": "Refresh",
+      "DOWNLOAD": "Download"
+    },
     "ADD_MEMBERS_BUTTON": "Add members",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Enable auto upgrades",

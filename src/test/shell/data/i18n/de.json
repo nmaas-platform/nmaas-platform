@@ -515,6 +515,14 @@
     "CHECK_STATUS_BUTTON": "Status überprüfen",
     "REDEPLOY_BUTTON": "Neuinstallieren",
     "ABORT_BUTTON": "Abbrechen",
+    "VIEW_LOGS": "View logs",
+    "LOG_ACCESS": {
+      "HEADER": "Logs",
+      "POD": "Pod",
+      "DROPDOWN_PLACEHOLDER": "Choose a pod",
+      "REFRESH": "Refresh",
+      "DOWNLOAD": "Download"
+    },
     "UPDATE_CONFIG_BUTTON": "Konfigurieren",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades aktivieren",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades deaktivieren",

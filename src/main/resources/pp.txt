@@ -34,8 +34,14 @@ directly in NMaaS), </li>
 <li><strong>first name</strong> (optional), </li>
 <li><strong>last name</strong> (optional), </li>
 <li><strong>email address</strong>. </li></ul></p>
-<p>The service log files contain the following user personal data: username, user identifier, first name, last
-name and email address. </p>
+<p>The service log files contain the following user personal data:<ul>
+<li><strong>username</strong>, </li>
+<li><strong>user identifier</strong>, </li>
+<li><strong>first name</strong>, </li>
+<li><strong>last name</strong>, </li>
+<li><strong>email address</strong>, </li>
+<li><strong>IP address</strong> (from which user logged into the NMaaS Portal). </li></ul></p>
+
 <p>The purpose of NMaaS is to facilitate automated deployment of network management and monitoring applications.
 It should be noted that the data collected and stored by particular applications deployed through NMaaS is neither
 controlled nor processed by NMaaS service and the NMaaS Operational Team however it might contain user personal data.

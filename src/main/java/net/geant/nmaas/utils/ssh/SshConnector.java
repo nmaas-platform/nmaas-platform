@@ -34,8 +34,9 @@ public class SshConnector {
 	}
 	
 	private void authenticate(BasicCredentials credentials) {
-		if (ssh == null || !isConnected())
+		if (ssh == null || !isConnected()) {
 			throw new SshConnectionException("Not connected.");
+		}
 		try {
 			ssh.authPublickey(credentials.getUsername());
 		} catch(IOException ex) {
@@ -44,15 +45,17 @@ public class SshConnector {
 	}
 	
 	String executeSingleCommand(String command) {
-		if(!isAuthenticated())
+		if(!isAuthenticated()) {
 			throw new SshConnectionException("Not authenticated connection to " + ssh.getRemoteAddress());
-		try (Session session = ssh.startSession()){
+		}
+		try (Session session = ssh.startSession()) {
 			final Session.Command c = session.exec(command);
 			String error = IOUtils.readFully(c.getErrorStream()).toString();
 			String output = IOUtils.readFully(c.getInputStream()).toString();
 			c.join(5, TimeUnit.SECONDS);
-			if (exitStatusIndicatesThatSomethingWentWrong(c.getExitStatus()))
+			if (exitStatusIndicatesThatSomethingWentWrong(c.getExitStatus())) {
 				throw new CommandExecutionException("Command execution failed (exit status: " + c.getExitStatus() + "; details: " + error + ")");
+			}
 			return output;
 		} catch (IOException ex) {
 			throw new SshConnectionException("Unable to read command execution error message -> " + ex.getMessage());
