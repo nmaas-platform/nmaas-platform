@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
@@ -50,6 +51,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/domains")
+@Slf4j
 public class DomainController extends AppBaseController {
 
 	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
