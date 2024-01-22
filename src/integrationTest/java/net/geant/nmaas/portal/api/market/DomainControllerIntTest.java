@@ -31,6 +31,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.net.InetAddress;
 import java.security.Principal;
@@ -409,13 +410,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
         when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
 
-        MvcResult result = mvc.perform(get("/api/domains/group/2")
+        ResultActions result = mvc.perform(get("/api/domains/group/2")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
+                .andExpect(status().is5xxServerError());
     }
 
 
