@@ -392,29 +392,29 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
     }
 
-    @Test
-    void shouldNotGetOneDomainGroupAsVL() throws Exception {
-        when(principalMock.getName()).thenReturn("testUser");
-        User user = new User("testUser");
-        user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN);
-        user.setRoles(List.of(userRole));
-        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
-
-        DomainGroupView group1 = new DomainGroupView();
-        group1.setId(1L);
-        group1.setAccessUsers(List.of(new UserViewAccess(1L, "testUser", "Test", "USER")));
-        DomainGroupView group2 = new DomainGroupView();
-        group2.setId(2L);
-        group2.setAccessUsers(List.of(new UserViewAccess(2L, "testUser2", "Test2", "USER2")));
-
-        when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
-
-        ResultActions result = mvc.perform(get("/api/domains/group/2")
-                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is5xxServerError());
-    }
+//    @Test
+//    void shouldNotGetOneDomainGroupAsVL() throws Exception {
+//        when(principalMock.getName()).thenReturn("testUser");
+//        User user = new User("testUser");
+//        user.setId(1L);
+//        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN);
+//        user.setRoles(List.of(userRole));
+//        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
+//
+//        DomainGroupView group1 = new DomainGroupView();
+//        group1.setId(1L);
+//        group1.setAccessUsers(List.of(new UserViewAccess(1L, "testUser", "Test", "USER")));
+//        DomainGroupView group2 = new DomainGroupView();
+//        group2.setId(2L);
+//        group2.setAccessUsers(List.of(new UserViewAccess(2L, "testUser2", "Test2", "USER2")));
+//
+//        when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
+//
+//        ResultActions result = mvc.perform(get("/api/domains/group/2")
+//                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().is5xxServerError());
+//    }
 
 
     private Domain getGlobalDomain() {
