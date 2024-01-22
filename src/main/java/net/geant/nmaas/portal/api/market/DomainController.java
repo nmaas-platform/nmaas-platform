@@ -228,6 +228,7 @@ public class DomainController extends AppBaseController {
 		}
 		try {
 			DomainGroupView domainGroupView = domainGroupService.createDomainGroup(domainGroup);
+			this.domainService.updateRolesInDomainGroupByUsers(domainGroupView);
 			return new Id(domainGroupView.getId());
 		} catch (InvalidDomainException e) {
 			throw new ProcessingException(e.getMessage());
