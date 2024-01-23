@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
 import net.geant.nmaas.kubernetes.KubernetesConnector;
 import net.geant.nmaas.kubernetes.shell.PodShellConnector;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,13 +23,13 @@ import static org.mockito.Mockito.when;
 
 public class KubernetesConnectorTest {
 
-    private KubernetesConnector connector;
-
-    private final String namespace = "namespace";
-    private final String podName = "turtle";
+    private static final String NAMESPACE = "namespace";
+    private static final String POD_NAME = "turtle";
 
     private final KubernetesClient client = mock(KubernetesClient.class);
     private final ExecWatch watch = mock(ExecWatch.class);
+
+    private KubernetesConnector connector;
 
     /**
      * extend class to be able to mock inner components
@@ -42,7 +44,7 @@ public class KubernetesConnectorTest {
 
     @BeforeEach
     void setup() throws IOException {
-        connector = new TestableKubernetesConnector(client, watch, namespace, podName);
+        connector = new TestableKubernetesConnector(client, watch, NAMESPACE, POD_NAME);
 
         PipedInputStream is = new PipedInputStream();
         PipedOutputStream out = new PipedOutputStream(is);
@@ -53,7 +55,9 @@ public class KubernetesConnectorTest {
 
     @Test
     void shouldReturnNotImplementedAfterExecutingSingleCommand() {
-        assertEquals("NOT IMPLEMENTED", connector.executeSingleCommand("command"));
+        assertThrows(NotImplementedException.class, () ->
+            connector.executeSingleCommand("command")
+        );
     }
 
     @Test
