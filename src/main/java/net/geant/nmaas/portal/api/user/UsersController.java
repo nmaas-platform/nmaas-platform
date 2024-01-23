@@ -69,7 +69,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_MANAGER;
 
 @RestController
@@ -499,7 +499,7 @@ public class UsersController {
                 throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
             }
         } else {
-            if (Stream.of(ROLE_GUEST, ROLE_USER, ROLE_DOMAIN_ADMIN, ROLE_VL_DOMAIN).noneMatch(allowed -> allowed == role)) {
+            if (Stream.of(ROLE_GUEST, ROLE_USER, ROLE_DOMAIN_ADMIN, ROLE_VL_DOMAIN_ADMIN).noneMatch(allowed -> allowed == role)) {
                 throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
             }
         }

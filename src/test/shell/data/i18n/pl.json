@@ -1039,7 +1039,7 @@
       "ROLE_INCOMPLETE":  "Konto w trakcie tworzenia",
       "ROLE_NOT_ACCEPTED" : "Konto jeszcze nie zaakceptowane",
       "ROLE_VL_MANAGER" : "Administrator wirtualnych laboratoriów",
-      "ROLE_VL_DOMAIN" : "WL administrator domeny"
+      "ROLE_VL_DOMAIN_ADMIN" : "WL administrator domeny"
     }
   },
   "PAGINATION": {

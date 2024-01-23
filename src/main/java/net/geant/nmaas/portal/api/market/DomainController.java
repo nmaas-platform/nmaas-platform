@@ -27,7 +27,6 @@ import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,7 +86,7 @@ public class DomainController extends AppBaseController {
 
 		if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
 				|| user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
-				&& (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_VL_DOMAIN))) {
+				&& (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_VL_DOMAIN_ADMIN))) {
 
 			return modelMapper.map(domain, DomainView.class);
 		}
@@ -248,7 +247,7 @@ public class DomainController extends AppBaseController {
 	public List<DomainGroupView> getDomainGroups(Principal principal) {
 		User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
 		if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_VL_MANAGER))) {
-			return domainGroupService.getAllDomainGroups().stream().filter(group -> group.getAccessUsers().stream()
+			return domainGroupService.getAllDomainGroups().stream().filter(group -> group.getManagers().stream()
 					.anyMatch(groupUser -> groupUser.getId().equals(user.getId()))).collect(Collectors.toList());
 		}
 		return domainGroupService.getAllDomainGroups();
@@ -260,7 +259,7 @@ public class DomainController extends AppBaseController {
 	public DomainGroupView getDomainGroup(@PathVariable Long domainGroupId, Principal principal) throws AccessDeniedException {
 		DomainGroupView domainGroupView = domainGroupService.getDomainGroup(domainGroupId);
 		if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-				domainGroupView.getAccessUsers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+				domainGroupView.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
 			return domainGroupView;
 		} else throw new AccessDeniedException("You have no access to this domain group");
 	}
@@ -290,7 +289,7 @@ public class DomainController extends AppBaseController {
 	public Id updateDomainGroup(@PathVariable Long domainGroupId, @RequestBody DomainGroupView domainGroupView, Principal principal) throws AccessDeniedException {
 		DomainGroupView domainGroup = domainGroupService.getDomainGroup(domainGroupId);
 		if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
-				domainGroup.getAccessUsers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+				domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
 			domainService.checkDomainGroupUsers(domainGroupView);
 			domainService.updateRolesInDomainGroupByUsers(domainGroupView);
 			return new Id(domainGroupService.updateDomainGroup(domainGroupId, domainGroupView).getId());

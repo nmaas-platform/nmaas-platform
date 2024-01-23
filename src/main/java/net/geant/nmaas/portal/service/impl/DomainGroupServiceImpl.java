@@ -4,18 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
-import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
-import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -117,7 +114,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 //        updateRolesInDomainsByUsers(view);
         domainGroup.setCodename(view.getCodename());
         domainGroup.setName(view.getName());
-        domainGroup.setAccessUsers(view.getAccessUsers());
+        domainGroup.setManagers(view.getManagers().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList()));
         for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {

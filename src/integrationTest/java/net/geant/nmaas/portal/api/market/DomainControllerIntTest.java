@@ -9,9 +9,8 @@ import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainView;
-import net.geant.nmaas.portal.api.domain.UserViewAccess;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -31,7 +30,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.net.InetAddress;
 import java.security.Principal;
@@ -343,16 +341,20 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
        when(principalMock.getName()).thenReturn("testUser");
         User user = new User("testUser");
         user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN);
+        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN_ADMIN);
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 
         DomainGroupView group1 = new DomainGroupView();
         group1.setId(1L);
-        group1.setAccessUsers(List.of(new UserViewAccess(1L, "testUser", "Test", "USER")));
+        User user1 = new User("testUser", true);
+        user1.setId(1L);
+        group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
         DomainGroupView group2 = new DomainGroupView();
         group2.setId(2L);
-        group2.setAccessUsers(List.of(new UserViewAccess(2L, "testUser2", "Test2", "USER2")));
+        User user2 = new User("testUser2", true);
+        user2.setId(1L);
+        group2.setManagers(List.of((modelMapper.map(user2, UserViewMinimal.class))));
 
         when(domainGroupService.getAllDomainGroups()).thenReturn(List.of(group1, group2));
 
@@ -370,16 +372,19 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(principalMock.getName()).thenReturn("admin");
         User user = new User("admin");
         user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN);
+        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN_ADMIN);
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 
         DomainGroupView group1 = new DomainGroupView();
         group1.setId(1L);
-        group1.setAccessUsers(List.of(new UserViewAccess(1L, "admin", "Test", "USER")));
+        User user1 = new User("testUser", true);
+        user1.setId(1L);
+        group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
         DomainGroupView group2 = new DomainGroupView();
-        group2.setId(2L);
-        group2.setAccessUsers(List.of(new UserViewAccess(2L, "testUser2", "Test2", "USER2")));
+        User user2 = new User("testUser2", true);
+        user2.setId(1L);
+        group2.setManagers(List.of((modelMapper.map(user2, UserViewMinimal.class))));
 
         when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
 

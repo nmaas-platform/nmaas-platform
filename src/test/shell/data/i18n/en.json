@@ -1040,7 +1040,7 @@
       "ROLE_INCOMPLETE":  "Account creation in progress",
       "ROLE_NOT_ACCEPTED" : "Account not active yet",
       "ROLE_VL_MANAGER" : "Virtual lab manager",
-      "ROLE_VL_DOMAIN" : "VL domain manager"
+      "ROLE_VL_DOMAIN_ADMIN" : "VL domain manager"
     }
   },
   "PAGINATION": {

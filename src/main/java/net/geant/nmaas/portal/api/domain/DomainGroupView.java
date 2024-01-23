@@ -29,7 +29,7 @@ public class DomainGroupView {
 
     private List<ApplicationStatePerDomainView> applicationStatePerDomain;
 
-    private List<UserViewAccess> accessUsers = new ArrayList<>();
+    private List<UserViewMinimal> managers = new ArrayList<>();
 
 
 }

@@ -6,9 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.domain.UserViewAccess;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -52,14 +50,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean hasPrivilege(User user, Domain domain, Role role) {
-		if (user == null || domain == null || role == null) {
-			return false;
-		}
-		return Objects.nonNull(userRoleRepository.findByDomainAndUserAndRole(domain, user, role));
-	}
-
-	@Override
-	public boolean hasPrivilege(UserViewAccess user, DomainBase domain, Role role) {
 		if (user == null || domain == null || role == null) {
 			return false;
 		}

@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.UserViewAccess;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,9 +25,6 @@ public interface UserRoleRepository extends JpaRepository<UserRole, UserRole.Id>
 	
 	@Query("SELECT ur FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user = ?2 AND ur.id.role = ?3")
 	UserRole findByDomainAndUserAndRole(Domain domain, User user, Role role);
-
-	@Query("SELECT ur FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user = ?2 AND ur.id.role = ?3")
-	UserRole findByDomainAndUserAndRole(DomainBase domain, UserViewAccess user, Role role);
 
 	@Query("SELECT ur.id.role FROM UserRole ur WHERE ur.id.domain.id = ?1 AND ur.id.user.id = ?2")
 	Set<Role> findRolesByDomainAndUser(Long domainId, Long userId);

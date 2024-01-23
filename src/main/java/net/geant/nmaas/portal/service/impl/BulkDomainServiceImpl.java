@@ -13,9 +13,6 @@ import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
-import net.geant.nmaas.portal.api.domain.UserBase;
-import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.domain.UserViewAccess;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
@@ -24,6 +21,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -49,6 +47,7 @@ import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_NAME;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN_ADMIN;
 
 @Service
 @Slf4j
@@ -62,6 +61,8 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final BulkDeploymentRepository bulkDeploymentRepository;
     private final ModelMapper modelMapper;
 
+    private final UserRoleRepository userRoleRepository;
+
     private final int domainCodenameMaxLength;
 
     public BulkDomainServiceImpl(
@@ -71,6 +72,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             BulkDeploymentRepository bulkDeploymentRepository,
             KubernetesClusterIngressManager kubernetesClusterIngressManager,
             ModelMapper modelMapper,
+            UserRoleRepository userRoleRepository,
             @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength) {
         this.domainService = domainService;
         this.domainGroupService = domainGroupService;
@@ -79,6 +81,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         this.bulkDeploymentRepository = bulkDeploymentRepository;
         this.modelMapper = modelMapper;
         this.domainCodenameMaxLength = domainCodenameMaxLength;
+        this.userRoleRepository = userRoleRepository;
     }
 
     public BulkDeploymentViewS handleBulkCreation(List<CsvDomain> domainSpecs, UserViewMinimal creator) {
@@ -87,7 +90,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
 
         List<BulkDeploymentEntry> bulkDeploymentEntries = new ArrayList<>();
 
-        domainSpecs.forEach( domainSpec -> {
+        domainSpecs.forEach(domainSpec -> {
             Domain domain = createDomainIfNotExists(bulkDeploymentEntries, domainSpec);
             // domain groups creation and domain assignment
             createMissingGroupsAndAssignDomain(domainSpec, domain, creator);
@@ -179,11 +182,13 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private void createMissingGroupsAndAssignDomain(CsvDomain csvDomain, Domain domain, UserViewMinimal creator) {
         List<String> groupNames = Arrays.stream(csvDomain.getDomainGroups().replaceAll("\\s", "").split(",")).collect(Collectors.toList());
         groupNames.removeAll(Arrays.asList("", null));
-        groupNames.forEach( groupName -> {
+        groupNames.forEach(groupName -> {
             log.info("Adding domain {} to group {}", domain.getName(), groupName);
             if (!domainGroupService.existDomainGroup(groupName, groupName)) {
-                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null, List.of(getUserViewAccess(creator))));
+                domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null, List.of(creator)));
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
+                User user = userService.findByUsername(creator.getUsername()).get();
+                userRoleRepository.save(new UserRole(user, domain, ROLE_VL_DOMAIN_ADMIN));
             } else {
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
             }
@@ -228,15 +233,6 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         details.put(BULK_ENTRY_DETAIL_KEY_USER_NAME, user.getUsername());
         details.put(BULK_ENTRY_DETAIL_KEY_USER_EMAIL, user.getEmail());
         return details;
-    }
-
-    private static UserViewAccess getUserViewAccess(UserViewMinimal user) {
-        UserViewAccess view = new UserViewAccess();
-        view.setId(user.getId());
-        view.setFirstname(user.getFirstname());
-        view.setLastname(user.getLastname());
-        view.setUsername(user.getUsername());
-        return view;
     }
 
 }

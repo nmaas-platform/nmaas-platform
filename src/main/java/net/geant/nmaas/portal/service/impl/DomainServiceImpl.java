@@ -315,7 +315,7 @@ public class DomainServiceImpl implements DomainService {
         User user = getUser(userId);
 
         if (userRoleRepository.findByDomainAndUserAndRole(domain, user, role) == null) {
-            if(role != Role.ROLE_VL_DOMAIN) removePreviousRoleInDomain(domain, user);
+            if(role != Role.ROLE_VL_DOMAIN_ADMIN) removePreviousRoleInDomain(domain, user);
             userRoleRepository.save(new UserRole(user, domain, role));
         }
     }
@@ -459,17 +459,17 @@ public class DomainServiceImpl implements DomainService {
     public void checkDomainGroupUsers(DomainGroupView view) {
         List<Long> userToDelete = new ArrayList<>();
         DomainGroupView domainGroup = this.domainGroupService.getDomainGroup(view.getId());
-        log.error("View size {}" ,view.getAccessUsers().size());
-        log.error("database  size {}" ,domainGroup.getAccessUsers().size());
-        domainGroup.getAccessUsers().forEach(user -> {
-            if (view.getAccessUsers().stream().noneMatch(viewUser -> viewUser.getId().equals(user.getId()))) {
+        log.error("View size {}" ,view.getManagers().size());
+        log.error("database  size {}" ,domainGroup.getManagers().size());
+        domainGroup.getManagers().forEach(user -> {
+            if (view.getManagers().stream().noneMatch(viewUser -> viewUser.getId().equals(user.getId()))) {
                 userToDelete.add(user.getId());
             }
         });
         log.error("Users to delete : {}", userToDelete.size());
         userToDelete.forEach(userId -> {
             domainGroup.getDomains().forEach(domain -> {
-                this.removeMemberRole(domain.getId(), userId, Role.ROLE_VL_DOMAIN);
+                this.removeMemberRole(domain.getId(), userId, Role.ROLE_VL_DOMAIN_ADMIN);
             });
         });
     }
@@ -477,8 +477,8 @@ public class DomainServiceImpl implements DomainService {
     @Override
     public void updateRolesInDomainGroupByUsers(DomainGroupView view) {
         view.getDomains().forEach(domain -> {
-            view.getAccessUsers().forEach(user -> {
-                    this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN);
+            view.getManagers().forEach(user -> {
+                    this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
             });
         });
     }
