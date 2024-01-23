@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
@@ -187,7 +188,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             if (!domainGroupService.existDomainGroup(groupName, groupName)) {
                 domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null, List.of(creator)));
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
-                User user = userService.findByUsername(creator.getUsername()).get();
+                User user = userService.findByUsername(creator.getUsername()).orElseThrow(() -> new MissingElementException("User not found"));
                 userRoleRepository.save(new UserRole(user, domain, ROLE_VL_DOMAIN_ADMIN));
             } else {
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);

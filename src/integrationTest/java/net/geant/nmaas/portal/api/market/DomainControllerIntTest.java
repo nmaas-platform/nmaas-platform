@@ -378,8 +378,9 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
 
         DomainGroupView group1 = new DomainGroupView();
         group1.setId(1L);
-        User user1 = new User("testUser", true);
+        User user1 = new User("vl_admin", true);
         user1.setId(1L);
+
         group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
         DomainGroupView group2 = new DomainGroupView();
         User user2 = new User("testUser2", true);
@@ -389,7 +390,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
 
         MvcResult result = mvc.perform(get("/api/domains/group/1")
-                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN_VL_MANAGER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
