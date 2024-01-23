@@ -64,7 +64,7 @@ public class BulkDomainServiceIntTest {
         user.setId(1L);
         user.setEmail("test@test.com");
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
-
+        when(userService.registerBulk(any(), any(), any())).thenReturn(user);
 
         BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
 
@@ -101,6 +101,7 @@ public class BulkDomainServiceIntTest {
         user.setId(1L);
         user.setEmail("test@test.com");
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
+        when(userService.registerBulk(any(), any(), any())).thenReturn(user);
 
         bulkDomainService.handleBulkCreation(input, new UserViewMinimal());
 
