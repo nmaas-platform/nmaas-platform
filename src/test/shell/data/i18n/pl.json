@@ -269,7 +269,8 @@
     "MANUAL_UPDATE" : {
       "HEADER" : "Ręczna zmiana wersji",
       "BODY" : "Aktualizacja wersji aplikacji dla instacji zgodnie z procesem aktualizacji przeprowadzonym ręcznie. Wybierz odpowiednią wersję z poniższej listy.",
-      "YES_BUTTON" : "Zaktualizuj wersję"
+      "YES_BUTTON" : "Zaktualizuj wersję",
+      "EMPTY" : "Brak dostepnych innych wersji"
     },
     "SORT_MODE": {
       "NONE": "Brak",
