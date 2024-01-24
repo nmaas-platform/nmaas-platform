@@ -232,6 +232,18 @@
       "ADD_INFO" : "Select domains to add them to group",
       "LIST" : "Domains in group",
       "ACTIVE" : "Active"
+    },
+    "GROUP" : {
+      "ACCESS_USER" : "Users with access",
+      "USERNAME" : "Username",
+      "NAME" : "Firstname Lastname",
+      "ADD" : "Grant access",
+      "ADD_USERS" : "Grand access to group",
+      "ADD_INFO" : "Find user by their mail. If you want to grant access to this group, click Grand access.",
+      "FOUND_USERS" : "Found users",
+      "SELECTED_USERS" : "Selected users",
+      "DELETE_USER" : "Revoke access",
+      "DELETE_MYSELF" : "Remove my access"
     }
   },
   "APP_INSTANCES": {
@@ -1024,7 +1036,9 @@
       "ROLE_DOMAIN_ADMIN": "Domain admin",
       "ROLE_GUEST": "Guest",
       "ROLE_INCOMPLETE":  "Account creation in progress",
-      "ROLE_NOT_ACCEPTED" : "Account not active yet"
+      "ROLE_NOT_ACCEPTED" : "Account not active yet",
+      "ROLE_VL_MANAGER" : "Virtual lab manager",
+      "ROLE_VL_DOMAIN_ADMIN" : "Virtual lab domain admin"
     }
   },
   "PAGINATION": {

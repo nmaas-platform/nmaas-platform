@@ -232,6 +232,18 @@
       "ADD_INFO" : "Wybierz domeny do dodania do grupy",
       "LIST" : "Domeny w grupie",
       "ACTIVE" : "Aktywna"
+    },
+    "GROUP" : {
+      "ACCESS_USER" : "Uprawnieni użytkownicy",
+      "USERNAME" : "Nazwa użytkownika",
+      "NAME" : "Imie i nazwisko",
+      "ADD" : "Wybierz",
+      "ADD_USERS" : "Nadaj dostęp do grupy",
+      "ADD_INFO" : "Znajdź użytkownika po jego adresie email. Lista znalezionych użytkowników wyświetli się poniżej.",
+      "FOUND_USERS" : "Znalezieni użytkownicy",
+      "SELECTED_USERS" : "Wybrani użytkownicy",
+      "DELETE_USER" : "Usuń dostęp",
+      "DELETE_MYSELF" : "Usuń mój dostęp"
     }
   },
   "APP_INSTANCES": {
@@ -1025,7 +1037,9 @@
       "ROLE_DOMAIN_ADMIN": "Administrator domeny",
       "ROLE_GUEST": "Gość",
       "ROLE_INCOMPLETE":  "Konto w trakcie tworzenia",
-      "ROLE_NOT_ACCEPTED" : "Konto jeszcze nie zaakceptowane"
+      "ROLE_NOT_ACCEPTED" : "Konto jeszcze nie zaakceptowane",
+      "ROLE_VL_MANAGER" : "Administrator wirtualnych laboratoriów",
+      "ROLE_VL_DOMAIN_ADMIN" : "WL administrator domeny"
     }
   },
   "PAGINATION": {

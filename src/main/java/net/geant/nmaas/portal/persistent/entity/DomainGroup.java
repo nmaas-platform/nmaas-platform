@@ -14,6 +14,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -24,8 +26,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name="domain_group", uniqueConstraints = {
-        @UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})
+@Table(name = "domain_group", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name"}), @UniqueConstraint(columnNames = {"codename"})
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -39,7 +41,7 @@ public class DomainGroup implements Serializable {
 
     @EqualsAndHashCode.Include
     @NotNull
-    @Column(nullable = false, unique=true)
+    @Column(nullable = false, unique = true)
     String name;
 
     @EqualsAndHashCode.Include
@@ -52,6 +54,14 @@ public class DomainGroup implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
     private List<Domain> domains = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "domain_group_managers",
+            joinColumns = @JoinColumn(name = "domain_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> managers = new ArrayList<>();
 
     public DomainGroup(String name, String codename) {
         super();
@@ -78,7 +88,7 @@ public class DomainGroup implements Serializable {
         this.addApplicationState(applicationBase, true);
     }
 
-    public void addApplicationState(ApplicationBase applicationBase, boolean enabled){
+    public void addApplicationState(ApplicationBase applicationBase, boolean enabled) {
         this.addApplicationState(new ApplicationStatePerDomain(applicationBase, enabled));
     }
 

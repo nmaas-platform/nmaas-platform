@@ -69,6 +69,8 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_MANAGER;
 
 @RestController
 @RequestMapping("/api")
@@ -493,11 +495,11 @@ public class UsersController {
         final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 
         if (domain.equals(globalDomain)) {
-            if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST).noneMatch(allowed -> allowed == role))) {
+            if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST, ROLE_VL_MANAGER).noneMatch(allowed -> allowed == role))) {
                 throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
             }
         } else {
-            if (Stream.of(ROLE_GUEST, ROLE_USER, ROLE_DOMAIN_ADMIN).noneMatch(allowed -> allowed == role)) {
+            if (Stream.of(ROLE_GUEST, ROLE_USER, ROLE_DOMAIN_ADMIN, ROLE_VL_DOMAIN_ADMIN).noneMatch(allowed -> allowed == role)) {
                 throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
             }
         }
@@ -590,8 +592,8 @@ public class UsersController {
         this.userService.setUserLanguage(userId, defaultLanguage);
     }
 
-    @GetMapping(value = "/users/search", params = {"searchPart", "domainId"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+    @GetMapping(value = "/users/search", params = {"searchPart"})
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_VL_MANAGER')")
     public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
         List<UserViewMinimal> result = new ArrayList<>();
         String search = searchPart.toLowerCase();
@@ -600,10 +602,16 @@ public class UsersController {
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .collect(Collectors.toList());
-        result = allUsers.stream().
-                filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
-                .map(this::mapMinimalUser).collect(Collectors.toList());
+        if (domainId != null) {
+            result = allUsers.stream()
+                    .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
+                    .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
+                    .map(this::mapMinimalUser).collect(Collectors.toList());
+        } else {
+            result = allUsers.stream()
+                    .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
+                    .map(this::mapMinimalUser).collect(Collectors.toList());
+        }
         return result;
     }
 

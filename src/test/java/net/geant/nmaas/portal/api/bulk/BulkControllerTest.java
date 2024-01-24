@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.api.bulk;
 
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
@@ -15,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,4 +95,44 @@ public class BulkControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Test
+    void shouldGetDomainBulksAsVLManager() {
+        when(principalMock.getName()).thenReturn("user");
+        User user = new User("user");
+        user.setId(10L);
+        when(userService.findByUsername("user")).thenReturn(Optional.of(user));
+        when(userService.findById(10L)).thenReturn(Optional.of(user));
+        List<BulkDeployment> bulks = new ArrayList<>();
+        BulkDeployment viewS = new BulkDeployment();
+        viewS.setType(BulkType.DOMAIN);
+        viewS.setCreatorId(10L);
+        bulks.add(viewS);
+        when(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).thenReturn(List.of(viewS));
+        assertEquals(1, Objects.requireNonNull(bulkController.getDomainDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
+    }
+
+
+    @Test
+    void shouldGetAppBulksAsVLManager() {
+        when(principalMock.getName()).thenReturn("user");
+        User user = new User("user");
+        user.setId(10L);
+        User user2 = new User("user2");
+        user2.setId(20L);
+        when(userService.findByUsername("user")).thenReturn(Optional.of(user));
+        when(userService.findByUsername("user2")).thenReturn(Optional.of(user2));
+        when(userService.findById(10L)).thenReturn(Optional.of(user));
+        when(userService.findById(20L)).thenReturn(Optional.of(user2));
+        List<BulkDeployment> bulks = new ArrayList<>();
+        BulkDeployment base1 = new BulkDeployment();
+        base1.setType(BulkType.DOMAIN);
+        base1.setCreatorId(10L);
+        bulks.add(base1);
+        BulkDeployment base2 = new BulkDeployment();
+        base2.setType(BulkType.DOMAIN);
+        base2.setCreatorId(20L);
+        bulks.add(base2);
+        when(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).thenReturn(bulks);
+        assertEquals(1, Objects.requireNonNull(bulkController.getAppDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
+    }
 }

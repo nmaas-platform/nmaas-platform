@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -37,8 +38,10 @@ public class BulkDomainServiceImplTest {
     private final BulkDeploymentRepository bulkDeploymentRepository = mock(BulkDeploymentRepository.class);
     private final KubernetesClusterIngressManager kubernetesClusterIngressManager = mock(KubernetesClusterIngressManager.class);
 
+    private final UserRoleRepository userRoleRepository = mock(UserRoleRepository.class);
+
     final BulkDomainService bulkDomainService = new BulkDomainServiceImpl(domainService, domainGroupService, userService,
-            bulkDeploymentRepository, kubernetesClusterIngressManager, new ModelMapper(), 12);;
+            bulkDeploymentRepository, kubernetesClusterIngressManager, new ModelMapper(),userRoleRepository, 12);;
 
     @Test
     void shouldHandleBulkCreationWhenAllCreated() {
@@ -54,7 +57,7 @@ public class BulkDomainServiceImplTest {
         user.setId(1L);
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
-        when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
+        when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
 
         bulkDomainService.handleBulkCreation(List.of(csvDomain), testUser());
@@ -83,7 +86,7 @@ public class BulkDomainServiceImplTest {
         user.setId(1L);
         user.setEmail("user1@test.com");
         when(userService.findByUsername("user1")).thenReturn(Optional.of(user));
-        when(userService.hasPrivilege(any(),any(),any())).thenReturn(true);
+        when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
 
         bulkDomainService.handleBulkCreation(List.of(csvDomain), testUser());

@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -60,4 +61,8 @@ public interface DomainService {
 	boolean softRemoveDomain(Long domainId);
 	void removeDomainFromAllGroups(Domain domain);
 	void removeAllUsersFromDomain(Domain domain);
+
+	void checkDomainGroupUsers(DomainGroupView view);
+
+	void updateRolesInDomainGroupByUsers(DomainGroupView view);
 }
