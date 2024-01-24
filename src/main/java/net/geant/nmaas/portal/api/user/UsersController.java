@@ -592,7 +592,7 @@ public class UsersController {
         this.userService.setUserLanguage(userId, defaultLanguage);
     }
 
-    @GetMapping(value = "/users/search", params = {"searchPart", "domainId"})
+    @GetMapping(value = "/users/search", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_VL_MANAGER')")
     public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
         List<UserViewMinimal> result = new ArrayList<>();
@@ -602,7 +602,7 @@ public class UsersController {
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .collect(Collectors.toList());
-        if (domainId > 0) {
+        if (domainId != null) {
             result = allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                     .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
