@@ -257,7 +257,8 @@
     "MANUAL_UPDATE" : {
       "HEADER" : "Manual version update",
       "BODY" : "Update the current application version for this application instance based on an upgrade process that was performed manually. Select the new correct version from the list below.",
-      "YES_BUTTON" : "Update version"
+      "YES_BUTTON" : "Update version",
+      "EMPTY" : "No other versions available"
     },
     "SORT_MODE": {
       "NONE": "None",
