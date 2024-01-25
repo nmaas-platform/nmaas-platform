@@ -191,6 +191,14 @@ public class KubernetesManager implements ContainerOrchestrator {
                 randomValue = RandomStringUtils.randomAlphanumeric(randomStringLength);
                 // store generated value to be used for subsequent parameters
                 additionalParameters.put(randomExpression, randomValue);
+            } else if (randomExpression.contains("HEX")) {
+                int randomStringLength = Integer.parseInt(randomExpression.replace("RANDOM_HEX_", ""));
+                randomValue = RandomStringUtils.random(randomStringLength,"1234567890abcdef");
+                additionalParameters.put(randomExpression, randomValue);
+            } else if (randomExpression.contains("NUMBER")) {
+                int randomStringLength = Integer.parseInt(randomExpression.replace("RANDOM_NUMBER_", ""));
+                randomValue = RandomStringUtils.randomNumeric(randomStringLength);
+                additionalParameters.put(randomExpression, randomValue);
             }
             return value.replace("%" + randomExpression + "%", randomValue);
         }
