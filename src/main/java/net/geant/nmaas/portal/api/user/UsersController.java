@@ -616,9 +616,8 @@ public class UsersController {
     }
 
     @GetMapping(value = "/users/search/managers", params = {"searchPart"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_VL_MANAGER')")
-    public List<UserViewMinimal> searchUserManagers(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
-        List<UserViewMinimal> result = new ArrayList<>();
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_VL_MANAGER')")
+    public List<UserViewMinimal> searchGroupManagers(@RequestParam(required = false) String searchPart) {
         String search = searchPart.toLowerCase();
 
         List<User> allUsers = this.userService.findAll().stream()
@@ -626,18 +625,11 @@ public class UsersController {
                 .filter(user -> Objects.nonNull(user.getEmail()))
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN) || role.getRole().equals(ROLE_VL_MANAGER)))
                 .collect(Collectors.toList());
-        if (domainId != null) {
-            result = allUsers.stream()
-                    .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                    .filter(user -> user.getRoles().stream().noneMatch(roles -> roles.getDomain().getId().equals(domainId)))
-                    .map(this::mapMinimalUser).collect(Collectors.toList());
-        } else {
-            result = allUsers.stream()
+
+        return allUsers.stream()
                     .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
                     .map(this::mapMinimalUser).collect(Collectors.toList());
         }
-        return result;
-    }
 
     private Role convertRole(String userRole) {
         Role role;
