@@ -615,6 +615,22 @@ public class UsersController {
         return result;
     }
 
+    @GetMapping(value = "/users/search/managers", params = {"searchPart"})
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_VL_MANAGER')")
+    public List<UserViewMinimal> searchGroupManagers(@RequestParam(required = false) String searchPart) {
+        String search = searchPart.toLowerCase();
+
+        List<User> allUsers = this.userService.findAll().stream()
+                .filter(User::isEnabled)
+                .filter(user -> Objects.nonNull(user.getEmail()))
+                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN) || role.getRole().equals(ROLE_VL_MANAGER)))
+                .collect(Collectors.toList());
+
+        return allUsers.stream()
+                    .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
+                    .map(this::mapMinimalUser).collect(Collectors.toList());
+        }
+
     private Role convertRole(String userRole) {
         Role role;
         try {
