@@ -40,6 +40,8 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.CREATE, Permissions.READ});
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.CREATE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {Permissions.CREATE, Permissions.READ});
+		permMatrix.put(Role.ROLE_VL_MANAGER, new Permissions[] {Permissions.CREATE, Permissions.READ});
+		permMatrix.put(Role.ROLE_VL_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.READ});
 	}
 
 
