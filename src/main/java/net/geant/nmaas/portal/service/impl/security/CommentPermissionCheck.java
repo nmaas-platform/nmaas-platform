@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl.security;
 
-import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -17,20 +16,18 @@ import java.util.Set;
 
 @Component
 public class CommentPermissionCheck extends BasePermissionCheck {
+
 	public static final String COMMENT = "comment";
-			
-	private final CommentRepository comments;
-	
-	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
-	
 	private static final Permissions[] OWNER_DEFAULT_PERMS = new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER};
+
+	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
+	private final CommentRepository comments;
 
 	public CommentPermissionCheck(CommentRepository comments) {
 		super();
 		this.comments = comments;
 		this.setupMatrix();
 	}
-
 
 	@Override
 	protected void setupMatrix() {
@@ -44,7 +41,6 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_VL_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.READ});
 	}
 
-
 	@Override
 	public boolean supports(String targetType) {		
 		return COMMENT.equalsIgnoreCase(targetType);
@@ -52,28 +48,31 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 
 	@Override
 	protected Set<Permissions> evaluatePermissions(User user, Serializable targetId, String targetType) {
-		if(!supports(targetType))
+		if (!supports(targetType)) {
 			throw new IllegalArgumentException("targetType not supported");
-		if(targetId != null && !(targetId instanceof Long)) 
+		}
+		if (targetId != null && !(targetId instanceof Long)) {
 			throw new IllegalArgumentException("targetId is not a valid type of " + Long.class.getSimpleName());
-		if(user == null)
+		}
+		if (user == null) {
 			throw new IllegalArgumentException("user is missing");
+		}
 		
 		Set<Permissions> resultPerms = new HashSet<>();
 
 		Comment comment = null;
-		if(targetId != null)
-			comment = comments.findById((Long)targetId).orElse(null);
-		
-		if(comment != null && comment.getOwner() != null && comment.getOwner().equals(user))
-			resultPerms.addAll(Arrays.asList(OWNER_DEFAULT_PERMS));
-		else
-			for(UserRole role : user.getRoles())
-				resultPerms.addAll(Arrays.asList(permMatrix.get(role.getRole())));
+		if (targetId != null) {
+			comment = comments.findById((Long) targetId).orElse(null);
+		}
 
+		if (comment != null && comment.getOwner() != null && comment.getOwner().equals(user)) {
+			resultPerms.addAll(Arrays.asList(OWNER_DEFAULT_PERMS));
+		} else {
+			for (UserRole role : user.getRoles()) {
+				resultPerms.addAll(Arrays.asList(permMatrix.get(role.getRole())));
+			}
+		}
 		return resultPerms;
 	}
-
-
 
 }

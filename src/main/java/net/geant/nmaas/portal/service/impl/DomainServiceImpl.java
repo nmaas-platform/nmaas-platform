@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -30,6 +31,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -68,6 +70,7 @@ public class DomainServiceImpl implements DomainService {
     private final ModelMapper modelMapper;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final DomainGroupService domainGroupService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
@@ -83,7 +86,8 @@ public class DomainServiceImpl implements DomainService {
                              DcnRepositoryManager dcnRepositoryManager,
                              ModelMapper modelMapper,
                              ApplicationStatePerDomainService applicationStatePerDomainService,
-                             DomainGroupService domainGroupService
+                             DomainGroupService domainGroupService,
+                             ApplicationEventPublisher eventPublisher
     ) {
         this.validator = validator;
         this.namespaceValidator = namespaceValidator;
@@ -96,6 +100,7 @@ public class DomainServiceImpl implements DomainService {
         this.modelMapper = modelMapper;
         this.applicationStatePerDomainService = applicationStatePerDomainService;
         this.domainGroupService = domainGroupService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -114,7 +119,8 @@ public class DomainServiceImpl implements DomainService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Domain createGlobalDomain() {
-        return getGlobalDomain().orElseGet(() -> createDomain(new DomainRequest(this.globalDomain, this.globalDomain.toLowerCase(), true)));
+        return getGlobalDomain()
+                .orElseGet(() -> createDomain(new DomainRequest(this.globalDomain, this.globalDomain.toLowerCase(), true)));
     }
 
     @Override
@@ -168,7 +174,11 @@ public class DomainServiceImpl implements DomainService {
             List<ApplicationStatePerDomain> applicationStatePerDomainList = applicationStatePerDomainService.generateListOfDefaultApplicationStatesPerDomain();
             Domain newDomain = modelMapper.map(request, Domain.class);
             newDomain.setApplicationStatePerDomain(applicationStatePerDomainList);
-            return domainRepository.save(newDomain);
+            Domain saved = domainRepository.save(newDomain);
+            if (!saved.getName().equals(globalDomain)) {
+                eventPublisher.publishEvent(new DomainCreatedEvent(this, new DomainCreatedEvent.DomainSpec(saved.getId(), saved.getName(), saved.getCodename())));
+            }
+            return saved;
         } catch (Exception ex) {
             throw new ProcessingException("Unable to create new domain with given name or codename.");
         }
@@ -315,7 +325,9 @@ public class DomainServiceImpl implements DomainService {
         User user = getUser(userId);
 
         if (userRoleRepository.findByDomainAndUserAndRole(domain, user, role) == null) {
-            if(role != Role.ROLE_VL_DOMAIN_ADMIN) removePreviousRoleInDomain(domain, user);
+            if (role != Role.ROLE_VL_DOMAIN_ADMIN) {
+                removePreviousRoleInDomain(domain, user);
+            }
             userRoleRepository.save(new UserRole(user, domain, role));
         }
     }
