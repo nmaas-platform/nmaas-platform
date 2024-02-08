@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 @Profile("env_kubernetes")
 @Log4j2
@@ -25,7 +27,7 @@ public class KubernetesNamespaceManager {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(DomainCreatedEvent event) {
-        // TODO
+       janitorService.createNameSpace(event.getDomain().getDomainCodename(), event.getDomain().getAnnotations());
     }
 
 }

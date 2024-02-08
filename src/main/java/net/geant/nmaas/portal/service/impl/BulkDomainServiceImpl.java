@@ -9,6 +9,7 @@ import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManag
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.bulk.KeyValue;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
@@ -65,6 +66,9 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final UserRoleRepository userRoleRepository;
 
     private final int domainCodenameMaxLength;
+
+    @Value("${nmaas.domains.auto.create.annotations:false}")
+    private Boolean basicAnnotations;
 
     public BulkDomainServiceImpl(
             DomainService domainService,
@@ -133,8 +137,16 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                 domainTechDetails.setKubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass());
             }
             DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, domainCodename, true, DcnDeploymentType.MANUAL, null);
+
+            List<KeyValue> annotations = new ArrayList<>();
+            if(basicAnnotations != null && basicAnnotations) {
+                log.info("Add basic 2 annotations to domain request {}", csvDomain.getDomainName());
+                annotations.add(new KeyValue("cni.projectcalico.org/ipv4pools", "customer-pool-ipv4"));
+                annotations.add(new KeyValue("cni.projectcalico.org/ipv6pools", "customer-pool-ipv6"));
+            }
+
             domain = domainService.createDomain(
-                    new DomainRequest(csvDomain.getDomainName(), domainCodename, domainDcnDetails, domainTechDetails, true));
+                    new DomainRequest(csvDomain.getDomainName(), domainCodename, domainDcnDetails, domainTechDetails, true, annotations));
             domainService.storeDcnInfo(prepareDcnInfo(domain));
             result.add(BulkDeploymentEntry.builder()
                     .type(BulkType.DOMAIN)

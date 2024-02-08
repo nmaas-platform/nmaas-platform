@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,13 +32,15 @@ public class DomainServiceIntTest {
                 "domain",
                 new DomainDcnDetailsView(null, null, true, DcnDeploymentType.MANUAL, null),
                 new DomainTechDetailsView(null, null, "external@domain", null, null, null),
-                true);
+                true,
+                new ArrayList<>());
         DomainRequest domainRequest2 = new DomainRequest(
                 "domainName",
                 "domain",
                 new DomainDcnDetailsView(null, null, true, DcnDeploymentType.MANUAL, null),
                 new DomainTechDetailsView(null, null, "external@domain", null, null, null),
-                true);
+                true,
+                new ArrayList<>());
 
         domainService.createDomain(domainRequest1);
 

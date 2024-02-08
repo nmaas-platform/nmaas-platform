@@ -87,6 +87,7 @@ nmaas.platform.webhooks.baseurl=${PLATFORM_BASEURL}/api/gitlab/webhooks
 nmaas.kubernetes.incluster=true
 
 nmaas.domains.auto.create.namespace=${NAMESPACE_CREATION_ENABLED}
+nmaas.domains.auto.create.annotations=${NAMESPACE_BASIC_ANNOTATION_ENABLED}
 
 # ------------------------------ #
 # Quartz scheduler configuration #

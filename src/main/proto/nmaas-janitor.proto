@@ -70,6 +70,16 @@ message PodLogsResponse {
     repeated string lines = 4;
 }
 
+message KeyValue {
+    string key = 1;
+    string value = 2;
+}
+
+message DomainNamespaceRequest {
+    string namespace = 1;
+    repeated KeyValue annotations = 2;
+}
+
 service ConfigService {
     rpc CreateOrReplace(InstanceRequest) returns (ServiceResponse);
     rpc DeleteIfExists(InstanceRequest) returns (ServiceResponse);
@@ -96,4 +106,8 @@ service InformationService {
 service PodService {
     rpc RetrievePodList(InstanceRequest) returns (PodListResponse);
     rpc RetrievePodLogs(PodRequest) returns (PodLogsResponse);
+}
+
+service NameSpaceCreation {
+    rpc CreateNameSpace(DomainNamespaceRequest) returns (ServiceResponse);
 }
