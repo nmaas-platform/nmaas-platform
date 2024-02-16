@@ -21,6 +21,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -60,6 +61,7 @@ public class DomainController extends AppBaseController {
 	private final DomainGroupService domainGroupService;
 	private final ApplicationEventPublisher eventPublisher;
 	private final ApplicationStatePerDomainService applicationStatePerDomainService;
+	private final ApplicationInstanceService applicationInstanceService;
 
 	@GetMapping
 	@Transactional(readOnly = true)
@@ -211,11 +213,12 @@ public class DomainController extends AppBaseController {
 			if(!domainService.softRemoveDomain(domainId)) {
 				throw new MissingElementException("Unable to soft remove domain");
 			}
-			return;
-		}
-		if(!domainService.removeDomain(domainId)) {
+		} else if(!domainService.removeDomain(domainId)) {
 			throw new MissingElementException("Unable to remove domain");
 		}
+
+		applicationInstanceService.deleteAllByDomain(domainId);
+
 	}
 
 	@PostMapping("/group")

@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,60 +43,65 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Service
 public class ApplicationInstanceServiceImpl implements ApplicationInstanceService {
 
-	private final AppInstanceRepository appInstanceRepo;
-	private final ApplicationService applications;
-	private final DomainService domains;
-	private final UserService users;
-	private final ApplicationSubscriptionService applicationSubscriptions;
-	private final DomainServiceImpl.CodenameValidator validator;
-	private final ApplicationStatePerDomainService applicationStatePerDomainService;
-	private final ApplicationInstanceUpgradeService instanceUpgradeService;
+    private final AppInstanceRepository appInstanceRepo;
+    private final ApplicationService applications;
+    private final DomainService domains;
+    private final UserService users;
+    private final ApplicationSubscriptionService applicationSubscriptions;
+    private final DomainServiceImpl.CodenameValidator validator;
+    private final ApplicationStatePerDomainService applicationStatePerDomainService;
+    private final ApplicationInstanceUpgradeService instanceUpgradeService;
+    private final AppLifecycleManager appLifecycleManager;
 
-	@Autowired
-	public ApplicationInstanceServiceImpl(AppInstanceRepository appInstanceRepo,
-                                          ApplicationService applications,
-                                          DomainService domains,
-                                          UserService users,
-                                          ApplicationSubscriptionService applicationSubscriptions,
-                                          @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator,
-                                          ApplicationStatePerDomainService applicationStatePerDomainService,
-										  ApplicationInstanceUpgradeService instanceUpgradeService) {
-		this.appInstanceRepo = appInstanceRepo;
-		this.applications = applications;
-		this.domains = domains;
-		this.users = users;
-		this.applicationSubscriptions = applicationSubscriptions;
-		this.validator = validator;
-		this.applicationStatePerDomainService = applicationStatePerDomainService;
-		this.instanceUpgradeService = instanceUpgradeService;
-	}
+    @Autowired
+    public ApplicationInstanceServiceImpl(
+            AppInstanceRepository appInstanceRepo,
+            ApplicationService applications,
+            DomainService domains,
+            UserService users,
+            ApplicationSubscriptionService applicationSubscriptions,
+            @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator,
+            ApplicationStatePerDomainService applicationStatePerDomainService,
+            ApplicationInstanceUpgradeService instanceUpgradeService,
+            AppLifecycleManager appLifecycleManager
+    ) {
+        this.appInstanceRepo = appInstanceRepo;
+        this.applications = applications;
+        this.domains = domains;
+        this.users = users;
+        this.applicationSubscriptions = applicationSubscriptions;
+        this.validator = validator;
+        this.applicationStatePerDomainService = applicationStatePerDomainService;
+        this.instanceUpgradeService = instanceUpgradeService;
+        this.appLifecycleManager = appLifecycleManager;
+    }
 
-	@Override
-	public AppInstance create(Long domainId, Long applicationId, String name, boolean autoUpgradesEnabled) {
-		Application app = applications.findApplication(applicationId).orElseThrow(() -> new ObjectNotFoundException("Application not found."));
-		Domain domain = domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found."));
-		return create(domain, app, name, autoUpgradesEnabled);
-	}
+    @Override
+    public AppInstance create(Long domainId, Long applicationId, String name, boolean autoUpgradesEnabled) {
+        Application app = applications.findApplication(applicationId).orElseThrow(() -> new ObjectNotFoundException("Application not found."));
+        Domain domain = domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found."));
+        return create(domain, app, name, autoUpgradesEnabled);
+    }
 
-	@Override
-	public AppInstance create(Domain domain, Application application, String name, boolean autoUpgradesEnabled) {
-		checkParam(domain);
-		if (!domain.isActive()) {
-			throw new IllegalArgumentException("Domain is inactive");
-		}
-		checkParam(application);
-		checkNameCharacters(name);
+    @Override
+    public AppInstance create(Domain domain, Application application, String name, boolean autoUpgradesEnabled) {
+        checkParam(domain);
+        if (!domain.isActive()) {
+            throw new IllegalArgumentException("Domain is inactive");
+        }
+        checkParam(application);
+        checkNameCharacters(name);
 
-		if (!this.applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)) {
+        if (!this.applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)) {
             throw new IllegalArgumentException("Application is disabled in domain settings");
         }
 
-		if (applicationSubscriptions.isActive(application.getName(), domain)) {
-			return appInstanceRepo.save(new AppInstance(application, domain, name, autoUpgradesEnabled));
-		} else {
-			throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
-		}
-	}
+        if (applicationSubscriptions.isActive(application.getName(), domain)) {
+            return appInstanceRepo.save(new AppInstance(application, domain, name, autoUpgradesEnabled));
+        } else {
+            throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
+        }
+    }
 
     @Override
     public boolean validateAgainstAppConfiguration(AppInstance appInstance, AppConfigurationView appConfigurationView) {
@@ -102,247 +109,259 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
         Application app = appInstance.getApplication();
 
         ApplicationStatePerDomain appStatePerDomain = domain.getApplicationStatePerDomain().stream()
-				.filter(appState -> appState.getApplicationBase().getName().equals(app.getName()))
-				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("Application state not found"));
+                .filter(appState -> appState.getApplicationBase().getName().equals(app.getName()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Application state not found"));
 
         return this.applicationStatePerDomainService.validateAppConfigurationAgainstState(appConfigurationView, appStatePerDomain);
     }
 
     @Override
-	public void delete(Long appInstanceId) {
-		checkParam(appInstanceId);
-		find(appInstanceId).ifPresent(appInstanceRepo::delete);
-	}
-	
-	@Override
-	public void update(AppInstance appInstance) {
-		checkParam(appInstance);
-		appInstanceRepo.save(appInstance);
-	}
-
-	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void updateApplication(Identifier internalId, Long applicationId) {
-		checkParam(internalId);
-		checkParam(applicationId);
-		final AppInstance instance = findByInternalId(internalId)
-				.orElseThrow(() -> new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
-		final Application application = applications.findApplication(applicationId)
-				.orElseThrow(() -> new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
-		appInstanceRepo.updateApplication(instance.getId(), instance.getApplication().getId(), application);
-	}
-
-	@Override
-	@Loggable(LogLevel.DEBUG)
-	public Optional<AppInstance> findByInternalId(Identifier deploymentId) {
-		checkParam(deploymentId);
-		return appInstanceRepo.findByInternalId(deploymentId);
-	}
-
-	@Override
-	public Optional<AppInstance> find(Long appInstanceId) {
-		checkParam(appInstanceId);
-		return appInstanceRepo.findById(appInstanceId);
-	}
-
-	@Override
-	public List<AppInstance> findAll() {
-		return appInstanceRepo.findAll()
-				.stream()
-				.filter(appInstance -> !appInstance.getDomain().isDeleted())
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public Page<AppInstance> findAll(Pageable pageable) {
-		Page<AppInstance> page = appInstanceRepo.findAll(pageable);
-		List<AppInstance> filtered = page.getContent()
-				.stream()
-				.filter(appInstance -> !appInstance.getDomain().isDeleted())
-				.collect(Collectors.toList());
-		return new PageImpl<>(filtered, pageable, filtered.size());
-	}
-
-	@Override
-	public List<AppInstance> findAllByOwner(Long userId) {
-		checkParam(userId);
-		User user = users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("user not found"));
-		return findAllByOwner(user);
-	}
-
-	@Override
-	public List<AppInstance> findAllByOwner(User owner) {
-		checkParam(owner);
-		return appInstanceRepo.findAllByOwner(owner);
-	}
-
-	@Override
-	public List<AppInstance> findAllByOwner(Long userId, Long domainId) {
-		User owner = getUser(userId);
-		Domain domain = getDomain(domainId);
-		return findAllByOwnerAndDomain(owner, domain);
-	}
-
-	@Override
-	public List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain) {
-		checkParam(owner);
-		checkParam(domain);
-		return appInstanceRepo.findAllByOwnerAndDomain(owner, domain);
-	}
-
-	@Override
-	public Page<AppInstance> findAllByOwner(Long userId, Pageable pageable) {
-		User user = getUser(userId);
-		return findAllByOwner(user, pageable);
-	}
-
-	@Override
-	public Page<AppInstance> findAllByOwner(User owner, Pageable pageable) {
-		checkParam(owner);
-		return appInstanceRepo.findAllByOwner(owner, pageable);
-	}
-
-	@Override
-	public Page<AppInstance> findAllByOwner(Long userId, Long domainId, Pageable pageable) {
-		User owner = getUser(userId);
-		Domain domain = getDomain(domainId);
-		return findAllByOwner(owner, domain, pageable);
-	}
-
-	@Override
-	public Page<AppInstance> findAllByOwner(User owner, Domain domain, Pageable pageable) {
-		checkParam(owner);
-		checkParam(domain);
-		return appInstanceRepo.findAllByOwnerAndDomain(owner, domain, pageable);
-	}
-
-	@Override
-	public List<AppInstance> findAllByDomain(Long domainId) {
-		Domain domain = getDomain(domainId);
-		return findAllByDomain(domain);
-	}
-
-	@Override
-	public List<AppInstance> findAllByDomain(Domain domain) {
-		checkParam(domain);
-		return appInstanceRepo.findAllByDomain(domain);
-	}
-
-	@Override
-	public Page<AppInstance> findAllByDomain(Long domainId, Pageable pageable) {
-		Domain domain = getDomain(domainId);
-		return findAllByDomain(domain, pageable);
-	}
-
-	@Override
-	public Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable) {
-		checkParam(domain);
-		return appInstanceRepo.findAllByDomain(domain, pageable);
-	}
-
-	@Override
-	public List<AppInstance> findAllByApplication(Application application) {
-		return appInstanceRepo.findAllByApplication(application);
-	}
-
-	@Override
-	@Transactional
-	@Loggable(LogLevel.DEBUG)
-	public boolean checkUpgradePossible(Long appInstanceId) {
-		return obtainVersionForUpgrade(appInstanceId).isPresent();
-	}
-
-	@Override
-	@Transactional
-	@Loggable(LogLevel.DEBUG)
-	public boolean checkUpgradePossible(Long appInstanceId, String targetVersion) {
-        return obtainVersionForUpgrade(appInstanceId)
-				.map(application -> application.getVersion().equals(targetVersion))
-				.orElse(false);
+    public void delete(Long appInstanceId) {
+        checkParam(appInstanceId);
+        find(appInstanceId).ifPresent(appInstanceRepo::delete);
     }
 
-	private Optional<Application> obtainVersionForUpgrade(Long appInstanceId) {
-		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
-		if (appInstance.isPresent()) {
-			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
-			Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
-			Optional<Long> versionForUpgrade = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
-			return versionForUpgrade.flatMap(applications::findApplication);
-		}
-		return Optional.empty();
-	}
+    @Override
+    public void update(AppInstance appInstance) {
+        checkParam(appInstance);
+        appInstanceRepo.save(appInstance);
+    }
 
-	@Override
-	@Transactional
-	@Loggable(LogLevel.DEBUG)
-	public AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
-		Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
-		if (appInstance.isPresent()) {
-			String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
-			Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
-			Optional<Long> nextVersionId = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
-			if (nextVersionId.isPresent()) {
-				Optional<Application> nextApplication = applications.findApplication(nextVersionId.get());
-				if (nextApplication.isPresent()) {
-					return new AppInstanceView.AppInstanceUpgradeInfo(
-							nextVersionId.get(),
-							nextApplication.get().getVersion(),
-							nextApplication.get().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion());
-				}
-			}
-		}
-		return null;
-	}
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateApplication(Identifier internalId, Long applicationId) {
+        checkParam(internalId);
+        checkParam(applicationId);
+        final AppInstance instance = findByInternalId(internalId)
+                .orElseThrow(() -> new InvalidDeploymentIdException("Application instance with internalId " + internalId + " does not exist"));
+        final Application application = applications.findApplication(applicationId)
+                .orElseThrow(() -> new InvalidApplicationIdException("Application with id " + applicationId + " does not exist"));
+        appInstanceRepo.updateApplication(instance.getId(), instance.getApplication().getId(), application);
+    }
 
-	private void checkParam(AppInstance appInstance) {
-		if(appInstance == null) {
-			throw new IllegalArgumentException("appInstance is null");
-		}
-		checkParam(appInstance.getId());
-	}
-	
-	private void checkParam(Long id) {
-		checkArgument(id != null, "Id is null");
-	}
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public Optional<AppInstance> findByInternalId(Identifier deploymentId) {
+        checkParam(deploymentId);
+        return appInstanceRepo.findByInternalId(deploymentId);
+    }
 
-	private void checkParam(Identifier id) {
-		checkArgument(id != null, "Id is null");
-	}
-	
-	private void checkParam(Application application) {
-		if(application == null) {
-			throw new IllegalArgumentException("application is null");
-		}
-		checkParam(application.getId());
-	}
-	
-	private void checkParam(Domain domain) {
-		if(domain == null) {
-			throw new IllegalArgumentException("domain is null");
-		}
-		checkParam(domain.getId());		
-	}
-	
-	private void checkParam(User user) {
-		if(user == null) {
-			throw new IllegalArgumentException("user is null");
-		}
-		checkParam(user.getId());
-	}
+    @Override
+    public Optional<AppInstance> find(Long appInstanceId) {
+        checkParam(appInstanceId);
+        return appInstanceRepo.findById(appInstanceId);
+    }
 
-	private void checkNameCharacters(String name){
-	    checkArgument(validator.valid(name), "Instance name is not valid");
-	}
+    @Override
+    public List<AppInstance> findAll() {
+        return appInstanceRepo.findAll()
+                .stream()
+                .filter(appInstance -> !appInstance.getDomain().isDeleted())
+                .collect(Collectors.toList());
+    }
 
-	protected Domain getDomain(Long domainId) {
-		checkParam(domainId);
-		return domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
-	}
-	
-	protected User getUser(Long userId) {
-		checkParam(userId);
-		return users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
-	}
-	
+    @Override
+    public Page<AppInstance> findAll(Pageable pageable) {
+        Page<AppInstance> page = appInstanceRepo.findAll(pageable);
+        List<AppInstance> filtered = page.getContent()
+                .stream()
+                .filter(appInstance -> !appInstance.getDomain().isDeleted())
+                .collect(Collectors.toList());
+        return new PageImpl<>(filtered, pageable, filtered.size());
+    }
+
+    @Override
+    public List<AppInstance> findAllByOwner(Long userId) {
+        checkParam(userId);
+        User user = users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("user not found"));
+        return findAllByOwner(user);
+    }
+
+    @Override
+    public List<AppInstance> findAllByOwner(User owner) {
+        checkParam(owner);
+        return appInstanceRepo.findAllByOwner(owner);
+    }
+
+    @Override
+    public List<AppInstance> findAllByOwner(Long userId, Long domainId) {
+        User owner = getUser(userId);
+        Domain domain = getDomain(domainId);
+        return findAllByOwnerAndDomain(owner, domain);
+    }
+
+    @Override
+    public List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain) {
+        checkParam(owner);
+        checkParam(domain);
+        return appInstanceRepo.findAllByOwnerAndDomain(owner, domain);
+    }
+
+    @Override
+    public Page<AppInstance> findAllByOwner(Long userId, Pageable pageable) {
+        User user = getUser(userId);
+        return findAllByOwner(user, pageable);
+    }
+
+    @Override
+    public Page<AppInstance> findAllByOwner(User owner, Pageable pageable) {
+        checkParam(owner);
+        return appInstanceRepo.findAllByOwner(owner, pageable);
+    }
+
+    @Override
+    public Page<AppInstance> findAllByOwner(Long userId, Long domainId, Pageable pageable) {
+        User owner = getUser(userId);
+        Domain domain = getDomain(domainId);
+        return findAllByOwner(owner, domain, pageable);
+    }
+
+    @Override
+    public Page<AppInstance> findAllByOwner(User owner, Domain domain, Pageable pageable) {
+        checkParam(owner);
+        checkParam(domain);
+        return appInstanceRepo.findAllByOwnerAndDomain(owner, domain, pageable);
+    }
+
+    @Override
+    public List<AppInstance> findAllByDomain(Long domainId) {
+        Domain domain = getDomain(domainId);
+        return findAllByDomain(domain);
+    }
+
+    @Override
+    public List<AppInstance> findAllByDomain(Domain domain) {
+        checkParam(domain);
+        return appInstanceRepo.findAllByDomain(domain);
+    }
+
+    @Override
+    public Page<AppInstance> findAllByDomain(Long domainId, Pageable pageable) {
+        Domain domain = getDomain(domainId);
+        return findAllByDomain(domain, pageable);
+    }
+
+    @Override
+    public Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable) {
+        checkParam(domain);
+        return appInstanceRepo.findAllByDomain(domain, pageable);
+    }
+
+    @Override
+    public List<AppInstance> findAllByApplication(Application application) {
+        return appInstanceRepo.findAllByApplication(application);
+    }
+
+    @Override
+    @Transactional
+    @Loggable(LogLevel.DEBUG)
+    public boolean checkUpgradePossible(Long appInstanceId) {
+        return obtainVersionForUpgrade(appInstanceId).isPresent();
+    }
+
+    @Override
+    @Transactional
+    @Loggable(LogLevel.DEBUG)
+    public boolean checkUpgradePossible(Long appInstanceId, String targetVersion) {
+        return obtainVersionForUpgrade(appInstanceId)
+                .map(application -> application.getVersion().equals(targetVersion))
+                .orElse(false);
+    }
+
+    private Optional<Application> obtainVersionForUpgrade(Long appInstanceId) {
+        Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
+        if (appInstance.isPresent()) {
+            String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
+            Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
+            Optional<Long> versionForUpgrade = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
+            return versionForUpgrade.flatMap(applications::findApplication);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    @Transactional
+    @Loggable(LogLevel.DEBUG)
+    public AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId) {
+        Optional<AppInstance> appInstance = appInstanceRepo.findById(appInstanceId);
+        if (appInstance.isPresent()) {
+            String currentHelmChartVersion = appInstance.get().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion();
+            Map<String, Long> allAppVersions = applications.findAllActiveVersionNumbers(appInstance.get().getApplication().getName());
+            Optional<Long> nextVersionId = instanceUpgradeService.getNextApplicationVersionForUpgrade(currentHelmChartVersion, allAppVersions);
+            if (nextVersionId.isPresent()) {
+                Optional<Application> nextApplication = applications.findApplication(nextVersionId.get());
+                if (nextApplication.isPresent()) {
+                    return new AppInstanceView.AppInstanceUpgradeInfo(
+                            nextVersionId.get(),
+                            nextApplication.get().getVersion(),
+                            nextApplication.get().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion());
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteAllByDomain(Long domainId) {
+        List<AppInstance> appsByDomain = findAllByDomain(domainId);
+        Iterator<AppInstance> iterator = appsByDomain.iterator();
+        while (iterator.hasNext()) {
+            AppInstance app = iterator.next();
+            delete(app.getId());
+            appLifecycleManager.removeApplication(app.getInternalId());
+            iterator.remove();
+        }
+    }
+
+    private void checkParam(AppInstance appInstance) {
+        if (appInstance == null) {
+            throw new IllegalArgumentException("appInstance is null");
+        }
+        checkParam(appInstance.getId());
+    }
+
+    private void checkParam(Long id) {
+        checkArgument(id != null, "Id is null");
+    }
+
+    private void checkParam(Identifier id) {
+        checkArgument(id != null, "Id is null");
+    }
+
+    private void checkParam(Application application) {
+        if (application == null) {
+            throw new IllegalArgumentException("application is null");
+        }
+        checkParam(application.getId());
+    }
+
+    private void checkParam(Domain domain) {
+        if (domain == null) {
+            throw new IllegalArgumentException("domain is null");
+        }
+        checkParam(domain.getId());
+    }
+
+    private void checkParam(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("user is null");
+        }
+        checkParam(user.getId());
+    }
+
+    private void checkNameCharacters(String name) {
+        checkArgument(validator.valid(name), "Instance name is not valid");
+    }
+
+    protected Domain getDomain(Long domainId) {
+        checkParam(domainId);
+        return domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
+    }
+
+    protected User getUser(Long userId) {
+        checkParam(userId);
+        return users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
+    }
+
 }

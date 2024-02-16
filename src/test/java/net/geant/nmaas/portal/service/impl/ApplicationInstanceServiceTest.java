@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
@@ -53,6 +54,8 @@ public class ApplicationInstanceServiceTest {
     DomainServiceImpl.CodenameValidator validator = mock(DomainServiceImpl.CodenameValidator.class);
     ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
     ApplicationInstanceUpgradeService applicationInstanceUpgradeService = mock(ApplicationInstanceUpgradeService.class);
+    AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
+
 
     ApplicationInstanceServiceImpl applicationInstanceService = new ApplicationInstanceServiceImpl(
             appInstanceRepo,
@@ -62,7 +65,9 @@ public class ApplicationInstanceServiceTest {
             applicationSubscriptions,
             validator,
             applicationStatePerDomainService,
-            applicationInstanceUpgradeService);
+            applicationInstanceUpgradeService,
+            appLifecycleManager
+    );
 
 
     @Test
