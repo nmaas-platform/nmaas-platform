@@ -52,4 +52,5 @@ public interface ApplicationInstanceService {
 	boolean checkUpgradePossible(Long appInstanceId, String targetVersion);
     AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
 
+	void deleteAllByDomain(Long domainId);
 }

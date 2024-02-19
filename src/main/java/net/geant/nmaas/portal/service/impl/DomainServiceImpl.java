@@ -277,7 +277,6 @@ public class DomainServiceImpl implements DomainService {
             domainTechDetailsRepository.deleteById(domainTechDetailsId);
             removeAllUsersFromDomain(domain);
             removeDomainFromAllGroups(domain);
-            triggerApplicationsUninstall();
             domainRepository.save(domain);
             return true;
         }).orElse(false);
@@ -296,10 +295,6 @@ public class DomainServiceImpl implements DomainService {
     @Override
     public void removeAllUsersFromDomain(Domain domain) {
         getMembers(domain.getId()).forEach(member -> removePreviousRoleInDomain(domain, member));
-    }
-
-    private void triggerApplicationsUninstall() {
-        // TODO
     }
 
     @Override
