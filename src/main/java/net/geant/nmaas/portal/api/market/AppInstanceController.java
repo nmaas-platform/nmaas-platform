@@ -517,6 +517,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/{appInstanceId}/parameters")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     public Map<String, String> getDeploymentParameters(@PathVariable Long appInstanceId) {
         Identifier internalId = getAppInstance(appInstanceId).getInternalId();
         return appDeploymentMonitor.appDeploymentParameters(internalId);
