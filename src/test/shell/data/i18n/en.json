@@ -1074,7 +1074,11 @@
     "PUBLIC_HEADER": "Public access options",
     "PUBLIC_ACCESS": "Access the application",
     "LOCAL_HEADER": "Local (in-cluster) access options",
-    "DEPLOYMENT_PARAMETERS": "Deployment parameters"
+    "DEPLOYMENT_PARAMETERS": {
+      "HEADER": "Deployment parameters",
+      "KEY": "Key",
+      "VALUE": "Value"
+    }
   },
   "GUEST_USER_MODAL": {
     "HEADER": "Guest account",

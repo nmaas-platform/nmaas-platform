@@ -515,6 +515,12 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
+    @GetMapping("/{appInstanceId}/parameters")
+    public Map<String, String> getDeploymentParameters(@PathVariable Long appInstanceId) {
+        Identifier internalId = getAppInstance(appInstanceId).getInternalId();
+        return appDeploymentMonitor.appDeploymentParameters(internalId);
+    }
+
     private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state, AppLifecycleState previousState) {
         AppInstanceState appInstanceState = mapAppInstanceState(state);
 
