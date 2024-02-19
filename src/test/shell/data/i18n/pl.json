@@ -1096,7 +1096,12 @@
     "MAIN_ACCESS": "Główny interfejs użytkownika",
     "PUBLIC_HEADER": "Dostęp publiczny (bez VPN)",
     "PUBLIC_ACCESS": "Otwórz aplikację",
-    "LOCAL_HEADER": "Dostęp lokalny (w ramach klastra)"
+    "LOCAL_HEADER": "Dostęp lokalny (w ramach klastra)",
+    "DEPLOYMENT_PARAMETERS": {
+      "HEADER": "Deployment parameters",
+      "KEY": "Key",
+      "VALUE": "Value"
+    }
   },
   "GUEST_USER_MODAL": {
     "HEADER": "Konto Gościa",

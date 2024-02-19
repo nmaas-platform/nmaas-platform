@@ -1095,7 +1095,12 @@
     "MAIN_ACCESS": "Hauptbenutzeroberfläche",
     "PUBLIC_HEADER": "Öffentliche Zugangsmöglichkeiten",
     "PUBLIC_ACCESS": "Zugriff auf Anwendung",
-    "LOCAL_HEADER": "Lokale Zugriffsoptionen (im Cluster)"
+    "LOCAL_HEADER": "Lokale Zugriffsoptionen (im Cluster)",
+    "DEPLOYMENT_PARAMETERS": {
+      "HEADER": "Deployment parameters",
+      "KEY": "Key",
+      "VALUE": "Value"
+    }
   },
   "GUEST_USER_MODAL": {
     "HEADER": "Guest account",
