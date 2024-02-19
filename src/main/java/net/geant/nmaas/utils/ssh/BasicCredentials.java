@@ -15,4 +15,5 @@ public class BasicCredentials {
         this.username = username;
         this.password = null;
     }
+
 }

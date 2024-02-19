@@ -24,8 +24,8 @@ public interface UserRoleRepository extends JpaRepository<UserRole, UserRole.Id>
 	List<UserRole> findByDomainAndUser(Domain domain, User user);
 	
 	@Query("SELECT ur FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user = ?2 AND ur.id.role = ?3")
-	UserRole findByDomainAndUserAndRole(Domain domain, User user, Role role);	
-	
+	UserRole findByDomainAndUserAndRole(Domain domain, User user, Role role);
+
 	@Query("SELECT ur.id.role FROM UserRole ur WHERE ur.id.domain.id = ?1 AND ur.id.user.id = ?2")
 	Set<Role> findRolesByDomainAndUser(Long domainId, Long userId);
 	

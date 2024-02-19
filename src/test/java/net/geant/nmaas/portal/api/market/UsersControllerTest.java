@@ -9,6 +9,7 @@ import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.api.user.UsersController;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -90,7 +91,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldReturnRoles(){
 		List<Role> roles = usersController.getRoles();
-		assertThat("Number of roles mismatch", roles.size() == 8);
+		assertThat("Number of roles mismatch", roles.size() == 10);
 	}
 
 	@Test

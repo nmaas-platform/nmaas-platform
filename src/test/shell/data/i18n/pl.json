@@ -227,11 +227,24 @@
       "GROUP" : "Grupa domen",
       "DOMAIN_NAME" : "Nazwa domeny",
       "DOMAIN_CODE_NAME" : "Skrót domeny",
-      "DELETE" : "Usuń domene z grupy",
-      "ADD" : "Dodaj domene do grupy",
+      "DELETE" : "Usuń domenę",
+      "ADD" : "Dodaj domenę",
       "ADD_INFO" : "Wybierz domeny do dodania do grupy",
       "LIST" : "Domeny w grupie",
       "ACTIVE" : "Aktywna"
+    },
+    "GROUP" : {
+      "ACCESS_USER" : "Menadżerowie grupy",
+      "ADD_MANAGERS" : "Dodaj menadżera",
+      "USERNAME" : "Nazwa użytkownika",
+      "NAME" : "Imie i nazwisko",
+      "ADD" : "Wybierz",
+      "ADD_USERS" : "Dodaj do grupy",
+      "ADD_INFO" : "Znajdź użytkownika, który ma zostać menadżerem grupy.",
+      "FOUND_USERS" : "Znaleziony użytkownik",
+      "SELECTED_USERS" : "Wybrani użytkownicy",
+      "DELETE_USER" : "Usuń dostęp",
+      "DELETE_MYSELF" : "Usuń mój dostęp"
     }
   },
   "APP_INSTANCES": {
@@ -257,7 +270,8 @@
     "MANUAL_UPDATE" : {
       "HEADER" : "Ręczna zmiana wersji",
       "BODY" : "Aktualizacja wersji aplikacji dla instacji zgodnie z procesem aktualizacji przeprowadzonym ręcznie. Wybierz odpowiednią wersję z poniższej listy.",
-      "YES_BUTTON" : "Zaktualizuj wersję"
+      "YES_BUTTON" : "Zaktualizuj wersję",
+      "EMPTY" : "Brak dostepnych innych wersji"
     },
     "SORT_MODE": {
       "NONE": "Brak",
@@ -503,6 +517,14 @@
     "CHECK_STATUS_BUTTON": "Sprawdź stan",
     "REDEPLOY_BUTTON": "Restartuj",
     "ABORT_BUTTON": "Przerwij",
+    "VIEW_LOGS": "Sprawdź logi",
+    "LOG_ACCESS": {
+      "HEADER": "Logi",
+      "POD": "Pod",
+      "DROPDOWN_PLACEHOLDER": "Wybierz pod",
+      "REFRESH": "Odśwież",
+      "DOWNLOAD": "Pobierz"
+    },
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Wyłącz automatyczne aktualizacje",
@@ -1017,7 +1039,9 @@
       "ROLE_DOMAIN_ADMIN": "Administrator domeny",
       "ROLE_GUEST": "Gość",
       "ROLE_INCOMPLETE":  "Konto w trakcie tworzenia",
-      "ROLE_NOT_ACCEPTED" : "Konto jeszcze nie zaakceptowane"
+      "ROLE_NOT_ACCEPTED" : "Konto jeszcze nie zaakceptowane",
+      "ROLE_VL_MANAGER" : "Administrator wirtualnych laboratoriów",
+      "ROLE_VL_DOMAIN_ADMIN" : "WL administrator domeny"
     }
   },
   "PAGINATION": {

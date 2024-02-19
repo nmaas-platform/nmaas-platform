@@ -6,20 +6,27 @@ import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -32,6 +39,12 @@ public class BulkDomainServiceIntTest {
 
     @Autowired
     private BulkDomainService bulkDomainService;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private UserRoleRepository userRoleRepository;
 
     @AfterEach
     void cleanup() {
@@ -47,6 +60,11 @@ public class BulkDomainServiceIntTest {
         UserViewMinimal creator = new UserViewMinimal();
         creator.setId(1L);
         creator.setUsername("testuser");
+        User user = new User("admin");
+        user.setId(1L);
+        user.setEmail("test@test.com");
+        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
+        when(userService.registerBulk(any(), any(), any())).thenReturn(user);
 
         BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
 
@@ -79,6 +97,11 @@ public class BulkDomainServiceIntTest {
         List<CsvDomain> input =
                 List.of(csvDomain1, csvDomain2, csvDomain3, csvDomain4, csvDomain5, csvDomain6,
                         csvDomain7, csvDomain8, csvDomain9, csvDomain10, csvDomain11, csvDomain12);
+        User user = new User("admin");
+        user.setId(1L);
+        user.setEmail("test@test.com");
+        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
+        when(userService.registerBulk(any(), any(), any())).thenReturn(user);
 
         bulkDomainService.handleBulkCreation(input, new UserViewMinimal());
 

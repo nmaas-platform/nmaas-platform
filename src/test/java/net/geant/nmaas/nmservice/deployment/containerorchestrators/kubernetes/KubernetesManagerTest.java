@@ -257,7 +257,7 @@ public class KubernetesManagerTest {
         assertEquals("valid", accessMethod.get().getCondition());
         assertTrue(accessMethod.get().isEnabled());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(15, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(19, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
         assertEquals("customvalue2", serviceInfo.getValue().getAdditionalParameters().get("customkey2"));
         assertEquals(serviceInfo.getValue().getAdditionalParameters().get("customkey3"), serviceInfo.getValue().getAdditionalParameters().get("customkey5"));
@@ -274,6 +274,10 @@ public class KubernetesManagerTest {
         assertEquals("appInstanceName", serviceInfo.getValue().getAdditionalParameters().get("appInstanceName"));
         assertNotNull(serviceInfo.getValue().getAdditionalParameters().get("RANDOM_STRING_4"));
         assertNotNull(serviceInfo.getValue().getAdditionalParameters().get("RANDOM_STRING_32"));
+        assertEquals(10, serviceInfo.getValue().getAdditionalParameters().get("customkey6").length());
+        assertEquals(8, serviceInfo.getValue().getAdditionalParameters().get("customkey7").length());
+        assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey6").matches("[0-9a-f]+"));
+        assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey7").matches("\\d+"));
     }
 
     private Map<String, String> getStringStringMap() {
@@ -283,6 +287,8 @@ public class KubernetesManagerTest {
         globalDeployParameters.put("customkey3", "%RANDOM_STRING_4%");
         globalDeployParameters.put("customkey4", "beginning-%RANDOM_STRING_32%-ending");
         globalDeployParameters.put("customkey5", "%RANDOM_STRING_4%");
+        globalDeployParameters.put("customkey6", "%RANDOM_HEX_10%");
+        globalDeployParameters.put("customkey7", "%RANDOM_NUMBER_8%");
         return globalDeployParameters;
     }
 

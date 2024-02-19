@@ -260,8 +260,9 @@ public class AppInstanceController extends AppBaseController {
                     return !(state.equals(AppInstanceState.DONE) || state.equals(AppInstanceState.REMOVED)); // check if it does not equal 'DONE' or 'REMOVED'
                 })
                 .map(AppInstance::getName) // take names only
+                .map(String::toLowerCase) // set all names to lower case
                 .collect(Collectors.toSet());
-        if (forbiddenNames.contains(appInstanceRequest.getName())) {
+        if (forbiddenNames.contains(appInstanceRequest.getName().toLowerCase())) {
             throw new IllegalArgumentException("Name is already taken");
         }
 

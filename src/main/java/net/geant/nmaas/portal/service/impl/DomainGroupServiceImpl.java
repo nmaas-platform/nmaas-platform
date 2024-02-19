@@ -9,6 +9,7 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
@@ -29,6 +30,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     private final DomainGroupRepository domainGroupRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
+
+
     private final ModelMapper modelMapper;
 
     @Override
@@ -108,8 +111,10 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
         DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).orElseThrow();
+//        updateRolesInDomainsByUsers(view);
         domainGroup.setCodename(view.getCodename());
         domainGroup.setName(view.getName());
+        domainGroup.setManagers(view.getManagers().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList()));
         for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
@@ -117,6 +122,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
                 }
             }
         }
+
         domainGroupRepository.save(domainGroup);
         return modelMapper.map(domainGroup, DomainGroupView.class);
     }
@@ -126,5 +132,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new IllegalArgumentException("Name is null or empty");
         }
     }
+
+
 
 }

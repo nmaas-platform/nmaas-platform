@@ -33,6 +33,8 @@ public class GenericPermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_USER, new Permissions[] {});
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
+		permMatrix.put(Role.ROLE_VL_MANAGER, new Permissions[] {});
+		permMatrix.put(Role.ROLE_VL_DOMAIN_ADMIN, new Permissions[] {});
 	}
 
 	@Override

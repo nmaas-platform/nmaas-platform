@@ -10,11 +10,13 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.AppInstanceBase;
+import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
 import net.geant.nmaas.portal.api.domain.ApplicationDTO;
 import net.geant.nmaas.portal.api.domain.DomainBase;
+import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.UserBase;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -433,6 +435,26 @@ public class AppInstanceControllerTest {
 
         verify(applicationEventPublisher, times(2)).publishEvent(any(AddUserToRepositoryGitlabEvent.class));
         verify(applicationEventPublisher, times(1)).publishEvent(any(RemoveUserFromRepositoryGitlabEvent.class));
+    }
+
+    @Test
+    public void shouldCreateAppInstanceThrowExceptionIfNameOfNewInstanceAlreadyExists(){
+        Principal principal = mock(Principal.class);
+        AppInstanceRequest appInstanceRequest = new AppInstanceRequest();
+        Long domainId = 2L;
+
+        appInstanceRequest.setName("instancename");
+        appInstanceRequest.setApplicationId(1L);
+        AppInstance appInstance = new AppInstance(application, "InstanceName", domain1, owner, false);
+
+        when(applicationInstanceService.findAllByDomain(domain1)).thenReturn(List.of(appInstance));
+        when(domainService.findDomain(domainId)).thenReturn(Optional.of(domain1));
+        when(appDeploymentMonitor.state(appInstance.getInternalId())).thenReturn(AppLifecycleState.UNKNOWN);
+        when(applicationService.findApplication(appInstanceRequest.getApplicationId())).thenReturn(Optional.of(application));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.appInstanceController.createAppInstance(appInstanceRequest, principal,domainId);
+        });
     }
 
     public static SSHKeyEntity getDefaultSSHKey(User owner) {

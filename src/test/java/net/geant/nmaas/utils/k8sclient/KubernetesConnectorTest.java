@@ -2,6 +2,9 @@ package net.geant.nmaas.utils.k8sclient;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
+import net.geant.nmaas.kubernetes.KubernetesConnector;
+import net.geant.nmaas.kubernetes.shell.PodShellConnector;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +15,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,32 +23,28 @@ import static org.mockito.Mockito.when;
 
 public class KubernetesConnectorTest {
 
+    private static final String NAMESPACE = "namespace";
+    private static final String POD_NAME = "turtle";
+
+    private final KubernetesClient client = mock(KubernetesClient.class);
+    private final ExecWatch watch = mock(ExecWatch.class);
+
     private KubernetesConnector connector;
-
-    private final String namespace = "namespace";
-    private final String podName = "turtle";
-
-
-    private KubernetesClient client = mock(KubernetesClient.class);
-    private ExecWatch watch = mock(ExecWatch.class);
 
     /**
      * extend class to be able to mock inner components
      */
-    private static class TestableKubernetesConnector extends KubernetesConnector {
+    private static class TestableKubernetesConnector extends PodShellConnector {
 
         public TestableKubernetesConnector(KubernetesClient client, ExecWatch watch, String namespace, String podName) {
-            super();
-            this.client = client;
-            this.watch = watch;
-            this.namespace = namespace;
-            this.podName = podName;
+            super(client, namespace, podName, watch);
         }
+
     }
 
     @BeforeEach
-    public void setup() throws IOException {
-        connector = new TestableKubernetesConnector(client, watch, namespace, podName);
+    void setup() throws IOException {
+        connector = new TestableKubernetesConnector(client, watch, NAMESPACE, POD_NAME);
 
         PipedInputStream is = new PipedInputStream();
         PipedOutputStream out = new PipedOutputStream(is);
@@ -54,12 +54,14 @@ public class KubernetesConnectorTest {
     }
 
     @Test
-    public void shouldReturnNotImplementedAfterExecutingSingleCommand() {
-        assertEquals("NOT IMPLEMENTED", connector.executeSingleCommand("command"));
+    void shouldReturnNotImplementedAfterExecutingSingleCommand() {
+        assertThrows(NotImplementedException.class, () ->
+            connector.executeSingleCommand("command")
+        );
     }
 
     @Test
-    public void shouldReturnInputStreams() {
+    void shouldReturnInputStreams() {
         connector.getInputStream();
         verify(watch, times(1)).getOutput();
         connector.getErrorStream();
@@ -69,11 +71,12 @@ public class KubernetesConnectorTest {
     }
 
     @Test
-    public void shouldWriteCommandToStreamWhenExecuted() throws IOException {
+    void shouldWriteCommandToStreamWhenExecuted() throws IOException {
         final String command = "command";
         connector.executeCommand(command);
         verify(watch, times(2)).getInput();
         BufferedReader reader = new BufferedReader(new InputStreamReader(connector.getInputStream()));
         assertEquals(command, reader.readLine());
     }
+
 }

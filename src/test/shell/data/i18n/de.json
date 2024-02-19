@@ -227,11 +227,24 @@
       "GROUP": "Domain group",
       "DOMAIN_NAME": "Domain Name",
       "DOMAIN_CODE_NAME": "Domain Codename",
-      "DELETE": "Remove domain from group",
-      "ADD": "Add domain to group",
-      "ADD_INFO": "Select domains to add them to group",
-      "LIST" : "Domains in group",
+      "DELETE" : "Remove domain",
+      "ADD" : "Add domain",
+      "ADD_INFO" : "Select domains to add them to group",
+      "LIST" : "Group domains",
       "ACTIVE" : "Active"
+    },
+    "GROUP" : {
+      "ACCESS_USER" : "Group managers",
+      "ADD_MANAGERS" : "Add group manager",
+      "USERNAME" : "Username",
+      "NAME" : "Name",
+      "ADD" : "Add manager",
+      "ADD_USERS" : "Add manager",
+      "ADD_INFO" : "Select user to be assigned as managers in group",
+      "FOUND_USERS" : "Found users",
+      "SELECTED_USERS" : "Selected users",
+      "DELETE_USER" : "Remove",
+      "DELETE_MYSELF" : "Remove my access"
     }
   },
   "APP_INSTANCES": {
@@ -257,7 +270,8 @@
     "MANUAL_UPDATE" : {
       "HEADER" : "Manual version update",
       "BODY" : "Update the current application version for this application instance based on an upgrade process that was performed manually. Select the new correct version from the list below.",
-      "YES_BUTTON" : "Update version"
+      "YES_BUTTON" : "Update version",
+      "EMPTY" : "No other versions available"
     },
     "SORT_MODE": {
       "NONE": "None",
@@ -503,6 +517,14 @@
     "CHECK_STATUS_BUTTON": "Status überprüfen",
     "REDEPLOY_BUTTON": "Neuinstallieren",
     "ABORT_BUTTON": "Abbrechen",
+    "VIEW_LOGS": "View logs",
+    "LOG_ACCESS": {
+      "HEADER": "Logs",
+      "POD": "Pod",
+      "DROPDOWN_PLACEHOLDER": "Choose a pod",
+      "REFRESH": "Refresh",
+      "DOWNLOAD": "Download"
+    },
     "UPDATE_CONFIG_BUTTON": "Konfigurieren",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades aktivieren",
     "DISABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades deaktivieren",
@@ -1016,7 +1038,9 @@
       "ROLE_DOMAIN_ADMIN": "Domain admin",
       "ROLE_GUEST": "Guest",
       "ROLE_INCOMPLETE":  "Account creation in progress",
-      "ROLE_NOT_ACCEPTED" : "Account not active yet"
+      "ROLE_NOT_ACCEPTED" : "Account not active yet",
+      "ROLE_VL_MANAGER" : "Virtual lab manager",
+      "ROLE_VL_DOMAIN_ADMIN" : "Virtual lab domain admin"
     }
   },
   "PAGINATION": {

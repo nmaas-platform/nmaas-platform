@@ -11,7 +11,7 @@ public class UsersHelper {
 
 	public final static User ADMIN = new User(1L, "admin", true, GLOBAL, Role.ROLE_SYSTEM_ADMIN);
 	public final static User TOOL_MANAGER = new User(2L , "toolman", true, GLOBAL, Role.ROLE_TOOL_MANAGER);
-	
+
 	public final static User DOMAIN1_ADMIN = new User(3L, "domain1_admin", true, DOMAIN1, Role.ROLE_DOMAIN_ADMIN);
 	public final static User DOMAIN1_USER1 = new User(4L, "domain1_user1", true, DOMAIN1, Role.ROLE_USER);
 	public final static User DOMAIN1_USER2 = new User(5L, "domain1_user2", true, DOMAIN1, Role.ROLE_USER);
@@ -24,6 +24,9 @@ public class UsersHelper {
 	
 	public final static User GLOBAL_GUEST = new User(11L, "unassigned_guest", true, GLOBAL, Role.ROLE_GUEST);
 	public final static User OPERATOR = new User(12L, "operator", true, GLOBAL, Role.ROLE_OPERATOR);
+
+	public final static User DOMAIN_VL_MANAGER = new User(13L , "vl_admin", true, GLOBAL, Role.ROLE_VL_MANAGER);
+
 
 	public final static List<User> USERS = Arrays.asList(ADMIN, TOOL_MANAGER, DOMAIN1_ADMIN, DOMAIN1_USER1, DOMAIN1_USER2, DOMAIN1_GUEST, DOMAIN2_ADMIN, DOMAIN2_USER1, DOMAIN2_USER2, DOMAIN2_GUEST, GLOBAL_GUEST);
 	public final static List<Domain> DOMAINS = Arrays.asList(GLOBAL, DOMAIN1, DOMAIN2);
