@@ -238,9 +238,9 @@
       "ADD_MANAGERS" : "Add group manager",
       "USERNAME" : "Username",
       "NAME" : "Name",
-      "ADD" : "Add manager",
-      "ADD_USERS" : "Add manager",
-      "ADD_INFO" : "Select user to be assigned as managers in group",
+      "ADD" : "Select user",
+      "ADD_USERS" : "Assign group manager role",
+      "ADD_INFO" : "Select user to be assigned as manager in group",
       "FOUND_USERS" : "Found users",
       "SELECTED_USERS" : "Selected users",
       "DELETE_USER" : "Remove",
@@ -267,6 +267,7 @@
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
     "UNDEPLOYED_VISIBLE": "Show undeployed instances",
     "SORT": "Sort",
+    "SHOW_CONFIG_BUTTON" : "Show configuration",
     "MANUAL_UPDATE" : {
       "HEADER" : "Manual version update",
       "BODY" : "Update the current application version for this application instance based on an upgrade process that was performed manually. Select the new correct version from the list below.",
@@ -551,7 +552,8 @@
       "ADDITIONAL_TAB": "Additional parameters",
       "STORAGE_SPACE": "Storage space",
       "NMAAS_TOOLS": "NMaaS Tools Page",
-      "DOCUMENTATION_INFO": "Detailed field descriptions are available at"
+      "DOCUMENTATION_INFO": "Detailed field descriptions are available at",
+      "PREVIEW": "Configuration preview"
     },
     "REQUIRED_FIELDS": "required fields",
     "APPLY_CONFIG_BUTTON": "Apply configuration",
@@ -636,7 +638,8 @@
     "HEADER": "Undeploy confirmation",
     "BODY": "Do you want to undeploy this application instance?",
     "YES_BUTTON": "Yes",
-    "CANCEL_BUTTON": "Cancel"
+    "CANCEL_BUTTON": "Cancel",
+    "CLOSE" : "Close"
   },
   "UPGRADE_MODAL": {
     "HEADER": "Upgrade to newer version",

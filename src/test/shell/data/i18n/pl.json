@@ -239,7 +239,7 @@
       "USERNAME" : "Nazwa użytkownika",
       "NAME" : "Imie i nazwisko",
       "ADD" : "Wybierz",
-      "ADD_USERS" : "Dodaj do grupy",
+      "ADD_USERS" : "Przydziel role menadżera",
       "ADD_INFO" : "Znajdź użytkownika, który ma zostać menadżerem grupy.",
       "FOUND_USERS" : "Znaleziony użytkownik",
       "SELECTED_USERS" : "Wybrani użytkownicy",
@@ -267,6 +267,7 @@
     "HIDE_UNDEPLOYED": "Ukryj zatrzymane instancje",
     "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
+    "SHOW_CONFIG_BUTTON" : "Pokaż konfigurację",
     "MANUAL_UPDATE" : {
       "HEADER" : "Ręczna zmiana wersji",
       "BODY" : "Aktualizacja wersji aplikacji dla instacji zgodnie z procesem aktualizacji przeprowadzonym ręcznie. Wybierz odpowiednią wersję z poniższej listy.",
@@ -550,7 +551,8 @@
       "ADDITIONAL_TAB": "Rozszerzona",
       "STORAGE_SPACE": "Przestrzeń dyskowa",
       "NMAAS_TOOLS": "NMaaS Tools Page",
-      "DOCUMENTATION_INFO": "Detailed field descriptions are available at"
+      "DOCUMENTATION_INFO": "Detailed field descriptions are available at",
+      "PREVIEW": "Podgląd konfiguracji"
     },
     "REQUIRED_FIELDS": "pola wymagane",
     "APPLY_CONFIG_BUTTON": "Prześlij konfigurację",
@@ -635,7 +637,8 @@
     "HEADER": "Potwierdzenie zatrzymania",
     "BODY": "Czy chcesz zatrzymać tę instancję?",
     "YES_BUTTON": "Tak",
-    "CANCEL_BUTTON": "Anuluj"
+    "CANCEL_BUTTON": "Anuluj",
+    "CLOSE" : "Zamknij"
   },
   "UPGRADE_MODAL": {
     "HEADER": "Aktualizacja do nowszej wersji",
