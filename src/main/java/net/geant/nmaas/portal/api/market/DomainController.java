@@ -110,7 +110,7 @@ public class DomainController extends AppBaseController {
 	@PostMapping
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) {
+	public Id createDomain(@RequestBody DomainRequest domainRequest) {
 		if (domainService.existsDomain(domainRequest.getName())) {
 			throw new ProcessingException("Domain already exists.");
 		}
@@ -134,7 +134,7 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) DomainView domainUpdate) {
-		if(!domainId.equals(domainUpdate.getId())) {
+		if (!domainId.equals(domainUpdate.getId())) {
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
 
@@ -150,7 +150,7 @@ public class DomainController extends AppBaseController {
 		domainUpdate.getDomainDcnDetails().getCustomerNetworks().stream().map(CustomerNetwork::of).forEach(net -> domain.getDomainDcnDetails().getCustomerNetworks().add(net));
 		if (StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())) {
 			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
-		} else if(!domainUpdate.getDomainTechDetails().getExternalServiceDomain().equalsIgnoreCase(domain.getDomainTechDetails().getExternalServiceDomain())){
+		} else if (!domainUpdate.getDomainTechDetails().getExternalServiceDomain().equalsIgnoreCase(domain.getDomainTechDetails().getExternalServiceDomain())) {
 			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		}
@@ -168,7 +168,7 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR')")
 	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody DomainView domainUpdate) {
-		if(!domainId.equals(domainUpdate.getId())) {
+		if (!domainId.equals(domainUpdate.getId())) {
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
@@ -195,36 +195,39 @@ public class DomainController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestParam(value = "configured") boolean dcnConfigured) {
 		Domain domain = domainService.changeDcnConfiguredFlag(domainId, dcnConfigured);
-		if(domain.getDomainDcnDetails().isDcnConfigured()){
+		if (domain.getDomainDcnDetails().isDcnConfigured()) {
 			this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
 			this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
-		} else{
+		} else {
 			this.eventPublisher.publishEvent(new DcnRemoveActionEvent(this, domain.getCodename()));
 		}
-
 		return new Id(domainId);
 	}
 	
 	@DeleteMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public void deleteDomain(@PathVariable Long domainId, @RequestParam(required = false, name = "softRemove") Boolean softRemove) {
+	public void deleteDomain(@PathVariable Long domainId, @RequestParam(required = false, name = "softRemove") Boolean softRemove) throws InterruptedException {
 		if (softRemove != null && softRemove) {
-			if(!domainService.softRemoveDomain(domainId)) {
+			if (!domainService.softRemoveDomain(domainId)) {
 				throw new MissingElementException("Unable to soft remove domain");
 			}
-		} else if(!domainService.removeDomain(domainId)) {
+		}
+		try {
+			applicationInstanceService.deleteAllByDomain(domainId);
+		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException("Unable to remove domain");
 		}
-
-		applicationInstanceService.deleteAllByDomain(domainId);
-
+		Thread.sleep(3000);
+		if (!domainService.removeDomain(domainId)) {
+			throw new MissingElementException("Unable to remove domain");
+		}
 	}
 
 	@PostMapping("/group")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')" )
-	public Id createDomainGroup(@RequestBody(required=true) DomainGroupView domainGroup) {
+	public Id createDomainGroup(@RequestBody DomainGroupView domainGroup) {
 		if (domainGroupService.existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
 			throw new ProcessingException("Domain group already exists.");
 		}
@@ -240,7 +243,7 @@ public class DomainController extends AppBaseController {
 	@DeleteMapping("/group/{domainGroupId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public void deleteDomainGroup(@PathVariable Long domainGroupId){
+	public void deleteDomainGroup(@PathVariable Long domainGroupId) {
 		this.domainGroupService.deleteDomainGroup(domainGroupId);
 	}
 
@@ -264,7 +267,9 @@ public class DomainController extends AppBaseController {
 		if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
 				domainGroupView.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
 			return domainGroupView;
-		} else throw new AccessDeniedException("You have no access to this domain group");
+		} else {
+			throw new AccessDeniedException("You have no access to this domain group");
+		}
 	}
 
 	@PostMapping("/group/{domainGroupCodeName}")
@@ -296,8 +301,9 @@ public class DomainController extends AppBaseController {
 			domainService.checkDomainGroupUsers(domainGroupView);
 			domainService.updateRolesInDomainGroupByUsers(domainGroupView);
 			return new Id(domainGroupService.updateDomainGroup(domainGroupId, domainGroupView).getId());
-		} else throw new AccessDeniedException("You have no access to this domain group");
-
+		} else {
+			throw new AccessDeniedException("You have no access to this domain group");
+		}
 	}
 
 }
