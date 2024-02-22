@@ -38,9 +38,11 @@ spring.http.encoding.charset=UTF-8
 spring.http.encoding.enabled=true
 spring.http.encoding.force=true
 
-# Prometheus metrics
+# Actuator and Metrics
 nmaas.metrics.enabled=${METRICS_ENABLED}
 management.endpoints.web.exposure.include=health,prometheus
+management.info.git.mode=full
+management.health.mail.enabled=false
 
 # Notifications
 notifications.from-address=${SMTP_FROM}
@@ -84,6 +86,9 @@ nmaas.platform.webhooks.baseurl=${PLATFORM_BASEURL}/api/gitlab/webhooks
 # NMaaS Platform is running within the Kubernetes cluster
 nmaas.kubernetes.incluster=true
 
+nmaas.domains.create.namespace=${NAMESPACE_CREATION_ENABLED}
+nmaas.domains.namespace.custom.annotations=${NAMESPACE_CUSTOM_ANNOTATION_ENABLED}
+
 # ------------------------------ #
 # Quartz scheduler configuration #
 # ------------------------------ #
@@ -103,8 +108,6 @@ jwt.resetSigningKey=testResetKey
 jwt.resetTokenValidFor=1800000
 captcha.secret=${CAPTCHA_SECRET}
 spring.data.web.pageable.default-page-size=1000
-management.info.git.mode=full
-management.health.mail.enabled=false
 spring.mvc.favicon.enabled=false
 spring.devtools.add-properties=false
 

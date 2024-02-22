@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -29,6 +30,7 @@ import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +48,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
@@ -61,6 +64,7 @@ public class DomainServiceTest {
     UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
     DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
     ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+    ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     ModelMapper modelMapper = new ModelMapper();
 
     DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
@@ -77,7 +81,7 @@ public class DomainServiceTest {
                 namespaceValidator, domainRepository,
                 domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
-                modelMapper, applicationStatePerDomainService, domainGroupService);
+                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -86,7 +90,10 @@ public class DomainServiceTest {
         when(domainRepository.findByName(anyString())).thenReturn(Optional.empty());
         Domain domain = new Domain("GLOBAL", "global");
         when(domainRepository.save(domain)).thenReturn(domain);
+
         Domain result = this.domainService.createGlobalDomain();
+
+        verifyNoInteractions(eventPublisher);
         assertThat("Codename mismatch", result.getCodename().equals("global"));
     }
 
@@ -104,7 +111,10 @@ public class DomainServiceTest {
         String codename = "testdom";
         Domain domain = new Domain(name, codename);
         when(domainRepository.save(domain)).thenReturn(domain);
+
         Domain result = this.domainService.createDomain(new DomainRequest(name, codename, true));
+
+        verify(eventPublisher).publishEvent(any(DomainCreatedEvent.class));
         assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
         assertThat("Active is false", result.isActive());
     }
@@ -117,6 +127,7 @@ public class DomainServiceTest {
             Domain domain = new Domain(name, codename);
             when(domainRepository.save(domain)).thenReturn(domain);
             this.domainService.createDomain(new DomainRequest(name, codename, true));
+            verifyNoInteractions(eventPublisher);
         });
     }
 
@@ -125,6 +136,7 @@ public class DomainServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             String codename = "test-domain";
             this.domainService.createDomain(new DomainRequest(null, codename,true));
+            verifyNoInteractions(eventPublisher);
         });
     }
 
@@ -134,7 +146,9 @@ public class DomainServiceTest {
         String codename = "testdom";
         Domain domain = new Domain(name, codename, false);
         when(domainRepository.save(domain)).thenReturn(domain);
+
         Domain result = this.domainService.createDomain(new DomainRequest(name, codename, false));
+
         assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
         assertThat("Active is false", !result.isActive());
     }
@@ -156,7 +170,9 @@ public class DomainServiceTest {
         DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
         domainRequest.setDomainDcnDetails(domainDcnDetailsView);
         domainRequest.setDomainTechDetails(domainTechDetailsView);
+
         Domain result = this.domainService.createDomain(domainRequest);
+
         assertThat("Name mismatch", result.getName().equals(name));
         assertThat("Codename mismatch", result.getCodename().equals(codename));
         assertThat("Active flag is incorrect", !result.isActive());
@@ -196,9 +212,7 @@ public class DomainServiceTest {
 
     @Test
     void shouldNotUpdateNullDomain() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.domainService.updateDomain(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> this.domainService.updateDomain(null));
     }
 
     @Test
