@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.api.bulk.KeyValue;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;

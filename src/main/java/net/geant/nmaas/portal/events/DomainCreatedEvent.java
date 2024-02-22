@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.events;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
-import net.geant.nmaas.portal.api.bulk.KeyValue;
+import net.geant.nmaas.portal.api.domain.KeyValue;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.bulk;
+package net.geant.nmaas.portal.api.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

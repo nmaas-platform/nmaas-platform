@@ -72,6 +72,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     @Override
     public DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupId) {
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
+        log.debug("Removing domain {} from group {}", domain.getCodename(), domainGroup.getCodename());
         domainGroup.removeDomain(domain);
         return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
     }
@@ -102,7 +103,9 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     @Override
     public List<DomainGroupView> getAllDomainGroups() {
-        return domainGroupRepository.findAll().stream().map(g -> modelMapper.map(g, DomainGroupView.class)).collect(Collectors.toList());
+        return domainGroupRepository.findAll().stream()
+                .map(g -> modelMapper.map(g, DomainGroupView.class))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -132,7 +135,5 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new IllegalArgumentException("Name is null or empty");
         }
     }
-
-
 
 }

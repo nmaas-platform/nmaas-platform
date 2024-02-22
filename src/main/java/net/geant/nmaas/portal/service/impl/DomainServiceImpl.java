@@ -7,7 +7,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
-import net.geant.nmaas.portal.api.bulk.KeyValue;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.UserView;
@@ -41,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -296,12 +294,10 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void removeDomainFromAllGroups(Domain domain) {
-        Iterator<DomainGroup> iterator = domain.getGroups().iterator();
-        while (iterator.hasNext()) {
-            DomainGroup group = iterator.next();
-            domainGroupService.deleteDomainFromGroup(domain, group.getId());
-            iterator.remove();
-        }
+        List<Long> idsToDelete = domain.getGroups().stream().map(DomainGroup::getId).collect(Collectors.toList());
+        idsToDelete.forEach(id -> {
+            domainGroupService.deleteDomainFromGroup(domain, id);
+        });
     }
 
     @Override

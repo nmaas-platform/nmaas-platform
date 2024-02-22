@@ -13,7 +13,7 @@ public interface DomainGroupService {
 
     DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName);
 
-    DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupCodeName);
+    DomainGroupView deleteDomainFromGroup(Domain domain, Long domainGroupId);
 
     void deleteDomainGroup(Long domainGroupId);
 
