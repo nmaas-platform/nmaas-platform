@@ -1098,7 +1098,7 @@
     "PUBLIC_ACCESS": "Otwórz aplikację",
     "LOCAL_HEADER": "Dostęp lokalny (w ramach klastra)",
     "DEPLOYMENT_PARAMETERS": {
-      "HEADER": "Deployment parameters",
+      "HEADER": "Relevant deployment parameters",
       "KEY": "Key",
       "VALUE": "Value"
     }
