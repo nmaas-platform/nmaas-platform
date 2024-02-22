@@ -212,6 +212,7 @@ public class DomainController extends AppBaseController {
 			if (!domainService.softRemoveDomain(domainId)) {
 				throw new MissingElementException("Unable to soft remove domain");
 			}
+			return;
 		}
 		try {
 			applicationInstanceService.deleteAllByDomain(domainId);
