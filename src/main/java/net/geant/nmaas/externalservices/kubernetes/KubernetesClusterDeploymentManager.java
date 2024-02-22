@@ -58,7 +58,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
 
     public Optional<String> getStorageClass(String domain) {
         Optional <DomainTechDetails> foundDomain = domainTechDetailsRepository.findByDomainCodename(domain);
-        if(foundDomain.isPresent() && StringUtils.isNotEmpty(foundDomain.get().getKubernetesStorageClass())){
+        if (foundDomain.isPresent() && StringUtils.isNotEmpty(foundDomain.get().getKubernetesStorageClass())) {
             return Optional.of(foundDomain.get().getKubernetesStorageClass());
         }
         if (this.getDefaultStorageClass() != null && !this.getDefaultStorageClass().isEmpty()) {
@@ -68,7 +68,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
     }
 
     public String namespace(String domain) {
-        switch(this.getNamespaceConfigOption()){
+        switch (this.getNamespaceConfigOption()) {
             case CREATE_NAMESPACE:
                 //dynamic creation of namespace will be added
                 return NMAAS_NAMESPACE_PREFIX + domain;
@@ -76,7 +76,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
                 return this.getDefaultNamespace();
             case USE_DOMAIN_NAMESPACE:
                 Optional<DomainTechDetails> foundDomain = this.domainTechDetailsRepository.findByDomainCodename(domain);
-                if(foundDomain.isPresent()){
+                if (foundDomain.isPresent()) {
                     return foundDomain.get().getKubernetesNamespace();
                 }
                 return NMAAS_NAMESPACE_PREFIX + domain;
