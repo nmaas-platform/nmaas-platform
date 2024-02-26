@@ -41,10 +41,14 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 		globalPermMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {});
 		globalPermMatrix.put(Role.ROLE_USER, new Permissions[] {});
 		globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
+		globalPermMatrix.put(Role.ROLE_VL_DOMAIN_ADMIN, new Permissions[] {});
+		globalPermMatrix.put(Role.ROLE_VL_MANAGER, new Permissions[] {});
 
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
+		permMatrix.put(Role.ROLE_VL_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.READ});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
+		permMatrix.put(Role.ROLE_VL_MANAGER, new Permissions[] {Permissions.READ});
 	}
 
 	@Override

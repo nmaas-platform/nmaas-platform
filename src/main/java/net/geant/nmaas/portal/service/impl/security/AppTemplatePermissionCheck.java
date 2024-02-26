@@ -33,6 +33,8 @@ public class AppTemplatePermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_USER, new Permissions[] { Permissions.READ});
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] { Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER });
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {Permissions.READ});
+		permMatrix.put(Role.ROLE_VL_DOMAIN_ADMIN, new Permissions[] { Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER });
+		permMatrix.put(Role.ROLE_VL_MANAGER, new Permissions[] {Permissions.READ});
 	}
 
 	@Override
