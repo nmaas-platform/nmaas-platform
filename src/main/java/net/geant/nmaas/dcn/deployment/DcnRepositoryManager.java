@@ -1,10 +1,11 @@
 package net.geant.nmaas.dcn.deployment;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,14 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
+@Log4j2
 public class DcnRepositoryManager {
 
-    private DcnInfoRepository dcnInfoRepository;
-
-    @Autowired
-    public DcnRepositoryManager(DcnInfoRepository dcnInfoRepository) {
-        this.dcnInfoRepository = dcnInfoRepository;
-    }
+    private final DcnInfoRepository dcnInfoRepository;
 
     @EventListener
     public void notifyStateChange(DcnDeploymentStateChangeEvent event) {
@@ -50,8 +48,12 @@ public class DcnRepositoryManager {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeDcnInfo(String domain) {
-        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
-        dcnInfoRepository.delete(dcnInfo);
+        try {
+            DcnInfo dcnInfo = loadDcnOrThrowException(domain);
+            dcnInfoRepository.delete(dcnInfo);
+        } catch (InvalidDomainException e) {
+            log.warn("DCN for domain {} doesn't exist hence can't be removed", domain);
+        }
     }
 
     protected DcnInfo loadNetwork(String domain) {

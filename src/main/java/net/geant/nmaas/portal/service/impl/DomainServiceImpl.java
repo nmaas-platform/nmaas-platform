@@ -263,6 +263,7 @@ public class DomainServiceImpl implements DomainService {
     @Override
     public boolean removeDomain(Long id) {
         return findDomain(id).map(toRemove -> {
+            dcnRepositoryManager.removeDcnInfo(toRemove.getCodename());
             checkGlobal(toRemove);
             domainRepository.delete(toRemove);
             return true;
@@ -275,6 +276,7 @@ public class DomainServiceImpl implements DomainService {
         String removedSuffix = "_DELETED_" + OffsetDateTime.now();
         return findDomain(domainId).map(domain -> {
             checkGlobal(domain);
+            dcnRepositoryManager.removeDcnInfo(domain.getCodename());
             domain.setDeleted(true);
             domain.setName(domain.getName() + removedSuffix);
             domain.setCodename(domain.getCodename() + removedSuffix);

@@ -82,13 +82,6 @@ public class DcnRepositoryManagerIntTest {
     }
 
     @Test
-    void shouldThrowExceptionDuringRemovalOnMissingDcnForGivenClient() {
-        assertThrows(InvalidDomainException.class, () -> {
-            dcnRepositoryManager.removeDcnInfo(DOMAIN);
-        });
-    }
-
-    @Test
     void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() {
         assertThrows(InvalidDomainException.class, () -> {
             dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
