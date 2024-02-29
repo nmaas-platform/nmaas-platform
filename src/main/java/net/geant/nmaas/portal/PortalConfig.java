@@ -92,18 +92,18 @@ public class PortalConfig {
 			@Override
 			@Transactional
 			public void afterPropertiesSet() {
-				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
-				if(defaultTermsOfUse.isEmpty()){
+				Optional<Content> defaultAcceptableUsePolicy = contentRepository.findByName("aup");
+				if(defaultAcceptableUsePolicy.isEmpty()){
 					try {
-						addContentToDatabase("tos", "Terms of use", readContent("classpath:tos.txt"));
+						addContentToDatabase("aup", "Acceptable Use Policy", readContent("classpath:aup.txt"));
 					}catch (IOException err) {
 						throw new ProcessingException(err.getMessage());
 					}
 				}
-				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("pp");
+				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("privacy");
 				if(defaultPrivacyPolicy.isEmpty()){
 					try {
-						addContentToDatabase("pp", "Privacy Policy", readContent("classpath:pp.txt"));
+						addContentToDatabase("privacy", "Privacy Policy", readContent("classpath:privacy.txt"));
 					} catch (IOException err) {
 						throw new ProcessingException(err.getMessage());
 					}
