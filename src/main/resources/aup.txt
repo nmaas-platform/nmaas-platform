@@ -1,0 +1,46 @@
+<h3>Acceptable Use Policy for NMaaS Service</h3>
+<p>Network Management as a Service (<a href="https://www.geant.org/NMaaS">NMaaS</a>) provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure (“NMaaS” or “Service”).</p>
+
+<ol>
+    <li><strong>Authorized Use:</strong>
+        <ul>
+            <li>NMaaS is for authorized users to manage and monitor network infrastructure.</li>
+        </ul>
+    </li>
+    <li><strong>Prohibited Activities:</strong>
+        <ul>
+            <li>Unauthorized access, illegal activities, data manipulation, and distribution of malicious software are strictly prohibited.</li>
+        </ul>
+    </li>
+    <li><strong>Data Protection:</strong>
+        <ul>
+            <li>Users must safeguard data confidentiality and integrity, refraining from sharing login credentials.</li>
+        </ul>
+    </li>
+    <li><strong>Resource Conservation:</strong>
+        <ul>
+            <li>Users must use NMaaS resources responsibly to avoid impacting performance or availability.</li>
+        </ul>
+    </li>
+    <li><strong>Reporting Violations:</strong>
+        <ul>
+            <li>Users must promptly report suspected violations to the NMaaS administrator or support team.</li>
+        </ul>
+    </li>
+    <li><strong>Consequences of Violation:</strong>
+        <ul>
+            <li>Violations may lead to disciplinary action or legal consequences.</li>
+        </ul>
+    </li>
+    <li><strong>Policy Review:</strong>
+        <ul>
+            <li>This Policy may be updated periodically, with users notified of any changes.</li>
+        </ul>
+    </li>
+</ol>
+
+<p>By using NMaaS, users agree to abide by this Policy.</p>
+
+<p>GÉANT reserves the right to enforce this Policy at its discretion.</p>
+
+<p>Last Revision: [Insert Date]</p>
