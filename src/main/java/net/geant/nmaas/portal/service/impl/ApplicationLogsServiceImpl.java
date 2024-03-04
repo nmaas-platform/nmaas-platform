@@ -36,7 +36,7 @@ public class ApplicationLogsServiceImpl implements ApplicationLogsService {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(IllegalArgumentException::new);
         return appDeploymentMonitor.appComponents(appInstance.getInternalId()).stream()
-                .map(c -> new PodInfo(c.getName(), c.getDisplayName()))
+                .map(c -> new PodInfo(c.getName(), c.getDisplayName(), List.of()))
                 .collect(Collectors.toList());
     }
 
