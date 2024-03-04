@@ -16,6 +16,7 @@ import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValue;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -181,8 +182,11 @@ public class JanitorService {
         }
     }
 
-    public List<String> getPodLogs(Identifier deploymentId, String podName, String domain) {
+    public List<String> getPodLogs(Identifier deploymentId, String podName, String containerName, String domain) {
         PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
+        JanitorManager.PodInfo podInfo = (StringUtils.isNotEmpty(containerName)) ?
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).addContainers(containerName).build() :
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).build();
         JanitorManager.PodLogsResponse response = stub.retrievePodLogs(
                 JanitorManager.PodRequest.newBuilder()
                         .setApi("v1")
@@ -192,11 +196,8 @@ public class JanitorService {
                                         setUid(deploymentId.value()).
                                         setDomain(domain).build()
                         )
-                        .setPod(
-                                JanitorManager.PodInfo.newBuilder().
-                                        setName(podName).
-                                        setDisplayName(podName).build()
-                        ).build());
+                        .setPod(podInfo)
+                        .build());
         switch (response.getStatus()) {
             case OK:
                 return response.getLinesList();

@@ -106,8 +106,8 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     }
 
     @Override
-    public AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName) {
-        return serviceDeployment.serviceComponentLogs(deploymentId, appComponentName);
+    public AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName, String appSubComponentName) {
+        return serviceDeployment.serviceComponentLogs(deploymentId, appComponentName, appSubComponentName);
     }
 
 }

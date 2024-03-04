@@ -25,6 +25,7 @@ public class ApplicationLogsServiceImplTest {
 
     private static final long APP_INSTANCE_ID = 1L;
     private static final String POD_NAME = "pod1";
+    private static final String CONTAINER_NAME = "con1";
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
@@ -54,7 +55,7 @@ public class ApplicationLogsServiceImplTest {
     void shouldGetNamesOfPods() {
         when(applicationInstanceService.find(APP_INSTANCE_ID)).thenReturn(Optional.of(appInstance));
         when(appDeploymentMonitor.appComponents(DEPLOYMENT_ID)).thenReturn(
-                List.of(new AppComponentDetails("p1", "pd1"), new AppComponentDetails("p2", "pd2")));
+                List.of(new AppComponentDetails("p1", "pd1", List.of(CONTAINER_NAME)), new AppComponentDetails("p2", "pd2", null)));
         List<PodInfo> podNames = applicationLogsService.getPodNames(APP_INSTANCE_ID);
         assertThat(podNames.size()).isEqualTo(2);
         assertThat(podNames).extracting(PodInfo::getName).containsAll(List.of("p1", "p2"));
@@ -63,9 +64,9 @@ public class ApplicationLogsServiceImplTest {
     @Test
     void shouldGetPodLogs() {
         when(applicationInstanceService.find(APP_INSTANCE_ID)).thenReturn(Optional.of(appInstance));
-        when(appDeploymentMonitor.appComponentLogs(DEPLOYMENT_ID, POD_NAME)).thenReturn(
+        when(appDeploymentMonitor.appComponentLogs(DEPLOYMENT_ID, POD_NAME, CONTAINER_NAME)).thenReturn(
                 new AppComponentLogs(POD_NAME, List.of("l1", "l2", "l3")));
-        PodLogs podLogs = applicationLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME);
+        PodLogs podLogs = applicationLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME);
         assertThat(podLogs.getName()).isEqualTo(POD_NAME);
         assertThat(podLogs.getLines()).containsAll(List.of("l1", "l2", "l3"));
     }
