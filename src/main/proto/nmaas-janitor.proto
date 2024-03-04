@@ -24,6 +24,7 @@ message Credentials {
 message PodInfo {
     string name = 1;
     string displayName = 2;
+    repeated string containers = 3;
 }
 
 message InstanceRequest {

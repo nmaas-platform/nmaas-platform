@@ -23,6 +23,7 @@ public class AppLogsController {
 
     /**
      * Retrieves pod names for an AppInstance
+     *
      * @param appInstanceId identifier of AppInstance to retrieve pod names
      * @return names of pods and corresponding service names (to be displayed to the user)
      */
@@ -38,14 +39,19 @@ public class AppLogsController {
 
     /**
      * Retrieves logs for given pod of AppInstance
+     *
      * @param appInstanceId identifier of AppInstance to retrieve pod names
-     * @param podName name of a pod
+     * @param podName       name of a pod
      */
-    @GetMapping(value = "/{appInstanceId}/pods/{podName}")
+    @GetMapping(value = "/{appInstanceId}/pods/{podName}/container/{containerName}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    public PodLogs getPodLogs(@PathVariable Long appInstanceId, @PathVariable String podName) {
+    public PodLogs getPodLogs(
+            @PathVariable Long appInstanceId,
+            @PathVariable String podName,
+            @PathVariable String containerName
+    ) {
         if (service.isLogAccessEnabled(appInstanceId)) {
-            return service.getPodLogs(appInstanceId, podName);
+            return service.getPodLogs(appInstanceId, podName, containerName);
         } else {
             throw new IllegalStateException();
         }

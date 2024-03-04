@@ -521,6 +521,7 @@
     "VIEW_LOGS": "View logs",
     "LOG_ACCESS": {
       "HEADER": "Logs",
+      "CONTAINER": "Container",
       "POD": "Pod",
       "DROPDOWN_PLACEHOLDER": "Choose a pod",
       "REFRESH": "Refresh",

@@ -36,15 +36,15 @@ public class ApplicationLogsServiceImpl implements ApplicationLogsService {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(IllegalArgumentException::new);
         return appDeploymentMonitor.appComponents(appInstance.getInternalId()).stream()
-                .map(c -> new PodInfo(c.getName(), c.getDisplayName()))
+                .map(c -> new PodInfo(c.getName(), c.getDisplayName(), c.getSubComponents()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PodLogs getPodLogs(Long appInstanceId, String podName) {
+    public PodLogs getPodLogs(Long appInstanceId, String podName, String containerName) {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(IllegalArgumentException::new);
-        AppComponentLogs appComponentLogs = appDeploymentMonitor.appComponentLogs(appInstance.getInternalId(), podName);
+        AppComponentLogs appComponentLogs = appDeploymentMonitor.appComponentLogs(appInstance.getInternalId(), podName, containerName);
         return new PodLogs(appComponentLogs.getName(), processLogs(appComponentLogs.getLines()));
     }
 
