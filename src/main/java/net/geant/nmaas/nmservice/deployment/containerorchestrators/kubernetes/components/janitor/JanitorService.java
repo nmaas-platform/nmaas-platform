@@ -73,7 +73,7 @@ public class JanitorService {
                 build();
     }
 
-    private JanitorManager.NamespaceRequest buildNamespaceRequest(String domain, List<KeyValue> annotations) {
+    private JanitorManager.NamespaceRequest buildNamespaceRequest(String domain, List<KeyValueView> annotations) {
         JanitorManager.NamespaceRequest request = JanitorManager.NamespaceRequest.newBuilder()
                 .setApi("v1")
                 .setNamespace(domain)
