@@ -530,6 +530,7 @@
     "VIEW_LOGS": "Sprawdź logi",
     "LOG_ACCESS": {
       "HEADER": "Logi",
+      "CONTAINER": "Kontener",
       "POD": "Pod",
       "DROPDOWN_PLACEHOLDER": "Wybierz pod",
       "REFRESH": "Odśwież",

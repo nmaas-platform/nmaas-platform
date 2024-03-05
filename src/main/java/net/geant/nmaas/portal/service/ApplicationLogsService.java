@@ -11,6 +11,5 @@ public interface ApplicationLogsService {
 
     List<PodInfo> getPodNames(Long appInstanceId);
 
-    PodLogs getPodLogs(Long appInstanceId, String podName);
-
+    PodLogs getPodLogs(Long appInstanceId, String podName, String containerName);
 }
