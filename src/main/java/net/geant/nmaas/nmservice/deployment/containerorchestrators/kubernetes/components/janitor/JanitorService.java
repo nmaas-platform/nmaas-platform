@@ -38,6 +38,7 @@ public class JanitorService {
         this.channel = ManagedChannelBuilder.forAddress(
                 env.getProperty("janitor.address"),
                 env.getProperty("janitor.port", Integer.class))
+                .maxInboundMessageSize(Integer.MAX_VALUE)
                 .usePlaintext()
                 .build();
     }
