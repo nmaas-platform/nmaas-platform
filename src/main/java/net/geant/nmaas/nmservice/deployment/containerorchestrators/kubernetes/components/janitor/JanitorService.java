@@ -73,8 +73,11 @@ public class JanitorService {
                 build();
     }
 
-    private JanitorManager.NamespaceRequest buildDomainNamespaceRequest(String domain, List<KeyValue> annotations) {
-        JanitorManager.NamespaceRequest request = JanitorManager.NamespaceRequest.newBuilder().setNamespace(domain).build();
+    private JanitorManager.NamespaceRequest buildNamespaceRequest(String domain, List<KeyValue> annotations) {
+        JanitorManager.NamespaceRequest request = JanitorManager.NamespaceRequest.newBuilder()
+                .setApi("v1")
+                .setNamespace(domain)
+                .build();
         annotations.forEach(keyValue -> {
             JanitorManager.KeyValue annotation = JanitorManager.KeyValue.newBuilder().setKey(keyValue.getKey()).setValue(keyValue.getValue()).build();
             request.getAnnotationsList().add(annotation);
@@ -211,7 +214,8 @@ public class JanitorService {
     public void createNameSpace(String domainNameSpace, List<KeyValue> annotations) {
         log.info(String.format("Request domain namespace creation for domain %s with %s annotations", domainNameSpace, annotations.size()));
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createNamespace(buildDomainNamespaceRequest(domainNameSpace, annotations));
+        JanitorManager.ServiceResponse response = stub.createNamespace(
+                buildNamespaceRequest(domainNameSpace, annotations));
         throwExceptionIfExecutionFailed(response);
     }
 

@@ -77,8 +77,9 @@ message KeyValue {
 }
 
 message NamespaceRequest {
-    string namespace = 1;
-    repeated KeyValue annotations = 2;
+    string api = 1;
+    string namespace = 2;
+    repeated KeyValue annotations = 3;
 }
 
 service ConfigService {
