@@ -4,6 +4,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -65,4 +66,10 @@ public interface DomainService {
 	void checkDomainGroupUsers(DomainGroupView view);
 
 	void updateRolesInDomainGroupByUsers(DomainGroupView view);
+
+	void addAnnotation(KeyValueView annotation);
+	boolean checkIfAnnotationExist(String key);
+	void deleteAnnotation(String key);
+	void deleteAnnotation(Long id);
+	List<KeyValueView> getAnnotations();
 }

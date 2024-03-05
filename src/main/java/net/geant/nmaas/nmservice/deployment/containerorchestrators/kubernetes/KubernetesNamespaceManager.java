@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
-import net.geant.nmaas.portal.api.domain.KeyValue;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -35,7 +35,7 @@ public class KubernetesNamespaceManager {
         log.info("Handling DomainCreatedEvent ...");
         if (triggerNamespaceCreation) {
             log.info("Triggering namespace creation using Janitor.");
-            List<KeyValue> annotations = includeNamespaceAnnotations ? event.getDomain().getAnnotations() : Collections.emptyList();
+            List<KeyValueView> annotations = includeNamespaceAnnotations ? event.getDomain().getAnnotations() : Collections.emptyList();
             janitorService.createNameSpace(event.getDomain().getDomainCodename(), annotations);
         } else {
             log.info("Automatic namespace creation is disabled. Nothing to do.");

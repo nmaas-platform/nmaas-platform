@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -305,6 +306,29 @@ public class DomainController extends AppBaseController {
 		} else {
 			throw new AccessDeniedException("You have no access to this domain group");
 		}
+	}
+
+	@GetMapping("/annotations")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public List<KeyValueView> getDomainAnnotations() {
+		return this.domainService.getAnnotations();
+	}
+
+	@PostMapping("/annotations")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public void saveAnnotations(@RequestBody List<KeyValueView> annotations) {
+		annotations.forEach(annotation -> {
+			this.domainService.addAnnotation(annotation);
+		});
+	}
+
+	@DeleteMapping("/annotations/{key}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public void deleteAnnotations(@PathVariable String key){
+		this.domainService.deleteAnnotation(key);
 	}
 
 }

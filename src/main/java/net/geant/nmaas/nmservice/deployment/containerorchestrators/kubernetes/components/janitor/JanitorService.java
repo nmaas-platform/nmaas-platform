@@ -15,7 +15,7 @@ import net.geant.nmaas.externalservices.inventory.janitor.PodServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.api.domain.KeyValue;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class JanitorService {
                 build();
     }
 
-    private JanitorManager.NamespaceRequest buildDomainNamespaceRequest(String domain, List<KeyValue> annotations) {
+    private JanitorManager.NamespaceRequest buildDomainNamespaceRequest(String domain, List<KeyValueView> annotations) {
         JanitorManager.NamespaceRequest request = JanitorManager.NamespaceRequest.newBuilder().setNamespace(domain).build();
         annotations.forEach(keyValue -> {
             JanitorManager.KeyValue annotation = JanitorManager.KeyValue.newBuilder().setKey(keyValue.getKey()).setValue(keyValue.getValue()).build();
@@ -206,7 +206,7 @@ public class JanitorService {
         }
     }
 
-    public void createNameSpace(String domainNameSpace, List<KeyValue> annotations) {
+    public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
         log.info(String.format("Request domain namespace creation for domain %s with %s annotations", domainNameSpace, annotations.size()));
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createNamespace(buildDomainNamespaceRequest(domainNameSpace, annotations));
