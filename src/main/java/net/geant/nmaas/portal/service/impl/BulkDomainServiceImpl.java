@@ -142,7 +142,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             if(includeDomainAnnotations != null && includeDomainAnnotations) {
                 // TODO move to different place
                 this.domainService.getAnnotations().forEach(annotation -> {
-                    annotations.add(annotation)
+                    annotations.add(annotation);
                 });
                 log.info("Add global {} annotations to domain request {}", this.domainService.getAnnotations().size() ,csvDomain.getDomainName());
             
