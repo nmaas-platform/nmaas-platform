@@ -141,9 +141,11 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             List<KeyValueView> annotations = new ArrayList<>();
             if(includeDomainAnnotations != null && includeDomainAnnotations) {
                 // TODO move to different place
-                log.info("Add basic 2 annotations to domain request {}", csvDomain.getDomainName());
-                annotations.add(new KeyValueView("cni.projectcalico.org/ipv4pools", "customer-pool-ipv4"));
-                annotations.add(new KeyValueView("cni.projectcalico.org/ipv6pools", "customer-pool-ipv6"));
+                this.domainService.getAnnotations().forEach(annotation -> {
+                    annotations.add(annotation)
+                });
+                log.info("Add global {} annotations to domain request {}", this.domainService.getAnnotations().size() ,csvDomain.getDomainName());
+            
             }
 
             domain = domainService.createDomain(
