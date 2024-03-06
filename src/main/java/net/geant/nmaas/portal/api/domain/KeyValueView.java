@@ -13,7 +13,7 @@ import javax.persistence.Column;
 @Setter
 @Getter
 @Builder
-public class KeyValue {
+public class KeyValueView {
 
     @Column(name = "key_string")
     private String key;

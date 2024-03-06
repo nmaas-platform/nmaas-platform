@@ -9,6 +9,7 @@ import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -17,9 +18,11 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
+import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
@@ -40,10 +43,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.validation.OverridesAttribute;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
@@ -70,6 +76,7 @@ public class DomainServiceImpl implements DomainService {
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final DomainGroupService domainGroupService;
     private final ApplicationEventPublisher eventPublisher;
+    private final DomainAnnotationsRepository domainAnnotationsRepository;
 
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
@@ -86,7 +93,8 @@ public class DomainServiceImpl implements DomainService {
                              ModelMapper modelMapper,
                              ApplicationStatePerDomainService applicationStatePerDomainService,
                              DomainGroupService domainGroupService,
-                             ApplicationEventPublisher eventPublisher
+                             ApplicationEventPublisher eventPublisher,
+                             DomainAnnotationsRepository domainAnnotationsRepository
     ) {
         this.validator = validator;
         this.namespaceValidator = namespaceValidator;
@@ -100,6 +108,7 @@ public class DomainServiceImpl implements DomainService {
         this.applicationStatePerDomainService = applicationStatePerDomainService;
         this.domainGroupService = domainGroupService;
         this.eventPublisher = eventPublisher;
+        this.domainAnnotationsRepository = domainAnnotationsRepository;
     }
 
     @Override
@@ -487,6 +496,47 @@ public class DomainServiceImpl implements DomainService {
                     this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
             });
         });
+    }
+
+    // Domain annotations
+
+    @Override
+    public void addAnnotation(KeyValueView keyValue){
+        ModelMapper modelMapper = new ModelMapper();
+        if(this.domainAnnotationsRepository.existsByKey(keyValue.getKey())) {
+            DomainAnnotation annotation = this.domainAnnotationsRepository.findByKey(keyValue.getKey()).get();
+            if(!annotation.getValue().equals(keyValue.getValue())) {
+                // this.domainAnnotationsRepository.delete(annotation);
+                annotation.setValue(keyValue.getValue());
+                log.error("updated annotation:{} {} {}",annotation.getId(), annotation.getKey(), annotation.getValue());
+                this.domainAnnotationsRepository.save(annotation);
+            }
+        } else {
+            this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
+        }
+    }
+
+    @Override
+    public boolean checkIfAnnotationExist(String key) {
+        return this.domainAnnotationsRepository.existsByKey(key);
+    }
+
+    @Override
+    public void deleteAnnotation(Long id){
+        this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findById(id).get());
+    }
+
+    @Override
+    public void deleteAnnotation(String id){
+       if(this.domainAnnotationsRepository.findByKey(id).isPresent()) {
+        this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findByKey(id).get());
+       }
+    }
+
+    @Override
+    public List<KeyValueView> getAnnotations() {
+        return this.domainAnnotationsRepository.findAll().stream().map(annotation-> new KeyValueView(annotation.getKey(),annotation.getValue()))
+            .collect(Collectors.toList());
     }
 
 }

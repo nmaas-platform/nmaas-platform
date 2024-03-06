@@ -27,7 +27,7 @@ public class DomainRequest {
 
 	private boolean active = true;
 
-	private List<KeyValue> annotations = new ArrayList<>();
+	private List<KeyValueView> annotations = new ArrayList<>();
 
 	public DomainRequest(String name, String codename, boolean active) {
 		this.name = name;

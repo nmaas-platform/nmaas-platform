@@ -9,7 +9,7 @@ import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManag
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.domain.KeyValue;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
@@ -138,12 +138,14 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             }
             DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, domainCodename, true, DcnDeploymentType.MANUAL, null);
 
-            List<KeyValue> annotations = new ArrayList<>();
+            List<KeyValueView> annotations = new ArrayList<>();
             if(includeDomainAnnotations != null && includeDomainAnnotations) {
                 // TODO move to different place
-                log.info("Add basic 2 annotations to domain request {}", csvDomain.getDomainName());
-                annotations.add(new KeyValue("cni.projectcalico.org/ipv4pools", "customer-pool-ipv4"));
-                annotations.add(new KeyValue("cni.projectcalico.org/ipv6pools", "customer-pool-ipv6"));
+                this.domainService.getAnnotations().forEach(annotation -> {
+                    annotations.add(annotation);
+                });
+                log.info("Add global {} annotations to domain request {}", this.domainService.getAnnotations().size() ,csvDomain.getDomainName());
+            
             }
 
             domain = domainService.createDomain(

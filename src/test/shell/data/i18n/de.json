@@ -245,6 +245,15 @@
       "SELECTED_USERS" : "Selected users",
       "DELETE_USER" : "Remove",
       "DELETE_MYSELF" : "Remove my access"
+    },
+    "ANNOTATIONS" : {
+      "HEADER" : "Domain annotations",
+      "SUBHEADER" : "Global domain annotations. This set of annotations will be added to each domain creation.",
+      "CREATION" : "Domain namespace annotations",
+      "ADD" : "Add annotation",
+      "KEY"  : "Key",
+      "VALUE" : "Value",
+      "EDIT" : "Edit global annotations"
     }
   },
   "APP_INSTANCES": {

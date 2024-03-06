@@ -245,6 +245,15 @@
       "SELECTED_USERS" : "Wybrani użytkownicy",
       "DELETE_USER" : "Usuń dostęp",
       "DELETE_MYSELF" : "Usuń mój dostęp"
+    },
+    "ANNOTATIONS" : {
+      "HEADER" : "Adnotacje domeny",
+      "SUBHEADER" : "Globalne ustawienie adnotacji domeny. Poniższe domeny będą dodane podczas tworzenia domeny.",
+      "CREATION" : "Adnotację przestrzeni domeny",
+      "ADD" : "Dodajadnotacje",
+      "KEY"  : "Klucz",
+      "VALUE" : "Wartość",
+      "EDIT" : "Edytuj adnotacje"
     }
   },
   "APP_INSTANCES": {
