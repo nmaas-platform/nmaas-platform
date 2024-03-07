@@ -91,8 +91,9 @@ public interface AppDeploymentMonitor {
      *
      * @param deploymentId unique identifier of the deployed user application
      * @param appComponentName name of the component which logs should be collected
+     * @param appSubComponentName name of a subcomponent (added if required)
      * @return objects representing logs from application component
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
-    AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName);
+    AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName, String appSubComponentName);
 }

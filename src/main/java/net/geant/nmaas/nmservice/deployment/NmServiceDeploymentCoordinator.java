@@ -162,9 +162,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String appComponentName) {
+    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName) {
         try {
-            return orchestrator.serviceComponentLogs(deploymentId, appComponentName);
+            return orchestrator.serviceComponentLogs(deploymentId, serviceComponentName, serviceSubComponentName);
         } catch (ContainerOrchestratorInternalErrorException e) {
             throw new CouldNotRetrieveNmServiceComponentLogsException("Exception thrown during component logs retrieval -> " + e.getMessage());
         }

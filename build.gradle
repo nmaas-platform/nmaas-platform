@@ -34,7 +34,8 @@ protobuf {
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.55.1'
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.62.2'
+            //path = './protoc-gen-grpc-java.exe'
         }
     }
     generateProtoTasks {
@@ -97,9 +98,9 @@ dependencies {
 
     implementation('org.springdoc:springdoc-openapi-ui:1.6.15')
 
-    implementation('org.modelmapper:modelmapper:3.1.1')
-    implementation('org.modelmapper.extensions:modelmapper-spring:3.1.1')
-    implementation('org.apache.commons:commons-lang3:3.12.0')
+    implementation('org.modelmapper:modelmapper:3.2.0')
+    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.0')
+    implementation('org.apache.commons:commons-lang3:3.14.0')
 
     // Database
     runtimeOnly('com.h2database:h2')
@@ -120,11 +121,11 @@ dependencies {
     implementation('io.fabric8:kubernetes-client:4.13.3')
 
     implementation('com.google.protobuf:protobuf-java:3.23.2')
-    implementation('io.grpc:grpc-netty-shaded:1.55.1')
-    implementation('io.grpc:grpc-protobuf:1.55.1')
-    implementation('io.grpc:grpc-stub:1.55.1')
+    implementation('io.grpc:grpc-netty-shaded:1.62.2')
+    implementation('io.grpc:grpc-protobuf:1.62.2')
+    implementation('io.grpc:grpc-stub:1.62.2')
 
-    implementation('com.opencsv:opencsv:5.8')
+    implementation('com.opencsv:opencsv:5.9')
 
     testImplementation('org.mockito:mockito-inline:4.7.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')

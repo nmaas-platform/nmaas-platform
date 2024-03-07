@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.events;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
-import net.geant.nmaas.portal.api.domain.KeyValue;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class DomainCreatedEvent extends ApplicationEvent {
         Long domainId;
         String domainName;
         String domainCodename;
-        List<KeyValue> annotations;
+        List<KeyValueView> annotations;
     }
 
 }

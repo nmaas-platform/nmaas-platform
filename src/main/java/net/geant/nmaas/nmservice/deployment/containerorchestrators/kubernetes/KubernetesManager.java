@@ -42,7 +42,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -442,7 +441,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             return janitorService.getPodNames(service.getDescriptiveDeploymentId(), service.getDomain()).stream()
-                    .map(p -> new AppComponentDetails(p.getName(), p.getDisplayName()))
+                    .map(p -> new AppComponentDetails(p.getName(), p.getDisplayName(), p.getContainersList()))
                     .collect(Collectors.toList());
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
@@ -452,12 +451,12 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName) {
+    public AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName) {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             return new AppComponentLogs(
                     serviceComponentName,
-                    janitorService.getPodLogs(service.getDescriptiveDeploymentId(), serviceComponentName, service.getDomain())
+                    janitorService.getPodLogs(service.getDescriptiveDeploymentId(), serviceComponentName, serviceSubComponentName, service.getDomain())
             );
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));

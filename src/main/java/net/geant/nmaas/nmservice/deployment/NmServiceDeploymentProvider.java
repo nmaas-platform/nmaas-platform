@@ -116,9 +116,10 @@ public interface NmServiceDeploymentProvider {
      * Retrieves logs from given service component.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param appComponentName name of service component from which logs should be retrieved
+     * @param serviceComponentName name of service component from which logs should be retrieved
+     * @param serviceSubComponentName name of service subcomponent (added if required)
      * @return {@link AppComponentLogs} object containing application logs
      */
-    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String appComponentName);
+    AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName);
 
 }

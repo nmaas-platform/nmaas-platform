@@ -51,7 +51,7 @@ public class AppLogsController {
             @PathVariable String containerName
     ) {
         if (service.isLogAccessEnabled(appInstanceId)) {
-            return service.getPodLogs(appInstanceId, podName);
+            return service.getPodLogs(appInstanceId, podName, containerName);
         } else {
             throw new IllegalStateException();
         }

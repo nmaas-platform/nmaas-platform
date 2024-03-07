@@ -9,11 +9,11 @@ import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManag
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.domain.KeyValue;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
@@ -66,9 +66,6 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final UserRoleRepository userRoleRepository;
 
     private final int domainCodenameMaxLength;
-
-    @Value("${nmaas.domains.namespace.custom.annotations:false}")
-    private Boolean includeDomainAnnotations;
 
     public BulkDomainServiceImpl(
             DomainService domainService,
@@ -137,17 +134,10 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                 domainTechDetails.setKubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass());
             }
             DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, domainCodename, true, DcnDeploymentType.MANUAL, null);
-
-            List<KeyValue> annotations = new ArrayList<>();
-            if(includeDomainAnnotations != null && includeDomainAnnotations) {
-                // TODO move to different place
-                log.info("Add basic 2 annotations to domain request {}", csvDomain.getDomainName());
-                annotations.add(new KeyValue("cni.projectcalico.org/ipv4pools", "customer-pool-ipv4"));
-                annotations.add(new KeyValue("cni.projectcalico.org/ipv6pools", "customer-pool-ipv6"));
-            }
-
-            domain = domainService.createDomain(
-                    new DomainRequest(csvDomain.getDomainName(), domainCodename, domainDcnDetails, domainTechDetails, true, annotations));
+            List<KeyValueView> domainAnnotations = domainService.getAnnotations();
+            log.debug("Preparing new domain request with {} namespace annotations.", domainAnnotations.size());
+            DomainRequest domainRequest = new DomainRequest(csvDomain.getDomainName(), domainCodename, domainDcnDetails, domainTechDetails, true, domainAnnotations);
+            domain = domainService.createDomain(domainRequest);
             domainService.storeDcnInfo(prepareDcnInfo(domain));
             result.add(BulkDeploymentEntry.builder()
                     .type(BulkType.DOMAIN)

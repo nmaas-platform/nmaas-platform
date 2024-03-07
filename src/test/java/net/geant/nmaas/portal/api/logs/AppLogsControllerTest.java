@@ -17,6 +17,7 @@ public class AppLogsControllerTest {
 
     private static final long APP_INSTANCE_ID = 1L;
     private static final String POD_NAME = "podName";
+    private static final String CONTAINER_NAME = "containerName";
 
     private final ApplicationLogsService appLogsService = mock(ApplicationLogsService.class);
 
@@ -30,7 +31,7 @@ public class AppLogsControllerTest {
     @Test
     void shouldRetrievePodNames() {
         when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(true);
-        when(appLogsService.getPodNames(APP_INSTANCE_ID)).thenReturn(List.of(new PodInfo("name", "displayName")));
+        when(appLogsService.getPodNames(APP_INSTANCE_ID)).thenReturn(List.of(new PodInfo("name", "displayName", List.of(CONTAINER_NAME))));
 
         assertThat(appLogsController.getPodNames(APP_INSTANCE_ID)).isNotNull();
         verify(appLogsService).getPodNames(APP_INSTANCE_ID);
@@ -49,11 +50,21 @@ public class AppLogsControllerTest {
     @Test
     void shouldRetrievePodLogs() {
         when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(true);
-        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME))
+        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME))
                 .thenReturn(new PodLogs(POD_NAME, List.of("line1", "line2")));
 
-        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME)).isNotNull();
-        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME);
+        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME)).isNotNull();
+        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME);
+    }
+
+    @Test
+    void shouldRetrievePodLogsWhenContainerNotSpecified() {
+        when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(true);
+        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, null))
+                .thenReturn(new PodLogs(POD_NAME, List.of("line1", "line2")));
+
+        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, null)).isNotNull();
+        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME, null);
     }
 
     @Test
@@ -61,7 +72,7 @@ public class AppLogsControllerTest {
         when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(false);
 
         assertThrows(IllegalStateException.class, () ->
-                appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME)
+                appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME)
         );
         verify(appLogsService, times(0)).getPodNames(APP_INSTANCE_ID);
     }

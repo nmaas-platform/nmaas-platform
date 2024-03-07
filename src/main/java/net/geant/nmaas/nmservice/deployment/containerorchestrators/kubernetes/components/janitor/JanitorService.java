@@ -15,13 +15,15 @@ import net.geant.nmaas.externalservices.inventory.janitor.PodServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.api.domain.KeyValue;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +39,7 @@ public class JanitorService {
         this.channel = ManagedChannelBuilder.forAddress(
                 env.getProperty("janitor.address"),
                 env.getProperty("janitor.port", Integer.class))
+                .maxInboundMessageSize(Integer.MAX_VALUE)
                 .usePlaintext()
                 .build();
     }
@@ -63,7 +66,6 @@ public class JanitorService {
                 setUser(user).
                 setPassword(password).
                 build();
-
         return JanitorManager.InstanceCredentialsRequest.newBuilder().
                 setApi("v1").
                 setInstance(instance).
@@ -71,14 +73,14 @@ public class JanitorService {
                 build();
     }
 
-    private JanitorManager.NamespaceRequest buildDomainNamespaceRequest(String domain, List<KeyValue> annotations) {
-        JanitorManager.NamespaceRequest request = JanitorManager.NamespaceRequest.newBuilder().setNamespace(domain).build();
-        annotations.forEach(keyValue -> {
-            JanitorManager.KeyValue annotation = JanitorManager.KeyValue.newBuilder().setKey(keyValue.getKey()).setValue(keyValue.getValue()).build();
-            request.getAnnotationsList().add(annotation);
-        });
-
-        return request;
+    private JanitorManager.NamespaceRequest buildNamespaceRequest(String domain, List<KeyValueView> annotations) {
+        return JanitorManager.NamespaceRequest.newBuilder()
+                .setApi("v1")
+                .setNamespace(domain)
+                .addAllAnnotations(annotations.stream()
+                        .map(kv -> JanitorManager.KeyValue.newBuilder().setKey(kv.getKey()).setValue(kv.getValue()).build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     public void createOrReplaceConfigMap(Identifier deploymentId, String domain) {
@@ -181,8 +183,11 @@ public class JanitorService {
         }
     }
 
-    public List<String> getPodLogs(Identifier deploymentId, String podName, String domain) {
+    public List<String> getPodLogs(Identifier deploymentId, String podName, String containerName, String domain) {
         PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
+        JanitorManager.PodInfo podInfo = (StringUtils.isNotEmpty(containerName)) ?
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).addContainers(containerName).build() :
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).build();
         JanitorManager.PodLogsResponse response = stub.retrievePodLogs(
                 JanitorManager.PodRequest.newBuilder()
                         .setApi("v1")
@@ -192,11 +197,8 @@ public class JanitorService {
                                         setUid(deploymentId.value()).
                                         setDomain(domain).build()
                         )
-                        .setPod(
-                                JanitorManager.PodInfo.newBuilder().
-                                        setName(podName).
-                                        setDisplayName(podName).build()
-                        ).build());
+                        .setPod(podInfo)
+                        .build());
         switch (response.getStatus()) {
             case OK:
                 return response.getLinesList();
@@ -206,10 +208,11 @@ public class JanitorService {
         }
     }
 
-    public void createNameSpace(String domainNameSpace, List<KeyValue> annotations) {
+    public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
         log.info(String.format("Request domain namespace creation for domain %s with %s annotations", domainNameSpace, annotations.size()));
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createNamespace(buildDomainNamespaceRequest(domainNameSpace, annotations));
+        JanitorManager.ServiceResponse response = stub.createNamespace(
+                buildNamespaceRequest(domainNameSpace, annotations));
         throwExceptionIfExecutionFailed(response);
     }
 
