@@ -262,6 +262,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             }
         } catch (InterruptedException e) {
             log.warn("Thread interrupted while sleeping ... Resending the event");
+            Thread.currentThread().interrupt();
             return event;
         } catch (NoSuchElementException e) {
             log.warn("Received bulk status update request but entry was not found ({})", event.getBulkDeploymentId().toString());
