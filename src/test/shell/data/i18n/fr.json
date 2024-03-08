@@ -532,9 +532,12 @@
       "HEADER": "Logs",
       "CONTAINER": "Container",
       "POD": "Pod",
-      "DROPDOWN_PLACEHOLDER": "Choose a pod",
+      "PLACEHOLDER_POD": "Choose a pod",
+      "PLACEHOLDER_CONTAINER": "Choose a container",
       "REFRESH": "Refresh",
-      "DOWNLOAD": "Download"
+      "DOWNLOAD": "Download",
+      "NO_LOGS": "No logs are available for this application",
+      "WAITING": "Waiting for logs..."
     },
     "ADD_MEMBERS_BUTTON": "Add members",
     "UPDATE_CONFIG_BUTTON": "Update configuration",
