@@ -495,12 +495,11 @@ public class DomainServiceImpl implements DomainService {
     // Domain annotations
 
     @Override
-    public void addAnnotation(KeyValueView keyValue){
+    public void addAnnotation(KeyValueView keyValue) {
         ModelMapper modelMapper = new ModelMapper();
-        if(this.domainAnnotationsRepository.existsByKey(keyValue.getKey())) {
+        if (this.domainAnnotationsRepository.existsByKey(keyValue.getKey())) {
             throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.getKey()));
-        } 
-            
+        }
         this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
     }
 
@@ -510,7 +509,7 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void deleteAnnotation(Long id){
+    public void deleteAnnotation(Long id) {
         this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findById(id).get());
     }
 
@@ -521,7 +520,7 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void updateAnnotation(Long id, DomainAnnotation annotation) {
-        if(this.domainAnnotationsRepository.findById(id).isPresent() && id.equals(annotation.getId())) {
+        if (this.domainAnnotationsRepository.findById(id).isPresent() && id.equals(annotation.getId())) {
             DomainAnnotation domainAnnotation = this.domainAnnotationsRepository.findById(id).get();
             domainAnnotation.setKey(annotation.getKey());
             domainAnnotation.setValue(annotation.getValue());

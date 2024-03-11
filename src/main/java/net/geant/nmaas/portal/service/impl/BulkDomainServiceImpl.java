@@ -134,19 +134,16 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                 domainTechDetails.setKubernetesIngressClass(kubernetesClusterIngressManager.getSupportedIngressClass());
             }
             DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView(null, domainCodename, true, DcnDeploymentType.MANUAL, null);
-
-            List<KeyValueView> annotations = new ArrayList<>();
-            if(includeDomainAnnotations != null && includeDomainAnnotations) {
-                // TODO move to different place
-                this.domainService.getAnnotations().forEach(annotation -> {
-                    annotations.add(new KeyValueView(annotation.getKey(), annotation.getValue()));
-                });
-                log.info("Add global {} annotations to domain request {}", this.domainService.getAnnotations().size() ,csvDomain.getDomainName());
-            
-            }
-
-            domain = domainService.createDomain(
-                    new DomainRequest(csvDomain.getDomainName(), domainCodename, domainDcnDetails, domainTechDetails, true, annotations));
+            DomainRequest domainRequest = new DomainRequest(
+                    csvDomain.getDomainName(),
+                    domainCodename,
+                    domainDcnDetails,
+                    domainTechDetails,
+                    true,
+                    domainService.getAnnotations().stream()
+                            .map(a -> new KeyValueView(a.getKey(), a.getValue()))
+                            .collect(Collectors.toList()));
+            domain = domainService.createDomain(domainRequest);
             domainService.storeDcnInfo(prepareDcnInfo(domain));
             result.add(BulkDeploymentEntry.builder()
                     .type(BulkType.DOMAIN)
