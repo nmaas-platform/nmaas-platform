@@ -504,16 +504,10 @@ public class DomainServiceImpl implements DomainService {
     public void addAnnotation(KeyValueView keyValue){
         ModelMapper modelMapper = new ModelMapper();
         if(this.domainAnnotationsRepository.existsByKey(keyValue.getKey())) {
-            DomainAnnotation annotation = this.domainAnnotationsRepository.findByKey(keyValue.getKey()).get();
-            if(!annotation.getValue().equals(keyValue.getValue())) {
-                // this.domainAnnotationsRepository.delete(annotation);
-                annotation.setValue(keyValue.getValue());
-                log.error("updated annotation:{} {} {}",annotation.getId(), annotation.getKey(), annotation.getValue());
-                this.domainAnnotationsRepository.save(annotation);
-            }
-        } else {
-            this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
-        }
+            throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.getKey()));
+        } 
+            
+        this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
     }
 
     @Override
@@ -527,16 +521,18 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void deleteAnnotation(String id){
-       if(this.domainAnnotationsRepository.findByKey(id).isPresent()) {
-        this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findByKey(id).get());
-       }
+    public List<DomainAnnotation> getAnnotations() {
+        return this.domainAnnotationsRepository.findAll();
     }
 
     @Override
-    public List<KeyValueView> getAnnotations() {
-        return this.domainAnnotationsRepository.findAll().stream().map(annotation-> new KeyValueView(annotation.getKey(),annotation.getValue()))
-            .collect(Collectors.toList());
+    public void updateAnnotation(Long id, DomainAnnotation annotation) {
+        if(this.domainAnnotationsRepository.findById(id).isPresent() && id.equals(annotation.getId())) {
+            DomainAnnotation domainAnnotation = this.domainAnnotationsRepository.findById(id).get();
+            domainAnnotation.setKey(annotation.getKey());
+            domainAnnotation.setValue(annotation.getValue());
+            this.domainAnnotationsRepository.save(annotation);
+        }
     }
 
 }

@@ -20,6 +20,7 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
@@ -311,24 +312,29 @@ public class DomainController extends AppBaseController {
 	@GetMapping("/annotations")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public List<KeyValueView> getDomainAnnotations() {
+	public List<DomainAnnotation> getDomainAnnotations() {
 		return this.domainService.getAnnotations();
 	}
 
 	@PostMapping("/annotations")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public void saveAnnotations(@RequestBody List<KeyValueView> annotations) {
-		annotations.forEach(annotation -> {
-			this.domainService.addAnnotation(annotation);
-		});
+	public void addAnnotation(@RequestBody KeyValueView annotation) {
+			this.domainService.addAnnotation(annotation);	
 	}
 
-	@DeleteMapping("/annotations/{key}")
+	@DeleteMapping("/annotations/{id}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public void deleteAnnotations(@PathVariable String key){
-		this.domainService.deleteAnnotation(key);
+	public void deleteAnnotations(@PathVariable Long id){
+		this.domainService.deleteAnnotation(id);
+	}
+
+	@PutMapping("/annotations/{id}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public void updateAnnotation(@PathVariable Long id, @RequestBody DomainAnnotation annotation) {
+		this.domainService.updateAnnotation(id, annotation);
 	}
 
 }
