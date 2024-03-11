@@ -92,7 +92,7 @@ public class AppInstanceControllerTest {
     private final Pageable pageableInvalid = mock(Pageable.class);
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         owner = new User("owner");
         owner.setId(2L);
         admin = new User("admin");
@@ -160,7 +160,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllInstancesWithPageable() {
+    void shouldGetAllInstancesWithPageable() {
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, true);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -178,7 +178,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobal() {
+    void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobal() {
         AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -199,7 +199,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobalAndPageableInvalid() {
+    void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobalAndPageableInvalid() {
         AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -219,7 +219,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllInstancesWithParamsWhenIsUserAndPageableInvalid() {
+    void shouldGetAllInstancesWithParamsWhenIsUserAndPageableInvalid() {
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -240,7 +240,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
+    void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
         AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -260,7 +260,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllUserInstancesInDomain() {
+    void shouldGetAllUserInstancesInDomain() {
         AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -277,7 +277,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllMyInstancesInDomain() {
+    void shouldGetAllMyInstancesInDomain() {
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -298,7 +298,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAllRunningInstancesOfUserInDomain() {
+    void shouldGetAllRunningInstancesOfUserInDomain() {
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
@@ -320,7 +320,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldGetAppInstance() {
+    void shouldGetAppInstance() {
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
@@ -334,7 +334,6 @@ public class AppInstanceControllerTest {
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
         assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
-//        assertEquals(application.getId(), appInstanceView.getApplication().getId());
         assertEquals(domain1.getId(), appInstanceView.getDomain().getId());
 
         MissingElementException me = assertThrows(MissingElementException.class,
@@ -345,7 +344,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldConvertAppInstanceToAppInstanceViewWithApplicationIdAndDomainId() {
+    void shouldConvertAppInstanceToAppInstanceViewWithApplicationIdAndDomainId() {
         ModelMapper modelMapper = new ModelMapper();
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         AppInstanceView appInstanceView = modelMapper.map(appInstance, AppInstanceView.class);
@@ -354,7 +353,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldConvertAppInstanceToAppInstanceViewExtendedWithApplicationViewAndDomainView() {
+    void shouldConvertAppInstanceToAppInstanceViewExtendedWithApplicationViewAndDomainView() {
         ModelMapper modelMapper = new ModelMapper();
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         AppInstanceViewExtended appInstanceView = modelMapper.map(appInstance, AppInstanceViewExtended.class);
@@ -376,7 +375,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void ShouldGetAppInstanceState() {
+    void ShouldGetAppInstanceState() {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
@@ -395,11 +394,10 @@ public class AppInstanceControllerTest {
         assertEquals(appInstance.getId(), ais.getAppInstanceId());
     }
 
-    private final static String VALID_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDuQ6IUs8q207aA/q+KRswa+Ui+hx2c8yN/EoSIGCRhoadKkn1dN1GCGr6hn4te7BvWunGuRbLxtKf23IQvud3NuhWVrNCwJbHOIJ3To+45IBnGuur7u5CDBPR8tsvbkk4jde8j58K2xM+9GeGBxZhXEvgVs+uQwDqMhHeWCS9sqcf0Es0fXlQOffQCEiRnGOrd7cL1iIr7fimqGrGYmqxu3gfzhEPrMNHoXW5QArne48gK0EZvxmMoP5FWXLQx3itzDKfPaIB//uRBbBTNFUd6FWjZs2S1vsmKbV7LU0BBRu+CLfbw41eFuQUbx2/hQc+JbV0E5l31oCi04cZtfr1CKvmmA4t13UyooCPZWafS/uBi8n8eVoOT+VisEhbsFQJydulWeEeFF5bIwrMxPx4SucmvnsgZouemHSpuLvwIFanycPc6PWDL7gx6MLbLHulvNO22FVdRnuisgspGM85H1WFD51L5ARUz/bTltbYRKtcXhi3lYAETPmHjdiQCOp9pWNTTs+JHTz1mfA7LSVoceWO+5mdMEGwH3sEeZ/PgK6rUBocEV+xP7nj+i2L+KS/c+NvC49etjHiGCxUfXZozNSoma/tkSav2tvx10DWG8Yb93CAyqSyW1VdQIE/jE0PNWWwhvDzj1td4qsJw2+x8bCZVUChf50WxuEtBAFzVjw== user@vm1"; // user@vm1
+    private static final String VALID_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDuQ6IUs8q207aA/q+KRswa+Ui+hx2c8yN/EoSIGCRhoadKkn1dN1GCGr6hn4te7BvWunGuRbLxtKf23IQvud3NuhWVrNCwJbHOIJ3To+45IBnGuur7u5CDBPR8tsvbkk4jde8j58K2xM+9GeGBxZhXEvgVs+uQwDqMhHeWCS9sqcf0Es0fXlQOffQCEiRnGOrd7cL1iIr7fimqGrGYmqxu3gfzhEPrMNHoXW5QArne48gK0EZvxmMoP5FWXLQx3itzDKfPaIB//uRBbBTNFUd6FWjZs2S1vsmKbV7LU0BBRu+CLfbw41eFuQUbx2/hQc+JbV0E5l31oCi04cZtfr1CKvmmA4t13UyooCPZWafS/uBi8n8eVoOT+VisEhbsFQJydulWeEeFF5bIwrMxPx4SucmvnsgZouemHSpuLvwIFanycPc6PWDL7gx6MLbLHulvNO22FVdRnuisgspGM85H1WFD51L5ARUz/bTltbYRKtcXhi3lYAETPmHjdiQCOp9pWNTTs+JHTz1mfA7LSVoceWO+5mdMEGwH3sEeZ/PgK6rUBocEV+xP7nj+i2L+KS/c+NvC49etjHiGCxUfXZozNSoma/tkSav2tvx10DWG8Yb93CAyqSyW1VdQIE/jE0PNWWwhvDzj1td4qsJw2+x8bCZVUChf50WxuEtBAFzVjw== user@vm1"; // user@vm1
 
     @Test
-    public void shouldUpdateAppInstanceMembersList() {
-
+    void shouldUpdateAppInstanceMembersList() {
         ModelMapper modelMapper = new ModelMapper();
 
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
@@ -438,7 +436,7 @@ public class AppInstanceControllerTest {
     }
 
     @Test
-    public void shouldCreateAppInstanceThrowExceptionIfNameOfNewInstanceAlreadyExists(){
+    void shouldCreateAppInstanceThrowExceptionIfNameOfNewInstanceAlreadyExists(){
         Principal principal = mock(Principal.class);
         AppInstanceRequest appInstanceRequest = new AppInstanceRequest();
         Long domainId = 2L;

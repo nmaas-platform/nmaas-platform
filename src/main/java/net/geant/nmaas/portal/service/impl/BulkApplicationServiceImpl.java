@@ -73,9 +73,9 @@ import static net.geant.nmaas.portal.api.market.AppInstanceController.mapAppInst
 @Slf4j
 public class BulkApplicationServiceImpl implements BulkApplicationService {
 
-    private final static int DEFAULT_DELAY_IN_SECONDS = 15;
-    private final static String CSV_HEADER_PARAM_PREFIX = "param.";
-    private final static String EMPTY_VALUE = "<EMPTY>";
+    private static final int DEFAULT_DELAY_IN_SECONDS = 15;
+    private static final String CSV_HEADER_PARAM_PREFIX = "param.";
+    private static final String EMPTY_VALUE = "<EMPTY>";
 
     private final ApplicationBaseService applicationBaseService;
     private final ApplicationService applicationService;

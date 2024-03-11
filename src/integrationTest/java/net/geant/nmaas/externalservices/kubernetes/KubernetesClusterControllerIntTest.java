@@ -18,9 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class KubernetesClusterControllerIntTest {
 
-    private final static String URL_PREFIX = "/api/management/kubernetes";
+    private static final String URL_PREFIX = "/api/management/kubernetes";
 
-    private final static String KUBERNETES_CLUSTER_JSON =
+    private static final String KUBERNETES_CLUSTER_JSON =
                 "{" +
                     "\"ingress\":{" +
                         "\"controllerConfigOption\":\"USE_EXISTING\"," +

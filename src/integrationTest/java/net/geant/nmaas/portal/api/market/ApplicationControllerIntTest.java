@@ -85,8 +85,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     @Autowired
     private ModelMapper modelMapper;
 
-    private final static String APP_1_NAME = "testApp1";
-    private final static String APP_2_NAME = "testApp2";
+    private static final String APP_1_NAME = "testApp1";
+    private static final String APP_2_NAME = "testApp2";
 
     private ApplicationBase testApp1Base;
     private Application testApp1;

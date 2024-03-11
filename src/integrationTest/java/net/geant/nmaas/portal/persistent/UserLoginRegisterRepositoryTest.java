@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.persistent;
 
-
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Log4j2
 public class UserLoginRegisterRepositoryTest {
 
-    private final static String DOMAIN = "userdom";
+    private static final String DOMAIN = "userdom";
 
     @Autowired
     UserRepository userRepository;
@@ -42,7 +41,7 @@ public class UserLoginRegisterRepositoryTest {
 
     @BeforeEach
     @Transactional
-    public void setUp() {
+    void setUp() {
         domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
         User tester = new User("tester", true, "test123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
         tester.setEmail("test@test.com");
@@ -55,7 +54,7 @@ public class UserLoginRegisterRepositoryTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         try {
             this.userRepository.findAll().stream()
                     .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
@@ -70,12 +69,12 @@ public class UserLoginRegisterRepositoryTest {
     }
 
     @Test
-    public void shouldContainThreeUsers() {
+    void shouldContainThreeUsers() {
         assertEquals(2, userRepository.count());
     }
 
     @Test
-    public void shouldContainNoLoginRecords() {
+    void shouldContainNoLoginRecords() {
         for (UserLoginRegister u : userLoginRegisterRepository.findAll()) {
             log.info(u.getUser().getUsername() + "\t" + u.getDate());
         }
@@ -83,7 +82,7 @@ public class UserLoginRegisterRepositoryTest {
     }
 
     @Test
-    public void shouldInsertNewLoginEntry() {
+    void shouldInsertNewLoginEntry() {
         User user = userRepository.findByUsername("testadmin").get();
 
         UserLoginRegister ulr = new UserLoginRegister(OffsetDateTime.now(), user, UserLoginRegisterType.SUCCESS, null, null, null);
@@ -94,7 +93,7 @@ public class UserLoginRegisterRepositoryTest {
     }
 
     @Test
-    public void shouldReturnFirstAndLastLoginDates() {
+    void shouldReturnFirstAndLastLoginDates() {
         OffsetDateTime midLoginDate = OffsetDateTime.now();
         OffsetDateTime firstLoginDate = midLoginDate.minusWeeks(4);
         OffsetDateTime lastLoginDate = midLoginDate.plusWeeks(4);
@@ -135,7 +134,7 @@ public class UserLoginRegisterRepositoryTest {
     }
 
     @Test
-    public void shouldReturnLastFailedLoginDates() {
+    void shouldReturnLastFailedLoginDates() {
         OffsetDateTime midLoginDate = OffsetDateTime.now();
         OffsetDateTime firstLoginDate = midLoginDate.minusWeeks(4);
         OffsetDateTime lastLoginDate = midLoginDate.plusWeeks(4);

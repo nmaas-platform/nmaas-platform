@@ -69,7 +69,7 @@ public class KubernetesManagerTest {
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
     private final JanitorService janitorService = mock(JanitorService.class);
 
-    private final static Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
+    private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
     private final KubernetesManager manager = new KubernetesManager(
             repositoryManager,
