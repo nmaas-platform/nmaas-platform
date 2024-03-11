@@ -532,9 +532,12 @@
       "HEADER": "Logi",
       "CONTAINER": "Kontener",
       "POD": "Pod",
-      "DROPDOWN_PLACEHOLDER": "Wybierz pod",
+      "PLACEHOLDER_POD": "Wybierz pod",
+      "PLACEHOLDER_CONTAINER": "Wybierz kontener",
       "REFRESH": "Odśwież",
-      "DOWNLOAD": "Pobierz"
+      "DOWNLOAD": "Pobierz",
+      "NO_LOGS": "Logi nie są dostępne dla tej aplikacji",
+      "WAITING": "Oczekiwanie na logi..."
     },
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",

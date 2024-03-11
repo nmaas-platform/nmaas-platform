@@ -1,6 +1,42 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.0",
+      "date" : "(2024/03/12)",
+      "topic" : [
+        {
+          "title" : "Bulk domain and user creation",
+          "tags" : "[New Feature]",
+          "description" : "Added possibility of creating multiple domains and user accounts from csv file import."
+        },
+        {
+          "title" : "Bulk application deployment",
+          "tags" : "[New Feature]",
+          "description" : "Added possibility of deploying multiple application instance specified in a csv file."
+        },
+        {
+          "title" : "Introduced domain groups",
+          "tags" : "[New Feature]",
+          "description" : "Domain groups can be used to manage to portfolio of applications available for deployment in each domain."
+        },
+        {
+          "title" : "New role for bulk operations and domain group management",
+          "tags" : "[New Feature]",
+          "description" : "A new global role was introduces with access to bulk operations and domain groups creation and management."
+        },
+        {
+          "title" : "Application log access",
+          "tags" : "[New Feature]",
+          "description" : "Introduced possibility of accessing application logs."
+        },
+        {
+          "title" : "Portal layout improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Applied some layout improvements to several views mostly for system and domain administrator users."
+        }
+      ]
+    },
+    {
       "verNo" : "1.5.4",
       "date" : "(2023/12/27)",
       "topic" : [

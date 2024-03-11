@@ -9,11 +9,11 @@ import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManag
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
+import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
@@ -66,9 +66,6 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final UserRoleRepository userRoleRepository;
 
     private final int domainCodenameMaxLength;
-
-    @Value("${nmaas.domains.namespace.custom.annotations:false}")
-    private Boolean includeDomainAnnotations;
 
     public BulkDomainServiceImpl(
             DomainService domainService,

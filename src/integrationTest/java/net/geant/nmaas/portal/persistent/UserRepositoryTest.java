@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Log4j2
 public class UserRepositoryTest {
 
-	private final static String DOMAIN = "userdom";
+	private static final String DOMAIN = "userdom";
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -125,9 +125,8 @@ public class UserRepositoryTest {
 		userRepository.setPrivacyPolicyAcceptedFlag(privacyPolicyAcceptedTestUserFalse.get().getId(), true);
 
 		Optional<User> privacyPolicyAcceptedTestUserTrue = userRepository.findByUsername("privacyTest");
-		assertNotNull(privacyPolicyAcceptedTestUserTrue.get());
+		assertTrue(privacyPolicyAcceptedTestUserTrue.isPresent());
 		assertTrue(privacyPolicyAcceptedTestUserTrue.get().isPrivacyPolicyAccepted());
-
 	}
 
 	@Test

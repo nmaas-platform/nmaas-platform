@@ -17,8 +17,8 @@ import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
+import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -43,13 +43,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.validation.OverridesAttribute;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
@@ -474,14 +471,11 @@ public class DomainServiceImpl implements DomainService {
     public void checkDomainGroupUsers(DomainGroupView view) {
         List<Long> userToDelete = new ArrayList<>();
         DomainGroupView domainGroup = this.domainGroupService.getDomainGroup(view.getId());
-        log.error("View size {}" ,view.getManagers().size());
-        log.error("database  size {}" ,domainGroup.getManagers().size());
         domainGroup.getManagers().forEach(user -> {
             if (view.getManagers().stream().noneMatch(viewUser -> viewUser.getId().equals(user.getId()))) {
                 userToDelete.add(user.getId());
             }
         });
-        log.error("Users to delete : {}", userToDelete.size());
         userToDelete.forEach(userId -> {
             domainGroup.getDomains().forEach(domain -> {
                 this.removeMemberRole(domain.getId(), userId, Role.ROLE_VL_DOMAIN_ADMIN);

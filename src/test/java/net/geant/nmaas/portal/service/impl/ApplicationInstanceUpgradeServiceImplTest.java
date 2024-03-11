@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ApplicationInstanceUpgradeServiceImplTest {
 
-    private final static String CURRENT_CHART_VERSION = "1.2.3";
+    private static final String CURRENT_CHART_VERSION = "1.2.3";
 
-    ApplicationInstanceUpgradeService appInstanceUpgradeService = new ApplicationInstanceUpgradeServiceImpl();
+    final ApplicationInstanceUpgradeService appInstanceUpgradeService = new ApplicationInstanceUpgradeServiceImpl();
 
     @Test
-    public void shouldReturnValidNextVersion() {
+    void shouldReturnValidNextVersion() {
         Map<String, Long> allVersions = new HashMap<>();
         allVersions.put(CURRENT_CHART_VERSION, 123L);
         allVersions.put("1.2.5", 125L);
@@ -35,7 +35,7 @@ public class ApplicationInstanceUpgradeServiceImplTest {
     }
 
     @Test
-    public void shouldReturnEmptyNextVersion() {
+    void shouldReturnEmptyNextVersion() {
         Map<String, Long> allVersions = new HashMap<>();
         allVersions.put(CURRENT_CHART_VERSION, 123L);
         allVersions.put("1.2.2", 125L);

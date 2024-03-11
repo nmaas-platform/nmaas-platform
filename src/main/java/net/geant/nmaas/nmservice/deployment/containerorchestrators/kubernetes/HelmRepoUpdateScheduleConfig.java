@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class HelmRepoUpdateScheduleConfig {
 
-    private final static String HELM_REPO_UPDATE_JOB_NAME = "HelmRepoUpdateJob";
+    private static final String HELM_REPO_UPDATE_JOB_NAME = "HelmRepoUpdateJob";
 
     @Bean
     public InitializingBean insertDefaultHelmRepoUpdateJob() {

@@ -28,7 +28,7 @@ class KubernetesDeploymentParametersProviderTest {
     private final KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
     private final AppDeploymentRepository appDeploymentRepository = mock(AppDeploymentRepository.class);
 
-    private final static Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
+    private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
     private final KubernetesDeploymentParametersProvider provider = new KubernetesDeploymentParametersProvider(
             deploymentManager,

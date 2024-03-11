@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +66,6 @@ public class JanitorService {
                 setUser(user).
                 setPassword(password).
                 build();
-
         return JanitorManager.InstanceCredentialsRequest.newBuilder().
                 setApi("v1").
                 setInstance(instance).
@@ -74,16 +74,13 @@ public class JanitorService {
     }
 
     private JanitorManager.NamespaceRequest buildNamespaceRequest(String domain, List<KeyValueView> annotations) {
-        JanitorManager.NamespaceRequest request = JanitorManager.NamespaceRequest.newBuilder()
+        return JanitorManager.NamespaceRequest.newBuilder()
                 .setApi("v1")
                 .setNamespace(domain)
+                .addAllAnnotations(annotations.stream()
+                        .map(kv -> JanitorManager.KeyValue.newBuilder().setKey(kv.getKey()).setValue(kv.getValue()).build())
+                        .collect(Collectors.toList()))
                 .build();
-        annotations.forEach(keyValue -> {
-            JanitorManager.KeyValue annotation = JanitorManager.KeyValue.newBuilder().setKey(keyValue.getKey()).setValue(keyValue.getValue()).build();
-            request.getAnnotationsList().add(annotation);
-        });
-
-        return request;
     }
 
     public void createOrReplaceConfigMap(Identifier deploymentId, String domain) {

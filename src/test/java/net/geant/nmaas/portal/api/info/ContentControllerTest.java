@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 public class ContentControllerTest {
 
-    private final static Content CONTENT = new Content(1L, "Test name", "Test content", "Test title");
+    private static final Content CONTENT = new Content(1L, "Test name", "Test content", "Test title");
 
     private final ContentRepository repository = mock(ContentRepository.class);
     private final ModelMapper modelMapper = new ModelMapper();

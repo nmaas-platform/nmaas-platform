@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class AppUpgradeScheduleConfig {
 
-    private final static String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
-    private final static String APP_UPGRADE_SUMMARY_JOB_NAME = "AppUpgradeSummaryJob";
+    private static final String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
+    private static final String APP_UPGRADE_SUMMARY_JOB_NAME = "AppUpgradeSummaryJob";
 
     @Bean
     public InitializingBean insertDefaultAppUpgradeJob() {
