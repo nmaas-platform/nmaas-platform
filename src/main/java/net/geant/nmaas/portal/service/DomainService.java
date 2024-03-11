@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import org.springframework.data.domain.Page;
@@ -69,7 +70,7 @@ public interface DomainService {
 
 	void addAnnotation(KeyValueView annotation);
 	boolean checkIfAnnotationExist(String key);
-	void deleteAnnotation(String key);
 	void deleteAnnotation(Long id);
-	List<KeyValueView> getAnnotations();
+	List<DomainAnnotation> getAnnotations();
+	void updateAnnotation(Long id,DomainAnnotation domainAnnotation);
 }

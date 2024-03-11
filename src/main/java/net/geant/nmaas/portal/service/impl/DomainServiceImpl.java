@@ -493,19 +493,14 @@ public class DomainServiceImpl implements DomainService {
     }
 
     // Domain annotations
+
     @Override
     public void addAnnotation(KeyValueView keyValue) {
         ModelMapper modelMapper = new ModelMapper();
-        Optional<DomainAnnotation> domainAnnotationFromDb = this.domainAnnotationsRepository.findByKey(keyValue.getKey());
-        if (domainAnnotationFromDb.isPresent()) {
-            DomainAnnotation annotation = domainAnnotationFromDb.get();
-            if (!annotation.getValue().equals(keyValue.getValue())) {
-                annotation.setValue(keyValue.getValue());
-                this.domainAnnotationsRepository.save(annotation);
-            }
-        } else {
-            this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
+        if (this.domainAnnotationsRepository.existsByKey(keyValue.getKey())) {
+            throw new ProcessingException(String.format("Domain annotation with key (%s) already exist", keyValue.getKey()));
         }
+        this.domainAnnotationsRepository.save(modelMapper.map(keyValue, DomainAnnotation.class));
     }
 
     @Override
@@ -515,21 +510,22 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void deleteAnnotation(Long id) {
-        Optional<DomainAnnotation> domainAnnotationFromDb = this.domainAnnotationsRepository.findById(id);
-        domainAnnotationFromDb.ifPresent(this.domainAnnotationsRepository::delete);
+        this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findById(id).get());
     }
 
     @Override
-    public void deleteAnnotation(String id) {
-        Optional<DomainAnnotation> domainAnnotationFromDb = this.domainAnnotationsRepository.findByKey(id);
-        domainAnnotationFromDb.ifPresent(this.domainAnnotationsRepository::delete);
+    public List<DomainAnnotation> getAnnotations() {
+        return this.domainAnnotationsRepository.findAll();
     }
 
     @Override
-    public List<KeyValueView> getAnnotations() {
-        return this.domainAnnotationsRepository.findAll().stream()
-                .map(annotation-> new KeyValueView(annotation.getKey(), annotation.getValue()))
-                .collect(Collectors.toList());
+    public void updateAnnotation(Long id, DomainAnnotation annotation) {
+        if (this.domainAnnotationsRepository.findById(id).isPresent() && id.equals(annotation.getId())) {
+            DomainAnnotation domainAnnotation = this.domainAnnotationsRepository.findById(id).get();
+            domainAnnotation.setKey(annotation.getKey());
+            domainAnnotation.setValue(annotation.getValue());
+            this.domainAnnotationsRepository.save(annotation);
+        }
     }
 
 }
