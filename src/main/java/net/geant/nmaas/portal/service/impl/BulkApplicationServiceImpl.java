@@ -309,7 +309,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         for (BulkDeploymentEntryView app : apps) {
             Long appInstanceId = Long.valueOf(findAppDetail(app, BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
             AppInstance appInstance = instanceService.find(appInstanceId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
+                    .orElseThrow(() -> new ObjectNotFoundException("App instance not found"));
 
             appLifecycleManager.removeApplication(appInstance.getInternalId());
             instanceService.delete(appInstanceId);
