@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
@@ -487,7 +488,7 @@ public class DomainServiceImpl implements DomainService {
     public void updateRolesInDomainGroupByUsers(DomainGroupView view) {
         view.getDomains().forEach(domain -> {
             view.getManagers().forEach(user -> {
-                    this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
+                this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
             });
         });
     }
@@ -526,6 +527,15 @@ public class DomainServiceImpl implements DomainService {
             domainAnnotation.setValue(annotation.getValue());
             this.domainAnnotationsRepository.save(annotation);
         }
+    }
+
+    @Override
+    public void removeAppBaseFromAllDomains(ApplicationBase base) {
+        getDomains().forEach(domain -> removeFromDomain(base, domain));
+    }
+
+    private void removeFromDomain(ApplicationBase base, Domain domain) {
+        domain.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base));
     }
 
 }

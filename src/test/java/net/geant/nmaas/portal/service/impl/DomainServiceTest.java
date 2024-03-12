@@ -14,6 +14,8 @@ import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -453,6 +455,22 @@ public class DomainServiceTest {
         assertEquals(2, resultDomainGroup.get().getDomains().size());
         assertTrue(resultDomainGroup2.isPresent());
         assertEquals(1, resultDomainGroup2.get().getDomains().size());
+    }
+
+    @Test
+    void shouldRemoveAppBaseFromAllDomains() {
+        ApplicationBase applicationBase = new ApplicationBase(1L, "appBase");
+        ApplicationStatePerDomain statePerDomain = new ApplicationStatePerDomain(applicationBase);
+        Domain domain1 = new Domain(1L,"dom1", "dom1");
+        Domain domain2 = new Domain(2L,"dom2", "dom2");
+        domain1.setApplicationStatePerDomain(new ArrayList<>(List.of(statePerDomain)));
+        domain2.setApplicationStatePerDomain(new ArrayList<>(List.of(statePerDomain)));
+        when(domainRepository.findAll()).thenReturn(List.of(domain1, domain2));
+
+        domainService.removeAppBaseFromAllDomains(applicationBase);
+
+        assertEquals(0, domain1.getApplicationStatePerDomain().size());
+        assertEquals(0, domain2.getApplicationStatePerDomain().size());
     }
 
 }
