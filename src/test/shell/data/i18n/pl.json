@@ -1221,8 +1221,9 @@
     },
     "REMOVE" : {
       "HEADER" : "Remove bulk deployment",
-      "APP" : "Do you want to remove all instances created by this bulk ? ",
-      "REMOVE" : "Remove"
+      "APP" : "Do you want to remove all instances created by this bulk deployment?",
+      "REMOVE" : "Remove",
+      "ERROR": "Error removing bulk deployment:"
     }
   },
   "SHARED" : {

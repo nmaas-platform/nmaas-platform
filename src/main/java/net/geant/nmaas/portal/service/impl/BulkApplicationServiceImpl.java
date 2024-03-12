@@ -14,6 +14,7 @@ import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
 import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
@@ -21,6 +22,7 @@ import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
@@ -55,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -300,6 +303,24 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         );
     }
 
+    @Override
+    public void deleteAppInstancesFromBulk(BulkDeploymentView bulk) {
+        List<BulkDeploymentEntryView> apps = bulk.getEntries();
+        for (BulkDeploymentEntryView app : apps) {
+            Long appInstanceId = Long.valueOf(findAppDetail(app, BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+            AppInstance appInstance = instanceService.find(appInstanceId)
+                    .orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
+
+            appLifecycleManager.removeApplication(appInstance.getInternalId());
+            instanceService.delete(appInstanceId);
+        }
+    }
+
+    private String findAppDetail(BulkDeploymentEntryView app, String key) {
+        return Optional.ofNullable(app.getDetails().get(key))
+                .orElseThrow(() -> new ObjectNotFoundException(key + " not found"));
+    }
+
     private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(BulkType.APPLICATION);
@@ -355,8 +376,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
             //deploy
             Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
-            params.forEach( (key, value) -> {
-                configurationParameters.put(key,  Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
+            params.forEach((key, value) -> {
+                configurationParameters.put(key, Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
                 log.debug("Params = {} - {}", key, value);
             });
 
