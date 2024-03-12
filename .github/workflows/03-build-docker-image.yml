@@ -1,14 +1,28 @@
-name: Build docker image with tag latest
+name: Build docker image with appropriate tag
 
 on:
   push:
     branches:
       - develop
+  release:
+    types: [released]
 
 jobs:
   build_docker_image:
     runs-on: ubuntu-22.04
     steps:
+      - name: Determine Docker Tag
+        id: docker_tag
+        run: |
+          GIT_EVENT=${{ github.event_name }}
+          GIT_BRANCH_NAME=${GITHUB_REF##*/}
+          if [[ $GIT_EVENT == 'push' && $GIT_BRANCH_NAME == 'develop' ]]; then
+            echo "DOCKER_TAG=latest" >> $GITHUB_ENV
+          elif [[ $GIT_EVENT == 'release' ]]; then
+            GIT_TAG_NAME=${{ github.event.release.tag_name }}
+            echo "DOCKER_TAG=$(echo $GIT_TAG_NAME | cut -c 2-)" >> $GITHUB_ENV
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -29,4 +43,4 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_REPOSITORY_LOCAL }}:latest
+            ${{ secrets.DOCKER_REPOSITORY_LOCAL }}:${{ env.DOCKER_TAG }}
