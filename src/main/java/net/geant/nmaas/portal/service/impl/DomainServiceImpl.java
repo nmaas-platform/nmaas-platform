@@ -510,7 +510,9 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void deleteAnnotation(Long id) {
-        this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findById(id).get());
+        if(this.domainAnnotationsRepository.findById(id).isPresent()){
+            this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findById(id).get());
+        }
     }
 
     @Override
