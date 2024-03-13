@@ -7,6 +7,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
@@ -520,13 +521,13 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void updateAnnotation(Long id, DomainAnnotation annotation) {
+    public void updateAnnotation(Long id, DomainAnnotationView annotation) {
         Optional<DomainAnnotation> domainFromDb = this.domainAnnotationsRepository.findById(id);
         if (domainFromDb.isPresent() && id.equals(annotation.getId())) {
             DomainAnnotation domainAnnotation = domainFromDb.get();
             domainAnnotation.setKey(annotation.getKey());
             domainAnnotation.setValue(annotation.getValue());
-            this.domainAnnotationsRepository.save(annotation);
+            this.domainAnnotationsRepository.save(domainAnnotation);
         }
     }
 
