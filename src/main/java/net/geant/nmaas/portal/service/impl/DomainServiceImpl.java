@@ -510,9 +510,8 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void deleteAnnotation(Long id) {
-        if(this.domainAnnotationsRepository.findById(id).isPresent()){
-            this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findById(id).get());
-        }
+        Optional<DomainAnnotation> domainFromDb = this.domainAnnotationsRepository.findById(id);
+        domainFromDb.ifPresent(this.domainAnnotationsRepository::delete);
     }
 
     @Override
@@ -522,8 +521,9 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void updateAnnotation(Long id, DomainAnnotation annotation) {
-        if (this.domainAnnotationsRepository.findById(id).isPresent() && id.equals(annotation.getId())) {
-            DomainAnnotation domainAnnotation = this.domainAnnotationsRepository.findById(id).get();
+        Optional<DomainAnnotation> domainFromDb = this.domainAnnotationsRepository.findById(id);
+        if (domainFromDb.isPresent() && id.equals(annotation.getId())) {
+            DomainAnnotation domainAnnotation = domainFromDb.get();
             domainAnnotation.setKey(annotation.getKey());
             domainAnnotation.setValue(annotation.getValue());
             this.domainAnnotationsRepository.save(annotation);
