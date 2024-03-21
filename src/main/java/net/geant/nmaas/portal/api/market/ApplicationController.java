@@ -135,7 +135,7 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public void updateApplicationBaseOwner(@PathVariable Long id, @PathVariable String owner, Principal principal) {
 		// only system admin and owner can update application base
-		log.error("Upate owner for application {} to {}", id, owner);
+		log.info("Upate owner for application {} to {}", id, owner);
 		this.applicationBaseOwnerCheck(id, principal);
 		appBaseService.updateOwner(id, owner);
 	}
