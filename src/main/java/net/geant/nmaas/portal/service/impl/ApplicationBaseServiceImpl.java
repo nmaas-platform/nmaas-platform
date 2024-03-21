@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +68,23 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         }
         applicationBase.validate();
         return appBaseRepository.save(applicationBase);
+    }
+
+    @Override
+    @Transactional
+    public ApplicationBase updateOwner(ApplicationBase applicationBase) {
+        if (applicationBase.getId() == null) {
+            throw new ProcessingException("Updated entity id must not be null");
+        }
+        applicationBase.validate();
+        Optional<ApplicationBase> fromDb = appBaseRepository.findById(applicationBase.getId());
+        if(fromDb.isPresent()) {
+            ApplicationBase base = fromDb.get();
+            base.setOwner(applicationBase.getOwner());
+            return appBaseRepository.save(base);
+        } else {
+            throw new ProcessingException("Updated entity not found");
+        }
     }
 
     @Override
