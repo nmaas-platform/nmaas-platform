@@ -72,15 +72,15 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     @Transactional
-    public ApplicationBase updateOwner(ApplicationBase applicationBase) {
-        if (applicationBase.getId() == null) {
+    public ApplicationBase updateOwner(Long id, String owner) {
+        if (id == null) {
             throw new ProcessingException("Updated entity id must not be null");
         }
-        applicationBase.validate();
-        Optional<ApplicationBase> fromDb = appBaseRepository.findById(applicationBase.getId());
+        Optional<ApplicationBase> fromDb = appBaseRepository.findById(id);
         if(fromDb.isPresent()) {
             ApplicationBase base = fromDb.get();
-            base.setOwner(applicationBase.getOwner());
+            base.setOwner(owner);
+            base.validate();
             return appBaseRepository.save(base);
         } else {
             throw new ProcessingException("Updated entity not found");

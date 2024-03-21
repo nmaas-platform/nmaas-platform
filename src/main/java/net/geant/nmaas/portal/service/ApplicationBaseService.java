@@ -10,7 +10,7 @@ public interface ApplicationBaseService {
     ApplicationBase create(ApplicationBase applicationBase);
     ApplicationBase update(ApplicationBase applicationBase);
 
-    ApplicationBase updateOwner(ApplicationBase applicationBase);
+    ApplicationBase updateOwner(Long id, String owner);
 
     void updateApplicationVersionState(String name, String version, ApplicationState state);
 

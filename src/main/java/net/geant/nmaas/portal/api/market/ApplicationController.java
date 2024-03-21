@@ -130,14 +130,14 @@ public class ApplicationController extends AppBaseController {
 		appBaseService.update(modelMapper.map(baseView, ApplicationBase.class));
 	}
 
-	@PatchMapping(value = "/base/owner")
+	@PatchMapping(value = "/base/{id}/owner/{owner}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void updateApplicationBaseOwner(@RequestBody ApplicationBaseView baseView, Principal principal) {
+	public void updateApplicationBaseOwner(@PathVariable Long id, @PathVariable String owner, Principal principal) {
 		// only system admin and owner can update application base
-		log.error("Upate owner for application {} to {}", baseView.getName(), baseView.getOwner());
-		this.applicationBaseOwnerCheck(baseView.getName(), principal);
-		appBaseService.updateOwner(modelMapper.map(baseView, ApplicationBase.class));
+		log.error("Upate owner for application {} to {}", id, owner);
+		this.applicationBaseOwnerCheck(id, principal);
+		appBaseService.updateOwner(id, owner);
 	}
 
 	@DeleteMapping(value = "/base/{id}")
@@ -390,6 +390,11 @@ public class ApplicationController extends AppBaseController {
 
 	private void applicationBaseOwnerCheck(String applicationBaseName, Principal principal) {
 		ApplicationBase applicationBase = this.appBaseService.findByName(applicationBaseName);
+		this.applicationBaseOwnerCheck(applicationBase, principal);
+	}
+
+	private void applicationBaseOwnerCheck(Long Id, Principal principal) {
+		ApplicationBase applicationBase = this.appBaseService.getBaseApp(Id);
 		this.applicationBaseOwnerCheck(applicationBase, principal);
 	}
 
