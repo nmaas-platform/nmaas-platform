@@ -74,7 +74,7 @@ public interface DomainService {
 	boolean checkIfAnnotationExist(String key);
 	void deleteAnnotation(Long id);
 	List<DomainAnnotation> getAnnotations();
-  void updateAnnotation(Long id,DomainAnnotation domainAnnotation);
-  void removeAppBaseFromAllDomains(ApplicationBase base);
+  	void updateAnnotation(Long id,DomainAnnotationView domainAnnotation);
+  	void removeAppBaseFromAllDomains(ApplicationBase base);
   
 }
