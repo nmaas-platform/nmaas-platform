@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     private final TagRepository tagRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ApplicationEventPublisher eventPublisher;
+    private final DomainService domainService;
 
     @Override
     @Transactional
@@ -142,6 +144,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     public void deleteAppBase(ApplicationBase base) {
         base.setName(base.getName() + "_DELETED_" + OffsetDateTime.now());
         appBaseRepository.save(base);
+        domainService.removeAppBaseFromAllDomains(base);
     }
 
     private void setMissingDescriptions(ApplicationBase app) {
