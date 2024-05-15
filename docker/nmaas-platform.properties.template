@@ -51,7 +51,7 @@ notifications.from-address=${SMTP_FROM}
 # Database         #
 # ---------------- #
 # Standalone PostgreSQL
-db.standalone.jdbc-url=jdbc:postgresql://${POSTGRESQL_HOST}:5432/${POSTGRESQL_DBNAME}
+db.standalone.jdbc-url=jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DBNAME}
 db.standalone.username=${POSTGRESQL_USERNAME}
 db.standalone.password=${POSTGRESQL_PASSWORD}
 # FlywayDB settings
