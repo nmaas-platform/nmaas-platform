@@ -91,6 +91,8 @@ public class KubernetesManagerTest {
         parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
         parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
         parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
+        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
+        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
         parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
         parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
         parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
@@ -257,7 +259,7 @@ public class KubernetesManagerTest {
         assertEquals("valid", accessMethod.get().getCondition());
         assertTrue(accessMethod.get().isEnabled());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(19, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(21, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
         assertEquals("customvalue2", serviceInfo.getValue().getAdditionalParameters().get("customkey2"));
         assertEquals(serviceInfo.getValue().getAdditionalParameters().get("customkey3"), serviceInfo.getValue().getAdditionalParameters().get("customkey5"));
@@ -266,8 +268,10 @@ public class KubernetesManagerTest {
         assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey4").matches("beginning-(.*)-ending"));
         assertEquals("hostname", serviceInfo.getValue().getAdditionalParameters().get("smtpHostname"));
         assertEquals("5", serviceInfo.getValue().getAdditionalParameters().get("smtpPort"));
+        assertEquals("host:port", serviceInfo.getValue().getAdditionalParameters().get("smtpHostnameWithPort"));
         assertEquals("username", serviceInfo.getValue().getAdditionalParameters().get("smtpUsername"));
         assertEquals("password", serviceInfo.getValue().getAdditionalParameters().get("smtpPassword"));
+        assertEquals("@fromdomain", serviceInfo.getValue().getAdditionalParameters().get("smtpFromDefaultDomain"));
         assertEquals("domain", serviceInfo.getValue().getAdditionalParameters().get("domainCodeName"));
         assertEquals("extBaseUrl", serviceInfo.getValue().getAdditionalParameters().get("baseUrl"));
         assertEquals("descriptiveDeploymentId", serviceInfo.getValue().getAdditionalParameters().get("releaseName"));
@@ -298,6 +302,8 @@ public class KubernetesManagerTest {
         deployParameters.put(ParameterType.SMTP_PORT.toString(), "smtpPort");
         deployParameters.put(ParameterType.SMTP_USERNAME.toString(), "smtpUsername");
         deployParameters.put(ParameterType.SMTP_PASSWORD.toString(), "smtpPassword");
+        deployParameters.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "smtpHostnameWithPort");
+        deployParameters.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "smtpFromDefaultDomain");
         deployParameters.put(ParameterType.DOMAIN_CODENAME.toString(), "domainCodeName");
         deployParameters.put(ParameterType.BASE_URL.toString(), "baseUrl");
         deployParameters.put(ParameterType.RELEASE_NAME.toString(), "releaseName");

@@ -166,6 +166,7 @@ kubernetes.deployment.smtpServerHostname=${SMTP_HOST}
 kubernetes.deployment.smtpServerPort=${SMTP_PORT}
 kubernetes.deployment.smtpServerUsername=${SMTP_LOGIN}
 kubernetes.deployment.smtpServerPassword=${SMTP_PASSWORD}
+kubernetes.deployment.smtpFromDefaultDomain=${SMTP_FROM_DEFAULT_DOMAIN}
 kubernetes.deployment.defaultStorageClass=${K8S_DEPLOYMENT_DEFAULT_STORAGE_CLASS}
 kubernetes.deployment.forceDedicatedWorkers=false
 
