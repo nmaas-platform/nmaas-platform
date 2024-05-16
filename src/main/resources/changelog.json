@@ -1,6 +1,22 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.1",
+      "date" : "(2024/05/16)",
+      "topic" : [
+        {
+          "title" : "Fixed loading GitLab repository information for application instances",
+          "tags" : "[Bugfix]",
+          "description" : "Applied fix in the Janitor component related with querying for projects in given group."
+        },
+        {
+          "title" : "Multiple minor enhancements and fixes",
+          "tags" : "[Enhancement]",
+          "description" : "Addressed multiple issues on both back-end and front-end."
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.0",
       "date" : "(2024/03/12)",
       "topic" : [
