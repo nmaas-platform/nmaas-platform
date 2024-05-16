@@ -44,6 +44,7 @@ public class KubernetesClusterControllerIntTest {
                         "\"smtpServerPort\":587," +
                         "\"smtpServerUsername\":\"\"," +
                         "\"smtpServerPassword\":\"\"," +
+                        "\"smtpFromDefaultDomain\":\"\"," +
                         "\"forceDedicatedWorkers\":false" +
                     "}" +
                 "}";
@@ -55,7 +56,7 @@ public class KubernetesClusterControllerIntTest {
     private KubernetesClusterIngressManager clusterIngressManager;
 
     @Test
-    public void shouldFetchKubernetesCluster() throws Exception {
+    void shouldFetchKubernetesCluster() throws Exception {
         MockMvc mvc = MockMvcBuilders
                 .standaloneSetup(new KubernetesClusterController(clusterIngressManager, clusterDeploymentManager))
                 .setControllerAdvice(new ApiExceptionHandler())

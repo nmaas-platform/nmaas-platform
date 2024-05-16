@@ -142,6 +142,12 @@ public class KubernetesManager implements ContainerOrchestrator {
                 case SMTP_PORT:
                     additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_PORT.name()));
                     break;
+                case SMTP_HOST_WITH_PORT:
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_HOST_WITH_PORT.name()));
+                    break;
+                case SMTP_FROM_DEFAULT_DOMAIN:
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name()));
+                    break;
                 case SMTP_USERNAME:
                     if (deploymentParameters.containsKey(ParameterType.SMTP_USERNAME.name())) {
                         additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_USERNAME.name()));
