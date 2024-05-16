@@ -40,10 +40,9 @@ build_and_push_release_image:
   stage: build
   only:
     - tags
-  variables:
-    IMAGE_TAG: $(echo $CI_COMMIT_TAG | cut -c 2-)
   script:
     - |
+      export IMAGE_TAG=$(echo $CI_COMMIT_TAG | cut -c 2-)
       docker image prune -f
       docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REPOSITORY
       docker build -t $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG .
