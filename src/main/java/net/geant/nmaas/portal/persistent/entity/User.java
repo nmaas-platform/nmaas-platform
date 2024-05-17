@@ -10,8 +10,8 @@ import lombok.Setter;
 import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;

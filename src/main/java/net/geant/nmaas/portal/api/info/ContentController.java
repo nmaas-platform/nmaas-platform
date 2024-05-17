@@ -8,7 +8,7 @@ import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @RestController
 @AllArgsConstructor

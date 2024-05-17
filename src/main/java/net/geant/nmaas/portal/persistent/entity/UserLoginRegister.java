@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.persistent.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 

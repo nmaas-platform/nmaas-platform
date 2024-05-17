@@ -4,7 +4,6 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecListener;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.Response;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.InputStream;
@@ -14,7 +13,7 @@ public abstract class KubernetesConnector implements AsyncConnector {
 
     public static class SimpleListener implements ExecListener {
         @Override
-        public void onOpen(Response response) {
+        public void onOpen() {
             log.info("Shell opened");
         }
 
