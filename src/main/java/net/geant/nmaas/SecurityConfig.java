@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -69,45 +70,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api-docs/**"
     };
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        boolean sslEnabled = Boolean.parseBoolean(env.getProperty(SSL_ENABLED, "false"));
-        if (sslEnabled) {
-            http.requiresChannel().anyRequest().requiresSecure();
-        }
-        http
-                .csrf().disable()
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+        return httpSecurity
                 .exceptionHandling()
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .and()
-                .authorizeRequests()
-                .antMatchers(AUTH_BASIC_LOGIN).permitAll()
-                .antMatchers(AUTH_BASIC_SIGNUP).permitAll()
-                .antMatchers(AUTH_BASIC_TOKEN).permitAll()
-                .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers(AUTH_SSO_LOGIN).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/i18n/content/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/i18n/all/enabled").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/auth/sso").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/mail").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/mail/type").permitAll()
-                .antMatchers("/api/users/reset/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
-                .antMatchers("/api/orchestration/deployments/**/state").authenticated()
-                .antMatchers("/api/orchestration/deployments/**/access").authenticated()
-                .antMatchers("/api/orchestration/deployments/**").authenticated()
-                .antMatchers("/api/management/**").authenticated()
-                .antMatchers("/api/**").authenticated()
+                .authorizeHttpRequests(httpRequest -> httpRequest.requestMatchers(AUTH_BASIC_LOGIN).permitAll()
+                        .requestMatchers(AUTH_BASIC_SIGNUP).permitAll()
+                        .requestMatchers(AUTH_BASIC_TOKEN).permitAll()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(AUTH_SSO_LOGIN).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/i18n/content/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/i18n/all/enabled").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/sso").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/mail").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/mail/type").permitAll()
+                        .requestMatchers("/api/users/reset/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
+                        .requestMatchers("/api/orchestration/deployments/**/state").authenticated()
+                        .requestMatchers("/api/orchestration/deployments/**/access").authenticated()
+                        .requestMatchers("/api/orchestration/deployments/**").authenticated()
+                        .requestMatchers("/api/management/**").authenticated()
+                        .requestMatchers("/api/**").authenticated())
+
                 .and()
                 .addFilterBefore(
                         statelessAuthFilter(
@@ -145,6 +141,83 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         StatelessAuthenticationFilter.class
                 );
     }
+
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        boolean sslEnabled = Boolean.parseBoolean(env.getProperty(SSL_ENABLED, "false"));
+//        if (sslEnabled) {
+//            http.requiresChannel().anyRequest().requiresSecure();
+//        }
+//        http
+//                .csrf().disable()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers(AUTH_BASIC_LOGIN).permitAll()
+//                .antMatchers(AUTH_BASIC_SIGNUP).permitAll()
+//                .antMatchers(AUTH_BASIC_TOKEN).permitAll()
+//                .antMatchers(AUTH_WHITELIST).permitAll()
+//                .antMatchers(AUTH_SSO_LOGIN).permitAll()
+//                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+//                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
+//                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
+//                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
+//                .antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
+//                .antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/i18n/content/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/i18n/all/enabled").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/auth/sso").permitAll()
+//                .antMatchers(HttpMethod.POST, "/api/mail").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/mail/type").permitAll()
+//                .antMatchers("/api/users/reset/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
+//                .antMatchers("/api/orchestration/deployments/**/state").authenticated()
+//                .antMatchers("/api/orchestration/deployments/**/access").authenticated()
+//                .antMatchers("/api/orchestration/deployments/**").authenticated()
+//                .antMatchers("/api/management/**").authenticated()
+//                .antMatchers("/api/**").authenticated()
+//                .and()
+//                .addFilterBefore(
+//                        statelessAuthFilter(
+//                                new SkipPathRequestMatcher(
+//                                        new AntPathRequestMatcher[]{
+//                                                new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
+//                                                new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
+//                                                new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+//                                                new AntPathRequestMatcher(AUTH_SSO_LOGIN),
+//                                                new AntPathRequestMatcher("/api-docs/**"),
+//                                                new AntPathRequestMatcher("/actuator/**"),
+//                                                new AntPathRequestMatcher("/favicon.ico"),
+//                                                new AntPathRequestMatcher("/api/configuration/**", "GET"),
+//                                                new AntPathRequestMatcher("/api/auth/sso", "GET"),
+//                                                new AntPathRequestMatcher("/api/info/**"),
+//                                                new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
+//                                                new AntPathRequestMatcher("/api/content/**"),
+//                                                new AntPathRequestMatcher("/api/users/reset/**"),
+//                                                new AntPathRequestMatcher("/api/mail"),
+//                                                new AntPathRequestMatcher("/api/monitor/all", "GET"),
+//                                                new AntPathRequestMatcher("/api/mail/type", "GET"),
+//                                                new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
+//                                                new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
+//                                                new AntPathRequestMatcher("/api/gitlab/webhooks/**")
+//                                        }
+//                                ),
+//                                null,
+//                                tokenAuthenticationService),
+//                        UsernamePasswordAuthenticationFilter.class
+//                )
+//                .addFilterBefore(
+//                        gitlabTokenFilter("/api/gitlab/webhooks/**",
+//                                null,
+//                                gitLabProjectRepository),
+//                        StatelessAuthenticationFilter.class
+//                );
+//    }
 
     private Filter statelessAuthFilter(RequestMatcher skipPaths, AuthenticationFailureHandler failureHandler, TokenAuthenticationService tokenService) {
         StatelessAuthenticationFilter filter = new StatelessAuthenticationFilter(skipPaths, tokenService);
