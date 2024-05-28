@@ -15,10 +15,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -27,10 +27,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import jakarta.servlet.Filter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -38,7 +41,7 @@ import jakarta.servlet.Filter;
 @PropertySource("classpath:application.properties")
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 @ComponentScan(basePackages = {"net.geant.nmaas.portal.api.security"})
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private static final String SSL_ENABLED = "server.ssl.enabled";
 
@@ -74,12 +77,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
-                .exceptionHandling()
-                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
-                .and()
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .and()
-                .authorizeHttpRequests(httpRequest -> httpRequest.requestMatchers(AUTH_BASIC_LOGIN).permitAll()
+                .exceptionHandling(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
+                .csrf(Customizer.withDefaults())
+                .authorizeHttpRequests(httpRequest -> httpRequest
+                        .requestMatchers(AUTH_BASIC_LOGIN).permitAll()
                         .requestMatchers(AUTH_BASIC_SIGNUP).permitAll()
                         .requestMatchers(AUTH_BASIC_TOKEN).permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
@@ -103,10 +105,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .requestMatchers("/api/orchestration/deployments/**").authenticated()
                         .requestMatchers("/api/management/**").authenticated()
                         .requestMatchers("/api/**").authenticated())
-
-                .and()
-                .addFilterBefore(
-                        statelessAuthFilter(
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(statelessAuthFilter(
                                 new SkipPathRequestMatcher(
                                         new AntPathRequestMatcher[]{
                                                 new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
@@ -132,15 +132,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 ),
                                 null,
                                 tokenAuthenticationService),
-                        UsernamePasswordAuthenticationFilter.class
-                )
+                        UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(
                         gitlabTokenFilter("/api/gitlab/webhooks/**",
                                 null,
                                 gitLabProjectRepository),
                         StatelessAuthenticationFilter.class
-                );
+                ).build();
+
+
     }
+
 
 //    @Override
 //    protected void configure(HttpSecurity http) throws Exception {
