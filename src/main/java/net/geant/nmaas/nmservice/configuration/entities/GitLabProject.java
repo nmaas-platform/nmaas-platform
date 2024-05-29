@@ -49,7 +49,7 @@ public class GitLabProject {
      * Internal GitLab project id
      */
     @Column(nullable = false)
-    private Integer projectId;
+    private Long projectId;
 
     /**
      * URL that can be directly used in "git clone" command with SSH
@@ -63,7 +63,7 @@ public class GitLabProject {
     @Column
     private String webhookToken;
 
-    public GitLabProject(Identifier deploymentId, String accessUser, String accessPassword, String accessUrl, String cloneUrl, Integer projectId) {
+    public GitLabProject(Identifier deploymentId, String accessUser, String accessPassword, String accessUrl, String cloneUrl, Long projectId) {
         this.deploymentId = deploymentId;
         this.accessUser = accessUser;
         this.accessPassword = accessPassword;

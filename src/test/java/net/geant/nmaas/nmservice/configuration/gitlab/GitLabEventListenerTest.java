@@ -46,7 +46,7 @@ public class GitLabEventListenerTest {
         eventsListener.handleGitlabEvent(event);
 
         verify(gitConfigHandler, times(1)).createUser(anyString(), anyString(), anyString(), anyList());
-        verify(gitConfigHandler, times(1)).addMemberToProject(anyInt(), anyString());
+        verify(gitConfigHandler, times(1)).addMemberToProject(anyLong(), anyString());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class GitLabEventListenerTest {
 
         eventsListener.handleGitlabEvent(event);
 
-        verify(gitConfigHandler, times(1)).removeMemberFromProject(anyInt(), anyString());
+        verify(gitConfigHandler, times(1)).removeMemberFromProject(anyLong(), anyString());
     }
 
     @Test

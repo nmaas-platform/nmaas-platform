@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -38,7 +39,7 @@ public class ShellSessionObserverTest {
         observable.executeCommand(new K8sShellCommandRequest("some command", ""));
 
         // one heartbeat and one message
-        verify(mockEmitter, timeout(200).times(2)).send(any());
+        verify(mockEmitter, timeout(200).times(2)).send(Optional.ofNullable(any()));
 
         observer.complete();
         observable.complete();

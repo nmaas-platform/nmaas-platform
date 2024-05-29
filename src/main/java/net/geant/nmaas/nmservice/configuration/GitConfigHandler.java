@@ -24,10 +24,10 @@ public interface GitConfigHandler {
      */
     AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId);
 
-    void addMemberToProject(Integer gitLabProjectId, Integer gitLabUserId);
-    void addMemberToProject(Integer gitLabProjectId, String username);
+    void addMemberToProject(Long gitLabProjectId, Long gitLabUserId);
+    void addMemberToProject(Long gitLabProjectId, String username);
 
-    void removeMemberFromProject(Integer gitLabProjectId, Integer gitLabUserId);
-    void removeMemberFromProject(Integer gitLabProjectId, String username);
+    void removeMemberFromProject(Long gitLabProjectId, Long gitLabUserId);
+    void removeMemberFromProject(Long gitLabProjectId, String username);
 
 }

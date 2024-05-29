@@ -51,7 +51,7 @@ public class GitLabConfigHandlerTest {
         when(gitLabManager.getGitlabPort()).thenReturn(80);
         when(gitLabManager.projects()).thenReturn(projectApi);
 
-        String result = handler.getHttpUrlToRepo(1);
+        String result = handler.getHttpUrlToRepo(1L);
 
         assertThat(result).isEqualTo("http://test-server:80/group/project.git");
     }
@@ -64,7 +64,7 @@ public class GitLabConfigHandlerTest {
         when(project.getSshUrlToRepo()).thenReturn("git@gitlab.nmaas.eu:groups-pllab/pllab-oxidized-142.git");
         when(gitLabManager.projects()).thenReturn(projectApi);
 
-        String result = handler.getSshUrlToRepo(1);
+        String result = handler.getSshUrlToRepo(1L);
 
         assertThat(result).isEqualTo("git@gitlab.nmaas.eu/groups-pllab/pllab-oxidized-142.git");
     }
@@ -97,17 +97,17 @@ public class GitLabConfigHandlerTest {
     void shouldCreateRepository() throws GitLabApiException {
         Identifier deploymentId = Identifier.newInstance("deploymentId");
         Identifier descriptiveDeploymentId = Identifier.newInstance("descriptiveDeploymentId");
-        User gitLabUser = new User().withId(120).withUsername("test_user.eu");
+        User gitLabUser = new User().withId(120L).withUsername("test_user.eu");
         UserApi userApi = mock(UserApi.class);
         when(userApi.getOptionalUser("test_user.eu")).thenReturn(Optional.of(gitLabUser));
         when(gitLabManager.users()).thenReturn(userApi);
         GroupApi groupApi = mock(GroupApi.class);
-        when(groupApi.getOptionalGroup(any())).thenReturn(Optional.of(new Group().withId(220)));
+        when(groupApi.getOptionalGroup(any())).thenReturn(Optional.of(new Group().withId(220L)));
         when(gitLabManager.groups()).thenReturn(groupApi);
         ProjectApi projectApi = mock(ProjectApi.class);
-        Project project = new Project().withId(350);
+        Project project = new Project().withId(350L);
         project.setHttpUrlToRepo("https://repo.url.pl/DOMAIN/PROJECT");
-        when(projectApi.createProject(220, descriptiveDeploymentId.value())).thenReturn(project);
+        when(projectApi.createProject(220L, descriptiveDeploymentId.value())).thenReturn(project);
         when(projectApi.getProject(350)).thenReturn(project);
         when(gitLabManager.projects()).thenReturn(projectApi);
         when(repositoryManager.loadDescriptiveDeploymentId(deploymentId)).thenReturn(descriptiveDeploymentId);
@@ -116,7 +116,7 @@ public class GitLabConfigHandlerTest {
         handler.createRepository(deploymentId,"test@user.eu");
 
         verify(userApi).getOptionalUser("test_user.eu");
-        verify(projectApi).addMember(350, 120, PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL);
+        verify(projectApi).addMember(350L, 120L, PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL);
     }
     
 }

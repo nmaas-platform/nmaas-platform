@@ -98,7 +98,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     private void replaceUserSshKeys(String username, List<String> sshKeys) throws GitRepositoryOperationException, GitLabApiException {
-        Integer userId = getUserId(prepareGitLabUsername(username));
+        Long userId = getUserId(prepareGitLabUsername(username));
         gitLabManager.users().getSshKeys(userId).forEach(k -> {
             try {
                 gitLabManager.users().deleteSshKey(userId, k.getId());
@@ -131,11 +131,11 @@ public class GitLabConfigHandler implements GitConfigHandler {
         String domain = repositoryManager.loadDomain(deploymentId);
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         log.info(String.format("Retrieving or creating user %s", member));
-        Integer gitLabUserId = getUserId(prepareGitLabUsername(member));
+        Long gitLabUserId = getUserId(prepareGitLabUsername(member));
         log.info(String.format("Retrieving or creating group %s", domain));
-        Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
+        Long gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
         log.info(String.format("Creating project %s within the group %s", descriptiveDeploymentId, domain));
-        Integer gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
+        Long gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
         log.info("Adding member to the project");
         addMemberToProject(gitLabProjectId, gitLabUserId);
         String webhookId = generateWebhookId();
@@ -148,7 +148,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         repositoryManager.updateGitLabProject(deploymentId, project);
     }
 
-    private Integer getUserId(String gitLabUsername) {
+    private Long getUserId(String gitLabUsername) {
         try {
             return gitLabManager.users()
                     .getOptionalUser(gitLabUsername)
@@ -160,14 +160,14 @@ public class GitLabConfigHandler implements GitConfigHandler {
         }
     }
 
-    private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, String domain) {
+    private Long getOrCreateGroupWithMemberForUserIfNotExists(Long gitLabUserId, String domain) {
         try {
             Optional<Group> group = gitLabManager.groups().getOptionalGroup(groupPath(domain));
             if (group.isPresent()) {
                 return group.get().getId();
             } else {
                 gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
-                Integer groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
+                Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
                 gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
                 return groupId;
             }
@@ -176,7 +176,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         }
     }
 
-    private Integer createProjectWithinGroup(Integer groupId, Identifier deploymentId) {
+    private Long createProjectWithinGroup(Long groupId, Identifier deploymentId) {
         try {
             return gitLabManager.projects().createProject(groupId, projectName(deploymentId)).getId();
         } catch (GitLabApiException e) {
@@ -184,7 +184,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         }
     }
 
-    private GitLabProject project(Identifier deploymentId, String member, Integer gitLabProjectId) {
+    private GitLabProject project(Identifier deploymentId, String member, Long gitLabProjectId) {
         try {
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
             String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
@@ -194,11 +194,11 @@ public class GitLabConfigHandler implements GitConfigHandler {
         }
     }
 
-    String getSshUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
+    String getSshUrlToRepo(Long gitLabProjectId) throws GitLabApiException {
         return StringUtils.replace(gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo(), ":", "/");
     }
 
-    String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
+    String getHttpUrlToRepo(Long gitLabProjectId) throws GitLabApiException {
         String[] urlFromGitlabApiParts = gitLabManager.projects().getProject(gitLabProjectId).getHttpUrlToRepo().split("//");
         String[] urlParts = urlFromGitlabApiParts[1].split("/");
         urlParts[0] = gitLabManager.getGitlabServer() + ":" + gitLabManager.getGitlabPort();
@@ -206,7 +206,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     @Override
-    public void addMemberToProject(Integer gitLabProjectId, Integer gitLabUserId) {
+    public void addMemberToProject(Long gitLabProjectId, Long gitLabUserId) {
         try {
             gitLabManager.projects().addMember(gitLabProjectId, gitLabUserId, fullAccessCode());
         } catch (GitLabApiException e) {
@@ -215,13 +215,13 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     @Override
-    public void addMemberToProject(Integer gitLabProjectId, String username) {
-        Integer userId = getUserId(prepareGitLabUsername(username));
+    public void addMemberToProject(Long gitLabProjectId, String username) {
+        Long userId = getUserId(prepareGitLabUsername(username));
         this.addMemberToProject(gitLabProjectId, userId);
     }
 
     @Override
-    public void removeMemberFromProject(Integer gitLabProjectId, Integer gitLabUserId) {
+    public void removeMemberFromProject(Long gitLabProjectId, Long gitLabUserId) {
         try {
             gitLabManager.projects().removeMember(gitLabProjectId, gitLabUserId);
         } catch (GitLabApiException e) {
@@ -230,12 +230,12 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     @Override
-    public void removeMemberFromProject(Integer gitLabProjectId, String username) {
-        Integer userId = getUserId(prepareGitLabUsername(username));
+    public void removeMemberFromProject(Long gitLabProjectId, String username) {
+        Long userId = getUserId(prepareGitLabUsername(username));
         this.removeMemberFromProject(gitLabProjectId, userId);
     }
 
-    private void addWebhookToProject(Integer gitLabProjectId, String webhookId, String webhookToken) {
+    private void addWebhookToProject(Long gitLabProjectId, String webhookId, String webhookToken) {
         try {
             ProjectHook hook = new ProjectHook();
             hook.setPushEvents(true);
@@ -271,7 +271,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         loadGitlabProject(deploymentId).ifPresent(p -> uploadConfigFilesToProject(p.getProjectId(), configIds));
     }
 
-    private void uploadConfigFilesToProject(Integer gitLabProjectId, List<String> configIds) {
+    private void uploadConfigFilesToProject(Long gitLabProjectId, List<String> configIds) {
         configIds.forEach(configId -> {
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
@@ -301,7 +301,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         loadGitlabProject(deploymentId).ifPresent(p -> removeProject(p.getProjectId()));
     }
 
-    private void removeProject(Integer projectId){
+    private void removeProject(Long projectId){
         gitLabManager.projects().getOptionalProject(projectId).ifPresent(p -> {
             try {
                 gitLabManager.projects().deleteProject(projectId);
