@@ -43,7 +43,7 @@ public class GitLabConfigHandlerTest {
 
     @Test
     void shouldBuildHttpUrlToRepo() throws InvalidDeploymentIdException, GitLabApiException {
-        ProjectApi projectApi = mock(ProjectApi.class);
+        ProjectApi projectApi = new ProjectApi(null);
         Project project = mock(Project.class);
         when(projectApi.getProject(anyInt())).thenReturn(project);
         when(project.getHttpUrlToRepo()).thenReturn("http://example.gitlab.com/group/project.git");
@@ -58,8 +58,8 @@ public class GitLabConfigHandlerTest {
 
     @Test
     void shouldBuildSshUrlToRepo() throws GitLabApiException {
-        ProjectApi projectApi = mock(ProjectApi.class);
-        Project project = mock(Project.class);
+        ProjectApi projectApi = new ProjectApi(null);
+        Project project = new Project();
         when(projectApi.getProject(anyInt())).thenReturn(project);
         when(project.getSshUrlToRepo()).thenReturn("git@gitlab.nmaas.eu:groups-pllab/pllab-oxidized-142.git");
         when(gitLabManager.projects()).thenReturn(projectApi);

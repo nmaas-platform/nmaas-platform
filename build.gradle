@@ -117,8 +117,11 @@ dependencies {
     implementation('org.flywaydb:flyway-core')
 
     implementation('io.jsonwebtoken:jjwt:0.9.1')
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
+
+//    implementation 'io.jsonwebtoken:jjwt:0.12.5'
     implementation('org.freemarker:freemarker:2.3.32')
-    implementation('org.gitlab4j:gitlab4j-api:5.5.0')
+    implementation('org.gitlab4j:gitlab4j-api:5.6.0')
     implementation('com.vdurmont:semver4j:3.1.0')
     implementation('io.micrometer:micrometer-registry-prometheus:1.11.2')
 

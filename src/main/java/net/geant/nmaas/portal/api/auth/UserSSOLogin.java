@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.api.auth;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -11,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.TextCodec;
+//import io.jsonwebtoken.impl.TextCodec;
 import io.jsonwebtoken.impl.crypto.DefaultSignerFactory;
 import io.jsonwebtoken.impl.crypto.Signer;
 import lombok.Getter;
@@ -31,13 +33,13 @@ public class UserSSOLogin {
 		if(id.length != 3)
 			throw new AuthenticationException("Bad userid format");
 
-		this.username = TextCodec.BASE64.decodeToString(id[0]);
+		this.username = Arrays.toString(Base64.getDecoder().decode(id[0]));
 		this.time = Long.parseLong(id[1]);
 		this.tokenSignature = id[2];
 	}
 
 	public void validate(String key, int timeout) {
-		String signed = TextCodec.BASE64.encode(this.username) + "|" + this.time;
+		String signed = Base64.getEncoder().encodeToString(this.username.getBytes()) + "|" + this.time;
 
 		byte[] keyBytes = key.getBytes(StandardCharsets.US_ASCII);
 		Key keyspec = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
