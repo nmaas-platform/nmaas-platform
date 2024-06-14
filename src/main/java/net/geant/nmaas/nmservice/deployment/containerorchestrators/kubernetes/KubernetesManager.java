@@ -326,12 +326,13 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
                     .map(m -> {
-                        if (m.isOfType(INTERNAL) && StringUtils.isEmpty(m.getUrl())) {
+                        if ((m.isOfType(INTERNAL) || m.isOfType(LOCAL))
+                                && StringUtils.isEmpty(m.getUrl())) {
                             String lbServiceIp = janitorService.retrieveServiceIp(
                                     buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
                                     service.getDomain());
                             String ipWithPortString = getIpAddressWithPort(lbServiceIp, m.getDeployParameters());
-                            m.setUrl(getUserAtIpAddressUrl(ipWithPortString, m.getProtocol()));
+                            m.setUrl(getUserAtIpAddressUrl(ipWithPortString, m.getProtocol(), m.getDeployParameters()));
                         }
                         return m;
                     })
@@ -356,8 +357,17 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private String getUserAtIpAddressUrl(String ipAddress, String protocol) {
-        return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
+    private String getUserAtIpAddressUrl(String ipAddress, String protocol, Map<HelmChartIngressVariable, String> deployParameters) {
+        String username;
+        if(deployParameters != null
+                && deployParameters.containsKey(HelmChartIngressVariable.ACCESS_USER)
+                && !deployParameters.get(HelmChartIngressVariable.ACCESS_USER).isEmpty()){
+            username = deployParameters.get(HelmChartIngressVariable.ACCESS_USER);
+        }else{
+            username = DEFAULT_INTERNAL_SSH_ACCESS_USERNAME;
+        }
+
+        return "SSH".equals(protocol) ? username + "@" + ipAddress : ipAddress;
     }
 
     private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
