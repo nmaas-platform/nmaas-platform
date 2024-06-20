@@ -68,6 +68,15 @@ public class ApplicationController extends AppBaseController {
 		private ApplicationView application;
 	}
 
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	@Setter
+	public static class ApplicationDTOVersionList {
+		private ApplicationBaseView applicationBase;
+		private List<ApplicationView> applications;
+	}
+
 	private final ApplicationEventPublisher eventPublisher;
 
 	private final RatingRepository ratingRepository;
@@ -197,6 +206,18 @@ public class ApplicationController extends AppBaseController {
 				modelMapper.map(app, ApplicationView.class)
 		);
 	}
+
+	@GetMapping(value="/base/allversions/{id}")
+	@Transactional
+	public ApplicationDTOVersionList getApplicationDTOWithAllVersions(@PathVariable Long id) {
+		ApplicationBase base = appBaseService.getBaseApp(id);
+		List<Application> versionList = this.applicationService.findAll().stream().filter(app -> app.getName().equalsIgnoreCase(base.getName())).collect(Collectors.toList());
+		return new ApplicationDTOVersionList(
+				modelMapper.map(base, ApplicationBaseView.class),
+				versionList.stream().map(app->modelMapper.map(app, ApplicationView.class)).collect(Collectors.toList())
+		);
+	}
+
 
 	@GetMapping(value="/versions/{id}")
 	@Transactional
