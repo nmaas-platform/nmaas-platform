@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import net.geant.nmaas.portal.persistent.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -94,10 +95,10 @@ public class JWTTokenService {
 	}
 	
 	public Claims getClaims(String token) {
-		return Jwts.parser().setSigningKey(jwtSettings.getSigningKey()).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(jwtSettings.getSigningKey()).parseClaimsJwt(token).getBody();
 	}
 
 	public Claims getResetClaims(String token) {
-		return Jwts.parser().setSigningKey(jwtSettings.getResetSigningKey()).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(jwtSettings.getResetSigningKey()).parseClaimsJwt(token).getBody();
 	}
 }
