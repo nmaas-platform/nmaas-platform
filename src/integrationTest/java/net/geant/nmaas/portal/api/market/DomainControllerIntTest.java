@@ -203,7 +203,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(patch("/api/domains/" + request.getId())
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN1_ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
+//                .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())

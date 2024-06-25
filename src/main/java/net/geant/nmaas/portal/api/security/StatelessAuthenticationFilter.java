@@ -29,7 +29,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String reqText = request.getRequestURI() != null ? request.getRequestURI() : "empty";
-		log.debug("Request: " + reqText);
+		log.error("Request: " + reqText);
 		try {
 			return tokenService.getAuthentication(request);
 		} catch(Exception ex) {
@@ -40,7 +40,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		log.debug("Authentication: " + authResult);
+		log.error("Authentication: " + authResult);
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		context.setAuthentication(authResult);
 		SecurityContextHolder.setContext(context);
@@ -51,7 +51,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		log.debug("Authentication unsuccessful");
+		log.error("Authentication unsuccessful");
 		SecurityContextHolder.clearContext();
 		getFailureHandler().onAuthenticationFailure(request, response, failed);
 	}

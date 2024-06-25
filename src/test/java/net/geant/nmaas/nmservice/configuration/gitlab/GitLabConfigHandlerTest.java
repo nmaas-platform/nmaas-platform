@@ -21,9 +21,7 @@ import java.util.Optional;
 
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -43,9 +41,9 @@ public class GitLabConfigHandlerTest {
 
     @Test
     void shouldBuildHttpUrlToRepo() throws InvalidDeploymentIdException, GitLabApiException {
-        ProjectApi projectApi = new ProjectApi(null);
+        ProjectApi projectApi = mock(ProjectApi.class);
         Project project = mock(Project.class);
-        when(projectApi.getProject(anyInt())).thenReturn(project);
+        when(projectApi.getProject(anyLong())).thenReturn(project);
         when(project.getHttpUrlToRepo()).thenReturn("http://example.gitlab.com/group/project.git");
         when(gitLabManager.getGitlabServer()).thenReturn("test-server");
         when(gitLabManager.getGitlabPort()).thenReturn(80);
@@ -58,9 +56,9 @@ public class GitLabConfigHandlerTest {
 
     @Test
     void shouldBuildSshUrlToRepo() throws GitLabApiException {
-        ProjectApi projectApi = new ProjectApi(null);
-        Project project = new Project();
-        when(projectApi.getProject(anyInt())).thenReturn(project);
+        ProjectApi projectApi = mock(ProjectApi.class);
+        Project project = mock(Project.class);
+        when(projectApi.getProject(anyLong())).thenReturn(project);
         when(project.getSshUrlToRepo()).thenReturn("git@gitlab.nmaas.eu:groups-pllab/pllab-oxidized-142.git");
         when(gitLabManager.projects()).thenReturn(projectApi);
 
@@ -108,7 +106,7 @@ public class GitLabConfigHandlerTest {
         Project project = new Project().withId(350L);
         project.setHttpUrlToRepo("https://repo.url.pl/DOMAIN/PROJECT");
         when(projectApi.createProject(220L, descriptiveDeploymentId.value())).thenReturn(project);
-        when(projectApi.getProject(350)).thenReturn(project);
+        when(projectApi.getProject(350L)).thenReturn(project);
         when(gitLabManager.projects()).thenReturn(projectApi);
         when(repositoryManager.loadDescriptiveDeploymentId(deploymentId)).thenReturn(descriptiveDeploymentId);
         when(repositoryManager.loadDomain(deploymentId)).thenReturn("DOMAIN");

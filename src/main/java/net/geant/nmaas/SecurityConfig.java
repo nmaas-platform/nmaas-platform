@@ -80,6 +80,7 @@ public class SecurityConfig {
                 .exceptionHandling(Customizer.withDefaults())
                 .cors(Customizer.withDefaults())
                 .csrf(Customizer.withDefaults())
+//                .requiresChannel().anyRequest().requiresSecure()
                 .authorizeHttpRequests(httpRequest -> httpRequest
                         .requestMatchers(AUTH_BASIC_LOGIN).permitAll()
                         .requestMatchers(AUTH_BASIC_SIGNUP).permitAll()
@@ -246,6 +247,7 @@ public class SecurityConfig {
         corsConfig.addAllowedOrigin("*");
         corsConfig.addAllowedHeader("*");
         corsConfig.addAllowedMethod("*");
+        corsConfig.setMaxAge(3600L); // Set max age for preflight requests
 
         source.registerCorsConfiguration("/api/**", corsConfig);
 

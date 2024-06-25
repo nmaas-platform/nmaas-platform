@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class TokenAuthenticationService {
 
 	private static final String AUTH_HEADER = "Authorization";
@@ -34,6 +36,8 @@ public class TokenAuthenticationService {
 			throw new AuthenticationMethodNotSupportedException(AUTH_HEADER + " contains unsupported method.");
 
 		String token = authHeader.substring(AUTH_METHOD.length() + 1);
+
+		log.error("Jwt token auth service: {} {} ", jwtTokenService.getClaims(token).getSubject(),jwtTokenService.getClaims(token).get("scopes") );
 
 		String username = jwtTokenService.getClaims(token).getSubject();
 		Object scopes = jwtTokenService.getClaims(token).get("scopes");

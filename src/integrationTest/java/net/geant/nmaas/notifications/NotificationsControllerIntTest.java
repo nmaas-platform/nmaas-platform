@@ -1,5 +1,6 @@
 package net.geant.nmaas.notifications;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Slf4j
 public class NotificationsControllerIntTest extends BaseControllerTestSetup {
 
     @BeforeEach
@@ -47,6 +49,9 @@ public class NotificationsControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void sendValidAdminNotification() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
+        log.error("Token from getValidUserToken = {}", token);
+
+
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/mail/admin")
                     .header("Authorization", "Bearer " + token)
