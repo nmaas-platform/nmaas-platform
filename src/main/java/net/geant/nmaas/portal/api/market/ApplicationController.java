@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
@@ -19,13 +20,9 @@ import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -71,6 +68,10 @@ public class ApplicationController extends AppBaseController {
 	private final ApplicationEventPublisher eventPublisher;
 
 	private final RatingRepository ratingRepository;
+
+	private final ApplicationInstanceService applicationInstanceService;
+
+	private final AppLifecycleManager appLifecycleManager;
 
 	/*
 	 * Application Base Part
@@ -151,6 +152,10 @@ public class ApplicationController extends AppBaseController {
         for (ApplicationVersion appVersion : base.getVersions()) {
             Application app = getApp(appVersion.getAppVersionId());
             applicationService.changeApplicationState(app, state);
+			List<AppInstance> instanceList =  applicationInstanceService.findAllByApplication(app);
+			instanceList.forEach(instance -> {
+				appLifecycleManager.removeApplication(instance.getInternalId());
+			});
             appVersion.setState(state);
         }
 
