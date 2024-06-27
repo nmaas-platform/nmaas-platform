@@ -736,6 +736,7 @@
     "VIEW_BUTTON": "View",
     "EDIT_BUTTON": "Edit",
     "DELETE_BUTTON": "Remove",
+    "SELECT_VERSION" : "Select version to be base in creator",
     "CONFIRM_REMOVAL" : {
       "HEADER": "Confirm application removal",
       "DESCRIPTION": "Do you want to completely remove this application from the catalogue along with all its versions?",
