@@ -326,7 +326,7 @@ public class ApplicationController extends AppBaseController {
 						numberOfRunningInstances = +1;
 					}
 					if(numberOfRunningInstances > 0) {
-						throw new ProcessingException("Can not delete app version. You still have " + numberOfRunningInstances + " running instances of this version.");
+						throw new ProcessingException("Can not set state to Disabled. There is still " + numberOfRunningInstances + " running instances of this version.");
 					}
 			}
 			);
