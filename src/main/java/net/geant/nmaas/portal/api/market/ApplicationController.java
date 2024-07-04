@@ -9,23 +9,15 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.api.domain.AppRateView;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -80,6 +72,12 @@ public class ApplicationController extends AppBaseController {
 	private final ApplicationEventPublisher eventPublisher;
 
 	private final RatingRepository ratingRepository;
+
+	private final ApplicationInstanceService applicationInstanceService;
+
+	private final AppLifecycleManager appLifecycleManager;
+
+	private final AppInstanceController appInstanceController;
 
 	/*
 	 * Application Base Part
@@ -159,10 +157,8 @@ public class ApplicationController extends AppBaseController {
 		ApplicationState state = ApplicationState.DELETED;
         for (ApplicationVersion appVersion : base.getVersions()) {
             Application app = getApp(appVersion.getAppVersionId());
-            applicationService.changeApplicationState(app, state);
-            appVersion.setState(state);
+            if(app.getState() != ApplicationState.DELETED) throw new ProcessingException("Can not delete base, version " +  app.getVersion() +" is not deleted");
         }
-
 		appBaseService.deleteAppBase(base);
 	}
 
@@ -339,8 +335,23 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping(value = "/state/{id}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
-	public void changeApplicationState(@PathVariable long id, @RequestBody ApplicationStateChangeRequest stateChangeRequest) {
+	public void changeApplicationState(@PathVariable long id, @RequestBody ApplicationStateChangeRequest stateChangeRequest, Principal principal) {
 		Application app = getApp(id);
+		if(stateChangeRequest.getState().equals(ApplicationState.DELETED)) {
+			applicationInstanceService.findAllByApplication(app).forEach(ai -> {
+					AppInstanceStatus instanceState = appInstanceController.getState(ai.getId(), principal);
+					int numberOfRunningInstances = 0;
+					if(!(instanceState.getState().equals(AppInstanceState.DONE)
+							|| instanceState.getState().equals(AppInstanceState.FAILURE)
+							|| instanceState.getState().equals(AppInstanceState.REMOVED) )) {
+						numberOfRunningInstances = +1;
+					}
+					if(numberOfRunningInstances > 0) {
+						throw new ProcessingException("Can not set state to Disabled. There is still " + numberOfRunningInstances + " running instances of this version.");
+					}
+			}
+			);
+		}
 		applicationService.changeApplicationState(app, stateChangeRequest.getState());
 		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
 		this.sendMails(app, stateChangeRequest);

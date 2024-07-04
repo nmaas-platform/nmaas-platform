@@ -97,7 +97,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .findAny()
                 .ifPresent(appVersion -> appVersion.setState(state));
         appBase.validate();
-        appBaseRepository.save(appBase);
+            appBaseRepository.save(appBase);
         if (state.equals(ApplicationState.ACTIVE)) {
             eventPublisher.publishEvent(new ApplicationActivatedEvent(this, name, version));
         }

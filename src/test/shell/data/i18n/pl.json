@@ -735,6 +735,7 @@
     "VIEW_BUTTON": "Pokaż",
     "EDIT_BUTTON": "Edytuj",
     "DELETE_BUTTON": "Usuń",
+    "SELECT_VERSION" : "Wybierz wersję aplikacji, która ma być podstawą w kreatorze",
     "CONFIRM_REMOVAL" : {
       "HEADER": "Potwierdź usunięcie aplikacji",
       "DESCRIPTION": "Czy na pewno chcesz całkowicie usunąć tą aplikację z katalogu razem ze wszystkimi wersjami?",
