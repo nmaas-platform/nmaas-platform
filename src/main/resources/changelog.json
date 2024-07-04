@@ -1,6 +1,17 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.2",
+      "date" : "(2024/07/xx)",
+      "topic" : [
+        {
+          "title" : "Fixed issue with displaying user details view",
+          "tags" : "[Bugfix]",
+          "description" : "Fix was applied to used password handling component affecting few views."
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.1",
       "date" : "(2024/05/22)",
       "topic" : [
