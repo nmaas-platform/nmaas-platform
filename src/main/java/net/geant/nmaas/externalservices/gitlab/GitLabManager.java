@@ -22,21 +22,16 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Log4j2
 public class GitLabManager {
 
-    @Value("${gitlab.address}")
-    private String gitLabAddress;
+    private static final String GITLAB_API_NAMESPACE = "/api/v4";
 
-    @Value("${gitlab.port}")
-    private Integer gitLabPort;
+    @Value("${gitlab.apiUrl}")
+    private String gitLabApiUrl;
 
     @Value("${gitlab.token}")
     private String gitLabToken;
 
-    public String getGitlabServer() {
-        return this.gitLabAddress;
-    }
-
-    public int getGitlabPort() {
-        return this.gitLabPort;
+    public String getGitLabApiUrl() {
+        return this.gitLabApiUrl;
     }
 
     public GroupApi groups() {
@@ -59,19 +54,20 @@ public class GitLabManager {
         return new GitLabApi(GitLabApi.ApiVersion.V4, getApiUrl(), this.gitLabToken);
     }
 
-    private String getApiUrl(){
-        return String.format("http://%s:%d", this.gitLabAddress, this.gitLabPort);
+    String getApiUrl() {
+        return gitLabApiUrl.endsWith(GITLAB_API_NAMESPACE)
+                ? gitLabApiUrl.substring(0, gitLabApiUrl.length() - GITLAB_API_NAMESPACE.length())
+                : gitLabApiUrl;
     }
 
     public void validateGitLabInstance() {
-        checkArgument(this.gitLabAddress != null && !this.gitLabAddress.isEmpty(), "GitLab address is null or empty");
-        checkArgument(this.gitLabPort != null, "GitLab port is null");
+        checkArgument(this.gitLabApiUrl != null && !this.gitLabApiUrl.isEmpty(), "GitLab api URL is null or empty");
         checkArgument(this.gitLabToken != null && !this.gitLabToken.isEmpty(), "GitLab token is null or empty");
         try {
             api().getVersion();
             log.trace("GitLab instance is running");
-        } catch (GitLabApiException e){
-            throw new GitLabInvalidConfigurationException("GitLab instance is not running -> " + e.getMessage());
+        } catch (GitLabApiException e) {
+            throw new GitLabInvalidConfigurationException("GitLab instance doesn't respond -> " + e.getMessage());
         }
     }
 

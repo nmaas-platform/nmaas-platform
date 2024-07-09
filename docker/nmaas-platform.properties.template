@@ -141,8 +141,7 @@ janitor.port=${JANITOR_PORT}
 # -------------------- #
 # GitLab configuration #
 # -------------------- #
-gitlab.address=${GITLAB_ADDRESS}
-gitlab.port=${GITLAB_PORT}
+gitlab.apiUrl=${GITLAB_API_URL}
 gitlab.token=${GITLAB_TOKEN}
 
 # ------------------------ #
