@@ -47,11 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -173,6 +169,14 @@ public class ApplicationController extends AppBaseController {
 		appBaseService.deleteAppBase(base);
 	}
 
+	@GetMapping(value = "/base/{name}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public ApplicationBaseView getApplicationBase(@PathVariable String name) {
+		ApplicationBaseView app = modelMapper.map(appBaseService.findByName(name), ApplicationBaseView.class);
+		return this.setAppRating(app);
+	}
+
 	/*
 	 * Application part
 	 */
@@ -201,6 +205,25 @@ public class ApplicationController extends AppBaseController {
 				modelMapper.map(base, ApplicationBaseView.class),
 				modelMapper.map(application, ApplicationView.class)
 		);
+	}
+
+	@GetMapping(value = "/{name}/version/{version}}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public ApplicationDTO getAppVersionByName(@PathVariable String name,@PathVariable String version) {
+		ApplicationBase base = this.appBaseService.findByName(name);
+
+		Optional<Application> application = this.applicationService.findApplication(name, version);
+
+		if(application.isPresent()) {
+			return new ApplicationDTO(
+					modelMapper.map(base, ApplicationBaseView.class),
+					modelMapper.map(application.get(), ApplicationView.class)
+			);
+		} else {
+			throw new MissingElementException("Application " + name + " version " + version + " not found");
+		}
+
 	}
 
 	@GetMapping(value="/{id}")
