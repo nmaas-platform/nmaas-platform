@@ -207,7 +207,7 @@ public class ApplicationController extends AppBaseController {
 		);
 	}
 
-	@GetMapping(value = "/{name}/version/{version}}")
+	@GetMapping(value = "/{name}/version/{version}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public ApplicationDTO getAppVersionByName(@PathVariable String name,@PathVariable String version) {
