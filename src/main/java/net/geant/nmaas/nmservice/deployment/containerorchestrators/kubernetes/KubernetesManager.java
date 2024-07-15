@@ -46,11 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -131,10 +127,10 @@ public class KubernetesManager implements ContainerOrchestrator {
                 .collect(Collectors.toSet());
     }
 
-    private Map<String, String> createAdditionalParametersMap(Identifier deploymentId, Map<String, String> deployParameters){
+    private Map<String, String> createAdditionalParametersMap(Identifier deploymentId, Map<String, String> deployParameters) {
         Map<String, String> additionalParameters = new HashMap<>();
         Map<String, String> deploymentParameters = deploymentParametersProvider.deploymentParameters(deploymentId);
-        deployParameters.forEach((k,v) -> {
+        deployParameters.forEach((k, v) -> {
             switch (ParameterType.fromValue(k)) {
                 case SMTP_HOSTNAME:
                     additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_HOSTNAME.name()));
@@ -359,15 +355,14 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     private String getUserAtIpAddressUrl(String ipAddress, String protocol, Map<HelmChartIngressVariable, String> deployParameters) {
         String username;
-        if(deployParameters != null
+        if (deployParameters != null
                 && deployParameters.containsKey(HelmChartIngressVariable.ACCESS_USER)
-                && !deployParameters.get(HelmChartIngressVariable.ACCESS_USER).isEmpty()){
+                && !deployParameters.get(HelmChartIngressVariable.ACCESS_USER).isEmpty()) {
             username = deployParameters.get(HelmChartIngressVariable.ACCESS_USER);
-        }else{
-            username = DEFAULT_INTERNAL_SSH_ACCESS_USERNAME;
+            return "SSH".equals(protocol) ? username + "@" + ipAddress : username;
+        } else {
+            return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
         }
-
-        return "SSH".equals(protocol) ? username + "@" + ipAddress : ipAddress;
     }
 
     private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
