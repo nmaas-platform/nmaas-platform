@@ -359,9 +359,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                 && deployParameters.containsKey(HelmChartIngressVariable.ACCESS_USER)
                 && !deployParameters.get(HelmChartIngressVariable.ACCESS_USER).isEmpty()) {
             username = deployParameters.get(HelmChartIngressVariable.ACCESS_USER);
-            return "SSH".equals(protocol) ? username + "@" + ipAddress : username;
+            return username + "@" + ipAddress;
         } else {
-            return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
+            return DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress;
         }
     }
 
