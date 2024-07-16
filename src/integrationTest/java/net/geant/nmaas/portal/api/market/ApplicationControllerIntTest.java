@@ -249,6 +249,18 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
+    void shouldGetAppBaseByName() throws Exception {
+        String name = this.testApp1Base.getName();
+        MvcResult result = mvc.perform(get("/api/apps/base/name/" + name)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        ApplicationBaseView app = objectMapper.readValue(result.getResponse().getContentAsString(), ApplicationBaseView.class);
+        assertEquals(APP_1_NAME, app.getName());
+    }
+
+    @Test
     void shouldGetLatestAppVersion() throws Exception {
         this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.3.0", ApplicationState.DISABLED));
         this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.2.0", ApplicationState.ACTIVE));

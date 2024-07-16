@@ -169,7 +169,7 @@ public class ApplicationController extends AppBaseController {
 		appBaseService.deleteAppBase(base);
 	}
 
-	@GetMapping(value = "/base/{name}")
+	@GetMapping(value = "/base/name/{name}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public ApplicationBaseView getApplicationBase(@PathVariable String name) {
