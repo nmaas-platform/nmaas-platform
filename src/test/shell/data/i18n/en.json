@@ -933,7 +933,8 @@
     "REASON": "Reason",
     "REASON_PLACEHOLDER": "Please explain your decision",
     "CANCEL_BUTTON": "Cancel",
-    "CHANGE_STATE_BUTTON": "Change state"
+    "CHANGE_STATE_BUTTON": "Change state",
+    "ERROR_DELETED" : "Not possible to delete this application version due to running instances. Uninstall those instances and try again."
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contact us",
