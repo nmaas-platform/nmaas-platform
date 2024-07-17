@@ -932,7 +932,8 @@
     "REASON": "Powód",
     "REASON_PLACEHOLDER": "Proszę uzasadnij swoją decyzję",
     "CANCEL_BUTTON": "Anuluj",
-    "CHANGE_STATE_BUTTON": "Zmień stan"
+    "CHANGE_STATE_BUTTON": "Zmień stan",
+    "ERROR_DELETED" : "Nie można usunąć powyższej wersji, ponieważ nadal są uruchomione aplikacji wykorzystujące ją. Usuń je i spróbuj ponownie."
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",

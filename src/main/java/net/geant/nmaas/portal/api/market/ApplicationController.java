@@ -378,7 +378,7 @@ public class ApplicationController extends AppBaseController {
 					.filter(s -> !List.of(AppInstanceState.DONE, AppInstanceState.FAILURE, AppInstanceState.REMOVED).contains(s.getState()))
 					.count();
 			if (numberOfRunningInstances > 0) {
-				throw new ProcessingException("Can not set state to Disabled. There is still " + numberOfRunningInstances + " running instances of this version.");
+				throw new ProcessingException("Can not set state to DELETED. There is still " + numberOfRunningInstances + " running instances of this version.");
 			}
 		}
 		applicationService.changeApplicationState(app, stateChangeRequest.getState());
