@@ -51,7 +51,7 @@ notifications.from-address=${SMTP_FROM}
 # Database         #
 # ---------------- #
 # Standalone PostgreSQL
-db.standalone.jdbc-url=jdbc:postgresql://${POSTGRESQL_HOST}:5432/${POSTGRESQL_DBNAME}
+db.standalone.jdbc-url=jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DBNAME}
 db.standalone.username=${POSTGRESQL_USERNAME}
 db.standalone.password=${POSTGRESQL_PASSWORD}
 # FlywayDB settings
@@ -141,8 +141,7 @@ janitor.port=${JANITOR_PORT}
 # -------------------- #
 # GitLab configuration #
 # -------------------- #
-gitlab.address=${GITLAB_ADDRESS}
-gitlab.port=${GITLAB_PORT}
+gitlab.apiUrl=${GITLAB_API_URL}
 gitlab.token=${GITLAB_TOKEN}
 
 # ------------------------ #
@@ -166,6 +165,7 @@ kubernetes.deployment.smtpServerHostname=${SMTP_HOST}
 kubernetes.deployment.smtpServerPort=${SMTP_PORT}
 kubernetes.deployment.smtpServerUsername=${SMTP_LOGIN}
 kubernetes.deployment.smtpServerPassword=${SMTP_PASSWORD}
+kubernetes.deployment.smtpFromDefaultDomain=${SMTP_FROM_DEFAULT_DOMAIN}
 kubernetes.deployment.defaultStorageClass=${K8S_DEPLOYMENT_DEFAULT_STORAGE_CLASS}
 kubernetes.deployment.forceDedicatedWorkers=false
 

@@ -91,6 +91,8 @@ public class KubernetesManagerTest {
         parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
         parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
         parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
+        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
+        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
         parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
         parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
         parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
@@ -137,6 +139,9 @@ public class KubernetesManagerTest {
         Map<HelmChartIngressVariable, String> sshAccessDeploymentParameters = new HashMap<>();
         sshAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_PORT, "22");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service-with-port", null, "SSH", sshAccessDeploymentParameters));
+        Map<HelmChartIngressVariable, String> sshAccessUserDeploymentParameters = new HashMap<>();
+        sshAccessUserDeploymentParameters.put(HelmChartIngressVariable.ACCESS_USER, "testUser");
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service-with-access-user", null, "SSH", sshAccessUserDeploymentParameters));
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public",null));
         Map<HelmChartIngressVariable, String> dataAccessDeploymentParameters = new HashMap<>();
         dataAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_SUFFIX, "component1");
@@ -257,7 +262,7 @@ public class KubernetesManagerTest {
         assertEquals("valid", accessMethod.get().getCondition());
         assertTrue(accessMethod.get().isEnabled());
         assertNotNull(serviceInfo.getValue().getAdditionalParameters());
-        assertEquals(19, serviceInfo.getValue().getAdditionalParameters().size());
+        assertEquals(21, serviceInfo.getValue().getAdditionalParameters().size());
         assertEquals("customvalue1", serviceInfo.getValue().getAdditionalParameters().get("customkey1"));
         assertEquals("customvalue2", serviceInfo.getValue().getAdditionalParameters().get("customkey2"));
         assertEquals(serviceInfo.getValue().getAdditionalParameters().get("customkey3"), serviceInfo.getValue().getAdditionalParameters().get("customkey5"));
@@ -266,8 +271,10 @@ public class KubernetesManagerTest {
         assertTrue(serviceInfo.getValue().getAdditionalParameters().get("customkey4").matches("beginning-(.*)-ending"));
         assertEquals("hostname", serviceInfo.getValue().getAdditionalParameters().get("smtpHostname"));
         assertEquals("5", serviceInfo.getValue().getAdditionalParameters().get("smtpPort"));
+        assertEquals("host:port", serviceInfo.getValue().getAdditionalParameters().get("smtpHostnameWithPort"));
         assertEquals("username", serviceInfo.getValue().getAdditionalParameters().get("smtpUsername"));
         assertEquals("password", serviceInfo.getValue().getAdditionalParameters().get("smtpPassword"));
+        assertEquals("@fromdomain", serviceInfo.getValue().getAdditionalParameters().get("smtpFromDefaultDomain"));
         assertEquals("domain", serviceInfo.getValue().getAdditionalParameters().get("domainCodeName"));
         assertEquals("extBaseUrl", serviceInfo.getValue().getAdditionalParameters().get("baseUrl"));
         assertEquals("descriptiveDeploymentId", serviceInfo.getValue().getAdditionalParameters().get("releaseName"));
@@ -298,6 +305,8 @@ public class KubernetesManagerTest {
         deployParameters.put(ParameterType.SMTP_PORT.toString(), "smtpPort");
         deployParameters.put(ParameterType.SMTP_USERNAME.toString(), "smtpUsername");
         deployParameters.put(ParameterType.SMTP_PASSWORD.toString(), "smtpPassword");
+        deployParameters.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "smtpHostnameWithPort");
+        deployParameters.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "smtpFromDefaultDomain");
         deployParameters.put(ParameterType.DOMAIN_CODENAME.toString(), "domainCodeName");
         deployParameters.put(ParameterType.BASE_URL.toString(), "baseUrl");
         deployParameters.put(ParameterType.RELEASE_NAME.toString(), "releaseName");
@@ -341,7 +350,7 @@ public class KubernetesManagerTest {
         manager.deployNmService(DEPLOYMENT_ID);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-        assertEquals(8, accessMethodsArg.getValue().size());
+        assertEquals(9, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
@@ -394,7 +403,7 @@ public class KubernetesManagerTest {
 
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
             verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(8, accessMethodsArg.getValue().size());
+            assertEquals(9, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")
@@ -405,6 +414,11 @@ public class KubernetesManagerTest {
                             && m.getName().equals("ssh-service-with-port")
                             && m.getProtocol().equals("SSH")
                             && m.getUrl().equals("netops@192.168.100.1 (port: 22)")));
+            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                    m.isOfType(ServiceAccessMethodType.INTERNAL)
+                            && m.getName().equals("ssh-service-with-access-user")
+                            && m.getProtocol().equals("SSH")
+                            && m.getUrl().equals("testUser@192.168.100.1")));
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("data-service")

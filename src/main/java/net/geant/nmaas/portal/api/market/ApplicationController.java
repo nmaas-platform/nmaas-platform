@@ -9,6 +9,8 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
@@ -26,6 +28,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
+import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -44,11 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -68,9 +67,24 @@ public class ApplicationController extends AppBaseController {
 		private ApplicationView application;
 	}
 
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Getter
+	@Setter
+	public static class ApplicationDTOVersionList {
+		private ApplicationBaseView applicationBase;
+		private List<ApplicationView> applications;
+	}
+
 	private final ApplicationEventPublisher eventPublisher;
 
 	private final RatingRepository ratingRepository;
+
+	private final ApplicationInstanceService applicationInstanceService;
+
+	private final AppLifecycleManager appLifecycleManager;
+
+	private final AppInstanceController appInstanceController;
 
 	/*
 	 * Application Base Part
@@ -134,8 +148,7 @@ public class ApplicationController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public void updateApplicationBaseOwner(@PathVariable Long id, @PathVariable String owner, Principal principal) {
-		// only system admin and owner can update application base
-		log.info("Upate owner for application {} to {}", id, owner);
+		log.info("Updating owner of application {} to {}", id, owner);
 		this.applicationBaseOwnerCheck(id, principal);
 		appBaseService.updateOwner(id, owner);
 	}
@@ -147,14 +160,21 @@ public class ApplicationController extends AppBaseController {
 		ApplicationBase base = appBaseService.getBaseApp(id);
 		// only system admin and owner can update application base
 		this.applicationBaseOwnerCheck(base.getName(), principal);
-		ApplicationState state = ApplicationState.DELETED;
         for (ApplicationVersion appVersion : base.getVersions()) {
             Application app = getApp(appVersion.getAppVersionId());
-            applicationService.changeApplicationState(app, state);
-            appVersion.setState(state);
+            if (app.getState() != ApplicationState.DELETED) {
+				throw new ProcessingException("Can't delete " + base.getName() + " application base since version " +  app.getVersion() + " is not deleted");
+			}
         }
-
 		appBaseService.deleteAppBase(base);
+	}
+
+	@GetMapping(value = "/base/name/{name}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public ApplicationBaseView getApplicationBase(@PathVariable String name) {
+		ApplicationBaseView app = modelMapper.map(appBaseService.findByName(name), ApplicationBaseView.class);
+		return this.setAppRating(app);
 	}
 
 	/*
@@ -187,6 +207,25 @@ public class ApplicationController extends AppBaseController {
 		);
 	}
 
+	@GetMapping(value = "/{name}/version/{version}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public ApplicationDTO getAppVersionByName(@PathVariable String name,@PathVariable String version) {
+		ApplicationBase base = this.appBaseService.findByName(name);
+
+		Optional<Application> application = this.applicationService.findApplication(name, version);
+
+		if(application.isPresent()) {
+			return new ApplicationDTO(
+					modelMapper.map(base, ApplicationBaseView.class),
+					modelMapper.map(application.get(), ApplicationView.class)
+			);
+		} else {
+			throw new MissingElementException("Application " + name + " version " + version + " not found");
+		}
+
+	}
+
 	@GetMapping(value="/{id}")
 	@Transactional
 	public ApplicationDTO getApplicationDTO(@PathVariable Long id) {
@@ -198,13 +237,26 @@ public class ApplicationController extends AppBaseController {
 		);
 	}
 
-	@GetMapping(value="/versions/{id}")
+	@GetMapping(value = "/base/allversions/{id}")
+	@Transactional
+	public ApplicationDTOVersionList getApplicationDTOWithAllVersions(@PathVariable Long id) {
+		ApplicationBase base = appBaseService.getBaseApp(id);
+		List<Application> versionList = this.applicationService.findAll().stream()
+				.filter(app -> app.getName().equalsIgnoreCase(base.getName()))
+				.collect(Collectors.toList());
+		return new ApplicationDTOVersionList(
+				modelMapper.map(base, ApplicationBaseView.class),
+				versionList.stream().map(app->modelMapper.map(app, ApplicationView.class)).collect(Collectors.toList())
+		);
+	}
+
+	@GetMapping(value = "/versions/{id}")
 	@Transactional
 	public Set<ApplicationVersion> getApplicationVersion(@PathVariable Long id) {
 		return this.getVersions(id);
 	}
 
-	@GetMapping(value="/version/{id}")
+	@GetMapping(value = "/version/{id}")
 	@Transactional
 	public ApplicationView getApplication(@PathVariable Long id) {
 		Application app = getApp(id);
@@ -268,7 +320,7 @@ public class ApplicationController extends AppBaseController {
 		this.applicationBaseOwnerCheck(view.getName(), principal);
 
 		// check if id exists
-		if(view.getId() == null) {
+		if (view.getId() == null) {
 			log.error("ID is not present in Application update");
 			throw new ProcessingException("Cannot update application without id");
 		}
@@ -277,12 +329,12 @@ public class ApplicationController extends AppBaseController {
 		Optional<Application> optId = applicationService.findApplication(view.getId());
 		Optional<Application> optNameVersion = applicationService.findApplication(view.getName(), view.getVersion());
 
-		if(optId.isEmpty() || optNameVersion.isEmpty()) {
+		if (optId.isEmpty() || optNameVersion.isEmpty()) {
 			log.error("Requested application does not exist");
 			throw new MissingElementException("Application does not exist");
 		}
 
-		if(!optId.get().equals(optNameVersion.get())) {
+		if (!optId.get().equals(optNameVersion.get())) {
 			log.error("Retrieved different applications using id and name&version, update aborted");
 			throw new ProcessingException("You cannot change application name, version and id");
 		}
@@ -318,8 +370,17 @@ public class ApplicationController extends AppBaseController {
 	@PatchMapping(value = "/state/{id}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
-	public void changeApplicationState(@PathVariable long id, @RequestBody ApplicationStateChangeRequest stateChangeRequest) {
+	public void changeApplicationState(@PathVariable long id, @RequestBody ApplicationStateChangeRequest stateChangeRequest, Principal principal) {
 		Application app = getApp(id);
+		if (stateChangeRequest.getState().equals(ApplicationState.DELETED)) {
+			long numberOfRunningInstances = applicationInstanceService.findAllByApplication(app).stream()
+					.map(ai -> appInstanceController.getState(ai.getId(), principal))
+					.filter(s -> !List.of(AppInstanceState.DONE, AppInstanceState.FAILURE, AppInstanceState.REMOVED).contains(s.getState()))
+					.count();
+			if (numberOfRunningInstances > 0) {
+				throw new ProcessingException("Can not set state to Disabled. There is still " + numberOfRunningInstances + " running instances of this version.");
+			}
+		}
 		applicationService.changeApplicationState(app, stateChangeRequest.getState());
 		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
 		this.sendMails(app, stateChangeRequest);

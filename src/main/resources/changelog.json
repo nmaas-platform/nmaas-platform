@@ -1,6 +1,43 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.2",
+      "date" : "(2024/07/17`)",
+      "topic" : [
+        {
+          "title" : "Fixed issue with displaying user details view",
+          "tags" : "[Bugfix]",
+          "description" : "Fix was applied to password handling component affecting few views."
+        },
+        {
+          "title" : "Support for external GitLab instances",
+          "tags" : "[Enhancement]",
+          "description" : "Allowed for connecting to external GitLab instances running outside of the local cluster."
+        },
+        {
+          "title" : "Enhanced application specification export option",
+          "tags" : "[Enhancement]",
+          "description" : "Application spec export JSON files now contain more relevant data."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.6.1",
+      "date" : "(2024/05/22)",
+      "topic" : [
+        {
+          "title" : "Fixed loading GitLab repository information for application instances",
+          "tags" : "[Bugfix]",
+          "description" : "Applied fix in the Janitor component related with querying for projects in given group."
+        },
+        {
+          "title" : "Multiple minor enhancements and fixes",
+          "tags" : "[Enhancement]",
+          "description" : "Addressed multiple issues on both back-end and front-end."
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.0",
       "date" : "(2024/03/12)",
       "topic" : [
