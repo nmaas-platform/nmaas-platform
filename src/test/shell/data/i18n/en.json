@@ -739,10 +739,10 @@
     "SELECT_VERSION" : "Select version to be base in creator",
     "CONFIRM_REMOVAL" : {
       "HEADER": "Confirm application removal",
-      "DESCRIPTION": "Do you want to completely remove this application from the catalogue along with all its versions?",
+      "DESCRIPTION": "Do you want to completely remove this application from the catalogue?",
       "CANCEL" : "Cancel",
       "CONFIRM": "Confirm",
-      "DISABLED": "This application still has some currently running instances. Please undeploy them and proceed with the removal."
+      "DISABLED": "Some active versions of this application exists. Delete them and try again."
     },
     "CHANGE_STATE_BUTTON": "Change state",
     "CHANGE_OWNER_BUTTON": "Change owner",
