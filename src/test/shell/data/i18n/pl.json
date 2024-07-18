@@ -738,10 +738,10 @@
     "SELECT_VERSION" : "Wybierz wersję aplikacji, która ma być podstawą w kreatorze",
     "CONFIRM_REMOVAL" : {
       "HEADER": "Potwierdź usunięcie aplikacji",
-      "DESCRIPTION": "Czy na pewno chcesz całkowicie usunąć tą aplikację z katalogu razem ze wszystkimi wersjami?",
+      "DESCRIPTION": "Czy na pewno chcesz całkowicie usunąć tą aplikację z katalogu ?",
       "CANCEL" : "Anuluj",
       "CONFIRM": "Potwierdź",
-      "DISABLED": "Nie możesz usunąć tej ponieważ ma aktualnie uruchomione instancje. Odinstaluj te instancje i ponów próbę usunięcia aplikacji."
+      "DISABLED": "Istnieją aktywne wersję tej aplikacji. Usuń je i spróbuj ponownie."
     },
     "CHANGE_STATE_BUTTON": "Zmień stan",
     "CHANGE_OWNER_BUTTON": "Zmień właściciela",
