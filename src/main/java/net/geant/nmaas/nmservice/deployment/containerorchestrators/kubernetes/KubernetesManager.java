@@ -322,8 +322,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             Set<ServiceAccessMethod> accessMethods = service.getAccessMethods().stream()
                     .map(m -> {
-                        if ((m.isOfType(INTERNAL) || m.isOfType(LOCAL))
-                                && StringUtils.isEmpty(m.getUrl())) {
+                        if (m.isOfType(INTERNAL) && StringUtils.isEmpty(m.getUrl())) {
                             String lbServiceIp = janitorService.retrieveServiceIp(
                                     buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
                                     service.getDomain());
@@ -378,7 +377,11 @@ public class KubernetesManager implements ContainerOrchestrator {
                         if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
                             Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
                             janitorService.checkServiceExists(serviceName, service.getDomain());
-                            m.setUrl(serviceName.value());
+                            String lbServiceIp = janitorService.retrieveServiceIp(
+                                    buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
+                                    service.getDomain());
+                            String ipWithPortString = getIpAddressWithPort(lbServiceIp, m.getDeployParameters());
+                            m.setUrl(getUserAtIpAddressUrl(ipWithPortString, m.getProtocol(), m.getDeployParameters()));
                         }
                         return m;
                     })
