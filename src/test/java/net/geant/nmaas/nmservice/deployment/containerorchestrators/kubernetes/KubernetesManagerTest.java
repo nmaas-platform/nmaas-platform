@@ -143,6 +143,10 @@ public class KubernetesManagerTest {
         sshAccessUserDeploymentParameters.put(HelmChartIngressVariable.ACCESS_USER, "testUser");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service-with-access-user", null, "SSH", sshAccessUserDeploymentParameters));
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public",null));
+        Map<HelmChartIngressVariable, String> dataAccessUserDeploymentParameters = new HashMap<>();
+        dataAccessUserDeploymentParameters.put(HelmChartIngressVariable.ACCESS_USER, "testUser");
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service-with-access-user", null, "DATA", dataAccessUserDeploymentParameters));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public",null));
         Map<HelmChartIngressVariable, String> dataAccessDeploymentParameters = new HashMap<>();
         dataAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_SUFFIX, "component1");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service", null, "DATA", dataAccessDeploymentParameters));
@@ -403,7 +407,7 @@ public class KubernetesManagerTest {
 
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
             verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(9, accessMethodsArg.getValue().size());
+            assertEquals(10, accessMethodsArg.getValue().size());
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")
@@ -418,6 +422,11 @@ public class KubernetesManagerTest {
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service-with-access-user")
                             && m.getProtocol().equals("SSH")
+                            && m.getUrl().equals("testUser@192.168.100.1")));
+            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+                    m.isOfType(ServiceAccessMethodType.INTERNAL)
+                            && m.getName().equals("data-service-with-access-user")
+                            && m.getProtocol().equals("DATA")
                             && m.getUrl().equals("testUser@192.168.100.1")));
             assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
