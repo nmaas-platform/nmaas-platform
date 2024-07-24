@@ -29,6 +29,7 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -85,6 +86,8 @@ public class ApplicationController extends AppBaseController {
 	private final AppLifecycleManager appLifecycleManager;
 
 	private final AppInstanceController appInstanceController;
+
+	private final ApplicationSubscriptionService applicationSubscriptionService;
 
 	/*
 	 * Application Base Part
@@ -166,6 +169,7 @@ public class ApplicationController extends AppBaseController {
 				throw new ProcessingException("Can't delete " + base.getName() + " application base since version " +  app.getVersion() + " is not deleted");
 			}
         }
+		applicationSubscriptionService.unsubscribeAll(base);
 		appBaseService.deleteAppBase(base);
 	}
 

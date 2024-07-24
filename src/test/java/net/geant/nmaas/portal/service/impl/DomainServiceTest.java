@@ -25,7 +25,10 @@ import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepositor
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.service.*;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,8 +74,6 @@ public class DomainServiceTest {
     DomainGroupService domainGroupService;
     DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
 
-    ApplicationSubscriptionService applicationSubscriptionService = mock(ApplicationSubscriptionService.class);
-
     DomainService domainService;
 
     @BeforeEach
@@ -84,7 +85,7 @@ public class DomainServiceTest {
                 namespaceValidator, domainRepository,
                 domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
-                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository, applicationSubscriptionService);
+                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 

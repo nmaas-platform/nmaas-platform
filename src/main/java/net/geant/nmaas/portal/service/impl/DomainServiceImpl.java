@@ -27,7 +27,10 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.service.*;
+import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,8 +77,6 @@ public class DomainServiceImpl implements DomainService {
     private final ApplicationEventPublisher eventPublisher;
     private final DomainAnnotationsRepository domainAnnotationsRepository;
 
-    private final ApplicationSubscriptionService applicationSubscriptionService;
-
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
 
@@ -92,8 +93,7 @@ public class DomainServiceImpl implements DomainService {
                              ApplicationStatePerDomainService applicationStatePerDomainService,
                              DomainGroupService domainGroupService,
                              ApplicationEventPublisher eventPublisher,
-                             DomainAnnotationsRepository domainAnnotationsRepository,
-                             ApplicationSubscriptionService applicationSubscriptionService
+                             DomainAnnotationsRepository domainAnnotationsRepository
     ) {
         this.validator = validator;
         this.namespaceValidator = namespaceValidator;
@@ -108,7 +108,6 @@ public class DomainServiceImpl implements DomainService {
         this.domainGroupService = domainGroupService;
         this.eventPublisher = eventPublisher;
         this.domainAnnotationsRepository = domainAnnotationsRepository;
-        this.applicationSubscriptionService = applicationSubscriptionService;
     }
 
     @Override
@@ -537,7 +536,7 @@ public class DomainServiceImpl implements DomainService {
     public void removeAppBaseFromAllDomains(ApplicationBase base) {
         getDomains().forEach(domain -> {
             removeFromDomain(base, domain);
-            this.applicationSubscriptionService.unsubscribe(base, domain);
+
         });
     }
 
