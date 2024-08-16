@@ -204,6 +204,12 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
+	public void unsubscribeAll(ApplicationBase applicationBase) {
+		List<ApplicationSubscription> subList = getSubscriptionsBy(null, applicationBase);
+		subList.forEach(this::unsubscribe);
+	}
+
+	@Override
 	public List<ApplicationBase> getSubscribedApplications() {
 		return getSubscribedApplications(null);
 	}
