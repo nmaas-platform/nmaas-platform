@@ -1,6 +1,22 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.3",
+      "date" : "(2024/08/26)",
+      "topic" : [
+        {
+          "title" : "New layout for the portal landing pages",
+          "tags" : "[Enhancement]",
+          "description" : "New landing pages can be customized to reflect the purpose of given nmaas deployment"
+        },
+        {
+          "title" : "Support for SSO accounts provisioned ahead of time",
+          "tags" : "[Enhancement]",
+          "description" : "Bulk user deployment process was enhanced with an option to indicate that given user account should allow for SSO login"
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.2",
       "date" : "(2024/07/19)",
       "topic" : [

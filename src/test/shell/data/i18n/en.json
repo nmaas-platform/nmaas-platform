@@ -248,10 +248,10 @@
     },
     "ANNOTATIONS" : {
       "HEADER" : "Domain annotations",
-      "SUBHEADER" : "Global domain annotations. This set of annotations will be added to each domain creation.",
+      "SUBHEADER" : "Global domain annotations. This set of annotations will be added to Kubernetes objects created for each new domain.",
       "CREATION" : "Domain namespace annotations",
       "ADD" : "Add annotation",
-      "KEY"  : "Key",
+      "KEY" : "Key",
       "VALUE" : "Value",
       "EDIT" : "Edit global annotations"
     }

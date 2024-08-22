@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
+    public static final String DELETED_MARKER = "_DELETED_";
+
     private final ApplicationBaseRepository appBaseRepository;
     private final TagRepository tagRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
@@ -91,7 +93,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public void updateApplicationVersionState(String name, String version, ApplicationState state) {
-        ApplicationBase appBase = findByName(name.contains("_DELETED_") ? name.substring(0, name.indexOf("_DELETED_")) : name);
+        ApplicationBase appBase = findByName(name.contains(DELETED_MARKER) ? name.substring(0, name.indexOf(DELETED_MARKER)) : name);
         appBase.getVersions().stream()
                 .filter(appVersion -> appVersion.getVersion().equals(version))
                 .findAny()
@@ -107,7 +109,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     public List<ApplicationBase> findAll() {
         return appBaseRepository.findAll()
                 .stream()
-                .filter(app -> !app.getName().contains("_DELETED_"))
+                .filter(app -> !app.getName().contains(DELETED_MARKER))
                 .collect(Collectors.toList());
     }
 
@@ -142,7 +144,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public void deleteAppBase(ApplicationBase base) {
-        base.setName(base.getName() + "_DELETED_" + OffsetDateTime.now());
+        base.setName(base.getName() + DELETED_MARKER + OffsetDateTime.now());
         appBaseRepository.save(base);
         domainService.removeAppBaseFromAllDomains(base);
     }

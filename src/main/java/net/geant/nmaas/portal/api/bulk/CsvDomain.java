@@ -23,14 +23,17 @@ public class CsvDomain implements BulkCsvProcessorImpl.CsvBean {
     private String email;
 
     @CsvBindByName(column = "networks")
-    private Object DCNetworks;
+    private Object dcnetworks;
 
     @CsvBindByName(column = "domainGroups")
     private String domainGroups;
 
+    @CsvBindByName(column = "ssoEnabled")
+    private Boolean ssoEnabled;
+
     @Override
     public String toString() {
-        return String.format("Bulk deployment for domain %s with admin %s %s. Networks: %s, DomainGroups: %s", domainName, email, adminUserName, DCNetworks, domainGroups);
+        return String.format("Bulk deployment for domain %s with admin %s %s. Networks: %s, DomainGroups: %s", domainName, email, adminUserName, dcnetworks, domainGroups);
     }
 
 }

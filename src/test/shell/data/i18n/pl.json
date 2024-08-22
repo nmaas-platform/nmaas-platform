@@ -248,12 +248,12 @@
     },
     "ANNOTATIONS" : {
       "HEADER" : "Adnotacje domeny",
-      "SUBHEADER" : "Globalne ustawienie adnotacji domeny. Poniższe domeny będą dodane podczas tworzenia domeny.",
+      "SUBHEADER" : "Globalne ustawienie adnotacji domeny. Poniższy zestaw adnotacji zostanie dodany do obiektów Kubernetes tworzonych dla każdej nowej domeny.",
       "CREATION" : "Adnotację przestrzeni domeny",
-      "ADD" : "Dodajadnotacje",
-      "KEY"  : "Klucz",
+      "ADD" : "Dodaj adnotację",
+      "KEY" : "Klucz",
       "VALUE" : "Wartość",
-      "EDIT" : "Edytuj adnotacje"
+      "EDIT" : "Edytuj adnotację"
     }
   },
   "APP_INSTANCES": {

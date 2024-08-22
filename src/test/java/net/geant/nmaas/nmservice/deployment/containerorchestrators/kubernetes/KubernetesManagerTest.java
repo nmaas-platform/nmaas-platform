@@ -354,7 +354,7 @@ public class KubernetesManagerTest {
         manager.deployNmService(DEPLOYMENT_ID);
         ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
-        assertEquals(9, accessMethodsArg.getValue().size());
+        assertEquals(10, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
                         m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
