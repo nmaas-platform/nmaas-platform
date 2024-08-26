@@ -325,8 +325,10 @@
     "LANGUAGE_DISABLED": "Désactivé",
     "TEST_INSTANCE": "Marquer comme instance de test NMaaS",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
-    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list",
-    "DOMAIN_SELECTION_ENABLED" : "Sélection de domaine lors de l'enregistrement"
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Recipients of app deployment failed emails",
+    "DOMAIN_SELECTION_ENABLED" : "Sélection de domaine lors de l'enregistrement",
+    "BULK_DOMAINS_ALLOW_FOR_SSO_ACCOUNTS" : "Allow for creation or update of a SSO-enabled account in bulk process",
+    "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS" : "Send notification email for new accounts created in bulk process"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",

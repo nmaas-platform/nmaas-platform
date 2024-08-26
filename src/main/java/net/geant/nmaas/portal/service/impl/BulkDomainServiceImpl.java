@@ -7,7 +7,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
-import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
@@ -18,13 +17,13 @@ import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
-import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -48,8 +47,11 @@ import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_EMAIL;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_NAME;
-import static net.geant.nmaas.portal.api.bulk.BulkType.*;
-import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.*;
+import static net.geant.nmaas.portal.api.bulk.BulkType.DOMAIN;
+import static net.geant.nmaas.portal.api.bulk.BulkType.USER;
+import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.COMPLETED;
+import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.FAILED;
+import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PENDING;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN_ADMIN;
 
@@ -66,6 +68,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
     private final ModelMapper modelMapper;
 
     private final UserRoleRepository userRoleRepository;
+    private final ConfigurationManager configurationManager;
 
     private final int domainCodenameMaxLength;
 
@@ -77,7 +80,8 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             KubernetesClusterIngressManager kubernetesClusterIngressManager,
             ModelMapper modelMapper,
             UserRoleRepository userRoleRepository,
-            @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength) {
+            @Value("${nmaas.portal.domains.codename.length}") int domainCodenameMaxLength,
+            ConfigurationManager configurationManager) {
         this.domainService = domainService;
         this.domainGroupService = domainGroupService;
         this.userService = userService;
@@ -86,6 +90,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         this.modelMapper = modelMapper;
         this.domainCodenameMaxLength = domainCodenameMaxLength;
         this.userRoleRepository = userRoleRepository;
+        this.configurationManager = configurationManager;
     }
 
     public BulkDeploymentViewS handleBulkCreation(List<CsvDomain> domainSpecs, UserViewMinimal creator) {
@@ -216,9 +221,11 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                 user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, ROLE_DOMAIN_ADMIN)));
                 userUpdateRequired = true;
             }
-            if (csvDomain.getSsoEnabled() != null && csvDomain.getSsoEnabled()) {
-                if (StringUtils.isEmpty(user.getSamlToken())) {
-                    user.setSamlToken(csvDomain.getEmail());
+            if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
+                if (csvDomain.getSsoEnabled() != null && csvDomain.getSsoEnabled()) {
+                    if (StringUtils.isEmpty(user.getSamlToken())) {
+                        user.setSamlToken(csvDomain.getEmail());
+                    }
                 }
             }
             if (userUpdateRequired) {

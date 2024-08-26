@@ -3,10 +3,13 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
+import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
+import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
@@ -14,6 +17,7 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -44,6 +48,12 @@ public class BulkDomainServiceIntTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ConfigurationRepository configurationRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     @MockBean
     private UserRoleRepository userRoleRepository;
 
@@ -63,6 +73,7 @@ public class BulkDomainServiceIntTest {
         UserViewMinimal creator = new UserViewMinimal();
         creator.setId(1L);
         creator.setUsername("admin");
+
         BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
 
         assertEquals(BulkDeploymentState.COMPLETED, result.getState());
@@ -75,6 +86,30 @@ public class BulkDomainServiceIntTest {
         assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isEqualTo("user1@test.com");
         assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getSamlToken()).isNull();
         assertThat(userRepository.findByEmail("user3@test.com").orElseThrow().getSamlToken()).isEqualTo("user3@test.com");
+    }
+
+    @Test
+    void shouldHandleBulkCreationOfUsersWithSsoEnabledFlagWhenDisabledGlobally() {
+        CsvDomain csvDomain1 = new CsvDomain("test4", "user1", "user1@test.com", null, "group1", true);
+        CsvDomain csvDomain2 = new CsvDomain("test5", "user2", "user2@test.com", null, "group1", false);
+        List<CsvDomain> input = List.of(csvDomain1, csvDomain2);
+        configurationRepository.save(modelMapper.map(
+                ConfigurationView.builder().id(1L).defaultLanguage("en").bulkDomainsAllowForSsoAccounts(false).build(), Configuration.class));
+        UserViewMinimal creator = new UserViewMinimal();
+        creator.setId(1L);
+        creator.setUsername("admin");
+
+        BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
+
+        assertEquals(BulkDeploymentState.COMPLETED, result.getState());
+        List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
+        assertEquals(1, bulkDeployments.size());
+        BulkDeployment bulkDeployment = bulkDeployments.get(0);
+        assertEquals(1, bulkDeployment.getCreatorId());
+        assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
+        assertEquals(4, bulkDeployment.getEntries().size());
+        assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isNull();
+        assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getSamlToken()).isNull();
     }
 
     @Test

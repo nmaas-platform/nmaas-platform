@@ -7,7 +7,7 @@
         "wwwUrl": "https://healthchecks.io/",
         "sourceUrl": "https://github.com/healthchecks/healthchecks",
         "issuesUrl": "https://github.com/healthchecks/healthchecks/issues",
-        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Healthchecks",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/nmaas+Tools#NMaaSTools-Healthchecks",
         "descriptions": [
             {
                 "language": "en",

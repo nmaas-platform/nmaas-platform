@@ -169,8 +169,10 @@ public class UserServiceImpl implements UserService {
 			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
 		}
 		// set user saml_token to email address if a sso account requested
-		if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
-			newUser.setSamlToken(csvUser.getEmail());
+		if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
+			if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
+				newUser.setSamlToken(csvUser.getEmail());
+			}
 		}
 		userRepository.save(newUser);
 		return newUser;
