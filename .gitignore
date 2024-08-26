@@ -8,3 +8,4 @@ out/
 /build/
 .idea/
 /src/main/resources/git.properties
+/src/test/shell/tmp/
