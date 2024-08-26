@@ -12,28 +12,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ConfigurationTest {
 
     @Test
-    public void shouldCreateConfigurationWithEmailList() {
+    void shouldCreateConfigurationWithEmailList() {
         List<String> emails = Lists.newArrayList("admin@email.com", "user@email.com");
-
-        Configuration configuration = new Configuration(true, true, "en", true, true, emails, true);
-
+        Configuration configuration = Configuration.builder()
+                .maintenance(true)
+                .ssoLoginAllowed(true)
+                .defaultLanguage("en")
+                .testInstance(true)
+                .sendAppInstanceFailureEmails(true)
+                .appInstanceFailureEmails(String.join(";", emails))
+                .registrationDomainSelectionEnabled(true)
+                .bulkDomainsAllowForSsoAccounts(false)
+                .bulkDomainsSendEmailForNewAccounts(false)
+                .build();
         assertEquals(2, configuration.getAppInstanceFailureEmailList().size());
     }
 
     @Test
-    public void bareModelMapperShouldMapBetweenConfigurationAndConfigurationView() {
+    void bareModelMapperShouldMapBetweenConfigurationAndConfigurationView() {
         ModelMapper mm = new ModelMapper();
-
         List<String> emails = Lists.newArrayList("admin@email.com", "user@email.com");
-
-        Configuration configuration = new Configuration(true, true, "en", true, true, emails, true);
+        Configuration configuration = Configuration.builder()
+                .maintenance(true)
+                .ssoLoginAllowed(true)
+                .defaultLanguage("en")
+                .testInstance(true)
+                .sendAppInstanceFailureEmails(true)
+                .appInstanceFailureEmails(String.join(";", emails))
+                .registrationDomainSelectionEnabled(true)
+                .bulkDomainsAllowForSsoAccounts(false)
+                .bulkDomainsSendEmailForNewAccounts(false)
+                .build();
 
         ConfigurationView configurationView = mm.map(configuration, ConfigurationView.class);
-
         assertEquals(2, configurationView.getAppInstanceFailureEmailList().size());
 
         Configuration conf2 = mm.map(configurationView, Configuration.class);
-
         assertEquals(2, conf2.getAppInstanceFailureEmailList().size());
     }
+
 }

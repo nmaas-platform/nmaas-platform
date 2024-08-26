@@ -153,20 +153,26 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User registerBulk(CsvDomain userCSV, Domain globalDomain, Domain domain) {
-		if (userRepository.existsByUsername(userCSV.getAdminUserName()) || userRepository.existsByEmail(userCSV.getEmail())) {
+	public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
+		if (userRepository.existsByUsername(csvUser.getAdminUserName()) || userRepository.existsByEmail(csvUser.getEmail())) {
 			throw new SignupException("User already exists");
 		}
 		String temporaryPassword = RandomStringUtils.random(16);
-		log.info("Creating user {} with temporary password", userCSV.getAdminUserName());
-		User newUser = new User(userCSV.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
-		newUser.setEmail(userCSV.getEmail());
+		log.info("Creating user {} with temporary password", csvUser.getAdminUserName());
+		User newUser = new User(csvUser.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
+		newUser.setEmail(csvUser.getEmail());
 		newUser.setEnabled(true);
 		newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 		newUser.setTermsOfUseAccepted(true);
 		newUser.setPrivacyPolicyAccepted(true);
 		if (domain != null) {
 			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
+		}
+		// set user saml_token to email address if a sso account requested
+		if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
+			if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
+				newUser.setSamlToken(csvUser.getEmail());
+			}
 		}
 		userRepository.save(newUser);
 		return newUser;
@@ -176,10 +182,9 @@ public class UserServiceImpl implements UserService {
 	public void update(User user) {
 		checkParam(user);
 		checkParam(user.getId());
-				
-		if(!userRepository.existsById(user.getId()))
-			throw new ProcessingException("User (id=" + user.getId() + " does not exists.");
-		
+		if (!userRepository.existsById(user.getId())) {
+			throw new ProcessingException("User with id " + user.getId() + " does not exist");
+		}
 		userRepository.saveAndFlush(user);
 	}
 
@@ -187,14 +192,12 @@ public class UserServiceImpl implements UserService {
 	public void delete(User user) {
 		checkParam(user);
 		checkParam(user.getId());
-		
 		userRepository.delete(user);
 	}
 
 	@Override
 	public void deleteById(Long userId) {
 		checkParam(userId);
-
 		userRepository.deleteById(userId);
 	}
 

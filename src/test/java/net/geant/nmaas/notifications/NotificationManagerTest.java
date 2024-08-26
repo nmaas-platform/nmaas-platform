@@ -279,7 +279,7 @@ public class NotificationManagerTest {
 
         String external = "external@email.com";
 
-        List<User> adminUsers = this.getAdminUserList();
+        List<User> adminUsers = getAdminUserList();
         List<String> emails = Lists.newArrayList(
                 adminUsers.get(0).getEmail(),
                 external
@@ -287,7 +287,7 @@ public class NotificationManagerTest {
 
         when(userService.findByEmail(adminUsers.get(0).getEmail())).thenReturn(adminUsers.get(0));
         when(userService.findByEmail(external)).thenThrow(new IllegalArgumentException("test message"));
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(true, true, "en", true, true, emails));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(true, true, "en", true, true, emails, true, true));
 
         notificationManager.prepareAndSendMail(ma);
 

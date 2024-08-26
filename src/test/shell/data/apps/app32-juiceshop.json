@@ -7,7 +7,7 @@
         "wwwUrl": "https://owasp-juice.shop/",
         "sourceUrl": "https://github.com/juice-shop/juice-shop",
         "issuesUrl": "https://github.com/juice-shop/juice-shop/issues",
-        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-JuiceShop",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/nmaas+Tools#nmaasTools-JuiceShop",
         "descriptions": [
             {
                 "language": "en",
