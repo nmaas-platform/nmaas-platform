@@ -314,7 +314,7 @@
     "NOT_FOUND_ERROR": "Not found"
   },
   "PORTAL_CONFIGURATION": {
-    "TITLE": "Portal configuration",
+    "TITLE": "Platform settings",
     "MAINTENANCE": "Maintenance",
     "ALLOW_SSO_LOGIN": "Allow SSO login",
     "SUBMIT_BUTTON": "Submit",
