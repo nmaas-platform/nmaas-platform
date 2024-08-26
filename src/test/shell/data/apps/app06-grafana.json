@@ -7,7 +7,7 @@
         "wwwUrl": "https://grafana.com/",
         "sourceUrl": "https://github.com/grafana/grafana",
         "issuesUrl": "https://github.com/grafana/grafana/issues",
-        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-Grafana",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/nmaas+Tools#nmaasTools-Grafana",
         "descriptions": [
             {
                 "language": "en",
@@ -103,7 +103,7 @@
                                                 "optionsLabelPosition": "right",
                                                 "values": [
                                                     {
-                                                        "label": "NMaaS Prometheus instance",
+                                                        "label": "nmaas Prometheus instance",
                                                         "value": "inCluster"
                                                     },
                                                     {

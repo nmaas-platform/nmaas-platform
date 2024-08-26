@@ -7,7 +7,7 @@
         "wwwUrl": "https://netbox.readthedocs.io/",
         "sourceUrl": "https://github.com/netbox-community/netbox/",
         "issuesUrl": "https://github.com/netbox-community/netbox/issues",
-        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#NMaaSTools-NetBox",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/nmaas+Tools#nmaasTools-NetBox",
         "descriptions": [
             {
                 "language": "en",

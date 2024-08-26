@@ -248,10 +248,10 @@
     },
     "ANNOTATIONS" : {
       "HEADER" : "Domain annotations",
-      "SUBHEADER" : "Global domain annotations. This set of annotations will be added to each domain creation.",
+      "SUBHEADER" : "Global domain annotations. This set of annotations will be added to Kubernetes objects created for each new domain.",
       "CREATION" : "Domain namespace annotations",
       "ADD" : "Add annotation",
-      "KEY"  : "Key",
+      "KEY" : "Key",
       "VALUE" : "Value",
       "EDIT" : "Edit global annotations"
     }
@@ -325,8 +325,10 @@
     "LANGUAGE_DISABLED": "Désactivé",
     "TEST_INSTANCE": "Marquer comme instance de test NMaaS",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
-    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list",
-    "DOMAIN_SELECTION_ENABLED" : "Sélection de domaine lors de l'enregistrement"
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Recipients of app deployment failed emails",
+    "DOMAIN_SELECTION_ENABLED" : "Sélection de domaine lors de l'enregistrement",
+    "BULK_DOMAINS_ALLOW_FOR_SSO_ACCOUNTS" : "Allow for creation or update of a SSO-enabled account in bulk process",
+    "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS" : "Send notification email for new accounts created in bulk process"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
@@ -737,10 +739,10 @@
     "SELECT_VERSION" : "Select version to be base in creator",
     "CONFIRM_REMOVAL" : {
       "HEADER": "Confirm application removal",
-      "DESCRIPTION": "Do you want to completely remove this application from the catalogue along with all its versions?",
+      "DESCRIPTION": "Do you want to completely remove this application from the catalogue?",
       "CANCEL" : "Cancel",
       "CONFIRM": "Confirm",
-      "DISABLED": "This application still has some currently running instances. Please undeploy them and proceed with the removal."
+      "DISABLED": "Some active versions of this application exists. Delete them and try again."
     },
     "CHANGE_STATE_BUTTON": "Change state",
     "CHANGE_OWNER_BUTTON": "Change owner",
@@ -931,7 +933,9 @@
     "REASON": "Reason",
     "REASON_PLACEHOLDER": "Please explain your decision",
     "CANCEL_BUTTON": "Cancel",
-    "CHANGE_STATE_BUTTON": "Change state"
+    "CHANGE_STATE_BUTTON": "Change state",
+    "ERROR_DELETED" : "Not possible to delete this application version due to running instances. Uninstall those instances and try again."
+
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",

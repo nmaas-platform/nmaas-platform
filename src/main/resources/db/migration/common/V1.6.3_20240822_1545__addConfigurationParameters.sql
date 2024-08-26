@@ -1,0 +1,2 @@
+ALTER TABLE configuration ADD COLUMN bulk_domains_allow_for_sso_accounts boolean DEFAULT TRUE;
+ALTER TABLE configuration ADD COLUMN bulk_domains_send_email_for_new_accounts boolean DEFAULT TRUE;

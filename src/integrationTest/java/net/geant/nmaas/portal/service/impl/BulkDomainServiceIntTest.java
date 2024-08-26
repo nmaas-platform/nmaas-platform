@@ -3,17 +3,21 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
+import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,11 +26,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -40,8 +42,17 @@ public class BulkDomainServiceIntTest {
     @Autowired
     private BulkDomainService bulkDomainService;
 
-    @MockBean
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ConfigurationRepository configurationRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @MockBean
     private UserRoleRepository userRoleRepository;
@@ -49,23 +60,68 @@ public class BulkDomainServiceIntTest {
     @AfterEach
     void cleanup() {
         bulkDeploymentRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    @Test
+    void shouldHandleBulkCreationOfUsersWithSsoEnabledFlag() {
+        CsvDomain csvDomain1 = new CsvDomain("test1", "user1", "user1@test.com", null, "group1", true);
+        CsvDomain csvDomain2 = new CsvDomain("test2", "user2", "user2@test.com", null, "group1", false);
+        CsvDomain csvDomain3 = new CsvDomain("test3", "user3", "user3@test.com", null, "group1", true);
+        List<CsvDomain> input = List.of(csvDomain1, csvDomain2, csvDomain3);
+
+        UserViewMinimal creator = new UserViewMinimal();
+        creator.setId(1L);
+        creator.setUsername("admin");
+
+        BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
+
+        assertEquals(BulkDeploymentState.COMPLETED, result.getState());
+        List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
+        assertEquals(1, bulkDeployments.size());
+        BulkDeployment bulkDeployment = bulkDeployments.get(0);
+        assertEquals(1, bulkDeployment.getCreatorId());
+        assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
+        assertEquals(6, bulkDeployment.getEntries().size());
+        assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isEqualTo("user1@test.com");
+        assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getSamlToken()).isNull();
+        assertThat(userRepository.findByEmail("user3@test.com").orElseThrow().getSamlToken()).isEqualTo("user3@test.com");
+    }
+
+    @Test
+    void shouldHandleBulkCreationOfUsersWithSsoEnabledFlagWhenDisabledGlobally() {
+        CsvDomain csvDomain1 = new CsvDomain("test4", "user1", "user1@test.com", null, "group1", true);
+        CsvDomain csvDomain2 = new CsvDomain("test5", "user2", "user2@test.com", null, "group1", false);
+        List<CsvDomain> input = List.of(csvDomain1, csvDomain2);
+        configurationRepository.save(modelMapper.map(
+                ConfigurationView.builder().id(1L).defaultLanguage("en").bulkDomainsAllowForSsoAccounts(false).build(), Configuration.class));
+        UserViewMinimal creator = new UserViewMinimal();
+        creator.setId(1L);
+        creator.setUsername("admin");
+
+        BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
+
+        assertEquals(BulkDeploymentState.COMPLETED, result.getState());
+        List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
+        assertEquals(1, bulkDeployments.size());
+        BulkDeployment bulkDeployment = bulkDeployments.get(0);
+        assertEquals(1, bulkDeployment.getCreatorId());
+        assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
+        assertEquals(4, bulkDeployment.getEntries().size());
+        assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isNull();
+        assertThat(userRepository.findByEmail("user2@test.com").orElseThrow().getSamlToken()).isNull();
     }
 
     @Test
     void shouldHandleBulkCreationOfDomainWithUniqueCodenames() {
-        CsvDomain csvDomain1 = new CsvDomain("Test.Domain.100", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain2 = new CsvDomain("Test.Domain.101", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain3 = new CsvDomain("Test.Domain.102", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain1 = new CsvDomain("Test.Domain.100", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain2 = new CsvDomain("Test.Domain.101", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain3 = new CsvDomain("Test.Domain.102", "user1", "user1@test.com", null, "group1", null);
         List<CsvDomain> input = List.of(csvDomain1, csvDomain2, csvDomain3);
+
         UserViewMinimal creator = new UserViewMinimal();
         creator.setId(1L);
-        creator.setUsername("testuser");
-        User user = new User("admin");
-        user.setId(1L);
-        user.setEmail("test@test.com");
-        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
-        when(userService.registerBulk(any(), any(), any())).thenReturn(user);
-
+        creator.setUsername("admin");
         BulkDeploymentViewS result = bulkDomainService.handleBulkCreation(input, creator);
 
         assertEquals(BulkDeploymentState.COMPLETED, result.getState());
@@ -82,28 +138,26 @@ public class BulkDomainServiceIntTest {
 
     @Test
     void shouldHandleBulkCreationOfDomainWithManyUniqueCodenames() {
-        CsvDomain csvDomain1 = new CsvDomain("Test2.Domain#User154", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain2 = new CsvDomain("Test2.Domain#User324", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain3 = new CsvDomain("Test2.Domain#User453", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain4 = new CsvDomain("Test2.Domain#User236", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain5 = new CsvDomain("Test2.Domain#User753", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain6 = new CsvDomain("Test2.Domain#User823", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain7 = new CsvDomain("Test2.Domain#User156", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain8 = new CsvDomain("Test2.Domain#User754", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain9 = new CsvDomain("Test2.Domain#User865", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain10 = new CsvDomain("Test2.Domain#User933", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain11 = new CsvDomain("Test2.Domain#User944", "user1", "user1@test.com", null, "group1");
-        CsvDomain csvDomain12 = new CsvDomain("Test2.Domain#User966", "user1", "user1@test.com", null, "group1");
+        CsvDomain csvDomain1 = new CsvDomain("Test2.Domain#User154", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain2 = new CsvDomain("Test2.Domain#User324", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain3 = new CsvDomain("Test2.Domain#User453", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain4 = new CsvDomain("Test2.Domain#User236", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain5 = new CsvDomain("Test2.Domain#User753", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain6 = new CsvDomain("Test2.Domain#User823", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain7 = new CsvDomain("Test2.Domain#User156", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain8 = new CsvDomain("Test2.Domain#User754", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain9 = new CsvDomain("Test2.Domain#User865", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain10 = new CsvDomain("Test2.Domain#User933", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain11 = new CsvDomain("Test2.Domain#User944", "user1", "user1@test.com", null, "group1", null);
+        CsvDomain csvDomain12 = new CsvDomain("Test2.Domain#User966", "user1", "user1@test.com", null, "group1", null);
         List<CsvDomain> input =
                 List.of(csvDomain1, csvDomain2, csvDomain3, csvDomain4, csvDomain5, csvDomain6,
                         csvDomain7, csvDomain8, csvDomain9, csvDomain10, csvDomain11, csvDomain12);
-        User user = new User("admin");
-        user.setId(1L);
-        user.setEmail("test@test.com");
-        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
-        when(userService.registerBulk(any(), any(), any())).thenReturn(user);
 
-        bulkDomainService.handleBulkCreation(input, new UserViewMinimal());
+        UserViewMinimal creator = new UserViewMinimal();
+        creator.setId(1L);
+        creator.setUsername("admin");
+        bulkDomainService.handleBulkCreation(input, creator);
 
         BulkDeployment bulkDeployment = bulkDeploymentRepository.findAll().get(0);
         assertEquals(24, bulkDeployment.getEntries().size());

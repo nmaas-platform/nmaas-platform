@@ -32,28 +32,28 @@
     "REGISTER": "Register",
     "TITLE1": "Network Management as a Service",
     "TITLE2": "provides a portfolio of network management applications run as dedicated per-user instances in the cloud.",
-    "INTRO_TEXT": "GÉANT’s NMaaS service includes three aspects: providing, managing and maintaining the infrastructure of the NMaaS service portal, platform and selected tools, supporting users in using the system, and the selected tools for monitoring their networks via NMaaS, as well as supporting users that contribute their software to NMaaS system.",
+    "INTRO_TEXT": "GÉANT’s nmaas service includes three aspects: providing, managing and maintaining the infrastructure of the nmaas service portal, platform and selected tools, supporting users in using the system, and the selected tools for monitoring their networks via nmaas, as well as supporting users that contribute their software to nmaas system.",
     "TARGET_USERS_HEADER": "Target users",
-    "TARGET_USERS_TEXT": "NMaaS users are organisations that do not want to own NMS infrastructure themselves and/or want to outsource network management, as well as organisations and/or individuals that are searching for quality network management software or who want to share their software within the community.",
-    "MARKETPLACE_HEADER": "NMaaS Marketplace",
-    "MARKETPLACE_TEXT": "NMaaS Marketplace is a catalogue of available open source tools, supported by community, distributed free, chosen by administration. There is also place for your application choice - you can propose new applications. ",
+    "TARGET_USERS_TEXT": "nmaas users are organisations that do not want to own NMS infrastructure themselves and/or want to outsource network management, as well as organisations and/or individuals that are searching for quality network management software or who want to share their software within the community.",
+    "MARKETPLACE_HEADER": "nmaas Marketplace",
+    "MARKETPLACE_TEXT": "nmaas Marketplace is a catalogue of available open source tools, supported by community, distributed free, chosen by administration. There is also place for your application choice - you can propose new applications. ",
     "COST_REDUCTION_HEADER": "Cost reduction",
-    "COST_REDUCTION_TEXT": "With NMaaS, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.",
+    "COST_REDUCTION_TEXT": "With nmaas, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.",
     "SECURITY_HEADER": "Security",
-    "SECURITY_TEXT": "With NMaaS, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network.",
+    "SECURITY_TEXT": "With nmaas, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network.",
     "SCALING_HEADER": "Flexible scaling",
-    "SCALING_TEXT": "If You need some horizontal scaling - there is no problem with that on NMaaS. You can very easily scale Your instances in few minutes.",
-    "NMAAS_FEATURES_HEADER": "NMaaS Features",
+    "SCALING_TEXT": "If You need some horizontal scaling - there is no problem with that on nmaas. You can very easily scale Your instances in few minutes.",
+    "NMAAS_FEATURES_HEADER": "nmaas Features",
     "APP_MARKET_HEADER": "Application Market",
     "APP_MARKET_TEXT": "At store You can find top picked applications to manage and maintain Your network infrastructure, chosen by administrators and community.",
     "OWN_APPS_HEADER": "Own applications",
-    "OWN_APPS_TEXT": "You want to share your own application with the community? NMaaS is open for addition of new applications.",
+    "OWN_APPS_TEXT": "You want to share your own application with the community? nmaas is open for addition of new applications.",
     "EDUGAIN_SUPPORT_HEADER": "eduGAIN support",
     "EDUGAIN_SUPPORT_TEXT": "You don't need to create a new account. Login using an existing account from you identity provider federated under eduGAIN.",
     "FAST_DEPLOYMENT_HEADER": "Fast & easy deployment",
     "FAST_DEPLOYMENT_TEXT": "Upon your request applications are deployed within minutes with custom configuration provided through a simple wizard.",
     "WEB_PORTAL_HEADER": "Modern user interface",
-    "WEB_PORTAL_TEXT": "NMaaS provides a modern web-based user portal that follows reactive design principle.",
+    "WEB_PORTAL_TEXT": "nmaas provides a modern web-based user portal that follows reactive design principle.",
     "KUBERNETES_HEADER": "Kubernetes deployment",
     "KUBERNETES_TEXT": "User application instances are deployed in Kubernetes cluster run on top of dedicated hardware infrastructure assuring high performance and reliability.",
     "TECHNOLOGIES_USED_HEADER": "Technologies used",
@@ -94,8 +94,8 @@
     "USER_DISABLED_MESSAGE": "User is disabled"
   },
   "TEST_INSTANCE_MODAL": {
-    "HEADER": "NMaaS test instance",
-    "BODY": "Please be aware that this is a test NMaaS instance. The user isolation and data security measures are not so strict as on the production instance. Do not use this instance to monitor real equipment.",
+    "HEADER": "nmaas test instance",
+    "BODY": "Please be aware that this is a test nmaas instance. The user isolation and data security measures are not so strict as on the production instance. Do not use this instance to monitor real equipment.",
     "OK_BUTTON": "OK"
   },
   "PROVIDE_SSH_KEY_MODAL": {
@@ -248,10 +248,10 @@
     },
     "ANNOTATIONS" : {
       "HEADER" : "Domain annotations",
-      "SUBHEADER" : "Global domain annotations. This set of annotations will be added to each domain creation.",
+      "SUBHEADER" : "Global domain annotations. This set of annotations will be added to Kubernetes objects created for each new domain.",
       "CREATION" : "Domain namespace annotations",
       "ADD" : "Add annotation",
-      "KEY"  : "Key",
+      "KEY" : "Key",
       "VALUE" : "Value",
       "EDIT" : "Edit global annotations"
     }
@@ -323,11 +323,12 @@
     "LANGUAGE_SUPPORT": "Supported languages",
     "LANGUAGE_ENABLED": "Enabled",
     "LANGUAGE_DISABLED": "Disabled",
-    "TEST_INSTANCE": "Mark as test NMaaS instance",
+    "TEST_INSTANCE": "Mark as test nmaas instance",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
-    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Emails list",
-    "DOMAIN_SELECTION_ENABLED" : "Domain selection during registration"
-
+    "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Recipients of app deployment failed emails",
+    "DOMAIN_SELECTION_ENABLED" : "Domain selection during registration",
+    "BULK_DOMAINS_ALLOW_FOR_SSO_ACCOUNTS" : "Allow for creation or update of a SSO-enabled account in bulk process",
+    "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS" : "Send notification email for new accounts created in bulk process"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",
@@ -387,7 +388,7 @@
     }
   },
   "GIT_INFO": {
-    "HEADER": "NMaaS version information",
+    "HEADER": "nmaas version information",
     "VERSION": "Version",
     "BUILD_TIME": "Build time",
     "LAST_COMMIT": "Last commit",
@@ -551,7 +552,7 @@
       "STATE": "State",
       "DEFAULT_ERROR_STATE": "Something went wrong",
       "DETAILS": "Details",
-      "DEFAULT_ERROR_MESSAGE": "Application deployment failed due to an unexpected error. NMaaS support team has been notified already.<br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>."
+      "DEFAULT_ERROR_MESSAGE": "Application deployment failed due to an unexpected error. nmaas support team has been notified already.<br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Deployment history",
@@ -564,7 +565,7 @@
       "ADVANCED_TAB": "Advanced",
       "ADDITIONAL_TAB": "Additional parameters",
       "STORAGE_SPACE": "Storage space",
-      "NMAAS_TOOLS": "NMaaS Tools Page",
+      "NMAAS_TOOLS": "nmaas Tools Page",
       "DOCUMENTATION_INFO": "Detailed field descriptions are available at",
       "PREVIEW": "Configuration preview"
     },
@@ -694,11 +695,11 @@
   },
   "RESET_PASSWORD": {
     "FORGOT_PASSWORD_BUTTON": "Forgot password",
-    "TEXT": "To reset your password, enter the email address you used to sign in to NMaaS.",
+    "TEXT": "To reset your password, enter the email address you used to sign in to nmaas.",
     "SUBMIT_BUTTON": "Submit",
     "EMAIL": "Email",
     "INVALID_TOKEN": "Your link has already expired. Please fill out forget password form again.",
-    "GO_BACK": "Go back to the NMaaS page",
+    "GO_BACK": "Go back to the nmaas page",
     "MODAL": {
       "HEADER": "Please check your email",
       "BODY": "If you have provided valid email we will send to you link for resetting password. Please be advised that you can only reset password for local account.",
@@ -739,10 +740,10 @@
     "SELECT_VERSION" : "Select version to be base in creator",
     "CONFIRM_REMOVAL" : {
       "HEADER": "Confirm application removal",
-      "DESCRIPTION": "Do you want to completely remove this application from the catalogue along with all its versions?",
+      "DESCRIPTION": "Do you want to completely remove this application from the catalogue?",
       "CANCEL" : "Cancel",
       "CONFIRM": "Confirm",
-      "DISABLED": "This application still has some currently running instances. Please undeploy them and proceed with the removal."
+      "DISABLED": "Some active versions of this application exists. Delete them and try again."
     },
     "CHANGE_STATE_BUTTON": "Change state",
     "CHANGE_OWNER_BUTTON": "Change owner",
@@ -768,7 +769,7 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
   },
   "APPS_WIZARD": {
-    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the NMaaS portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in NMaaS.",
+    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
     "ACCEPT_RULES_CHECKBOX": "I read the general instructions above",
     "NEXT_BUTTON": "Next",
     "SUBMIT_BUTTON": "Submit",
@@ -933,7 +934,8 @@
     "REASON": "Reason",
     "REASON_PLACEHOLDER": "Please explain your decision",
     "CANCEL_BUTTON": "Cancel",
-    "CHANGE_STATE_BUTTON": "Change state"
+    "CHANGE_STATE_BUTTON": "Change state",
+    "ERROR_DELETED" : "Not possible to delete this application version due to running instances. Uninstall those instances and try again."
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contact us",
