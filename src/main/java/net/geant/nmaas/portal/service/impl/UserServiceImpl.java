@@ -304,7 +304,6 @@ public class UserServiceImpl implements UserService {
 					.put("email", user.getEmail())
 					.build();
 		}
-		log.error("map {}", map);
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.otherAttributes(map)
 				.mailType(mailType)

@@ -215,7 +215,6 @@ public class NotificationManager {
     }
 
     private String getContent(String content, Map<String, Object> otherAttributes) throws IOException, TemplateException {
-        log.error("oters {}", otherAttributes);
         return FreeMarkerTemplateUtils.processTemplateIntoString(
                 new Template(
                         MailTemplateElements.CONTENT,

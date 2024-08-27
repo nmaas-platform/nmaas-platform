@@ -42,7 +42,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@Slf4j
 public class UserServiceImplTest {
 
     @Mock
@@ -449,7 +448,6 @@ public class UserServiceImplTest {
 
         User user = userService.registerBulk(csvUser, domain, null);
 
-        log.error("user = {}, {}", user.getUsername(), user.getEmail());
         verify(userRepository, times(1)).save(any());
         verify(eventPublisher, times(1)).publishEvent(any());
     }
