@@ -9,10 +9,10 @@
   "templates": [
     {
       "language": "en",
-      "subject": "NMaaS: New login",
+      "subject": "nmaas: New login",
       "template": {
         "HEADER": "Dear user,",
-        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> You can set your password by clicking the following link: <a href=\"${accessURL}\">Click here to reset your password.</a><br />.<br>The password set link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
+        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br />.<br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -20,10 +20,10 @@
     },
     {
       "language": "fr",
-      "subject": "NMaaS: New login",
+      "subject": "nmaas: New login",
       "template": {
         "HEADER": "Dear user,",
-        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> You can set your password by clicking the following link: <a href=\"${accessURL}\">Click here to reset your password.</a><br />.<br>The password set link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
+        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br />.<br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -31,10 +31,10 @@
     },
     {
       "language": "de",
-      "subject": "NMaaS: New login",
+      "subject": "nmaas: New login",
       "template": {
         "HEADER": "Dear user,",
-        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> You can set your password by clicking the following link: <a href=\"${accessURL}\">Click here to reset your password.</a><br />.<br>The password set link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
+        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br />.<br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -42,7 +42,7 @@
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Nowe logowanie",
+      "subject": "nmaas: Nowe logowanie",
       "template": {
         "HEADER": "Drogi użytkowniku,",
         "CONTENT": "Nowe konto zostało załozone w nmass, używając twojego adresu email. Przypisana nazwa użytkownika to ${username}.<br> Możesz zresetować swoje hasłu używając linku: <a href=\"${accessURL}\">Kliknij tutaj aby zresetować haslo.</a><br />.<br>Link jest ważny przez 24 godziny. Po tym czasie nadal możesz zresetować hasło używając standardowej procedury resetu hasła na stronie.",

@@ -9,10 +9,10 @@
   "templates": [
     {
       "language": "en",
-      "subject": "NMaaS: New sso login",
+      "subject": "nmaas: New sso login",
       "template": {
         "HEADER": "Dear user,",
-        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to <a href=\"${portal}\">portal</a> and login using the „Federated login\" option using your institutional account credentials.",
+        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to the <a href=\"${portal}\">portal</a> and login using the <b>Federated login</b> option using your institutional account credentials.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -20,10 +20,10 @@
     },
     {
       "language": "fr",
-      "subject": "NMaaS: New sso login",
+      "subject": "nmaas: New sso login",
       "template": {
         "HEADER": "Dear user,",
-        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to <a href=\"${portal}\">portal</a> and login using the „Federated login\" option using your institutional account credentials.",
+        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to the <a href=\"${portal}\">portal</a> and login using the <b>Federated login</b> option using your institutional account credentials.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -31,10 +31,10 @@
     },
     {
       "language": "de",
-      "subject": "NMaaS: New sso login",
+      "subject": "nmaas: New sso login",
       "template": {
         "HEADER": "Dear user,",
-        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to <a href=\"${portal}\">portal</a> and login using the „Federated login\" option using your institutional account credentials.",
+        "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to the <a href=\"${portal}\">portal</a> and login using the <b>Federated login</b> option using your institutional account credentials.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -42,10 +42,10 @@
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Nowe logowanie SSO",
+      "subject": "nmaas: Nowe logowanie SSO",
       "template": {
         "HEADER": "Drogi użytkowniku,",
-        "CONTENT": "Nowe konto zostało założone, wykorzystując twój adres email. Przypisana nazwa użytkownika to ${username}.<br>Możesz przejśc do <a href=\"${portal}\">portal</a> i zalogowac się przez opcję „Federated login\" wykorzystując dane logowania z Twojej organizacji..",
+        "CONTENT": "Nowe konto zostało założone, wykorzystując twój adres email. Przypisana nazwa użytkownika to ${username}.<br>Możesz przejśc do <a href=\"${portal}\">portal</a> i zalogowac się przez opcję <b>Federated login</b> wykorzystując dane logowania z Twojej organizacji..",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
