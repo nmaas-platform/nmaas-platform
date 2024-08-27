@@ -302,6 +302,7 @@ public class UserServiceImpl implements UserService {
 			map = ImmutableMap.<String, Object>builder()
 					.put("username", user.getUsername())
 					.put("email", user.getEmail())
+					.put("portal", this.portalAddress)
 					.build();
 		}
 		MailAttributes mailAttributes = MailAttributes.builder()
