@@ -82,6 +82,21 @@ public class JWTTokenService {
 				.signWith(SignatureAlgorithm.HS384, jwtSettings.getResetSigningKey())
 				.compact();
 	}
+
+	public String getResetToken24Hours(String email) {
+		if(email == null || email.isEmpty()) {
+			throw new IllegalArgumentException("Email cannot be null or empty");
+		}
+
+		return Jwts.builder()
+				.setSubject(email)
+				.setIssuer(jwtSettings.getIssuer())
+				.setId(UUID.randomUUID().toString())
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getRegistrationResetTokenExpTime()))
+				.signWith(SignatureAlgorithm.HS384, jwtSettings.getResetSigningKey())
+				.compact();
+	}
 	
 	public boolean validateRefreshToken(String token) {
 		try {

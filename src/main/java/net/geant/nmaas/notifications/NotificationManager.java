@@ -66,7 +66,6 @@ public class NotificationManager {
      */
     void prepareAndSendMail(MailAttributes mailAttributes) {
         MailTemplateView mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
-
         Template template;
         try {
             template = templateService.getHTMLTemplate();
@@ -120,6 +119,9 @@ public class NotificationManager {
         }
         if (mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)) {
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
+        }
+        if(mailAttributes.getMailType().equals(MailType.NEW_BULK_LOGIN) || mailAttributes.getMailType().equals(MailType.NEW_BULK_SSO_LOGIN)){
+            mailAttributes.setAddressees(List.of(convertEmailToUserView((mailAttributes.getOtherAttributes().get("email").toString()))));
         }
         if (List.of(MailType.REGISTRATION, MailType.APP_NEW, MailType.NEW_SSO_LOGIN, MailType.APP_UPGRADE_SUMMARY)
                 .contains(mailAttributes.getMailType())) {

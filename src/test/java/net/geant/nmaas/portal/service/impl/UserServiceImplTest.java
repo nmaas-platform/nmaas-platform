@@ -1,10 +1,13 @@
 package net.geant.nmaas.portal.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -19,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
@@ -49,12 +53,19 @@ public class UserServiceImplTest {
     @Mock
     ConfigurationManager configurationManager;
 
+    @Mock
+    ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    JWTTokenService jwtTokenService;
+
     @InjectMocks
     UserServiceImpl userService;
 
     @BeforeEach
     public void setup() {
-        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper());
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper(), eventPublisher, jwtTokenService);
+
     }
 
     @Test
@@ -423,6 +434,70 @@ public class UserServiceImplTest {
         when(userRepository.findAll()).thenReturn(users);
         assertEquals(1, userService.findAllUsersWithAdminRole().size());
         assertEquals(userService.findAllUsersWithAdminRole().get(0).getEmail(), user.getEmail());
+    }
+
+    @Test
+    void registerBulkTestSSOEnable() {
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, true));
+
+        CsvDomain csvUser = new CsvDomain();
+        csvUser.setAdminUserName("test");
+        csvUser.setEmail("test@email.com");
+        csvUser.setSsoEnabled(true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+
+        User user = userService.registerBulk(csvUser, domain, null);
+
+        verify(userRepository, times(1)).save(any());
+        verify(eventPublisher, times(1)).publishEvent(any());
+    }
+
+    @Test
+    void registerBulkTestSSODisable() {
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, true));
+
+        CsvDomain csvUser = new CsvDomain();
+        csvUser.setAdminUserName("test");
+        csvUser.setEmail("test@email.com");
+        csvUser.setSsoEnabled(false);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+
+        User user = userService.registerBulk(csvUser, domain, null);
+
+        verify(userRepository, times(1)).save(any());
+        verify(eventPublisher, times(1)).publishEvent(any());
+    }
+
+    @Test
+    void registerBulkTestSSODisableGlobally() {
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, true));
+
+        CsvDomain csvUser = new CsvDomain();
+        csvUser.setAdminUserName("test");
+        csvUser.setEmail("test@email.com");
+        csvUser.setSsoEnabled(false);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+
+        User user = userService.registerBulk(csvUser, domain, null);
+
+        verify(userRepository, times(1)).save(any());
+        verify(eventPublisher, times(1)).publishEvent(any());
+    }
+
+    @Test
+    void registerBulkTestSSODisableGloballyMailOff() {
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, false));
+
+        CsvDomain csvUser = new CsvDomain();
+        csvUser.setAdminUserName("test");
+        csvUser.setEmail("test@email.com");
+        csvUser.setSsoEnabled(false);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+
+        User user = userService.registerBulk(csvUser, domain, null);
+
+        verify(userRepository, times(1)).save(any());
+        verify(eventPublisher, times(0)).publishEvent(any());
     }
 
 }
