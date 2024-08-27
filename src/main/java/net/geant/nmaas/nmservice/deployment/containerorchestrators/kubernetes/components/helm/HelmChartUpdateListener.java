@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -17,6 +18,7 @@ import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.Applicat
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class HelmChartUpdateListener {
 
     @Autowired
@@ -27,9 +29,12 @@ public class HelmChartUpdateListener {
     public ApplicationEvent trigger(ApplicationListUpdatedEvent event) {
         // add Helm repository from KubernetesTemplate (it will be overwritten if already exists)
         if (Arrays.asList(ADDED, UPDATED).contains(event.getAction()) && event.getDeploymentSpec() != null) {
+            log.error("Triggered helm chart, {}", event);
             String repoName = event.getDeploymentSpec().getKubernetesTemplate().getHelmChartRepository().getName();
             String repoUrl = event.getDeploymentSpec().getKubernetesTemplate().getHelmChartRepository().getUrl();
             if (StringUtils.hasText(repoName) && StringUtils.hasText(repoUrl)) {
+                log.error("Triggered helm chart not null , {}", event);
+
                 helmCommandExecutor.executeHelmRepoAddCommand(repoName, repoUrl);
             }
         }

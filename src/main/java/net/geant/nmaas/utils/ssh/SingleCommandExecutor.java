@@ -49,6 +49,7 @@ public class SingleCommandExecutor {
 	}
 
 	public void executeSingleCommand(Command command) {
+        log.error("command : {}", command.asString());
         executeCommand(command);
 	}
 
