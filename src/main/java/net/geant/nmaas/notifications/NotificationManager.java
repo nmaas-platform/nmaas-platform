@@ -66,7 +66,6 @@ public class NotificationManager {
      */
     void prepareAndSendMail(MailAttributes mailAttributes) {
         MailTemplateView mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
-        log.error("Test {}", mailTemplate.getMailType());
         Template template;
         try {
             template = templateService.getHTMLTemplate();
