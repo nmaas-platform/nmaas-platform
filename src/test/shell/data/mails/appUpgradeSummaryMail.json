@@ -1,52 +1,52 @@
 {
   "mailType": "APP_UPGRADE_SUMMARY",
   "globalInformation": {
-    "LOGO_LINK": "https://www.geant.org/Style%20Library/geant/Images/logo.png",
-    "LOGO_ALT": "GÉANT logo",
-    "PORTAL_LOGO_ALT": "nmaas logo",
+    "LOGO_LINK": "https://cds.geant.org/images/geant_mini_logo.jpg",
+    "LOGO_ALT": "Geant logo",
+    "PORTAL_LOGO_ALT": "NMaaS logo",
     "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
   },
   "templates": [
     {
       "language": "en",
-      "subject": "nmaas: Summary of automatic application upgrades",
+      "subject": "NMaaS: Summary of automatic application upgrades",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>New application version</th><th>New helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
-        "SENDER": "Best regards,<br />nmaas Team",
+        "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
       }
     },
     {
       "language": "fr",
-      "subject": "nmaas: Summary of automatic application upgrades",
+      "subject": "NMaaS: Summary of automatic application upgrades",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>New application version</th><th>New helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
-        "SENDER": "Best regards,<br />nmaas Team",
+        "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
       }
     },
     {
       "language": "de",
-      "subject": "nmaas: Summary of automatic application upgrades",
+      "subject": "NMaaS: Summary of automatic application upgrades",
       "template": {
         "HEADER": "Dear ${username},",
         "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>New application version</th><th>New helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
-        "SENDER": "Best regards,<br />nmaas Team",
+        "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
       }
     },
     {
       "language": "pl",
-      "subject": "nmaas: Podsumowanie automatycznych aktualizacji aplikacji",
+      "subject": "NMaaS: Podsumowanie automatycznych aktualizacji aplikacji",
       "template": {
         "HEADER": "Drogi ${username},",
         "CONTENT": "<#if upgradesExist>The following application upgrades were performed during last ${summaryInternal} hours.<br><table style=\"font-family: sans-serif; font-size: 12px;\"><tr><th>Domain</th><th>Instance name</th><th>New application version</th><th>New helm chart version</th><th>Timestamp</th><th>Status</th></tr><#list appUpgrades as upgrade><tr><td>${upgrade.domainName}</td><td>${upgrade.appInstanceName}</td><td>${upgrade.appVersion}</td><td>${upgrade.appHelmChartVersion}</td><td>${upgrade.timestamp}</td><td>${upgrade.status}</td></tr></#list></table><#else>No application upgrades were performed during last ${summaryInternal} hours.</#if>",
-        "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
       }
