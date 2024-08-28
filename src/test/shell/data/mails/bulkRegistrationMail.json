@@ -1,9 +1,9 @@
 {
   "mailType": "NEW_BULK_LOGIN",
   "globalInformation": {
-    "LOGO_LINK": "https://cds.geant.org/images/geant_mini_logo.jpg",
-    "LOGO_ALT": "Geant logo",
-    "PORTAL_LOGO_ALT": "NMaaS logo",
+    "LOGO_LINK": "https://www.geant.org/Style%20Library/geant/Images/logo.png",
+    "LOGO_ALT": "GÉANT logo",
+    "PORTAL_LOGO_ALT": "nmaas logo",
     "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
   },
   "templates": [
@@ -13,7 +13,7 @@
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br /><br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
-        "SENDER": "Best regards,<br />NMaaS Team",
+        "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
       }
@@ -24,7 +24,7 @@
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br /><br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
-        "SENDER": "Best regards,<br />NMaaS Team",
+        "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
       }
@@ -35,7 +35,7 @@
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br /><br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
-        "SENDER": "Best regards,<br />NMaaS Team",
+        "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
       }
@@ -46,7 +46,7 @@
       "template": {
         "HEADER": "Drogi użytkowniku,",
         "CONTENT": "Nowe konto zostało załozone w nmass, używając twojego adresu email. Przypisana nazwa użytkownika to ${username}.<br> Możesz zresetować swoje hasłu używając linku: <a href=\"${accessURL}\">Kliknij tutaj aby zresetować haslo.</a><br />.<br>Link jest ważny przez 24 godziny. Po tym czasie nadal możesz zresetować hasło używając standardowej procedury resetu hasła na stronie.",
-        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
+        "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
       }
