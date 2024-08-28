@@ -10,13 +10,7 @@ import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.portal.api.domain.AppInstanceState;
-import net.geant.nmaas.portal.api.domain.AppRateView;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -95,9 +89,9 @@ public class ApplicationController extends AppBaseController {
 
 	@GetMapping("/base")
 	@Transactional
-	public List<ApplicationBaseView> getAllActiveApplicationBase() {
+	public List<ApplicationBaseViewS> getAllActiveApplicationBase() {
 		return appBaseService.findAllActiveApps().stream()
-				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
+				.map(app -> modelMapper.map(app, ApplicationBaseViewS.class))
 				.map(this::setAppRating)
 				.collect(Collectors.toList());
 	}
@@ -119,6 +113,12 @@ public class ApplicationController extends AppBaseController {
 	}
 
 	private ApplicationBaseView setAppRating(ApplicationBaseView baseView) {
+		Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
+		baseView.setRate(this.createAppRateView(rating));
+		return baseView;
+	}
+
+	private ApplicationBaseViewS setAppRating(ApplicationBaseViewS baseView) {
 		Integer[] rating = this.ratingRepository.getApplicationRating(baseView.getId());
 		baseView.setRate(this.createAppRateView(rating));
 		return baseView;
