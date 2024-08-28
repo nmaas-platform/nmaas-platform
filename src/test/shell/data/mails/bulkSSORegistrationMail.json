@@ -9,7 +9,7 @@
   "templates": [
     {
       "language": "en",
-      "subject": "nmaas: New sso login",
+      "subject": "nmaas: Your new account",
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to the <a href=\"${portal}\">portal</a> and login using the <b>Federated login</b> option using your institutional account credentials.",
@@ -20,7 +20,7 @@
     },
     {
       "language": "fr",
-      "subject": "nmaas: New sso login",
+      "subject": "nmaas: Your new account",
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to the <a href=\"${portal}\">portal</a> and login using the <b>Federated login</b> option using your institutional account credentials.",
@@ -31,7 +31,7 @@
     },
     {
       "language": "de",
-      "subject": "nmaas: New sso login",
+      "subject": "nmaas: Your new account",
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br>You can now go to the <a href=\"${portal}\">portal</a> and login using the <b>Federated login</b> option using your institutional account credentials.",
@@ -42,7 +42,7 @@
     },
     {
       "language": "pl",
-      "subject": "nmaas: Nowe logowanie SSO",
+      "subject": "nmaas: Twoje nowe konto",
       "template": {
         "HEADER": "Drogi użytkowniku,",
         "CONTENT": "Nowe konto zostało założone, wykorzystując twój adres email. Przypisana nazwa użytkownika to ${username}.<br>Możesz przejśc do <a href=\"${portal}\">portal</a> i zalogowac się przez opcję <b>Federated login</b> wykorzystując dane logowania z Twojej organizacji..",

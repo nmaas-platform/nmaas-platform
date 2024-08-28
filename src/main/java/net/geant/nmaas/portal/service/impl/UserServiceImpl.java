@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -59,8 +60,8 @@ public class UserServiceImpl implements UserService {
 	private final JWTTokenService jwtTokenService;
 
 	@Value("${portal.address}")
+	@Setter
 	private String portalAddress;
-
 
 	@Override
 	public boolean hasPrivilege(User user, Domain domain, Role role) {

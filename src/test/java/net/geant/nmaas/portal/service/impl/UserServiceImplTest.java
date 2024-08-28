@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
@@ -18,7 +17,6 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -59,17 +57,16 @@ public class UserServiceImplTest {
     @Mock
     JWTTokenService jwtTokenService;
 
-    @InjectMocks
     UserServiceImpl userService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper(), eventPublisher, jwtTokenService);
-
+        userService.setPortalAddress("portalAddress");
     }
 
     @Test
-    public void hasPrivilegeShouldReturnFalseDueToEmptyUser() {
+    void hasPrivilegeShouldReturnFalseDueToEmptyUser() {
         User user = null;
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         Role role = Role.ROLE_USER;
@@ -77,7 +74,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void hasPrivilegeShouldReturnFalseDueToEmptyDomain() {
+    void hasPrivilegeShouldReturnFalseDueToEmptyDomain() {
         User user = new User("test", true);
         Domain domain = null;
         Role role = Role.ROLE_USER;
@@ -85,7 +82,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void hasPrivilegeShouldReturnFalseDueToEmptyRole() {
+    void hasPrivilegeShouldReturnFalseDueToEmptyRole() {
         User user = new User("test", true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         Role role = null;
@@ -93,7 +90,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void hasPrivilegeShouldReturnFalseDueToEmptyUserRole() {
+    void hasPrivilegeShouldReturnFalseDueToEmptyUserRole() {
         User user = new User("test", true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         Role role = Role.ROLE_USER;
@@ -102,7 +99,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void hasPrivilegeShouldPassCorrectly() {
+    void hasPrivilegeShouldPassCorrectly() {
         User user = new User("test", true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         Role role = Role.ROLE_USER;
@@ -131,7 +128,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void domainAdminShouldNotUpdateDataOfUserNotInHisDomain(){
+    void domainAdminShouldNotUpdateDataOfUserNotInHisDomain() {
         User admin = new User("admin", true);
         User user = new User("test", true);
         Domain domain = new Domain("testdom", "testdom");
@@ -142,7 +139,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void userShouldNotUpdateOtherUserData(){
+    void userShouldNotUpdateOtherUserData() {
         User admin = new User("admin", true);
         User user = new User("test", true);
         Domain domain = new Domain("testdom", "testdom");
@@ -152,7 +149,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void findAllShouldReturnListWithElements(){
+    void findAllShouldReturnListWithElements() {
         User user = new User("test1", true);
         User user1 = new User("test2", true);
         User user2 = new User("test3", true);
@@ -169,12 +166,12 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void findByUsernameShouldReturnEmptyOptionalWhenNull(){
+    void findByUsernameShouldReturnEmptyOptionalWhenNull() {
         assertEquals(Optional.empty(), userService.findByUsername(null));
     }
 
     @Test
-    void findByUsernameShouldReturnUserObject(){
+    void findByUsernameShouldReturnUserObject() {
         User user = new User("test1", true);
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
         Optional<User> resultUser = userService.findByUsername("test");
@@ -188,7 +185,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void findByIdShouldReturnUserObject(){
+    void findByIdShouldReturnUserObject() {
         User user = new User("test1", true);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         Optional<User> resultUser = userService.findById((long) 0);
@@ -197,12 +194,12 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void findBySamlTokenShouldReturnEmptyOptionalWhenNull(){
+    void findBySamlTokenShouldReturnEmptyOptionalWhenNull() {
         assertEquals(Optional.empty(), userService.findBySamlToken(null));
     }
 
     @Test
-    void findBySamlTokenShouldReturnUserObject(){
+    void findBySamlTokenShouldReturnUserObject() {
         User user = new User("test1", true);
         when(userRepository.findBySamlToken(anyString())).thenReturn(Optional.of(user));
         Optional<User> resultUser = userService.findBySamlToken("token");
@@ -211,57 +208,57 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void existsByUsernameCheckParamShouldThrowException(){
+    void existsByUsernameCheckParamShouldThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
             userService.existsByUsername(null);
         });
     }
 
     @Test
-    void existsByIdCheckParamShouldThrowException(){
+    void existsByIdCheckParamShouldThrowException() {
         assertThrows(IllegalArgumentException.class, () -> {
             userService.existsById(null);
         });
     }
 
     @Test
-    void existsByUsernameShouldThrowFalseWhenThereIsNoUserWithSpecifiedName(){
+    void existsByUsernameShouldThrowFalseWhenThereIsNoUserWithSpecifiedName() {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         assertFalse(userService.existsByUsername("test1"));
     }
 
     @Test
-    void existsByIdShouldThrowFalseWhenThereIsNoUserWithSpecifiedId(){
+    void existsByIdShouldThrowFalseWhenThereIsNoUserWithSpecifiedId() {
         when(userRepository.existsById(anyLong())).thenReturn(false);
         assertFalse(userService.existsById((long) 0));
     }
 
     @Test
-    void existsByUsernameShouldThrowTrue(){
+    void existsByUsernameShouldThrowTrue() {
         when(userRepository.existsByUsername(anyString())).thenReturn(true);
         assertTrue(userService.existsByUsername("test1"));
     }
 
     @Test
-    void existsByIdShouldThrowTrue(){
+    void existsByIdShouldThrowTrue() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         assertTrue(userService.existsById((long) 0));
     }
 
     @Test
-    void existsByEmailShouldThrowTrue(){
+    void existsByEmailShouldThrowTrue() {
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
         assertTrue(userService.existsByEmail("test@test.com"));
     }
 
     @Test
-    void existsByEmailShouldThrowFalseWhenThereIsNoUserWithSpecifiedId(){
+    void existsByEmailShouldThrowFalseWhenThereIsNoUserWithSpecifiedId() {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         assertFalse(userService.existsByEmail("test@test.com"));
     }
 
     @Test
-    void shouldRegisterUserWithGlobalGuestRole(){
+    void shouldRegisterUserWithGlobalGuestRole() {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
@@ -274,7 +271,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain(){
+    void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain() {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, true));
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
@@ -288,7 +285,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void shouldNotRegisterUserWhenUserAlreadyExists(){
+    void shouldNotRegisterUserWhenUserAlreadyExists() {
         assertThrows(SignupException.class, () -> {
             Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
             Domain domain = new Domain("GLOBAL", "GLOBAL");
@@ -298,7 +295,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void shouldNotRegisterUserWhenUserAlreadyExistsByMail(){
+    void shouldNotRegisterUserWhenUserAlreadyExistsByMail() {
         assertThrows(SignupException.class, () -> {
             Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
             Domain domain = new Domain("GLOBAL", "GLOBAL");
@@ -308,7 +305,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void shouldRegisterSSOUser(){
+    void shouldRegisterSSOUser() {
         UserSSOLogin ssoUser = new UserSSOLogin("test|1234|id");
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, false));
@@ -318,14 +315,14 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateShouldFailDueToEmptyUser(){
+    void updateShouldFailDueToEmptyUser() {
         assertThrows(IllegalArgumentException.class, () -> {
             userService.update(null);
         });
     }
 
     @Test
-    void updateShouldFailDueToEmptyUserId(){
+    void updateShouldFailDueToEmptyUserId() {
         assertThrows(IllegalArgumentException.class, () -> {
             User user = new User("test", true);
             userService.update(user);
@@ -333,7 +330,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateShouldFailDueToUserDoNotExist(){
+    void updateShouldFailDueToUserDoNotExist() {
         assertThrows(ProcessingException.class, () -> {
             when(userRepository.existsById(anyLong())).thenReturn(false);
             User user = new User("test", true);
@@ -352,14 +349,14 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void deleteShouldFailDueToEmptyUser(){
+    void deleteShouldFailDueToEmptyUser() {
         assertThrows(IllegalArgumentException.class, () -> {
             userService.delete(null);
         });
     }
 
     @Test
-    public void deleteShouldFailDueToEmptyUserId(){
+    public void deleteShouldFailDueToEmptyUserId() {
         assertThrows(IllegalArgumentException.class, () -> {
             User user = new User("test", true);
             userService.delete(user);
@@ -367,7 +364,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void deleteShouldPassCorrectly(){
+    void deleteShouldPassCorrectly() {
         User user = new User("test", true);
         user.setId((long) 0);
         userService.delete(user);
@@ -381,43 +378,43 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void setEnabledFlagShouldChangeFlagToTrue(){
+    void setEnabledFlagShouldChangeFlagToTrue() {
         userService.setEnabledFlag((long) 0, true);
         verify(userRepository).setEnabledFlag((long) 0, true);
     }
 
     @Test
-    void setEnabledFlagShouldChangeFlagToFalse(){
+    void setEnabledFlagShouldChangeFlagToFalse() {
         userService.setEnabledFlag((long) 0, false);
         verify(userRepository).setEnabledFlag((long) 0, false);
     }
 
     @Test
-    void setTermsOfUseAcceptedFlagShouldChangeFlagToTrue(){
+    void setTermsOfUseAcceptedFlagShouldChangeFlagToTrue() {
         userService.setTermsOfUseAcceptedFlag((long) 0, true);
         verify(userRepository).setTermsOfUseAcceptedFlag((long) 0, true);
     }
 
     @Test
-    void setTermsOfUseAcceptedFlagShouldChangeFlagToFalse(){
+    void setTermsOfUseAcceptedFlagShouldChangeFlagToFalse() {
         userService.setTermsOfUseAcceptedFlag((long) 0, false);
         verify(userRepository).setTermsOfUseAcceptedFlag((long) 0, false);
     }
 
     @Test
-    void setPrivacyPolicyAcceptedFlagShouldChangeFlagToTrue(){
+    void setPrivacyPolicyAcceptedFlagShouldChangeFlagToTrue() {
         userService.setPrivacyPolicyAcceptedFlag((long) 0, true);
         verify(userRepository).setPrivacyPolicyAcceptedFlag((long) 0, true);
     }
 
     @Test
-    void setPrivacyPolicyAcceptedFlagShouldChangeFlagToFalse(){
+    void setPrivacyPolicyAcceptedFlagShouldChangeFlagToFalse() {
         userService.setPrivacyPolicyAcceptedFlag((long) 0, false);
         verify(userRepository).setPrivacyPolicyAcceptedFlag((long) 0, false);
     }
 
     @Test
-    void findAllUsersEmailWithAdminRole(){
+    void findAllUsersEmailWithAdminRole() {
         List<User> users = new ArrayList<>();
         List<UserRole> userRoles = new ArrayList<>();
 
@@ -478,7 +475,7 @@ public class UserServiceImplTest {
         csvUser.setSsoEnabled(false);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
 
-        User user = userService.registerBulk(csvUser, domain, null);
+        userService.registerBulk(csvUser, domain, null);
 
         verify(userRepository, times(1)).save(any());
         verify(eventPublisher, times(1)).publishEvent(any());
@@ -494,7 +491,7 @@ public class UserServiceImplTest {
         csvUser.setSsoEnabled(false);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
 
-        User user = userService.registerBulk(csvUser, domain, null);
+        userService.registerBulk(csvUser, domain, null);
 
         verify(userRepository, times(1)).save(any());
         verify(eventPublisher, times(0)).publishEvent(any());

@@ -9,7 +9,7 @@
   "templates": [
     {
       "language": "en",
-      "subject": "nmaas: New login",
+      "subject": "nmaas: Your new account",
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br /><br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
@@ -20,7 +20,7 @@
     },
     {
       "language": "fr",
-      "subject": "nmaas: New login",
+      "subject": "nmaas: Your new account",
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br /><br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
@@ -31,7 +31,7 @@
     },
     {
       "language": "de",
-      "subject": "nmaas: New login",
+      "subject": "nmaas: Your new account",
       "template": {
         "HEADER": "Dear user,",
         "CONTENT": "New nmaas account was created using your email address. Assigned username is ${username}.<br> Set your password using the following link: <a href=\"${accessURL}\">password set link.</a><br /><br>Note that the link is only valid for the next 24 hours. After that time you can still set it using the standard password reset process.",
@@ -42,7 +42,7 @@
     },
     {
       "language": "pl",
-      "subject": "nmaas: Nowe logowanie",
+      "subject": "nmaas: Twoje nowe konto",
       "template": {
         "HEADER": "Drogi użytkowniku,",
         "CONTENT": "Nowe konto zostało załozone w nmass, używając twojego adresu email. Przypisana nazwa użytkownika to ${username}.<br> Możesz zresetować swoje hasłu używając linku: <a href=\"${accessURL}\">Kliknij tutaj aby zresetować haslo.</a><br />.<br>Link jest ważny przez 24 godziny. Po tym czasie nadal możesz zresetować hasło używając standardowej procedury resetu hasła na stronie.",
