@@ -1,1 +1,1 @@
- ## Directory used to store temporary file during local tests
+ ## Directory used to store temporary files during local tests
