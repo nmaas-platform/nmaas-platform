@@ -6,12 +6,12 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
 /**
- * Declares methods to be used by the NMaaS Portal to manage NMaaS applications lifecycle.
+ * Declares methods to be used by the nmaas Portal to manage nmaas applications lifecycle.
  */
 public interface AppLifecycleManager {
 
     /**
-     * Triggers the NMaaS application deployment process which may take some time. This process is executed asynchronously
+     * Triggers the nmaas application deployment process which may take some time. This process is executed asynchronously
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
      * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
      *
@@ -21,7 +21,7 @@ public interface AppLifecycleManager {
     Identifier deployApplication(AppDeployment appDeployment);
 
     /**
-     * Triggers the NMaaS application redeployment process which may take some time.This process is executed asynchronously
+     * Triggers the nmaas application redeployment process which may take some time.This process is executed asynchronously
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
      * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
      * @param deploymentId unique identifier of the user application
@@ -29,7 +29,7 @@ public interface AppLifecycleManager {
     void redeployApplication(Identifier deploymentId);
 
     /**
-     * Applies custom configuration for the NMaaS application being deployed once provided by the user.
+     * Applies custom configuration for the nmaas application being deployed once provided by the user.
      *  @param deploymentId unique identifier of the deployed user application
      * @param configuration configuration provided by user in application deployment wizard
      * @param initiator username of a user who triggered this action
@@ -44,7 +44,7 @@ public interface AppLifecycleManager {
     void removeApplication(Identifier deploymentId);
 
     /**
-     * Upgrades already deployed user application to the desired version available in the NMaaS Portal.
+     * Upgrades already deployed user application to the desired version available in the nmaas Portal.
      * This most probably requires application container redeployment.
      * Application configuration and persistent data must be retained.
      *

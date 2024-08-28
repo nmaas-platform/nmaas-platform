@@ -328,9 +328,9 @@ public class NotificationManagerTest {
             add(lmcv);
         }});
         mt.setGlobalInformation(new HashMap<String, String>() {{
-            put("LOGO_LINK", "https://www.geant.org/Style%20Library/Geant/Images/logo.png");
-            put("LOGO_ALT", "Geant logo");
-            put("PORTAL_LOGO_ALT", "NMaaS logo");
+            put("LOGO_LINK", "https://www.geant.org/Style%20Library/geant/Images/logo.png");
+            put("LOGO_ALT", "GÉANT logo");
+            put("PORTAL_LOGO_ALT", "nmaas logo");
             put("SENDER_INFO", "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands");
         }});
 

@@ -52,9 +52,9 @@ Script will load the following data:
 
 A dedicated Helm chart has been developed to ease the nmaas installation inside a Kubernetes cluster.
 This way both the supported network management applications and the nmaas core components can be installed within a single K8s cluster.
-For more information please contact the [NMaaS Team](mailto:nmaas-team@lists.geant.org).
+For more information please contact the [nmaas Team](mailto:nmaas-team@lists.geant.org).
 
 
-### Building and uploading NMaaS Platform Docker image
+### Building and uploading nmaas Platform Docker image
 
-In order to build the NMaaS Platform Docker image first alter the *build_and_publish.sh* with custom *REPOSITORY*, *PACKAGE* and *TAG* values and execute *build_and_publish.sh* to automatically build and publish *nmaas-platform* image to selected Docker repository.
+In order to build the nmaas Platform Docker image first alter the *build_and_publish.sh* with custom *REPOSITORY*, *PACKAGE* and *TAG* values and execute *build_and_publish.sh* to automatically build and publish *nmaas-platform* image to selected Docker repository.

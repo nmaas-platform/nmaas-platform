@@ -7,7 +7,7 @@
         "wwwUrl": "https://www.postgresql.org/",
         "sourceUrl": "https://github.com/postgres/postgres",
         "issuesUrl": "https://www.postgresql.org/list/",
-        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#PostgreSQL",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/nmaas+Tools#PostgreSQL",
         "descriptions": [
             {
                 "language": "en",
