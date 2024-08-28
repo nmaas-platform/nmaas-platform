@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
@@ -81,7 +82,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
             throw new ProcessingException("Updated entity id must not be null");
         }
         Optional<ApplicationBase> fromDb = appBaseRepository.findById(id);
-        if(fromDb.isPresent()) {
+        if (fromDb.isPresent()) {
             ApplicationBase base = fromDb.get();
             base.setOwner(owner);
             base.validate();
@@ -99,7 +100,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .findAny()
                 .ifPresent(appVersion -> appVersion.setState(state));
         appBase.validate();
-            appBaseRepository.save(appBase);
+        appBaseRepository.save(appBase);
         if (state.equals(ApplicationState.ACTIVE)) {
             eventPublisher.publishEvent(new ApplicationActivatedEvent(this, name, version));
         }
@@ -118,6 +119,10 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return appBaseRepository.findAll().stream()
                 .filter(this::isAppActive)
                 .collect(Collectors.toList());
+    }
+
+    public List<ApplicationBaseS> findAllActiveAppsSmall() {
+        return appBaseRepository.findAllSmall();
     }
 
     @Override
@@ -154,12 +159,12 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .filter(description -> description.getLanguage().equals("en"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));
         app.getDescriptions().forEach(description -> {
-                    if (StringUtils.isEmpty(description.getBriefDescription())) {
-                        description.setBriefDescription(appDescription.getBriefDescription());
-                    }
-                    if (StringUtils.isEmpty(description.getFullDescription())) {
-                        description.setFullDescription(appDescription.getFullDescription());
-                    }
-                });
+            if (StringUtils.isEmpty(description.getBriefDescription())) {
+                description.setBriefDescription(appDescription.getBriefDescription());
+            }
+            if (StringUtils.isEmpty(description.getFullDescription())) {
+                description.setFullDescription(appDescription.getFullDescription());
+            }
+        });
     }
 }

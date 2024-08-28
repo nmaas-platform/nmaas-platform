@@ -90,7 +90,7 @@ public class ApplicationController extends AppBaseController {
 	@GetMapping("/base")
 	@Transactional
 	public List<ApplicationBaseViewS> getAllActiveApplicationBase() {
-		return appBaseService.findAllActiveApps().stream()
+		return appBaseService.findAllActiveAppsSmall().stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseViewS.class))
 				.map(this::setAppRating)
 				.collect(Collectors.toList());
