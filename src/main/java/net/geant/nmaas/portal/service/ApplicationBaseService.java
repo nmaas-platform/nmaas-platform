@@ -19,7 +19,7 @@ public interface ApplicationBaseService {
     List<ApplicationBase> findAll();
     List<ApplicationBase> findAllActiveApps();
 
-    List<ApplicationBaseS> findAllActiveAppsSmall();
+    List<ApplicationBaseViewS> findAllActiveAppsSmall();
 
     ApplicationBase getBaseApp(Long id);
     ApplicationBase findByName(String name);
