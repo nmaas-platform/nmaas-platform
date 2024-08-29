@@ -1,11 +1,13 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import java.util.List;
-import java.util.Optional;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ApplicationBaseRepository extends JpaRepository<ApplicationBase, Long> {
@@ -19,5 +21,12 @@ public interface ApplicationBaseRepository extends JpaRepository<ApplicationBase
 
     @Query("select count(distinct ab.name) FROM ApplicationBase ab JOIN Application a on a.name = ab.name WHERE a.state = 'ACTIVE'")
     long countAllActive();
+
+//    @Query(value = "select new net.geant.nmaas.portal.api.domain.ApplicationBaseSTest(ab.id, ab.name, ab.tags) from ApplicationBase ab JOIN Application a ON a.name = ab.name " +
+//            " WHERE a.state = 'ACTIVE' ", nativeQuery = true)
+//    List<ApplicationBaseSTest> findAllSmallQuery();
+
+    @Query("Select ab from ApplicationBase ab JOIN ApplicationVersion av on av.appVersionId = ab.id WHERE av.state = 'ACTIVE'")
+    List<ApplicationBaseS> findAllSmall();
 
 }

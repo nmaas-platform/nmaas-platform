@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.api.domain;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import net.geant.nmaas.portal.persistent.entity.AppDescription;
+import net.geant.nmaas.portal.persistent.entity.Tag;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
