@@ -26,7 +26,7 @@ public interface ApplicationBaseRepository extends JpaRepository<ApplicationBase
 //            " WHERE a.state = 'ACTIVE' ", nativeQuery = true)
 //    List<ApplicationBaseSTest> findAllSmallQuery();
 
-    @Query("Select ab from ApplicationBase ab JOIN Application a on a.name = ab.name WHERE a.state = 'ACTIVE'")
+    @Query("Select ab from ApplicationBase ab JOIN ApplicationVersion av on av.appVersionId = ab.id WHERE av.state = 'ACTIVE'")
     List<ApplicationBaseS> findAllSmall();
 
 }
