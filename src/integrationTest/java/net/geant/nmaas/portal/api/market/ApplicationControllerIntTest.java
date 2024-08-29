@@ -20,6 +20,7 @@ import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
 import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
 import net.geant.nmaas.portal.api.domain.ApplicationDTO;
 import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
@@ -122,12 +123,13 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetActiveApplications() throws Exception {
+        log.error("Test = {} {}", this.applicationBaseRepository.findAll().size(), this.applicationBaseRepository.findAllSmall().size());
         MvcResult result = mvc.perform(get("/api/apps/base")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
-        ApplicationBaseView[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseView[].class);
+        ApplicationBaseViewS[] resultView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationBaseViewS[].class);
         assertEquals(1, resultView.length);
         assertEquals(APP_1_NAME, resultView[0].getName());
     }
@@ -313,6 +315,14 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
         ApplicationView applicationView = objectMapper.readValue(result.getResponse().getContentAsByteArray(), ApplicationView.class);
         assertEquals(ApplicationState.DISABLED, applicationView.getState());
+
+        //reverse state to active again
+        mvc.perform(patch("/api/apps/state/" + id)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .content(objectMapper.writeValueAsString(new ApplicationStateChangeRequest(ApplicationState.ACTIVE, "reason", false)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test

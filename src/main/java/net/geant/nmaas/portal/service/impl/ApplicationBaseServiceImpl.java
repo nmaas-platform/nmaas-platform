@@ -2,7 +2,9 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
+import net.geant.nmaas.portal.api.domain.TagView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
@@ -16,6 +18,8 @@ import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,7 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +43,9 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ApplicationEventPublisher eventPublisher;
     private final DomainService domainService;
+
+    @Autowired
+    protected ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -121,8 +129,14 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .collect(Collectors.toList());
     }
 
-    public List<ApplicationBaseS> findAllActiveAppsSmall() {
-        return appBaseRepository.findAllSmall();
+    @Override
+    public List<ApplicationBaseViewS> findAllActiveAppsSmall() {
+
+        return appBaseRepository.findAllSmall().stream()
+                .map(app -> modelMapper.map(app, ApplicationBaseViewS.class))
+                .peek(app -> app.setDescriptions(List.of(modelMapper.map(appBaseRepository.findAllBaseDescription(app.getId()), AppDescriptionView[].class))))
+                .peek(app -> app.setTags(Set.of(modelMapper.map(appBaseRepository.findAllBaseTag(app.getId()), TagView[].class))))
+                .collect(Collectors.toList());
     }
 
     @Override
