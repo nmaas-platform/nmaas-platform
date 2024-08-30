@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
 import net.geant.nmaas.portal.api.domain.TagView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -24,7 +25,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -131,12 +134,19 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public List<ApplicationBaseViewS> findAllActiveAppsSmall() {
-
-        return appBaseRepository.findAllSmall().stream()
+        log.debug("Loading information about all applications");
+        LocalDateTime beginning = LocalDateTime.now();
+        List<ApplicationBaseS> allSmall = appBaseRepository.findAllSmall();
+        LocalDateTime end = LocalDateTime.now();
+        log.debug("Loaded base data from db in {}ms", end.toInstant(ZoneOffset.UTC).toEpochMilli() - beginning.toInstant(ZoneOffset.UTC).toEpochMilli());
+        List<ApplicationBaseViewS> result = allSmall.stream()
                 .map(app -> modelMapper.map(app, ApplicationBaseViewS.class))
                 .peek(app -> app.setDescriptions(List.of(modelMapper.map(appBaseRepository.findAllBaseDescription(app.getId()), AppDescriptionView[].class))))
                 .peek(app -> app.setTags(Set.of(modelMapper.map(appBaseRepository.findAllBaseTag(app.getId()), TagView[].class))))
                 .collect(Collectors.toList());
+        LocalDateTime finish = LocalDateTime.now();
+        log.debug("Complete data is ready after next {}ms", finish.toInstant(ZoneOffset.UTC).toEpochMilli() - end.toInstant(ZoneOffset.UTC).toEpochMilli());
+        return result;
     }
 
     @Override
