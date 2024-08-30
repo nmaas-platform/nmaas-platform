@@ -6,34 +6,13 @@ import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.HelmChartRepositoryView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
-import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
-import net.geant.nmaas.portal.api.domain.AppStorageVolumeView;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
-import net.geant.nmaas.portal.api.domain.ApplicationDTO;
-import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.persistent.entity.AppDescription;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -48,21 +27,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -102,8 +70,16 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
         this.testApp1Base = this.applicationBaseService.create(getDefaultApplicationBase(APP_1_NAME));
         this.testApp1 = this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.0", ApplicationState.ACTIVE));
-        this.testApp1Base.getVersions().add(
-                new ApplicationVersion(this.testApp1.getVersion(), this.testApp1.getState(), this.testApp1.getId())
+        this.testApp1Base.getVersions().addAll(
+                List.of(
+                    new ApplicationVersion(this.testApp1.getVersion(), this.testApp1.getState(), this.testApp1.getId()),
+                    new ApplicationVersion("1.1.1",
+                            ApplicationState.ACTIVE,
+                            this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.1", ApplicationState.ACTIVE)).getId()),
+                    new ApplicationVersion("1.1.2",
+                            ApplicationState.DISABLED,
+                            this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.2", ApplicationState.DISABLED)).getId())
+                )
         );
         this.testApp1Base = this.applicationBaseService.update(this.testApp1Base);
 
@@ -123,7 +99,7 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     void shouldGetActiveApplications() throws Exception {
-        log.error("Test = {} {}", this.applicationBaseRepository.findAll().size(), this.applicationBaseRepository.findAllSmall().size());
+        log.debug("Test = {} {}", this.applicationBaseRepository.findAll().size(), this.applicationBaseRepository.findAllSmall().size());
         MvcResult result = mvc.perform(get("/api/apps/base")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
