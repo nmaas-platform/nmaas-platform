@@ -743,7 +743,7 @@
       "DESCRIPTION": "Do you want to completely remove this application from the catalogue?",
       "CANCEL" : "Cancel",
       "CONFIRM": "Confirm",
-      "DISABLED": "Some active versions of this application exists. Delete them and try again."
+      "DISABLED": "Some active versions of this application exist. Delete them and try again."
     },
     "CHANGE_STATE_BUTTON": "Änderungsstatus",
     "CHANGE_OWNER_BUTTON": "Change owner",
