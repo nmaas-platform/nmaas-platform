@@ -412,10 +412,15 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
-            if  (NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED.equals(state)) {
-                return APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS;
+            switch (state) {
+                case DEPLOYMENT_FAILED:
+                    return APPLICATION_DEPLOYMENT_FAILED;
+                case CONFIGURATION_REMOVAL_INITIATED:
+                    return APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS;
+                default:
+                        return nextStateForNotMatchingNmServiceDeploymentState(this, state);
             }
-            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+
         }
 
         @Override
