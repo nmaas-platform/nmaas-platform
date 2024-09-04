@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -298,6 +299,58 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     }
                 }
         );
+    }
+
+    @Override
+    public BulkDeployment updateState(Long bulkId) {
+        log.info("Update all states for bulk {}", bulkId);
+        Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(bulkId);
+        if(bulk.isPresent()) {
+            BulkDeployment bulkDeployment = bulk.get();
+            bulkDeployment.getEntries().forEach(entry -> {
+                try {
+                    Long instanceId = Long.valueOf(entry.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+                    AppInstance instance = instanceService.find(instanceId).orElseThrow();
+
+                    AppLifecycleState state = appDeploymentMonitor.state(instance.getInternalId());
+                    log.error("For bulk entries {} state = {}", entry.getId(), state.toString());
+                    switch (state) {
+                        case APPLICATION_DEPLOYMENT_VERIFIED:
+                            entry.setState(BulkDeploymentState.COMPLETED);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
+                        case APPLICATION_CONFIGURATION_FAILED:
+                        case APPLICATION_DEPLOYMENT_FAILED:
+                        case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
+                        case INTERNAL_ERROR:
+                            entry.setState(BulkDeploymentState.FAILED);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
+                        default:
+                            entry.setState(BulkDeploymentState.PENDING);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
+                    }
+                    logBulkStateUpdate(entry.getId(), entry.getState().name());
+
+                } catch (Exception e) {
+                    log.error("Can not update state of {} bulk entry", entry.getId());
+                }
+            });
+            if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.COMPLETED);
+            } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.FAILED);
+            } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
+            }
+            logBulkStateUpdate(bulkDeployment.getId(),bulkDeployment.getState().name());
+            bulkDeploymentRepository.save(bulkDeployment);
+            return bulkDeployment;
+        } else {
+            log.error("Can not find bulk deployment {}", bulkId);
+            throw new MissingElementException("Can not find bulk deployment " + bulkId);
+        }
     }
 
     private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
