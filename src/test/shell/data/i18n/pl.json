@@ -1214,7 +1214,8 @@
       "DOMAIN" : "Domena",
       "CHECK_STATE" : "Sprawdź status",
       "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej",
-      "DOWNLOAD_CSV" : "Pobierz CSV"
+      "DOWNLOAD_CSV" : "Pobierz CSV",
+      "REFRESH" : "Odśwież stany"
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",

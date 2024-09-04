@@ -1212,7 +1212,8 @@
       "DOMAIN" : "Domain",
       "CHECK_STATE" : "Check state",
       "UPLOAD_TEXT" : "or enter CSV content below",
-      "DOWNLOAD_CSV" : "Download CSV"
+      "DOWNLOAD_CSV" : "Download CSV",
+      "REFRESH" : "Refresh states"
     },
     "STATE" : {
       "PENDING" :  "Pending",
