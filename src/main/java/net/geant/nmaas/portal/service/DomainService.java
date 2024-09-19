@@ -2,10 +2,12 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -72,5 +74,7 @@ public interface DomainService {
 	boolean checkIfAnnotationExist(String key);
 	void deleteAnnotation(Long id);
 	List<DomainAnnotation> getAnnotations();
-	void updateAnnotation(Long id,DomainAnnotation domainAnnotation);
+  	void updateAnnotation(Long id,DomainAnnotationView domainAnnotation);
+  	void removeAppBaseFromAllDomains(ApplicationBase base);
+  
 }

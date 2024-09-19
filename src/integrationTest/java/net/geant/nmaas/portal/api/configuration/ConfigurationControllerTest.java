@@ -65,7 +65,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldAddNewConfiguration() throws Exception {
         repository.deleteAll();
-        ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>());
+        ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>(), true, true);
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
@@ -81,7 +81,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldUpdateConfiguration() throws Exception {
         Long id = repository.findAll().get(0).getId();
-        ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>());
+        ConfigurationView configuration = new ConfigurationView(true, false, "en", false, false, new ArrayList<>(), true, true);
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX+"/{id}",id)
                 .contentType(MediaType.APPLICATION_JSON)

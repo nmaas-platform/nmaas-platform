@@ -7,6 +7,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
@@ -15,6 +16,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
@@ -487,7 +489,7 @@ public class DomainServiceImpl implements DomainService {
     public void updateRolesInDomainGroupByUsers(DomainGroupView view) {
         view.getDomains().forEach(domain -> {
             view.getManagers().forEach(user -> {
-                    this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
+                this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
             });
         });
     }
@@ -510,7 +512,8 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void deleteAnnotation(Long id) {
-        this.domainAnnotationsRepository.delete(this.domainAnnotationsRepository.findById(id).get());
+        Optional<DomainAnnotation> domainFromDb = this.domainAnnotationsRepository.findById(id);
+        domainFromDb.ifPresent(this.domainAnnotationsRepository::delete);
     }
 
     @Override
@@ -519,13 +522,26 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public void updateAnnotation(Long id, DomainAnnotation annotation) {
-        if (this.domainAnnotationsRepository.findById(id).isPresent() && id.equals(annotation.getId())) {
-            DomainAnnotation domainAnnotation = this.domainAnnotationsRepository.findById(id).get();
+    public void updateAnnotation(Long id, DomainAnnotationView annotation) {
+        Optional<DomainAnnotation> domainFromDb = this.domainAnnotationsRepository.findById(id);
+        if (domainFromDb.isPresent() && id.equals(annotation.getId())) {
+            DomainAnnotation domainAnnotation = domainFromDb.get();
             domainAnnotation.setKey(annotation.getKey());
             domainAnnotation.setValue(annotation.getValue());
-            this.domainAnnotationsRepository.save(annotation);
+            this.domainAnnotationsRepository.save(domainAnnotation);
         }
+    }
+
+    @Override
+    public void removeAppBaseFromAllDomains(ApplicationBase base) {
+        getDomains().forEach(domain -> {
+            removeFromDomain(base, domain);
+
+        });
+    }
+
+    private void removeFromDomain(ApplicationBase base, Domain domain) {
+        domain.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base));
     }
 
 }

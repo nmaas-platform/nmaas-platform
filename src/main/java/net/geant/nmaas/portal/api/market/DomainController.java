@@ -8,6 +8,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
+import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainBaseWithState;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
@@ -245,7 +246,7 @@ public class DomainController extends AppBaseController {
 
 	@DeleteMapping("/group/{domainGroupId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
 	public void deleteDomainGroup(@PathVariable Long domainGroupId) {
 		this.domainGroupService.deleteDomainGroup(domainGroupId);
 	}
@@ -287,7 +288,7 @@ public class DomainController extends AppBaseController {
 
 	@PatchMapping("/group/{domainGroupId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
 	public DomainGroupView deleteDomainFromGroup(@PathVariable Long domainGroupId, @RequestBody Long domainId) {
 		return domainGroupService.deleteDomainFromGroup(
 				domainService.findDomain(domainId).orElseThrow(() -> new IllegalArgumentException(String.format("Domain with id %s doesn't exist", domainId))),
@@ -333,7 +334,7 @@ public class DomainController extends AppBaseController {
 	@PutMapping("/annotations/{id}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public void updateAnnotation(@PathVariable Long id, @RequestBody DomainAnnotation annotation) {
+	public void updateAnnotation(@PathVariable Long id, @RequestBody DomainAnnotationView annotation) {
 		this.domainService.updateAnnotation(id, annotation);
 	}
 

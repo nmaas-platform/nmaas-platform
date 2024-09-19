@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 
@@ -10,10 +12,14 @@ public interface ApplicationBaseService {
     ApplicationBase create(ApplicationBase applicationBase);
     ApplicationBase update(ApplicationBase applicationBase);
 
+    ApplicationBase updateOwner(Long id, String owner);
+
     void updateApplicationVersionState(String name, String version, ApplicationState state);
 
     List<ApplicationBase> findAll();
     List<ApplicationBase> findAllActiveApps();
+
+    List<ApplicationBaseViewS> findAllActiveAppsSmall();
 
     ApplicationBase getBaseApp(Long id);
     ApplicationBase findByName(String name);

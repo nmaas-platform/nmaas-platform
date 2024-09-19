@@ -13,16 +13,16 @@ import org.springframework.stereotype.Component;
 public class BasicApplicationMetricsService extends BaseMetricService {
 
     private static final String APPLICATION_COUNT_METRIC_NAME = "nmaas_applications_count";
-    private static final String APPLICATION_COUNT_METRIC_DESCRIPTION = "Total NMaaS applications";
+    private static final String APPLICATION_COUNT_METRIC_DESCRIPTION = "Total nmaas applications";
 
     private static final String APPLICATION_INSTANCE_RUNNING_ALL_COUNT_METRIC_NAME = "nmaas_application_instances_all_count";
-    private static final String APPLICATION_INSTANCE_RUNNING_ALL_COUNT_METRIC_DESCRIPTION = "Total NMaaS running application instances";
+    private static final String APPLICATION_INSTANCE_RUNNING_ALL_COUNT_METRIC_DESCRIPTION = "Total nmaas running application instances";
 
     private static final String APPLICATION_INSTANCE_RUNNING_COUNT_METRIC_NAME = "nmaas_application_instances_count";
-    private static final String APPLICATION_INSTANCE_RUNNING_COUNT_METRIC_DESCRIPTION = "NMaaS running application instances";
+    private static final String APPLICATION_INSTANCE_RUNNING_COUNT_METRIC_DESCRIPTION = "nmaas running application instances";
 
     private static final String APPLICATION_SUBSCRIPTIONS_COUNT_METRIC_NAME = "nmaas_application_subscriptions_count";
-    private static final String APPLICATION_SUBSCRIPTIONS_COUNT_METRIC_DESCRIPTION = "Total NMaaS application subscriptions";
+    private static final String APPLICATION_SUBSCRIPTIONS_COUNT_METRIC_DESCRIPTION = "Total nmaas application subscriptions";
 
     private static final String BASE_UNIT_NUMBER = "number";
 

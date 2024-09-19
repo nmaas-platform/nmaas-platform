@@ -26,26 +26,33 @@ import static org.mockito.Mockito.when;
 
 public class ConfigurationManagerTest {
 
-    private ConfigurationRepository repository = mock(ConfigurationRepository.class);
-
-    private ModelMapper modelMapper = new ModelMapper();
-
-    private InternationalizationSimpleRepository internationalizationRepository = mock(InternationalizationSimpleRepository.class);
+    private final ConfigurationRepository repository = mock(ConfigurationRepository.class);
+    private final InternationalizationSimpleRepository internationalizationRepository = mock(InternationalizationSimpleRepository.class);
+    private final ModelMapper modelMapper = new ModelMapper();
 
     private ConfigurationManager configurationManager;
-
     private Configuration config;
-
-    ConfigurationView configView;
-
+    private ConfigurationView configView;
     private InternationalizationView internationalization;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository);
-        this.config = new Configuration(1L, false, false, "en", false, false, "", true);
+        this.config = Configuration.builder()
+                .id(1L)
+                .maintenance(true)
+                .ssoLoginAllowed(true)
+                .defaultLanguage("en")
+                .testInstance(true)
+                .sendAppInstanceFailureEmails(true)
+                .appInstanceFailureEmails("")
+                .registrationDomainSelectionEnabled(true)
+                .bulkDomainsAllowForSsoAccounts(false)
+                .bulkDomainsSendEmailForNewAccounts(false)
+                .build();
         this.internationalization = new InternationalizationView("pl", true, "{\"test\":\"test\"}");
-        this.configView = new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>(), true);
+        this.configView = new ConfigurationView(1L, false, false, "pl",
+                false, false, new ArrayList<>(), true, true, false);
     }
 
     @Test
@@ -60,7 +67,7 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldSetConfiguration(){
+    void shouldSetConfiguration(){
         when(repository.count()).thenReturn(0L);
         Long id = configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
         assertEquals(config.getId(), id);
@@ -68,7 +75,7 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldNotSetConfigIfAlreadyExists(){
+    void shouldNotSetConfigIfAlreadyExists(){
         assertThrows(OnlyOneConfigurationSupportedException.class, () -> {
             when(repository.count()).thenReturn(1L);
             configurationManager.setConfiguration(modelMapper.map(config, ConfigurationView.class));
@@ -76,7 +83,7 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldUpdateConfiguration(){
+    void shouldUpdateConfiguration(){
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
         when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
                 .thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
@@ -85,7 +92,7 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldNotUpdateNotExistingConfig(){
+    void shouldNotUpdateNotExistingConfig(){
         assertThrows(ConfigurationNotFoundException.class, () -> {
             when(repository.findById(config.getId())).thenReturn(Optional.empty());
             configurationManager.updateConfiguration(1L, configView);
@@ -93,7 +100,7 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldNotSetNotExistingLanguageAsDefault(){
+    void shouldNotSetNotExistingLanguageAsDefault(){
         assertThrows(IllegalArgumentException.class, () -> {
             when(repository.findById(config.getId())).thenReturn(Optional.of(config));
             when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
@@ -103,7 +110,7 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldNotSetDisabledLanguageAsDefault(){
+    void shouldNotSetDisabledLanguageAsDefault(){
         assertThrows(IllegalStateException.class, () -> {
             this.internationalization.setEnabled(false);
             when(repository.findById(config.getId())).thenReturn(Optional.of(config));
@@ -112,4 +119,5 @@ public class ConfigurationManagerTest {
             configurationManager.updateConfiguration(1L, configView);
         });
     }
+
 }

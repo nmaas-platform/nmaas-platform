@@ -11,8 +11,10 @@ import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
+import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Collections;
@@ -40,12 +42,15 @@ public class ApplicationBaseServiceTest {
     private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
     private final TagRepository tagRepo = mock(TagRepository.class);
     private final ApplicationEventPublisher eventPublisher= mock(ApplicationEventPublisher.class);
+    private final DomainService domainService = mock(DomainService.class);
+
+    private final ModelMapper modelMapper = new ModelMapper();
 
     private ApplicationBaseService appBaseService;
 
     @BeforeEach
     void setup() {
-        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, tagRepo, applicationStatePerDomainService,eventPublisher);
+        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, tagRepo, applicationStatePerDomainService,eventPublisher, domainService, modelMapper);
         applicationBase1.setDescriptions(Collections.singletonList(
                 new AppDescription(11L, "en", "description", "full description")
         ));

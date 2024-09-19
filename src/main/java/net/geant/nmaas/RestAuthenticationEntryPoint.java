@@ -17,6 +17,6 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException) throws IOException {
 
-        response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to invoke NMaaS REST API operations" );
+        response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to invoke nmaas REST API operations" );
     }
 }

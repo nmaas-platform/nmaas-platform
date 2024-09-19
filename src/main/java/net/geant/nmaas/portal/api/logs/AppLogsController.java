@@ -28,7 +28,7 @@ public class AppLogsController {
      * @return names of pods and corresponding service names (to be displayed to the user)
      */
     @GetMapping(value = "/{appInstanceId}/pods")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'ANY')")
     public List<PodInfo> getPodNames(@PathVariable Long appInstanceId) {
         if (service.isLogAccessEnabled(appInstanceId)) {
             return service.getPodNames(appInstanceId);
@@ -44,7 +44,7 @@ public class AppLogsController {
      * @param podName       name of a pod
      */
     @GetMapping(value = "/{appInstanceId}/pods/{podName}/container/{containerName}")
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'ANY')")
     public PodLogs getPodLogs(
             @PathVariable Long appInstanceId,
             @PathVariable String podName,

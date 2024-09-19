@@ -1,6 +1,11 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,14 +20,18 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Configuration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     @Column(name = "maintenance", nullable = false)
     private boolean maintenance = false;
+
+    @Builder.Default
 
     @Column(nullable = false)
     private boolean ssoLoginAllowed = false;
@@ -30,27 +39,31 @@ public class Configuration {
     @Column(nullable = false)
     private String defaultLanguage;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean testInstance = false;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean sendAppInstanceFailureEmails = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Getter(value = AccessLevel.PRIVATE)
     @Setter(value = AccessLevel.PRIVATE)
     private String appInstanceFailureEmails = "";
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean registrationDomainSelectionEnabled = true;
 
-    public Configuration(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance){
-        this.maintenance = maintenance;
-        this.ssoLoginAllowed = ssoLoginAllowed;
-        this.defaultLanguage = defaultLanguage;
-        this.testInstance = testInstance;
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean bulkDomainsAllowForSsoAccounts = true;
 
-    }
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean bulkDomainsSendEmailForNewAccounts = true;
 
     public void setAppInstanceFailureEmailList(List<String> emails) {
         this.appInstanceFailureEmails = String.join(";", emails);
@@ -67,7 +80,9 @@ public class Configuration {
             boolean testInstance,
             boolean sendAppInstanceFailureEmails,
             List<String> appInstanceFailureEmailList,
-            boolean registrationDomainSelectionEnabled
+            boolean registrationDomainSelectionEnabled,
+            boolean bulkDomainsAllowForSsoAccounts,
+            boolean bulkDomainsSendEmailForNewAccounts
     ){
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
@@ -76,6 +91,8 @@ public class Configuration {
         this.sendAppInstanceFailureEmails = sendAppInstanceFailureEmails;
         this.setAppInstanceFailureEmailList(appInstanceFailureEmailList);
         this.registrationDomainSelectionEnabled = registrationDomainSelectionEnabled;
+        this.bulkDomainsAllowForSsoAccounts = bulkDomainsAllowForSsoAccounts;
+        this.bulkDomainsSendEmailForNewAccounts = bulkDomainsSendEmailForNewAccounts;
     }
 
 }

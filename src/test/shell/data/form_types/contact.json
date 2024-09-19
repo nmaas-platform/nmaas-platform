@@ -3,5 +3,5 @@
   "access": "ALL",
   "templateName": "default",
   "emails": ["nmaas-dev@lists.geant.org"],
-  "subject": "NMaaS: Contact"
+  "subject": "nmaas: Contact"
 }

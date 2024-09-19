@@ -1,6 +1,69 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.3",
+      "date" : "(2024/09/05)",
+      "topic" : [
+        {
+          "title" : "New layout for the portal landing pages",
+          "tags" : "[Enhancement]",
+          "description" : "New landing pages can be customized to reflect the purpose of given nmaas deployment"
+        },
+        {
+          "title" : "Support for SSO accounts provisioned ahead of time",
+          "tags" : "[Enhancement]",
+          "description" : "Bulk user deployment process was enhanced with an option to indicate that given user account should allow for SSO login"
+        },
+        {
+          "title" : "New email notifications for user accounts created in bulk",
+          "tags" : "[Enhancement]",
+          "description" : "New users with accounts created in bulk process will receive customized email messages with instructions on first login"
+        },
+        {
+          "title" : "Fixed issue with selection of application version for manual upgrade",
+          "tags" : "[Bugfix]",
+          "description" : "Fix was applied to drop down version selector on manual application instance version upgrade modal"
+        }
+      ]
+    },
+    {
+      "verNo" : "1.6.2",
+      "date" : "(2024/07/19)",
+      "topic" : [
+        {
+          "title" : "Fixed issue with displaying user details view",
+          "tags" : "[Bugfix]",
+          "description" : "Fix was applied to password handling component affecting few views."
+        },
+        {
+          "title" : "Support for external GitLab instances",
+          "tags" : "[Enhancement]",
+          "description" : "Allowed for connecting to external GitLab instances running outside of the local cluster."
+        },
+        {
+          "title" : "Enhanced application specification export option",
+          "tags" : "[Enhancement]",
+          "description" : "Application spec export JSON files now contain more relevant data."
+        }
+      ]
+    },
+    {
+      "verNo" : "1.6.1",
+      "date" : "(2024/05/22)",
+      "topic" : [
+        {
+          "title" : "Fixed loading GitLab repository information for application instances",
+          "tags" : "[Bugfix]",
+          "description" : "Applied fix in the Janitor component related with querying for projects in given group."
+        },
+        {
+          "title" : "Multiple minor enhancements and fixes",
+          "tags" : "[Enhancement]",
+          "description" : "Addressed multiple issues on both back-end and front-end."
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.0",
       "date" : "(2024/03/12)",
       "topic" : [
@@ -132,7 +195,7 @@
         {
           "title" : "REST API documentation endpoint",
           "tags" : "[New Feature]",
-          "description" : "Enabled Swagger and OpenAPI specification endpoints to document NMaaS Platform API."
+          "description" : "Enabled Swagger and OpenAPI specification endpoints to document nmaas Platform API."
         }
       ]
     },
@@ -157,9 +220,9 @@
           "description" : "Added possibility to set users as application owners with specific set of permissions within the Portal."
         },
         {
-          "title" : "Support for local NMaaS deployments",
+          "title" : "Support for local nmaas deployments",
           "tags" : "[Enhancement]",
-          "description" : "Added set of improvements to support local NMaaS deployments."
+          "description" : "Added set of improvements to support local nmaas deployments."
         },
         {
           "title" : "Advanced support for specifying Helm chart repositories",
@@ -220,7 +283,7 @@
           "description" : "Introduced multiple enhancements to the user administrator view."
         },
         {
-          "title" : "Enhanced NMaaS configuration process",
+          "title" : "Enhanced nmaas configuration process",
           "tags" : "[Enhancement]",
           "description" : "Refactored Platform source code in order to load additional configuration parameters from properties file."
         }
@@ -316,7 +379,7 @@
         {
           "title" : "Added support for advanced configuration using Git repository",
           "tags" : "[New Feature]",
-          "description" : "Enhanced both the NMaaS core components and Janitor to allow for creation of multiple ConfigMaps based on the content of Git repository of a given application instance."
+          "description" : "Enhanced both the nmaas core components and Janitor to allow for creation of multiple ConfigMaps based on the content of Git repository of a given application instance."
         },
         {
           "title" : "Added missing SSH key notification",
@@ -421,7 +484,7 @@
         {
           "title" : "Janitor able to retrieve service IP address from K8s API",
           "tags" : "[New Feature]",
-          "description" : "NMaaS Janitor component is able to retrieve particular service IP address assigned by the MetalLB load balancer."
+          "description" : "nmaas Janitor component is able to retrieve particular service IP address assigned by the MetalLB load balancer."
         },
         {
           "title" : "Enhanced user management",
@@ -494,9 +557,9 @@
           "description" : "Application instances deployed with release names allowing for easy identification."
         },
         {
-          "title" : "Ability to mark NMaaS installation as a test instance",
+          "title" : "Ability to mark nmaas installation as a test instance",
           "tags" : "[Enhancement]",
-          "description" : "When user logs in on a test NMaaS instance a popup window is deployed with appropriate information."
+          "description" : "When user logs in on a test nmaas instance a popup window is deployed with appropriate information."
         }
       ]
     },
@@ -507,7 +570,7 @@
         {
           "title" : "Application management added",
           "tags" : "[New Feature]",
-          "description" : "New functionality and dedicated view in the UI allows for adding and maintaining information about NMaaS applications."
+          "description" : "New functionality and dedicated view in the UI allows for adding and maintaining information about nmaas applications."
         },
         {
           "title" : "Language management added",
@@ -517,7 +580,7 @@
         {
           "title" : "About page added",
           "tags" : "[New Feature]",
-          "description" : "Added dedicated About page with information about current and previous versions of NMaaS and a contact form."
+          "description" : "Added dedicated About page with information about current and previous versions of nmaas and a contact form."
         },
         {
           "title" : "Extended nmaas-janitor to use readiness probes",
@@ -556,14 +619,14 @@
           "description" : "New library offers many interesting features and is actively developed."
         },
         {
-          "title" : "Implemented new version of the NMaaS notification service",
+          "title" : "Implemented new version of the nmaas notification service",
           "tags" : "[Enhancement]",
           "description" : "The nmaas-notification component is no longer used. Email templates have been improved."
         },
         {
           "title" : "Implemented new application view",
           "tags" : "[Enhancement]",
-          "description" : "New version of application view and rating system added to NMaaS."
+          "description" : "New version of application view and rating system added to nmaas."
         },
         {
           "title": "During deployment of Prometheus application, user cannot remove added targets",
@@ -584,12 +647,12 @@
         {
           "title" : "Support for Docker Compose and Kubernetes deployment environments",
           "tags" : "[New Feature]",
-          "description" : "NMaaS supports deployment of applications in two container orchestration environments."
+          "description" : "nmaas supports deployment of applications in two container orchestration environments."
         },
         {
           "title" : "Support for 6 network management applications",
           "tags" : "[New Feature]",
-          "description" : "Six network management applications were integrated and added to NMaaS portfolio."
+          "description" : "Six network management applications were integrated and added to nmaas portfolio."
         },
         {
           "title" : "Support for configuration files storage on GitLab repository",

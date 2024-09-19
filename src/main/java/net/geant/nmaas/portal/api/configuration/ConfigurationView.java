@@ -39,13 +39,22 @@ public class ConfigurationView {
     @Builder.Default
     private boolean registrationDomainSelectionEnabled = true;
 
-    public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance, boolean sendAppInstanceFailureEmails, List<String> appInstanceFailureEmailList) {
+    @Builder.Default
+    private boolean bulkDomainsAllowForSsoAccounts = true;
+
+    @Builder.Default
+    private boolean bulkDomainsSendEmailForNewAccounts = true;
+
+    public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance, boolean sendAppInstanceFailureEmails, List<String> appInstanceFailureEmailList,
+                             boolean bulkDomainsAllowForSsoAccounts, boolean bulkDomainsSendEmailForNewAccounts) {
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
         this.defaultLanguage = defaultLanguage;
         this.testInstance = testInstance;
         this.sendAppInstanceFailureEmails = sendAppInstanceFailureEmails;
         this.appInstanceFailureEmailList = appInstanceFailureEmailList;
+        this.bulkDomainsAllowForSsoAccounts = bulkDomainsAllowForSsoAccounts;
+        this.bulkDomainsSendEmailForNewAccounts = bulkDomainsSendEmailForNewAccounts;
     }
 
 }

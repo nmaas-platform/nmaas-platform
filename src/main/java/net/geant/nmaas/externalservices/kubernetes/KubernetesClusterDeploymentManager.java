@@ -46,6 +46,9 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
     @Value("${kubernetes.deployment.smtpServerPassword:}")
     private String smtpServerPassword;
 
+    @Value("${kubernetes.deployment.smtpFromDefaultDomain}")
+    private String smtpFromDefaultDomain;
+
     @Value("${kubernetes.deployment.forceDedicatedWorkers:false}")
     private Boolean forceDedicatedWorkers;
 
@@ -101,6 +104,8 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
         return Optional.ofNullable(smtpServerPassword);
     }
 
+    public String getSMTPFromDefaultDomain() { return smtpFromDefaultDomain; }
+
     KClusterView.KClusterDeploymentView getKClusterDeploymentView() {
         KClusterView.KClusterDeploymentView kClusterDeploymentView = new KClusterView.KClusterDeploymentView();
         kClusterDeploymentView.setNamespaceConfigOption(this.namespaceConfigOption);
@@ -110,6 +115,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
         kClusterDeploymentView.setSmtpServerPort(this.smtpServerPort);
         kClusterDeploymentView.setSmtpServerUsername(this.smtpServerUsername);
         kClusterDeploymentView.setSmtpServerPassword(this.smtpServerPassword);
+        kClusterDeploymentView.setSmtpFromDefaultDomain(this.smtpFromDefaultDomain);
         kClusterDeploymentView.setForceDedicatedWorkers(this.forceDedicatedWorkers);
         return kClusterDeploymentView;
     }

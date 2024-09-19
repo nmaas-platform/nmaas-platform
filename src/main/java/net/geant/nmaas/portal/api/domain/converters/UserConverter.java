@@ -31,7 +31,7 @@ public class UserConverter extends AbstractConverter<User, UserView> {
 
     private Set<UserRoleView> convertUserRole(User source){
         return source.getRoles().stream()
-                .map(role -> new UserRoleView(role.getRole(), role.getDomain().getId()))
+                .map(role -> new UserRoleView(role.getRole(), role.getDomain().getId(), role.getDomain().getName()))
                 .collect(Collectors.toSet());
     }
 

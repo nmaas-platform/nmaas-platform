@@ -5,8 +5,10 @@ import java.util.Arrays;
 public enum ParameterType {
     SMTP_HOSTNAME,
     SMTP_PORT,
+    SMTP_HOST_WITH_PORT,
     SMTP_USERNAME,
     SMTP_PASSWORD,
+    SMTP_FROM_DEFAULT_DOMAIN,
     DOMAIN_CODENAME,
     BASE_URL,
     RELEASE_NAME,
