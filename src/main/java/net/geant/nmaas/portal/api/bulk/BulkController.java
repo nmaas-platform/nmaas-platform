@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -151,15 +152,21 @@ public class BulkController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<Void> removeBulkDeployment(
             @PathVariable Long id,
-            @RequestParam(name = "removeAll") boolean removeApps
+            @RequestParam(name = "removeAll") boolean removeApps,
+            Principal principal
     ) {
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
         Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(id);
         if (bulk.isEmpty()) {
             return ResponseEntity.notFound().build();
+        }
+
+        if(bulk.get().getCreatorId().equals(user.getId()) ) {
+            throw new PermissionDeniedDataAccessException("User doesnt have access to this bulk deployment", new Throwable());
         }
         if (removeApps) {
             bulkApplicationService.deleteAppInstancesFromBulk(mapToView(bulk.get(), BulkDeploymentView.class));
