@@ -2,7 +2,7 @@
   "versions" : [
     {
       "verNo" : "1.6.3",
-      "date" : "(2024/09/04)",
+      "date" : "(2024/09/05)",
       "topic" : [
         {
           "title" : "New layout for the portal landing pages",
@@ -13,6 +13,16 @@
           "title" : "Support for SSO accounts provisioned ahead of time",
           "tags" : "[Enhancement]",
           "description" : "Bulk user deployment process was enhanced with an option to indicate that given user account should allow for SSO login"
+        },
+        {
+          "title" : "New email notifications for user accounts created in bulk",
+          "tags" : "[Enhancement]",
+          "description" : "New users with accounts created in bulk process will receive customized email messages with instructions on first login"
+        },
+        {
+          "title" : "Fixed issue with selection of application version for manual upgrade",
+          "tags" : "[Bugfix]",
+          "description" : "Fix was applied to drop down version selector on manual application instance version upgrade modal"
         }
       ]
     },

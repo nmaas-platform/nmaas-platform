@@ -70,7 +70,7 @@ public class NotificationManager {
         try {
             template = templateService.getHTMLTemplate();
         } catch (IOException e) {
-            log.error(String.format("Cannot retrieve html template: %s", e.getMessage()));
+            log.error("Cannot retrieve html template: {}", e.getMessage());
             throw new ProcessingException(e);
         }
 
@@ -193,7 +193,7 @@ public class NotificationManager {
     }
 
     private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserView user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
-        boolean showAdditional = mailAttributes.getOtherAttributes().get("message") != null;
+        boolean showAdditional = mailAttributes.getMailType() == MailType.NEW_ACTIVE_APP && mailAttributes.getOtherAttributes().get("message") != null;
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
                 .putAll(mailTemplate.getGlobalInformation())
                 .put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress)

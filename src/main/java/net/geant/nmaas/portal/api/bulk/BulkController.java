@@ -14,9 +14,11 @@ import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +32,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -91,17 +94,14 @@ public class BulkController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAllDeploymentRecords() {
-        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findAll()));
+        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findAll()));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
-        BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
-        bulkView.setCreator(getUserView(bulk.getCreatorId()));
-        mapDetails(bulk, bulkView);
-        return ResponseEntity.ok(bulkView);
+        return ResponseEntity.ok(mapToView(bulk, BulkDeploymentView.class));
     }
 
     @GetMapping(value = "/app/csv/{id}", produces = "text/csv")
@@ -124,7 +124,7 @@ public class BulkController {
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords() {
-        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.DOMAIN)));
+        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.DOMAIN)));
     }
 
     @GetMapping("/domains/vl")
@@ -132,14 +132,14 @@ public class BulkController {
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).stream()
+        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
     }
 
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords() {
-        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.APPLICATION)));
+        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.APPLICATION)));
     }
 
     @GetMapping("/apps/vl")
@@ -147,10 +147,35 @@ public class BulkController {
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToView(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).stream()
+        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    public ResponseEntity<Void> removeBulkDeployment(
+            @PathVariable Long id,
+            @RequestParam(name = "removeAll") boolean removeApps,
+            Principal principal
+    ) {
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
+
+        Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(id);
+        if (bulk.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if(bulk.get().getCreatorId().equals(user.getId()) ) {
+            throw new PermissionDeniedDataAccessException("User doesnt have access to this bulk deployment", new Throwable());
+        }
+        if (removeApps) {
+            bulkApplicationService.deleteAppInstancesFromBulk(mapToView(bulk.get(), BulkDeploymentView.class));
+        }
+        bulkDeploymentRepository.delete(bulk.get());
+        return ResponseEntity.ok().build();
+    }
+
+    private List<BulkDeploymentViewS> mapToViewList(List<BulkDeployment> deployments) {
     @GetMapping("/refresh/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
@@ -159,13 +184,15 @@ public class BulkController {
 
     private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {
         return deployments.stream()
-                .map(bulk -> {
-                    BulkDeploymentViewS bulkView = modelMapper.map(bulk, BulkDeploymentViewS.class);
-                    bulkView.setCreator(getUserView(bulk.getCreatorId()));
-                    mapDetails(bulk, bulkView);
-                    return bulkView;
-                })
+                .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
                 .collect(Collectors.toList());
+    }
+
+    private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {
+        T bulkView = modelMapper.map(bulk, viewType);
+        bulkView.setCreator(getUserView(bulk.getCreatorId()));
+        mapDetails(bulk, bulkView);
+        return bulkView;
     }
 
     private BulkDeploymentView mapToView(BulkDeployment deployment) {
