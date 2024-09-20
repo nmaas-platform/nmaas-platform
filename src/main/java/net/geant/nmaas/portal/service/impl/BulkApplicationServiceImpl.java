@@ -333,7 +333,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     AppInstance instance = instanceService.find(instanceId).orElseThrow();
 
                     AppLifecycleState state = appDeploymentMonitor.state(instance.getInternalId());
-                    log.error("For bulk entries {} state = {}", entry.getId(), state.toString());
                     switch (state) {
                         case APPLICATION_DEPLOYMENT_VERIFIED:
                             entry.setState(BulkDeploymentState.COMPLETED);
