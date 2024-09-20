@@ -5,4 +5,4 @@ create table access_tokens (
         user_id bigint,
         valid boolean not null,
         primary key (id)
- ó);
+ );
