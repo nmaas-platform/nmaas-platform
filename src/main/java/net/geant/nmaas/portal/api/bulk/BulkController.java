@@ -176,6 +176,11 @@ public class BulkController {
     }
 
     private List<BulkDeploymentViewS> mapToViewList(List<BulkDeployment> deployments) {
+        return deployments.stream()
+                .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/refresh/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
