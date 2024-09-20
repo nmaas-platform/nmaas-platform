@@ -279,7 +279,7 @@ public class NotificationManagerTest {
 
         String external = "external@email.com";
 
-        List<User> adminUsers = this.getAdminUserList();
+        List<User> adminUsers = getAdminUserList();
         List<String> emails = Lists.newArrayList(
                 adminUsers.get(0).getEmail(),
                 external
@@ -287,7 +287,7 @@ public class NotificationManagerTest {
 
         when(userService.findByEmail(adminUsers.get(0).getEmail())).thenReturn(adminUsers.get(0));
         when(userService.findByEmail(external)).thenThrow(new IllegalArgumentException("test message"));
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(true, true, "en", true, true, emails));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(true, true, "en", true, true, emails, true, true));
 
         notificationManager.prepareAndSendMail(ma);
 
@@ -328,9 +328,9 @@ public class NotificationManagerTest {
             add(lmcv);
         }});
         mt.setGlobalInformation(new HashMap<String, String>() {{
-            put("LOGO_LINK", "https://www.geant.org/Style%20Library/Geant/Images/logo.png");
-            put("LOGO_ALT", "Geant logo");
-            put("PORTAL_LOGO_ALT", "NMaaS logo");
+            put("LOGO_LINK", "https://www.geant.org/Style%20Library/geant/Images/logo.png");
+            put("LOGO_ALT", "GÉANT logo");
+            put("PORTAL_LOGO_ALT", "nmaas logo");
             put("SENDER_INFO", "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands");
         }});
 

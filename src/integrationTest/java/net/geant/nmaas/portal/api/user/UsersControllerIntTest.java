@@ -12,7 +12,6 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
@@ -316,8 +315,8 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         user.setRoles(Stream.of(userRole1, userRole2).collect(Collectors.toList()));
         user.setEnabled(true);
 
-        UserRoleView userRole3 = new UserRoleView(ROLE_TOOL_MANAGER, 1L);
-        UserRoleView userRole4 = new UserRoleView(ROLE_USER, 1L);
+        UserRoleView userRole3 = new UserRoleView(ROLE_TOOL_MANAGER, 1L, "");
+        UserRoleView userRole4 = new UserRoleView(ROLE_USER, 1L, "");
 
         UserRequest userRequest = new UserRequest(2L, "user2", "password");
         userRequest.setFirstname("FirstName1");

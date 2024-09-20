@@ -201,8 +201,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
     String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
         String[] urlFromGitlabApiParts = gitLabManager.projects().getProject(gitLabProjectId).getHttpUrlToRepo().split("//");
         String[] urlParts = urlFromGitlabApiParts[1].split("/");
-        urlParts[0] = gitLabManager.getGitlabServer() + ":" + gitLabManager.getGitlabPort();
-        return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
+        urlParts[0] = gitLabManager.getGitLabApiUrl();
+        return String.join("/", urlParts);
     }
 
     @Override
@@ -261,8 +261,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
      *
      * @param deploymentId unique identifier of service deployment
      * @param configIds list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
-     * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
-     * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in database
+     * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in the database
+     * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in the database
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override

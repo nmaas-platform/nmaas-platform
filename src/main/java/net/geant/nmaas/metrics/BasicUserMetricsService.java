@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 public class BasicUserMetricsService extends BaseMetricService {
 
     private static final String USER_COUNT_METRIC_NAME = "nmaas_users_count";
-    private static final String USER_COUNT_METRIC_DESCRIPTION = "Total NMaaS users";
+    private static final String USER_COUNT_METRIC_DESCRIPTION = "Total nmaas users";
 
     private static final String USER_WITHOUT_DOMAIN_COUNT_METRIC_NAME = "nmaas_user_no_domain_count";
-    private static final String USER_WITHOUT_DOMAIN_COUNT_METRIC_DESCRIPTION = "NMaaS users without domain";
+    private static final String USER_WITHOUT_DOMAIN_COUNT_METRIC_DESCRIPTION = "nmaas users without domain";
 
     private static final String DOMAIN_COUNT_METRIC_NAME = "nmaas_domains_count";
-    private static final String DOMAIN_COUNT_METRIC_DESCRIPTION = "Total NMaaS domains";
+    private static final String DOMAIN_COUNT_METRIC_DESCRIPTION = "Total nmaas domains";
 
     private static final String BASE_UNIT_NUMBER = "number";
 

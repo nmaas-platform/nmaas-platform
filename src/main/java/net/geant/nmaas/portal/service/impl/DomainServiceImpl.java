@@ -534,7 +534,10 @@ public class DomainServiceImpl implements DomainService {
 
     @Override
     public void removeAppBaseFromAllDomains(ApplicationBase base) {
-        getDomains().forEach(domain -> removeFromDomain(base, domain));
+        getDomains().forEach(domain -> {
+            removeFromDomain(base, domain);
+
+        });
     }
 
     private void removeFromDomain(ApplicationBase base, Domain domain) {

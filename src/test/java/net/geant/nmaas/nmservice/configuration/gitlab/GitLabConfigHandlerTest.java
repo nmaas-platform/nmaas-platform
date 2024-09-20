@@ -47,8 +47,7 @@ public class GitLabConfigHandlerTest {
         Project project = mock(Project.class);
         when(projectApi.getProject(anyInt())).thenReturn(project);
         when(project.getHttpUrlToRepo()).thenReturn("http://example.gitlab.com/group/project.git");
-        when(gitLabManager.getGitlabServer()).thenReturn("test-server");
-        when(gitLabManager.getGitlabPort()).thenReturn(80);
+        when(gitLabManager.getGitLabApiUrl()).thenReturn("http://test-server:80");
         when(gitLabManager.projects()).thenReturn(projectApi);
 
         String result = handler.getHttpUrlToRepo(1);

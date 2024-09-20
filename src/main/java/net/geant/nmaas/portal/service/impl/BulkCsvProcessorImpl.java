@@ -30,10 +30,8 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
 
     public static final String TYPE_CSV = "text/csv";
 
-    private static final List<String> requiredDomainHeader = List.of("domain", "username", "email");
-
-    private static final List<String> requireApplicationHeader = List.of("domain", "instance", "version");
-
+    private static final List<String> REQUIRED_DOMAIN_HEADER = List.of("domain", "username", "email");
+    private static final List<String> REQUIRED_APPLICATION_HEADER = List.of("domain", "instance", "version");
 
     @Override
     public List<CsvDomain> processDomainSpecs(MultipartFile file) throws IOException {
@@ -54,7 +52,7 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
     }
 
     /**
-     * Read CSV file and map it to given class type
+     * Read the CSV file and map it to given class type
      *
      * @param file       an MultipartFile CSV from controller
      * @param outputType an CSVClass created for reader of CSV file (used to map fields)
@@ -105,7 +103,7 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
             throw new ProcessingException("CSV headers are empty");
         }
 
-        if (Arrays.asList(headers).containsAll(requiredDomainHeader) || Arrays.asList(headers).containsAll(requireApplicationHeader)) {
+        if (Arrays.asList(headers).containsAll(REQUIRED_DOMAIN_HEADER) || Arrays.asList(headers).containsAll(REQUIRED_APPLICATION_HEADER)) {
             log.debug("Csv headers are correct");
         } else {
             throw new ProcessingException("CSV headers missing required column");

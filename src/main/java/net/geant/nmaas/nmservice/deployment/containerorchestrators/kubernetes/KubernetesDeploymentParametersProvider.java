@@ -16,7 +16,9 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.BASE_URL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.DOMAIN_CODENAME;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.RELEASE_NAME;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_FROM_DEFAULT_DOMAIN;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_HOSTNAME;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_HOST_WITH_PORT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_PASSWORD;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_PORT;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType.SMTP_USERNAME;
@@ -35,13 +37,15 @@ public class KubernetesDeploymentParametersProvider implements AppDeploymentPara
         Map<String, String> parametersMap = new HashMap<>();
         parametersMap.put(SMTP_HOSTNAME.name(), deploymentManager.getSMTPServerHostname());
         parametersMap.put(SMTP_PORT.name(), deploymentManager.getSMTPServerPort().toString());
+        parametersMap.put(SMTP_HOST_WITH_PORT.name(), deploymentManager.getSMTPServerHostname() + ":" + deploymentManager.getSMTPServerPort().toString());
+        parametersMap.put(SMTP_FROM_DEFAULT_DOMAIN.name(), deploymentManager.getSMTPFromDefaultDomain());
         deploymentManager.getSMTPServerUsername().ifPresent(username -> {
-            if(!username.isEmpty()) {
+            if (!username.isEmpty()) {
                 parametersMap.put(SMTP_USERNAME.name(), username);
             }
         });
         deploymentManager.getSMTPServerPassword().ifPresent(value -> {
-            if(!value.isEmpty()) {
+            if (!value.isEmpty()) {
                 parametersMap.put(SMTP_PASSWORD.name(), value);
             }
         });

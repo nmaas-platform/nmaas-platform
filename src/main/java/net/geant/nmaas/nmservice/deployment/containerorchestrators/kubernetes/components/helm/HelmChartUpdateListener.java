@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -17,6 +18,7 @@ import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.Applicat
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class HelmChartUpdateListener {
 
     @Autowired

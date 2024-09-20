@@ -2,6 +2,10 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
+import net.geant.nmaas.portal.api.domain.TagView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
@@ -15,14 +19,19 @@ import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,11 +39,16 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
+    public static final String DELETED_MARKER = "_DELETED_";
+
     private final ApplicationBaseRepository appBaseRepository;
     private final TagRepository tagRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ApplicationEventPublisher eventPublisher;
     private final DomainService domainService;
+
+    @Autowired
+    protected ModelMapper modelMapper;
 
     @Override
     @Transactional
@@ -79,7 +93,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
             throw new ProcessingException("Updated entity id must not be null");
         }
         Optional<ApplicationBase> fromDb = appBaseRepository.findById(id);
-        if(fromDb.isPresent()) {
+        if (fromDb.isPresent()) {
             ApplicationBase base = fromDb.get();
             base.setOwner(owner);
             base.validate();
@@ -91,7 +105,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public void updateApplicationVersionState(String name, String version, ApplicationState state) {
-        ApplicationBase appBase = findByName(name.contains("_DELETED_") ? name.substring(0, name.indexOf("_DELETED_")) : name);
+        ApplicationBase appBase = findByName(name.contains(DELETED_MARKER) ? name.substring(0, name.indexOf(DELETED_MARKER)) : name);
         appBase.getVersions().stream()
                 .filter(appVersion -> appVersion.getVersion().equals(version))
                 .findAny()
@@ -107,7 +121,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     public List<ApplicationBase> findAll() {
         return appBaseRepository.findAll()
                 .stream()
-                .filter(app -> !app.getName().contains("_DELETED_"))
+                .filter(app -> !app.getName().contains(DELETED_MARKER))
                 .collect(Collectors.toList());
     }
 
@@ -116,6 +130,23 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return appBaseRepository.findAll().stream()
                 .filter(this::isAppActive)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ApplicationBaseViewS> findAllActiveAppsSmall() {
+        log.debug("Loading information about all applications");
+        LocalDateTime beginning = LocalDateTime.now();
+        List<ApplicationBaseS> allSmall = appBaseRepository.findAllSmall();
+        LocalDateTime end = LocalDateTime.now();
+        log.debug("Loaded base data from db in {}ms", end.toInstant(ZoneOffset.UTC).toEpochMilli() - beginning.toInstant(ZoneOffset.UTC).toEpochMilli());
+        List<ApplicationBaseViewS> result = allSmall.stream()
+                .map(app -> modelMapper.map(app, ApplicationBaseViewS.class))
+                .peek(app -> app.setDescriptions(List.of(modelMapper.map(appBaseRepository.findAllBaseDescription(app.getId()), AppDescriptionView[].class))))
+                .peek(app -> app.setTags(Set.of(modelMapper.map(appBaseRepository.findAllBaseTag(app.getId()), TagView[].class))))
+                .collect(Collectors.toList());
+        LocalDateTime finish = LocalDateTime.now();
+        log.debug("Complete data is ready after next {}ms", finish.toInstant(ZoneOffset.UTC).toEpochMilli() - end.toInstant(ZoneOffset.UTC).toEpochMilli());
+        return result;
     }
 
     @Override
@@ -142,7 +173,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public void deleteAppBase(ApplicationBase base) {
-        base.setName(base.getName() + "_DELETED_" + OffsetDateTime.now());
+        base.setName(base.getName() + DELETED_MARKER + OffsetDateTime.now());
         appBaseRepository.save(base);
         domainService.removeAppBaseFromAllDomains(base);
     }
@@ -152,12 +183,12 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .filter(description -> description.getLanguage().equals("en"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));
         app.getDescriptions().forEach(description -> {
-                    if (StringUtils.isEmpty(description.getBriefDescription())) {
-                        description.setBriefDescription(appDescription.getBriefDescription());
-                    }
-                    if (StringUtils.isEmpty(description.getFullDescription())) {
-                        description.setFullDescription(appDescription.getFullDescription());
-                    }
-                });
+            if (StringUtils.isEmpty(description.getBriefDescription())) {
+                description.setBriefDescription(appDescription.getBriefDescription());
+            }
+            if (StringUtils.isEmpty(description.getFullDescription())) {
+                description.setFullDescription(appDescription.getFullDescription());
+            }
+        });
     }
 }

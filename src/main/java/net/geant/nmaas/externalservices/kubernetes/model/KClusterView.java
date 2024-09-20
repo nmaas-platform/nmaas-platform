@@ -33,6 +33,8 @@ public class KClusterView {
 
         private String smtpServerPassword;
 
+        private String smtpFromDefaultDomain;
+
         private Boolean forceDedicatedWorkers;
 
     }

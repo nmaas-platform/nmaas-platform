@@ -46,11 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -131,16 +127,22 @@ public class KubernetesManager implements ContainerOrchestrator {
                 .collect(Collectors.toSet());
     }
 
-    private Map<String, String> createAdditionalParametersMap(Identifier deploymentId, Map<String, String> deployParameters){
+    private Map<String, String> createAdditionalParametersMap(Identifier deploymentId, Map<String, String> deployParameters) {
         Map<String, String> additionalParameters = new HashMap<>();
         Map<String, String> deploymentParameters = deploymentParametersProvider.deploymentParameters(deploymentId);
-        deployParameters.forEach((k,v) -> {
+        deployParameters.forEach((k, v) -> {
             switch (ParameterType.fromValue(k)) {
                 case SMTP_HOSTNAME:
                     additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_HOSTNAME.name()));
                     break;
                 case SMTP_PORT:
                     additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_PORT.name()));
+                    break;
+                case SMTP_HOST_WITH_PORT:
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_HOST_WITH_PORT.name()));
+                    break;
+                case SMTP_FROM_DEFAULT_DOMAIN:
+                    additionalParameters.put(v, deploymentParameters.get(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name()));
                     break;
                 case SMTP_USERNAME:
                     if (deploymentParameters.containsKey(ParameterType.SMTP_USERNAME.name())) {
@@ -325,7 +327,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                                     buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
                                     service.getDomain());
                             String ipWithPortString = getIpAddressWithPort(lbServiceIp, m.getDeployParameters());
-                            m.setUrl(getUserAtIpAddressUrl(ipWithPortString, m.getProtocol()));
+                            m.setUrl(getUserAtIpAddressUrl(ipWithPortString, m.getProtocol(), m.getDeployParameters()));
                         }
                         return m;
                     })
@@ -350,8 +352,16 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private String getUserAtIpAddressUrl(String ipAddress, String protocol) {
-        return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
+    private String getUserAtIpAddressUrl(String ipAddress, String protocol, Map<HelmChartIngressVariable, String> deployParameters) {
+        String username;
+        if (deployParameters != null
+                && deployParameters.containsKey(HelmChartIngressVariable.ACCESS_USER)
+                && !deployParameters.get(HelmChartIngressVariable.ACCESS_USER).isEmpty()) {
+            username = deployParameters.get(HelmChartIngressVariable.ACCESS_USER);
+            return username + "@" + ipAddress;
+        } else {
+            return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
+        }
     }
 
     private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
@@ -367,7 +377,10 @@ public class KubernetesManager implements ContainerOrchestrator {
                         if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
                             Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
                             janitorService.checkServiceExists(serviceName, service.getDomain());
-                            m.setUrl(serviceName.value());
+                            String username;
+                            username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
+                            m.setUrl(username != null && !username.isEmpty()?
+                                    username + "@" + serviceName.value(): serviceName.value());
                         }
                         return m;
                     })

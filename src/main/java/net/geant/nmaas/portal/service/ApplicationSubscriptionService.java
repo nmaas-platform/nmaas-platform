@@ -33,6 +33,8 @@ public interface ApplicationSubscriptionService {
 	void unsubscribe(ApplicationSubscription appSub);
 	void unsubscribe(Long applicationId, Long domainId);
 	void unsubscribe(ApplicationBase application, Domain domain);
+
+	void unsubscribeAll(ApplicationBase applicationBase);
 		
 	List<ApplicationBase> getSubscribedApplications();
 	List<ApplicationBase> getSubscribedApplications(Long domainId);

@@ -1,10 +1,10 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import java.util.Optional;
+import net.geant.nmaas.portal.persistent.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import net.geant.nmaas.portal.persistent.entity.Tag;
+import java.util.Optional;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
-	Optional<Tag> findByName(String source);
+    Optional<Tag> findByName(String source);
 }

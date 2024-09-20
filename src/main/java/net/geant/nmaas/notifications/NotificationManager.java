@@ -66,12 +66,11 @@ public class NotificationManager {
      */
     void prepareAndSendMail(MailAttributes mailAttributes) {
         MailTemplateView mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
-
         Template template;
         try {
             template = templateService.getHTMLTemplate();
         } catch (IOException e) {
-            log.error(String.format("Cannot retrieve html template: %s", e.getMessage()));
+            log.error("Cannot retrieve html template: {}", e.getMessage());
             throw new ProcessingException(e);
         }
 
@@ -120,6 +119,9 @@ public class NotificationManager {
         }
         if (mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)) {
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
+        }
+        if(mailAttributes.getMailType().equals(MailType.NEW_BULK_LOGIN) || mailAttributes.getMailType().equals(MailType.NEW_BULK_SSO_LOGIN)){
+            mailAttributes.setAddressees(List.of(convertEmailToUserView((mailAttributes.getOtherAttributes().get("email").toString()))));
         }
         if (List.of(MailType.REGISTRATION, MailType.APP_NEW, MailType.NEW_SSO_LOGIN, MailType.APP_UPGRADE_SUMMARY)
                 .contains(mailAttributes.getMailType())) {
@@ -191,7 +193,7 @@ public class NotificationManager {
     }
 
     private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserView user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
-        boolean showAdditional = mailAttributes.getOtherAttributes().get("message") != null;
+        boolean showAdditional = mailAttributes.getMailType() == MailType.NEW_ACTIVE_APP && mailAttributes.getOtherAttributes().get("message") != null;
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
                 .putAll(mailTemplate.getGlobalInformation())
                 .put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress)

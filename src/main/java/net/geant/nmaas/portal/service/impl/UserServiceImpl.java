@@ -1,8 +1,13 @@
 package net.geant.nmaas.portal.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.notifications.MailAttributes;
+import net.geant.nmaas.notifications.NotificationEvent;
+import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
@@ -10,6 +15,7 @@ import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -20,6 +26,8 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -47,6 +55,13 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final ConfigurationManager configurationManager;
 	private final ModelMapper modelMapper;
+
+	private final ApplicationEventPublisher eventPublisher;
+	private final JWTTokenService jwtTokenService;
+
+	@Value("${portal.address}")
+	@Setter
+	private String portalAddress;
 
 	@Override
 	public boolean hasPrivilege(User user, Domain domain, Role role) {
@@ -153,20 +168,32 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User registerBulk(CsvDomain userCSV, Domain globalDomain, Domain domain) {
-		if (userRepository.existsByUsername(userCSV.getAdminUserName()) || userRepository.existsByEmail(userCSV.getEmail())) {
+	public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
+		if (userRepository.existsByUsername(csvUser.getAdminUserName()) || userRepository.existsByEmail(csvUser.getEmail())) {
 			throw new SignupException("User already exists");
 		}
 		String temporaryPassword = RandomStringUtils.random(16);
-		log.info("Creating user {} with temporary password", userCSV.getAdminUserName());
-		User newUser = new User(userCSV.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
-		newUser.setEmail(userCSV.getEmail());
+		log.info("Creating user {} with temporary password", csvUser.getAdminUserName());
+		User newUser = new User(csvUser.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
+		newUser.setEmail(csvUser.getEmail());
 		newUser.setEnabled(true);
 		newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 		newUser.setTermsOfUseAccepted(true);
 		newUser.setPrivacyPolicyAccepted(true);
 		if (domain != null) {
 			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
+		}
+		boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
+		// set user saml_token to email address if a sso account requested
+		if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
+			if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
+				newUser.setSamlToken(csvUser.getEmail());
+				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
+			}else {
+				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
+			}
+		} else {
+			if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
 		}
 		userRepository.save(newUser);
 		return newUser;
@@ -176,10 +203,9 @@ public class UserServiceImpl implements UserService {
 	public void update(User user) {
 		checkParam(user);
 		checkParam(user.getId());
-				
-		if(!userRepository.existsById(user.getId()))
-			throw new ProcessingException("User (id=" + user.getId() + " does not exists.");
-		
+		if (!userRepository.existsById(user.getId())) {
+			throw new ProcessingException("User with id " + user.getId() + " does not exist");
+		}
 		userRepository.saveAndFlush(user);
 	}
 
@@ -187,14 +213,12 @@ public class UserServiceImpl implements UserService {
 	public void delete(User user) {
 		checkParam(user);
 		checkParam(user.getId());
-		
 		userRepository.delete(user);
 	}
 
 	@Override
 	public void deleteById(Long userId) {
 		checkParam(userId);
-
 		userRepository.deleteById(userId);
 	}
 
@@ -265,5 +289,38 @@ public class UserServiceImpl implements UserService {
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name()) ))
 				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
+	}
+
+	private void sendMail(User user, MailType mailType) {
+		ImmutableMap<String, Object> map;
+		if(mailType == MailType.NEW_BULK_LOGIN) {
+			map = ImmutableMap.<String, Object>builder()
+					.put("username", user.getUsername())
+					.put("email", user.getEmail())
+					.put("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken24Hours(user.getEmail())))
+					.build();
+		} else {
+			map = ImmutableMap.<String, Object>builder()
+					.put("username", user.getUsername())
+					.put("email", user.getEmail())
+					.put("portal", this.portalAddress)
+					.build();
+		}
+		MailAttributes mailAttributes = MailAttributes.builder()
+				.otherAttributes(map)
+				.mailType(mailType)
+				.build();
+		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+	}
+
+	private String generateResetPasswordUrl(String token) {
+		String url = this.portalAddress;
+		if(url == null) {
+			return "reset/" + token;
+		}
+		if (!url.endsWith("/")) {
+			url += "/";
+		}
+		return url + "reset/" + token;
 	}
 }
