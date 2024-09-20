@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "accessTokens")
+@Table(name = "access_tokens")
 @NoArgsConstructor
 @Getter
 @Setter
