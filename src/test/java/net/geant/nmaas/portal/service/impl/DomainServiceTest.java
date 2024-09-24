@@ -473,4 +473,22 @@ public class DomainServiceTest {
         assertEquals(0, domain2.getApplicationStatePerDomain().size());
     }
 
+    @Test
+    void shouldRemoveAppBaseFromAllDomainGroup() {
+        ApplicationBase applicationBase = new ApplicationBase(1L, "appBase");
+        ApplicationStatePerDomain statePerDomain = new ApplicationStatePerDomain(applicationBase);
+        DomainGroup domainGroup = new DomainGroup("test", "test1");
+        DomainGroup domainGroup2 = new DomainGroup("test2", "test2");
+        domainGroup.setApplicationStatePerDomain(new ArrayList<>(List.of(statePerDomain)));
+        domainGroup2.setApplicationStatePerDomain(new ArrayList<>(List.of(statePerDomain)));
+        when(domainGroupRepository.findAll()).thenReturn(List.of(domainGroup, domainGroup2));
+
+        domainGroupService.deleteAppBaseFromAllAppState(applicationBase);
+
+        assertEquals(0, domainGroup.getApplicationStatePerDomain().size());
+        assertEquals(0, domainGroup2.getApplicationStatePerDomain().size());
+
+
+    }
+
 }
