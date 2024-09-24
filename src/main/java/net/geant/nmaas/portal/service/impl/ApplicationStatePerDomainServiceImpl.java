@@ -101,5 +101,4 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
     public boolean validateAppConfigurationAgainstState(AppConfigurationView appConfig, ApplicationStatePerDomain appState) {
         return appConfig.getStorageSpace() == null || appConfig.getStorageSpace() <= appState.getPvStorageSizeLimit();
     }
-
 }

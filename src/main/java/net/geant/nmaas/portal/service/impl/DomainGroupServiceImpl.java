@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
@@ -134,6 +135,12 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         if (StringUtils.isEmpty(domainGroup.getName()) || StringUtils.isEmpty(domainGroup.getCodename())) {
             throw new IllegalArgumentException("Name is null or empty");
         }
+    }
+
+    public void deleteAppBaseFromAllAppState(ApplicationBase base) {
+        domainGroupRepository.findAll().forEach(d -> {
+          d.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base));
+        });
     }
 
 }

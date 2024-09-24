@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 
 import java.util.List;
@@ -22,5 +23,7 @@ public interface DomainGroupService {
     List<DomainGroupView> getAllDomainGroups();
 
     DomainGroupView updateDomainGroup(Long domainGroupId, DomainGroupView view);
+
+    void deleteAppBaseFromAllAppState(ApplicationBase base);
 
 }
