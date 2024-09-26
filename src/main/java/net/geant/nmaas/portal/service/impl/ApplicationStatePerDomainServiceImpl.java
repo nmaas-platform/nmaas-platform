@@ -9,6 +9,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
+import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
 
     private final DomainRepository domainRepository;
     private final ApplicationBaseRepository applicationBaseRepository;
+    private final DomainGroupRepository domainGroupRepository;
 
     @Override
     public List<ApplicationStatePerDomain> generateListOfDefaultApplicationStatesPerDomain() {
@@ -44,6 +46,11 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
         appState.setPvStorageSizeLimit(ApplicationStatePerDomainServiceImpl.DEFAULT_PV_STORAGE_SIZE_LIMIT);
         List<Domain> allDomains = domainRepository.findAll();
         allDomains.forEach(domain -> domain.addApplicationState(appState));
+        //update domains groups - set app to false by default
+        appState.setEnabled(false);
+        domainGroupRepository.findAll().forEach(d -> {
+            d.getApplicationStatePerDomain().add(appState);
+        });
         return domainRepository.saveAll(allDomains);
     }
 
