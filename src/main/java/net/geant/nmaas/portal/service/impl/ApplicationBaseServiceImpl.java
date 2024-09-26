@@ -136,13 +136,12 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     public List<ApplicationBaseViewS> findAllActiveAppsSmall() {
         log.debug("Loading information about all applications");
         LocalDateTime beginning = LocalDateTime.now();
-        List<ApplicationBaseS> allSmall = appBaseRepository.findAllSmall();
+        List<ApplicationBaseS> allSmall = appBaseRepository.findAllSmall2();
         LocalDateTime end = LocalDateTime.now();
         log.debug("Loaded base data from db in {}ms", end.toInstant(ZoneOffset.UTC).toEpochMilli() - beginning.toInstant(ZoneOffset.UTC).toEpochMilli());
         List<ApplicationBaseViewS> result = allSmall.stream()
                 .map(app -> modelMapper.map(app, ApplicationBaseViewS.class))
-                .peek(app -> app.setDescriptions(List.of(modelMapper.map(appBaseRepository.findAllBaseDescription(app.getId()), AppDescriptionView[].class))))
-                .peek(app -> app.setTags(Set.of(modelMapper.map(appBaseRepository.findAllBaseTag(app.getId()), TagView[].class))))
+
                 .collect(Collectors.toList());
         LocalDateTime finish = LocalDateTime.now();
         log.debug("Complete data is ready after next {}ms", finish.toInstant(ZoneOffset.UTC).toEpochMilli() - end.toInstant(ZoneOffset.UTC).toEpochMilli());
