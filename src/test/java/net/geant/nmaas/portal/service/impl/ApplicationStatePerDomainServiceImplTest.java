@@ -5,6 +5,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
+import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,8 @@ public class ApplicationStatePerDomainServiceImplTest {
     private final DomainRepository domains = mock(DomainRepository.class);
     private final ApplicationBaseRepository applications = mock(ApplicationBaseRepository.class);
 
+    private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
+
     private ApplicationStatePerDomainServiceImpl appState;
 
     private final Domain domain1 = mock(Domain.class);
@@ -35,7 +38,7 @@ public class ApplicationStatePerDomainServiceImplTest {
 
     @BeforeEach
     void setup() {
-        appState = new ApplicationStatePerDomainServiceImpl(domains, applications);
+        appState = new ApplicationStatePerDomainServiceImpl(domains, applications, domainGroupRepository);
     }
 
     @Test
