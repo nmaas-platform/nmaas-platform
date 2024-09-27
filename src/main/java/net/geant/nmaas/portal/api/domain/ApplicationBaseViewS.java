@@ -1,11 +1,13 @@
 package net.geant.nmaas.portal.api.domain;
 
-import lombok.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import net.geant.nmaas.portal.persistent.entity.AppDescription;
-import net.geant.nmaas.portal.persistent.entity.Tag;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
