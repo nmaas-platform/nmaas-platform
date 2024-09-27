@@ -15,6 +15,7 @@ import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.configuration.TestCacheConfig;
 import net.geant.nmaas.portal.api.domain.AppAccessMethodView;
 import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpecView;
@@ -44,6 +45,8 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -65,8 +68,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.cache.type=none")
 @Log4j2
+@Import(TestCacheConfig.class)
 class ApplicationControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
@@ -104,13 +108,13 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
         this.testApp1 = this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.0", ApplicationState.ACTIVE));
         this.testApp1Base.getVersions().addAll(
                 List.of(
-                    new ApplicationVersion(this.testApp1.getVersion(), this.testApp1.getState(), this.testApp1.getId()),
-                    new ApplicationVersion("1.1.1",
-                            ApplicationState.ACTIVE,
-                            this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.1", ApplicationState.ACTIVE)).getId()),
-                    new ApplicationVersion("1.1.2",
-                            ApplicationState.DISABLED,
-                            this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.2", ApplicationState.DISABLED)).getId())
+                        new ApplicationVersion(this.testApp1.getVersion(), this.testApp1.getState(), this.testApp1.getId()),
+                        new ApplicationVersion("1.1.1",
+                                ApplicationState.ACTIVE,
+                                this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.1", ApplicationState.ACTIVE)).getId()),
+                        new ApplicationVersion("1.1.2",
+                                ApplicationState.DISABLED,
+                                this.applicationService.create(getDefaultApplication(APP_1_NAME, "1.1.2", ApplicationState.DISABLED)).getId())
                 )
         );
         this.testApp1Base = this.applicationBaseService.update(this.testApp1Base);
@@ -130,8 +134,8 @@ class ApplicationControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
+    @CacheEvict(value = "applicationBaseS", allEntries = true)
     void shouldGetActiveApplications() throws Exception {
-        log.debug("Test = {} {}", this.applicationBaseRepository.findAll().size(), this.applicationBaseRepository.findAllSmall().size());
         MvcResult result = mvc.perform(get("/api/apps/base")
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
