@@ -68,7 +68,7 @@ spring.jpa.show-sql=true
 spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 
 # -------------------------------------------------------- #
-# NMaaS application deployment and configuration processes #
+# nmaas application deployment and configuration processes #
 # -------------------------------------------------------- #
 nmaas.service.deployment.check.interval=${DEPLOYMENT_CHECK_INTERVAL}
 nmaas.service.deployment.max.duration=${DEPLOYMENT_CHECK_TIMEOUT}
@@ -83,7 +83,7 @@ nmaas.portal.domains.namespace.pattern=[a-z0-9-]{0,64}
 
 nmaas.platform.webhooks.baseurl=${PLATFORM_BASEURL}/api/gitlab/webhooks
 
-# NMaaS Platform is running within the Kubernetes cluster
+# nmaas Platform is running within the Kubernetes cluster
 nmaas.kubernetes.incluster=true
 
 nmaas.domains.create.namespace=${NAMESPACE_CREATION_ENABLED:false}
@@ -101,10 +101,11 @@ spring.quartz.properties.org.quartz.jobStore.driverDelegateClass=org.quartz.impl
 upload.dir=/nmaas/files/upload
 jwt.tokenValidFor=3600000
 jwt.refreshTokenValidFor=13600000
-jwt.issuer=NMaaS
+jwt.issuer=nmaas
 jwt.signingKey=${API_KEY}
 jwt.resetSigningKey=testResetKey
 jwt.resetTokenValidFor=1800000
+jwt.resetTokenRegistrationValid=86400000
 captcha.secret=${CAPTCHA_SECRET}
 spring.data.web.pageable.default-page-size=1000
 spring.mvc.favicon.enabled=false

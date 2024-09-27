@@ -15,6 +15,7 @@ import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
 import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
+import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
@@ -22,6 +23,7 @@ import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
@@ -55,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -300,6 +303,75 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         );
     }
 
+    @Override
+    public void deleteAppInstancesFromBulk(BulkDeploymentView bulk) {
+        List<BulkDeploymentEntryView> apps = bulk.getEntries();
+        for (BulkDeploymentEntryView app : apps) {
+            Long appInstanceId = Long.valueOf(findAppDetail(app, BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+            AppInstance appInstance = instanceService.find(appInstanceId)
+                    .orElseThrow(() -> new ObjectNotFoundException("App instance not found"));
+
+            appLifecycleManager.removeApplication(appInstance.getInternalId());
+            instanceService.delete(appInstanceId);
+        }
+    }
+
+    private String findAppDetail(BulkDeploymentEntryView app, String key) {
+        return Optional.ofNullable(app.getDetails().get(key))
+                .orElseThrow(() -> new ObjectNotFoundException(key + " not found"));
+    }
+
+    @Override
+    public BulkDeployment updateState(Long bulkId) {
+        log.info("Update all states for bulk {}", bulkId);
+        Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(bulkId);
+        if(bulk.isPresent()) {
+            BulkDeployment bulkDeployment = bulk.get();
+            bulkDeployment.getEntries().forEach(entry -> {
+                try {
+                    Long instanceId = Long.valueOf(entry.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+                    AppInstance instance = instanceService.find(instanceId).orElseThrow();
+
+                    AppLifecycleState state = appDeploymentMonitor.state(instance.getInternalId());
+                    switch (state) {
+                        case APPLICATION_DEPLOYMENT_VERIFIED:
+                            entry.setState(BulkDeploymentState.COMPLETED);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
+                        case APPLICATION_CONFIGURATION_FAILED:
+                        case APPLICATION_DEPLOYMENT_FAILED:
+                        case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
+                        case INTERNAL_ERROR:
+                            entry.setState(BulkDeploymentState.FAILED);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
+                        default:
+                            entry.setState(BulkDeploymentState.PENDING);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
+                    }
+                    logBulkStateUpdate(entry.getId(), entry.getState().name());
+
+                } catch (Exception e) {
+                    log.error("Can not update state of {} bulk entry", entry.getId());
+                }
+            });
+            if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.COMPLETED);
+            } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.FAILED);
+            } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
+            }
+            logBulkStateUpdate(bulkDeployment.getId(),bulkDeployment.getState().name());
+            bulkDeploymentRepository.save(bulkDeployment);
+            return bulkDeployment;
+        } else {
+            log.error("Can not find bulk deployment {}", bulkId);
+            throw new MissingElementException("Can not find bulk deployment " + bulkId);
+        }
+    }
+
     private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(BulkType.APPLICATION);
@@ -355,8 +427,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
             //deploy
             Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
-            params.forEach( (key, value) -> {
-                configurationParameters.put(key,  Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
+            params.forEach((key, value) -> {
+                configurationParameters.put(key, Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
                 log.debug("Params = {} - {}", key, value);
             });
 

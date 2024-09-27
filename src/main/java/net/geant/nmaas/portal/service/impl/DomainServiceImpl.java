@@ -536,8 +536,8 @@ public class DomainServiceImpl implements DomainService {
     public void removeAppBaseFromAllDomains(ApplicationBase base) {
         getDomains().forEach(domain -> {
             removeFromDomain(base, domain);
-
         });
+        domainGroupService.deleteAppBaseFromAllAppState(base);
     }
 
     private void removeFromDomain(ApplicationBase base, Domain domain) {

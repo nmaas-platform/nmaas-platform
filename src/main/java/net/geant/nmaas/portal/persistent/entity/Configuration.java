@@ -47,6 +47,7 @@ public class Configuration {
     @Column(nullable = false)
     private boolean sendAppInstanceFailureEmails = false;
 
+    @Builder.Default
     @Column(nullable = false)
     @Getter(value = AccessLevel.PRIVATE)
     @Setter(value = AccessLevel.PRIVATE)

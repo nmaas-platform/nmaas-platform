@@ -314,7 +314,7 @@
     "NOT_FOUND_ERROR": "Nie znaleziono"
   },
   "PORTAL_CONFIGURATION": {
-    "TITLE": "Konfiguracja portalu",
+    "TITLE": "Ustawienia platformy",
     "MAINTENANCE": "Przerwa techniczna",
     "ALLOW_SSO_LOGIN": "Zezwól na logowanie przez SSO",
     "SUBMIT_BUTTON": "Prześlij",
@@ -1156,6 +1156,30 @@
       }
     }
   },
+  "TOKENS": {
+    "HEADER": "Tokens",
+    "TABLE": {
+      "ID": "ID",
+      "NAME": "Name",
+      "VALUE": "Value",
+      "VALID": "Valid",
+      "ACTIONS": "Actions"
+    },
+    "MODAL": {
+      "HEADER": "Add new access token",
+      "NAME": "Name",
+      "BUTTON_ADD": "Submit",
+      "BUTTON_CANCEL": "Cancel",
+      "ERROR": {
+        "NAME_REQUIRED": "Name is required",
+        "NAME_MINLENGTH": "Name must have at least 1 character",
+        "NAME_MAXLENGTH": "Name cannot be longer than 16 characters"
+      }
+    },
+    "BUTTON_INVALIDATE": "Invalidate",
+    "NO_TOKENS": "No tokens",
+    "NEW_TOKEN": "Add new token"
+  },
   "JSON_EDIT": {
     "INVALID_JSON": "Niewłaściwy format JSON. Zmiany wprowadzone do zawartości formularza nie zostaną zapisane."
   },
@@ -1214,7 +1238,8 @@
       "DOMAIN" : "Domena",
       "CHECK_STATE" : "Sprawdź status",
       "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej",
-      "DOWNLOAD_CSV" : "Pobierz CSV"
+      "DOWNLOAD_CSV" : "Pobierz CSV",
+      "REFRESH" : "Odśwież stany"
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",
@@ -1225,8 +1250,9 @@
     },
     "REMOVE" : {
       "HEADER" : "Remove bulk deployment",
-      "APP" : "Do you want to remove all instances created by this bulk ? ",
-      "REMOVE" : "Remove"
+      "APP" : "Do you want to remove all instances created by this bulk deployment?",
+      "REMOVE" : "Remove",
+      "ERROR": "Error removing bulk deployment:"
     }
   },
   "SHARED" : {

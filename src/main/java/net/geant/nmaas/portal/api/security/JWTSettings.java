@@ -20,6 +20,9 @@ public class JWTSettings {
 
 	@Value("${jwt.resetTokenValidFor}")
 	private Long resetTokenExpTime;
+
+	@Value("${jwt.resetTokenRegistrationValid}")
+	private Long registrationResetTokenExpTime;
 	
 	@Value("${jwt.issuer}")
 	private String issuer;

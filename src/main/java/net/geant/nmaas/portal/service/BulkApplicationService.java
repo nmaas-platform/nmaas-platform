@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.io.InputStreamResource;
 
@@ -22,6 +23,10 @@ public interface BulkApplicationService {
 
     List<BulkAppDetails> getAppsBulkDetails(BulkDeploymentView view);
 
-    InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> list );
+    InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> list);
+
+    void deleteAppInstancesFromBulk(BulkDeploymentView bulk);
+
+    BulkDeployment updateState(Long bulkId);
 
 }

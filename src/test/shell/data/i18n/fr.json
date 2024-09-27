@@ -32,18 +32,18 @@
     "REGISTER": "S'enregistrer",
     "TITLE1": "Network Management as a Service",
     "TITLE2": "Un portefeuille d'applications de gestion de réseau privé dans le cloud.",
-    "INTRO_TEXT": "Le service GÉANT NMaaS est une plateforme de fourniture d'application de gestion de réseau accessible par le bias d'un \"App store\" communautaire.",
+    "INTRO_TEXT": "Le service GÉANT nmaas est une plateforme de fourniture d'application de gestion de réseau accessible par le bias d'un \"App store\" communautaire.",
     "TARGET_USERS_HEADER": "Utilisateurs",
-    "TARGET_USERS_TEXT": "Les utilisateurs cible de NMaaS sont les organisations qui veulent externaliser mais également partager leur outil de gestion de réseau.",
+    "TARGET_USERS_TEXT": "Les utilisateurs cible de nmaas sont les organisations qui veulent externaliser mais également partager leur outil de gestion de réseau.",
     "MARKETPLACE_HEADER": "App store",
-    "MARKETPLACE_TEXT": "NMaaS fournit de la supervision dans le cloud. Il est possible de souscrire aux applications les plus populaires, mais également il vous est possible de publier vos applications.",
+    "MARKETPLACE_TEXT": "nmaas fournit de la supervision dans le cloud. Il est possible de souscrire aux applications les plus populaires, mais également il vous est possible de publier vos applications.",
     "COST_REDUCTION_HEADER": "Réduction des coûts",
-    "COST_REDUCTION_TEXT": "Avec NMaaS, les utilisateurs n'ont plus à maintenir les infrastructures de supervision.",
+    "COST_REDUCTION_TEXT": "Avec nmaas, les utilisateurs n'ont plus à maintenir les infrastructures de supervision.",
     "SECURITY_HEADER": "Sécurité",
-    "SECURITY_TEXT": "Dans NMaaS, Chaque organisation possède un accès VPN sécurisé à ces applications. Un autre VPN sécurisé est utilisé pour communiquer avec les équipements supervisés",
+    "SECURITY_TEXT": "Dans nmaas, Chaque organisation possède un accès VPN sécurisé à ces applications. Un autre VPN sécurisé est utilisé pour communiquer avec les équipements supervisés",
     "SCALING_HEADER": "Passage à l'echelle horizontale",
     "SCALING_TEXT": "De nouvelles instances peuvent être déployer en cas d'augmentation du nombre d'élément à superviser",
-    "NMAAS_FEATURES_HEADER": "Les principales fonctionnaités de NMaaS",
+    "NMAAS_FEATURES_HEADER": "Les principales fonctionnaités de nmaas",
     "APP_MARKET_HEADER": "App store",
     "APP_MARKET_TEXT": "Vous pouvez trouver non seulement les applications officielles, sélectionnéss par l'administrateur, mais aussi les applications communautaires publiées par les usagers.",
     "OWN_APPS_HEADER": "Systéme de notation",
@@ -94,8 +94,8 @@
     "USER_DISABLED_MESSAGE": "User is disabled"
   },
   "TEST_INSTANCE_MODAL": {
-    "HEADER": "Instance de test NMaaS",
-    "BODY": "Veuillez noter qu'il s'agit d'une instance de test NMaaS. Les mesures d'isolation de l'utilisateur et de sécurité des données ne sont pas aussi strictes que sur l'instance de production. N'utilisez pas cette instance pour surveiller un équipement réel.",
+    "HEADER": "Instance de test nmaas",
+    "BODY": "Veuillez noter qu'il s'agit d'une instance de test nmaas. Les mesures d'isolation de l'utilisateur et de sécurité des données ne sont pas aussi strictes que sur l'instance de production. N'utilisez pas cette instance pour surveiller un équipement réel.",
     "OK_BUTTON": "OK"
   },
   "PROVIDE_SSH_KEY_MODAL": {
@@ -323,7 +323,7 @@
     "LANGUAGE_SUPPORT": "Langues supportées",
     "LANGUAGE_ENABLED": "Activé",
     "LANGUAGE_DISABLED": "Désactivé",
-    "TEST_INSTANCE": "Marquer comme instance de test NMaaS",
+    "TEST_INSTANCE": "Marquer comme instance de test nmaas",
     "SEND_APP_INSTANCE_FAILURE_EMAILS": "Send emails when app instance fails to deploy",
     "SEND_APP_INSTANCE_FAILURE_EMAILS_LIST": "Recipients of app deployment failed emails",
     "DOMAIN_SELECTION_ENABLED" : "Sélection de domaine lors de l'enregistrement",
@@ -388,7 +388,7 @@
     }
   },
   "GIT_INFO": {
-    "HEADER": "NMaaS version",
+    "HEADER": "nmaas version",
     "VERSION": "Version",
     "BUILD_TIME": "Build time",
     "LAST_COMMIT": "Dernier commit",
@@ -552,7 +552,7 @@
       "STATE": "Etat",
       "DEFAULT_ERROR_STATE": "Une erreur est survenue",
       "DETAILS": "Details",
-      "DEFAULT_ERROR_MESSAGE": "Le déploiement de l'application a échoué en raison d'une erreur inattendue. L'équipe d'assistance NMaaS a déjà été notifiée.<br>Pour signaler un problème, utilisez le <a href=\"about?type=ISSUE_REPORT\">formulaire de contact</a>."
+      "DEFAULT_ERROR_MESSAGE": "Le déploiement de l'application a échoué en raison d'une erreur inattendue. L'équipe d'assistance nmaas a déjà été notifiée.<br>Pour signaler un problème, utilisez le <a href=\"about?type=ISSUE_REPORT\">formulaire de contact</a>."
     },
     "DEPLOYMENT_HISTORY": {
       "HEADER": "Historique des éeploiements",
@@ -565,7 +565,7 @@
       "ADVANCED_TAB": "Avancé...",
       "ADDITIONAL_TAB": "Parametres additionnels",
       "STORAGE_SPACE": "Espace de stockage",
-      "NMAAS_TOOLS": "NMaaS Tools Page",
+      "NMAAS_TOOLS": "nmaas Tools Page",
       "DOCUMENTATION_INFO": "Des descriptions détaillées des champs sont disponibles sur",
       "PREVIEW": "Configuration preview"
     },
@@ -620,17 +620,17 @@
       "APP_UPGRADE_FAILED": "La mise à niveau de l'application a échoué"
     },
     "USER_FRIENDLY": {
-      "REQUESTED": "NMaaS traite votre demande",
-      "VALIDATION": "NMaaS valide les ressources disponibles",
-      "PREPARATION": "NMaaS prépare l'environnement de déploiement de votre application",
-      "CONNECTING": "NMaaS met en place une connectivité sécurisée à votre équipement",
+      "REQUESTED": "nmaas traite votre demande",
+      "VALIDATION": "nmaas valide les ressources disponibles",
+      "PREPARATION": "nmaas prépare l'environnement de déploiement de votre application",
+      "CONNECTING": "nmaas met en place une connectivité sécurisée à votre équipement",
       "CONFIGURATION_AWAITING": "Votre instance d'application a été déployée avec succès. <br>Pour continuer, effectuez la première configuration à l'aide du bouton d'action <i>Configurer</i>.",
       "DEPLOYING": "L'application est en cours d'activation. Ce processus peut prendre plusieurs minutes. <br>Vous serez averti par e-mail une fois que votre instance sera prête",
       "RUNNING": "Votre application est maintenant active. Vous pouvez y accéder en utilisant l'option <i>Accès</i> du menu <i>Actions</i>. <br>Utilisez les options <i>Configurer</i> et <i>Membres</i> pour mettre à jour respectivement la configuration et la liste des utilisateurs de l'application.",
       "UNDEPLOYING": "L'application n'est pas déployée. Ce processus peut prendre plusieurs minutes",
       "DONE": "Application non déployée avec succès",
       "FAILURE": "",
-      "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
+      "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe nmaas à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
     },
     "SHOW_VERSIONS_LABEL": "Afficher les versions disponibles",
@@ -742,7 +742,7 @@
       "DESCRIPTION": "Do you want to completely remove this application from the catalogue?",
       "CANCEL" : "Cancel",
       "CONFIRM": "Confirm",
-      "DISABLED": "Some active versions of this application exists. Delete them and try again."
+      "DISABLED": "Some active versions of this application exist. Delete them and try again."
     },
     "CHANGE_STATE_BUTTON": "Change state",
     "CHANGE_OWNER_BUTTON": "Change owner",
@@ -768,7 +768,7 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
   },
   "APPS_WIZARD": {
-    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the NMaaS portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in NMaaS.",
+    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the nmaas portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in nmaas.",
     "ACCEPT_RULES_CHECKBOX": "I read the general instructions above",
     "NEXT_BUTTON": "Next",
     "SUBMIT_BUTTON": "Submit",
@@ -801,7 +801,7 @@
     "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Application update configuration wizard template",
     "NEW_APP_MODAL": {
       "HEADER": "New application submitted correctly",
-      "BODY": "Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.",
+      "BODY": "Thank you for submitting new application. Your request must be now reviewed by nmaas Team. It may take some time.",
       "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
     },
     "EDIT_APP_MODAL": {
@@ -821,23 +821,23 @@
     "ACCEPT_RULES_TOOLTIP": "You have to accept the rules!",
     "NAME_TOOLTIP": "Official application name.",
     "VERSION_TOOLTIP": "Current release number of application.",
-    "LICENSE_TOOLTIP": "Enter name of license under which application is distributed. Please make sure that application can be used in NMaaS.",
+    "LICENSE_TOOLTIP": "Enter name of license under which application is distributed. Please make sure that application can be used in nmaas.",
     "LICENSE_URL_TOOLTIP": "To give user more information about license and permissions to use, provide link to license description.",
     "PROJECT_WEBSITE_TOOLTIP": "To give user more information about whole project, provide link to project website.",
     "SOURCE_CODE_TOOLTIP": "Url to project source code e.g. github.com/project.",
     "PROJECT_ISSUES_TOOLTIP": "To be sure that users can always find way to report bug to team responsible for tool, provide link to issues, e.g. github.com/project/issues.",
     "TAGS_TOOLTIP": "Please select tags which describes application. This will help users to find applications more effectively.",
     "NEW_TAGS_TOOLTIP": "You can add tags for your application if existing tags doesn't describe your application well. Type tag name and press enter to add new tag.",
-    "BRIEF_DESCRIPTION_TOOLTIP": "Enter brief description of application. This text will be displayed on NMaaS market page.",
+    "BRIEF_DESCRIPTION_TOOLTIP": "Enter brief description of application. This text will be displayed on nmaas market page.",
     "FULL_DESCRIPTION_TOOLTIP": "Enter full description of application. This text will be displayed on application details page.",
-    "CHART_NAME_TOOLTIP": "Enter name of chart, which will be used in NMaaS.",
-    "CHART_VERSION_TOOLTIP": "Enter version of chart, which will be used in NMaaS.",
+    "CHART_NAME_TOOLTIP": "Enter name of chart, which will be used in nmaas.",
+    "CHART_VERSION_TOOLTIP": "Enter version of chart, which will be used in nmaas.",
     "HELM_CHART_REPOSITORY_NAME_TOOLTIP": "Enter Helm Chart Repository Name",
     "HELM_CHART_REPOSITORY_URL_TOOLTIP": "Enter Helm Chart URL address",
     "MAIN_DEPLOYMENT_NAME_TOOLTIP": "Enter the name of main component deployed by this chart.",
     "DEFAULT_STORAGE_SPACE_TOOLTIP": "Enter default storage space (in gigabytes).",
-    "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global NMaaS settings. If you want to use one of them please specify how we should pass that variable.",
-    "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
+    "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global nmaas settings. If you want to use one of them please specify how we should pass that variable.",
+    "REPOSITORY_REQUIRED_TOOLTIP": "nmaas can use GitLab to store configuration of each instance.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
     "CONFIG_FILENAME_LABEL": "Configuration filename",
@@ -856,8 +856,8 @@
     "BASIC_APP_INFO_STEP_INFO": "Basic set of information about the application. Application can be filtered by tag. Select an existing tag or create a new one if none is suitable.",
     "LOGO_AND_SCREENSHOTS_STEP_INFO": "Application logo is displayed in various views in the application. A set of screenshots should give a nice overview of the application's UI.",
     "APP_DESCRIPTIONS_STEP_INFO": "Brief and full descriptions of the application should provide a basic (limited length) and comprehensive information about the nature and purpose of the application. Descriptions should be provided in as many supported languages as possible.",
-    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Applications offered through NMaaS are deployed in Kubernetes as Helm charts. Basic information about the chart is required with additional set of optional parameters to be passed during the installation process.",
-    "CONFIG_TEMPLATES_STEP_INFO": "NMaaS applications are populated with basic configuration parameters provided by users using a wizard. The list of configuration files (with parameterized content) to be used and loaded by the application at startup should be provided. Those need to be complemented with the definition of the wizard component dedicated for particular application allowing user to provide all necessary parameters used to populate configuration files. ",
+    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Applications offered through nmaas are deployed in Kubernetes as Helm charts. Basic information about the chart is required with additional set of optional parameters to be passed during the installation process.",
+    "CONFIG_TEMPLATES_STEP_INFO": "nmaas applications are populated with basic configuration parameters provided by users using a wizard. The list of configuration files (with parameterized content) to be used and loaded by the application at startup should be provided. Those need to be complemented with the definition of the wizard component dedicated for particular application allowing user to provide all necessary parameters used to populate configuration files. ",
     "BASIC_AUTH_LABEL": "Requires basic authorization",
     "BASIC_AUTH_TOOLTIP": "You can add basic authorization for your application simply by checking this checkbox.",
     "TERMS_ACCEPTANCE_LABEL": "Terms acceptance required",
@@ -882,8 +882,8 @@
     "CONFIG_UPDATE_ENABLED": "Enable configuration updates",
     "STATIC_GLOBAL_DEPLOY_PARAMETERS": "Static global deploy parameters",
     "DEPLOY_PARAMETERS": "Global deploy parameters",
-    "PROJECT_NMAAS_DOCUMENTATION_LABEL": "NMaaS Documentation URL",
-    "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to NMaaS Documentatnion (NMaaS Tools)",
+    "PROJECT_NMAAS_DOCUMENTATION_LABEL": "nmaas Documentation URL",
+    "PROJECT_NMAAS_DOCUMENTATION_TOOLTIP": "Provide URL to nmaas Documentatnion (nmaas Tools)",
     "RAW_JSON": "Raw JSON format",
     "FORM_BUILDER": "Form builder",
     "FORM_DEFINITION": "Form definition",
@@ -940,8 +940,8 @@
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",
     "CHANGELOG_TITLE": "Version actuelle du logiciel et journal des modifications",
-    "CONTACT_DESC": "Le formulaire de contact offre un moyen facile d'entrer en contact avec l'équipe NMaaS. Choisissez le type de formulaire le plus adapté à votre demande.",
-    "CHANGELOG_DESC": "Vous trouverez ci-dessous des informations détaillées sur la version actuelle de NMaaS et un résumé des changements introduits dans les versions précédentes du logiciel."
+    "CONTACT_DESC": "Le formulaire de contact offre un moyen facile d'entrer en contact avec l'équipe nmaas. Choisissez le type de formulaire le plus adapté à votre demande.",
+    "CHANGELOG_DESC": "Vous trouverez ci-dessous des informations détaillées sur la version actuelle de nmaas et un résumé des changements introduits dans les versions précédentes du logiciel."
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Dernière version",
@@ -971,17 +971,17 @@
       "DOMAIN_CODENAME_DESCRIPTION": "Abbreviated version of the domain name (up to 12 characters)",
       "DOMAIN_CODENAME_ERROR": "Invalid domain codename",
       "JUSTIFICATION": "Request justification",
-      "JUSTIFICATION_DESCRIPTION": "Brief justification for the new domain creation including the name of the requesting Institution and the main purpose for deployment of NMaaS applications.",
+      "JUSTIFICATION_DESCRIPTION": "Brief justification for the new domain creation including the name of the requesting Institution and the main purpose for deployment of nmaas applications.",
       "VPN_OPTION": "VPN solution",
       "VPN_OPTION_DESCRIPTION": "Two types of software-based VPN solutions are currently supported. Select the preferred one",
       "VPN_USER_IP": "Public IP for VPN tunnel setup",
       "VPN_USER_IP_DESCRIPTION": "Public IP for VPN tunnel termination on user end",
       "VPN_USER_SUBNETS": "Monitored user subnets",
-      "VPN_USER_SUBNETS_DESCRIPTION": "List of monitored subnets that should be reachable from your application deployed on NMaaS",
+      "VPN_USER_SUBNETS_DESCRIPTION": "List of monitored subnets that should be reachable from your application deployed on nmaas",
       "VPN_USER_SUBNETS_ADD": "Add subnet",
       "VPN_USER_SUBNETS_SUBNET": "Subnet",
       "ADDITIONAL_VPN_SUBNETS": "Additional subnets",
-      "ADDITIONAL_VPN_SUBNETS_DESCRIPTION": "Additional IP ranges that should be reachable from your NMaaS applications, outside those specified above (e.g. some public services)",
+      "ADDITIONAL_VPN_SUBNETS_DESCRIPTION": "Additional IP ranges that should be reachable from your nmaas applications, outside those specified above (e.g. some public services)",
       "TECH_CONTACT": "Technical contact",
       "TECH_CONTACT_DESCRIPTION": "Person to be contacted to further discuss technical matters related with VPN setup",
       "TECH_CONTACT_PLACEHOLDER": "Name and email",
@@ -996,7 +996,7 @@
     },
     "MODAL": {
       "TITLE": "Le courrier a été envoyé",
-      "MESSAGE": "L'équipe NMaaS répondra bientôt.",
+      "MESSAGE": "L'équipe nmaas répondra bientôt.",
       "CLOSE_BUTTON": "Fermer"
     },
     "SELECT_CATEGORY": "Select category",
@@ -1156,6 +1156,30 @@
       }
     }
   },
+  "TOKENS": {
+    "HEADER": "Tokens",
+    "TABLE": {
+      "ID": "ID",
+      "NAME": "Name",
+      "VALUE": "Value",
+      "VALID": "Valid",
+      "ACTIONS": "Actions"
+    },
+    "MODAL": {
+      "HEADER": "Add new access token",
+      "NAME": "Name",
+      "BUTTON_ADD": "Submit",
+      "BUTTON_CANCEL": "Cancel",
+      "ERROR": {
+        "NAME_REQUIRED": "Name is required",
+        "NAME_MINLENGTH": "Name must have at least 1 character",
+        "NAME_MAXLENGTH": "Name cannot be longer than 16 characters"
+      }
+    },
+    "BUTTON_INVALIDATE": "Invalidate",
+    "NO_TOKENS": "No tokens",
+    "NEW_TOKEN": "Add new token"
+  },
   "JSON_EDIT": {
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   },
@@ -1213,7 +1237,8 @@
       "DOMAIN" : "Domain",
       "CHECK_STATE" : "Check state",
       "UPLOAD_TEXT" : "or enter CSV content below",
-      "DOWNLOAD_CSV" : "Download CSV"
+      "DOWNLOAD_CSV" : "Download CSV",
+      "REFRESH" : "Refresh states"
     },
     "STATE" : {
       "PENDING" :  "Pending",
@@ -1224,8 +1249,9 @@
     },
     "REMOVE" : {
       "HEADER" : "Remove bulk deployment",
-      "APP" : "Do you want to remove all instances created by this bulk ? ",
-      "REMOVE" : "Remove"
+      "APP" : "Do you want to remove all instances created by this bulk deployment?",
+      "REMOVE" : "Remove",
+      "ERROR": "Error removing bulk deployment:"
     }
   },
   "SHARED" : {

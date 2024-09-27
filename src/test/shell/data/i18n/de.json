@@ -314,7 +314,7 @@
     "NOT_FOUND_ERROR": "Nicht gefunden"
   },
   "PORTAL_CONFIGURATION": {
-    "TITLE": "Portal Konfiguration",
+    "TITLE": "Platform Konfiguration",
     "MAINTENANCE": "Wartung",
     "ALLOW_SSO_LOGIN": "Erlaube SSO login",
     "SUBMIT_BUTTON": "Senden",
@@ -743,7 +743,7 @@
       "DESCRIPTION": "Do you want to completely remove this application from the catalogue?",
       "CANCEL" : "Cancel",
       "CONFIRM": "Confirm",
-      "DISABLED": "Some active versions of this application exists. Delete them and try again."
+      "DISABLED": "Some active versions of this application exist. Delete them and try again."
     },
     "CHANGE_STATE_BUTTON": "Änderungsstatus",
     "CHANGE_OWNER_BUTTON": "Change owner",
@@ -1155,6 +1155,30 @@
       }
     }
   },
+  "TOKENS": {
+    "HEADER": "Tokens",
+    "TABLE": {
+      "ID": "ID",
+      "NAME": "Name",
+      "VALUE": "Value",
+      "VALID": "Valid",
+      "ACTIONS": "Actions"
+    },
+    "MODAL": {
+      "HEADER": "Add new access token",
+      "NAME": "Name",
+      "BUTTON_ADD": "Submit",
+      "BUTTON_CANCEL": "Cancel",
+      "ERROR": {
+        "NAME_REQUIRED": "Name is required",
+        "NAME_MINLENGTH": "Name must have at least 1 character",
+        "NAME_MAXLENGTH": "Name cannot be longer than 16 characters"
+      }
+    },
+    "BUTTON_INVALIDATE": "Invalidate",
+    "NO_TOKENS": "No tokens",
+    "NEW_TOKEN": "Add new token"
+  },
   "JSON_EDIT": {
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   },
@@ -1212,7 +1236,8 @@
       "DOMAIN" : "Domain",
       "CHECK_STATE" : "Check state",
       "UPLOAD_TEXT" : "or enter CSV content below",
-      "DOWNLOAD_CSV" : "Download CSV"
+      "DOWNLOAD_CSV" : "Download CSV",
+      "REFRESH" : "Refresh states"
     },
     "STATE" : {
       "PENDING" :  "Pending",
@@ -1223,8 +1248,9 @@
     },
     "REMOVE" : {
       "HEADER" : "Remove bulk deployment",
-      "APP" : "Do you want to remove all instances created by this bulk ? ",
-      "REMOVE" : "Remove"
+      "APP" : "Do you want to remove all instances created by this bulk deployment?",
+      "REMOVE" : "Remove",
+      "ERROR": "Error removing bulk deployment:"
     }
   },
   "SHARED" : {

@@ -3,5 +3,5 @@
   "access": "ONLY_NOT_LOGGED_IN",
   "templateName": "default",
   "emails": ["nmaas-dev@lists.geant.org"],
-  "subject": "NMaaS: Access request"
+  "subject": "nmaas: Access request"
 }
