@@ -21,6 +21,8 @@ import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +54,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     @Transactional
+    @CachePut("applicationBaseS")
     public ApplicationBase create(ApplicationBase applicationBase) {
         if (applicationBase.getId() != null) {
             log.error("Cannot add ApplicationBase - id not null");
@@ -78,6 +81,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     @Transactional
+    @CachePut("applicationBaseS")
     public ApplicationBase update(ApplicationBase applicationBase) {
         if (applicationBase.getId() == null) {
             throw new ProcessingException("Updated entity id must not be null");
@@ -88,6 +92,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     @Transactional
+    @CachePut("applicationBaseS")
     public ApplicationBase updateOwner(Long id, String owner) {
         if (id == null) {
             throw new ProcessingException("Updated entity id must not be null");
@@ -104,6 +109,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
+    @CacheEvict(value = "applicationBaseS", allEntries = true)
     public void updateApplicationVersionState(String name, String version, ApplicationState state) {
         ApplicationBase appBase = findByName(name.contains(DELETED_MARKER) ? name.substring(0, name.indexOf(DELETED_MARKER)) : name);
         appBase.getVersions().stream()
@@ -170,6 +176,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
+    @CacheEvict(value = "applicationBaseS", allEntries = true)
     public void deleteAppBase(ApplicationBase base) {
         base.setName(base.getName() + DELETED_MARKER + OffsetDateTime.now());
         appBaseRepository.save(base);
