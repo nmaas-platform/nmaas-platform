@@ -23,11 +23,4 @@ public class HelmRepoUpdateListener {
         return null;
     }
 
-    @EventListener
-    @Loggable(LogLevel.INFO)
-    public ApplicationEvent trigger(ApplicationListUpdatedEvent event) {
-        helmKServiceManager.updateHelmRepo();
-        return null;
-    }
-
 }
