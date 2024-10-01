@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
+import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.ApplicationEvent;
@@ -18,6 +19,13 @@ public class HelmRepoUpdateListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(ApplicationActivatedEvent event) {
+        helmKServiceManager.updateHelmRepo();
+        return null;
+    }
+
+    @EventListener
+    @Loggable(LogLevel.INFO)
+    public ApplicationEvent trigger(ApplicationListUpdatedEvent event) {
         helmKServiceManager.updateHelmRepo();
         return null;
     }
