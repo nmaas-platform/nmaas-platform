@@ -285,9 +285,10 @@
     },
     "SORT_MODE": {
       "NONE": "None",
-      "NAME": "By name",
-      "RATING": "Top rated",
-      "POPULAR": "Most popular"
+      "NAME": "Name",
+      "RATING": "Rating",
+      "POPULAR": "Popularity",
+      "DATE" : "Date added"
     }
   },
   "MONITOR": {
