@@ -286,8 +286,9 @@
     "SORT_MODE": {
       "NONE": "Brak",
       "NAME": "Nazwa",
-      "RATING": "Najlepiej oceniane",
-      "POPULAR": "Najbardziej popularne"
+      "RATING": "Ocena",
+      "POPULAR": "Popularność",
+      "DATE" : "Data dodania"
     }
   },
   "MONITOR": {
