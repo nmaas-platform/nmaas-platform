@@ -39,7 +39,7 @@ build_and_push_latest_image:
 build_and_push_alfa_image:
   stage: build
   only:
-    - release/*
+    - /^release/
   script:
     - |
       export IMAGE_TAG=$(echo $CI_COMMIT_BRANCH | cut -c 9-)-alfa
