@@ -36,6 +36,19 @@ build_and_push_latest_image:
       docker push $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG
       docker logout $DOCKER_REPOSITORY
 
+build_and_push_alfa_image:
+  stage: build
+  only:
+    - /^release/
+  script:
+    - |
+      export IMAGE_TAG=$(echo $CI_COMMIT_BRANCH | cut -c 9-)-alfa
+      docker image prune -f
+      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REPOSITORY
+      docker build -t $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG .
+      docker push $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG
+      docker logout $DOCKER_REPOSITORY
+
 build_and_push_release_image:
   stage: build
   only:
