@@ -1224,7 +1224,8 @@
       "PROCESSING" :  "Przetwarzanie",
       "COMPLETED" : "Zakończone",
       "FAILED" : "Nieudane",
-      "PARTIALLY_FAILED" : "Częściowo nieudane"
+      "PARTIALLY_FAILED" : "Częściowo nieudane",
+      "REMOVED" : "Usunięta"
     },
     "REMOVE" : {
       "HEADER" : "Usuń grupę",

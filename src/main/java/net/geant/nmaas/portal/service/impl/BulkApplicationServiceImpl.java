@@ -345,6 +345,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                             entry.setState(BulkDeploymentState.FAILED);
                             bulkDeploymentEntryRepository.save(entry);
                             break;
+                        case APPLICATION_REMOVED:
+                        case FAILED_APPLICATION_REMOVED:
+                            entry.setState(BulkDeploymentState.REMOVED);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
                         default:
                             entry.setState(BulkDeploymentState.PENDING);
                             bulkDeploymentEntryRepository.save(entry);

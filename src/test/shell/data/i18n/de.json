@@ -1221,7 +1221,8 @@
       "PROCESSING" :  "Processing",
       "COMPLETED" : "Completed",
       "FAILED" : "Failed",
-      "PARTIALLY_FAILED" : "Partially failed"
+      "PARTIALLY_FAILED" : "Partially failed",
+      "REMOVED" : "Removed"
     },
     "REMOVE" : {
       "HEADER" : "Remove bulk deployment",
