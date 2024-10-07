@@ -24,7 +24,6 @@
     "BULK_DEPLOYMENT" : "Deploy bulk application",
     "BULK_DEPLOYMENT_DOMAIN" : "Deploy bulk domains",
     "DOMAIN_GROUPS" : "Domain groups",
-    "DOMAIN_GROUPS" : "Domain groups",
     "PAST_BULK_DOMAIN" : "Past domains bulk",
     "PAST_BULK_APP" : "Past application bulk"
   },
