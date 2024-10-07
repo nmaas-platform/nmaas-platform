@@ -1215,7 +1215,9 @@
       "DOMAIN" : "Domena",
       "CHECK_STATE" : "Sprawdź status",
       "UPLOAD_TEXT" : "lub podaj tekst w formacie CSV poniżej",
-      "DOWNLOAD_CSV" : "Pobierz CSV"
+      "DOWNLOAD_CSV" : "Pobierz CSV",
+      "REFRESH" : "Odśwież status "
+
     },
     "STATE" : {
       "PENDING" :  "Oczekuje",
@@ -1225,9 +1227,10 @@
       "PARTIALLY_FAILED" : "Częściowo nieudane"
     },
     "REMOVE" : {
-      "HEADER" : "Remove bulk deployment",
-      "APP" : "Do you want to remove all instances created by this bulk ? ",
-      "REMOVE" : "Remove"
+      "HEADER" : "Usuń grupę",
+      "APP" : "Czy chcesz usunąć wszystkie instancje powiązane z ta grupą ? ",
+      "REMOVE" : "Usuń",
+      "ERROR": "Błąd podczas usuwania grupy"
     }
   },
   "SHARED" : {
