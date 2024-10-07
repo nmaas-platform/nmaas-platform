@@ -248,6 +248,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
                     return new AppAutoDeploymentReviewEvent(this);
+                case APPLICATION_REMOVED:
+                case FAILED_APPLICATION_REMOVED:
+                    bulkDeploymentEntry.setState(BulkDeploymentState.REMOVED);
+                    bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
+                    return new AppAutoDeploymentReviewEvent(this);
                 default:
                     int delayInSeconds = event.getWaitIntervalBeforeNextCheckInSeconds() > 0 ?
                             event.getWaitIntervalBeforeNextCheckInSeconds() : DEFAULT_DELAY_IN_SECONDS;
@@ -291,6 +296,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         stateChanged = true;
                     } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.FAILED);
+                        stateChanged = true;
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.REMOVED);
                         stateChanged = true;
                     }
                     if (stateChanged) {
@@ -343,6 +351,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
                         case INTERNAL_ERROR:
                             entry.setState(BulkDeploymentState.FAILED);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
+                        case APPLICATION_REMOVED:
+                        case FAILED_APPLICATION_REMOVED:
+                            entry.setState(BulkDeploymentState.REMOVED);
                             bulkDeploymentEntryRepository.save(entry);
                             break;
                         default:
