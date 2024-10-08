@@ -199,6 +199,7 @@ public class BulkController {
             bulkView.setCreator(getUserView(bulk.getCreatorId()));
         } catch (Exception ex) {
             log.error("Can not find creator for {} - creatorId:  {}", bulk.getId(), bulk.getCreatorId());
+            return null;
         }
         mapDetails(bulk, bulkView);
         return bulkView;
@@ -208,6 +209,7 @@ public class BulkController {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
         try {
             bulkView.setCreator(getUserView(deployment.getCreatorId()));
+            return null;
         } catch (Exception ex) {
             log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreatorId());
         }
