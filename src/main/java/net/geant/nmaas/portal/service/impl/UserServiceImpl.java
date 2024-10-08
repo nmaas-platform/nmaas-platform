@@ -188,6 +188,8 @@ public class UserServiceImpl implements UserService {
 		if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
 			if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
 				newUser.setSamlToken(csvUser.getEmail());
+				newUser.setFirstname(csvUser.getAdminUserName());
+				newUser.setLastname(csvUser.getAdminUserName());
 				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
 			}else {
 				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
