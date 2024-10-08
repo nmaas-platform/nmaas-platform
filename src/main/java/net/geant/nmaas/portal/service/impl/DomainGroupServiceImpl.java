@@ -143,4 +143,10 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         });
     }
 
+    @Override
+    public void deleteUserFromAllDomainsGroups(User user) {
+        domainGroupRepository.findAll().forEach(d -> {
+            d.getManagers().remove(user);
+        });
+    }
 }
