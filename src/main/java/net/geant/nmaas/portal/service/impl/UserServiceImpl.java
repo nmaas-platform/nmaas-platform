@@ -17,12 +17,14 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -58,6 +60,7 @@ public class UserServiceImpl implements UserService {
 
 	private final ApplicationEventPublisher eventPublisher;
 	private final JWTTokenService jwtTokenService;
+	private final DomainGroupService domainGroupService;
 
 	@Value("${portal.address}")
 	@Setter
@@ -215,12 +218,14 @@ public class UserServiceImpl implements UserService {
 	public void delete(User user) {
 		checkParam(user);
 		checkParam(user.getId());
+		domainGroupService.deleteUserFromAllDomainsGroups(user);
 		userRepository.delete(user);
 	}
 
 	@Override
 	public void deleteById(Long userId) {
 		checkParam(userId);
+		domainGroupService.deleteUserFromAllDomainsGroups(userRepository.getReferenceById(userId));
 		userRepository.deleteById(userId);
 	}
 
