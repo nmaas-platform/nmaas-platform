@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,11 +58,14 @@ public class UserServiceImplTest {
     @Mock
     JWTTokenService jwtTokenService;
 
+    @Mock
+    DomainGroupService domainGroupService;
+
     UserServiceImpl userService;
 
     @BeforeEach
     void setup() {
-        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper(), eventPublisher, jwtTokenService);
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper(), eventPublisher, jwtTokenService,domainGroupService);
         userService.setPortalAddress("portalAddress");
     }
 
