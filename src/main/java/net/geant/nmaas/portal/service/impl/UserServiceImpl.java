@@ -183,6 +183,8 @@ public class UserServiceImpl implements UserService {
 		newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 		newUser.setTermsOfUseAccepted(true);
 		newUser.setPrivacyPolicyAccepted(true);
+		newUser.setFirstname(csvUser.getAdminUserName());
+		newUser.setLastname(csvUser.getAdminUserName());
 		if (domain != null) {
 			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
 		}
@@ -191,8 +193,6 @@ public class UserServiceImpl implements UserService {
 		if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
 			if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
 				newUser.setSamlToken(csvUser.getEmail());
-				newUser.setFirstname(csvUser.getAdminUserName());
-				newUser.setLastname(csvUser.getAdminUserName());
 				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
 			}else {
 				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
