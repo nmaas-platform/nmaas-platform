@@ -195,14 +195,22 @@ public class BulkController {
 
     private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {
         T bulkView = modelMapper.map(bulk, viewType);
-        bulkView.setCreator(getUserView(bulk.getCreatorId()));
+        try {
+            bulkView.setCreator(getUserView(bulk.getCreatorId()));
+        } catch (Exception ex) {
+            log.error("Can not find creator for {} - creatorId:  {}", bulk.getId(), bulk.getCreatorId());
+        }
         mapDetails(bulk, bulkView);
         return bulkView;
     }
 
     private BulkDeploymentView mapToView(BulkDeployment deployment) {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
-        bulkView.setCreator(getUserView(deployment.getCreatorId()));
+        try {
+            bulkView.setCreator(getUserView(deployment.getCreatorId()));
+        } catch (Exception ex) {
+            log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreatorId());
+        }
         mapDetails(deployment, bulkView);
         return bulkView;
 
