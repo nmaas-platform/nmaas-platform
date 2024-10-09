@@ -1004,7 +1004,8 @@
       "START_DAY" : "Start date",
       "END_DAY" : "Finish date",
       "MESSAGE_ADDITIONAL" : "Additional message",
-      "MESSAGE_ADDITIONAL_PLACHOLDER" : "Additional message"
+      "MESSAGE_ADDITIONAL_PLACHOLDER" : "Additional message",
+      "APP_LIST_ADD" : "Add application"
     },
     "MODAL": {
       "TITLE": "Le courrier a été envoyé",
