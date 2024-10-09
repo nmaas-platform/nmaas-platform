@@ -31,7 +31,7 @@ public class NotificationController {
         // TODO verify if captcha token must be verified
 
         MailType mailType = mailAttributes.getMailType();
-        if (mailType.equals(MailType.CONTACT_FORM) || mailType.equals(MailType.ISSUE_REPORT) || mailType.equals(MailType.NEW_DOMAIN_REQUEST)) {
+        if (mailType.equals(MailType.CONTACT_FORM) || mailType.equals(MailType.ISSUE_REPORT) || mailType.equals(MailType.NEW_DOMAIN_REQUEST) || mailType.equals(MailType.VLAB_REQUEST)) {
             eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
         } else {
             throw new AuthenticationException("You are not allowed to send this mail");

@@ -333,7 +333,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     public BulkDeployment updateState(Long bulkId) {
         log.info("Update all states for bulk {}", bulkId);
         Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(bulkId);
-        if(bulk.isPresent()) {
+        if (bulk.isPresent()) {
             BulkDeployment bulkDeployment = bulk.get();
             bulkDeployment.getEntries().forEach(entry -> {
                 try {
@@ -367,16 +367,19 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
                 } catch (Exception e) {
                     log.error("Can not update state of {} bulk entry", entry.getId());
+                    log.error("Error : {}", e.getMessage());
                 }
             });
             if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.COMPLETED);
+            } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(bulkDeployment.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.REMOVED);
             } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.FAILED);
             } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
             }
-            logBulkStateUpdate(bulkDeployment.getId(),bulkDeployment.getState().name());
+            logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
             bulkDeploymentRepository.save(bulkDeployment);
             return bulkDeployment;
         } else {
@@ -440,8 +443,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
             //deploy
             Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
-            params.forEach( (key, value) -> {
-                configurationParameters.put(key,  Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
+            params.forEach((key, value) -> {
+                configurationParameters.put(key, Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
                 log.debug("Params = {} - {}", key, value);
             });
 

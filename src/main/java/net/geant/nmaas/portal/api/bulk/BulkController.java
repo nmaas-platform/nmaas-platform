@@ -209,9 +209,9 @@ public class BulkController {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
         try {
             bulkView.setCreator(getUserView(deployment.getCreatorId()));
-            return null;
         } catch (Exception ex) {
             log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreatorId());
+            return null;
         }
         mapDetails(deployment, bulkView);
         return bulkView;

@@ -1,5 +1,7 @@
 package net.geant.nmaas.notifications;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
@@ -31,6 +33,8 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,10 +147,19 @@ public class NotificationManager {
                     .map(u -> modelMapper.map(u, UserView.class))
                     .collect(Collectors.toList()));
         }
-        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST)
+        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST, MailType.VLAB_REQUEST)
                 .contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
+            if (mailAttributes.getMailType().equals(MailType.VLAB_REQUEST)) {
+                Object datesObject = mailAttributes.getOtherAttributes().get("dates");
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<Object> datesList = objectMapper.convertValue(datesObject, new TypeReference<List<Object>>() {});
+                Map<String,Object> dates = objectMapper.convertValue(datesList.get(0), new TypeReference<Map<String, Object>>() {});
+                dates.forEach( (k,v)-> {
+                    mailAttributes.getOtherAttributes().put(k,v);
+                });
+            }
             if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");
             } else {

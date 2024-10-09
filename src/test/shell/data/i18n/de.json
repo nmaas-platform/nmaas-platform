@@ -992,7 +992,19 @@
       "ISSUE_APPLICATION_NAME_PLACEHOLDER": "Anwendungsname",
       "ISSUE_APPLICATION_NAME_DESCRIPTION": "Name der von dem Problem betroffenen Anwendung",
       "ISSUE_DESCRIPTION": "Fehlerbeschreibung",
-      "ISSUE_DESCRIPTION_PLACEHOLDER": "Detaillierte Beschreibung des aufgetretenen Problems"
+      "ISSUE_DESCRIPTION_PLACEHOLDER": "Detaillierte Beschreibung des aufgetretenen Problems",
+      "EMAIL_CONTACT" : "Contact person email",
+      "STUDENTS" : "Number of students",
+      "STUDENTS_PLACEHOLDER" : "Number of students in course",
+      "MANAGERS" : "Managers",
+      "MANAGERS_PLACEHOLDER" : "Number of managers",
+      "APP_LIST" : "Application list",
+      "APP_LIST_DESCRIPTION" : "Application list that you would like to use in your course. Add theirs names.",
+      "START_DAY" : "Start date",
+      "END_DAY" : "Finish date",
+      "MESSAGE_ADDITIONAL" : "Additional message",
+      "MESSAGE_ADDITIONAL_PLACEHOLDER" : "Additional message",
+      "APP_LIST_ADD" : "Add application"
     },
     "MODAL": {
       "TITLE": "Mail wurde versendet",
@@ -1005,7 +1017,8 @@
       "ISSUE_REPORT": "Report issue",
       "FEATURE_REQUEST": "Feature request",
       "ACCESS_REQUEST": "Access request",
-      "NEW_DOMAIN_REQUEST": "New domain request"
+      "NEW_DOMAIN_REQUEST": "New domain request",
+      "VLAB_REQUEST" : "Vlab request"
     }
   },
   "LANGUAGE": {

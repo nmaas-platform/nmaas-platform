@@ -104,6 +104,9 @@ curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" -
 echo.
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\bulkSSORegistrationMail.json
 echo.
+echo.
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\vlabRequest.json
+echo.
 
 echo.
 echo App1
@@ -275,4 +278,7 @@ curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --heade
 echo.
 echo Insert form type domain request
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\domain_request.json
+echo.
+echo Insert form type vlab request
+curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\vlab_request.json
 echo.
