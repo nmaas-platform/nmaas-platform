@@ -8,10 +8,10 @@
   "templates": [
     {
       "language": "en",
-      "subject": "nmaas: New VLAB request",
+      "subject": "nmaas: New vLAB request",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New vlab  request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested students: ${students}</p><p>Requested managers: ${managers}</p><p>Application list:</p><#list appList as app><span>${app.appListName}, </span></#list><p>Start date: ${startDay}</p><p>End date: ${endDay}</p><p>Additional message: ${message}</p>",
+        "CONTENT": "<p>New vLAB request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested number of lab participants: ${students}</p><p>Requested number of lab managers: ${managers}</p><p>List of considered applications:</p><#list appList as app><span>${app.appListName}, </span></#list><p>vLAB start date: ${startDay}</p><p>vLAB end date: ${endDay}</p><p>Additional information: ${message}</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -19,10 +19,10 @@
     },
     {
       "language": "fr",
-      "subject": "nmaas: New VLAB request",
+      "subject": "nmaas: New vLAB request",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New vlab  request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested students: ${students}</p><p>Requested managers: ${managers}</p><p>Application list:</p><#list appList as app><span>${app.appListName}, </span></#list><p>Start date: ${startDay}</p><p>End date: ${endDay}</p><p>Additional message: ${message}</p>",
+        "CONTENT": "<p>New vLAB request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested number of lab participants: ${students}</p><p>Requested number of lab managers: ${managers}</p><p>List of considered applications:</p><#list appList as app><span>${app.appListName}, </span></#list><p>vLAB start date: ${startDay}</p><p>vLAB end date: ${endDay}</p><p>Additional information: ${message}</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -30,10 +30,10 @@
     },
     {
       "language": "de",
-      "subject": "nmaas: New VLAB request",
+      "subject": "nmaas: New vLAB request",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New vlab  request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested students: ${students}</p><p>Requested managers: ${managers}</p><p>Application list:</p><#list appList as app><span>${app.appListName}, </span></#list><p>Start date: ${startDay}</p><p>End date: ${endDay}</p><p>Additional message: ${message}</p>",
+        "CONTENT": "<p>New vLAB request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested number of lab participants: ${students}</p><p>Requested number of lab managers: ${managers}</p><p>List of considered applications:</p><#list appList as app><span>${app.appListName}, </span></#list><p>vLAB start date: ${startDay}</p><p>vLAB end date: ${endDay}</p><p>Additional information: ${message}</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -41,10 +41,10 @@
     },
     {
       "language": "pl",
-      "subject": "nmaas: New VLAB request",
+      "subject": "nmaas: New vLAB request",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>New vlab  request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested students: ${students}</p><p>Requested managers: ${managers}</p><p>Application list:</p><#list appList as app><span>${app.appListName}, </span></#list><p>Start date: ${startDay}</p><p>End date: ${endDay}</p><p>Additional message: ${message}</p>",
+        "CONTENT": "<p>New vLAB request was sent from the contact form.</p><p>Requester email: ${email}</p><p>Requester institution: ${institution}</p><p>Requested number of lab participants: ${students}</p><p>Requested number of lab managers: ${managers}</p><p>List of considered applications:</p><#list appList as app><span>${app.appListName}, </span></#list><p>vLAB start date: ${startDay}</p><p>vLAB end date: ${endDay}</p><p>Additional information: ${message}</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""

@@ -1,6 +1,22 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.4",
+      "date" : "(2024/10/10)",
+      "topic" : [
+        {
+          "title" : "Improved sorting on the main applications view",
+          "tags" : "[Enhancement]",
+          "description" : "Updated sorting options available on the application market view"
+        },
+        {
+          "title" : "Fixed synchronization of applications lists in domain groups",
+          "tags" : "[Bugfix]",
+          "description" : ""
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.3",
       "date" : "(2024/09/05)",
       "topic" : [

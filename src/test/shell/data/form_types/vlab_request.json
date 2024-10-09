@@ -3,5 +3,5 @@
   "access": "ALL",
   "templateName": "vlabRequest",
   "emails": ["nmaas-dev@lists.geant.org"],
-  "subject": "nmaas: New VLab Request"
+  "subject": "nmaas: New vLAB request"
 }
