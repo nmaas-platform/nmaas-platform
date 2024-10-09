@@ -20,7 +20,7 @@ sonar:
     - /^release/
   script:
     - chmod +x ./gradlew
-    - ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=develop -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube
+    - ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=${CI_COMMIT_BRANCH} -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube
 
 build_and_push_latest_image:
   stage: build
