@@ -1004,7 +1004,7 @@
       "START_DAY" : "Początek kursu",
       "END_DAY" : "Koniec kursu",
       "MESSAGE_ADDITIONAL" : "Dodatkowy komentarz",
-      "MESSAGE_ADDITIONAL_PLACHOLDER" : "Dodatkowy komentarz",
+      "MESSAGE_ADDITIONAL_PLACEHOLDER" : "Dodatkowy komentarz",
       "APP_LIST_ADD" : "Dodaj aplikację"
     },
     "MODAL": {
