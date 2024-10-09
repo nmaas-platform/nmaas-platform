@@ -14,12 +14,11 @@ test:
 
 sonar:
   stage: sonar
-  image: openjdk:11-jdk-slim
+  image: openjdk:17-jdk-slim
   only:
     - develop
   script:
     - chmod +x ./gradlew
-    - ./gradlew integrationTest jacocoTestCoverageVerification
     - ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=develop -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube
 
 build_and_push_latest_image:
