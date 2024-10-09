@@ -143,7 +143,7 @@ public class NotificationManager {
                     .map(u -> modelMapper.map(u, UserView.class))
                     .collect(Collectors.toList()));
         }
-        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST)
+        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST, MailType.VLAB_REQUEST)
                 .contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
