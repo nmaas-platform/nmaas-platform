@@ -3,6 +3,7 @@ package net.geant.nmaas.notifications.templates;
 import net.geant.nmaas.notifications.MailTemplateElements;
 import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.templates.repository.MailTemplateRepository;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class TemplateServiceTest {
 
     @Test
     void shouldThrowExceptionOnMissingHtmlTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(DataConflictException.class, () -> {
             templateService.getHTMLTemplate();
         });
     }
@@ -52,17 +53,17 @@ public class TemplateServiceTest {
         when(repository.findByMailType(MailType.ACCOUNT_ACTIVATED))
                 .thenReturn(Optional.of(new MailTemplate(1L, MailType.ACCOUNT_ACTIVATED, null, null)));
         assertNotNull(templateService.getMailTemplate(MailType.ACCOUNT_ACTIVATED));
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(DataConflictException.class, () -> {
             templateService.getMailTemplate(MailType.ACCOUNT_BLOCKED);
         });
     }
 
     @Test
     void shouldHandleHtmlTemplateStorage() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(DataConflictException.class, () -> {
             templateService.storeHTMLTemplate(null);
         });
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(DataConflictException.class, () -> {
             templateService.storeHTMLTemplate(new MockMultipartFile("name", "content".getBytes()));
         });
         assertDoesNotThrow(() -> {
@@ -72,7 +73,7 @@ public class TemplateServiceTest {
 
     @Test
     void shouldUpdateHtmlTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(DataConflictException.class, () -> {
             templateService.updateHTMLTemplate(null);
         });
     }
