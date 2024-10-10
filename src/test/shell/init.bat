@@ -104,7 +104,6 @@ curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" -
 echo.
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\bulkSSORegistrationMail.json
 echo.
-echo.
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\mails\vlabRequest.json
 echo.
 
