@@ -994,17 +994,17 @@
       "ISSUE_APPLICATION_NAME_DESCRIPTION": "Nazwa aplikacji w której wystąpił błąd",
       "ISSUE_DESCRIPTION": "Opis problemu",
       "ISSUE_DESCRIPTION_PLACEHOLDER": "Szczegółowy opis problemu",
-      "EMAIL_CONTACT" : "Emial do osoby kontaktowej",
-      "STUDENTS" : "Liczba studentów",
-      "STUDENTS_PLACEHOLDER" : "Liczba studentów w kursie",
-      "MANAGERS" : "Liczba managerów",
-      "MANAGERS_PLACEHOLDER" : "Liczba managerów w kursie",
-      "APP_LIST" : "List aplikacji",
-      "APP_LIST_DESCRIPTION" : "Lista aplikacji, które chcesz użytkować w swoim kursie. Dodaj kolejno nazwy.",
-      "START_DAY" : "Początek kursu",
-      "END_DAY" : "Koniec kursu",
-      "MESSAGE_ADDITIONAL" : "Dodatkowy komentarz",
-      "MESSAGE_ADDITIONAL_PLACEHOLDER" : "Dodatkowy komentarz",
+      "EMAIL_CONTACT" : "Adres email osoby kontaktowej",
+      "STUDENTS" : "Liczba uczestników laboratorium (np. studentów)",
+      "STUDENTS_PLACEHOLDER" : "Liczba uczestników laboratorium (szacowana)",
+      "MANAGERS" : "Liczba opiekunów laboratorium (np. nauczycieli)",
+      "MANAGERS_PLACEHOLDER" : "Liczba opiekunów laboratorium (szacowana)",
+      "APP_LIST" : "Lista aplikacji",
+      "APP_LIST_DESCRIPTION" : "Wstępna lista aplikacji, które chcesz wykorzystać w swoim laboratorium",
+      "START_DAY" : "Początek laboratorium",
+      "END_DAY" : "Koniec laboratorium",
+      "MESSAGE_ADDITIONAL" : "Dodatkowe informacje",
+      "MESSAGE_ADDITIONAL_PLACEHOLDER" : "Dodatkowe informacje",
       "APP_LIST_ADD" : "Dodaj aplikację"
     },
     "MODAL": {
@@ -1019,7 +1019,7 @@
       "FEATURE_REQUEST": "Propozycja zmiany lub dodania nowej aplikacji",
       "ACCESS_REQUEST": "Prośba o dostęp",
       "NEW_DOMAIN_REQUEST": "Utworzenie nowej domeny",
-      "VLAB_REQUEST" : "Prośba o dostep do programu nauczania"
+      "VLAB_REQUEST" : "Utworzenie środowiska wirtualnego nauczania"
     }
   },
   "LANGUAGE": {
