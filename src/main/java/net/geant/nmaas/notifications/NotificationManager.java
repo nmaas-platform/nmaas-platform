@@ -14,7 +14,6 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
-import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
@@ -33,8 +32,6 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -91,10 +88,10 @@ public class NotificationManager {
                     notificationService.sendMail(user.getEmail(), mailContent.getSubject(), filledTemplate, fromAddress);
                 }
             } catch (TemplateException | IOException e) {
-                log.error(String.format("Unable to generate template; to: [%s], template: [%s], message: %s", user.getEmail(), template.getName(), e.getMessage()));
+                log.error("Unable to generate template; to: [{}], template: [{}], message: {}", user.getEmail(), template.getName(), e.getMessage());
             }
         }
-        log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
+        log.info("Mail {} was sent to {}", mailAttributes.getMailType().name(), getListOfMails(mailAttributes.getAddressees()));
     }
 
     private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage) {
@@ -156,9 +153,7 @@ public class NotificationManager {
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<Object> datesList = objectMapper.convertValue(datesObject, new TypeReference<List<Object>>() {});
                 Map<String,Object> dates = objectMapper.convertValue(datesList.get(0), new TypeReference<Map<String, Object>>() {});
-                dates.forEach( (k,v)-> {
-                    mailAttributes.getOtherAttributes().put(k,v);
-                });
+                dates.forEach((k,v) -> mailAttributes.getOtherAttributes().put(k,v));
             }
             if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");

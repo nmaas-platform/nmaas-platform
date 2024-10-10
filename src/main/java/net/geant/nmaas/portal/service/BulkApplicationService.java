@@ -25,11 +25,8 @@ public interface BulkApplicationService {
 
     InputStreamResource getInputStreamAppBulkDetails(List<BulkAppDetails> list );
 
-
     void deleteAppInstancesFromBulk(BulkDeploymentView bulk);
 
     BulkDeployment updateState(Long bulkId);
-
-
 
 }
