@@ -163,7 +163,7 @@ public class NotificationManager {
                 });
 
                 List<VlabAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<VlabAppListElement>>() {});
-                mailAttributes.getOtherAttributes().put("appList",appList.stream().map(VlabAppListElement::getAppListName).collect(Collectors.joining())) ;
+                mailAttributes.getOtherAttributes().put("appList",appList.stream().map(VlabAppListElement::getAppListName).collect(Collectors.joining(", "))) ;
 
             }
             if (contactFormKey.isEmpty()) {
