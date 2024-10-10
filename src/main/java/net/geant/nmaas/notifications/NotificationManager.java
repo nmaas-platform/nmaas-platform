@@ -18,6 +18,7 @@ import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.VlabAppListElement;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -32,6 +33,8 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -153,7 +156,15 @@ public class NotificationManager {
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<Object> datesList = objectMapper.convertValue(datesObject, new TypeReference<List<Object>>() {});
                 Map<String,Object> dates = objectMapper.convertValue(datesList.get(0), new TypeReference<Map<String, Object>>() {});
-                dates.forEach((k,v) -> mailAttributes.getOtherAttributes().put(k,v));
+
+                dates.forEach((k,v) -> {
+                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(v.toString());
+                    mailAttributes.getOtherAttributes().put(k,offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                });
+
+                List<VlabAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<VlabAppListElement>>() {});
+                mailAttributes.getOtherAttributes().put("appList",appList.stream().map(VlabAppListElement::getAppListName).collect(Collectors.joining(", "))) ;
+
             }
             if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");
