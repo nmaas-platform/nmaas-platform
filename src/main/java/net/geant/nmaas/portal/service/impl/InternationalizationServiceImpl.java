@@ -2,8 +2,10 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.persistent.entity.InternationalizationSimple;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -14,11 +16,14 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InternationalizationServiceImpl implements InternationalizationService {
 
     private final InternationalizationSimpleRepository repository;
@@ -26,9 +31,39 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     private final ModelMapper modelMapper;
 
     @Override
-    public void addNewLanguage(InternationalizationView newLanguage) {
+    public void addNewLanguage(InternationalizationView newLanguage, Boolean force) {
         checkRequest(newLanguage);
-        repository.save(newLanguage.getAsInternationalizationSimple());
+        if (repository.findByLanguageOrderByIdDesc(newLanguage.getLanguage()).isEmpty()) {
+            repository.save(newLanguage.getAsInternationalizationSimple());
+        } else {
+            //add empty or override
+            InternationalizationSimple is = repository.findByLanguageOrderByIdDesc(newLanguage.getLanguage()).orElseThrow(() -> new DataConflictException("Language not found"));
+            InternationalizationView iv = is.getAsInternationalizationView();
+
+            if (!force) {
+                // only add new once, not override existed
+                Map<String, String> keyMap = new HashMap<>();
+                is.getLanguageNodes().forEach(node -> {
+                    keyMap.put(node.getKey(), node.getContent());
+                });
+                InternationalizationSimple simple = newLanguage.getAsInternationalizationSimple();
+                simple.getLanguageNodes().forEach(updatedNode -> {
+                    if (!keyMap.containsKey(updatedNode.getKey())) {
+                        is.getLanguageNodes().add(updatedNode);
+                    }
+                });
+                log.debug("New added {}", simple.getLanguageNodes().size());
+                repository.save(is);
+            } else {
+                //force update whole content
+                log.debug("force update, override all");
+                updateLanguage(newLanguage.getLanguage(), newLanguage.getContent());
+            }
+        }
+    }
+
+    private void overrideContent() {
+
     }
 
     private void checkRequest(InternationalizationView newLanguage) {

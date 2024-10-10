@@ -46,20 +46,20 @@ public class InternationalizationServiceTest {
 
     @Test
     public void shouldSaveLanguageContent(){
-        internationalizationService.addNewLanguage(this.language);
+        internationalizationService.addNewLanguage(this.language, false);
         verify(repository, times(1)).save(any());
     }
 
     @Test
     public void shouldNotSaveNullRequest(){
-        assertThrows(IllegalArgumentException.class, ()-> internationalizationService.addNewLanguage(null));
+        assertThrows(IllegalArgumentException.class, ()-> internationalizationService.addNewLanguage(null, false));
     }
 
     @Test
     public void shouldNotSaveWithEmptyLanguageId(){
         assertThrows(IllegalArgumentException.class, ()-> {
             this.language.setLanguage("");
-            internationalizationService.addNewLanguage(this.language);
+            internationalizationService.addNewLanguage(this.language, false);
         });
     }
 
@@ -67,7 +67,7 @@ public class InternationalizationServiceTest {
     public void shouldNotSaveWithEmptyContent(){
         assertThrows(IllegalArgumentException.class, ()-> {
             this.language.setContent("");
-            internationalizationService.addNewLanguage(this.language);
+            internationalizationService.addNewLanguage(this.language, false);
         });
     }
 
@@ -75,7 +75,7 @@ public class InternationalizationServiceTest {
     public void shouldNotSaveWithInvalidJsonContent(){
         assertThrows(IllegalArgumentException.class, ()-> {
             this.language.setContent("{invalid]");
-            internationalizationService.addNewLanguage(this.language);
+            internationalizationService.addNewLanguage(this.language, false);
         });
     }
 
