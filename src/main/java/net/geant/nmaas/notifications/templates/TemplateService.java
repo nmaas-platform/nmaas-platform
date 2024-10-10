@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.CheckForNull;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-//import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class TemplateService {
@@ -36,32 +34,32 @@ public class TemplateService {
     private LocalFileStorageService fileStorageService;
 
     @Autowired
-    public TemplateService(MailTemplateRepository repository, LocalFileStorageService fileStorageService, ModelMapper modelMapper){
+    public TemplateService(MailTemplateRepository repository, LocalFileStorageService fileStorageService, ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
         this.repository = repository;
         this.fileStorageService = fileStorageService;
     }
 
     @Transactional
-    public MailTemplateView getMailTemplate(MailType mailType){
-        MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailType.name() )));
+    public MailTemplateView getMailTemplate(MailType mailType) {
+        MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailType.name())));
         return modelMapper.map(mailTemplate, MailTemplateView.class);
     }
 
-    List<MailTemplateView> getMailTemplates(){
+    List<MailTemplateView> getMailTemplates() {
         return this.repository.findAll().stream()
                 .map(mailTemplate -> modelMapper.map(mailTemplate, MailTemplateView.class))
                 .collect(Collectors.toList());
     }
 
     void saveMailTemplate(MailTemplateView mailTemplate) {
-        checkArgument(!repository.existsByMailType(mailTemplate.getMailType()), String.format("Mail template %s already exists", mailTemplate.getMailType().name() ));
+        checkArgument(!repository.existsByMailType(mailTemplate.getMailType()), String.format("Mail template %s already exists", mailTemplate.getMailType().name()));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         repository.save(modelMapper.map(mailTemplate, MailTemplate.class));
     }
 
     void updateMailTemplate(MailTemplateView mailTemplate) {
-        MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailTemplate.getMailType().name() )));
+        MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailTemplate.getMailType().name())));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         mailTemplateEntity.getTemplates().clear();
         mailTemplateEntity.getTemplates().addAll(mailTemplate.getTemplates().stream().map(template -> modelMapper.map(template, LanguageMailContent.class)).collect(Collectors.toList()));
@@ -75,7 +73,7 @@ public class TemplateService {
         fileStorageService.store(file);
     }
 
-    void updateHTMLTemplate(MultipartFile file){
+    void updateHTMLTemplate(MultipartFile file) {
         FileInfo fileInfo = getHTMLTemplateFileInfo();
         if (fileStorageService.remove(fileInfo)) {
             storeHTMLTemplate(file);
