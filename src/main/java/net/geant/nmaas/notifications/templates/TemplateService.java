@@ -7,6 +7,7 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.entities.LanguageMailContent;
 import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.templates.repository.MailTemplateRepository;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
 import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.CheckForNull;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
+//import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class TemplateService {
@@ -42,7 +44,7 @@ public class TemplateService {
 
     @Transactional
     public MailTemplateView getMailTemplate(MailType mailType){
-        MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
+        MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailType.name() )));
         return modelMapper.map(mailTemplate, MailTemplateView.class);
     }
 
@@ -53,13 +55,13 @@ public class TemplateService {
     }
 
     void saveMailTemplate(MailTemplateView mailTemplate) {
-        checkArgument(!repository.existsByMailType(mailTemplate.getMailType()),"Mail template already exists");
+        checkArgument(!repository.existsByMailType(mailTemplate.getMailType()), String.format("Mail template %s already exists", mailTemplate.getMailType().name() ));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         repository.save(modelMapper.map(mailTemplate, MailTemplate.class));
     }
 
     void updateMailTemplate(MailTemplateView mailTemplate) {
-        MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
+        MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailTemplate.getMailType().name() )));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         mailTemplateEntity.getTemplates().clear();
         mailTemplateEntity.getTemplates().addAll(mailTemplate.getTemplates().stream().map(template -> modelMapper.map(template, LanguageMailContent.class)).collect(Collectors.toList()));
@@ -90,7 +92,13 @@ public class TemplateService {
         if (template.size() == 1) {
             return template.get(0);
         }
-        throw new IllegalArgumentException(String.format("Exactly one html template supported (actually got %d)", template.size()));
+        throw new DataConflictException(String.format("Exactly one html template supported (actually got %d)", template.size()));
+    }
+
+    private static void checkArgument(boolean expression, String errorMessage) {
+        if (!expression) {
+            throw new DataConflictException(String.valueOf(errorMessage));
+        }
     }
 
 }
