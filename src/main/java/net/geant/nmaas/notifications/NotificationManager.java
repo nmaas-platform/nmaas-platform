@@ -32,6 +32,8 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -153,7 +155,11 @@ public class NotificationManager {
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<Object> datesList = objectMapper.convertValue(datesObject, new TypeReference<List<Object>>() {});
                 Map<String,Object> dates = objectMapper.convertValue(datesList.get(0), new TypeReference<Map<String, Object>>() {});
-                dates.forEach((k,v) -> mailAttributes.getOtherAttributes().put(k,v));
+
+                dates.forEach((k,v) -> {
+                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(v.toString());
+                    mailAttributes.getOtherAttributes().put(k,offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                });
             }
             if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");
