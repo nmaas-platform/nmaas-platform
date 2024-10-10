@@ -10,9 +10,14 @@
           "description" : "Updated sorting options available on the application market view"
         },
         {
-          "title" : "Fixed synchronization of applications lists in domain groups",
+          "title" : "Fixed synchronization of available applications in domain groups",
           "tags" : "[Bugfix]",
-          "description" : ""
+          "description" : "Application addition or removal is now reflected on the list of applications available on the domain group configuration view"
+        },
+        {
+          "title" : "Added new type of contact form",
+          "tags" : "[Enhancement]",
+          "description" : "Added support for a new type of contact form along with a new email template for vLAB requests"
         }
       ]
     },
