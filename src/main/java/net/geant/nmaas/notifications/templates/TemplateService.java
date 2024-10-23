@@ -42,7 +42,7 @@ public class TemplateService {
 
     @Transactional
     public MailTemplateView getMailTemplate(MailType mailType) {
-        MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailType.name())));
+        MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         return modelMapper.map(mailTemplate, MailTemplateView.class);
     }
 
@@ -59,7 +59,7 @@ public class TemplateService {
     }
 
     void updateMailTemplate(MailTemplateView mailTemplate) {
-        MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new DataConflictException(String.format("Mail template %s not found", mailTemplate.getMailType().name())));
+        MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         mailTemplateEntity.getTemplates().clear();
         mailTemplateEntity.getTemplates().addAll(mailTemplate.getTemplates().stream().map(template -> modelMapper.map(template, LanguageMailContent.class)).collect(Collectors.toList()));
@@ -90,7 +90,7 @@ public class TemplateService {
         if (template.size() == 1) {
             return template.get(0);
         }
-        throw new DataConflictException(String.format("Exactly one html template supported (actually got %d)", template.size()));
+        throw new IllegalArgumentException(String.format("Exactly one html template supported (actually got %d)", template.size()));
     }
 
     private static void checkArgument(boolean expression, String errorMessage) {

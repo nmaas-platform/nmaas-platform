@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
             repository.save(newLanguage.getAsInternationalizationSimple());
         } else {
             //add empty or override
-            InternationalizationSimple is = repository.findByLanguageOrderByIdDesc(newLanguage.getLanguage()).orElseThrow(() -> new DataConflictException("Language not found"));
+            InternationalizationSimple is = repository.findByLanguageOrderByIdDesc(newLanguage.getLanguage()).orElseThrow(() -> new NotFoundException("Language not found"));
             InternationalizationView iv = is.getAsInternationalizationView();
 
             if (!force) {
@@ -60,10 +61,6 @@ public class InternationalizationServiceImpl implements InternationalizationServ
                 updateLanguage(newLanguage.getLanguage(), newLanguage.getContent());
             }
         }
-    }
-
-    private void overrideContent() {
-
     }
 
     private void checkRequest(InternationalizationView newLanguage) {
