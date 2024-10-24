@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -305,6 +306,19 @@ public class DomainController extends AppBaseController {
 			domainService.checkDomainGroupUsers(domainGroupView);
 			domainService.updateRolesInDomainGroupByUsers(domainGroupView);
 			return new Id(domainGroupService.updateDomainGroup(domainGroupId, domainGroupView).getId());
+		} else {
+			throw new AccessDeniedException("You have no access to this domain group");
+		}
+	}
+
+	@PutMapping("/group/members/{domainGroupId}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+	public DomainGroupView updateDomainGroupMembers(@PathVariable Long domainGroupId, @RequestBody List<UserViewMinimal> members, Principal principal) throws AccessDeniedException {
+		DomainGroupView domainGroup = domainGroupService.getDomainGroup(domainGroupId);
+		if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
+				domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
+			return domainService.updateMembers(members, domainGroup);
 		} else {
 			throw new AccessDeniedException("You have no access to this domain group");
 		}
