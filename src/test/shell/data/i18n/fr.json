@@ -1170,6 +1170,30 @@
       }
     }
   },
+  "TOKENS": {
+    "HEADER": "Tokens",
+    "TABLE": {
+      "ID": "ID",
+      "NAME": "Name",
+      "VALUE": "Value",
+      "VALID": "Valid",
+      "ACTIONS": "Actions"
+    },
+    "MODAL": {
+      "HEADER": "Add new access token",
+      "NAME": "Name",
+      "BUTTON_ADD": "Submit",
+      "BUTTON_CANCEL": "Cancel",
+      "ERROR": {
+        "NAME_REQUIRED": "Name is required",
+        "NAME_MINLENGTH": "Name must have at least 1 character",
+        "NAME_MAXLENGTH": "Name cannot be longer than 16 characters"
+      }
+    },
+    "BUTTON_INVALIDATE": "Invalidate",
+    "NO_TOKENS": "No tokens",
+    "NEW_TOKEN": "Add new token"
+  },
   "JSON_EDIT": {
     "INVALID_JSON": "Invalid JSON format. Changes made to the content of the wizard will not be persisted."
   },

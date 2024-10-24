@@ -165,7 +165,7 @@ public class BulkController {
             return ResponseEntity.notFound().build();
         }
 
-        if(bulk.get().getCreatorId().equals(user.getId()) ) {
+        if (bulk.get().getCreatorId().equals(user.getId()) ) {
             throw new PermissionDeniedDataAccessException("User doesnt have access to this bulk deployment", new Throwable());
         }
         if (removeApps) {
@@ -215,7 +215,6 @@ public class BulkController {
         }
         mapDetails(deployment, bulkView);
         return bulkView;
-
     }
 
     private void mapDetails(BulkDeployment deployment, BulkDeploymentViewS view) {

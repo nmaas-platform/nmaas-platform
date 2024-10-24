@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
 }
 
-version = '1.6.4'
+version = '1.7.0-SNAPSHOT'
 group = 'net.geant.nmaas'
 
 java {
@@ -95,6 +95,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-quartz')
     implementation('org.springframework.boot:spring-boot-starter-log4j2')
     implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 
     implementation('org.springdoc:springdoc-openapi-ui:1.6.15')
 
@@ -113,6 +115,7 @@ dependencies {
     implementation('org.gitlab4j:gitlab4j-api:4.19.0')
     implementation('com.vdurmont:semver4j:3.1.0')
     implementation('io.micrometer:micrometer-registry-prometheus:1.11.2')
+
 
     // SSH library
     implementation('com.hierynomus:sshj:0.32.0')

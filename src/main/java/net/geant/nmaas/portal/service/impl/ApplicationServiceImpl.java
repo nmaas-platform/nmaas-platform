@@ -13,6 +13,8 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +44,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	@Transactional
+	@CachePut("applicationBaseS")
 	public Application update(Application application) {
 		checkApp(application);
 		Application saved = applicationRepository.save(application);
@@ -66,6 +69,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
+	@CachePut("applicationBaseS")
 	public Application create(Application application) {
 		if(application.getId() != null) {
 			throw new ProcessingException("While creating id must be null");
@@ -77,6 +81,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
+	@CacheEvict(value = "applicationBaseS")
 	public void delete(Long id) {
 		checkParam(id);
 		applicationRepository.findById(id).ifPresent(app -> {
@@ -123,6 +128,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
+	@CacheEvict(value = "applicationBaseS", allEntries = true)
 	public void changeApplicationState(Application app, ApplicationState state) {
 		if(!app.getState().isChangeAllowed(state)) {
 			throw new IllegalStateException("Application state transition from " + app.getState() + " to " + state + " is not allowed.");
