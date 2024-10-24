@@ -248,6 +248,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     bulkDeploymentEntry.setState(BulkDeploymentState.FAILED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
                     return new AppAutoDeploymentReviewEvent(this);
+                case APPLICATION_REMOVED:
+                case FAILED_APPLICATION_REMOVED:
+                    bulkDeploymentEntry.setState(BulkDeploymentState.REMOVED);
+                    bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
+                    return new AppAutoDeploymentReviewEvent(this);
                 default:
                     int delayInSeconds = event.getWaitIntervalBeforeNextCheckInSeconds() > 0 ?
                             event.getWaitIntervalBeforeNextCheckInSeconds() : DEFAULT_DELAY_IN_SECONDS;
@@ -292,6 +297,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.FAILED);
                         stateChanged = true;
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
+                        d.setState(BulkDeploymentState.REMOVED);
+                        stateChanged = true;
                     }
                     if (stateChanged) {
                         logBulkStateUpdate(d.getId(), d.getState().name());
@@ -325,7 +333,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     public BulkDeployment updateState(Long bulkId) {
         log.info("Update all states for bulk {}", bulkId);
         Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(bulkId);
-        if(bulk.isPresent()) {
+        if (bulk.isPresent()) {
             BulkDeployment bulkDeployment = bulk.get();
             bulkDeployment.getEntries().forEach(entry -> {
                 try {
@@ -345,6 +353,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                             entry.setState(BulkDeploymentState.FAILED);
                             bulkDeploymentEntryRepository.save(entry);
                             break;
+                        case APPLICATION_REMOVED:
+                        case FAILED_APPLICATION_REMOVED:
+                            entry.setState(BulkDeploymentState.REMOVED);
+                            bulkDeploymentEntryRepository.save(entry);
+                            break;
                         default:
                             entry.setState(BulkDeploymentState.PENDING);
                             bulkDeploymentEntryRepository.save(entry);
@@ -354,16 +367,19 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
                 } catch (Exception e) {
                     log.error("Can not update state of {} bulk entry", entry.getId());
+                    log.error("Error : {}", e.getMessage());
                 }
             });
             if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.COMPLETED);
+            } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
+                bulkDeployment.setState(BulkDeploymentState.REMOVED);
             } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.FAILED);
             } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
             }
-            logBulkStateUpdate(bulkDeployment.getId(),bulkDeployment.getState().name());
+            logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
             bulkDeploymentRepository.save(bulkDeployment);
             return bulkDeployment;
         } else {

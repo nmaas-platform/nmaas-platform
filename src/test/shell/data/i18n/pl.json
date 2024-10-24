@@ -993,7 +993,19 @@
       "ISSUE_APPLICATION_NAME_PLACEHOLDER": "Nazwa apliakcji",
       "ISSUE_APPLICATION_NAME_DESCRIPTION": "Nazwa aplikacji w której wystąpił błąd",
       "ISSUE_DESCRIPTION": "Opis problemu",
-      "ISSUE_DESCRIPTION_PLACEHOLDER": "Szczegółowy opis problemu"
+      "ISSUE_DESCRIPTION_PLACEHOLDER": "Szczegółowy opis problemu",
+      "EMAIL_CONTACT" : "Adres email osoby kontaktowej",
+      "STUDENTS" : "Liczba uczestników laboratorium (np. studentów)",
+      "STUDENTS_PLACEHOLDER" : "Liczba uczestników laboratorium (szacowana)",
+      "MANAGERS" : "Liczba opiekunów laboratorium (np. nauczycieli)",
+      "MANAGERS_PLACEHOLDER" : "Liczba opiekunów laboratorium (szacowana)",
+      "APP_LIST" : "Lista aplikacji",
+      "APP_LIST_DESCRIPTION" : "Wstępna lista aplikacji, które chcesz wykorzystać w swoim laboratorium",
+      "START_DAY" : "Początek laboratorium",
+      "END_DAY" : "Koniec laboratorium",
+      "MESSAGE_ADDITIONAL" : "Dodatkowe informacje",
+      "MESSAGE_ADDITIONAL_PLACEHOLDER" : "Dodatkowe informacje",
+      "APP_LIST_ADD" : "Dodaj aplikację"
     },
     "MODAL": {
       "TITLE": "Mail został wysłany",
@@ -1006,7 +1018,8 @@
       "ISSUE_REPORT": "Zgłoszenie problemu",
       "FEATURE_REQUEST": "Propozycja zmiany lub dodania nowej aplikacji",
       "ACCESS_REQUEST": "Prośba o dostęp",
-      "NEW_DOMAIN_REQUEST": "Utworzenie nowej domeny"
+      "NEW_DOMAIN_REQUEST": "Utworzenie nowej domeny",
+      "VLAB_REQUEST" : "Utworzenie środowiska wirtualnego nauczania"
     }
   },
   "LANGUAGE": {
@@ -1247,13 +1260,14 @@
       "PROCESSING" :  "Przetwarzanie",
       "COMPLETED" : "Zakończone",
       "FAILED" : "Nieudane",
-      "PARTIALLY_FAILED" : "Częściowo nieudane"
+      "PARTIALLY_FAILED" : "Częściowo nieudane",
+      "REMOVED" : "Usunięta"
     },
     "REMOVE" : {
-      "HEADER" : "Remove bulk deployment",
-      "APP" : "Do you want to remove all instances created by this bulk deployment?",
-      "REMOVE" : "Remove",
-      "ERROR": "Error removing bulk deployment:"
+      "HEADER" : "Usuń grupę",
+      "APP" : "Czy chcesz usunąć wszystkie instancje powiązane z ta grupą ? ",
+      "REMOVE" : "Usuń",
+      "ERROR": "Błąd podczas usuwania grupy"
     }
   },
   "SHARED" : {

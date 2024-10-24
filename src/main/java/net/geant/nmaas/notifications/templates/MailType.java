@@ -24,5 +24,6 @@ public enum MailType {
     NEW_ACTIVE_APP,
 
     NEW_BULK_SSO_LOGIN,
-    NEW_BULK_LOGIN
+    NEW_BULK_LOGIN,
+    VLAB_REQUEST
 }

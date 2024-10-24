@@ -1,6 +1,27 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.4",
+      "date" : "(2024/10/10)",
+      "topic" : [
+        {
+          "title" : "Improved sorting on the main applications view",
+          "tags" : "[Enhancement]",
+          "description" : "Updated sorting options available on the application market view"
+        },
+        {
+          "title" : "Fixed synchronization of available applications in domain groups",
+          "tags" : "[Bugfix]",
+          "description" : "Application addition or removal is now reflected on the list of applications available on the domain group configuration view"
+        },
+        {
+          "title" : "Added new type of contact form",
+          "tags" : "[Enhancement]",
+          "description" : "Added support for a new type of contact form along with a new email template for vLAB requests"
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.3",
       "date" : "(2024/09/05)",
       "topic" : [

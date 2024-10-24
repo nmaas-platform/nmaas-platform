@@ -165,7 +165,7 @@ public class BulkController {
             return ResponseEntity.notFound().build();
         }
 
-        if(bulk.get().getCreatorId().equals(user.getId()) ) {
+        if (bulk.get().getCreatorId().equals(user.getId()) ) {
             throw new PermissionDeniedDataAccessException("User doesnt have access to this bulk deployment", new Throwable());
         }
         if (removeApps) {
@@ -209,13 +209,12 @@ public class BulkController {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
         try {
             bulkView.setCreator(getUserView(deployment.getCreatorId()));
-            return null;
         } catch (Exception ex) {
             log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreatorId());
+            return null;
         }
         mapDetails(deployment, bulkView);
         return bulkView;
-
     }
 
     private void mapDetails(BulkDeployment deployment, BulkDeploymentViewS view) {

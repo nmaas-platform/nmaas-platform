@@ -213,12 +213,12 @@ public class ApplicationController extends AppBaseController {
 	@GetMapping(value = "/{name}/version/{version}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public ApplicationDTO getAppVersionByName(@PathVariable String name,@PathVariable String version) {
+	public ApplicationDTO getApplicationByNameAndVersion(@PathVariable String name, @PathVariable String version) {
 		ApplicationBase base = this.appBaseService.findByName(name);
 
 		Optional<Application> application = this.applicationService.findApplication(name, version);
 
-		if(application.isPresent()) {
+		if (application.isPresent()) {
 			return new ApplicationDTO(
 					modelMapper.map(base, ApplicationBaseView.class),
 					modelMapper.map(application.get(), ApplicationView.class)

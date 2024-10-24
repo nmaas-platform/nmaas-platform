@@ -14,13 +14,13 @@ test:
 
 sonar:
   stage: sonar
-  image: openjdk:11-jdk-slim
+  image: openjdk:17-jdk-slim
   only:
     - develop
+    - /^release/
   script:
     - chmod +x ./gradlew
-    - ./gradlew integrationTest jacocoTestCoverageVerification
-    - ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=develop -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube
+    - ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=${CI_COMMIT_BRANCH} -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube
 
 build_and_push_latest_image:
   stage: build
@@ -30,6 +30,19 @@ build_and_push_latest_image:
     IMAGE_TAG: "latest"
   script:
     - |
+      docker image prune -f
+      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REPOSITORY
+      docker build -t $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG .
+      docker push $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG
+      docker logout $DOCKER_REPOSITORY
+
+build_and_push_alfa_image:
+  stage: build
+  only:
+    - /^release/
+  script:
+    - |
+      export IMAGE_TAG=$(echo $CI_COMMIT_BRANCH | cut -c 9-)-alfa
       docker image prune -f
       docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REPOSITORY
       docker build -t $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG .
