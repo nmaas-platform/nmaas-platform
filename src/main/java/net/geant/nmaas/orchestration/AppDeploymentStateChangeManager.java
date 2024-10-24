@@ -81,7 +81,7 @@ public class AppDeploymentStateChangeManager {
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {
                 List<AppDeploymentHistory> deploymentHistory =  deploymentRepositoryManager.loadStateHistory(event.getDeploymentId());
-                if(deploymentHistory.stream().filter(state -> state.getCurrentState().isInRunningState()).count() > 1) {
+                if(deploymentHistory.stream().filter(state -> state.getCurrentState().isInRunningState()).count() <= 1) {
                     eventPublisher.publishEvent(
                             new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
                 }
