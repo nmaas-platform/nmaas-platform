@@ -29,8 +29,4 @@ public interface BulkApplicationService {
 
     BulkDeployment updateState(Long bulkId);
 
-    void deleteAppInstancesFromBulk(BulkDeploymentView bulk);
-
-    BulkDeployment updateState(Long bulkId);
-
 }
