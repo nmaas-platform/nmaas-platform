@@ -34,7 +34,7 @@ public class TemplateServiceTest {
 
     @Test
     void shouldThrowExceptionOnMissingHtmlTemplate() {
-        assertThrows(DataConflictException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             templateService.getHTMLTemplate();
         });
     }
@@ -53,17 +53,17 @@ public class TemplateServiceTest {
         when(repository.findByMailType(MailType.ACCOUNT_ACTIVATED))
                 .thenReturn(Optional.of(new MailTemplate(1L, MailType.ACCOUNT_ACTIVATED, null, null)));
         assertNotNull(templateService.getMailTemplate(MailType.ACCOUNT_ACTIVATED));
-        assertThrows(DataConflictException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             templateService.getMailTemplate(MailType.ACCOUNT_BLOCKED);
         });
     }
 
     @Test
     void shouldHandleHtmlTemplateStorage() {
-        assertThrows(DataConflictException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             templateService.storeHTMLTemplate(null);
         });
-        assertThrows(DataConflictException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             templateService.storeHTMLTemplate(new MockMultipartFile("name", "content".getBytes()));
         });
         assertDoesNotThrow(() -> {
@@ -73,7 +73,7 @@ public class TemplateServiceTest {
 
     @Test
     void shouldUpdateHtmlTemplate() {
-        assertThrows(DataConflictException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             templateService.updateHTMLTemplate(null);
         });
     }

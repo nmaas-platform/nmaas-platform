@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 
 @Service
 public class TemplateService {
@@ -53,7 +55,7 @@ public class TemplateService {
     }
 
     void saveMailTemplate(MailTemplateView mailTemplate) {
-        checkArgument(!repository.existsByMailType(mailTemplate.getMailType()), String.format("Mail template %s already exists", mailTemplate.getMailType().name()));
+        checkArgumentConflict(!repository.existsByMailType(mailTemplate.getMailType()), String.format("Mail template %s already exists", mailTemplate.getMailType().name()));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
         repository.save(modelMapper.map(mailTemplate, MailTemplate.class));
     }
@@ -69,7 +71,7 @@ public class TemplateService {
     void storeHTMLTemplate(MultipartFile file) {
         checkArgument(file != null && !file.isEmpty(), "HTML template cannot be null or empty");
         checkArgument(Objects.equals(file.getContentType(), MailTemplateElements.HTML_TYPE), "HTML template must be in html format");
-        checkArgument(fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE).isEmpty(), "Only one HTML template is supported.");
+        checkArgumentConflict(fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE).isEmpty(), "Only one HTML template is supported.");
         fileStorageService.store(file);
     }
 
@@ -93,7 +95,7 @@ public class TemplateService {
         throw new IllegalArgumentException(String.format("Exactly one html template supported (actually got %d)", template.size()));
     }
 
-    private static void checkArgument(boolean expression, String errorMessage) {
+    private static void checkArgumentConflict(boolean expression, String errorMessage) {
         if (!expression) {
             throw new DataConflictException(String.valueOf(errorMessage));
         }
