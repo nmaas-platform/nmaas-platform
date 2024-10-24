@@ -6,6 +6,7 @@ import net.geant.nmaas.notifications.types.model.FormTypeView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.persistence.repository.FormTypeRepository;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class FormTypeService {
         if(!this.typeRepository.existsById(ent.getKeyValue())) {
             this.typeRepository.save(ent);
         } else {
-            throw new ProcessingException("Form type already exists");
+            throw new DataConflictException(String.format("Form type %s already exists", ent.getTemplateName()));
         }
     }
 
