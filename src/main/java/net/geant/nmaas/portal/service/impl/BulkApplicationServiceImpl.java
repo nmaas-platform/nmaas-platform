@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobEntry;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobRepository;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -94,6 +96,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final ModelMapper modelMapper;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final BulkDeploymentJobRepository bulkDeploymentJobRepository;
+
     @Override
     public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator) {
         log.info("Handling bulk application deployment for {} with {} entries", applicationName, appInstanceSpecs.size());
@@ -141,8 +145,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .appName(application.getName())
                         .descriptiveDeploymentId(createDescriptiveDeploymentId(instance.getDomain().getCodename(), application.getName(), instance.getId()))
                         .build();
-                Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
-
+                Identifier internalId = appLifecycleManager.deployApplicationBulk(appDeployment);
+                // add job entry to table
+                bulkDeploymentJobRepository.save(BulkDeploymentJobEntry.builder().identifier(internalId).build());
+//
                 // updating application instance information with assigned deployment identifier
                 instance.setInternalId(internalId);
                 instanceService.update(instance);
@@ -530,6 +536,22 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         });
 
         return header;
+    }
+
+    private static Map<String, String> genereteAppDeploymentMap(AppDeployment appDeployment, Identifier identifier) {
+        Map<String, String> map = new HashMap<>();
+        map.put("domain", appDeployment.getDomain());
+        map.put("instanceId", appDeployment.getInstanceId().toString());
+        map.put("applicationId", appDeployment.getApplicationId().value());
+        map.put("deploymentName", appDeployment.getDeploymentName());
+        map.put("configFileRepositoryRequired", String.valueOf(appDeployment.isConfigFileRepositoryRequired()));
+        map.put("configUpdateEnabled", String.valueOf(appDeployment.isConfigUpdateEnabled()));
+        map.put("termsAcceptanceRequired", String.valueOf(appDeployment.isTermsAcceptanceRequired()));
+        map.put("owner", appDeployment.getOwner());
+        map.put("appName", appDeployment.getAppName());
+        map.put("descriptiveDeploymentId",appDeployment.getDescriptiveDeploymentId().value());
+        map.put("internalId",identifier.value() ) ;
+        return map;
     }
 
 }

@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobRepository;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -73,9 +74,11 @@ public class BulkApplicationServiceImplTest {
     private final ModelMapper modelMapper = new ModelMapper();
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
+    private final BulkDeploymentJobRepository bulkDeploymentJobRepository = mock(BulkDeploymentJobRepository.class);
+
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
             domainService, applicationSubscriptionService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
-            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, eventPublisher);
+            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, eventPublisher, bulkDeploymentJobRepository);
 
     @Test
     void shouldHandleBulkDeployment() throws JsonProcessingException {
