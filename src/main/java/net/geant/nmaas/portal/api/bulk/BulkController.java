@@ -110,7 +110,7 @@ public class BulkController {
         log.info("Processing bulk application deployment details request");
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
         BulkDeploymentView bulkView = modelMapper.map(bulk, BulkDeploymentView.class);
-        bulkView.setCreator(getUserView(bulk.getCreatorId()));
+        bulkView.setCreator(getUserView(bulk.getCreator().getId()));
         mapDetails(bulk, bulkView);
         List<BulkAppDetails> details = bulkApplicationService.getAppsBulkDetails(bulkView);
         InputStreamResource inputStreamResource = bulkApplicationService.getInputStreamAppBulkDetails(details);
@@ -165,7 +165,7 @@ public class BulkController {
             return ResponseEntity.notFound().build();
         }
 
-        if (bulk.get().getCreatorId().equals(user.getId()) ) {
+        if(bulk.get().getCreator().getId().equals(user.getId()) ) {
             throw new PermissionDeniedDataAccessException("User doesnt have access to this bulk deployment", new Throwable());
         }
         if (removeApps) {
@@ -196,9 +196,9 @@ public class BulkController {
     private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {
         T bulkView = modelMapper.map(bulk, viewType);
         try {
-            bulkView.setCreator(getUserView(bulk.getCreatorId()));
+            bulkView.setCreator(getUserView(bulk.getCreator().getId()));
         } catch (Exception ex) {
-            log.error("Can not find creator for {} - creatorId:  {}", bulk.getId(), bulk.getCreatorId());
+            log.error("Can not find creator for {} - creatorId:  {}", bulk.getId(), bulk.getCreator().getId());
             return null;
         }
         mapDetails(bulk, bulkView);
@@ -208,10 +208,10 @@ public class BulkController {
     private BulkDeploymentView mapToView(BulkDeployment deployment) {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
         try {
-            bulkView.setCreator(getUserView(deployment.getCreatorId()));
-        } catch (Exception ex) {
-            log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreatorId());
+            bulkView.setCreator(getUserView(deployment.getCreator().getId()));
             return null;
+        } catch (Exception ex) {
+            log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreator().getId());
         }
         mapDetails(deployment, bulkView);
         return bulkView;

@@ -37,6 +37,7 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
@@ -84,6 +85,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final ApplicationService applicationService;
     private final DomainService domainService;
     private final ApplicationSubscriptionService applicationSubscriptionService;
+    private final UserService userService;
 
     private final ApplicationInstanceService instanceService;
     private final AppDeploymentMonitor appDeploymentMonitor;
@@ -388,11 +390,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
     }
 
-    private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
+    private  BulkDeployment createBulkDeployment(UserViewMinimal creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(BulkType.APPLICATION);
         bulkDeployment.setState(BulkDeploymentState.PROCESSING);
-        bulkDeployment.setCreatorId(creator.getId());
+        bulkDeployment.setCreator(userService.findById(creator.getId()).orElseThrow(() -> new MissingElementException("User with this ID not found")));
         bulkDeployment.setCreationDate(OffsetDateTime.now());
         bulkDeployment.setEntries(new ArrayList<>());
         return bulkDeployment;
