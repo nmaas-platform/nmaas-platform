@@ -215,7 +215,6 @@ public class BulkController {
         }
         mapDetails(deployment, bulkView);
         return bulkView;
-
     }
 
     private void mapDetails(BulkDeployment deployment, BulkDeploymentViewS view) {

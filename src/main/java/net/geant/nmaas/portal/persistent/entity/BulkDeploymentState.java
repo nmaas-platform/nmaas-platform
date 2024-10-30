@@ -5,5 +5,7 @@ public enum BulkDeploymentState {
     PROCESSING,
     COMPLETED,
     FAILED,
-    PARTIALLY_FAILED;
+    PARTIALLY_FAILED,
+
+    REMOVED
 }

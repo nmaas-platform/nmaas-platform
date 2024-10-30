@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import net.geant.nmaas.notifications.types.model.FormTypeRequest;
 import net.geant.nmaas.notifications.types.model.FormTypeView;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,4 +37,9 @@ public class FormTypeController {
         this.service.create(request);
     }
 
+    @ExceptionHandler(DataConflictException.class)
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    public String handleDataConfigException(DataConflictException e){
+        return e.getMessage();
+    }
 }

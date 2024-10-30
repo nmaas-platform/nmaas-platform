@@ -992,7 +992,19 @@
       "ISSUE_APPLICATION_NAME_PLACEHOLDER": "Anwendungsname",
       "ISSUE_APPLICATION_NAME_DESCRIPTION": "Name der von dem Problem betroffenen Anwendung",
       "ISSUE_DESCRIPTION": "Fehlerbeschreibung",
-      "ISSUE_DESCRIPTION_PLACEHOLDER": "Detaillierte Beschreibung des aufgetretenen Problems"
+      "ISSUE_DESCRIPTION_PLACEHOLDER": "Detaillierte Beschreibung des aufgetretenen Problems",
+      "EMAIL_CONTACT" : "Contact person email address",
+      "STUDENTS" : "Number of lab participants (e.g. students)",
+      "STUDENTS_PLACEHOLDER" : "Number of lab participants (estimated)",
+      "MANAGERS" : "Number of lab managers (e.g. teachers)",
+      "MANAGERS_PLACEHOLDER" : "Number of lab managers (estimated)",
+      "APP_LIST" : "List of lab applications",
+      "APP_LIST_DESCRIPTION" : "Tentative list of applications that you would like to use in your lab",
+      "START_DAY" : "Start date",
+      "END_DAY" : "Finish date",
+      "MESSAGE_ADDITIONAL" : "Additional information",
+      "MESSAGE_ADDITIONAL_PLACEHOLDER" : "Additional information",
+      "APP_LIST_ADD" : "Add application"
     },
     "MODAL": {
       "TITLE": "Mail wurde versendet",
@@ -1005,7 +1017,8 @@
       "ISSUE_REPORT": "Report issue",
       "FEATURE_REQUEST": "Feature request",
       "ACCESS_REQUEST": "Access request",
-      "NEW_DOMAIN_REQUEST": "New domain request"
+      "NEW_DOMAIN_REQUEST": "New domain request",
+      "VLAB_REQUEST" : "Virtual Lab request"
     }
   },
   "LANGUAGE": {
@@ -1245,7 +1258,8 @@
       "PROCESSING" :  "Processing",
       "COMPLETED" : "Completed",
       "FAILED" : "Failed",
-      "PARTIALLY_FAILED" : "Partially failed"
+      "PARTIALLY_FAILED" : "Partially failed",
+      "REMOVED" : "Removed"
     },
     "REMOVE" : {
       "HEADER" : "Remove bulk deployment",

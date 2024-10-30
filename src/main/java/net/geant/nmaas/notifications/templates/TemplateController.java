@@ -2,9 +2,12 @@ package net.geant.nmaas.notifications.templates;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
+import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,5 +71,11 @@ public class TemplateController {
     @Transactional
     public void updateHtmlTemplate(@RequestBody MultipartFile file){
         this.templateService.updateHTMLTemplate(file);
+    }
+
+    @ExceptionHandler(DataConflictException.class)
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    public String handleDataConfigException(DataConflictException e){
+        return e.getMessage();
     }
 }

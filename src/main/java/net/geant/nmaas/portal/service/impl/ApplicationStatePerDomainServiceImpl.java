@@ -47,9 +47,10 @@ public class ApplicationStatePerDomainServiceImpl implements ApplicationStatePer
         List<Domain> allDomains = domainRepository.findAll();
         allDomains.forEach(domain -> domain.addApplicationState(appState));
         //update domains groups - set app to false by default
-        appState.setEnabled(false);
+        ApplicationStatePerDomain appState2 = new ApplicationStatePerDomain(applicationBase);
+        appState2.setEnabled(false);
         domainGroupRepository.findAll().forEach(d -> {
-            d.getApplicationStatePerDomain().add(appState);
+            d.getApplicationStatePerDomain().add(appState2);
         });
         return domainRepository.saveAll(allDomains);
     }
