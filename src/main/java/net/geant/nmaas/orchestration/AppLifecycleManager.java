@@ -21,6 +21,17 @@ public interface AppLifecycleManager {
     Identifier deployApplication(AppDeployment appDeployment);
 
     /**
+     * Triggers the nmaas application deployment process which may take some time. This process is executed asynchronously
+     * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
+     * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
+     * Does not trigger the request event
+     *
+     * @param appDeployment App deployment
+     * @return unique identifier of the deployed user application
+     */
+    Identifier deployApplicationBulk(AppDeployment appDeployment);
+
+    /**
      * Triggers the nmaas application redeployment process which may take some time.This process is executed asynchronously
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
      * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
