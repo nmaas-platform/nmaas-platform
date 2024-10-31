@@ -41,23 +41,4 @@ public class BulkDeploymentJobEntry {
 
     private Identifier identifier;
 
-//    @ElementCollection
-//    @MapKeyColumn(name = "key_column")
-//    @Column(name = "json_value")
-//    private Map<String, String> appDeploymentMap = new HashMap<>();
-
-//    public void setAppDeploymentMap(Map<String, Object> map) {
-//        this.appDeploymentMap = map.entrySet().stream()
-//                .collect(Collectors.toMap(
-//                        Map.Entry::getKey,
-//                        e -> {
-//                            try {
-//                                return new ObjectMapper().writeValueAsString(e.getValue());
-//                            } catch (JsonProcessingException ex) {
-//                                throw new RuntimeException(ex);
-//                            }
-//                        }
-//                ));
-//    }
-
 }

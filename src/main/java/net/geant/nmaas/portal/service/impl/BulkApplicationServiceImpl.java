@@ -538,20 +538,4 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         return header;
     }
 
-    private static Map<String, String> genereteAppDeploymentMap(AppDeployment appDeployment, Identifier identifier) {
-        Map<String, String> map = new HashMap<>();
-        map.put("domain", appDeployment.getDomain());
-        map.put("instanceId", appDeployment.getInstanceId().toString());
-        map.put("applicationId", appDeployment.getApplicationId().value());
-        map.put("deploymentName", appDeployment.getDeploymentName());
-        map.put("configFileRepositoryRequired", String.valueOf(appDeployment.isConfigFileRepositoryRequired()));
-        map.put("configUpdateEnabled", String.valueOf(appDeployment.isConfigUpdateEnabled()));
-        map.put("termsAcceptanceRequired", String.valueOf(appDeployment.isTermsAcceptanceRequired()));
-        map.put("owner", appDeployment.getOwner());
-        map.put("appName", appDeployment.getAppName());
-        map.put("descriptiveDeploymentId",appDeployment.getDescriptiveDeploymentId().value());
-        map.put("internalId",identifier.value() ) ;
-        return map;
-    }
-
 }
