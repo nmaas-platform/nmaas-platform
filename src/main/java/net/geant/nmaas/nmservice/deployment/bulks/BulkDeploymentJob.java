@@ -12,11 +12,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class BulkDeploymentJob implements Job {
 
-    private final BulkDeploymentJobService service ;
+    private final BulkDeploymentQueueService service;
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        log.debug("Trigger bulk deployment job...");
-        service.checkStatusAndDeploy();
-
+        log.debug("Triggering bulk deployment job...");
+        service.handleQueue();
     }
+
 }

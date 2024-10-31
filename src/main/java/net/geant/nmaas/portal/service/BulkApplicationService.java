@@ -31,6 +31,6 @@ public interface BulkApplicationService {
 
     void updateBulkApplicationStatus();
 
-    public void updateEntryStateById(Long entryId);
+    void updateEntryStateById(Long entryId);
 
 }

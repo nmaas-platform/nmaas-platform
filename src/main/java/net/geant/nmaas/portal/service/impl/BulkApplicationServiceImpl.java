@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobEntry;
-import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobRepository;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -42,7 +42,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
@@ -93,9 +92,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final BulkDeploymentRepository bulkDeploymentRepository;
     private final BulkDeploymentEntryRepository bulkDeploymentEntryRepository;
     private final ModelMapper modelMapper;
-    private final ApplicationEventPublisher eventPublisher;
 
-    private final BulkDeploymentJobRepository bulkDeploymentJobRepository;
+    private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository;
 
     @Override
     public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator) {
@@ -131,7 +129,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 // creating initial application instance entry
                 instance = instanceService.create(domain, application, applicationSpec.getApplicationInstanceName(), false);
 
-                // preparing and triggering new application deployment
+                // preparing and initializing new application deployment
                 AppDeployment appDeployment = AppDeployment.builder()
                         .domain(instance.getDomain().getCodename())
                         .instanceId(instance.getId())
@@ -144,7 +142,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .appName(application.getName())
                         .descriptiveDeploymentId(createDescriptiveDeploymentId(instance.getDomain().getCodename(), application.getName(), instance.getId()))
                         .build();
-                Identifier internalId = appLifecycleManager.deployApplicationBulk(appDeployment);
+                Identifier internalId = appLifecycleManager.initApplicationDeployment(appDeployment);
                 // add job entry to table
 //
                 // updating application instance information with assigned deployment identifier
@@ -174,18 +172,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .details(prepareBulkApplicationDeploymentDetailsMap(instance, application))
                                 .build()
                 );
-                bulkDeploymentJobRepository.save(BulkDeploymentJobEntry.builder().identifier(internalId).bulkEntryId(bulkDeploymentEntry.getId()).build());
-
+                bulkDeploymentQueueRepository.save(
+                        BulkDeploymentQueueEntry.builder().deploymentId(internalId).bulkEntryId(bulkDeploymentEntry.getId()).build()
+                );
 
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
-
-                // triggering event for monitoring and processing of bulk deployment
-//                eventPublisher.publishEvent(
-//                        new AppAutoDeploymentTriggeredEvent(
-//                                this,
-//                                Identifier.newInstance(bulkDeploymentEntry.getId()),
-//                                internalId,
-//                                appConfigurationView));
 
             } catch (Exception e) {
                 log.warn("Exception thrown while deploying application {}:{} in domain {}", applicationName, applicationSpec.getApplicationVersion(), applicationSpec.getDomainName());
@@ -373,7 +364,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Override
     @Transactional
     public void updateEntryStateById(Long entryId) {
-        log.warn("Updating bulk entry {} and his bulk deplyoment", entryId);
+        log.warn("Updating bulk entry {} and his bulk deployment", entryId);
         updateEntryState(bulkDeploymentEntryRepository.getReferenceById(entryId));
         updateMainBulkState(bulkDeploymentRepository.findByBulkEntryId(entryId));
     }

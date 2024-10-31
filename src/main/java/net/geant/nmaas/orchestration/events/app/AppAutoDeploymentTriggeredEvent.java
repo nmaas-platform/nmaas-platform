@@ -5,6 +5,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import org.springframework.context.ApplicationEvent;
 
+// Currently not used
 @Getter
 public class AppAutoDeploymentTriggeredEvent extends ApplicationEvent {
 

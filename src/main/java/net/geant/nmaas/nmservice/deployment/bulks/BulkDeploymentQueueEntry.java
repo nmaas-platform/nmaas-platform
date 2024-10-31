@@ -18,13 +18,14 @@ import javax.persistence.Id;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BulkDeploymentJobEntry {
+public class BulkDeploymentQueueEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Identifier identifier;
+    private Identifier deploymentId;
 
     private Long bulkEntryId;
+
 }

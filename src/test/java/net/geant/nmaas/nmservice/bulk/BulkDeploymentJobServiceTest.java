@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.bulk;
 
-import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobEntry;
-import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobRepository;
-import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobService;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueService;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -23,58 +23,53 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class BulkDeploymentJobServiceTest {
+class BulkDeploymentJobServiceTest {
 
     AppDeploymentMonitor appDeploymentMonitor = mock(AppDeploymentMonitor.class);
-
     AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
-
-    BulkDeploymentJobRepository bulkDeploymentJobRepository = mock(BulkDeploymentJobRepository.class);
-
+    BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
     ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
-
     BulkApplicationService bulkApplicationService = mock(BulkApplicationService.class);
 
-    BulkDeploymentJobService underService;
+    BulkDeploymentQueueService underTest;
 
     @BeforeEach
     void setup() {
-        underService = new BulkDeploymentJobService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentJobRepository, eventPublisher, bulkApplicationService);
-        underService.deploymentLimitPerMinute = 2;
+        underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentQueueRepository, eventPublisher, bulkApplicationService);
+        underTest.parallelDeploymentsLimit = 2;
     }
 
     @Test
-    public void shouldTriggerDeployment() {
-        BulkDeploymentJobEntry entry = new BulkDeploymentJobEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
-        BulkDeploymentJobEntry entry2 = new BulkDeploymentJobEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
-        BulkDeploymentJobEntry entry3 = new BulkDeploymentJobEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
-
-        when(bulkDeploymentJobRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
+    void shouldTriggerDeployment() {
+        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
+        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
+        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
+        when(bulkDeploymentQueueRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.REQUESTED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.REQUEST_VALIDATED);
-        underService.checkStatusAndDeploy();
+        underTest.handleQueue();
 
         //Limit set to 2 in properties
         verify(eventPublisher, times(2)).publishEvent(any());
     }
 
     @Test
-    public void shouldTriggerDeleteEntryJob() {
-        BulkDeploymentJobEntry entry = new BulkDeploymentJobEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
-        BulkDeploymentJobEntry entry2 = new BulkDeploymentJobEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
-        BulkDeploymentJobEntry entry3 = new BulkDeploymentJobEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
-        bulkDeploymentJobRepository.save(entry);
-        bulkDeploymentJobRepository.save(entry2);
-        bulkDeploymentJobRepository.save(entry3);
-
+    void shouldTriggerDeleteEntryJob() {
+        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
+        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
+        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
+        bulkDeploymentQueueRepository.save(entry);
+        bulkDeploymentQueueRepository.save(entry2);
+        bulkDeploymentQueueRepository.save(entry3);
 
 //        when(bulkDeploymentJobRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_FAILED);
-        underService.checkStatusAndDeploy();
+        underTest.handleQueue();
 
         //Limit set to 2 in properties
         verify(eventPublisher, times(0)).publishEvent(any());
-        assertEquals(0, bulkDeploymentJobRepository.findAll().size());
+        assertEquals(0, bulkDeploymentQueueRepository.findAll().size());
     }
+
 }

@@ -69,7 +69,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplicationBulk(AppDeployment appDeployment) {
+    public Identifier initApplicationDeployment(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
         deploymentRepositoryManager.store(appDeployment);

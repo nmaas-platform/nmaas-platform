@@ -3,7 +3,6 @@ package net.geant.nmaas.scheduling;
 import com.google.common.base.Strings;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
-import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJobService;
 import net.geant.nmaas.orchestration.AppUpgradeSummaryJob;
 import net.geant.nmaas.orchestration.AppUpgradeTriggerJob;
 import org.springframework.beans.factory.InitializingBean;
