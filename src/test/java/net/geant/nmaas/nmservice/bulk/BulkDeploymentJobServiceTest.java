@@ -8,6 +8,7 @@ import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
+import net.geant.nmaas.portal.service.BulkApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,11 +33,13 @@ public class BulkDeploymentJobServiceTest {
 
     ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
+    BulkApplicationService bulkApplicationService = mock(BulkApplicationService.class);
+
     BulkDeploymentJobService underService;
 
     @BeforeEach
     void setup() {
-        underService = new BulkDeploymentJobService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentJobRepository, eventPublisher);
+        underService = new BulkDeploymentJobService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentJobRepository, eventPublisher, bulkApplicationService);
         underService.deploymentLimitPerMinute = 2;
     }
 

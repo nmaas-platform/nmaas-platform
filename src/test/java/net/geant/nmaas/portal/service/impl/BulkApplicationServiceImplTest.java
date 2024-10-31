@@ -105,7 +105,7 @@ public class BulkApplicationServiceImplTest {
         bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser());
 
         verify(applicationSubscriptionService).subscribe(110L, domain.getId(), true);
-        verify(appLifecycleManager).deployApplication(any());
+        verify(appLifecycleManager).deployApplicationBulk(any());
         ArgumentCaptor<AppInstance> appInstanceArgumentCaptor = ArgumentCaptor.forClass(AppInstance.class);
         verify(applicationInstanceService, times(2)).update(appInstanceArgumentCaptor.capture());
         Map<String, String> deploymentParametersMap = new ObjectMapper().readValue(
