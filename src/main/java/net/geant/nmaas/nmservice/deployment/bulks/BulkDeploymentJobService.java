@@ -12,6 +12,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.BulkApplicationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class BulkDeploymentJobService {
 
     private final ApplicationEventPublisher eventPublisher;
 
+    private final BulkApplicationService bulkApplicationService;
+
     @Value("${portal.config.bulk.deploy.limit}")
     public Integer deploymentLimitPerMinute;
 
@@ -51,6 +54,7 @@ public class BulkDeploymentJobService {
         });
 
         deleteRunningJobs();
+        updateBulkStatus();
     }
 
     public void deleteRunningJobs() {
@@ -62,6 +66,10 @@ public class BulkDeploymentJobService {
            AppDeploymentState state =  appDeploymentRepositoryManager.loadState(deployment.getIdentifier());
            return state.isInRunningState() || state.isInFailedState();
        }).peek(dep -> log.debug("Delete job for {}", dep.getIdentifier())).forEach(bulkDeploymentJobRepository::delete);
+    }
+
+    public void updateBulkStatus() {
+        this.bulkApplicationService.updateBulkApplicationStatus();
     }
 
 }

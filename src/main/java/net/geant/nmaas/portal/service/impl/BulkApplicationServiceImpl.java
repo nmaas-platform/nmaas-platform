@@ -180,12 +180,12 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
 
                 // triggering event for monitoring and processing of bulk deployment
-                eventPublisher.publishEvent(
-                        new AppAutoDeploymentTriggeredEvent(
-                                this,
-                                Identifier.newInstance(bulkDeploymentEntry.getId()),
-                                internalId,
-                                appConfigurationView));
+//                eventPublisher.publishEvent(
+//                        new AppAutoDeploymentTriggeredEvent(
+//                                this,
+//                                Identifier.newInstance(bulkDeploymentEntry.getId()),
+//                                internalId,
+//                                appConfigurationView));
 
             } catch (Exception e) {
                 log.warn("Exception thrown while deploying application {}:{} in domain {}", applicationName, applicationSpec.getApplicationVersion(), applicationSpec.getDomainName());
@@ -339,8 +339,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     public BulkDeployment updateState(Long bulkId) {
         log.info("Update all states for bulk {}", bulkId);
         Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(bulkId);
-        if (bulk.isPresent()) {
-            BulkDeployment bulkDeployment = bulk.get();
+        if(bulk.isPresent()) {
+           return this.updateStateBulk(bulk.get());
+        }
+        throw new MissingElementException("Can not find bulk deployment " + bulkId);
+    }
+
+    private BulkDeployment updateStateBulk(BulkDeployment bulkDeployment) {
             bulkDeployment.getEntries().forEach(entry -> {
                 try {
                     Long instanceId = Long.valueOf(entry.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
@@ -388,10 +393,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
             bulkDeploymentRepository.save(bulkDeployment);
             return bulkDeployment;
-        } else {
-            log.error("Can not find bulk deployment {}", bulkId);
-            throw new MissingElementException("Can not find bulk deployment " + bulkId);
-        }
+
     }
 
     private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
@@ -536,6 +538,12 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         });
 
         return header;
+    }
+
+    @Override
+    @Transactional
+    public void updateBulkApplicationStatus() {
+      this.bulkDeploymentRepository.findByType(BulkType.APPLICATION).forEach(this::updateStateBulk);
     }
 
 }

@@ -29,4 +29,6 @@ public interface BulkApplicationService {
 
     BulkDeployment updateState(Long bulkId);
 
+    void updateBulkApplicationStatus();
+
 }
