@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
-import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.persistent.entity.InternationalizationSimple;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
