@@ -8,10 +8,13 @@ import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
+import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -488,7 +491,108 @@ public class DomainServiceTest {
         assertEquals(0, domainGroup.getApplicationStatePerDomain().size());
         assertEquals(0, domainGroup2.getApplicationStatePerDomain().size());
 
+    }
 
+    @Test
+    void shouldChangeMembersFromGroupView() {
+        DomainBase domain1 = new DomainBase();
+        domain1.setId(1L);
+        domain1.setName("dom1");
+        domain1.setCodename("dom1");
+        Domain domain = new Domain(1L,"dom1", "dom1");
+
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+        when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
+        when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
+
+        UserViewMinimal userView = new UserViewMinimal();
+        userView.setId(1L);
+
+        UserViewMinimal userView2 = new UserViewMinimal();
+        userView2.setId(2L);
+
+        User user = new User("user");
+
+
+        DomainGroupView domainGroupView = new DomainGroupView(1l, "test", "test1",List.of(domain1), null, List.of(userView) );
+        DomainGroup domainGroup = new DomainGroup(1l, "test", "test1");
+        domainGroup.setManagers(List.of(user));
+
+        when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
+
+
+        DomainGroupView result = domainService.updateMembers(List.of(userView2), domainGroupView );
+
+        assertEquals(1, result.getManagers().size());
+        assertEquals(2L , result.getManagers().get(0).getId());
+
+
+    }
+
+    @Test
+    void shouldAddMembersFromGroupView() {
+        DomainBase domain1 = new DomainBase();
+        domain1.setId(1L);
+        domain1.setName("dom1");
+        domain1.setCodename("dom1");
+        Domain domain = new Domain(1L,"dom1", "dom1");
+
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+        when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
+        when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
+
+        UserViewMinimal userView = new UserViewMinimal();
+        userView.setId(1L);
+
+        UserViewMinimal userView2 = new UserViewMinimal();
+        userView2.setId(2L);
+
+        User user = new User("user");
+
+
+        DomainGroupView domainGroupView = new DomainGroupView(1l, "test", "test1",List.of(domain1), null, List.of(userView) );
+        DomainGroup domainGroup = new DomainGroup(1l, "test", "test1");
+        domainGroup.setManagers(List.of(user));
+
+        when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
+
+
+        DomainGroupView result = domainService.updateMembers(List.of(userView2, userView), domainGroupView );
+
+        assertEquals(2, result.getManagers().size());
+    }
+
+    @Test
+    void shouldDeleteMembersFromGroupView() {
+        DomainBase domain1 = new DomainBase();
+        domain1.setId(1L);
+        domain1.setName("dom1");
+        domain1.setCodename("dom1");
+        Domain domain = new Domain(1L,"dom1", "dom1");
+
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+        when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
+        when(userService.findById(2L)).thenReturn(Optional.of(new User("test2")));
+
+        UserViewMinimal userView = new UserViewMinimal();
+        userView.setId(1L);
+
+        UserViewMinimal userView2 = new UserViewMinimal();
+        userView2.setId(2L);
+
+        User user = new User("user");
+
+
+        DomainGroupView domainGroupView = new DomainGroupView(1l, "test", "test1",List.of(domain1), null, List.of(userView) );
+        DomainGroup domainGroup = new DomainGroup(1l, "test", "test1");
+        domainGroup.setManagers(List.of(user));
+
+        when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
+
+
+        DomainGroupView result = domainService.updateMembers(List.of(), domainGroupView );
+
+        assertEquals(0, result.getManagers().size());
     }
 
 }

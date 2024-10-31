@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
@@ -69,6 +70,8 @@ public interface DomainService {
 	void checkDomainGroupUsers(DomainGroupView view);
 
 	void updateRolesInDomainGroupByUsers(DomainGroupView view);
+
+	DomainGroupView updateMembers(List<UserViewMinimal> newMembers, DomainGroupView view);
 
 	void addAnnotation(KeyValueView annotation);
 	boolean checkIfAnnotationExist(String key);
