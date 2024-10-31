@@ -14,7 +14,6 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
-import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
 import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
@@ -147,7 +146,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .build();
                 Identifier internalId = appLifecycleManager.deployApplicationBulk(appDeployment);
                 // add job entry to table
-                bulkDeploymentJobRepository.save(BulkDeploymentJobEntry.builder().identifier(internalId).build());
 //
                 // updating application instance information with assigned deployment identifier
                 instance.setInternalId(internalId);
@@ -176,6 +174,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .details(prepareBulkApplicationDeploymentDetailsMap(instance, application))
                                 .build()
                 );
+                bulkDeploymentJobRepository.save(BulkDeploymentJobEntry.builder().identifier(internalId).bulkEntryId(bulkDeploymentEntry.getId()).build());
+
 
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
 
@@ -346,41 +346,12 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     private BulkDeployment updateStateBulk(BulkDeployment bulkDeployment) {
-            bulkDeployment.getEntries().forEach(entry -> {
-                try {
-                    Long instanceId = Long.valueOf(entry.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
-                    AppInstance instance = instanceService.find(instanceId).orElseThrow();
+        bulkDeployment.getEntries().forEach(this::updateEntryState);
+        return updateMainBulkState(bulkDeployment);
+    }
 
-                    AppLifecycleState state = appDeploymentMonitor.state(instance.getInternalId());
-                    switch (state) {
-                        case APPLICATION_DEPLOYMENT_VERIFIED:
-                            entry.setState(BulkDeploymentState.COMPLETED);
-                            bulkDeploymentEntryRepository.save(entry);
-                            break;
-                        case APPLICATION_CONFIGURATION_FAILED:
-                        case APPLICATION_DEPLOYMENT_FAILED:
-                        case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
-                        case INTERNAL_ERROR:
-                            entry.setState(BulkDeploymentState.FAILED);
-                            bulkDeploymentEntryRepository.save(entry);
-                            break;
-                        case APPLICATION_REMOVED:
-                        case FAILED_APPLICATION_REMOVED:
-                            entry.setState(BulkDeploymentState.REMOVED);
-                            bulkDeploymentEntryRepository.save(entry);
-                            break;
-                        default:
-                            entry.setState(BulkDeploymentState.PENDING);
-                            bulkDeploymentEntryRepository.save(entry);
-                            break;
-                    }
-                    logBulkStateUpdate(entry.getId(), entry.getState().name());
-
-                } catch (Exception e) {
-                    log.error("Can not update state of {} bulk entry", entry.getId());
-                    log.error("Error : {}", e.getMessage());
-                }
-            });
+    private BulkDeployment updateMainBulkState(BulkDeployment bulkDeployment) {
+            BulkDeploymentState oldState = bulkDeployment.getState();
             if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.COMPLETED);
             } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
@@ -390,10 +361,57 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                 bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
             }
-            logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
-            bulkDeploymentRepository.save(bulkDeployment);
+            //only update if state changed
+            if(!oldState.equals(bulkDeployment.getState())) {
+                logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
+                bulkDeploymentRepository.save(bulkDeployment);
+            }
             return bulkDeployment;
+        }
 
+
+    @Override
+    @Transactional
+    public void updateEntryStateById(Long entryId) {
+        log.warn("Updating bulk entry {} and his bulk deplyoment", entryId);
+        updateEntryState(bulkDeploymentEntryRepository.getReferenceById(entryId));
+        updateMainBulkState(bulkDeploymentRepository.findByBulkEntryId(entryId));
+    }
+
+    private void updateEntryState(BulkDeploymentEntry entry) {
+        try {
+            Long instanceId = Long.valueOf(entry.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+            AppInstance instance = instanceService.find(instanceId).orElseThrow();
+
+            AppLifecycleState state = appDeploymentMonitor.state(instance.getInternalId());
+            switch (state) {
+                case APPLICATION_DEPLOYMENT_VERIFIED:
+                    entry.setState(BulkDeploymentState.COMPLETED);
+                    bulkDeploymentEntryRepository.save(entry);
+                    break;
+                case APPLICATION_CONFIGURATION_FAILED:
+                case APPLICATION_DEPLOYMENT_FAILED:
+                case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
+                case INTERNAL_ERROR:
+                    entry.setState(BulkDeploymentState.FAILED);
+                    bulkDeploymentEntryRepository.save(entry);
+                    break;
+                case APPLICATION_REMOVED:
+                case FAILED_APPLICATION_REMOVED:
+                    entry.setState(BulkDeploymentState.REMOVED);
+                    bulkDeploymentEntryRepository.save(entry);
+                    break;
+                default:
+                    entry.setState(BulkDeploymentState.PENDING);
+                    bulkDeploymentEntryRepository.save(entry);
+                    break;
+            }
+            logBulkStateUpdate(entry.getId(), entry.getState().name());
+
+        } catch (Exception e) {
+            log.error("Can not update state of {} bulk entry", entry.getId());
+            log.error("Error : {}", e.getMessage());
+        }
     }
 
     private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {

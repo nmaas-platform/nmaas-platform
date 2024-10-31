@@ -45,9 +45,9 @@ public class BulkDeploymentJobServiceTest {
 
     @Test
     public void shouldTriggerDeployment() {
-        BulkDeploymentJobEntry entry = new BulkDeploymentJobEntry(1L, new Identifier(UUID.randomUUID().toString()));
-        BulkDeploymentJobEntry entry2 = new BulkDeploymentJobEntry(2L, new Identifier(UUID.randomUUID().toString()));
-        BulkDeploymentJobEntry entry3 = new BulkDeploymentJobEntry(3L, new Identifier(UUID.randomUUID().toString()));
+        BulkDeploymentJobEntry entry = new BulkDeploymentJobEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
+        BulkDeploymentJobEntry entry2 = new BulkDeploymentJobEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
+        BulkDeploymentJobEntry entry3 = new BulkDeploymentJobEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
 
         when(bulkDeploymentJobRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.REQUESTED);
@@ -60,9 +60,9 @@ public class BulkDeploymentJobServiceTest {
 
     @Test
     public void shouldTriggerDeleteEntryJob() {
-        BulkDeploymentJobEntry entry = new BulkDeploymentJobEntry(1L, new Identifier(UUID.randomUUID().toString()));
-        BulkDeploymentJobEntry entry2 = new BulkDeploymentJobEntry(2L, new Identifier(UUID.randomUUID().toString()));
-        BulkDeploymentJobEntry entry3 = new BulkDeploymentJobEntry(3L, new Identifier(UUID.randomUUID().toString()));
+        BulkDeploymentJobEntry entry = new BulkDeploymentJobEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
+        BulkDeploymentJobEntry entry2 = new BulkDeploymentJobEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
+        BulkDeploymentJobEntry entry3 = new BulkDeploymentJobEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
         bulkDeploymentJobRepository.save(entry);
         bulkDeploymentJobRepository.save(entry2);
         bulkDeploymentJobRepository.save(entry3);

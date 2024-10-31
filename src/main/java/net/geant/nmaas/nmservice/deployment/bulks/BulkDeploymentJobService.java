@@ -54,7 +54,6 @@ public class BulkDeploymentJobService {
         });
 
         deleteRunningJobs();
-        updateBulkStatus();
     }
 
     public void deleteRunningJobs() {
@@ -65,7 +64,10 @@ public class BulkDeploymentJobService {
        jobList.stream().filter(deployment -> {
            AppDeploymentState state =  appDeploymentRepositoryManager.loadState(deployment.getIdentifier());
            return state.isInRunningState() || state.isInFailedState();
-       }).peek(dep -> log.debug("Delete job for {}", dep.getIdentifier())).forEach(bulkDeploymentJobRepository::delete);
+       }).peek(dep -> log.debug("Delete job for {}", dep.getIdentifier())).forEach(dep -> {
+           bulkApplicationService.updateEntryStateById(dep.getBulkEntryId());
+           bulkDeploymentJobRepository.delete(dep);
+       });
     }
 
     public void updateBulkStatus() {
