@@ -1,11 +1,10 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -17,11 +16,10 @@ import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.Applicat
 import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.UPDATED;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class HelmChartUpdateListener {
 
-    @Autowired
     private final HelmCommandExecutor helmCommandExecutor;
 
     @EventListener
@@ -34,8 +32,8 @@ public class HelmChartUpdateListener {
             if (StringUtils.hasText(repoName) && StringUtils.hasText(repoUrl)) {
                 helmCommandExecutor.executeHelmRepoAddCommand(repoName, repoUrl);
             }
+            helmCommandExecutor.executeHelmRepoUpdateCommand();
         }
-        helmCommandExecutor.executeHelmRepoUpdateCommand();
         return null;
     }
 

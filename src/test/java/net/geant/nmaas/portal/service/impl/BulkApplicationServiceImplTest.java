@@ -3,13 +3,13 @@ package net.geant.nmaas.portal.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
-import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -33,7 +33,6 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -71,11 +69,12 @@ public class BulkApplicationServiceImplTest {
     private final BulkDeploymentRepository bulkDeploymentRepository = mock(BulkDeploymentRepository.class);
     private final BulkDeploymentEntryRepository bulkDeploymentEntryRepository = mock(BulkDeploymentEntryRepository.class);
     private final ModelMapper modelMapper = new ModelMapper();
-    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+
+    private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
 
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
             domainService, applicationSubscriptionService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
-            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, eventPublisher);
+            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository);
 
     @Test
     void shouldHandleBulkDeployment() throws JsonProcessingException {
@@ -97,12 +96,11 @@ public class BulkApplicationServiceImplTest {
         when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
         when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
         when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
-        doNothing().when(eventPublisher).publishEvent(any(ApplicationEvent.class));
 
         bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser());
 
         verify(applicationSubscriptionService).subscribe(110L, domain.getId(), true);
-        verify(appLifecycleManager).deployApplication(any());
+        verify(appLifecycleManager).initApplicationDeployment(any());
         ArgumentCaptor<AppInstance> appInstanceArgumentCaptor = ArgumentCaptor.forClass(AppInstance.class);
         verify(applicationInstanceService, times(2)).update(appInstanceArgumentCaptor.capture());
         Map<String, String> deploymentParametersMap = new ObjectMapper().readValue(
@@ -110,7 +108,6 @@ public class BulkApplicationServiceImplTest {
         );
         assertEquals("value1", deploymentParametersMap.get("key1"));
         verify(bulkDeploymentEntryRepository).save(any());
-        verify(eventPublisher).publishEvent(any(AppAutoDeploymentTriggeredEvent.class));
         ArgumentCaptor<BulkDeployment> bulkDeploymentArgumentCaptor = ArgumentCaptor.forClass(BulkDeployment.class);
         verify(bulkDeploymentRepository).save(bulkDeploymentArgumentCaptor.capture());
         BulkDeployment bulkDeployment = bulkDeploymentArgumentCaptor.getValue();
