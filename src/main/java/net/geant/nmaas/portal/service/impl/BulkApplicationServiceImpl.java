@@ -364,7 +364,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Override
     @Transactional
     public void updateEntryStateById(Long entryId) {
-        log.warn("Updating bulk entry {} and his bulk deployment", entryId);
+        log.debug("Updating bulk entry {} and its parent bulk deployment", entryId);
         updateEntryState(bulkDeploymentEntryRepository.getReferenceById(entryId));
         updateMainBulkState(bulkDeploymentRepository.findByBulkEntryId(entryId));
     }
