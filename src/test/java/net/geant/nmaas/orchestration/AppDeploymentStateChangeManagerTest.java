@@ -7,6 +7,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
@@ -20,7 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_IN_PROGRESS;
@@ -28,6 +32,7 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTARTED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADED;
@@ -41,6 +46,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -166,5 +172,39 @@ public class AppDeploymentStateChangeManagerTest {
         manager.notifyStateChange(event);
         verify(publisher).publishEvent(any(AppUpgradeFailedEvent.class));
     }
+
+    @Test
+    void shouldSendEmailWithoutHistoryRunning() {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
+        when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
+            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+        }}));
+        when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
+        when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
+        manager.notifyStateChange(event);
+        verify(publisher).publishEvent(any(NotificationEvent.class));
+    }
+
+    @Test
+    void shouldNotSendEmailWithoutHistoryRunning() {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
+        when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
+            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));}}));
+        AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED,APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
+        AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS,APPLICATION_DEPLOYMENT_VERIFIED);
+        // added second time as "current" re-deployment, because current state is not added by `update state` function
+        AppDeploymentHistory history3 = new AppDeploymentHistory(3L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS,APPLICATION_DEPLOYMENT_VERIFIED);
+
+        when(deployments.loadStateHistory(deploymentId)).thenReturn(java.util.List.of(history, history2, history3));
+        when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
+        when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
+        manager.notifyStateChange(event);
+        verify(publisher, never()).publishEvent(any(NotificationEvent.class));
+    }
+
 
 }
