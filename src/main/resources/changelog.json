@@ -1,6 +1,22 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.5",
+      "date" : "(2024/11/08)",
+      "topic" : [
+        {
+          "title" : "Improved bulk application deployment process",
+          "tags" : "[Enhancement]",
+          "description" : "---"
+        },
+        {
+          "title" : "Removed redundant email notifications",
+          "tags" : "[Enhancement]",
+          "description" : "---"
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.4",
       "date" : "(2024/10/10)",
       "topic" : [
