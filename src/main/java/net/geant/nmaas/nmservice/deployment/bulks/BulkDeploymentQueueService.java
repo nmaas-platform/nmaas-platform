@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.portal.service.BulkApplicationService;
@@ -25,6 +27,7 @@ public class BulkDeploymentQueueService {
     private final BulkDeploymentQueueRepository queueRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final BulkApplicationService bulkApplicationService;
+    private final AppLifecycleManager appLifecycleManager;
 
     @Value("${nmaas.service.deployment.parallel.limit}")
     public Integer parallelDeploymentsLimit;
@@ -35,6 +38,15 @@ public class BulkDeploymentQueueService {
 
         List<BulkDeploymentQueueEntry> toDeploy = jobList.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
                 .equals(AppLifecycleState.REQUESTED)).collect(Collectors.toList());
+
+        //app to configure
+        jobList.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
+                .equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED)).forEach( deployment -> {
+                    log.debug("Configuration triggered for {}", deployment.getDeploymentId());
+            appLifecycleManager.applyConfiguration(deployment.getDeploymentId(), AppConfigurationView.builder()
+                    .jsonInput(deployment.getAppConfigurationJson())
+                    .mandatoryParameters(deployment.getAppConfigurationJson()).build(), null);
+        });
 
         log.debug("Jobs to do {}, jobs to deploy {}", jobList.size(), toDeploy.size());
 

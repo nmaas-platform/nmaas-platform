@@ -1,11 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.bulks;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,5 +29,8 @@ public class BulkDeploymentQueueEntry {
     private Identifier deploymentId;
 
     private Long bulkEntryId;
+
+    @JsonProperty("appConfigurationJson")
+    private String appConfigurationJson;
 
 }
