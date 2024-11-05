@@ -54,10 +54,12 @@ class BulkDeploymentJobServiceTest {
         when(bulkDeploymentQueueRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.REQUESTED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.REQUEST_VALIDATED);
+
         underTest.handleQueue();
 
-        //Limit set to 2 in properties
+        // two deployments triggered following the limit set in properties
         verify(eventPublisher, times(2)).publishEvent(any());
+        assertEquals(3, bulkDeploymentQueueRepository.findAll().size());
     }
 
     @Test
@@ -68,13 +70,12 @@ class BulkDeploymentJobServiceTest {
         bulkDeploymentQueueRepository.save(entry);
         bulkDeploymentQueueRepository.save(entry2);
         bulkDeploymentQueueRepository.save(entry3);
-
-//        when(bulkDeploymentJobRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.APPLICATION_DEPLOYMENT_FAILED);
+
         underTest.handleQueue();
 
-        //Limit set to 2 in properties
+        // no new deployments triggered and all entries removed from queue since failed
         verify(eventPublisher, times(0)).publishEvent(any());
         assertEquals(0, bulkDeploymentQueueRepository.findAll().size());
     }

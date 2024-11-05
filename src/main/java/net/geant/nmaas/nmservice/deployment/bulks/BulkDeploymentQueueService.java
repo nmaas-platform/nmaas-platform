@@ -34,13 +34,14 @@ public class BulkDeploymentQueueService {
 
     public void handleQueue() {
         log.debug("Limit {}", configurationManager.getConfiguration().getParallelDeploymentsLimit());
-        List<BulkDeploymentQueueEntry> jobList = queueRepository.findAll();
+        List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
+        log.debug("Handling bulk queue (total entries {})", queue.size());
 
-        List<BulkDeploymentQueueEntry> toDeploy = jobList.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
+        List<BulkDeploymentQueueEntry> toDeploy = queue.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
                 .equals(AppLifecycleState.REQUESTED)).collect(Collectors.toList());
 
         //app to configure
-        jobList.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
+        queue.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
                 .equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED)).forEach( deployment -> {
                     log.debug("Configuration triggered for {}", deployment.getDeploymentId());
             appLifecycleManager.applyConfiguration(deployment.getDeploymentId(), AppConfigurationView.builder()
@@ -48,32 +49,38 @@ public class BulkDeploymentQueueService {
                     .mandatoryParameters(deployment.getAppConfigurationJson()).build(), null);
         });
 
-        log.debug("Jobs to do {}, jobs to deploy {}", jobList.size(), toDeploy.size());
 
         toDeploy.stream().limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()).forEach( deploy -> {
             eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploy.getDeploymentId()));
             log.debug("Trigger running for {}", deploy.getDeploymentId());
         });
+        updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(queue);
 
-        removeCompletedFromQueue();
+        triggerNewDeploymentsFromQueue(queue);
     }
 
-    private void removeCompletedFromQueue() {
-        List<BulkDeploymentQueueEntry> jobList = queueRepository.findAll();
-
-        // TODO future for inFailState redeploy application
-
-        jobList.stream().filter(deployment -> {
-            AppDeploymentState state =  appDeploymentRepositoryManager.loadState(deployment.getDeploymentId());
-            return state.isInRunningState() || state.isInFailedState();
-        }).peek(dep -> log.debug("Delete job for {}", dep.getDeploymentId())).forEach(dep -> {
-            bulkApplicationService.updateEntryStateById(dep.getBulkEntryId());
-            queueRepository.delete(dep);
-        });
+    private void updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(List<BulkDeploymentQueueEntry> queue) {
+        log.debug("Verifying statuses and cleaning up the queue");
+        queue.stream()
+                .filter(e -> {
+                    AppDeploymentState state =  appDeploymentRepositoryManager.loadState(e.getDeploymentId());
+                    return state.isInRunningState() || state.isInFailedState();
+                })
+                .forEach(e -> {
+                    bulkApplicationService.updateEntryStateById(e.getBulkEntryId());
+                    log.debug("Removing entry for {}", e.getDeploymentId());
+                    queueRepository.delete(e);
+                });
     }
 
-    public void updateBulkStatus() {
-        this.bulkApplicationService.updateBulkApplicationStatus();
+    private void triggerNewDeploymentsFromQueue(List<BulkDeploymentQueueEntry> queue) {
+        queue.stream()
+                .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED))
+                .limit(parallelDeploymentsLimit) // we may take into account ongoing deployments as well
+                .forEach(e -> {
+                    eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
+                    log.debug("Trigger running for {}", e.getDeploymentId());
+                });
     }
 
 }
