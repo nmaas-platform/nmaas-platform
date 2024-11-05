@@ -10,6 +10,7 @@ import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.scheduling.AppUpgradeScheduleConfig;
+import net.geant.nmaas.scheduling.BulkDeploymentScheduleConfig;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ public class ConfigurationManagerTest {
 
     private final ScheduleManager scheduleManager = mock(ScheduleManager.class);
 
-    private final AppUpgradeScheduleConfig appUpgradeScheduleConfig = mock(AppUpgradeScheduleConfig.class);
+    private final BulkDeploymentScheduleConfig bulkDeploymentScheduleConfig = mock(BulkDeploymentScheduleConfig.class);
 
     private final BulkDeploymentJob bulkDeploymentJob = mock(BulkDeploymentJob.class);
 
@@ -46,7 +47,7 @@ public class ConfigurationManagerTest {
 
     @BeforeEach
     public void setup() {
-        this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository, scheduleManager, appUpgradeScheduleConfig, bulkDeploymentJob);
+        this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository, scheduleManager, bulkDeploymentScheduleConfig, bulkDeploymentJob);
         this.config = Configuration.builder()
                 .id(1L)
                 .maintenance(true)
