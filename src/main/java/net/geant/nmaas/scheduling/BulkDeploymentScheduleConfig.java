@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
@@ -16,7 +17,12 @@ public class BulkDeploymentScheduleConfig {
 
     private static final String BULK_DEPLOYMENT_JOB = "BulkDeploymentJob";
 
+    public String getBulkDeploymentJobName() {
+        return BULK_DEPLOYMENT_JOB;
+    }
+
     @Bean
+    @DependsOn({"portalConfiguration"})
     public InitializingBean insertDefaultBulkDeploymentJob() {
         return new InitializingBean() {
 

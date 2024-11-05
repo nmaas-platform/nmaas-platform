@@ -19,11 +19,6 @@ public class AppUpgradeScheduleConfig {
 
     private static final String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
     private static final String APP_UPGRADE_SUMMARY_JOB_NAME = "AppUpgradeSummaryJob";
-    private static final String BULK_DEPLOYMENT_JOB = "BulkDeploymentJob";
-
-    public String getBulkDeploymentJobName() {
-        return BULK_DEPLOYMENT_JOB;
-    }
 
 
     @Bean
@@ -48,9 +43,6 @@ public class AppUpgradeScheduleConfig {
             @Value("${nmaas.service.upgrade-summary.cron}")
             String appUpgradeSummaryCron;
 
-            @Value("${nmaas.service.bulk-deployment.cron}")
-            String bulkDeploymentCron;
-
             @Override
             @Transactional
             public void afterPropertiesSet() {
@@ -65,12 +57,6 @@ public class AppUpgradeScheduleConfig {
                     log.warn("Won't send out email notifications about automatic upgrades in given period");
                 } else {
                     this.scheduleManager.createJob(appUpgradeSummaryJob, APP_UPGRADE_SUMMARY_JOB_NAME, appUpgradeSummaryCron);
-                }
-                if (Strings.isNullOrEmpty(bulkDeploymentCron)) {
-                    log.warn("Bulk deployment cron expression not provided");
-                } else {
-                    log.debug("Created bulk deplyoment cron ");
-                    this.scheduleManager.createJob(bulkDeploymentJob, BULK_DEPLOYMENT_JOB, bulkDeploymentCron);
                 }
             }
         };

@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.scheduling.AppUpgradeScheduleConfig;
+import net.geant.nmaas.scheduling.BulkDeploymentScheduleConfig;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private final InternationalizationSimpleRepository internationalizationRepository;
     private final ScheduleManager scheduleManager;
 
-    private final AppUpgradeScheduleConfig appUpgradeScheduleConfig;
+    private final BulkDeploymentScheduleConfig bulkDeploymentScheduleConfig;
     private final BulkDeploymentJob bulkDeploymentJob;
 
     @Override
@@ -60,8 +61,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         if( !(updatedConfiguration.getBulkDeploymentJobCron().equalsIgnoreCase(configuration.get().getBulkDeploymentJobCron()) ||
         updatedConfiguration.getParallelDeploymentsLimit().equals(configuration.get().getParallelDeploymentsLimit())) ) {
             // job need to be updated
-            scheduleManager.deleteJob(appUpgradeScheduleConfig.getBulkDeploymentJobName());
-            scheduleManager.createJob(bulkDeploymentJob, appUpgradeScheduleConfig.getBulkDeploymentJobName(), updatedConfiguration.getBulkDeploymentJobCron());
+            scheduleManager.deleteJob(bulkDeploymentScheduleConfig.getBulkDeploymentJobName());
+            scheduleManager.createJob(bulkDeploymentJob, bulkDeploymentScheduleConfig.getBulkDeploymentJobName(), updatedConfiguration.getBulkDeploymentJobCron());
         }
         repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
     }

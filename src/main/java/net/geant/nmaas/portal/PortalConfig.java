@@ -121,7 +121,7 @@ public class PortalConfig {
 		};
 	}
 
-	@Bean
+	@Bean("portalConfiguration")
 	public InitializingBean saveDefaultPortalConfiguration() {
 		return new InitializingBean() {
 
