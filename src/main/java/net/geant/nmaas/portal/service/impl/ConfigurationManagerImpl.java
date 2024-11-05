@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -9,6 +10,9 @@ import net.geant.nmaas.portal.persistent.entity.InternationalizationSimple;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import net.geant.nmaas.scheduling.AppUpgradeScheduleConfig;
+import net.geant.nmaas.scheduling.BulkDeploymentScheduleConfig;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -23,6 +27,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private final ConfigurationRepository repository;
     private final ModelMapper modelMapper;
     private final InternationalizationSimpleRepository internationalizationRepository;
+    private final ScheduleManager scheduleManager;
+
+    private final BulkDeploymentScheduleConfig bulkDeploymentScheduleConfig;
+    private final BulkDeploymentJob bulkDeploymentJob;
 
     @Override
     public ConfigurationView getConfiguration() {
@@ -49,6 +57,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
                 .orElseThrow(() -> new IllegalArgumentException("Language not found"));
         if (!internationalization.isEnabled()) {
             throw new IllegalStateException("Default language must be active");
+        }
+        if( !(updatedConfiguration.getBulkDeploymentJobCron().equalsIgnoreCase(configuration.get().getBulkDeploymentJobCron()) ||
+        updatedConfiguration.getParallelDeploymentsLimit().equals(configuration.get().getParallelDeploymentsLimit())) ) {
+            // job need to be updated
+            scheduleManager.deleteJob(bulkDeploymentScheduleConfig.getBulkDeploymentJobName());
+            scheduleManager.createJob(bulkDeploymentJob, bulkDeploymentScheduleConfig.getBulkDeploymentJobName(), updatedConfiguration.getBulkDeploymentJobCron());
         }
         repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
     }

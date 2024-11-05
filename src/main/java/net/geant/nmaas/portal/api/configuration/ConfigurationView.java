@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,12 @@ public class ConfigurationView {
     @Builder.Default
     private boolean bulkDomainsSendEmailForNewAccounts = true;
 
+    private String bulkDeploymentJobCron;
+
+    private Integer parallelDeploymentsLimit;
+
     public ConfigurationView(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage, boolean testInstance, boolean sendAppInstanceFailureEmails, List<String> appInstanceFailureEmailList,
-                             boolean bulkDomainsAllowForSsoAccounts, boolean bulkDomainsSendEmailForNewAccounts) {
+                             boolean bulkDomainsAllowForSsoAccounts, boolean bulkDomainsSendEmailForNewAccounts, String bulkDeploymentJobCron, Integer bulkDeploymentPerPeriod) {
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
         this.defaultLanguage = defaultLanguage;
@@ -55,6 +60,8 @@ public class ConfigurationView {
         this.appInstanceFailureEmailList = appInstanceFailureEmailList;
         this.bulkDomainsAllowForSsoAccounts = bulkDomainsAllowForSsoAccounts;
         this.bulkDomainsSendEmailForNewAccounts = bulkDomainsSendEmailForNewAccounts;
+        this.bulkDeploymentJobCron = bulkDeploymentJobCron;
+        this.parallelDeploymentsLimit = bulkDeploymentPerPeriod;
     }
 
 }

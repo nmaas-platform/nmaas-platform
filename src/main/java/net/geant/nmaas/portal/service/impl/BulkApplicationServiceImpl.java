@@ -142,12 +142,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .appName(application.getName())
                         .descriptiveDeploymentId(createDescriptiveDeploymentId(instance.getDomain().getCodename(), application.getName(), instance.getId()))
                         .build();
-                Identifier internalId = appLifecycleManager.initApplicationDeployment(appDeployment);
-                // add job entry to table
-//
-                // updating application instance information with assigned deployment identifier
-                instance.setInternalId(internalId);
-                instanceService.update(instance);
+
 
                 // updating application instance information with custom configuration
                 AppConfigurationView appConfigurationView = new AppConfigurationView();
@@ -163,6 +158,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     appConfigurationView.setJsonInput("{}");
                 }
 
+                // add job entry to table
+                Identifier internalId = appLifecycleManager.initApplicationDeployment(appDeployment);
+                // updating application instance information with assigned deployment identifier
+                instance.setInternalId(internalId);
+                instanceService.update(instance);
+
+
                 // store entry information in database
                 BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.save(
                         BulkDeploymentEntry.builder()
@@ -173,7 +175,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .build()
                 );
                 bulkDeploymentQueueRepository.save(
-                        BulkDeploymentQueueEntry.builder().deploymentId(internalId).bulkEntryId(bulkDeploymentEntry.getId()).build()
+                        BulkDeploymentQueueEntry.builder()
+                                .deploymentId(internalId)
+                                .bulkEntryId(bulkDeploymentEntry.getId())
+                                .appConfigurationJson(appConfigurationView.getJsonInput())
+                                .build()
                 );
 
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
