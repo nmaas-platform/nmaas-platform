@@ -37,26 +37,21 @@ public class BulkDeploymentQueueService {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
         log.debug("Handling bulk queue (total entries {})", queue.size());
 
-        List<BulkDeploymentQueueEntry> toDeploy = queue.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
-                .equals(AppLifecycleState.REQUESTED)).collect(Collectors.toList());
+        triggerConfiguration(queue);
 
-        //app to configure
+        updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(queue);
+
+        triggerNewDeploymentsFromQueue(queue);
+    }
+
+    private void triggerConfiguration(List<BulkDeploymentQueueEntry> queue) {
         queue.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
                 .equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED)).forEach( deployment -> {
-                    log.debug("Configuration triggered for {}", deployment.getDeploymentId());
+            log.debug("Configuration triggered for {}", deployment.getDeploymentId());
             appLifecycleManager.applyConfiguration(deployment.getDeploymentId(), AppConfigurationView.builder()
                     .jsonInput(deployment.getAppConfigurationJson())
                     .mandatoryParameters(deployment.getAppConfigurationJson()).build(), null);
         });
-
-
-        toDeploy.stream().limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()).forEach( deploy -> {
-            eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploy.getDeploymentId()));
-            log.debug("Trigger running for {}", deploy.getDeploymentId());
-        });
-        updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(queue);
-
-        triggerNewDeploymentsFromQueue(queue);
     }
 
     private void updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(List<BulkDeploymentQueueEntry> queue) {
@@ -76,7 +71,7 @@ public class BulkDeploymentQueueService {
     private void triggerNewDeploymentsFromQueue(List<BulkDeploymentQueueEntry> queue) {
         queue.stream()
                 .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED))
-                .limit(parallelDeploymentsLimit) // we may take into account ongoing deployments as well
+                .limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()) // we may take into account ongoing deployments as well
                 .forEach(e -> {
                     eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
                     log.debug("Trigger running for {}", e.getDeploymentId());
