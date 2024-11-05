@@ -5,10 +5,13 @@ import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueService;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.service.BulkApplicationService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,19 +34,23 @@ class BulkDeploymentJobServiceTest {
     ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     BulkApplicationService bulkApplicationService = mock(BulkApplicationService.class);
 
+    AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
+
+    ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+
     BulkDeploymentQueueService underTest;
 
     @BeforeEach
     void setup() {
-        underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentQueueRepository, eventPublisher, bulkApplicationService);
-        underTest.parallelDeploymentsLimit = 2;
+        underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentQueueRepository, eventPublisher, bulkApplicationService, appLifecycleManager, configurationManager);
+       when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
     }
 
     @Test
     void shouldTriggerDeployment() {
-        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
-        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
-        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
+        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params");
+        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L, "params");
+        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L, "params");
         when(bulkDeploymentQueueRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.REQUESTED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.REQUEST_VALIDATED);
@@ -55,9 +62,9 @@ class BulkDeploymentJobServiceTest {
 
     @Test
     void shouldTriggerDeleteEntryJob() {
-        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L);
-        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L);
-        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L);
+        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params");
+        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L, "params");
+        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L, "params");
         bulkDeploymentQueueRepository.save(entry);
         bulkDeploymentQueueRepository.save(entry2);
         bulkDeploymentQueueRepository.save(entry3);

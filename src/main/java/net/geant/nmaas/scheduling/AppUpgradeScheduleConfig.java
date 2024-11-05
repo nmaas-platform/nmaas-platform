@@ -1,6 +1,7 @@
 package net.geant.nmaas.scheduling;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
 import net.geant.nmaas.orchestration.AppUpgradeSummaryJob;
@@ -19,6 +20,10 @@ public class AppUpgradeScheduleConfig {
     private static final String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
     private static final String APP_UPGRADE_SUMMARY_JOB_NAME = "AppUpgradeSummaryJob";
     private static final String BULK_DEPLOYMENT_JOB = "BulkDeploymentJob";
+
+    public String getBulkDeploymentJobName() {
+        return BULK_DEPLOYMENT_JOB;
+    }
 
 
     @Bean
@@ -64,7 +69,7 @@ public class AppUpgradeScheduleConfig {
                 if (Strings.isNullOrEmpty(bulkDeploymentCron)) {
                     log.warn("Bulk deployment cron expression not provided");
                 } else {
-                    log.warn("Created bulk deplyoment cron ");
+                    log.debug("Created bulk deplyoment cron ");
                     this.scheduleManager.createJob(bulkDeploymentJob, BULK_DEPLOYMENT_JOB, bulkDeploymentCron);
                 }
             }

@@ -65,6 +65,13 @@ public class Configuration {
     @Column(nullable = false)
     private boolean bulkDomainsSendEmailForNewAccounts = true;
 
+    @Column(nullable = false)
+    private String bulkDeploymentJobCron;
+
+    @Column(nullable = false)
+    private Integer parallelDeploymentsLimit;
+
+
     public void setAppInstanceFailureEmailList(List<String> emails) {
         this.appInstanceFailureEmails = String.join(";", emails);
     }
