@@ -157,6 +157,11 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
         return this.repository.countAllRunningByAppName().stream().collect(Collectors.toMap(AppDeploymentCount::getApplicationName, AppDeploymentCount::getCount));
     }
 
+    @Override
+    public Boolean isFirstTimeDeployment(Identifier deploymentId) {
+        return loadStateHistory(deploymentId).stream().filter(state -> state.getCurrentState().isInRunningState()).count() <= 1;
+    }
+
     private String deploymentNotFoundMessage(Identifier deploymentId) {
         return "Deployment with id " + deploymentId + " not found in the repository. ";
     }
