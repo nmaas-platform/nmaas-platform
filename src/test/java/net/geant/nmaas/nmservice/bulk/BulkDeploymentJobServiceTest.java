@@ -33,9 +33,7 @@ class BulkDeploymentJobServiceTest {
     BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
     ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     BulkApplicationService bulkApplicationService = mock(BulkApplicationService.class);
-
     AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
-
     ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
     BulkDeploymentQueueService underTest;
@@ -43,7 +41,7 @@ class BulkDeploymentJobServiceTest {
     @BeforeEach
     void setup() {
         underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentQueueRepository, eventPublisher, bulkApplicationService, appLifecycleManager, configurationManager);
-       when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
+        when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
     }
 
     @Test
