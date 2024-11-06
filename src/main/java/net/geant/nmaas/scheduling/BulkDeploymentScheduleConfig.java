@@ -16,11 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class BulkDeploymentScheduleConfig {
 
-    private static final String BULK_DEPLOYMENT_JOB = "BulkDeploymentJob";
-
-    public String getBulkDeploymentJobName() {
-        return BULK_DEPLOYMENT_JOB;
-    }
+    public static final String BULK_DEPLOYMENT_JOB = "BulkDeploymentJob";
 
     @Bean
     @DependsOn({"portalConfiguration"})
@@ -42,11 +38,11 @@ public class BulkDeploymentScheduleConfig {
             @Override
             @Transactional
             public void afterPropertiesSet() {
-                if(!Strings.isNullOrEmpty(configurationManager.getConfiguration().getBulkDeploymentJobCron())) {
-                    log.debug("Configuration is loaded, taking bulk cron setting from there");
-                    this.scheduleManager.createJob(bulkDeploymentJob, BULK_DEPLOYMENT_JOB, configurationManager.getConfiguration().getBulkDeploymentJobCron());
-                }
-                else if (Strings.isNullOrEmpty(bulkDeploymentCron)) {
+                String bulkDeploymentCronFromDb = configurationManager.getConfiguration().getBulkDeploymentJobCron();
+                if (!Strings.isNullOrEmpty(bulkDeploymentCronFromDb)) {
+                    log.debug("Scheduling bulk deployment job based on cron loaded from the database");
+                    this.scheduleManager.createJob(bulkDeploymentJob, BULK_DEPLOYMENT_JOB, bulkDeploymentCronFromDb);
+                } else if (Strings.isNullOrEmpty(bulkDeploymentCron)) {
                     log.warn("Bulk deployment cron expression not provided");
                 } else {
                     this.scheduleManager.createJob(bulkDeploymentJob, BULK_DEPLOYMENT_JOB, bulkDeploymentCron);

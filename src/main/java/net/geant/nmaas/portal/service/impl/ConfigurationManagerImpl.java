@@ -10,7 +10,6 @@ import net.geant.nmaas.portal.persistent.entity.InternationalizationSimple;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
-import net.geant.nmaas.scheduling.AppUpgradeScheduleConfig;
 import net.geant.nmaas.scheduling.BulkDeploymentScheduleConfig;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.modelmapper.ModelMapper;
@@ -25,12 +24,10 @@ import java.util.Optional;
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private final ConfigurationRepository repository;
-    private final ModelMapper modelMapper;
     private final InternationalizationSimpleRepository internationalizationRepository;
     private final ScheduleManager scheduleManager;
-
-    private final BulkDeploymentScheduleConfig bulkDeploymentScheduleConfig;
     private final BulkDeploymentJob bulkDeploymentJob;
+    private final ModelMapper modelMapper;
 
     @Override
     public ConfigurationView getConfiguration() {
@@ -58,18 +55,17 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         if (!internationalization.isEnabled()) {
             throw new IllegalStateException("Default language must be active");
         }
-        if( !(updatedConfiguration.getBulkDeploymentJobCron().equalsIgnoreCase(configuration.get().getBulkDeploymentJobCron()) ||
-        updatedConfiguration.getParallelDeploymentsLimit().equals(configuration.get().getParallelDeploymentsLimit())) ) {
-            // job need to be updated
-            scheduleManager.deleteJob(bulkDeploymentScheduleConfig.getBulkDeploymentJobName());
-            scheduleManager.createJob(bulkDeploymentJob, bulkDeploymentScheduleConfig.getBulkDeploymentJobName(), updatedConfiguration.getBulkDeploymentJobCron());
+        if (!updatedConfiguration.getBulkDeploymentJobCron().equalsIgnoreCase(configuration.get().getBulkDeploymentJobCron())) {
+            // job needs to be recreated
+            scheduleManager.deleteJob(BulkDeploymentScheduleConfig.BULK_DEPLOYMENT_JOB);
+            scheduleManager.createJob(bulkDeploymentJob, BulkDeploymentScheduleConfig.BULK_DEPLOYMENT_JOB, updatedConfiguration.getBulkDeploymentJobCron());
         }
         repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
     }
 
     private Configuration loadSingleConfiguration() {
         if (repository.count() > 1 || repository.count() == 0) {
-            throw new IllegalStateException("Found " + repository.count() + " configuration instead of one");
+            throw new IllegalStateException("Found " + repository.count() + " configurations instead of one");
         }
         return repository.findAll().get(0);
     }
