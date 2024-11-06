@@ -158,6 +158,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
+    @Transactional
     public Boolean isFirstTimeDeployment(Identifier deploymentId) {
         return loadStateHistory(deploymentId).stream().filter(state -> state.getCurrentState().isInRunningState()).count() <= 1;
     }
