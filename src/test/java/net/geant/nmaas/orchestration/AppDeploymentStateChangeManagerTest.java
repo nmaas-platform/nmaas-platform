@@ -93,15 +93,19 @@ public class AppDeploymentStateChangeManagerTest {
 
     @Test
     void shouldTriggerNotificationEvent() {
+        when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
-        when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
-        }}));
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(
+                new AppUiAccessDetails(
+                        new HashSet<ServiceAccessMethodView>() {{  add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url")); }}
+                )
+        );
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
-
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
+
         ApplicationEvent newEvent = manager.notifyStateChange(event);
+
         assertThat(newEvent, is(nullValue()));
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
     }
@@ -175,6 +179,7 @@ public class AppDeploymentStateChangeManagerTest {
 
     @Test
     void shouldSendEmailWithoutHistoryRunning() {
+        when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
@@ -183,7 +188,9 @@ public class AppDeploymentStateChangeManagerTest {
         }}));
         when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
+
         manager.notifyStateChange(event);
+
         verify(publisher).publishEvent(any(NotificationEvent.class));
     }
 

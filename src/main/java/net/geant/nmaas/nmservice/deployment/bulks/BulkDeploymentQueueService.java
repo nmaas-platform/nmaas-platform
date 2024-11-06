@@ -11,12 +11,10 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +31,11 @@ public class BulkDeploymentQueueService {
    private final ConfigurationManager configurationManager;
 
     public void handleQueue() {
-        log.debug("Limit {}", configurationManager.getConfiguration().getParallelDeploymentsLimit());
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
         log.debug("Handling bulk queue (total entries {})", queue.size());
+        if (queue.isEmpty()) {
+            return;
+        }
 
         triggerConfiguration(queue);
 
@@ -46,16 +46,16 @@ public class BulkDeploymentQueueService {
 
     private void triggerConfiguration(List<BulkDeploymentQueueEntry> queue) {
         queue.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
-                .equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED)).forEach( deployment -> {
-            log.debug("Configuration triggered for {}", deployment.getDeploymentId());
-            appLifecycleManager.applyConfiguration(deployment.getDeploymentId(), AppConfigurationView.builder()
-                    .jsonInput(deployment.getAppConfigurationJson())
-                    .mandatoryParameters(deployment.getAppConfigurationJson()).build(), null);
-        });
+                .equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED))
+                .forEach(e -> {
+                    log.debug("Configuration task triggered for {}", e.getDeploymentId());
+                    appLifecycleManager.applyConfiguration(e.getDeploymentId(), AppConfigurationView.builder()
+                            .jsonInput(e.getAppConfigurationJson())
+                            .mandatoryParameters(e.getAppConfigurationJson()).build(), null);
+                });
     }
 
     private void updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(List<BulkDeploymentQueueEntry> queue) {
-        log.debug("Verifying statuses and cleaning up the queue");
         queue.stream()
                 .filter(e -> {
                     AppDeploymentState state =  appDeploymentRepositoryManager.loadState(e.getDeploymentId());
@@ -74,7 +74,7 @@ public class BulkDeploymentQueueService {
                 .limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()) // we may take into account ongoing deployments as well
                 .forEach(e -> {
                     eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
-                    log.debug("Trigger running for {}", e.getDeploymentId());
+                    log.debug("Triggering deployment for {}", e.getDeploymentId());
                 });
     }
 
