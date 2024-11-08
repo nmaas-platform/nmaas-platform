@@ -23,7 +23,7 @@ public class TokenAuthenticationService {
 	private static final String AUTH_HEADER = "Authorization";
 	private static final String AUTH_METHOD = "Bearer";
 	
-	private JWTTokenService jwtTokenService;
+	private final JWTTokenService jwtTokenService;
 
 	@Autowired
 	public TokenAuthenticationService(JWTTokenService jwtTokenService) {
