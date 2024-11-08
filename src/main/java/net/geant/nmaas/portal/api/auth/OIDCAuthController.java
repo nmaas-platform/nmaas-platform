@@ -10,6 +10,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,9 @@ public class OIDCAuthController {
 
     private final DomainService domains;
 
+    @Value("${portal.address}")
+    private String portalAddress;
+
 
     @GetMapping("/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUserser) {
@@ -40,7 +44,7 @@ public class OIDCAuthController {
                 userService.findByUsername("oidc_" + oidcUserser.getAttribute("preferred_username")).orElseThrow()
                 : registerNewUser(oidcUserser);
 
-        String redirectUrl = "http://localhost:4200/login-success?token=" + jwtTokenService.getToken(user) + "&refresh_token=" + jwtTokenService.getRefreshToken(user);
+        String redirectUrl = portalAddress +  "/login-success?token=" + jwtTokenService.getToken(user) + "&refresh_token=" + jwtTokenService.getRefreshToken(user);
         return new RedirectView(redirectUrl);
 
     }
