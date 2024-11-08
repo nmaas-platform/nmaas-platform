@@ -164,7 +164,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 instance.setInternalId(internalId);
                 instanceService.update(instance);
 
-
                 // store entry information in database
                 BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.save(
                         BulkDeploymentEntry.builder()
@@ -185,8 +184,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
 
             } catch (Exception e) {
-                log.warn("Exception thrown while deploying application {}:{} in domain {}", applicationName, applicationSpec.getApplicationVersion(), applicationSpec.getDomainName());
-                log.warn(e.getMessage());
+                log.warn("Exception thrown while deploying application {}:{} in domain {} (message: {})",
+                        applicationName,
+                        applicationSpec.getApplicationVersion(),
+                        applicationSpec.getDomainName(),
+                        e.getMessage());
                 bulkDeployment.getEntries().add(
                         BulkDeploymentEntry.builder()
                                 .type(BulkType.APPLICATION)

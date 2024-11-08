@@ -255,14 +255,14 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
     @Override
     @Transactional
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public boolean checkUpgradePossible(Long appInstanceId) {
         return obtainVersionForUpgrade(appInstanceId).isPresent();
     }
 
     @Override
     @Transactional
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public boolean checkUpgradePossible(Long appInstanceId, String targetVersion) {
         return obtainVersionForUpgrade(appInstanceId)
                 .map(application -> application.getVersion().equals(targetVersion))
@@ -303,6 +303,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void deleteAllByDomain(Long domainId) {
         List<AppInstance> appsByDomain = findAllByDomain(domainId);
         Iterator<AppInstance> iterator = appsByDomain.iterator();

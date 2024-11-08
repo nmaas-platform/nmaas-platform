@@ -49,7 +49,7 @@ public class SingleCommandExecutor {
 	}
 
 	public void executeSingleCommand(Command command) {
-        log.error("command : {}", command.asString());
+        log.trace("command : {}", command.asString());
         executeCommand(command);
 	}
 
@@ -66,12 +66,12 @@ public class SingleCommandExecutor {
     }
 
     private void connect() {
-        log.debug("Connecting to " + hostname);
+        log.trace("Connecting to {}", hostname);
         connector = new SshConnector(hostname, port, credentials);
 	}
 
     private String execute(Command command) {
-        log.debug("Executing command: " + command.asString());
+        log.trace("Executing command: {}", command.asString());
         return connector.executeSingleCommand(command.asString());
     }
 
