@@ -19,7 +19,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -29,6 +29,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
 
 @Configuration
 @EnableWebSecurity
@@ -46,20 +47,24 @@ public class SecurityConfig {
     private static final String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
 
     private static final String AUTH_SSO_LOGIN = "/api/auth/sso/login";
+    private static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
+    private static final String AUTH_OIDC_SUCCESS = "/oidc/success";
 
-    private TokenAuthenticationService tokenAuthenticationService;
+    private final TokenAuthenticationService tokenAuthenticationService;
 
-    private Environment env;
+    private final Environment env;
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    private GitLabProjectRepository gitLabProjectRepository;
+    private final GitLabProjectRepository gitLabProjectRepository;
 
     private static final RequestMatcher[] AUTH_WHITELIST = {
             new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
             new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
             new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
             new AntPathRequestMatcher(AUTH_SSO_LOGIN),
+            new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
+            new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
             new AntPathRequestMatcher("/favicon.ico"),
             new AntPathRequestMatcher("/api/info/**"),
             new AntPathRequestMatcher("/actuator/**"),
@@ -87,6 +92,8 @@ public class SecurityConfig {
                     new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
                     new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
                     new AntPathRequestMatcher(AUTH_SSO_LOGIN),
+                    new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
+                    new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
                     new AntPathRequestMatcher("/api-docs/**"),
                     new AntPathRequestMatcher("/actuator/**"),
                     new AntPathRequestMatcher("/favicon.ico"),
@@ -108,10 +115,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
+
         return httpSecurity
-                .exceptionHandling(Customizer.withDefaults())
-                .cors(Customizer.withDefaults())
-                .csrf(Customizer.withDefaults())
+//                .exceptionHandling(Customizer.withDefaults())
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(httpRequest -> httpRequest
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/orchestration/deployments/**/state")).authenticated()
@@ -120,7 +128,12 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/management/**")).authenticated()
                         .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login(oAuth2 -> oAuth2
+                        .userInfoEndpoint(Customizer.withDefaults())
+                        .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
+                )
+
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(statelessAuthFilter(skipPathRequestMatcher,
                                 null,
                                 tokenAuthenticationService),
@@ -130,9 +143,9 @@ public class SecurityConfig {
                                 null,
                                 gitLabProjectRepository),
                         StatelessAuthenticationFilter.class
-                ).build();
+                )
+                .build();
     }
-
 
     private Filter statelessAuthFilter(RequestMatcher skipPaths, AuthenticationFailureHandler failureHandler, TokenAuthenticationService tokenService) {
         StatelessAuthenticationFilter filter = new StatelessAuthenticationFilter(skipPaths, tokenService);
@@ -167,81 +180,3 @@ public class SecurityConfig {
     }
 
 }
-
-
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        boolean sslEnabled = Boolean.parseBoolean(env.getProperty(SSL_ENABLED, "false"));
-//        if (sslEnabled) {
-//            http.requiresChannel().anyRequest().requiresSecure();
-//        }
-//        http
-//                .csrf().disable()
-//                .exceptionHandling()
-//                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers(AUTH_BASIC_LOGIN).permitAll()
-//                .antMatchers(AUTH_BASIC_SIGNUP).permitAll()
-//                .antMatchers(AUTH_BASIC_TOKEN).permitAll()
-//                .antMatchers(AUTH_WHITELIST).permitAll()
-//                .antMatchers(AUTH_SSO_LOGIN).permitAll()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
-//                .antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/i18n/content/**").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/i18n/all/enabled").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/auth/sso").permitAll()
-//                .antMatchers(HttpMethod.POST, "/api/mail").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/mail/type").permitAll()
-//                .antMatchers("/api/users/reset/**").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/monitor/all").permitAll()
-//                .antMatchers("/api/orchestration/deployments/**/state").authenticated()
-//                .antMatchers("/api/orchestration/deployments/**/access").authenticated()
-//                .antMatchers("/api/orchestration/deployments/**").authenticated()
-//                .antMatchers("/api/management/**").authenticated()
-//                .antMatchers("/api/**").authenticated()
-//                .and()
-//                .addFilterBefore(
-//                        statelessAuthFilter(
-//                                new SkipPathRequestMatcher(
-//                                        new AntPathRequestMatcher[]{
-//                                                new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
-//                                                new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
-//                                                new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
-//                                                new AntPathRequestMatcher(AUTH_SSO_LOGIN),
-//                                                new AntPathRequestMatcher("/api-docs/**"),
-//                                                new AntPathRequestMatcher("/actuator/**"),
-//                                                new AntPathRequestMatcher("/favicon.ico"),
-//                                                new AntPathRequestMatcher("/api/configuration/**", "GET"),
-//                                                new AntPathRequestMatcher("/api/auth/sso", "GET"),
-//                                                new AntPathRequestMatcher("/api/info/**"),
-//                                                new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
-//                                                new AntPathRequestMatcher("/api/content/**"),
-//                                                new AntPathRequestMatcher("/api/users/reset/**"),
-//                                                new AntPathRequestMatcher("/api/mail"),
-//                                                new AntPathRequestMatcher("/api/monitor/all", "GET"),
-//                                                new AntPathRequestMatcher("/api/mail/type", "GET"),
-//                                                new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
-//                                                new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
-//                                                new AntPathRequestMatcher("/api/gitlab/webhooks/**")
-//                                        }
-//                                ),
-//                                null,
-//                                tokenAuthenticationService),
-//                        UsernamePasswordAuthenticationFilter.class
-//                )
-//                .addFilterBefore(
-//                        gitlabTokenFilter("/api/gitlab/webhooks/**",
-//                                null,
-//                                gitLabProjectRepository),
-//                        StatelessAuthenticationFilter.class
-//                );
-//    }
