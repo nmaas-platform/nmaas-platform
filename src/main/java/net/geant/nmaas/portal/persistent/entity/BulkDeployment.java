@@ -15,6 +15,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -32,7 +34,9 @@ public class BulkDeployment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long creatorId;
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     private OffsetDateTime creationDate;
 

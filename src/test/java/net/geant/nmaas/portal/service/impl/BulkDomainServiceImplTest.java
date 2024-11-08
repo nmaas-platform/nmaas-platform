@@ -66,6 +66,7 @@ public class BulkDomainServiceImplTest {
         when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView());
+        when(userService.findById(any())).thenReturn(Optional.of(user));
 
         bulkDomainService.handleBulkCreation(List.of(csvDomain), testUser());
 
@@ -77,7 +78,7 @@ public class BulkDomainServiceImplTest {
         assertEquals(2, bulkDeployment.getEntries().size());
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.USER).findAny().orElseThrow().getCreated()).isFalse();
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.DOMAIN).findAny().orElseThrow().getCreated()).isFalse();
-        assertEquals(testUser().getId(), bulkDeployment.getCreatorId());
+        assertEquals(testUser().getId(), bulkDeployment.getCreator().getId());
     }
 
     @Test
@@ -99,6 +100,7 @@ public class BulkDomainServiceImplTest {
         when(userService.hasPrivilege((User) any(),any(),any())).thenReturn(true);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView());
+        when(userService.findById(any())).thenReturn(Optional.of(user));
 
         bulkDomainService.handleBulkCreation(List.of(csvDomain), testUser());
 
@@ -110,7 +112,7 @@ public class BulkDomainServiceImplTest {
         assertEquals(2, bulkDeployment.getEntries().size());
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.USER).findAny().orElseThrow().getCreated()).isFalse();
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.DOMAIN).findAny().orElseThrow().getCreated()).isTrue();
-        assertEquals(testUser().getId(), bulkDeployment.getCreatorId());
+        assertEquals(testUser().getId(), bulkDeployment.getCreator().getId());
     }
 
     @Test
@@ -131,10 +133,11 @@ public class BulkDomainServiceImplTest {
         when(userService.existsByUsername("user2")).thenReturn(false);
         when(userService.existsByEmail("user2@test.com")).thenReturn(Boolean.FALSE);
         User user = new User("user1", true);
-        user.setId(10L);
+        user.setId(1L);
         user.setEmail("user1@test.com");
         when(userService.registerBulk(any(), any(), any())).thenReturn(user);
         when(bulkDeploymentRepository.save(any())).thenReturn(new BulkDeployment());
+        when(userService.findById(any())).thenReturn(Optional.of(user));
 
         bulkDomainService.handleBulkCreation(List.of(csvDomain1, csvDomain2), testUser());
 
@@ -146,7 +149,7 @@ public class BulkDomainServiceImplTest {
         assertEquals(4, bulkDeployment.getEntries().size());
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.USER)).allMatch(BulkDeploymentEntry::getCreated);
         assertThat(bulkDeployment.getEntries().stream().filter(e -> e.getType() == BulkType.DOMAIN)).noneMatch(BulkDeploymentEntry::getCreated);
-        assertEquals(testUser().getId(), bulkDeployment.getCreatorId());
+        assertEquals(testUser().getId(), bulkDeployment.getCreator().getId());
     }
 
     private static UserViewMinimal testUser() {

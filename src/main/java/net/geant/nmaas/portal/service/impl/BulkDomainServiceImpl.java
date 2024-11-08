@@ -238,11 +238,11 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         }
     }
 
-    private static BulkDeployment createBulkDeployment(UserViewMinimal creator) {
+    private  BulkDeployment createBulkDeployment(UserViewMinimal creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(DOMAIN);
         bulkDeployment.setState(PENDING);
-        bulkDeployment.setCreatorId(creator.getId());
+        bulkDeployment.setCreator(userService.findById(creator.getId()).orElseThrow(() ->new MissingElementException("User with this ID not found")));
         bulkDeployment.setCreationDate(OffsetDateTime.now());
         return bulkDeployment;
     }

@@ -149,7 +149,7 @@ public class SSOAuthControllerIntTest extends BaseControllerTestSetup {
 
     private void addLanguage(){
         if(!intService.getEnabledLanguages().contains("en")) {
-            intService.addNewLanguage(new InternationalizationView("en", true, "{\"content\":\"content\"}"));
+            intService.addNewLanguage(new InternationalizationView("en", true, "{\"content\":\"content\"}"), false);
         }
     }
 

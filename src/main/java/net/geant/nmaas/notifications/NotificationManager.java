@@ -1,5 +1,7 @@
 package net.geant.nmaas.notifications;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
@@ -12,11 +14,11 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
-import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.VlabAppListElement;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -31,6 +33,8 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,10 +91,10 @@ public class NotificationManager {
                     notificationService.sendMail(user.getEmail(), mailContent.getSubject(), filledTemplate, fromAddress);
                 }
             } catch (TemplateException | IOException e) {
-                log.error(String.format("Unable to generate template; to: [%s], template: [%s], message: %s", user.getEmail(), template.getName(), e.getMessage()));
+                log.error("Unable to generate template; to: [{}], template: [{}], message: {}", user.getEmail(), template.getName(), e.getMessage());
             }
         }
-        log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
+        log.info("Mail {} was sent to {}", mailAttributes.getMailType().name(), getListOfMails(mailAttributes.getAddressees()));
     }
 
     private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage) {
@@ -143,10 +147,25 @@ public class NotificationManager {
                     .map(u -> modelMapper.map(u, UserView.class))
                     .collect(Collectors.toList()));
         }
-        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST)
+        if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST, MailType.VLAB_REQUEST)
                 .contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
             Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
+            if (mailAttributes.getMailType().equals(MailType.VLAB_REQUEST)) {
+                Object datesObject = mailAttributes.getOtherAttributes().get("dates");
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<Object> datesList = objectMapper.convertValue(datesObject, new TypeReference<List<Object>>() {});
+                Map<String,Object> dates = objectMapper.convertValue(datesList.get(0), new TypeReference<Map<String, Object>>() {});
+
+                dates.forEach((k,v) -> {
+                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(v.toString());
+                    mailAttributes.getOtherAttributes().put(k,offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                });
+
+                List<VlabAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<VlabAppListElement>>() {});
+                mailAttributes.getOtherAttributes().put("appList",appList.stream().map(VlabAppListElement::getAppListName).collect(Collectors.joining(", "))) ;
+
+            }
             if (contactFormKey.isEmpty()) {
                 log.error("Invalid contact form request, subType is null");
             } else {

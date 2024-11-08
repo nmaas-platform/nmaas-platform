@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
-public class HelmChartUpdateListenerTest {
+class HelmChartUpdateListenerTest {
 
     @Mock
     private HelmCommandExecutor executor;
@@ -25,19 +25,19 @@ public class HelmChartUpdateListenerTest {
     private HelmChartUpdateListener listener;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         listener = new HelmChartUpdateListener(executor);
     }
 
     @Test
-    public void shouldSkipExecutionDueToIncorrectAction() {
+    void shouldSkipExecutionDueToIncorrectAction() {
         ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", DELETED, null);
         listener.trigger(event);
         verifyNoInteractions(executor);
     }
 
     @Test
-    public void shouldSkipExecutionDueToIncorrectHelmChart() {
+    void shouldSkipExecutionDueToIncorrectHelmChart() {
         AppDeploymentSpec spec = new AppDeploymentSpec();
         KubernetesTemplate template = new KubernetesTemplate();
         spec.setKubernetesTemplate(template);
@@ -47,7 +47,7 @@ public class HelmChartUpdateListenerTest {
     }
 
     @Test
-    public void shouldExecuteHelmRepoAddCommand() {
+    void shouldExecuteHelmRepoAddCommand() {
         AppDeploymentSpec spec = new AppDeploymentSpec();
         KubernetesTemplate template = new KubernetesTemplate();
         HelmChartRepositoryEmbeddable repository = new HelmChartRepositoryEmbeddable();

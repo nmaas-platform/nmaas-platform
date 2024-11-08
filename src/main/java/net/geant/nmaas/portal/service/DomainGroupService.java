@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.User;
 
 import java.util.List;
 
@@ -26,4 +27,5 @@ public interface DomainGroupService {
 
     void deleteAppBaseFromAllAppState(ApplicationBase base);
 
+    void deleteUserFromAllDomainsGroups(User user);
 }

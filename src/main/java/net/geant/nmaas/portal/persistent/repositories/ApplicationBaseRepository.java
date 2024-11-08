@@ -26,7 +26,7 @@ public interface ApplicationBaseRepository extends JpaRepository<ApplicationBase
     long countAllActive();
 
     @Cacheable("applicationBaseS")
-    @Query("SELECT ab FROM ApplicationBase ab JOIN Application a on a.name = ab.name WHERE a.state = 'ACTIVE'")
+    @Query("SELECT DISTINCT ab FROM ApplicationBase ab JOIN Application a on a.name = ab.name WHERE a.state = 'ACTIVE'")
     List<ApplicationBaseS> findAllSmall();
 
     @Query("SELECT ab.tags FROM ApplicationBase ab WHERE ab.id =?1")

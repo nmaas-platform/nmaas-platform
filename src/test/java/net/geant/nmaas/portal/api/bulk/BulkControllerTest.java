@@ -105,7 +105,7 @@ public class BulkControllerTest {
         List<BulkDeployment> bulks = new ArrayList<>();
         BulkDeployment viewS = new BulkDeployment();
         viewS.setType(BulkType.DOMAIN);
-        viewS.setCreatorId(10L);
+        viewS.setCreator(user);
         bulks.add(viewS);
         when(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).thenReturn(List.of(viewS));
         assertEquals(1, Objects.requireNonNull(bulkController.getDomainDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
@@ -126,11 +126,11 @@ public class BulkControllerTest {
         List<BulkDeployment> bulks = new ArrayList<>();
         BulkDeployment base1 = new BulkDeployment();
         base1.setType(BulkType.DOMAIN);
-        base1.setCreatorId(10L);
+        base1.setCreator(user);
         bulks.add(base1);
         BulkDeployment base2 = new BulkDeployment();
         base2.setType(BulkType.DOMAIN);
-        base2.setCreatorId(20L);
+        base2.setCreator(user2);
         bulks.add(base2);
         when(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).thenReturn(bulks);
         assertEquals(1, Objects.requireNonNull(bulkController.getAppDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());

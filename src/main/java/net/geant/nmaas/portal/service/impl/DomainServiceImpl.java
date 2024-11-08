@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
@@ -492,6 +493,24 @@ public class DomainServiceImpl implements DomainService {
                 this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
             });
         });
+    }
+
+    @Override
+    public DomainGroupView updateMembers(List<UserViewMinimal> newMembers, DomainGroupView view) {
+        //delete roles
+
+        List<UserViewMinimal> toDeleteRole = new ArrayList<>(view.getManagers());
+        toDeleteRole.removeAll(newMembers);
+
+        toDeleteRole.forEach(user -> {
+            view.getDomains().forEach(domain -> {
+                this.removeMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
+            });
+        });
+
+        view.setManagers(newMembers);
+        updateRolesInDomainGroupByUsers(view);
+        return domainGroupService.updateDomainGroup(view.getId(), view);
     }
 
     // Domain annotations

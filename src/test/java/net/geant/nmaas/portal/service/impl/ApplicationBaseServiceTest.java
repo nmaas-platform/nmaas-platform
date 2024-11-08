@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public class ApplicationBaseServiceTest {
+class ApplicationBaseServiceTest {
 
     private final ApplicationBase applicationBase1 = new ApplicationBase("name");
     private final ApplicationBase applicationBase2 = new ApplicationBase(2L, "another");
@@ -68,7 +68,7 @@ public class ApplicationBaseServiceTest {
 
         verify(appBaseRepo, times(1)).save(any());
         assertEquals(applicationBase1.getName(), result.getName());
-        assertThat(result.getVersions()).hasSize(0);
+        assertThat(result.getVersions()).isEmpty();
     }
 
     @Test

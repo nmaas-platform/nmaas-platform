@@ -17,12 +17,14 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -58,8 +60,9 @@ public class UserServiceImpl implements UserService {
     private final ConfigurationManager configurationManager;
     private final ModelMapper modelMapper;
 
-    private final ApplicationEventPublisher eventPublisher;
-    private final JWTTokenService jwtTokenService;
+	private final ApplicationEventPublisher eventPublisher;
+	private final JWTTokenService jwtTokenService;
+	private final DomainGroupService domainGroupService;
 
     @Value("${portal.address}")
     @Setter
@@ -194,37 +197,39 @@ public class UserServiceImpl implements UserService {
         return newUser;
     }
 
-    @Override
-    public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
-        if (userRepository.existsByUsername(csvUser.getAdminUserName()) || userRepository.existsByEmail(csvUser.getEmail())) {
-            throw new SignupException("User already exists");
-        }
-        String temporaryPassword = RandomStringUtils.random(16);
-        log.info("Creating user {} with temporary password", csvUser.getAdminUserName());
-        User newUser = new User(csvUser.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
-        newUser.setEmail(csvUser.getEmail());
-        newUser.setEnabled(true);
-        newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
-        newUser.setTermsOfUseAccepted(true);
-        newUser.setPrivacyPolicyAccepted(true);
-        if (domain != null) {
-            newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
-        }
-        boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
-        // set user saml_token to email address if a sso account requested
-        if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
-            if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
-                newUser.setSamlToken(csvUser.getEmail());
-                if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
-            } else {
-                if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
-            }
-        } else {
-            if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
-        }
-        userRepository.save(newUser);
-        return newUser;
-    }
+	@Override
+	public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
+		if (userRepository.existsByUsername(csvUser.getAdminUserName()) || userRepository.existsByEmail(csvUser.getEmail())) {
+			throw new SignupException("User already exists");
+		}
+		String temporaryPassword = RandomStringUtils.random(16);
+		log.info("Creating user {} with temporary password", csvUser.getAdminUserName());
+		User newUser = new User(csvUser.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
+		newUser.setEmail(csvUser.getEmail());
+		newUser.setEnabled(true);
+		newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
+		newUser.setTermsOfUseAccepted(true);
+		newUser.setPrivacyPolicyAccepted(true);
+		newUser.setFirstname(csvUser.getAdminUserName());
+		newUser.setLastname(csvUser.getAdminUserName());
+		if (domain != null) {
+			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
+		}
+		boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
+		// set user saml_token to email address if a sso account requested
+		if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
+			if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
+				newUser.setSamlToken(csvUser.getEmail());
+				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
+			}else {
+				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
+			}
+		} else {
+			if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
+		}
+		userRepository.save(newUser);
+		return newUser;
+	}
 
     @Override
     public void update(User user) {
@@ -236,18 +241,20 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
     }
 
-    @Override
-    public void delete(User user) {
-        checkParam(user);
-        checkParam(user.getId());
-        userRepository.delete(user);
-    }
+	@Override
+	public void delete(User user) {
+		checkParam(user);
+		checkParam(user.getId());
+		domainGroupService.deleteUserFromAllDomainsGroups(user);
+		userRepository.delete(user);
+	}
 
-    @Override
-    public void deleteById(Long userId) {
-        checkParam(userId);
-        userRepository.deleteById(userId);
-    }
+	@Override
+	public void deleteById(Long userId) {
+		checkParam(userId);
+		domainGroupService.deleteUserFromAllDomainsGroups(userRepository.getReferenceById(userId));
+		userRepository.deleteById(userId);
+	}
 
     @Override
     @Transactional

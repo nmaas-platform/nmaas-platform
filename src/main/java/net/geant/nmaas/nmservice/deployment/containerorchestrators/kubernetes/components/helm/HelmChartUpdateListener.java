@@ -35,6 +35,7 @@ public class HelmChartUpdateListener {
                 helmCommandExecutor.executeHelmRepoAddCommand(repoName, repoUrl);
             }
         }
+        helmCommandExecutor.executeHelmRepoUpdateCommand();
         return null;
     }
 

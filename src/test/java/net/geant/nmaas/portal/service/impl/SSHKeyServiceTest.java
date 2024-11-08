@@ -6,8 +6,8 @@ import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.service.SSHKeyService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
@@ -17,20 +17,22 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class SSHKeyServiceTest {
+class SSHKeyServiceTest {
 
     private final SSHKeyRepository repository = mock(SSHKeyRepository.class);
-
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
     private SSHKeyService sut;
-
     private User owner;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.owner = new User("owner");
         this.owner.setId(1L);
         SSHKeyEntity key = new SSHKeyEntity(owner, "name", "key long long long");
@@ -44,7 +46,7 @@ public class SSHKeyServiceTest {
     }
 
     @Test
-    public void ShouldReturnAllKeysForUser() {
+    void ShouldReturnAllKeysForUser() {
         List<SSHKeyView> result = this.sut.findAllByUser(this.owner);
 
         assertEquals(1, result.size());
@@ -52,15 +54,14 @@ public class SSHKeyServiceTest {
     }
 
     @Test
-    public void shouldDeleteKeyIfValidRequest() {
-
+    void shouldDeleteKeyIfValidRequest() {
         this.sut.invalidate(this.owner, 1L);
 
         verify(this.repository, times(1)).deleteById(1L);
     }
 
     @Test
-    public void shouldThrowExceptionWhenKeyDoesNotExist() {
+    void shouldThrowExceptionWhenKeyDoesNotExist() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
             this.sut.invalidate(this.owner, 2L);
         });
@@ -69,7 +70,7 @@ public class SSHKeyServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenKeyDoesNotBelongToTheUser() {
+    void shouldThrowExceptionWhenKeyDoesNotBelongToTheUser() {
         User anonymous = new User("anonymous");
         anonymous.setId(31L);
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
@@ -77,11 +78,10 @@ public class SSHKeyServiceTest {
         });
 
         assertEquals("Invalid key owner", e.getMessage());
-
     }
 
     @Test
-    public void shouldCreateNewSSHKeyEntityWhenNameValid() {
+    void shouldCreateNewSSHKeyEntityWhenNameValid() {
         when(repository.existsByOwnerAndName(this.owner, "new key")).thenReturn(false);
         SSHKeyRequest request = new SSHKeyRequest("new key", "so long key");
         SSHKeyEntity res = new SSHKeyEntity(owner, "new key", "so long key");
@@ -96,7 +96,7 @@ public class SSHKeyServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenNameIsNotUnique() {
+    void shouldThrowExceptionWhenNameIsNotUnique() {
         when(repository.existsByOwnerAndName(this.owner, "name")).thenReturn(true);
         SSHKeyRequest request = new SSHKeyRequest("name", "so long key");
 
@@ -106,4 +106,5 @@ public class SSHKeyServiceTest {
 
         assertEquals("Name is already taken", e.getMessage());
     }
+
 }

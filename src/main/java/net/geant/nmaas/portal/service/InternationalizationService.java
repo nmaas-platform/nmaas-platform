@@ -5,7 +5,7 @@ import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 
 public interface InternationalizationService {
-    void addNewLanguage(InternationalizationView newLanguage);
+    void addNewLanguage(InternationalizationView newLanguage, Boolean force);
     void updateLanguage(String language, String content);
     List<InternationalizationBriefView> getAllSupportedLanguages();
     InternationalizationView getLanguage(String language);
