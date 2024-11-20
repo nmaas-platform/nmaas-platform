@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
@@ -27,8 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +58,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Transactional(value=TxType.REQUIRES_NEW)
+@Transactional(value = TxType.REQUIRES_NEW)
 public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     private static final String DOMAIN = "domtest";
@@ -112,7 +112,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         user3.setEmail("user3@testemail.com");
         userRepo.save(user3);
 
-        User domTestAdmin = new User("domAdmin", true, "domAdmin",domains.findDomain(DOMAIN2).get(), ROLE_DOMAIN_ADMIN, false, false);
+        User domTestAdmin = new User("domAdmin", true, "domAdmin", domains.findDomain(DOMAIN2).get(), ROLE_DOMAIN_ADMIN, false, false);
         domTestAdmin.setEmail("domAdmin@testemail.com");
         userRepo.save(domTestAdmin);
 
@@ -128,9 +128,9 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void testDisableUser() throws Exception {
         mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=false")
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andReturn();
         User result = userRepo.findById(userEntity.getId()).orElseThrow(IllegalArgumentException::new);
@@ -140,20 +140,20 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void testEnableUser() throws Exception {
         mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=true")
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted());
         User result = userRepo.findById(userEntity.getId()).orElseThrow(IllegalArgumentException::new);
         assertTrue(result.isEnabled());
     }
 
     @Test
-    void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
+    void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception {
         mvc.perform(post("/api/users/terms/" + user3.getUsername())
-                .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted());
         User result = userRepo.findById(user3.getId()).orElseThrow(IllegalArgumentException::new);
         assertTrue(result.isTermsOfUseAccepted());
@@ -173,7 +173,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void testGetUser() throws MissingElementException {
         long id = userRepo.findByUsername("admin").get().getId();
-        UserView user = (UserView)userController.retrieveUser(id, principal);
+        UserView user = (UserView) userController.retrieveUser(id, principal);
         assertEquals(Long.valueOf(id), user.getId());
         assertEquals("admin", user.getUsername());
     }
@@ -249,7 +249,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void testDeleteUser() {
         assertThrows(ProcessingException.class, () ->
-            userController.deleteUser(userEntity.getId())
+                userController.deleteUser(userEntity.getId())
         );
     }
 
@@ -268,7 +268,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void testGetMessageWhenUserUpdated(){
+    void testGetMessageWhenUserUpdated() {
         UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_USER);
         UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_TOOL_MANAGER);
 
@@ -351,10 +351,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldValidateResetRequest() throws Exception {
         MvcResult result = mvc.perform(post("/api/users/reset/validate")
-                .content(jwtTokenService.getResetToken(user3.getEmail()))
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(jwtTokenService.getResetToken(user3.getEmail()))
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(result.getResponse().getContentAsString().contains(user3.getEmail()));
@@ -364,10 +364,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     void shouldNotValidateResetRequest() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset/validate")
-                    .content(jwtTokenService.getResetToken("notexisting@email.co.uk"))
-                    .header("Authorization", "Bearer " + token)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
+                            .content(jwtTokenService.getResetToken("notexisting@email.co.uk"))
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotAcceptable());
         });
     }
@@ -377,10 +377,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken(user3.getEmail()), "test");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset?token=test-token")
-                    .content(new ObjectMapper().writeValueAsString(passwordReset))
-                    .header("Authorization", "Bearer " + token)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
+                            .content(new ObjectMapper().writeValueAsString(passwordReset))
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isAccepted());
         });
     }
@@ -390,10 +390,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/users/reset?token=test-token")
-                    .content(new ObjectMapper().writeValueAsString(passwordReset))
-                    .header("Authorization", "Bearer " + token)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
+                            .content(new ObjectMapper().writeValueAsString(passwordReset))
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotAcceptable());
         });
     }

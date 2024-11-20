@@ -5,6 +5,7 @@ import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.kubernetes.shell.observable.EchoShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -39,7 +40,9 @@ public class ShellSessionObserverTest {
         observable.executeCommand(new K8sShellCommandRequest("some command", ""));
 
         // one heartbeat and one message
-        verify(mockEmitter, timeout(200).times(2)).send(Optional.ofNullable(any()));
+//
+        ArgumentCaptor<SseEmitter.SseEventBuilder> captor = ArgumentCaptor.forClass(SseEmitter.SseEventBuilder.class);
+        verify(mockEmitter, timeout(200).times(2)).send(captor.capture());
 
         observer.complete();
         observable.complete();

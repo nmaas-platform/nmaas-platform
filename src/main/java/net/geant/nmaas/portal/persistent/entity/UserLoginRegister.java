@@ -1,8 +1,18 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
-import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 

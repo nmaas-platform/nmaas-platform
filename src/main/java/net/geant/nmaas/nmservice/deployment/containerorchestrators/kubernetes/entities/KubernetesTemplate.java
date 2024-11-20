@@ -1,12 +1,21 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -43,8 +52,8 @@ public class KubernetesTemplate implements Serializable {
      */
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride( name = "name", column = @Column(name = "helm_chart_repository_name")),
-            @AttributeOverride( name = "url",  column = @Column(name = "helm_chart_repository_url")),
+            @AttributeOverride(name = "name", column = @Column(name = "helm_chart_repository_name")),
+            @AttributeOverride(name = "url", column = @Column(name = "helm_chart_repository_url")),
     })
     private HelmChartRepositoryEmbeddable helmChartRepository = new HelmChartRepositoryEmbeddable();
 
@@ -70,7 +79,7 @@ public class KubernetesTemplate implements Serializable {
         return template;
     }
 
-    public void validate(){
+    public void validate() {
         checkArgument(chart != null, "Kubernetes chart must be provided");
         checkArgument(StringUtils.isNotEmpty(chart.getName()), "You must provide chart name");
         checkArgument(StringUtils.isNotEmpty(chart.getVersion()), "You must provide chart version");
