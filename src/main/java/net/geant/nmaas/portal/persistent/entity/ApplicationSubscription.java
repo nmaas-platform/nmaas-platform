@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -34,11 +35,11 @@ public class ApplicationSubscription {
 
 		private static final long serialVersionUID = -8711200394959797874L;
 
-		@OneToOne(fetch = FetchType.LAZY)
+		@ManyToOne(fetch = FetchType.LAZY)
 		@NotNull
 		private Domain domain;
 		
-		@OneToOne(fetch = FetchType.LAZY)
+		@ManyToOne(fetch = FetchType.LAZY)
 		@NotNull
 		private ApplicationBase application;
 

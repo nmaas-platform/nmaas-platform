@@ -118,7 +118,6 @@ dependencies {
     // Database
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
-//    implementation('org.hibernate.com:hibernate-envers')
     implementation 'org.hibernate.orm:hibernate-envers:6.5.0.Final'
     implementation('org.flywaydb:flyway-core')
 
@@ -128,7 +127,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
 
 
     implementation('org.freemarker:freemarker:2.3.32')
@@ -293,6 +291,6 @@ jacocoTestCoverageVerification.finalizedBy(jacocoTestReport)
 
 sonarqube {
     properties {
-        property "sonar.coverage.exclusions", ["**/inventory/janitor/**","**/exception/**","**/exceptions/**"]
+        property "sonar.coverage.exclusions", ["**/inventory/janitor/**", "**/exception/**", "**/exceptions/**"]
     }
 }
