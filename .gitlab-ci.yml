@@ -5,7 +5,7 @@ stages:
 
 test:
   stage: test
-  image: openjdk:11-jdk-slim
+  image: openjdk:17-jdk-slim
   tags:
     - docker
   script:
@@ -14,7 +14,7 @@ test:
 
 itest:
   stage: test
-  image: openjdk:11-jdk-slim
+  image: openjdk:17-jdk-slim
   tags:
     - docker
   only:
