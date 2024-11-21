@@ -38,7 +38,7 @@ public class Comment implements Serializable {
 	@ManyToOne(optional=false, fetch=FetchType.LAZY)
 	private ApplicationBase application;
 		
-	@OneToOne(optional=true, orphanRemoval=false, fetch=FetchType.LAZY)
+	@ManyToOne(optional=true, fetch=FetchType.LAZY)
 	private User owner;
 	
 	@ManyToOne(optional=true, fetch=FetchType.LAZY)
