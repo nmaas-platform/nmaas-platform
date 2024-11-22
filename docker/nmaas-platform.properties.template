@@ -58,6 +58,8 @@ db.standalone.password=${POSTGRESQL_PASSWORD}
 spring.flyway.enabled=true
 spring.flyway.locations=classpath:/db/migration
 spring.flyway.out-of-order=true
+#Hibernate settings
+spring.jpa.properties.hibernate.id.db_structure_naming_strategy=legacy
 
 # Common
 spring.jpa.properties.hibernate.show_sql=false
