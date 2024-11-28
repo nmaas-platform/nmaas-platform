@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.api.domain.FileInfoView;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -37,10 +41,11 @@ import net.geant.nmaas.portal.service.FileStorageService;
 @Log4j2
 public class AppScreenshotsController extends AppBaseController {
 	
-	private FileStorageService fileStorage;
+	private final FileStorageService fileStorage;
 
 	@Autowired
-	public AppScreenshotsController(FileStorageService fileStorage){
+	public AppScreenshotsController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService appBaseService, UserService userService, FileStorageService fileStorage) {
+		super(modelMapper, applicationService, appBaseService, userService);
 		this.fileStorage = fileStorage;
 	}
 

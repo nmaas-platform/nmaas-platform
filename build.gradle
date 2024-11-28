@@ -49,9 +49,7 @@ jar {
     enabled = false
 }
 
-bootJar {
-    archivesBaseName = 'nmaas-platform'
-}
+base.archivesName = 'nmaas-platform'
 
 springBoot {
     buildInfo()

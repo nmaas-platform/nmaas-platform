@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.portal.api.domain.CommentRequest;
 import net.geant.nmaas.portal.api.domain.CommentView;
-import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -11,26 +10,35 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class AppCommentsControllerTest {
+class AppCommentsControllerTest {
 
-    private ApplicationBaseService applicationBaseService = mock(ApplicationBaseService.class);
-    private UserRepository userRepository = mock(UserRepository.class);
-    private CommentRepository commentRepository = mock(CommentRepository.class);
+    private final ApplicationService applicationService = mock(ApplicationService.class);
+    private final ApplicationBaseService applicationBaseService = mock(ApplicationBaseService.class);
+    private final UserService userService = mock(UserService.class);
+    private final UserRepository userRepository = mock(UserRepository.class);
+    private final CommentRepository commentRepository = mock(CommentRepository.class);
 
     private AppCommentsController appCommentsController;
 
@@ -39,8 +47,7 @@ public class AppCommentsControllerTest {
     private User user;
 
     @BeforeEach
-    public void setup() {
-
+    void setup() {
         app = new ApplicationBase(1L, "name");
         when(applicationBaseService.findByName("name")).thenReturn(app);
         when(applicationBaseService.getBaseApp(1L)).thenReturn(app);
@@ -48,14 +55,17 @@ public class AppCommentsControllerTest {
         user = new User("user");
         when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 
-        this.appCommentsController = new AppCommentsController(commentRepository, userRepository);
-        this.appCommentsController.appBaseService = applicationBaseService;
-        this.appCommentsController.modelMapper = new ModelMapper();
-
+        this.appCommentsController = new AppCommentsController(
+                new ModelMapper(),
+                applicationService,
+                applicationBaseService,
+                userService,
+                commentRepository,
+                userRepository);
     }
 
     @Test
-    public void shouldAddComment() {
+    void shouldAddComment() {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
@@ -63,13 +73,13 @@ public class AppCommentsControllerTest {
         cr.setParentId(null);
         cr.setComment("Test comment");
 
-        Id result = this.appCommentsController.addComment(app.getId(), cr, principal);
+        appCommentsController.addComment(app.getId(), cr, principal);
 
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
     @Test
-    public void shouldNotAddEmptyComment() {
+    void shouldNotAddEmptyComment() {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
@@ -78,7 +88,7 @@ public class AppCommentsControllerTest {
         cr.setComment("");
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            this.appCommentsController.addComment(app.getId(), cr, principal);
+            appCommentsController.addComment(app.getId(), cr, principal);
         });
 
         assertEquals("Comment cannot be empty", e.getMessage());
@@ -88,14 +98,14 @@ public class AppCommentsControllerTest {
         cr2.setComment(null);
 
         e = assertThrows(IllegalArgumentException.class, () -> {
-            this.appCommentsController.addComment(app.getId(), cr2, principal);
+            appCommentsController.addComment(app.getId(), cr2, principal);
         });
 
         assertEquals("Comment cannot be empty", e.getMessage());
     }
 
     @Test
-    public void shouldAddCommentWithValidParentComment() {
+    void shouldAddCommentWithValidParentComment() {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
@@ -107,13 +117,13 @@ public class AppCommentsControllerTest {
         cr.setParentId(parentId);
         cr.setComment("Child comment");
 
-        Id result = this.appCommentsController.addComment(app.getId(), cr, principal);
+        this.appCommentsController.addComment(app.getId(), cr, principal);
 
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
     @Test
-    public void shouldThrowExceptionWhenParentCommentNotFound() {
+    void shouldThrowExceptionWhenParentCommentNotFound() {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
@@ -132,7 +142,7 @@ public class AppCommentsControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenParentCommentBelongsToAnotherApplication() {
+    void shouldThrowExceptionWhenParentCommentBelongsToAnotherApplication() {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(user.getUsername());
 
@@ -154,7 +164,7 @@ public class AppCommentsControllerTest {
     }
 
     @Test
-    public void shouldGetAllCommentsByApp() {
+    void shouldGetAllCommentsByApp() {
         Comment c1 = new Comment(app, "Root comment", user);
         Comment c2 = new Comment(app, "Deleted comment", user);
         c2.setDeleted(true);
@@ -177,4 +187,5 @@ public class AppCommentsControllerTest {
         List<CommentView> result = this.appCommentsController.getComments(app.getId(), null);
         assertEquals(3L, result.size());
     }
+
 }
