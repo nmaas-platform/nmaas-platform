@@ -68,7 +68,7 @@ public class SSOAuthControllerIntTest extends BaseControllerTestSetup {
         this.changeConfigToDefault();
     }
 
-    @Disabled
+//    @Disabled
     @Test
     @Transactional
     void shouldRegister() throws Exception {
@@ -134,7 +134,7 @@ public class SSOAuthControllerIntTest extends BaseControllerTestSetup {
         });
     }
 
-    @Disabled
+//    @Disabled
     @Test
     @Transactional
     void shouldNotLoginWithPortalMaintenance() {
