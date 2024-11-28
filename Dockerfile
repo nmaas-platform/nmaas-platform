@@ -8,7 +8,8 @@ RUN ls --all
 RUN chmod +x ./gradlew
 RUN ./gradlew -Dorg.gradle.daemon=false build
 
-FROM adoptopenjdk/openjdk11:jre-11.0.19_7-alpine
+FROM eclipse-temurin:17-jre-alpine
+
 MAINTAINER nmaas@lists.geant.org
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
