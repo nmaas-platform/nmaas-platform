@@ -1,16 +1,13 @@
-FROM openjdk:11-jdk-slim as builder
+FROM eclipse-temurin:17-jdk-alpine AS builder
 
 COPY . /build/
 WORKDIR /build/
 
-RUN ls --all
-
-RUN chmod +x ./gradlew
-RUN ./gradlew -Dorg.gradle.daemon=false build
+RUN chmod +x ./gradlew && ./gradlew -Dorg.gradle.daemon=false build
 
 FROM eclipse-temurin:17-jre-alpine
 
-MAINTAINER nmaas@lists.geant.org
+LABEL maintainer=nmaas@lists.geant.org
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
 COPY docker/run_platform.sh /nmaas/scripts/run_platform.sh
@@ -20,7 +17,6 @@ COPY docker/do-ntp.sh /etc/periodic/hourly/do-ntp.sh
 COPY docker/ssh-config /root/.ssh/config
 
 RUN apk add gettext postgresql-client
-
 RUN mkdir /nmaas/files
 
 RUN chmod +x /nmaas/scripts/run_platform.sh
