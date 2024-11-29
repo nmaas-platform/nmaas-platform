@@ -30,7 +30,7 @@ gitProperties {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.25.3'
+        artifact = 'com.google.protobuf:protoc:3.25.5'
     }
     plugins {
         grpc {
@@ -124,13 +124,10 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-
     implementation('org.freemarker:freemarker:2.3.32')
-//    implementation('org.gitlab4j:gitlab4j-api:5.6.0')
-    implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.5' // version 6 for jakarta
+    implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.6' // version 6 for jakarta
     implementation('com.vdurmont:semver4j:3.1.0')
     implementation('io.micrometer:micrometer-registry-prometheus:1.11.2')
-
 
     // SSH library
     implementation('com.hierynomus:sshj:0.32.0')
@@ -139,7 +136,7 @@ dependencies {
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:6.12.1')
 
-    implementation('com.google.protobuf:protobuf-java:3.25.3')
+    implementation('com.google.protobuf:protobuf-java:3.25.5')
     implementation('io.grpc:grpc-netty-shaded:1.62.2')
     implementation('io.grpc:grpc-protobuf:1.62.2')
     implementation('io.grpc:grpc-stub:1.62.2')
