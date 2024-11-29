@@ -28,37 +28,25 @@ public class BulkDeploymentQueueService {
     private final BulkApplicationService bulkApplicationService;
     private final AppLifecycleManager appLifecycleManager;
 
-   private final ConfigurationManager configurationManager;
+    private final ConfigurationManager configurationManager;
 
     public void handleQueue() {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
-        log.debug("Handling bulk queue (total entries {})", queue.size());
+        log.debug("Handling bulk queue (total entries {})", queueRepository.findAll().size());
         if (queue.isEmpty()) {
             return;
         }
 
-        triggerConfiguration(queue);
-
-        updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(queue);
-
-        triggerNewDeploymentsFromQueue(queue);
+        updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue();
+        triggerConfiguration();
+        triggerNewDeploymentsFromQueue();
     }
 
-    private void triggerConfiguration(List<BulkDeploymentQueueEntry> queue) {
-        queue.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
-                .equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED))
-                .forEach(e -> {
-                    log.debug("Configuration task triggered for {}", e.getDeploymentId());
-                    appLifecycleManager.applyConfiguration(e.getDeploymentId(), AppConfigurationView.builder()
-                            .jsonInput(e.getAppConfigurationJson())
-                            .mandatoryParameters(e.getAppConfigurationJson()).build(), null);
-                });
-    }
-
-    private void updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(List<BulkDeploymentQueueEntry> queue) {
+    private void updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue() {
+        List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
         queue.stream()
                 .filter(e -> {
-                    AppDeploymentState state =  appDeploymentRepositoryManager.loadState(e.getDeploymentId());
+                    AppDeploymentState state = appDeploymentRepositoryManager.loadState(e.getDeploymentId());
                     return state.isInRunningState() || state.isInFailedState();
                 })
                 .forEach(e -> {
@@ -68,7 +56,20 @@ public class BulkDeploymentQueueService {
                 });
     }
 
-    private void triggerNewDeploymentsFromQueue(List<BulkDeploymentQueueEntry> queue) {
+    private void triggerConfiguration() {
+        List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
+        queue.stream()
+                .filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId()).equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED))
+                .forEach(e -> {
+                    log.debug("Configuration task triggered for {}", e.getDeploymentId());
+                    appLifecycleManager.applyConfiguration(e.getDeploymentId(), AppConfigurationView.builder()
+                            .jsonInput(e.getAppConfigurationJson())
+                            .mandatoryParameters(e.getAppConfigurationJson()).build(), null);
+                });
+    }
+
+    private void triggerNewDeploymentsFromQueue() {
+        List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
         queue.stream()
                 .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED))
                 .limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()) // we may take into account ongoing deployments as well
