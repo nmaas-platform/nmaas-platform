@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
 
 @NoArgsConstructor
@@ -31,13 +30,15 @@ public class Content {
 
     @Column(unique = true, nullable = false)
     private String name;
+
     @Lob
     @JdbcType(VarcharJdbcType.class)
     @Column(columnDefinition = "TEXT")
     private String content;
+
     private String title;
 
-    public Content(String name, String title, String content){
+    public Content(String name, String title, String content) {
         this.name = name;
         this.title = title;
         this.content = content;
