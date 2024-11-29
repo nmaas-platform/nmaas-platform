@@ -65,6 +65,11 @@ public class BulkDeploymentQueueService {
                     appLifecycleManager.applyConfiguration(e.getDeploymentId(), AppConfigurationView.builder()
                             .jsonInput(e.getAppConfigurationJson())
                             .mandatoryParameters(e.getAppConfigurationJson()).build(), null);
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 });
     }
 
@@ -76,6 +81,11 @@ public class BulkDeploymentQueueService {
                 .forEach(e -> {
                     eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
                     log.debug("Triggering deployment for {}", e.getDeploymentId());
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 });
     }
 
