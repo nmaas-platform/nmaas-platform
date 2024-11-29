@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import net.geant.nmaas.orchestration.Identifier;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
 
 import jakarta.persistence.CascadeType;
@@ -21,6 +22,8 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -96,7 +99,8 @@ public class AppDeployment {
 
     /** Contains information about deployment fails */
     @Lob
-//    @Type(type = "text")
+    @JdbcType(VarcharJdbcType.class)
+    @Column(columnDefinition = "TEXT")
     private String errorMessage;
 
     private String owner;
