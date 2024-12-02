@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.configuration.InitScriptsController;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -22,6 +23,8 @@ public class HelmChartUpdateListener {
 
     private final HelmCommandExecutor helmCommandExecutor;
 
+    private final InitScriptsController initScriptsController;
+
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(ApplicationListUpdatedEvent event) {
@@ -32,7 +35,10 @@ public class HelmChartUpdateListener {
             if (StringUtils.hasText(repoName) && StringUtils.hasText(repoUrl)) {
                 helmCommandExecutor.executeHelmRepoAddCommand(repoName, repoUrl);
             }
-            helmCommandExecutor.executeHelmRepoUpdateCommand();
+            if(!initScriptsController.isScriptRunning) {
+                helmCommandExecutor.executeHelmRepoUpdateCommand();
+            }
+
         }
         return null;
     }
