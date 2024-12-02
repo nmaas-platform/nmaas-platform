@@ -69,13 +69,21 @@ public class BulkDeploymentQueueService {
     }
 
     private void triggerNewDeploymentsFromQueue(List<BulkDeploymentQueueEntry> queue) {
-        queue.stream()
-                .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED))
-                .limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()) // we may take into account ongoing deployments as well
-                .forEach(e -> {
-                    eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
-                    log.debug("Triggering deployment for {}", e.getDeploymentId());
-                });
+        //if application is still being deploying, wait for finish
+        if(queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS)).count() >=  configurationManager.getConfiguration().getParallelDeploymentsLimit() ) {
+            log.debug("Application is still being deployed, deploying new application skipped");
+        } else {
+            queue.stream()
+                    .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED) || e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.WAITING))
+                    .limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()) // we may take into account ongoing deployments as well
+                    .forEach(e -> {
+                        eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
+                        e.setState(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS);
+                        log.debug("Triggering deployment for {}", e.getDeploymentId());
+                    });
+        }
+
+
     }
 
 }
