@@ -46,9 +46,9 @@ class BulkDeploymentJobServiceTest {
 
     @Test
     void shouldTriggerDeployment() {
-        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params");
-        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L, "params");
-        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L, "params");
+        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
+        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
+        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
         when(bulkDeploymentQueueRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.REQUESTED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.REQUEST_VALIDATED);
@@ -62,9 +62,9 @@ class BulkDeploymentJobServiceTest {
 
     @Test
     void shouldTriggerDeleteEntryJob() {
-        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params");
-        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L, "params");
-        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L, "params");
+        BulkDeploymentQueueEntry entry = new BulkDeploymentQueueEntry(1L, new Identifier(UUID.randomUUID().toString()), 1L, "params",BulkDeploymentQueueEntry.QueryEntryState.WAITING);
+        BulkDeploymentQueueEntry entry2 = new BulkDeploymentQueueEntry(2L, new Identifier(UUID.randomUUID().toString()), 2L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
+        BulkDeploymentQueueEntry entry3 = new BulkDeploymentQueueEntry(3L, new Identifier(UUID.randomUUID().toString()), 3L, "params", BulkDeploymentQueueEntry.QueryEntryState.WAITING);
         bulkDeploymentQueueRepository.save(entry);
         bulkDeploymentQueueRepository.save(entry2);
         bulkDeploymentQueueRepository.save(entry3);

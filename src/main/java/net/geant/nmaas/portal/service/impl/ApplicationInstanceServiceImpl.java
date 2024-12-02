@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.OverridesAttribute;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -313,6 +314,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             appLifecycleManager.removeApplication(app.getInternalId());
             iterator.remove();
         }
+    }
+
+    @Override
+    public boolean isNameAvailableInDomain(String name, Domain domain) {
+        return appInstanceRepo.isNameAvailableInDomain(name, domain.getName()) > 0;
     }
 
     private void checkParam(AppInstance appInstance) {

@@ -91,6 +91,7 @@ public class BulkApplicationServiceImplTest {
         when(applicationService.findApplication(TEST_APP_NAME, TEST_APP_VERSION)).thenReturn(Optional.of(application));
         when(domainService.findDomain(anyString())).thenReturn(Optional.of(domain));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(global));
+        when(applicationInstanceService.isNameAvailableInDomain(anyString(), any())).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "testAppInstance", false);
         appInstance.setId(100L);
         when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
