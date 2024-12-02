@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InitScriptsStateService {
 
-
     private final HelmCommandExecutor helmCommandExecutor;
 
     public void executeHelmRepoUpdate() {

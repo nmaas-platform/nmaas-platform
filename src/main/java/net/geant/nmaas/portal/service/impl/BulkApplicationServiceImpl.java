@@ -123,8 +123,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 // verifying if desired instance name is still available
                 verifyIfInstanceNameIsAvailable(applicationSpec, domain);
 
-
-                log.debug(" 0 verify name instance availability");
+                log.debug("0 verify name instance availability");
                 // creating initial application instance entry
                 instance = instanceService.create(domain, application, applicationSpec.getApplicationInstanceName(), false);
                 log.debug("1. Instance created");
@@ -141,7 +140,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .appName(application.getName())
                         .descriptiveDeploymentId(createDescriptiveDeploymentId(instance.getDomain().getCodename(), application.getName(), instance.getId()))
                         .build();
-
 
                 // updating application instance information with custom configuration
                 AppConfigurationView appConfigurationView = new AppConfigurationView();
@@ -185,7 +183,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .appConfigurationJson(appConfigurationView.getJsonInput())
                                 .build()
                 );
-
                 log.debug("5. Bulk entry and Queue saved ");
 
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
