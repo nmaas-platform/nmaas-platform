@@ -28,7 +28,7 @@ public class BulkDeploymentQueueService {
     private final BulkApplicationService bulkApplicationService;
     private final AppLifecycleManager appLifecycleManager;
 
-   private final ConfigurationManager configurationManager;
+    private final ConfigurationManager configurationManager;
 
     public void handleQueue() {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
@@ -37,28 +37,16 @@ public class BulkDeploymentQueueService {
             return;
         }
 
-        triggerConfiguration(queue);
-
-        updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(queue);
-
-        triggerNewDeploymentsFromQueue(queue);
+        updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue();
+        triggerConfiguration();
+        triggerNewDeploymentsFromQueue();
     }
 
-    private void triggerConfiguration(List<BulkDeploymentQueueEntry> queue) {
-        queue.stream().filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId())
-                .equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED))
-                .forEach(e -> {
-                    log.debug("Configuration task triggered for {}", e.getDeploymentId());
-                    appLifecycleManager.applyConfiguration(e.getDeploymentId(), AppConfigurationView.builder()
-                            .jsonInput(e.getAppConfigurationJson())
-                            .mandatoryParameters(e.getAppConfigurationJson()).build(), null);
-                });
-    }
-
-    private void updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue(List<BulkDeploymentQueueEntry> queue) {
+    private void updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue() {
+        List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
         queue.stream()
                 .filter(e -> {
-                    AppDeploymentState state =  appDeploymentRepositoryManager.loadState(e.getDeploymentId());
+                    AppDeploymentState state = appDeploymentRepositoryManager.loadState(e.getDeploymentId());
                     return state.isInRunningState() || state.isInFailedState();
                 })
                 .forEach(e -> {
@@ -68,7 +56,25 @@ public class BulkDeploymentQueueService {
                 });
     }
 
-    private void triggerNewDeploymentsFromQueue(List<BulkDeploymentQueueEntry> queue) {
+    private void triggerConfiguration() {
+        List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
+        queue.stream()
+                .filter(deployment -> appDeploymentMonitor.state(deployment.getDeploymentId()).equals(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED))
+                .forEach(e -> {
+                    log.debug("Configuration task triggered for {}", e.getDeploymentId());
+                    appLifecycleManager.applyConfiguration(e.getDeploymentId(), AppConfigurationView.builder()
+                            .jsonInput(e.getAppConfigurationJson())
+                            .mandatoryParameters(e.getAppConfigurationJson()).build(), null);
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+    }
+
+    private void triggerNewDeploymentsFromQueue() {
+        List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
         //if application is still being deploying, wait for finish
         if(queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS)).count() >=  configurationManager.getConfiguration().getParallelDeploymentsLimit() ) {
             log.debug("Application is still being deployed, deploying new application skipped");
@@ -80,6 +86,11 @@ public class BulkDeploymentQueueService {
                         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
                         e.setState(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS);
                         log.debug("Triggering deployment for {}", e.getDeploymentId());
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     });
         }
 
