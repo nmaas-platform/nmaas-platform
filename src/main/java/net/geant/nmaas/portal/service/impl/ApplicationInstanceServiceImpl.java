@@ -318,7 +318,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
     @Override
     public boolean isNameAvailableInDomain(String name, Domain domain) {
-        return appInstanceRepo.isNameAvailableInDomain(name, domain.getName()) > 0;
+        return appInstanceRepo.isNameAvailableInDomain(name, domain.getName()) <= 0;
     }
 
     private void checkParam(AppInstance appInstance) {

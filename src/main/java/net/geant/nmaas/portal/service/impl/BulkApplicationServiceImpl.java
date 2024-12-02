@@ -119,15 +119,15 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     applicationSubscriptionService.subscribe(applicationBaseId, domain.getId(), true);
                 }
 
-                log.error("-1 get sub and domain");
+                log.debug("-1 get sub and domain");
                 // verifying if desired instance name is still available
                 verifyIfInstanceNameIsAvailable(applicationSpec, domain);
 
 
-                log.error(" 0 verify name instance availability");
+                log.debug(" 0 verify name instance availability");
                 // creating initial application instance entry
                 instance = instanceService.create(domain, application, applicationSpec.getApplicationInstanceName(), false);
-                log.error("1. Instance created");
+                log.debug("1. Instance created");
                 // preparing and initializing new application deployment
                 AppDeployment appDeployment = AppDeployment.builder()
                         .domain(instance.getDomain().getCodename())
@@ -156,17 +156,17 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 } else {
                     appConfigurationView.setJsonInput("{}");
                 }
-                log.error("2. Instance updated.");
+                log.debug("2. Instance updated.");
 
                 // add job entry to table
                 Identifier internalId = appLifecycleManager.initApplicationDeployment(appDeployment);
 
-                log.error("3. Init deployed, deploy id created .");
+                log.debug("3. Init deployed, deploy id created .");
                 // updating application instance information with assigned deployment identifier
                 instance.setInternalId(internalId);
                 instanceService.update(instance);
 
-                log.error("4. Instance updated.");
+                log.debug("4. Instance updated.");
 
                 // store entry information in database
                 BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.save(
@@ -186,7 +186,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                                 .build()
                 );
 
-                log.error("5. Bulk entry and Queue saved ");
+                log.debug("5. Bulk entry and Queue saved ");
 
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
 
@@ -206,7 +206,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             }
         });
 
-        log.error("6. Saved final ");
+        log.debug("6. Saved final ");
         return modelMapper.map(bulkDeploymentRepository.save(bulkDeployment), BulkDeploymentViewS.class);
     }
 
