@@ -7,9 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,5 +33,13 @@ public class BulkDeploymentQueueEntry {
 
     @JsonProperty("appConfigurationJson")
     private String appConfigurationJson;
+
+    @Enumerated(EnumType.STRING)
+    private QueryEntryState state;
+
+    public enum QueryEntryState {
+        WAITING,
+        IN_PROGRESS
+    }
 
 }

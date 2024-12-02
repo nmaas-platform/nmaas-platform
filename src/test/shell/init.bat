@@ -45,6 +45,12 @@ echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 echo
 
+echo ----------------------
+echo Start init scripts
+echo ----------------------
+curl -X POST %API_URL%/init/started --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+echo
+
 echo ---------------------
 echo Add Domain One with codename domain1
 curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
@@ -281,3 +287,9 @@ echo.
 echo Insert form type vlab request
 curl -X PUT %API_URL%/mail/type --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\form_types\vlab_request.json
 echo.
+
+echo Finish init scripts
+echo ----------------------
+curl -X POST %API_URL%/init/completed --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+echo
+

@@ -53,4 +53,7 @@ public interface ApplicationInstanceService {
     AppInstanceView.AppInstanceUpgradeInfo obtainUpgradeInfo(Long appInstanceId);
 
 	void deleteAllByDomain(Long domainId);
+
+	boolean isNameAvailableInDomain(String name, Domain domain);
+
 }
