@@ -33,4 +33,6 @@ public interface BulkApplicationService {
 
     void updateEntryStateById(Long entryId);
 
+    Boolean validateDomainsList(List<String> domainsName);
+
 }
