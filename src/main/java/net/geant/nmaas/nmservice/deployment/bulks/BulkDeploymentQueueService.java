@@ -88,6 +88,7 @@ public class BulkDeploymentQueueService {
                     log.debug("Triggering deployment for {}", e.getDeploymentId());
                     eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
                     e.setState(QueryEntryState.IN_PROGRESS);
+                    bulkApplicationService.setBulkEntryToProcessing(e.getBulkEntryId());
                     queueRepository.save(e);
                     try {
                         Thread.sleep(2000);
