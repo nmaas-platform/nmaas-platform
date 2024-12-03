@@ -81,6 +81,13 @@ public class BulkController {
                 List<CsvApplication> csvApplications = bulkCsvProcessor.processApplicationSpecs(file);
                 User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
+
+                //validate domains before processing bulk
+                if(bulkApplicationService.validateDomainsList(csvApplications.stream().map(CsvApplication::getDomainName).collect(Collectors.toList()))) {
+                    log.error("Domain validation error. Some domains are missing. Please check the CSV information.");
+                    throw new MissingElementException("Domain validation error. Some domains are missing. Please check the CSV content.");
+                }
+
                 return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user));
             } catch (Exception e) {
                 throw new RuntimeException(e);
