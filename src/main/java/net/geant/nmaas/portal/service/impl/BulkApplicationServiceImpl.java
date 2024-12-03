@@ -140,7 +140,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                         .descriptiveDeploymentId(createDescriptiveDeploymentId(instance.getDomain().getCodename(), application.getName(), instance.getId()))
                         .build();
 
-
                 // updating application instance information with custom configuration
                 AppConfigurationView appConfigurationView = new AppConfigurationView();
                 if (Objects.nonNull(applicationSpec.getParameters())) {
@@ -450,15 +449,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             details.put(BULK_ENTRY_DETAIL_KEY_APP_NAME, application.getName());
             details.put(BULK_ENTRY_DETAIL_KEY_APP_ID, String.valueOf(findApplicationBaseId(application.getName())));
         }
-        return details;
-    }
-
-    private Map<String, String> prepareBulkApplicationDeploymentDetailsMap(String name, String domainName) {
-        Map<String, String> details = new HashMap<>();
-        details.put(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME, name);
-        details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME, domainName);
-        details.put(BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME, "missing");
-
         return details;
     }
 

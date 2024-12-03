@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.bulks;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry.QueryEntryState;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -75,26 +76,25 @@ public class BulkDeploymentQueueService {
 
     private void triggerNewDeploymentsFromQueue() {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
-        //if application is still being deploying, wait for finish
-        if(queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS)).count() >=  configurationManager.getConfiguration().getParallelDeploymentsLimit() ) {
-            log.debug("Application is still being deployed, deploying new application skipped");
-        } else {
-            queue.stream()
-                    .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED) || e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.WAITING))
-                    .limit(configurationManager.getConfiguration().getParallelDeploymentsLimit()) // we may take into account ongoing deployments as well
-                    .forEach(e -> {
-                        eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
-                        e.setState(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS);
-                        log.debug("Triggering deployment for {}", e.getDeploymentId());
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-        }
-
-
+        long parallelDeploymentsLimit = configurationManager.getConfiguration().getParallelDeploymentsLimit();
+        long ongoingDeployments = queue.stream().filter(e -> e.getState().equals(QueryEntryState.IN_PROGRESS)).count();
+        long freeCapacity = parallelDeploymentsLimit - ongoingDeployments;
+        log.debug("Number of instances that can be triggered right away: {}", freeCapacity);
+        queue.stream()
+                .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED)
+                        || e.getState().equals(QueryEntryState.WAITING))
+                .limit(freeCapacity)
+                .forEach(e -> {
+                    log.debug("Triggering deployment for {}", e.getDeploymentId());
+                    eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
+                    e.setState(QueryEntryState.IN_PROGRESS);
+                    queueRepository.save(e);
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
     }
 
 }

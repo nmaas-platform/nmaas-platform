@@ -44,6 +44,6 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 			"'APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS'," +
 			"'APPLICATION_CONFIGURATION_REMOVED'," +
 			"'FAILED_APPLICATION_REMOVED')" )
-	int isNameAvailableInDomain(@Param(value = "name") String name,@Param(value = "domain") String domain);
+	int isNameAvailableInDomain(@Param(value = "name") String name, @Param(value = "domain") String domain);
 
 }
