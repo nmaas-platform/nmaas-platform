@@ -301,10 +301,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     } else if (d.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.PARTIALLY_FAILED);
                         stateChanged = true;
-                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()) ||  BulkDeploymentState.REMOVED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.FAILED);
                         stateChanged = true;
-                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()) || BulkDeploymentState.FAILED.equals(e.getState()))) {
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.REMOVED);
                         stateChanged = true;
                     }
@@ -357,7 +357,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             bulkDeployment.setState(BulkDeploymentState.COMPLETED);
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.REMOVED);
-        } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
+        } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState())||  BulkDeploymentState.REMOVED.equals(e.getState())) ) {
             bulkDeployment.setState(BulkDeploymentState.FAILED);
         } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
