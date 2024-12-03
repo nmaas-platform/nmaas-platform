@@ -11,7 +11,9 @@ import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.io.InputStreamResource;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public interface BulkApplicationService {
 
@@ -33,6 +35,8 @@ public interface BulkApplicationService {
 
     void updateEntryStateById(Long entryId);
 
-    Boolean validateDomainsList(List<String> domainsName);
+    Boolean validateDomainsList(Set<String> domainsName);
+
+    void setBulkEntryToProcessing(Long bulkEntryId);
 
 }

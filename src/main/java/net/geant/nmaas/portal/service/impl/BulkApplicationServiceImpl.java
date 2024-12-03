@@ -45,6 +45,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.StyledEditorKit;
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,11 +53,13 @@ import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID;
@@ -166,7 +169,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 BulkDeploymentEntry bulkDeploymentEntry = bulkDeploymentEntryRepository.save(
                         BulkDeploymentEntry.builder()
                                 .type(BulkType.APPLICATION)
-                                .state(BulkDeploymentState.PROCESSING)
+                                .state(BulkDeploymentState.PENDING)
                                 .created(true)
                                 .details(prepareBulkApplicationDeploymentDetailsMap(instance, application))
                                 .build()
@@ -205,13 +208,14 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @Override
-    public Boolean validateDomainsList(List<String> domainsName) {
+    public Boolean validateDomainsList(Set<String> domainsName) {
+        Boolean result = true;
         for (String domainName : domainsName) {
-            if (domainService.existsDomain(domainName)) {
-                return false;
+            if (!domainService.existsDomain(domainName)) {
+                result= false;
             }
         }
-        return true;
+        return result;
     }
 
     private static Map<String, String> mapToDeploymentParameters(MultiValuedMap<String, String> parsedParameters) {
@@ -337,6 +341,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @Override
+    public void setBulkEntryToProcessing(Long bulkEntryId) {
+        BulkDeploymentEntry entry = bulkDeploymentEntryRepository.getReferenceById(bulkEntryId);
+        entry.setState(BulkDeploymentState.PROCESSING);
+        bulkDeploymentEntryRepository.save(entry);
+    }
+
+    @Override
     public BulkDeployment updateState(Long bulkId) {
         log.info("Update all states for bulk {}", bulkId);
         Optional<BulkDeployment> bulk = this.bulkDeploymentRepository.findById(bulkId);
@@ -345,6 +356,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
         throw new MissingElementException("Can not find bulk deployment " + bulkId);
     }
+
+
 
     private BulkDeployment updateStateBulk(BulkDeployment bulkDeployment) {
         bulkDeployment.getEntries().forEach(this::updateEntryState);
