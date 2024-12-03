@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
+@Slf4j
 public class ApplicationInstanceServiceImpl implements ApplicationInstanceService {
 
     private final AppInstanceRepository appInstanceRepo;
@@ -318,7 +320,8 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
     @Override
     public boolean isNameAvailableInDomain(String name, Domain domain) {
-        return appInstanceRepo.isNameAvailableInDomain(name, domain.getName()) <= 0;
+        log.error("Found: {} matching names in domain", appInstanceRepo.isNameAvailableInDomain(name, domain.getCodename()));
+        return appInstanceRepo.isNameAvailableInDomain(name, domain.getCodename()) <= 0;
     }
 
     private void checkParam(AppInstance appInstance) {
