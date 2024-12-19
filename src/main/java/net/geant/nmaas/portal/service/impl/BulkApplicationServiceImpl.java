@@ -342,9 +342,12 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
     @Override
     public void setBulkEntryToProcessing(Long bulkEntryId) {
-        BulkDeploymentEntry entry = bulkDeploymentEntryRepository.getReferenceById(bulkEntryId);
-        entry.setState(BulkDeploymentState.PROCESSING);
-        bulkDeploymentEntryRepository.save(entry);
+        Optional<BulkDeploymentEntry> entry = bulkDeploymentEntryRepository.findById(bulkEntryId);
+        if(entry.isPresent()) {
+            BulkDeploymentEntry ent = entry.get();
+            ent.setState(BulkDeploymentState.PROCESSING);
+            bulkDeploymentEntryRepository.save(ent);
+        }
     }
 
     @Override
