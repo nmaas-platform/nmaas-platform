@@ -47,4 +47,5 @@ public interface AppDeploymentRepositoryManager {
 
     Map<String, Long> getDeploymentStatistics();
 
+    Boolean isFirstTimeDeployment(Identifier deploymentId);
 }

@@ -56,7 +56,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     private boolean helmRepoUpdateAsyncEnabled;
 
     @Override
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public void deployService(Identifier deploymentId) {
         try {
             if (!helmRepoUpdateAsyncEnabled) {
@@ -143,7 +143,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public boolean checkServiceDeployed(Identifier deploymentId) {
         try {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(
@@ -157,12 +157,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public void deleteServiceIfExists(Identifier deploymentId) {
         String namespace = namespaceService.namespace(repositoryManager.loadDomain(deploymentId));
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         try {
-            if(checkIfServiceExists(namespace, descriptiveDeploymentId)){
+            if (checkIfServiceExists(namespace, descriptiveDeploymentId)) {
                 helmCommandExecutor.executeHelmDeleteCommand(
                         namespace,
                         descriptiveDeploymentId.getValue()
@@ -173,12 +173,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         }
     }
 
-    private boolean checkIfServiceExists(String namespace, Identifier deploymentId){
+    private boolean checkIfServiceExists(String namespace, Identifier deploymentId) {
         return helmCommandExecutor.executeHelmListCommand(namespace).contains(deploymentId.value());
     }
 
     @Override
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion) {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {

@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.configuration.InitScriptsController;
 import net.geant.nmaas.portal.events.ApplicationListUpdatedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,9 +27,12 @@ class HelmChartUpdateListenerTest {
 
     private HelmChartUpdateListener listener;
 
+    @Mock()
+    private InitScriptsController initScriptsController;
+
     @BeforeEach
     void setup() {
-        listener = new HelmChartUpdateListener(executor);
+        listener = new HelmChartUpdateListener(executor, initScriptsController);
     }
 
     @Test

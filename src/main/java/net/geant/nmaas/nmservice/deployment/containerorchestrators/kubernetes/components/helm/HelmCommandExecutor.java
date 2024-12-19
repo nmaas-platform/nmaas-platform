@@ -189,7 +189,7 @@ public class HelmCommandExecutor {
             singleCommandExecutor().executeSingleCommand(
                     HelmVersionCommand.command(helmVersion, enableTls)
             );
-        } catch(SshConnectionException e) {
+        } catch (SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm version command -> " + e.getMessage());
         }
     }
@@ -201,7 +201,7 @@ public class HelmCommandExecutor {
     void executeHelmRepoUpdateCommand() {
         try{
             singleCommandExecutor().executeSingleCommand(HelmRepoUpdateCommand.command());
-        } catch(SshConnectionException e) {
+        } catch (SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm repository update command -> " + e.getMessage());
         }
     }
@@ -209,7 +209,7 @@ public class HelmCommandExecutor {
     void executeHelmRepoAddCommand(String repoName, String repoUrl) {
         try{
             singleCommandExecutor().executeSingleCommand(HelmRepoAddCommand.command(repoName, repoUrl));
-        } catch(SshConnectionException e) {
+        } catch (SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm repository add command -> " + e.getMessage());
         }
     }

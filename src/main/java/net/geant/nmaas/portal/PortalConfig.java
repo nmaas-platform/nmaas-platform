@@ -121,7 +121,7 @@ public class PortalConfig {
 		};
 	}
 
-	@Bean
+	@Bean("portalConfiguration")
 	public InitializingBean saveDefaultPortalConfiguration() {
 		return new InitializingBean() {
 
@@ -146,6 +146,12 @@ public class PortalConfig {
 			@Value("${portal.config.showDomainRegistrationSelector:true}")
 			private boolean showDomainRegistrationSelector;
 
+			@Value("${nmaas.service.deployment.parallel.limit}")
+			Integer bulkDeploymentPerPeriod;
+
+			@Value("${nmaas.service.bulk-deployment.cron}")
+			String bulkDeploymentCron;
+
 			@Autowired
 			private ConfigurationManager configurationManager;
 
@@ -159,6 +165,8 @@ public class PortalConfig {
 						.sendAppInstanceFailureEmails(this.sendAppInstanceFailureEmails)
 						.appInstanceFailureEmailList(Arrays.asList(this.appInstanceFailureEmailList.split(";")))
 						.registrationDomainSelectionEnabled(this.showDomainRegistrationSelector)
+						.bulkDeploymentJobCron(bulkDeploymentCron)
+						.parallelDeploymentsLimit(bulkDeploymentPerPeriod)
 						.build();
 				try {
 					this.configurationManager.setConfiguration(configurationView);

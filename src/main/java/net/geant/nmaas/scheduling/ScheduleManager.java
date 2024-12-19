@@ -37,8 +37,8 @@ public class ScheduleManager {
     public void createJob(MonitorService service, MonitorEntryView monitorEntryView) {
         JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
-        try{
-            if(scheduler.checkExists(jobKey(jobDescriptor.getServiceName().getName()))) {
+        try {
+            if (scheduler.checkExists(jobKey(jobDescriptor.getServiceName().getName()))) {
                 log.error(String.format("Job with name %s already exists", jobDescriptor.getServiceName()));
                 throw new IllegalStateException(String.format("Job with name %s already exists", jobDescriptor.getServiceName()));
             } else {
