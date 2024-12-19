@@ -353,7 +353,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             ent.setState(BulkDeploymentState.PROCESSING);
             bulkDeploymentEntryRepository.save(ent);
         }
-
     }
 
     @Override
