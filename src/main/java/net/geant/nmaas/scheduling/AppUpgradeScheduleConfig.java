@@ -1,7 +1,9 @@
 package net.geant.nmaas.scheduling;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
 import net.geant.nmaas.orchestration.AppUpgradeSummaryJob;
 import net.geant.nmaas.orchestration.AppUpgradeTriggerJob;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,6 +20,7 @@ public class AppUpgradeScheduleConfig {
     private static final String APP_UPGRADE_JOB_NAME = "AppUpgradeJob";
     private static final String APP_UPGRADE_SUMMARY_JOB_NAME = "AppUpgradeSummaryJob";
 
+
     @Bean
     public InitializingBean insertDefaultAppUpgradeJob() {
         return new InitializingBean() {
@@ -27,6 +30,9 @@ public class AppUpgradeScheduleConfig {
 
             @Autowired
             private AppUpgradeSummaryJob appUpgradeSummaryJob;
+
+            @Autowired
+            private BulkDeploymentJob bulkDeploymentJob;
 
             @Autowired
             private ScheduleManager scheduleManager;

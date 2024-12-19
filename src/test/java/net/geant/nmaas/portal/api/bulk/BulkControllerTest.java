@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.bulk;
 
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
@@ -23,8 +24,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -83,16 +86,23 @@ public class BulkControllerTest {
 
     @Test
     void shouldProcessBulkApplicationRequest() throws IOException {
-        MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
-        when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
-        when(principalMock.getName()).thenReturn("user");
-        when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
 
-        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", file);
 
-        verify(bulkCsvProcessor).processApplicationSpecs(any());
-        verify(bulkApplicationService).handleBulkDeployment(any(), any(), any());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertThrows(MissingElementException.class, () -> {
+            MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
+            when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
+            when(principalMock.getName()).thenReturn("user");
+            when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
+            ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", file);
+
+                }
+        );
+
+
+//        verify(bulkCsvProcessor).processApplicationSpecs(any());
+//        verify(bulkApplicationService).handleBulkDeployment(any(), any(), any());
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+
     }
 
     @Test

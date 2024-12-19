@@ -84,35 +84,35 @@ public class JanitorService {
     }
 
     public void createOrReplaceConfigMap(Identifier deploymentId, String domain) {
-        log.info(String.format("Creating or replacing configMap(s) for deployment %s in domain %s", deploymentId.value(), domain));
+        log.info("Creating or replacing configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
     }
 
     public void deleteConfigMapIfExists(Identifier deploymentId, String domain) {
-        log.info(String.format("Deleting configMap(s) for deployment %s in domain %s", deploymentId.value(), domain));
+        log.info("Deleting configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
     }
 
     public void createOrReplaceBasicAuth(Identifier deploymentId, String domain, String user, String password) {
-        log.info(String.format("Configuring basic auth for deployment %s in domain %s", deploymentId.value(), domain));
+        log.info("Configuring basic auth for deployment {} in domain {}", deploymentId.value(), domain);
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
         throwExceptionIfExecutionFailed(response);
     }
 
     public void deleteBasicAuthIfExists(Identifier deploymentId, String domain) {
-        log.info(String.format("Deleting basic auth for deployment %s in domain %s", deploymentId.value(), domain));
+        log.info("Deleting basic auth for deployment {} in domain {}", deploymentId.value(), domain);
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
     }
 
     public void deleteTlsIfExists(Identifier deploymentId, String domain) {
-        log.info(String.format("Deleting TLS for deployment %s in domain %s", deploymentId.value(), domain));
+        log.info("Deleting TLS for deployment {} in domain {}", deploymentId.value(), domain);
         CertManagerServiceGrpc.CertManagerServiceBlockingStub stub = CertManagerServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
@@ -129,7 +129,7 @@ public class JanitorService {
     }
 
     public boolean checkIfReady(Identifier deploymentId, String domain) {
-        log.info(String.format("Checking if deployment %s in domain %s is ready", deploymentId.value(), domain));
+        log.trace("Checking if deployment {} in domain {} is ready", deploymentId.value(), domain);
         ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(deploymentId, domain));
         switch (response.getStatus()) {
@@ -145,7 +145,7 @@ public class JanitorService {
     }
 
     public String retrieveServiceIp(Identifier serviceId, String domain) {
-        log.info(String.format("Retrieving service IP for %s in domain %s", serviceId.value(), domain));
+        log.info("Retrieving service IP for {} in domain {}", serviceId.value(), domain);
         InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
         JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(serviceId, domain));
         switch (response.getStatus()) {
@@ -158,7 +158,7 @@ public class JanitorService {
     }
 
     public void checkServiceExists(Identifier serviceId, String domain) {
-        log.info(String.format("Verifying if provided service %s exists in domain %s", serviceId.value(), domain));
+        log.info("Verifying if provided service {} exists in domain {}", serviceId.value(), domain);
         InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
         JanitorManager.InfoServiceResponse response = stub.checkServiceExists(buildInstanceRequest(serviceId, domain));
         switch (response.getStatus()) {
@@ -171,7 +171,7 @@ public class JanitorService {
     }
 
     public List<JanitorManager.PodInfo> getPodNames(Identifier deploymentId, String domain) {
-        log.info(String.format("Retrieving list of pods for %s in domain %s", deploymentId.value(), domain));
+        log.debug("Retrieving list of pods for {} in domain {}", deploymentId.value(), domain);
         PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
         JanitorManager.PodListResponse response = stub.retrievePodList(buildInstanceRequest(deploymentId, domain));
         switch (response.getStatus()) {
@@ -209,7 +209,7 @@ public class JanitorService {
     }
 
     public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
-        log.info(String.format("Request domain namespace creation for domain %s with %s annotations", domainNameSpace, annotations.size()));
+        log.info("Request domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createNamespace(
                 buildNamespaceRequest(domainNameSpace, annotations));
