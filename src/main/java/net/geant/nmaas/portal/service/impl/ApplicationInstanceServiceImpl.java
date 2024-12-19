@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.OverridesAttribute;
+import jakarta.validation.OverridesAttribute;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;

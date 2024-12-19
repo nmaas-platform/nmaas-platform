@@ -89,7 +89,10 @@ public class BulkController {
                 }
 
                 return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user));
-            } catch (Exception e) {
+            } catch (MissingElementException ex) {
+                throw ex;
+            }
+            catch (Exception e) {
                 throw new RuntimeException(e);
             }
         } else {

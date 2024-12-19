@@ -44,6 +44,7 @@ import java.util.Optional;
 
 import static net.geant.nmaas.portal.api.bulk.BulkType.APPLICATION;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.COMPLETED;
+import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PENDING;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PROCESSING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -78,7 +79,7 @@ public class BulkApplicationServiceImplTest {
 
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
             domainService, applicationSubscriptionService,userService,  applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
-            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, eventPublisher, bulkDeploymentQueueRepository);
+            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository);
 
     @Test
     void shouldHandleBulkDeployment() throws JsonProcessingException {
@@ -101,7 +102,7 @@ public class BulkApplicationServiceImplTest {
         when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
         when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
         when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
-        doNothing().when(eventPublisher).publishEvent(any(ApplicationEvent.class));
+//        doNothing().when(eventPublisher).publishEvent(any(ApplicationEvent.class));
         User user =new User("Test");
         user.setId(1L);
         when(userService.findById(any())).thenReturn(Optional.of(user));
@@ -124,7 +125,7 @@ public class BulkApplicationServiceImplTest {
         assertEquals(APPLICATION, bulkDeployment.getType());
         assertEquals(testUser().getId(), bulkDeployment.getCreator().getId());
         assertEquals(1, bulkDeployment.getEntries().size());
-        assertEquals(PROCESSING, bulkDeployment.getEntries().get(0).getState());
+        assertEquals(PENDING, bulkDeployment.getEntries().get(0).getState());
     }
 
     @Test
