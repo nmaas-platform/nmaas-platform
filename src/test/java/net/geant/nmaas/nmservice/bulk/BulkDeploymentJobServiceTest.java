@@ -55,7 +55,9 @@ class BulkDeploymentJobServiceTest {
         when(bulkDeploymentQueueRepository.findAll()).thenReturn(List.of(entry, entry2, entry3));
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.REQUESTED);
         when(appDeploymentRepositoryManager.loadState(any())).thenReturn(AppDeploymentState.REQUEST_VALIDATED);
-
+        when(bulkDeploymentRepository.findBulkIdByBulkEntryId(any())).thenReturn(1L);
+        when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
+        when(bulkDeploymentRepository.findParallelDeploymentsLimitByBulkId(any())).thenReturn(2);
         underTest.handleQueue();
 
         // two deployments triggered following the limit set in properties
