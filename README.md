@@ -17,7 +17,7 @@
   </p>
 </div>
 
-nmaas is an open-source framework developed within the GÉANT project for orchestration of on-demand deployment of applications in a multi-tenant Kubernetes-based cloud environment.
+nmaas is an open-source framework developed within the GÉANT project for orchestrated on-demand deployment of applications in a multi-tenant Kubernetes-based cloud environment.
 
 With a simple self-service web interface, nmaas applications are easily deployed within an isolated tenant environment assigned to a given user institution or team.
 

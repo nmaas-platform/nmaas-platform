@@ -1,7 +1,7 @@
 {
-  "key": "CONTACT",
+  "key": "FEATURE_REQUEST",
   "access": "ALL",
   "templateName": "default",
   "emails": ["nmaas-dev@lists.geant.org"],
-  "subject": "nmaas: Contact"
+  "subject": "NMaaS: Feature request"
 }

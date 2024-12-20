@@ -7,7 +7,7 @@
         "wwwUrl": "https://www.postgresql.org/",
         "sourceUrl": "https://github.com/postgres/postgres",
         "issuesUrl": "https://www.postgresql.org/list/",
-        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/nmaas+Tools#PostgreSQL",
+        "nmaasDocumentationUrl": "https://wiki.geant.org/display/NMAAS/NMaaS+Tools#PostgreSQL",
         "descriptions": [
             {
                 "language": "en",
@@ -146,7 +146,7 @@
                     "tag": "postgresql",
                     "conditionType": "NONE",
                     "deployParameters": {
-                        "K8S_SERVICE_PORT": "22"
+                        "K8S_SERVICE_PORT": "5432"
                     }
                 },
                 {
@@ -155,7 +155,7 @@
                     "tag": "postgresql",
                     "conditionType": "NONE",
                     "deployParameters": {
-                        "K8S_SERVICE_PORT": "22"
+                        "K8S_SERVICE_PORT": "5432"
                     }
                 }
             ],

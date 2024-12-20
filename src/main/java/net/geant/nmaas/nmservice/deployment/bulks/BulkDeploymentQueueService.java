@@ -77,20 +77,9 @@ public class BulkDeploymentQueueService {
 
     private void triggerNewDeploymentsFromQueue() {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
-
-        if(!queue.isEmpty()) {
+        if (!queue.isEmpty()) {
             long currentBulkId = bulkDeploymentRepository.findBulkIdByBulkEntryId(queue.get(0).getBulkEntryId()); // find bulkId
-            long parallelDeploymentsLimit ;
-            if(configurationManager.getConfiguration().getParallelDeploymentsLimit() >= bulkDeploymentRepository.findParallelDeploymentsLimitByBulkId(currentBulkId)) {
-                parallelDeploymentsLimit = bulkDeploymentRepository.findParallelDeploymentsLimitByBulkId(currentBulkId);
-            } else {
-                parallelDeploymentsLimit = configurationManager.getConfiguration().getParallelDeploymentsLimit();
-            }
-            log.debug("Triggering entries from bulkId: {} / parallelDeploymentLimit: {} ", currentBulkId, parallelDeploymentsLimit);
-
-            long ongoingDeployments = queue.stream().filter(e -> e.getState().equals(QueryEntryState.IN_PROGRESS)).count();
-            long freeCapacity = parallelDeploymentsLimit - ongoingDeployments;
-
+            long freeCapacity = getFreeCapacity(currentBulkId, queue);
             log.debug("Number of instances that can be triggered right away: {}", freeCapacity);
             queue.stream()
                     .filter(e -> bulkDeploymentRepository.findBulkIdByBulkEntryId(e.getBulkEntryId()).equals(currentBulkId))
@@ -110,7 +99,15 @@ public class BulkDeploymentQueueService {
                         }
                     });
         }
+    }
 
+    private long getFreeCapacity(long currentBulkId, List<BulkDeploymentQueueEntry> queue) {
+        Integer globalLimit = configurationManager.getConfiguration().getParallelDeploymentsLimit();
+        Integer bulkLimit = bulkDeploymentRepository.findParallelDeploymentsLimitByBulkId(currentBulkId);
+        long parallelDeploymentsLimit = globalLimit >= bulkLimit ? bulkLimit : globalLimit;
+        log.debug("Calculated limit: {} ", parallelDeploymentsLimit);
+        long ongoingDeployments = queue.stream().filter(e -> e.getState().equals(QueryEntryState.IN_PROGRESS)).count();
+        return parallelDeploymentsLimit - ongoingDeployments;
     }
 
 }
