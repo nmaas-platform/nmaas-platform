@@ -1218,6 +1218,7 @@
     },
     "APP": {
       "INFO" : "Select application for bulk deployment",
+      "PARAlLEL" : "Set custom restriction on parallel limit deployments.",
       "UPLOAD" : "New bulk deployment of",
       "UPLOAD_INFO" : "Select csv file with application instances specification for bulk deployment",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",

@@ -96,7 +96,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository;
 
     @Override
-    public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator) {
+    public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator, Integer limit) {
         log.info("Handling bulk application deployment for {} with {} entries", applicationName, appInstanceSpecs.size());
 
         if (!applicationBaseService.exists(applicationName)) {
@@ -185,6 +185,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
 
                 bulkDeployment.getEntries().add(bulkDeploymentEntry);
+                bulkDeployment.setParallelDeploymentsLimit(limit);
 
             } catch (Exception e) {
                 log.warn("Exception thrown while deploying application {}:{} in domain {} (message: {})",

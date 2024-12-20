@@ -42,6 +42,7 @@ import java.util.Optional;
 
 import static net.geant.nmaas.portal.api.bulk.BulkType.APPLICATION;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.COMPLETED;
+import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PENDING;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PROCESSING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -98,7 +99,7 @@ public class BulkApplicationServiceImplTest {
         when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
         when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
 
-        bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser());
+        bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser(), 2);
 
         verify(applicationSubscriptionService).subscribe(110L, domain.getId(), true);
         verify(appLifecycleManager).initApplicationDeployment(any());
@@ -116,7 +117,7 @@ public class BulkApplicationServiceImplTest {
         assertEquals(APPLICATION, bulkDeployment.getType());
         assertEquals(testUser().getId(), bulkDeployment.getCreatorId());
         assertEquals(1, bulkDeployment.getEntries().size());
-        assertEquals(PROCESSING, bulkDeployment.getEntries().get(0).getState());
+        assertEquals(PENDING, bulkDeployment.getEntries().get(0).getState());
     }
 
     @Test
@@ -175,10 +176,10 @@ public class BulkApplicationServiceImplTest {
         AppAutoDeploymentReviewEvent event = new AppAutoDeploymentReviewEvent(this);
         BulkDeployment bAppToBeCompleted = new BulkDeployment(
                 1L, 1L, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))));
+                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2);
         BulkDeployment bAppProcessing = new BulkDeployment(
                 2L, 1L, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))));
+                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2);
         when(bulkDeploymentRepository.findByTypeAndState(APPLICATION, PROCESSING))
                 .thenReturn(List.of(bAppToBeCompleted, bAppProcessing));
 
