@@ -1217,6 +1217,7 @@
     },
     "APP": {
       "INFO" : "Select application for bulk deployment",
+      "PARAlLEL" : "Set custom restriction on parallel limit deployments.",
       "UPLOAD" : "New bulk deployment of",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Bulk application deployments",

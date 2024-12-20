@@ -10,6 +10,7 @@ import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,11 +37,13 @@ class BulkDeploymentJobServiceTest {
     AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
     ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
+    BulkDeploymentRepository bulkDeploymentRepository = mock(BulkDeploymentRepository.class);
+
     BulkDeploymentQueueService underTest;
 
     @BeforeEach
     void setup() {
-        underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentQueueRepository, eventPublisher, bulkApplicationService, appLifecycleManager, configurationManager);
+        underTest = new BulkDeploymentQueueService(appDeploymentMonitor, appDeploymentRepositoryManager, bulkDeploymentQueueRepository, eventPublisher, bulkApplicationService, appLifecycleManager,bulkDeploymentRepository, configurationManager);
         when(configurationManager.getConfiguration()).thenReturn(ConfigurationView.builder().parallelDeploymentsLimit(2).build());
     }
 
