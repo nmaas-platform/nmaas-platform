@@ -15,6 +15,5 @@ public interface SSHKeyRepository extends JpaRepository<SSHKeyEntity, Long> {
     List<SSHKeyEntity> findAllByOwner(User owner);
     boolean existsByOwnerAndName(User owner, String name);
 
-//    @Query("Select k from SSHKeyEntity k where k.keyValue =: keyValue")
     boolean existsByKeyValue(@Param("keyValue") String keyValue);
 }
