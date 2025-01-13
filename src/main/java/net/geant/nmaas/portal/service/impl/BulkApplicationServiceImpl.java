@@ -482,7 +482,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         List<BulkAppDetails> result = new ArrayList<>();
 
         bulkDeployment.getEntries().forEach(deployment -> {
-            if(deployment.getState() != BulkDeploymentState.REMOVED) {
+            if( !(deployment.getState() == BulkDeploymentState.REMOVED || deployment.getState() == BulkDeploymentState.FAILED)) {
                 try {
                     Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
                     AppInstance instance = instanceService.find(instanceId).orElseThrow();
