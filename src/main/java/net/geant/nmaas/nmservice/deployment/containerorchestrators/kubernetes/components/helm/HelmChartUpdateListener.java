@@ -35,10 +35,9 @@ public class HelmChartUpdateListener {
             if (StringUtils.hasText(repoName) && StringUtils.hasText(repoUrl)) {
                 helmCommandExecutor.executeHelmRepoAddCommand(repoName, repoUrl);
             }
-            if (!initScriptsController.isScriptRunning) {
+            if (!initScriptsController.isInitInProgress()) {
                 helmCommandExecutor.executeHelmRepoUpdateCommand();
             }
-
         }
         return null;
     }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 public class InitScriptsController {
 
-    public boolean isScriptRunning = false;
+    private boolean initInProgress = false;
 
     private final InitScriptsStateService initScriptsStateService;
 
@@ -24,17 +24,22 @@ public class InitScriptsController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void startInitScripts() {
-        log.info("Notified about init script operations.");
-        this.isScriptRunning = true;
+        log.info("Notified that init operations started or are ongoing");
+        this.initInProgress = true;
     }
 
     @PostMapping(value = "/completed")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void endInitScripts() {
-        log.info("Notified that init operations are completed.");
-        this.isScriptRunning = false;
+        log.info("Notified that init operations are completed");
+        this.initInProgress = false;
+        log.info("Executing Helm repo update");
         initScriptsStateService.executeHelmRepoUpdate();
+    }
+
+    public boolean isInitInProgress() {
+        return initInProgress;
     }
 
 }

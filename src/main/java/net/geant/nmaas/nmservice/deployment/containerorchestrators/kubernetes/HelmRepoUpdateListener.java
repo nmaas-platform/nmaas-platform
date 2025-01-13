@@ -15,14 +15,12 @@ import org.springframework.stereotype.Component;
 public class HelmRepoUpdateListener {
 
     private final HelmKServiceManager helmKServiceManager;
-
     private final InitScriptsController initScriptsController;
-
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(ApplicationActivatedEvent event) {
-        if(!initScriptsController.isScriptRunning) {
+        if (!initScriptsController.isInitInProgress()) {
             helmKServiceManager.updateHelmRepo();
         }
         return null;
