@@ -482,37 +482,44 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         List<BulkAppDetails> result = new ArrayList<>();
 
         bulkDeployment.getEntries().forEach(deployment -> {
-            Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
-            AppInstance instance = instanceService.find(instanceId).orElseThrow();
+            if(deployment.getState() != BulkDeploymentState.REMOVED) {
+                try {
+                    Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
+                    AppInstance instance = instanceService.find(instanceId).orElseThrow();
 
-            Map<String, String> configurationParameters = new HashMap<>();
+                    Map<String, String> configurationParameters = new HashMap<>();
 
-            //deploy
-            Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
-            params.forEach((key, value) -> {
-                configurationParameters.put(key, Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
-                log.debug("Params = {} - {}", key, value);
-            });
+                    //deploy
+                    Map<String, String> params = appDeploymentMonitor.appDeploymentParameters(instance.getInternalId());
+                    params.forEach((key, value) -> {
+                        configurationParameters.put(key, Objects.isNull(value) || Objects.equals(value, "") ? EMPTY_VALUE : value.replace("\"", ""));
+                        log.debug("Params = {} - {}", key, value);
+                    });
 
-            Map<String, String> accessMethodParameters = new HashMap<>();
-            if (appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED) {
-                appDeploymentMonitor.userAccessDetails(instance.getInternalId()).getServiceAccessMethods()
-                        .forEach(accessMethod ->
-                                accessMethodParameters.put(
-                                        accessMethod.getName() + "." + accessMethod.getProtocol(),
-                                        Objects.isNull(accessMethod.getUrl()) || Objects.equals(accessMethod.getUrl(), "") ? EMPTY_VALUE : accessMethod.getUrl())
-                        );
+                    Map<String, String> accessMethodParameters = new HashMap<>();
+                    if (appDeploymentMonitor.state(instance.getInternalId()) != AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED) {
+                        appDeploymentMonitor.userAccessDetails(instance.getInternalId()).getServiceAccessMethods()
+                                .forEach(accessMethod ->
+                                        accessMethodParameters.put(
+                                                accessMethod.getName() + "." + accessMethod.getProtocol(),
+                                                Objects.isNull(accessMethod.getUrl()) || Objects.equals(accessMethod.getUrl(), "") ? EMPTY_VALUE : accessMethod.getUrl())
+                                );
+                    }
+
+                    BulkAppDetails details = BulkAppDetails.builder().userName(instance.getOwner().getUsername())
+                            .appInstanceName(instance.getName())
+                            .appName(instance.getApplication().getName())
+                            .domainCodeName(instance.getDomain().getCodename())
+                            .appVersion(instance.getApplication().getVersion())
+                            .parameters(configurationParameters)
+                            .accessMethod(accessMethodParameters)
+                            .build();
+                    result.add(details);
+                } catch ( Exception ex) {
+                    log.error("Can not prepare details for {} - ex: {}", Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID)), ex);
+                }
+
             }
-
-            BulkAppDetails details = BulkAppDetails.builder().userName(instance.getOwner().getUsername())
-                    .appInstanceName(instance.getName())
-                    .appName(instance.getApplication().getName())
-                    .domainCodeName(instance.getDomain().getCodename())
-                    .appVersion(instance.getApplication().getVersion())
-                    .parameters(configurationParameters)
-                    .accessMethod(accessMethodParameters)
-                    .build();
-            result.add(details);
         });
 
         result.forEach(x -> {
