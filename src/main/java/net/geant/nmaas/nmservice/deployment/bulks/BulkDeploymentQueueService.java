@@ -10,6 +10,7 @@ import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
+import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,7 +29,7 @@ public class BulkDeploymentQueueService {
     private final ApplicationEventPublisher eventPublisher;
     private final BulkApplicationService bulkApplicationService;
     private final AppLifecycleManager appLifecycleManager;
-
+    private final BulkDeploymentRepository bulkDeploymentRepository;
     private final ConfigurationManager configurationManager;
 
     public void handleQueue() {
@@ -76,26 +77,37 @@ public class BulkDeploymentQueueService {
 
     private void triggerNewDeploymentsFromQueue() {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
-        long parallelDeploymentsLimit = configurationManager.getConfiguration().getParallelDeploymentsLimit();
+        if (!queue.isEmpty()) {
+            long currentBulkId = bulkDeploymentRepository.findBulkIdByBulkEntryId(queue.get(0).getBulkEntryId()); // find bulkId
+            long freeCapacity = getFreeCapacity(currentBulkId, queue);
+            log.debug("Number of instances that can be triggered right away: {}", freeCapacity);
+            queue.stream()
+                    .filter(e -> bulkDeploymentRepository.findBulkIdByBulkEntryId(e.getBulkEntryId()).equals(currentBulkId))
+                    .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED)
+                            || e.getState().equals(QueryEntryState.WAITING))
+                    .limit(freeCapacity)
+                    .forEach(e -> {
+                        log.debug("Triggering deployment for {}", e.getDeploymentId());
+                        eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
+                        e.setState(QueryEntryState.IN_PROGRESS);
+                        bulkApplicationService.setBulkEntryToProcessing(e.getBulkEntryId());
+                        queueRepository.save(e);
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+        }
+    }
+
+    private long getFreeCapacity(long currentBulkId, List<BulkDeploymentQueueEntry> queue) {
+        Integer globalLimit = configurationManager.getConfiguration().getParallelDeploymentsLimit();
+        Integer bulkLimit = bulkDeploymentRepository.findParallelDeploymentsLimitByBulkId(currentBulkId);
+        long parallelDeploymentsLimit = globalLimit >= bulkLimit ? bulkLimit : globalLimit;
+        log.debug("Calculated limit: {} ", parallelDeploymentsLimit);
         long ongoingDeployments = queue.stream().filter(e -> e.getState().equals(QueryEntryState.IN_PROGRESS)).count();
-        long freeCapacity = parallelDeploymentsLimit - ongoingDeployments;
-        log.debug("Number of instances that can be triggered right away: {}", freeCapacity);
-        queue.stream()
-                .filter(e -> appDeploymentMonitor.state(e.getDeploymentId()).equals(AppLifecycleState.REQUESTED)
-                        || e.getState().equals(QueryEntryState.WAITING))
-                .limit(freeCapacity)
-                .forEach(e -> {
-                    log.debug("Triggering deployment for {}", e.getDeploymentId());
-                    eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, e.getDeploymentId()));
-                    e.setState(QueryEntryState.IN_PROGRESS);
-                    bulkApplicationService.setBulkEntryToProcessing(e.getBulkEntryId());
-                    queueRepository.save(e);
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
+        return parallelDeploymentsLimit - ongoingDeployments;
     }
 
 }

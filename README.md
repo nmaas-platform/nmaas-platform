@@ -11,13 +11,13 @@
     <br />
     <a href="https://docs.nmaas.eu/">Explore documentation</a>
     ·
-    <a href="https://github.com/nmaas-platform/nmaas-platform/issues">Report Bug</a>
+    <a href="https://gitlab.software.geant.org/nmaas/nmaas-platform/-/issues">Report Bug</a>
     ·
-    <a href="https://github.com/nmaas-platform/nmaas-platform/issues">Request Feature</a>
+    <a href="https://gitlab.software.geant.org/nmaas/nmaas-platform/-/issues">Request Feature</a>
   </p>
 </div>
 
-nmaas is an open-source framework developed within the GÉANT project for orchestration of on-demand deployment of applications in a multi-tenant Kubernetes-based cloud environment.
+nmaas is an open-source framework developed within the GÉANT project for orchestrated on-demand deployment of applications in a multi-tenant Kubernetes-based cloud environment.
 
 With a simple self-service web interface, nmaas applications are easily deployed within an isolated tenant environment assigned to a given user institution or team.
 
@@ -27,6 +27,8 @@ nmaas applications are containerized and deployed using [Helm charts](https://he
 
 
 ## Screenshots
+
+![Screenshot of application marketplace](docs/images/nmaas-landing-page.png "Landing page")
 
 ![Screenshot of application marketplace](docs/images/nmaas-applications.png "Marketplace view")
 

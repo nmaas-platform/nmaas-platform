@@ -1242,6 +1242,7 @@
     },
     "APP": {
       "INFO" : "Wybierz aplikacje dla grupowego uruchomienia",
+      "PARALLEL" : "Ustaw limit liczby jednorazowo uruchamianych instancji",
       "UPLOAD" : "Nowe grupowe uruchomienie aplikacji dla",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
       "HEADER" : "Uruchamianie wielu aplikacji",

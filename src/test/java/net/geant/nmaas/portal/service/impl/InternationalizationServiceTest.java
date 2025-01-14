@@ -25,9 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 class InternationalizationServiceTest {
-
     private final InternationalizationSimpleRepository repository = mock(InternationalizationSimpleRepository.class);
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
     private final ModelMapper modelMapper = new ModelMapper();
@@ -64,10 +62,10 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldNotSaveWithEmptyContent() {
-            language.setContent("");
-            assertThrows(IllegalArgumentException.class, () ->
-                    internationalizationService.addNewLanguage(this.language, false)
-            );
+        language.setContent("");
+        assertThrows(IllegalArgumentException.class, () ->
+                internationalizationService.addNewLanguage(this.language, false)
+        );
     }
 
     @Test

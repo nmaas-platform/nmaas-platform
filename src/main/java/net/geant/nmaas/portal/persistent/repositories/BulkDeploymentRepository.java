@@ -15,7 +15,13 @@ public interface BulkDeploymentRepository extends JpaRepository<BulkDeployment, 
 
     List<BulkDeployment> findByTypeAndState(BulkType bulkType, BulkDeploymentState bulkDeploymentState);
 
-    @Query("select b from BulkDeployment b join b.entries e WHERE e.id  = :entryId")
+    @Query("select b from BulkDeployment b join b.entries e WHERE e.id = :entryId")
     BulkDeployment findByBulkEntryId(@Param("entryId") Long entryId);
+
+    @Query("Select b.parallelDeploymentsLimit from BulkDeployment b WHERE b.id = :bulkId")
+    Integer findParallelDeploymentsLimitByBulkId(@Param("bulkId") Long bulkId);
+
+    @Query("Select b.id from BulkDeployment b join b.entries e WHERE e.id = :entryId")
+    Long findBulkIdByBulkEntryId(@Param("entryId") Long entryId);
 
 }

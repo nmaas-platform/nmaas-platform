@@ -78,7 +78,7 @@ public class BulkApplicationServiceImplTest {
     private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
 
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
-            domainService, applicationSubscriptionService,userService,  applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
+            domainService, applicationSubscriptionService, userService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
             bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository);
 
     @Test
@@ -102,12 +102,11 @@ public class BulkApplicationServiceImplTest {
         when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
         when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
         when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
-//        doNothing().when(eventPublisher).publishEvent(any(ApplicationEvent.class));
-        User user =new User("Test");
+        User user = new User("Test");
         user.setId(1L);
         when(userService.findById(any())).thenReturn(Optional.of(user));
 
-        bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser());
+        bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser(), 2);
 
         verify(applicationSubscriptionService).subscribe(110L, domain.getId(), true);
         verify(appLifecycleManager).initApplicationDeployment(any());
@@ -186,10 +185,10 @@ public class BulkApplicationServiceImplTest {
         user.setId(1L);
         BulkDeployment bAppToBeCompleted = new BulkDeployment(
                 1L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))));
+                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2);
         BulkDeployment bAppProcessing = new BulkDeployment(
                 2L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))));
+                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2);
         when(bulkDeploymentRepository.findByTypeAndState(APPLICATION, PROCESSING))
                 .thenReturn(List.of(bAppToBeCompleted, bAppProcessing));
 

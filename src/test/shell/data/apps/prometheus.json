@@ -38,7 +38,7 @@
     "application": {
         "id": null,
         "name": "Prometheus",
-        "version": "2.8.0",
+        "version": "2.54.1",
         "configWizardTemplate": {
             "template": {
                 "components": [
@@ -367,7 +367,7 @@
             "kubernetesTemplate": {
                 "chart": {
                     "name": "nmaas-prometheus",
-                    "version": "2.0.1"
+                    "version": "3.0.11"
                 }
             },
             "storageVolumes": [
