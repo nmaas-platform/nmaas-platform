@@ -80,7 +80,7 @@ public class BulkDomainServiceIntTest {
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
         BulkDeployment bulkDeployment = bulkDeployments.get(0);
-        assertEquals(1, bulkDeployment.getCreatorId());
+        assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(6, bulkDeployment.getEntries().size());
         assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isEqualTo("user1@test.com");
@@ -105,7 +105,7 @@ public class BulkDomainServiceIntTest {
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
         BulkDeployment bulkDeployment = bulkDeployments.get(0);
-        assertEquals(1, bulkDeployment.getCreatorId());
+        assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(4, bulkDeployment.getEntries().size());
         assertThat(userRepository.findByEmail("user1@test.com").orElseThrow().getSamlToken()).isNull();
@@ -128,7 +128,7 @@ public class BulkDomainServiceIntTest {
         List<BulkDeployment> bulkDeployments = bulkDeploymentRepository.findAll();
         assertEquals(1, bulkDeployments.size());
         BulkDeployment bulkDeployment = bulkDeployments.get(0);
-        assertEquals(1, bulkDeployment.getCreatorId());
+        assertEquals(1, bulkDeployment.getCreator().getId());
         assertEquals(BulkType.DOMAIN, bulkDeployment.getType());
         assertEquals(6, bulkDeployment.getEntries().size());
         assertEquals("testdomain10", bulkDeployment.getEntries().get(0).getDetails().get("domainCodename"));

@@ -4,6 +4,7 @@ import net.geant.nmaas.notifications.types.model.FormTypeRequest;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.persistence.repository.FormTypeRepository;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +45,7 @@ public class FormTypeServiceTest {
         when(repository.existsById(anyString())).thenReturn(true);
         FormTypeRequest ftr = new FormTypeRequest("CONTACT", "", "", new ArrayList<>(), "");
 
-        assertThrows(ProcessingException.class, () -> this.underTest.create(ftr));
+        assertThrows(DataConflictException.class, () -> this.underTest.create(ftr));
 
         verify(repository, times(0)).save(any(FormType.class));
     }

@@ -2,6 +2,7 @@ package net.geant.nmaas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.event.ApplicationEventMulticaster;
@@ -14,6 +15,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @SpringBootApplication
 @EnableScheduling
 @EnableAspectJAutoProxy
+@EnableCaching
 public class MainConfig {
 
     public static void main(String[] args) {

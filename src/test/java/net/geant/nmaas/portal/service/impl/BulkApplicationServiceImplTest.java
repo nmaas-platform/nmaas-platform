@@ -19,6 +19,7 @@ import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentEntryRepository;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -27,6 +28,7 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -69,9 +71,13 @@ public class BulkApplicationServiceImplTest {
     private final AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
     private final BulkDeploymentRepository bulkDeploymentRepository = mock(BulkDeploymentRepository.class);
     private final BulkDeploymentEntryRepository bulkDeploymentEntryRepository = mock(BulkDeploymentEntryRepository.class);
+
+    private final UserService userService = mock(UserService.class);
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+
 
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
             domainService, applicationSubscriptionService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
@@ -98,6 +104,10 @@ public class BulkApplicationServiceImplTest {
         when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
         when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
         when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
+        doNothing().when(eventPublisher).publishEvent(any(ApplicationEvent.class));
+        User user =new User("Test");
+        user.setId(1L);
+        when(userService.findById(any())).thenReturn(Optional.of(user));
 
         bulkApplicationService.handleBulkDeployment(TEST_APP_NAME, List.of(csvApplication), testUser(), 2);
 
@@ -115,7 +125,7 @@ public class BulkApplicationServiceImplTest {
         BulkDeployment bulkDeployment = bulkDeploymentArgumentCaptor.getValue();
         assertEquals(PROCESSING, bulkDeployment.getState());
         assertEquals(APPLICATION, bulkDeployment.getType());
-        assertEquals(testUser().getId(), bulkDeployment.getCreatorId());
+        assertEquals(testUser().getId(), bulkDeployment.getCreator().getId());
         assertEquals(1, bulkDeployment.getEntries().size());
         assertEquals(PENDING, bulkDeployment.getEntries().get(0).getState());
     }
@@ -174,11 +184,13 @@ public class BulkApplicationServiceImplTest {
     @Test
     void shouldHandleDeploymentReview() {
         AppAutoDeploymentReviewEvent event = new AppAutoDeploymentReviewEvent(this);
+        User user = new User("Test");
+        user.setId(1L);
         BulkDeployment bAppToBeCompleted = new BulkDeployment(
-                1L, 1L, OffsetDateTime.now(), PROCESSING, APPLICATION,
+                1L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
                 new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2);
         BulkDeployment bAppProcessing = new BulkDeployment(
-                2L, 1L, OffsetDateTime.now(), PROCESSING, APPLICATION,
+                2L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
                 new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2);
         when(bulkDeploymentRepository.findByTypeAndState(APPLICATION, PROCESSING))
                 .thenReturn(List.of(bAppToBeCompleted, bAppProcessing));

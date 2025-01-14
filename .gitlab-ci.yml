@@ -12,6 +12,18 @@ test:
     - chmod +x ./gradlew
     - ./gradlew -Dorg.gradle.daemon=false test
 
+itest:
+  stage: test
+  image: openjdk:11-jdk-slim
+  tags:
+    - docker
+  only:
+    - develop
+    - /^release/
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew integrationTest jacocoTestCoverageVerification
+
 sonar:
   stage: sonar
   image: openjdk:17-jdk-slim
