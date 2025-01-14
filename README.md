@@ -11,9 +11,9 @@
     <br />
     <a href="https://docs.nmaas.eu/">Explore documentation</a>
     ·
-    <a href="https://github.com/nmaas-platform/nmaas-platform/issues">Report Bug</a>
+    <a href="https://gitlab.software.geant.org/nmaas/nmaas-platform/-/issues">Report Bug</a>
     ·
-    <a href="https://github.com/nmaas-platform/nmaas-platform/issues">Request Feature</a>
+    <a href="https://gitlab.software.geant.org/nmaas/nmaas-platform/-/issues">Request Feature</a>
   </p>
 </div>
 
@@ -27,6 +27,8 @@ nmaas applications are containerized and deployed using [Helm charts](https://he
 
 
 ## Screenshots
+
+![Screenshot of application marketplace](docs/images/nmaas-landing-page.png "Landing page")
 
 ![Screenshot of application marketplace](docs/images/nmaas-applications.png "Marketplace view")
 

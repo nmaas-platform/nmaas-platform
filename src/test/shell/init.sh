@@ -4,7 +4,7 @@ function getToken() {
     python3 -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)['token']))" | sed -e 's/^"//' -e 's/"$//'
 }
 
-echo "Waiting for NMaaS Platform initialization"
+echo "Waiting for nmaas Platform initialization"
 until $(curl --output /dev/null --silent --head --fail http://localhost:9000/actuator/health); do
     echo "..."
     sleep 1s
