@@ -1,6 +1,27 @@
 {
   "versions" : [
     {
+      "verNo" : "1.6.5",
+      "date" : "(2025/01/14)",
+      "topic" : [
+        {
+          "title" : "Improved bulk application deployment process",
+          "tags" : "[Enhancement]",
+          "description" : "Bulk deployment process is now based on a queue and scheduled job which ensures better control over the process"
+        },
+        {
+          "title" : "Removed redundant email notifications",
+          "tags" : "[Enhancement]",
+          "description" : "Application instance ready email is no longer sent after application instance upgrade"
+        },
+        {
+          "title" : "Improved data initialization process after platform restart or upgrade",
+          "tags" : "[Enhancement]",
+          "description" : "Added dedicated REST endpoint for initialization scripts to indicate that database population with data is in progress"
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.4",
       "date" : "(2024/10/10)",
       "topic" : [

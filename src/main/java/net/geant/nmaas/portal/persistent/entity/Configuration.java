@@ -32,7 +32,6 @@ public class Configuration {
     private boolean maintenance = false;
 
     @Builder.Default
-
     @Column(nullable = false)
     private boolean ssoLoginAllowed = false;
 
@@ -65,13 +64,11 @@ public class Configuration {
     @Column(nullable = false)
     private boolean bulkDomainsSendEmailForNewAccounts = true;
 
-    public void setAppInstanceFailureEmailList(List<String> emails) {
-        this.appInstanceFailureEmails = String.join(";", emails);
-    }
+    @Column(name = "bulk_deployment_job_cron", nullable = false)
+    private String bulkDeploymentJobCron;
 
-    public List<String> getAppInstanceFailureEmailList() {
-        return Arrays.asList(this.appInstanceFailureEmails.split(";"));
-    }
+    @Column(name = "parallel_deployments_limit", nullable = false)
+    private Integer parallelDeploymentsLimit;
 
     public Configuration(
             boolean maintenance,
@@ -93,6 +90,14 @@ public class Configuration {
         this.registrationDomainSelectionEnabled = registrationDomainSelectionEnabled;
         this.bulkDomainsAllowForSsoAccounts = bulkDomainsAllowForSsoAccounts;
         this.bulkDomainsSendEmailForNewAccounts = bulkDomainsSendEmailForNewAccounts;
+    }
+
+    public void setAppInstanceFailureEmailList(List<String> emails) {
+        this.appInstanceFailureEmails = String.join(";", emails);
+    }
+
+    public List<String> getAppInstanceFailureEmailList() {
+        return Arrays.asList(this.appInstanceFailureEmails.split(";"));
     }
 
 }

@@ -74,6 +74,7 @@ public class BulkController {
     public ResponseEntity<BulkDeploymentViewS> uploadApplications(
             @NotNull Principal principal,
             @RequestParam("appName") String applicationName,
+            @RequestParam("limit") Integer limit,
             @RequestParam("file") MultipartFile file) {
         log.info("Processing new bulk application deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
@@ -81,7 +82,14 @@ public class BulkController {
                 List<CsvApplication> csvApplications = bulkCsvProcessor.processApplicationSpecs(file);
                 User userFromDb = userService.findByUsername(principal.getName()).orElseThrow();
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
-                return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user));
+
+                //validate domains before processing bulk
+                if(!bulkApplicationService.validateDomainsList(csvApplications.stream().map(CsvApplication::getDomainName).collect(Collectors.toSet()))) {
+                    log.error("Domain validation error. Some domains are missing. Please check the CSV information.");
+                    throw new MissingElementException("Domain validation error. Some domains are missing. Please check the CSV content.");
+                }
+
+                return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user, limit));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

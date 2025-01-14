@@ -71,7 +71,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	@CachePut("applicationBaseS")
 	public Application create(Application application) {
-		if(application.getId() != null) {
+		if (application.getId() != null) {
 			throw new ProcessingException("While creating id must be null");
 		}
 		clearIds(application);
@@ -109,7 +109,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public Application findApplicationLatestVersion(String name) {
-		if(!StringUtils.hasText(name)) {
+		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("Application name cannot be null or empty");
 		}
 		return applicationRepository.findByName(name).stream()
@@ -130,10 +130,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	@CacheEvict(value = "applicationBaseS", allEntries = true)
 	public void changeApplicationState(Application app, ApplicationState state) {
-		if(!app.getState().isChangeAllowed(state)) {
+		if (!app.getState().isChangeAllowed(state)) {
 			throw new IllegalStateException("Application state transition from " + app.getState() + " to " + state + " is not allowed.");
 		}
-		if(state.equals(ApplicationState.ACTIVE)) {
+		if (state.equals(ApplicationState.ACTIVE)) {
 			checkApp(app);
 			checkTemplates(app);
 		}
@@ -156,7 +156,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	private void checkTemplates(Application app) {
-		if(app.getAppConfigurationSpec().isConfigFileRepositoryRequired()) {
+		if (app.getAppConfigurationSpec().isConfigFileRepositoryRequired()) {
 			app.getAppConfigurationSpec().getTemplates().forEach(this::validateConfigFileTemplates);
 		}
 	}

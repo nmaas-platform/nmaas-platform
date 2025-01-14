@@ -51,4 +51,6 @@ public class BulkDeployment {
     @OneToMany(cascade = CascadeType.ALL)
     private List<BulkDeploymentEntry> entries = new ArrayList<>();
 
+    private Integer parallelDeploymentsLimit;
+
 }

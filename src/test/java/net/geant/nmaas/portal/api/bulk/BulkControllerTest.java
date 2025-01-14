@@ -75,7 +75,7 @@ public class BulkControllerTest {
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(false);
         when(principalMock.getName()).thenReturn("user");
 
-        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", file);
+        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", 2, file);
 
         verifyNoInteractions(bulkApplicationService);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -87,11 +87,12 @@ public class BulkControllerTest {
         when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
         when(principalMock.getName()).thenReturn("user");
         when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
+        when(bulkApplicationService.validateDomainsList(any())).thenReturn(true);
 
-        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", file);
+        ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", 2,file);
 
         verify(bulkCsvProcessor).processApplicationSpecs(any());
-        verify(bulkApplicationService).handleBulkDeployment(any(), any(), any());
+        verify(bulkApplicationService).handleBulkDeployment(any(), any(), any(), any());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 

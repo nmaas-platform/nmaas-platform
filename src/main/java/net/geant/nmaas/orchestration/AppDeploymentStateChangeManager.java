@@ -1,6 +1,5 @@
 package net.geant.nmaas.orchestration;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -49,13 +48,13 @@ public class AppDeploymentStateChangeManager {
         try {
             AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
             deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
-            if(newDeploymentState.isInFailedState()) {
-                log.warn("Application deployment failed state detected. Saving error message: " + event.getErrorMessage());
+            if (newDeploymentState.isInFailedState()) {
+                log.warn("Application deployment failed state detected. Saving error message: {}", event.getErrorMessage());
                 deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), event.getErrorMessage());
                 eventPublisher.publishEvent(
                         new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()), event.getErrorMessage()))
                 );
-                if(newDeploymentState == AppDeploymentState.APPLICATION_UPGRADE_FAILED) {
+                if (newDeploymentState == AppDeploymentState.APPLICATION_UPGRADE_FAILED) {
                     eventPublisher.publishEvent(
                             new AppUpgradeFailedEvent(this,
                                     event.getDeploymentId(),
@@ -65,7 +64,7 @@ public class AppDeploymentStateChangeManager {
                     );
                 }
             }
-            if(newDeploymentState == AppDeploymentState.APPLICATION_UPGRADED) {
+            if (newDeploymentState == AppDeploymentState.APPLICATION_UPGRADED) {
                 Identifier previousApplicationId = deploymentRepositoryManager.loadApplicationId(event.getDeploymentId());
                 Identifier newApplicationId = Identifier.newInstance(event.getDetail(EventDetailType.NEW_APPLICATION_ID));
                 deploymentRepositoryManager.updateApplicationId(event.getDeploymentId(), newApplicationId);
@@ -77,16 +76,16 @@ public class AppDeploymentStateChangeManager {
                                 AppUpgradeMode.valueOf(event.getDetail(EventDetailType.UPGRADE_TRIGGER_TYPE)))
                 );
             }
-            if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {
-                eventPublisher.publishEvent(
-                        new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
+            if (newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED
+                    && deploymentRepositoryManager.isFirstTimeDeployment(event.getDeploymentId())) {
+                    eventPublisher.publishEvent(
+                            new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
             }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
-            log.warn("State notification failure -> " + e.getMessage());
+            log.warn("State notification failure -> {}", e.getMessage());
             deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), e.getMessage());
             deploymentRepositoryManager.updateState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
-
             eventPublisher.publishEvent(
                     new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()), e.getMessage()))
             );
@@ -119,19 +118,19 @@ public class AppDeploymentStateChangeManager {
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyDcnDeployed(DcnDeployedEvent event) {
-        try{
+        try {
             deploymentRepositoryManager.loadAllWaitingForDcn(event.getRelatedTo())
                     .forEach(d -> eventPublisher.publishEvent(
                             new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "")));
-        }catch(Exception ex){
+        } catch(Exception ex) {
             long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            log.error("Error reported at {}", timestamp, ex);
         }
     }
 
     private MailAttributes getMailAttributes(AppDeployment appDeployment){
         return MailAttributes.builder()
-                .otherAttributes(ImmutableMap.of(
+                .otherAttributes(Map.of(
                         "accessURL", deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
                                 .getServiceAccessMethods().stream()
                                 .filter(m -> !Arrays.asList(ServiceAccessMethodType.INTERNAL, ServiceAccessMethodType.LOCAL).contains(m.getType()))

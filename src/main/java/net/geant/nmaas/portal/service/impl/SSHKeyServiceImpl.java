@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.UserSshKeysUpdatedGitlabEvent;
 import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.api.domain.SSHKeyView;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class SSHKeyServiceImpl implements SSHKeyService {
 
     private final SSHKeyRepository repository;
@@ -57,6 +59,12 @@ public class SSHKeyServiceImpl implements SSHKeyService {
         if(this.repository.existsByOwnerAndName(owner, request.getName())){
             throw new IllegalArgumentException("Name is already taken");
         }
+
+        if(this.repository.existsByKeyValue(request.getKey())) {
+            log.error("Can not add existing key to another user.");
+            throw new IllegalArgumentException("Can not add this key.");
+        }
+
         SSHKeyEntity newSSHKeyEntity = new SSHKeyEntity(owner, request.getName(), request.getKey());
         newSSHKeyEntity = this.repository.save(newSSHKeyEntity);
         // publish event after db state is changed

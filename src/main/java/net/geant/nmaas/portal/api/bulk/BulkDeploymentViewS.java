@@ -27,4 +27,5 @@ public class BulkDeploymentViewS {
     private BulkType type;
     private Map<String, String> details;
 
+    private Integer parallelDeploymentsLimit;
 }

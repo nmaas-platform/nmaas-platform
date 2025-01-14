@@ -1,0 +1,1 @@
+ALTER TABLE bulk_deployment_queue_entry add column state varchar(255) default null;
