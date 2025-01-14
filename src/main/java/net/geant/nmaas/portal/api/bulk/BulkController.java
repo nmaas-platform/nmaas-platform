@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.bulk;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +64,7 @@ public class BulkController {
                 throw new RuntimeException(e);
             }
         } else {
-            log.warn("Incorrect input file format");
+            log.warn("Incorrect domains input file format");
             return ResponseEntity.badRequest().build();
         }
     }
@@ -84,7 +84,10 @@ public class BulkController {
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
 
                 //validate domains before processing bulk
-                if(!bulkApplicationService.validateDomainsList(csvApplications.stream().map(CsvApplication::getDomainName).collect(Collectors.toSet()))) {
+                if (!bulkApplicationService.validateDomainsList(csvApplications.stream()
+                        .map(CsvApplication::getDomainName)
+                        .collect(Collectors.toSet()))
+                ) {
                     log.error("Domain validation error. Some domains are missing. Please check the CSV information.");
                     throw new MissingElementException("Domain validation error. Some domains are missing. Please check the CSV content.");
                 }
@@ -96,7 +99,7 @@ public class BulkController {
                 throw new RuntimeException(e);
             }
         } else {
-            log.warn("Incorrect input file format");
+            log.warn("Incorrect applications input file format");
             return ResponseEntity.badRequest().build();
         }
     }
@@ -175,8 +178,8 @@ public class BulkController {
             return ResponseEntity.notFound().build();
         }
 
-        if(bulk.get().getCreator().getId().equals(user.getId()) ) {
-            throw new PermissionDeniedDataAccessException("User doesnt have access to this bulk deployment", new Throwable());
+        if (bulk.get().getCreator().getId().equals(user.getId())) {
+            throw new PermissionDeniedDataAccessException("User doesn't have access to this bulk deployment", new Throwable());
         }
         if (removeApps) {
             bulkApplicationService.deleteAppInstancesFromBulk(mapToView(bulk.get(), BulkDeploymentView.class));
@@ -208,7 +211,7 @@ public class BulkController {
         try {
             bulkView.setCreator(getUserView(bulk.getCreator().getId()));
         } catch (Exception ex) {
-            log.error("Can not find creator for {} - creatorId:  {}", bulk.getId(), bulk.getCreator().getId());
+            log.error("Can't find user who requested bulk {} (provided id: {})", bulk.getId(), bulk.getCreator().getId());
             return null;
         }
         mapDetails(bulk, bulkView);
@@ -221,7 +224,7 @@ public class BulkController {
             bulkView.setCreator(getUserView(deployment.getCreator().getId()));
             return null;
         } catch (Exception ex) {
-            log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreator().getId());
+            log.error("Can't find user who requested bulk {} (provided id: {})", deployment.getId(), deployment.getCreator().getId());
         }
         mapDetails(deployment, bulkView);
         return bulkView;
