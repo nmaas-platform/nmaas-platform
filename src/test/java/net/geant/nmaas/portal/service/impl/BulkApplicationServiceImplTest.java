@@ -35,6 +35,7 @@ import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -76,11 +77,10 @@ public class BulkApplicationServiceImplTest {
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
-    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
 
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
-            domainService, applicationSubscriptionService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
+            domainService, applicationSubscriptionService, userService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
             bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository);
 
     @Test
@@ -104,7 +104,6 @@ public class BulkApplicationServiceImplTest {
         when(applicationInstanceService.create(any(Domain.class), any(Application.class), anyString(), anyBoolean())).thenReturn(appInstance);
         when(bulkDeploymentEntryRepository.save(any(BulkDeploymentEntry.class))).then(AdditionalAnswers.returnsFirstArg());
         when(bulkDeploymentRepository.save(any(BulkDeployment.class))).thenReturn(new BulkDeployment());
-        doNothing().when(eventPublisher).publishEvent(any(ApplicationEvent.class));
         User user =new User("Test");
         user.setId(1L);
         when(userService.findById(any())).thenReturn(Optional.of(user));
