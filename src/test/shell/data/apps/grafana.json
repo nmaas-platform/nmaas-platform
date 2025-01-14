@@ -103,7 +103,7 @@
                                                 "optionsLabelPosition": "right",
                                                 "values": [
                                                     {
-                                                        "label": "NMaaS Prometheus instance",
+                                                        "label": "nmaas Prometheus instance",
                                                         "value": "inCluster"
                                                     },
                                                     {

@@ -28,6 +28,8 @@ nmaas applications are containerized and deployed using [Helm charts](https://he
 
 ## Screenshots
 
+![Screenshot of application marketplace](docs/images/nmaas-landing-page.png "Landing page")
+
 ![Screenshot of application marketplace](docs/images/nmaas-applications.png "Marketplace view")
 
 ![Screenshot of application instances summary view](docs/images/nmaas-application-instances.png "Application instances")

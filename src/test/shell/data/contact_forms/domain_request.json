@@ -3,5 +3,5 @@
   "access": "ALL",
   "templateName": "domainRequest",
   "emails": ["nmaas-dev@lists.geant.org"],
-  "subject": "NMaaS: New domain request"
+  "subject": "nmaas: New domain request"
 }
