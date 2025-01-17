@@ -34,9 +34,9 @@ spring.mail.properties.mail.smtp.timeout=3000
 spring.mail.properties.mail.smtp.writetimeout=5000
 
 # HTTP filter options
-spring.http.encoding.charset=UTF-8
-spring.http.encoding.enabled=true
-spring.http.encoding.force=true
+server.servlet.encoding.charset=UTF-8
+server.servlet.encoding.enabled=true
+server.servlet.encoding.force=true
 
 # Actuator and Metrics
 nmaas.metrics.enabled=${METRICS_ENABLED}
@@ -58,6 +58,9 @@ db.standalone.password=${POSTGRESQL_PASSWORD}
 spring.flyway.enabled=true
 spring.flyway.locations=classpath:/db/migration
 spring.flyway.out-of-order=true
+#Hibernate settings
+spring.jpa.properties.hibernate.id.db_structure_naming_strategy=legacy
+spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true
 
 # Common
 spring.jpa.properties.hibernate.show_sql=false
@@ -104,8 +107,8 @@ upload.dir=/nmaas/files/upload
 jwt.tokenValidFor=3600000
 jwt.refreshTokenValidFor=13600000
 jwt.issuer=nmaas
-jwt.signingKey=${API_KEY}
-jwt.resetSigningKey=testResetKey
+jwt.signingKey=${JWT_SIGNING_KEY}
+jwt.resetSigningKey=${JWT_RESET_KEY}
 jwt.resetTokenValidFor=1800000
 jwt.resetTokenRegistrationValid=86400000
 captcha.secret=${CAPTCHA_SECRET}
@@ -120,6 +123,16 @@ sso.loginUrl=${SSO_URL_LOGIN}
 sso.logoutUrl=${SSO_URL_LOGOUT}
 sso.timeout=${SSO_TIMEOUT}
 sso.key=${SSO_KEY}
+
+# ------------------ #
+# OIDC configuration #
+# ------------------ #
+spring.security.oauth2.client.registration.my-oidc.client-id=${OIDC_CLIENT_ID}
+spring.security.oauth2.client.registration.my-oidc.client-secret=${OIDC_CLIENT_SECRET}
+spring.security.oauth2.client.registration.my-oidc.scope= openid, profile, email
+spring.security.oauth2.client.registration.my-oidc.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.my-oidc.redirect-uri={baseUrl}/login/oauth2/code/{registrationId}
+spring.security.oauth2.client.provider.my-oidc.issuer-uri=${OIDC_ISSUER_URI}
 
 # ------------------ #
 # Helm configuration #

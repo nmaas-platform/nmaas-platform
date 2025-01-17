@@ -34,12 +34,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,124 +53,149 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 @RequiredArgsConstructor
 @Log4j2
 public class UserServiceImpl implements UserService {
-	
-	private final UserRepository userRepository;
-	private final UserRoleRepository userRoleRepository;
-	private final PasswordEncoder passwordEncoder;
-	private final ConfigurationManager configurationManager;
-	private final ModelMapper modelMapper;
+
+    private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ConfigurationManager configurationManager;
+    private final ModelMapper modelMapper;
 
 	private final ApplicationEventPublisher eventPublisher;
 	private final JWTTokenService jwtTokenService;
 	private final DomainGroupService domainGroupService;
 
-	@Value("${portal.address}")
-	@Setter
-	private String portalAddress;
+    @Value("${portal.address}")
+    @Setter
+    private String portalAddress;
 
-	@Override
-	public boolean hasPrivilege(User user, Domain domain, Role role) {
-		if (user == null || domain == null || role == null) {
-			return false;
-		}
-		return Objects.nonNull(userRoleRepository.findByDomainAndUserAndRole(domain, user, role));
-	}
+    @Override
+    public boolean hasPrivilege(User user, Domain domain, Role role) {
+        if (user == null || domain == null || role == null) {
+            return false;
+        }
+        return Objects.nonNull(userRoleRepository.findByDomainAndUserAndRole(domain, user, role));
+    }
 
-	@Override
-	public boolean canUpdateData(String username, final List<UserRole> userRoles){
-		checkParam(username);
-		User user = findByUsername(username).orElseThrow(() -> new MissingElementException("User with username " + username + " not found"));
-		return isAdmin(user) || isDomainAdminInUserDomain(user, userRoles);
-	}
+    @Override
+    public boolean canUpdateData(String username, final List<UserRole> userRoles) {
+        checkParam(username);
+        User user = findByUsername(username).orElseThrow(() -> new MissingElementException("User with username " + username + " not found"));
+        return isAdmin(user) || isDomainAdminInUserDomain(user, userRoles);
+    }
 
-	private boolean isDomainAdminInUserDomain(User admin, final List<UserRole> userRoles){
-		return admin.getRoles().stream()
-				.filter(role -> role.getRole().equals(ROLE_DOMAIN_ADMIN))
-				.anyMatch(role -> userRoles.stream().anyMatch(userRole -> userRole.getDomain().equals(role.getDomain())));
-	}
+    private boolean isDomainAdminInUserDomain(User admin, final List<UserRole> userRoles) {
+        return admin.getRoles().stream()
+                .filter(role -> role.getRole().equals(ROLE_DOMAIN_ADMIN))
+                .anyMatch(role -> userRoles.stream().anyMatch(userRole -> userRole.getDomain().equals(role.getDomain())));
+    }
 
-	private boolean isAdmin(User user){
-		return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
-	}
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
+    }
 
-	@Override
-	public List<User> findAll() {		
-		return userRepository.findAll();
-	}
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 
-	@Override
-	public Page<User> findAll(Pageable pageable) {		
-		return userRepository.findAll(pageable);
-	}
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
 
-	@Override
-	public Optional<User> findByUsername(String username) {
-		return (username != null ? userRepository.findByUsername(username) : Optional.empty());
-	}
-	
-	@Override
-	public Optional<User> findById(Long id) {
-		return (id != null ? userRepository.findById(id) : Optional.empty());
-	}
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return (username != null ? userRepository.findByUsername(username) : Optional.empty());
+    }
 
-	@Override
-	public Optional<User> findBySamlToken(String token) {
-		return (token != null ? userRepository.findBySamlToken(token) : Optional.empty());
-	}
+    @Override
+    public Optional<User> findById(Long id) {
+        return (id != null ? userRepository.findById(id) : Optional.empty());
+    }
 
-	@Override
-	public User findByEmail(String email){
-		return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User with mail "+email+ " not found"));
-	}
+    @Override
+    public Optional<User> findBySamlToken(String token) {
+        return (token != null ? userRepository.findBySamlToken(token) : Optional.empty());
+    }
 
-	@Override
-	public boolean existsByUsername(String username) {
-		checkParam(username);
-		return userRepository.existsByUsername(username);
-	}
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User with mail " + email + " not found"));
+    }
 
-	@Override
-	public boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
-	}
+    @Override
+    public boolean existsByUsername(String username) {
+        checkParam(username);
+        return userRepository.existsByUsername(username);
+    }
 
-	@Override
-	public boolean existsById(Long id) {
-		checkParam(id);
-		return userRepository.existsById(id);
-	}
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
-	@Override
-	public User register(Registration registration, Domain globalDomain, Domain domain) {
-		if (userRepository.existsByUsername(registration.getUsername()) || userRepository.existsByEmail(registration.getEmail())) {
-			throw new SignupException("User already exists");
-		}
-		User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);
-		newUser.setEmail(registration.getEmail());
-		newUser.setFirstname(registration.getFirstname());
-		newUser.setLastname(registration.getLastname());
-		newUser.setEnabled(false);
-		if (domain != null) {
-			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
-		}
-		newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
-		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
-		newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
-		userRepository.save(newUser);
-		return newUser;
-	}
+    @Override
+    public boolean existsById(Long id) {
+        checkParam(id);
+        return userRepository.existsById(id);
+    }
 
-	@Override
-	public User register(UserSSOLogin userSSO, Domain globalDomain) {
-		byte[] array = new byte[16]; // random password
-		new SecureRandom().nextBytes(array);
-		String generatedString = Base64.getEncoder().encodeToString(array);
-		User newUser = new User("thirdparty-" + System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
-		newUser.setSamlToken(userSSO.getUsername()); // TODO: check if it's truly unique!
-		newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
-		userRepository.save(newUser);
-		return newUser;
-	}
+    @Override
+    public User register(OidcUser oidcUser, Domain globalDomain) {
+
+        Map<String, Object> attributes = oidcUser.getAttributes();
+        byte[] array = new byte[16];
+        new SecureRandom().nextBytes(array);
+        String generatedString = Base64.getEncoder().encodeToString(array);
+
+        User newUser = new User(
+                "oidc_" + attributes.get("preferred_username").toString(),
+                true,
+                generatedString,
+                globalDomain,
+                Role.ROLE_GUEST);
+        newUser.setEmail(attributes.get("email").toString());
+        newUser.setLastname(attributes.get("family_name").toString());
+        newUser.setFirstname(attributes.get("given_name").toString());
+        newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
+
+        userRepository.save(newUser);
+        return newUser;
+
+    }
+
+    @Override
+    @Transactional
+    public User register(Registration registration, Domain globalDomain, Domain domain) {
+        if (userRepository.existsByUsername(registration.getUsername()) || userRepository.existsByEmail(registration.getEmail())) {
+            throw new SignupException("User already exists");
+        }
+        User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);
+        newUser.setEmail(registration.getEmail());
+        newUser.setFirstname(registration.getFirstname());
+        newUser.setLastname(registration.getLastname());
+        newUser.setEnabled(false);
+        if (domain != null) {
+            newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
+        }
+        newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
+        newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
+        newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
+        userRepository.save(newUser);
+        return newUser;
+    }
+
+    @Override
+    public User register(UserSSOLogin userSSO, Domain globalDomain) {
+        byte[] array = new byte[16]; // random password
+        new SecureRandom().nextBytes(array);
+        String generatedString = Base64.getEncoder().encodeToString(array);
+        User newUser = new User("thirdparty-" + System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
+        newUser.setSamlToken(userSSO.getUsername()); // TODO: check if it's truly unique!
+        newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
+        userRepository.save(newUser);
+        return newUser;
+    }
 
 	@Override
 	public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
@@ -204,15 +231,15 @@ public class UserServiceImpl implements UserService {
 		return newUser;
 	}
 
-	@Override
-	public void update(User user) {
-		checkParam(user);
-		checkParam(user.getId());
-		if (!userRepository.existsById(user.getId())) {
-			throw new ProcessingException("User with id " + user.getId() + " does not exist");
-		}
-		userRepository.saveAndFlush(user);
-	}
+    @Override
+    public void update(User user) {
+        checkParam(user);
+        checkParam(user.getId());
+        if (!userRepository.existsById(user.getId())) {
+            throw new ProcessingException("User with id " + user.getId() + " does not exist");
+        }
+        userRepository.saveAndFlush(user);
+    }
 
 	@Override
 	public void delete(User user) {
@@ -229,105 +256,109 @@ public class UserServiceImpl implements UserService {
 		userRepository.deleteById(userId);
 	}
 
-	@Override
-	@Transactional
-	public void setEnabledFlag(Long userId, boolean isEnabled) {
-		userRepository.setEnabledFlag(userId, isEnabled);
-	}
+    @Override
+    @Transactional
+    public void setEnabledFlag(Long userId, boolean isEnabled) {
+        userRepository.setEnabledFlag(userId, isEnabled);
+    }
 
-	@Override
-	@Transactional
-	public void setUserLanguage(Long userId, final String userLanguage){
-		userRepository.setUserLanguage(userId, userLanguage);
-	}
+    @Override
+    @Transactional
+    public void setUserLanguage(Long userId, final String userLanguage) {
+        userRepository.setUserLanguage(userId, userLanguage);
+    }
 
-	@Override
-	@Transactional
-	public void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag){ userRepository.setTermsOfUseAcceptedFlag(userId, termsOfUseAcceptedFlag);}
+    @Override
+    @Transactional
+    public void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag) {
+        userRepository.setTermsOfUseAcceptedFlag(userId, termsOfUseAcceptedFlag);
+    }
 
-	@Override
-	@Transactional
-	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) {
-		User user = userRepository.findByUsername(username).orElseThrow(()
-				-> new UsernameNotFoundException("User " + username + " not found."));
-		userRepository.setTermsOfUseAcceptedFlag(user.getId(), termsOfUseAcceptedFlag);
-	}
+    @Override
+    @Transactional
+    public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) {
+        User user = userRepository.findByUsername(username).orElseThrow(()
+                -> new UsernameNotFoundException("User " + username + " not found."));
+        userRepository.setTermsOfUseAcceptedFlag(user.getId(), termsOfUseAcceptedFlag);
+    }
 
-	@Override
-	@Transactional
-	public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag){ userRepository.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);}
+    @Override
+    @Transactional
+    public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag) {
+        userRepository.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);
+    }
 
-	@Override
-	@Transactional
-	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) {
-		User user = userRepository.findByUsername(username).orElseThrow(()
-				-> new UsernameNotFoundException("User " + username + " not found."));
-		userRepository.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
-	}
+    @Override
+    @Transactional
+    public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) {
+        User user = userRepository.findByUsername(username).orElseThrow(()
+                -> new UsernameNotFoundException("User " + username + " not found."));
+        userRepository.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
+    }
 
-	private void checkParam(Long id) {
-		if(id == null)
-			throw new IllegalArgumentException("id is null");
-	}
-	
-	private void checkParam(String username) {
-		if(username == null)
-			throw new IllegalArgumentException("username is null");
-	}
-	
-	private void checkParam(User user) {
-		if(user == null)
-			throw new IllegalArgumentException("user is null");
-	}
+    private void checkParam(Long id) {
+        if (id == null)
+            throw new IllegalArgumentException("id is null");
+    }
 
-	@Override
-	@Transactional
-	public List<UserView> findAllUsersWithAdminRole(){
-		return findAll().stream()
-				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
-				.map(user -> modelMapper.map(user, UserView.class))
-				.collect(Collectors.toList());
-	}
+    private void checkParam(String username) {
+        if (username == null)
+            throw new IllegalArgumentException("username is null");
+    }
 
-	@Override
-	@Transactional
-	public List<UserView> findUsersWithRoleSystemAdminAndOperator(){
-		return findAll().stream()
-				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name()) ))
-				.map(user -> modelMapper.map(user, UserView.class))
-				.collect(Collectors.toList());
-	}
+    private void checkParam(User user) {
+        if (user == null)
+            throw new IllegalArgumentException("user is null");
+    }
 
-	private void sendMail(User user, MailType mailType) {
-		ImmutableMap<String, Object> map;
-		if(mailType == MailType.NEW_BULK_LOGIN) {
-			map = ImmutableMap.<String, Object>builder()
-					.put("username", user.getUsername())
-					.put("email", user.getEmail())
-					.put("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken24Hours(user.getEmail())))
-					.build();
-		} else {
-			map = ImmutableMap.<String, Object>builder()
-					.put("username", user.getUsername())
-					.put("email", user.getEmail())
-					.put("portal", this.portalAddress)
-					.build();
-		}
-		MailAttributes mailAttributes = MailAttributes.builder()
-				.otherAttributes(map)
-				.mailType(mailType)
-				.build();
-		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
-	}
+    @Override
+    @Transactional
+    public List<UserView> findAllUsersWithAdminRole() {
+        return findAll().stream()
+                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
+                .map(user -> modelMapper.map(user, UserView.class))
+                .collect(Collectors.toList());
+    }
 
-	private String generateResetPasswordUrl(String token) {
-		String url = this.portalAddress;
-		if(url == null) {
-			return "reset/" + token;
-		}
-		if (!url.endsWith("/")) {
-			url += "/";
-		}
-		return url + "reset/" + token;
-	}
+    @Override
+    @Transactional
+    public List<UserView> findUsersWithRoleSystemAdminAndOperator() {
+        return findAll().stream()
+                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())))
+                .map(user -> modelMapper.map(user, UserView.class))
+                .collect(Collectors.toList());
+    }
+
+    private void sendMail(User user, MailType mailType) {
+        ImmutableMap<String, Object> map;
+        if (mailType == MailType.NEW_BULK_LOGIN) {
+            map = ImmutableMap.<String, Object>builder()
+                    .put("username", user.getUsername())
+                    .put("email", user.getEmail())
+                    .put("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken24Hours(user.getEmail())))
+                    .build();
+        } else {
+            map = ImmutableMap.<String, Object>builder()
+                    .put("username", user.getUsername())
+                    .put("email", user.getEmail())
+                    .put("portal", this.portalAddress)
+                    .build();
+        }
+        MailAttributes mailAttributes = MailAttributes.builder()
+                .otherAttributes(map)
+                .mailType(mailType)
+                .build();
+        this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+    }
+
+    private String generateResetPasswordUrl(String token) {
+        String url = this.portalAddress;
+        if (url == null) {
+            return "reset/" + token;
+        }
+        if (!url.endsWith("/")) {
+            url += "/";
+        }
+        return url + "reset/" + token;
+    }
 }

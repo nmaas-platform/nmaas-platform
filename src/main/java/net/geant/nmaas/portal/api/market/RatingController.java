@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import net.geant.nmaas.portal.api.domain.ApiResponse;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -8,6 +8,11 @@ import net.geant.nmaas.portal.persistent.entity.AppRate;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.UserService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Map;
@@ -23,11 +27,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/apps/{appId}/rate")
 public class RatingController extends AppBaseController {
 	
 	private final RatingRepository ratingRepository;
+
+	@Autowired
+	public RatingController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService appBaseService, UserService userService, RatingRepository ratingRepository) {
+		super(modelMapper, applicationService, appBaseService, userService);
+		this.ratingRepository = ratingRepository;
+	}
 
 	@GetMapping
 	public AppRateView getAppRating(@PathVariable("appId") Long appId) {

@@ -107,7 +107,7 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
         when(ratingRepository.findById(appRateId)).thenReturn(Optional.of(appRate));
         when(ratingRepository.getApplicationRating(TEST_APP_ID)).thenReturn(List.of(1, 2, 3).toArray(Integer[]::new));
 
-        MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate/my/")
+        MvcResult mvcResult = mvc.perform(get("/api/apps/" + TEST_APP_ID + "/rate/my")
                 .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

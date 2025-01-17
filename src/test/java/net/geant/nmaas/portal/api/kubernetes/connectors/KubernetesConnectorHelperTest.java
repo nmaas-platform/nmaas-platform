@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.kubernetes.connectors;
 
-import io.fabric8.kubernetes.api.model.DoneablePod;
+//import io.fabric8.kubernetes.api.model.DoneablePod;
+
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -8,6 +9,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
+import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
 import net.geant.nmaas.kubernetes.KubernetesConnectorHelper;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
@@ -17,15 +19,10 @@ import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -67,8 +64,8 @@ public class KubernetesConnectorHelperTest {
         KubernetesClient client = mock(KubernetesClient.class);
         PodList podList = mock(PodList.class);
         when(configFactory.getClient()).thenReturn(client);
-        MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> pods = (MixedOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>>)mock(MixedOperation.class);
-        NonNamespaceOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> nsPods = (NonNamespaceOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>>)mock(NonNamespaceOperation.class);
+        MixedOperation<Pod, PodList, PodResource> pods = (MixedOperation<Pod, PodList, PodResource>)mock(MixedOperation.class);
+        NonNamespaceOperation<Pod, PodList, PodResource> nsPods = (NonNamespaceOperation<Pod, PodList, PodResource>)mock(NonNamespaceOperation.class);
         when(client.pods()).thenReturn(pods);
         when(pods.inNamespace("namespace")).thenReturn(nsPods);
         when(nsPods.list()).thenReturn(podList);
@@ -116,6 +113,8 @@ public class KubernetesConnectorHelperTest {
         List<Pod> items = Arrays.asList(pod0, pod1, pod2, pod3, pod4);
         when(podList.getItems()).thenReturn(items);
     }
+
+    //TODO: Missing DoneablePod on new version. Rewrite the setup stage
 
     @Test
     public void shouldReturnPodNamesWithPrefix() {

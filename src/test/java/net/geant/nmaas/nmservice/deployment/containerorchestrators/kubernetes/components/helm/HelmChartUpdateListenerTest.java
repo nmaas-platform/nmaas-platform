@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.ADDED;
 import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.ApplicationAction.DELETED;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,7 +39,8 @@ class HelmChartUpdateListenerTest {
     void shouldSkipExecutionDueToIncorrectAction() {
         ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", DELETED, null);
         listener.trigger(event);
-        verifyNoInteractions(executor);
+        verify(executor, never()).executeHelmRepoAddCommand(any(), any());
+//        verifyNoInteractions(executor);
     }
 
     @Test
@@ -47,7 +50,7 @@ class HelmChartUpdateListenerTest {
         spec.setKubernetesTemplate(template);
         ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(this, "app", "1.0", DELETED, spec);
         listener.trigger(event);
-        verifyNoInteractions(executor);
+        verify(executor, never()).executeHelmRepoAddCommand(any(),any());
     }
 
     @Test

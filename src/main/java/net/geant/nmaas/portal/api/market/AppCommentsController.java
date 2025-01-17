@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.api.domain.CommentView;
 import net.geant.nmaas.portal.persistent.entity.Comment;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +30,17 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 @RequestMapping("/api/apps/{appId}/comments")
 public class AppCommentsController extends AppBaseController {
 
-    private CommentRepository commentRepo;
-
-    private UserRepository userRepo;
+    private final CommentRepository commentRepo;
+    private final UserRepository userRepo;
 
     @Autowired
-    public AppCommentsController(CommentRepository commentRepo, UserRepository userRepo) {
+    public AppCommentsController(ModelMapper modelMapper,
+                                 ApplicationService applicationService,
+                                 ApplicationBaseService appBaseService,
+                                 UserService userService,
+                                 CommentRepository commentRepo,
+                                 UserRepository userRepo) {
+        super(modelMapper, applicationService, appBaseService, userService);
         this.commentRepo = commentRepo;
         this.userRepo = userRepo;
     }

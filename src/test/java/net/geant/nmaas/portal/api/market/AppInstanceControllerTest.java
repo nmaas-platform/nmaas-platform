@@ -130,8 +130,6 @@ public class AppInstanceControllerTest {
                 appDeploymentRepositoryManager,
                 applicationEventPublisher
         );
-        appInstanceController.modelMapper = new ModelMapper();
-        appInstanceController.userService = userService;
 
         when(pageable.getOffset()).thenReturn(0L);
         when(pageable.getPageNumber()).thenReturn(0);

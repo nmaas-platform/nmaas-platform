@@ -5,24 +5,12 @@ stages:
 
 test:
   stage: test
-  image: openjdk:11-jdk-slim
+  image: openjdk:17-jdk-slim
   tags:
     - docker
   script:
     - chmod +x ./gradlew
     - ./gradlew -Dorg.gradle.daemon=false test
-
-itest:
-  stage: test
-  image: openjdk:11-jdk-slim
-  tags:
-    - docker
-  only:
-    - develop
-    - /^release/
-  script:
-    - chmod +x ./gradlew
-    - ./gradlew integrationTest jacocoTestCoverageVerification
 
 sonar:
   stage: sonar
@@ -32,6 +20,7 @@ sonar:
     - /^release/
   script:
     - chmod +x ./gradlew
+    - ./gradlew integrationTest jacocoTestCoverageVerification
     - ./gradlew -Dsonar.host.url=${SONAR_HOST} -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName=${SONAR_PROJECT_NAME} -Dsonar.branch.name=${CI_COMMIT_BRANCH} -Dsonar.login=${SONAR_LOGIN_TOKEN} sonarqube
 
 build_and_push_latest_image:
