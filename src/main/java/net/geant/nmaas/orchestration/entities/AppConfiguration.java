@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
 
 import jakarta.persistence.Basic;
@@ -15,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
 
 /**
  * Application configuration in Json format provided by the user.
@@ -34,8 +36,8 @@ public class AppConfiguration {
 
     @Basic(fetch = FetchType.EAGER)
     @Lob
-//    @Type(type = "text")
-    @Column(nullable = false)
+    @JdbcType(VarcharJdbcType.class)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String jsonInput;
 
     public AppConfiguration(String jsonInput) {
