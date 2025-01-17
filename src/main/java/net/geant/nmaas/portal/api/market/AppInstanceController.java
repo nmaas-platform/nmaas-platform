@@ -69,7 +69,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/apps/instances")
-@AllArgsConstructor
 @Log4j2
 public class AppInstanceController extends AppBaseController {
 

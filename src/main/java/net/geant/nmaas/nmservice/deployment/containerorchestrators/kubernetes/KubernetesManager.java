@@ -230,10 +230,10 @@ public class KubernetesManager implements ContainerOrchestrator {
                 .map(am -> {
                     if (am.isOfType(PUBLIC)) {
                         if (!shouldRemainPublic(service.getAdditionalParameters(), am)) {
-                            log.info(String.format("%s access will remain public: no", am.getName()));
+                            log.info("{} access will remain public: no", am.getName());
                             return new ServiceAccessMethod(am.getId(), EXTERNAL, am.getName(), am.getUrl(), am.getProtocol(), am.getCondition(), am.isEnabled(), am.getDeployParameters());
                         }
-                        log.info(String.format("%s access will remain public: yes", am.getName()));
+                        log.info("{} access will remain public: yes", am.getName());
                     }
                     return am;
                 }).collect(Collectors.toSet());
@@ -303,8 +303,11 @@ public class KubernetesManager implements ContainerOrchestrator {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
 
             if (!janitorService.checkIfReady(
-                    getDeploymentIdForJanitorStatusCheck(service.getDescriptiveDeploymentId().value(), service.getKubernetesTemplate().getMainDeploymentName()),
-                    service.getDomain())) {
+                    getDeploymentIdForJanitorStatusCheck(
+                            service.getDescriptiveDeploymentId().value(),
+                            service.getKubernetesTemplate().getMainDeploymentName()),
+                    service.getDomain())
+            ) {
                 return false;
             }
 
@@ -312,7 +315,6 @@ public class KubernetesManager implements ContainerOrchestrator {
             retrieveOrUpdateLocalServiceName(service);
 
             return true;
-
         } catch (KServiceManipulationException | JanitorResponseException ex) {
             throw new ContainerCheckFailedException(ex.getMessage());
         }
@@ -334,7 +336,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     .collect(Collectors.toSet());
             repositoryManager.updateKServiceAccessMethods(accessMethods);
         } catch (JanitorResponseException je) {
-            log.error("Could not retrieve IP for " + service.getDescriptiveDeploymentId());
+            log.error("Could not retrieve IP for {}", service.getDescriptiveDeploymentId());
         }
     }
 
@@ -387,7 +389,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     .collect(Collectors.toSet());
             repositoryManager.updateKServiceAccessMethods(accessMethods);
         } catch (JanitorResponseException je) {
-            log.error("Could not retrieve service name for " + service.getDescriptiveDeploymentId());
+            log.error("Could not retrieve service name for {}", service.getDescriptiveDeploymentId());
         }
     }
 
@@ -441,9 +443,8 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public Map<String, String> serviceDeployParameters(Identifier deploymentId) {
         try {
-            Map<String, String> params = repositoryManager.loadService(deploymentId).getAdditionalParameters();
             // TODO filter only relevant parameters
-            return params;
+            return repositoryManager.loadService(deploymentId).getAdditionalParameters();
         } catch (Exception e) {
             throw new ProcessingException("Cant find additional parameters for " + deploymentId.value());
         }

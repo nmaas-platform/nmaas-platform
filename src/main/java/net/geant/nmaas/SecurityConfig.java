@@ -47,6 +47,7 @@ public class SecurityConfig {
     private static final String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
 
     private static final String AUTH_SSO_LOGIN = "/api/auth/sso/login";
+    private static final String AUTH_OIDC_LOGIN_PAGE = "/api/oauth2/authorization/my-oidc";
     private static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
     private static final String AUTH_OIDC_SUCCESS = "/oidc/success";
 
@@ -64,6 +65,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
             new AntPathRequestMatcher(AUTH_SSO_LOGIN),
             new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
+            new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
             new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
             new AntPathRequestMatcher("/favicon.ico"),
             new AntPathRequestMatcher("/api/info/**"),
@@ -93,6 +95,7 @@ public class SecurityConfig {
                     new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
                     new AntPathRequestMatcher(AUTH_SSO_LOGIN),
                     new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
+                    new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
                     new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
                     new AntPathRequestMatcher("/api-docs/**"),
                     new AntPathRequestMatcher("/actuator/**"),
@@ -131,6 +134,7 @@ public class SecurityConfig {
                 .oauth2Login(oAuth2 -> oAuth2
                         .userInfoEndpoint(Customizer.withDefaults())
                         .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
+                        .loginPage(AUTH_OIDC_LOGIN_PAGE)
                 )
 
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

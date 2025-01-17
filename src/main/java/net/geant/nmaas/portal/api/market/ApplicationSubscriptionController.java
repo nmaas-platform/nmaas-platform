@@ -1,12 +1,16 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
+import net.geant.nmaas.portal.service.UserService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,13 +31,18 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/subscriptions")
-@AllArgsConstructor
 public class ApplicationSubscriptionController extends AppBaseController {
 	
 	private final ApplicationSubscriptionService appSubscriptions;
-
 	private final RatingRepository ratingRepository;
-	
+
+	@Autowired
+	public ApplicationSubscriptionController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService appBaseService, UserService userService, ApplicationSubscriptionService appSubscriptions, RatingRepository ratingRepository) {
+		super(modelMapper, applicationService, appBaseService, userService);
+		this.appSubscriptions = appSubscriptions;
+		this.ratingRepository = ratingRepository;
+	}
+
 	@PostMapping
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'OWNER')")
 	@Transactional
@@ -87,7 +96,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 		return appSubscriptions.getSubscribedApplications(domainId).stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.map(this::setAppRating)
-				.collect(Collectors.toList());
+				.toList();
 	}
 	
 	@GetMapping("/apps")
@@ -96,7 +105,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 		return appSubscriptions.getSubscribedApplications().stream()
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.map(this::setAppRating)
-				.collect(Collectors.toList());
+				.toList();
 	}
 	
 	@GetMapping("/apps/{appId}")

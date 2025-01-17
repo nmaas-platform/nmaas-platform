@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
@@ -25,11 +25,16 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainAnnotation;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +49,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.constraints.NotNull;
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.List;
@@ -53,7 +57,6 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/domains")
 @Slf4j
 public class DomainController extends AppBaseController {
@@ -67,6 +70,16 @@ public class DomainController extends AppBaseController {
 	private final ApplicationStatePerDomainService applicationStatePerDomainService;
 	private final ApplicationInstanceService applicationInstanceService;
 
+	@Autowired
+	public DomainController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService appBaseService, UserService userService, DomainService domainService, DomainGroupService domainGroupService, ApplicationEventPublisher eventPublisher, ApplicationStatePerDomainService applicationStatePerDomainService, ApplicationInstanceService applicationInstanceService) {
+		super(modelMapper, applicationService, appBaseService, userService);
+		this.domainService = domainService;
+		this.domainGroupService = domainGroupService;
+		this.eventPublisher = eventPublisher;
+		this.applicationStatePerDomainService = applicationStatePerDomainService;
+		this.applicationInstanceService = applicationInstanceService;
+	}
+
 	@GetMapping
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
@@ -76,7 +89,7 @@ public class DomainController extends AppBaseController {
 					d = domainService.getAppStatesFromGroups(d);
 					return modelMapper.map(d, DomainView.class);
 				})
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@GetMapping("/{domainId}")

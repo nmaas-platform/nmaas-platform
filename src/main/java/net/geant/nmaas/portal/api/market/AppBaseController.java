@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -11,25 +10,16 @@ import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AppBaseController {
 
-	@Autowired
-	protected ModelMapper modelMapper;
-
-	@Autowired
-	protected ApplicationService applicationService;
-
-	@Autowired
-	protected ApplicationBaseService appBaseService;
-
-	@Autowired
-	protected UserService userService;
+	protected final ModelMapper modelMapper;
+	protected final ApplicationService applicationService;
+	protected final ApplicationBaseService appBaseService;
+	protected final UserService userService;
 
     protected Application getApp(Long appId) {
 		if (appId == null) {

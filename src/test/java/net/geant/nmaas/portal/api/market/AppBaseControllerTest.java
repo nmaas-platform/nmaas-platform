@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AppBaseControllerTest {
+class AppBaseControllerTest {
 
     private final ModelMapper modelMapper = new ModelMapper();
     private final ApplicationService appService = mock(ApplicationService.class);

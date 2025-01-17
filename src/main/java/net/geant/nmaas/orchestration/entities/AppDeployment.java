@@ -51,7 +51,7 @@ public class AppDeployment {
     @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
-    /** Name of the client domain for this deployment. */
+    /** Code Name of the client domain for this deployment. */
     @ToString.Include
     @Column(nullable = false)
     private String domain;

@@ -1,0 +1,1 @@
+ALTER TABLE bulk_deployment add column parallel_deployments_limit integer default 1;

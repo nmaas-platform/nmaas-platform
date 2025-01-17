@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.validation.OverridesAttribute;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
+@Slf4j
 public class ApplicationInstanceServiceImpl implements ApplicationInstanceService {
 
     private final AppInstanceRepository appInstanceRepo;
@@ -255,14 +258,14 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
     @Override
     @Transactional
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public boolean checkUpgradePossible(Long appInstanceId) {
         return obtainVersionForUpgrade(appInstanceId).isPresent();
     }
 
     @Override
     @Transactional
-    @Loggable(LogLevel.DEBUG)
+    @Loggable(LogLevel.TRACE)
     public boolean checkUpgradePossible(Long appInstanceId, String targetVersion) {
         return obtainVersionForUpgrade(appInstanceId)
                 .map(application -> application.getVersion().equals(targetVersion))
@@ -303,6 +306,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void deleteAllByDomain(Long domainId) {
         List<AppInstance> appsByDomain = findAllByDomain(domainId);
         Iterator<AppInstance> iterator = appsByDomain.iterator();
@@ -312,6 +316,12 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
             appLifecycleManager.removeApplication(app.getInternalId());
             iterator.remove();
         }
+    }
+
+    @Override
+    public boolean isNameAvailableInDomain(String name, Domain domain) {
+        log.error("Found: {} matching names in domain", appInstanceRepo.isNameAvailableInDomain(name, domain.getCodename()));
+        return appInstanceRepo.isNameAvailableInDomain(name, domain.getCodename()) <= 0;
     }
 
     private void checkParam(AppInstance appInstance) {

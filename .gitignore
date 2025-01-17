@@ -10,3 +10,4 @@ out/
 /src/main/resources/git.properties
 /src/test/shell/tmp/*
 !/src/test/shell/tmp/README.md
+protoc-gen-grpc-java.exe

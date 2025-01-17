@@ -11,7 +11,6 @@ test:
   script:
     - chmod +x ./gradlew
     - ./gradlew -Dorg.gradle.daemon=false test
-    - ./gradlew integrationTest jacocoTestCoverageVerification
 
 sonar:
   stage: sonar

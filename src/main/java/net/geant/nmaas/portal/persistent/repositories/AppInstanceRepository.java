@@ -39,4 +39,11 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 	@Query("update AppInstance ai set ai.application = :application, ai.previousApplicationId = :previousApplicationId where ai.id = :id")
 	void updateApplication(@Param(value = "id") long id, @Param(value = "previousApplicationId") long previousApplicationId, @Param(value = "application") Application application);
 
+	@Query("SELECT COUNT(ai.id) FROM AppInstance ai JOIN AppDeployment ad ON ad.deploymentId = ai.internalId WHERE ai.name = :name AND ai.domain.codename = :domain AND ad.state NOT IN" +
+			"('APPLICATION_REMOVED'," +
+			"'APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS'," +
+			"'APPLICATION_CONFIGURATION_REMOVED'," +
+			"'FAILED_APPLICATION_REMOVED')" )
+	int isNameAvailableInDomain(@Param(value = "name") String name, @Param(value = "domain") String domain);
+
 }
