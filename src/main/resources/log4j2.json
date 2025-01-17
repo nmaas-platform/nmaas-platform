@@ -170,6 +170,19 @@
               "ref": "nmaas-console"
             }
           ]
+        },
+        {
+          "name": "org.postgresql",
+          "level": "error",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
         }
       ],
       "root": {
