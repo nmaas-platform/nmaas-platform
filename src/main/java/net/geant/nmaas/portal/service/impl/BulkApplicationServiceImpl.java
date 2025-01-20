@@ -384,11 +384,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
         }
-
         //only update if state changed
         if ( oldState != null && !oldState.equals(bulkDeployment.getState())) {
             logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
-            bulkDeploymentRepository.save(bulkDeployment);
+            bulkDeployment= bulkDeploymentRepository.save(bulkDeployment);
         }
         return bulkDeployment;
     }
