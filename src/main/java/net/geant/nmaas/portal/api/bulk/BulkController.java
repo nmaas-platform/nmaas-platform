@@ -7,7 +7,9 @@ import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
@@ -178,7 +180,7 @@ public class BulkController {
             return ResponseEntity.notFound().build();
         }
 
-        if (!bulk.get().getCreator().getId().equals(user.getId())) {
+        if (!bulk.get().getCreator().getId().equals(user.getId()) && user.getRoles().stream().noneMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             log.error("Bulk data {}, user data {}", bulk.get().getCreator().getId(), user.getId());
             throw new PermissionDeniedDataAccessException("User doesn't have access to this bulk deployment", new Throwable());
         }
