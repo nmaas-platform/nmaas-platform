@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.user.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.UserApiTokens;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -28,13 +29,13 @@ public class CustomAccessTokenController {
     private final UserService userService;
 
     @GetMapping()
-    public List<UserApiTokens> getAll(Principal principal) {
+    public List<UserApiTokenView> getAll(Principal principal) {
         User user = getUser(principal);
         return accessTokenService.getAll(user.getId());
     }
 
     @PostMapping()
-    public UserApiTokens createNewToken(Principal principal, @RequestBody String name) {
+    public UserApiTokenView createNewToken(Principal principal, @RequestBody String name) {
         User user = getUser(principal);
         return accessTokenService.createToken(user, name);
     }
@@ -44,7 +45,7 @@ public class CustomAccessTokenController {
         accessTokenService.invalidate(id);
     }
 
-    @PutMapping("/{delete}")
+    @PutMapping("/delete/{id}")
     public void deleteToken(@PathVariable Long id) {
         accessTokenService.delete(id);
     }

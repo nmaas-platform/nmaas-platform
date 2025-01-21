@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.portal.api.user.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserApiTokens;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,14 +40,17 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
     }
 
     @Override
-    public UserApiTokens createToken(User user, String name) {
+    public UserApiTokenView createToken(User user, String name) {
         UserApiTokens token = createNewToken(user, name);
-        return userApiTokensRepository.save(token);
+        return mapToView(userApiTokensRepository.save(token)) ;
     }
 
     @Override
-    public List<UserApiTokens> getAll(Long userId) {
-        return userApiTokensRepository.findAllByUserId(userId);
+    public List<UserApiTokenView> getAll(Long userId) {
+        return userApiTokensRepository.findAllByUserId(userId).stream()
+                .filter(userApiTokens -> !userApiTokens.isDeleted())
+                .map(this::mapToView)
+                .collect(Collectors.toList());
     }
 
     private UserApiTokens createNewToken(User user, String name) {
@@ -54,6 +59,7 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
         token.setUser(user);
         token.setTokenValue(generateToken());
         token.setValid(true);
+        token.setDeleted(false);
         return token;
         }
 
@@ -66,5 +72,14 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
         return userApiTokensRepository
                 .findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Could not find access token with id: " + id));
+    }
+
+    private UserApiTokenView mapToView(UserApiTokens token) {
+        return UserApiTokenView.builder().id(token.getId())
+                .tokenValue(token.getTokenValue())
+                .valid(token.isValid())
+                .deleted(token.isDeleted())
+                .name(token.getName())
+                .build();
     }
 }
