@@ -39,16 +39,16 @@ public class OIDCAuthController {
 
 
     @GetMapping("/oidc/success")
-    public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUserser) {
+    public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser) {
 
         User user = userService
                 .existsByUsername("oidc_"
-                        + oidcUserser.getAttribute("preferred_username"))
+                        + oidcUser.getAttribute("preferred_username"))
                 ? userService
                 .findByUsername("oidc_"
-                        + oidcUserser.getAttribute("preferred_username"))
+                        + oidcUser.getAttribute("preferred_username"))
                 .orElseThrow()
-                : registerNewUser(oidcUserser);
+                : registerNewUser(oidcUser);
 
         String redirectUrl = portalAddress
                 + "/login-success?token="
@@ -59,11 +59,11 @@ public class OIDCAuthController {
 
     }
 
-    private User registerNewUser(OidcUser oidcUserser) {
+    private User registerNewUser(OidcUser oidcUser) {
 
         try {
             return userService
-                    .register(oidcUserser,
+                    .register(oidcUser,
                             domains.getGlobalDomain().orElseThrow(MissingElementException::new)
                     );
         } catch (ObjectAlreadyExistsException e) {
