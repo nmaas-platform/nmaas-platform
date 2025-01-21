@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.security;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.AccessToken;
+import net.geant.nmaas.portal.persistent.entity.UserApiTokens;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.CustomAccessTokenService;
 import net.geant.nmaas.portal.service.UserService;
@@ -28,20 +28,25 @@ public class CustomAccessTokenController {
     private final UserService userService;
 
     @GetMapping()
-    public List<AccessToken> getAll(Principal principal) {
+    public List<UserApiTokens> getAll(Principal principal) {
         User user = getUser(principal);
         return accessTokenService.getAll(user.getId());
     }
 
     @PostMapping()
-    public AccessToken createNewToken(Principal principal, @RequestBody String name) {
+    public UserApiTokens createNewToken(Principal principal, @RequestBody String name) {
         User user = getUser(principal);
-        return accessTokenService.createToken(user.getId(), name);
+        return accessTokenService.createToken(user, name);
     }
 
     @PutMapping("/{id}")
     public void invalidateToken(@PathVariable Long id) {
         accessTokenService.invalidate(id);
+    }
+
+    @PutMapping("/{delete}")
+    public void deleteToken(@PathVariable Long id) {
+        accessTokenService.delete(id);
     }
 
     private User getUser(Principal principal) {
