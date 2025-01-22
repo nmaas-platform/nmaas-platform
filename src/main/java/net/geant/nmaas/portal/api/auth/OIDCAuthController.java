@@ -38,7 +38,7 @@ public class OIDCAuthController {
     private String portalAddress;
 
 
-    @GetMapping("/oidc/success")
+    @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser) {
 
         User user = userService
@@ -71,14 +71,6 @@ public class OIDCAuthController {
         } catch (MissingElementException e) {
             throw new SignupException("Domain not found");
         }
-    }
-
-    @GetMapping("/api/oauth2/authorization/{registrationId}")
-    public void redirectToAuthorization(
-            @PathVariable String registrationId,
-            HttpServletResponse response) throws IOException {
-        String redirectUri = "/oauth2/authorization/" + registrationId;
-        response.sendRedirect(redirectUri);
     }
 }
 
