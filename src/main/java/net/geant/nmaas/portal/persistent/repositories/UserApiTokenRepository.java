@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface UserApiTokenRepository extends JpaRepository<UserApiToken, Long> {
     List<UserApiToken> findAllByUserId(Long userId);
 
-    Optional<UserApiToken> findAllByUserIdAndName(Long userId, String name);
+    List<UserApiToken> findAllByUserIdAndName(Long userId, String name);
 }

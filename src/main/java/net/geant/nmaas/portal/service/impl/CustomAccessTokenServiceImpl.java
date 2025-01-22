@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.service.CustomAccessTokenService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,8 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
 
     @Override
     public UserApiTokenView createToken(User user, String name) {
-        if(userApiTokenRepository.findAllByUserIdAndName(user.getId(), name).isPresent()) {
+        List<UserApiToken> tokens = userApiTokenRepository.findAllByUserIdAndName(user.getId(), name);
+        if(!tokens.isEmpty() && tokens.stream().anyMatch(c -> !c.isDeleted())) {
             throw new DataConflictException("Token name is already in use.");
         }
 
