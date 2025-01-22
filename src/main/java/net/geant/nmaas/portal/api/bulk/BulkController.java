@@ -138,8 +138,8 @@ public class BulkController {
 
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords() {
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.DOMAIN)));
+    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords(@RequestParam("deleted") Boolean deleted) {
+        return ResponseEntity.ok(mapToViewList(filter(deleted,bulkDeploymentRepository.findByType(BulkType.DOMAIN))));
     }
 
     @GetMapping("/domains/vl")
@@ -147,14 +147,14 @@ public class BulkController {
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).stream()
+        return ResponseEntity.ok(mapToViewList(filter(false,bulkDeploymentRepository.findByType(BulkType.DOMAIN))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
     }
 
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords() {
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.APPLICATION)));
+    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords(@RequestParam("deleted") Boolean deleted) {
+        return ResponseEntity.ok(mapToViewList(filter(deleted,bulkDeploymentRepository.findByType(BulkType.APPLICATION))));
     }
 
     @GetMapping("/apps/vl")
@@ -162,7 +162,7 @@ public class BulkController {
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).stream()
+        return ResponseEntity.ok(mapToViewList(filter(false,bulkDeploymentRepository.findByType(BulkType.APPLICATION))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
     }
 
@@ -254,6 +254,14 @@ public class BulkController {
         User user = userService.findById(id)
                 .orElseThrow();
         return modelMapper.map(user, UserViewMinimal.class);
+    }
+
+    private List<BulkDeployment> filter(Boolean showDeleted, List<BulkDeployment> deployments) {
+        if(showDeleted) {
+            return deployments;
+        } else {
+            return deployments.stream().filter(d -> !d.getDeleted()).collect(Collectors.toList());
+        }
     }
 
 }
