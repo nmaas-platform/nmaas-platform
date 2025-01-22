@@ -7,6 +7,7 @@ import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -138,7 +139,7 @@ public class BulkController {
 
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords(@RequestParam("deleted") Boolean deleted) {
+    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
         return ResponseEntity.ok(mapToViewList(filter(deleted,bulkDeploymentRepository.findByType(BulkType.DOMAIN))));
     }
 
@@ -153,7 +154,7 @@ public class BulkController {
 
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords(@RequestParam("deleted") Boolean deleted) {
+    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords(@RequestParam(value="deleted", defaultValue = "false") Boolean deleted) {
         return ResponseEntity.ok(mapToViewList(filter(deleted,bulkDeploymentRepository.findByType(BulkType.APPLICATION))));
     }
 
@@ -185,9 +186,12 @@ public class BulkController {
             throw new PermissionDeniedDataAccessException("User doesn't have access to this bulk deployment", new Throwable());
         }
         if (removeApps) {
-            bulkApplicationService.deleteAppInstancesFromBulk(mapToView(bulk.get(), BulkDeploymentView.class));
+            bulkApplicationService.deleteAppInstancesFromBulk(bulk.get());
         }
-        bulkDeploymentRepository.delete(bulk.get());
+//        bulkDeploymentRepository.delete(bulk.get());
+        bulk.get().setDeleted(true);
+        bulk.get().setState(BulkDeploymentState.REMOVED);
+        bulkDeploymentRepository.save(bulk.get());
         return ResponseEntity.ok().build();
     }
 

@@ -111,6 +111,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
         // create base bulk deployment record
         BulkDeployment bulkDeployment = createBulkDeployment(creator);
+        bulkDeployment.setDeleted(false);
 
         appInstanceSpecs.forEach(applicationSpec -> {
             AppInstance instance = null;
@@ -329,19 +330,27 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @Override
-    public void deleteAppInstancesFromBulk(BulkDeploymentView bulk) {
-        List<BulkDeploymentEntryView> apps = bulk.getEntries();
-        for (BulkDeploymentEntryView app : apps) {
+    public void deleteAppInstancesFromBulk(BulkDeployment bulk) {
+        List<BulkDeploymentEntry> apps = bulk.getEntries();
+        for (BulkDeploymentEntry app : apps) {
+            //update state to removed
+            app.setState(BulkDeploymentState.REMOVED);
             Long appInstanceId = Long.valueOf(findAppDetail(app, BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
             AppInstance appInstance = instanceService.find(appInstanceId)
                     .orElseThrow(() -> new ObjectNotFoundException("App instance not found"));
 
             appLifecycleManager.removeApplication(appInstance.getInternalId());
             instanceService.delete(appInstanceId);
+            bulkDeploymentEntryRepository.save(app);
         }
     }
 
     private String findAppDetail(BulkDeploymentEntryView app, String key) {
+        return Optional.ofNullable(app.getDetails().get(key))
+                .orElseThrow(() -> new ObjectNotFoundException(key + " not found"));
+    }
+
+    private String findAppDetail(BulkDeploymentEntry app, String key) {
         return Optional.ofNullable(app.getDetails().get(key))
                 .orElseThrow(() -> new ObjectNotFoundException(key + " not found"));
     }
