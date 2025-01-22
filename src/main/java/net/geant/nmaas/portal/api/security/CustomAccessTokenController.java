@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.user.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.UserApiTokens;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.CustomAccessTokenService;
 import net.geant.nmaas.portal.service.UserService;

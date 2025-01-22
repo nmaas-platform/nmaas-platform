@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserApiTokens {
+public class UserApiToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

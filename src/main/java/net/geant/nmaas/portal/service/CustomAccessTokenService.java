@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.user.UserApiTokenView;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserApiTokens;
 
 import java.util.List;
 
