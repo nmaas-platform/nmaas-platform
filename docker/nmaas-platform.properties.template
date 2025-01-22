@@ -131,7 +131,7 @@ spring.security.oauth2.client.registration.my-oidc.client-id=${OIDC_CLIENT_ID}
 spring.security.oauth2.client.registration.my-oidc.client-secret=${OIDC_CLIENT_SECRET}
 spring.security.oauth2.client.registration.my-oidc.scope= openid, profile, email
 spring.security.oauth2.client.registration.my-oidc.authorization-grant-type=authorization_code
-spring.security.oauth2.client.registration.my-oidc.redirect-uri={baseUrl}/login/oauth2/code/{registrationId}
+spring.security.oauth2.client.registration.my-oidc.redirect-uri={baseUrl}/api/login/oauth2/code/{registrationId}
 spring.security.oauth2.client.provider.my-oidc.issuer-uri=${OIDC_ISSUER_URI}
 
 # ------------------ #
