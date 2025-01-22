@@ -53,4 +53,6 @@ public class BulkDeployment {
 
     private Integer parallelDeploymentsLimit;
 
+    private Boolean deleted;
+
 }

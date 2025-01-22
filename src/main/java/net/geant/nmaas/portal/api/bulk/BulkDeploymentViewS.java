@@ -28,4 +28,5 @@ public class BulkDeploymentViewS {
     private Map<String, String> details;
 
     private Integer parallelDeploymentsLimit;
+    private Boolean deleted;
 }
