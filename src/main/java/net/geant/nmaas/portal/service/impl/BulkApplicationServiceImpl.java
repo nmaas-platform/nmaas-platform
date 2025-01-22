@@ -340,7 +340,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     .orElseThrow(() -> new ObjectNotFoundException("App instance not found"));
 
             appLifecycleManager.removeApplication(appInstance.getInternalId());
-            instanceService.delete(appInstanceId);
+//            instanceService.delete(appInstanceId);
             bulkDeploymentEntryRepository.save(app);
         }
     }
