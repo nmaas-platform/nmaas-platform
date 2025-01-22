@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserApiTokenRepository extends JpaRepository<UserApiToken, Long> {
     List<UserApiToken> findAllByUserId(Long userId);
+
+    Optional<UserApiToken> findAllByUserIdAndName(Long userId, String name);
 }

@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.user.UserApiTokenView;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
+import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserApiToken;
@@ -40,6 +42,10 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
 
     @Override
     public UserApiTokenView createToken(User user, String name) {
+        if(userApiTokenRepository.findAllByUserIdAndName(user.getId(), name).isPresent()) {
+            throw new DataConflictException("Token name is already in use.");
+        }
+
         UserApiToken token = createNewToken(user, name);
         return mapToView(userApiTokenRepository.save(token)) ;
     }
