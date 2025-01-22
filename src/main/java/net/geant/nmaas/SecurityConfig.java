@@ -2,6 +2,7 @@ package net.geant.nmaas;
 
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.api.security.StatelessGitlabAuthenticationFilter;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
 import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
@@ -20,7 +21,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -49,7 +53,8 @@ public class SecurityConfig {
     private static final String AUTH_SSO_LOGIN = "/api/auth/sso/login";
     private static final String AUTH_OIDC_LOGIN_PAGE = "/api/oauth2/authorization/my-oidc";
     private static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
-    private static final String AUTH_OIDC_SUCCESS = "/oidc/success";
+    private static final String AUTH_OIDC_SUCCESS = "/api/oidc/success";
+    private static final String AUTH_CODE = "/api/login/oauth2/code";
 
     private final TokenAuthenticationService tokenAuthenticationService;
 
@@ -67,6 +72,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
             new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
             new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
+            new AntPathRequestMatcher(AUTH_CODE),
             new AntPathRequestMatcher("/favicon.ico"),
             new AntPathRequestMatcher("/api/info/**"),
             new AntPathRequestMatcher("/actuator/**"),
@@ -97,6 +103,7 @@ public class SecurityConfig {
                     new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
                     new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
                     new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
+                    new AntPathRequestMatcher(AUTH_CODE),
                     new AntPathRequestMatcher("/api-docs/**"),
                     new AntPathRequestMatcher("/actuator/**"),
                     new AntPathRequestMatcher("/favicon.ico"),
@@ -116,8 +123,10 @@ public class SecurityConfig {
     );
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
 
+        DefaultOAuth2AuthorizationRequestResolver resolver =
+                new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/api/oauth2/authorization");
 
         return httpSecurity
 //                .exceptionHandling(Customizer.withDefaults())
@@ -132,11 +141,16 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
                 )
                 .oauth2Login(oAuth2 -> oAuth2
-                        .userInfoEndpoint(Customizer.withDefaults())
-                        .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
-                        .loginPage(AUTH_OIDC_LOGIN_PAGE)
+                                .userInfoEndpoint(Customizer.withDefaults())
+                                .authorizationEndpoint(authorization -> authorization
+                                        .authorizationRequestResolver(resolver)
+                                )
+                                .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
+                                .redirectionEndpoint(redirection -> redirection
+                                        .baseUri("/api/login/oauth2/code/*")
+                                )
                 )
-
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(statelessAuthFilter(skipPathRequestMatcher,
                                 null,
