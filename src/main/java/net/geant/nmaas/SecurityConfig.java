@@ -54,6 +54,7 @@ public class SecurityConfig {
     private static final String AUTH_OIDC_LOGIN_PAGE = "/api/oauth2/authorization/my-oidc";
     private static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
     private static final String AUTH_OIDC_SUCCESS = "/api/oidc/success";
+    private static final String AUTH_OIDC = "/api/oidc/**";
     private static final String AUTH_CODE = "/api/login/oauth2/code";
 
     private final TokenAuthenticationService tokenAuthenticationService;
@@ -71,7 +72,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher(AUTH_SSO_LOGIN),
             new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
             new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
-            new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
+            new AntPathRequestMatcher(AUTH_OIDC),
             new AntPathRequestMatcher(AUTH_CODE),
             new AntPathRequestMatcher("/favicon.ico"),
             new AntPathRequestMatcher("/api/info/**"),
@@ -102,7 +103,7 @@ public class SecurityConfig {
                     new AntPathRequestMatcher(AUTH_SSO_LOGIN),
                     new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
                     new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
-                    new AntPathRequestMatcher(AUTH_OIDC_SUCCESS),
+                    new AntPathRequestMatcher(AUTH_OIDC),
                     new AntPathRequestMatcher(AUTH_CODE),
                     new AntPathRequestMatcher("/api-docs/**"),
                     new AntPathRequestMatcher("/actuator/**"),
