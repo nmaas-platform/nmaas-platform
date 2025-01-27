@@ -25,7 +25,7 @@ To run the nmaas Platform on a dedicated machine, perform the following steps:
 + Build the nmaas Platform with *./gradlew clean build* command project root directory.
 + Retrieve the output executable *nmaas-platform-x.x.x.jar* file from *build/libs* directory.
 + Run the nmaas Platform with *java -jar nmaas-platform-x.x.x.jar* and optional arguments:
-    + *--Dlog4j.configurationFile* specifying the name of logger (Log4j2) configuration file (located in the same directory as the jar file) to be loaded instead of the built-in one. Please be advised that you have to add that parameter before the *-jar* parameter.
+    + *--Dlogback.configurationFile* specifying the name of logger configuration file (located in the same directory as the jar file) to be loaded instead of the built-in one. Please be advised that you have to add that parameter before the *-jar* parameter.
     + *--spring.config.name* specifying the name of the properties file (located in the same directory as the jar file) to be loaded instead of the built-in one.
 
 ### Swagger documentation of the nmaas Platform REST API

@@ -2,7 +2,6 @@ package net.geant.nmaas;
 
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.api.security.StatelessGitlabAuthenticationFilter;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
 import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;

@@ -26,4 +26,4 @@ else
   PGPASSWORD=${POSTGRESQL_PASSWORD} createdb ${POSTGRESQL_DBNAME} -h "${POSTGRESQL_HOST}" -p ${POSTGRESQL_PORT} -U "${POSTGRESQL_USERNAME}" ${POSTGRESQL_DBNAME}
 fi
 
-java -Djava.security.egd=file:/dev/./urandom -Dlog4j.configurationFile=config/log4j2-spring.json -jar $FILE --spring.config.name=nmaas-platform
+java -Djava.security.egd=file:/dev/./urandom java -Dlogback.configurationFile=config/logback.xml -jar $FILE --spring.config.name=nmaas-platform

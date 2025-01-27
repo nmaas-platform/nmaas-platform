@@ -12,7 +12,7 @@ LABEL maintainer=nmaas@lists.geant.org
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
 COPY docker/run_platform.sh /nmaas/scripts/run_platform.sh
 COPY docker/nmaas-platform.properties.template /nmaas/platform/config/nmaas-platform.properties.template
-COPY docker/log4j2-spring.json /nmaas/platform/config/log4j2-spring.json
+COPY docker/logback.xml /nmaas/platform/config/logback.xml
 COPY docker/do-ntp.sh /etc/periodic/hourly/do-ntp.sh
 COPY docker/ssh-config /root/.ssh/config
 

@@ -4,7 +4,6 @@ import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;

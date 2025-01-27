@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.K8sPodInfo;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;

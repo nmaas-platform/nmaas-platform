@@ -1,6 +1,5 @@
 package net.geant.nmaas.monitor;
 
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.scheduling.ScheduleManager;

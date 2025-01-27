@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -41,18 +40,15 @@ import java.util.stream.Collectors;
 public class RegistrationController {
 
 	private final UserService usersService;
-
 	private final DomainService domains;
-
 	private final ModelMapper modelMapper;
-
 	private final ApplicationEventPublisher eventPublisher;
 	
 	@PostMapping
 	@ValidateCaptcha
     @ResponseStatus(HttpStatus.CREATED)
 	public void signup(@RequestBody final Registration registration, @RequestParam String token) {
-		if(registration == null
+		if (registration == null
 				|| !StringUtils.hasText(registration.getUsername())
 				|| !StringUtils.hasText(registration.getPassword())
 				|| !StringUtils.hasText(registration.getEmail())) {
