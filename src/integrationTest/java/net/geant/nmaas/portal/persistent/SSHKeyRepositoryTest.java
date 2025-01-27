@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistent;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
@@ -49,8 +49,8 @@ public class SSHKeyRepositoryTest {
     }
 
     @AfterEach
-    void tearDown(){
-        try{
+    void tearDown() {
+        try {
             this.userRepository.findAll().stream()
                     .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                     .forEach(user -> userRepository.delete(user));
@@ -58,7 +58,7 @@ public class SSHKeyRepositoryTest {
                     .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
                     .forEach(domain -> domainRepository.delete(domain));
             repository.deleteAll();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             log.error(ex.getMessage());
         }
     }
