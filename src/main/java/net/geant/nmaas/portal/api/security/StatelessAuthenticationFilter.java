@@ -11,10 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
@@ -30,7 +30,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String reqText = request.getRequestURI() != null ? request.getRequestURI() : "empty";
-		log.debug("Request: " + reqText);
+		log.error("Request: " + reqText);
 		try {
 			return tokenService.getAuthentication(request);
 		} catch(Exception ex) {
@@ -41,7 +41,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		log.debug("Authentication: " + authResult);
+		log.error("Authentication: " + authResult);
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		context.setAuthentication(authResult);
 		SecurityContextHolder.setContext(context);
@@ -52,7 +52,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		log.debug("Authentication unsuccessful");
+		log.error("Authentication unsuccessful");
 		SecurityContextHolder.clearContext();
 		getFailureHandler().onAuthenticationFailure(request, response, failed);
 	}

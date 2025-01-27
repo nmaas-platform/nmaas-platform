@@ -13,8 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import javax.ws.rs.NotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;

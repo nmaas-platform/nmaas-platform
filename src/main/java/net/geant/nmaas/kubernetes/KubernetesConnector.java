@@ -15,7 +15,7 @@ public abstract class KubernetesConnector implements AsyncConnector {
 
     public static class SimpleListener implements ExecListener {
         @Override
-        public void onOpen(Response response) {
+        public void onOpen() {
             log.info("Shell opened");
         }
 

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableMap;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,14 @@ import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppInstanceState;
+import net.geant.nmaas.portal.api.domain.AppRateView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
+import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MarketException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -23,9 +31,14 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
+import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.ApplicationServiceImpl;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,14 +53,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api/apps")
 @Slf4j
 public class ApplicationController extends AppBaseController {
@@ -73,16 +88,20 @@ public class ApplicationController extends AppBaseController {
 	}
 
 	private final ApplicationEventPublisher eventPublisher;
-
 	private final RatingRepository ratingRepository;
-
 	private final ApplicationInstanceService applicationInstanceService;
-
-	private final AppLifecycleManager appLifecycleManager;
-
 	private final AppInstanceController appInstanceController;
-
 	private final ApplicationSubscriptionService applicationSubscriptionService;
+
+	@Autowired
+	public ApplicationController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService appBaseService, UserService userService, ApplicationEventPublisher eventPublisher, RatingRepository ratingRepository, ApplicationInstanceService applicationInstanceService, AppInstanceController appInstanceController, ApplicationSubscriptionService applicationSubscriptionService) {
+		super(modelMapper, applicationService, appBaseService, userService);
+		this.eventPublisher = eventPublisher;
+		this.ratingRepository = ratingRepository;
+		this.applicationInstanceService = applicationInstanceService;
+		this.appInstanceController = appInstanceController;
+		this.applicationSubscriptionService = applicationSubscriptionService;
+	}
 
 	/*
 	 * Application Base Part
@@ -93,7 +112,7 @@ public class ApplicationController extends AppBaseController {
 	public List<ApplicationBaseViewS> getAllActiveApplicationBase() {
 		return appBaseService.findAllActiveAppsSmall().stream()
 				.map(this::setAppRating)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@GetMapping("/base/all")
@@ -109,7 +128,7 @@ public class ApplicationController extends AppBaseController {
 				.filter(app -> isSystemAdmin || app.getOwner().equals(principal.getName()))
 				.map(app -> modelMapper.map(app, ApplicationBaseView.class))
 				.map(this::setAppRating)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private ApplicationBaseView setAppRating(ApplicationBaseView baseView) {
@@ -247,10 +266,12 @@ public class ApplicationController extends AppBaseController {
 		ApplicationBase base = appBaseService.getBaseApp(id);
 		List<Application> versionList = this.applicationService.findAll().stream()
 				.filter(app -> app.getName().equalsIgnoreCase(base.getName()))
-				.collect(Collectors.toList());
+				.toList();
 		return new ApplicationDTOVersionList(
 				modelMapper.map(base, ApplicationBaseView.class),
-				versionList.stream().map(app->modelMapper.map(app, ApplicationView.class)).collect(Collectors.toList())
+				versionList.stream()
+						.map(app -> modelMapper.map(app, ApplicationView.class))
+						.toList()
 		);
 	}
 

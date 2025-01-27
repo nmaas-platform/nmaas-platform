@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity.validators;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import net.geant.nmaas.portal.persistent.entity.User;
 
 public class NotNullIfAnotherFieldIsNullValidator implements ConstraintValidator<ValidUser, Object> {

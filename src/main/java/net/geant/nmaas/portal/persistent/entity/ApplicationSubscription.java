@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -7,13 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,11 +35,11 @@ public class ApplicationSubscription {
 
 		private static final long serialVersionUID = -8711200394959797874L;
 
-		@OneToOne(fetch = FetchType.LAZY)
+		@ManyToOne(fetch = FetchType.LAZY)
 		@NotNull
 		private Domain domain;
 		
-		@OneToOne(fetch = FetchType.LAZY)
+		@ManyToOne(fetch = FetchType.LAZY)
 		@NotNull
 		private ApplicationBase application;
 

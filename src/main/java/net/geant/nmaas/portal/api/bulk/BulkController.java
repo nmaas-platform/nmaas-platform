@@ -1,12 +1,16 @@
 package net.geant.nmaas.portal.api.bulk;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
+import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.BulkCsvProcessor;
@@ -27,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +67,7 @@ public class BulkController {
                 throw new RuntimeException(e);
             }
         } else {
-            log.warn("Incorrect input file format");
+            log.warn("Incorrect domains input file format");
             return ResponseEntity.badRequest().build();
         }
     }
@@ -84,17 +87,22 @@ public class BulkController {
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
 
                 //validate domains before processing bulk
-                if(!bulkApplicationService.validateDomainsList(csvApplications.stream().map(CsvApplication::getDomainName).collect(Collectors.toSet()))) {
+                if (!bulkApplicationService.validateDomainsList(csvApplications.stream()
+                        .map(CsvApplication::getDomainName)
+                        .collect(Collectors.toSet()))
+                ) {
                     log.error("Domain validation error. Some domains are missing. Please check the CSV information.");
                     throw new MissingElementException("Domain validation error. Some domains are missing. Please check the CSV content.");
                 }
 
                 return ResponseEntity.ok(bulkApplicationService.handleBulkDeployment(applicationName, csvApplications, user, limit));
+            } catch (MissingElementException ex) {
+                throw ex;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         } else {
-            log.warn("Incorrect input file format");
+            log.warn("Incorrect applications input file format");
             return ResponseEntity.badRequest().build();
         }
     }
@@ -131,8 +139,8 @@ public class BulkController {
 
     @GetMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords() {
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.DOMAIN)));
+    public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecords(@RequestParam(value = "deleted", defaultValue = "false") Boolean deleted) {
+        return ResponseEntity.ok(mapToViewList(filter(deleted,bulkDeploymentRepository.findByType(BulkType.DOMAIN))));
     }
 
     @GetMapping("/domains/vl")
@@ -140,14 +148,14 @@ public class BulkController {
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).stream()
+        return ResponseEntity.ok(mapToViewList(filter(false,bulkDeploymentRepository.findByType(BulkType.DOMAIN))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
     }
 
     @GetMapping("/apps")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords() {
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.APPLICATION)));
+    public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecords(@RequestParam(value="deleted", defaultValue = "false") Boolean deleted) {
+        return ResponseEntity.ok(mapToViewList(filter(deleted,bulkDeploymentRepository.findByType(BulkType.APPLICATION))));
     }
 
     @GetMapping("/apps/vl")
@@ -155,7 +163,7 @@ public class BulkController {
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
-        return ResponseEntity.ok(mapToViewList(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).stream()
+        return ResponseEntity.ok(mapToViewList(filter(false,bulkDeploymentRepository.findByType(BulkType.APPLICATION))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId())).collect(Collectors.toList()));
     }
 
@@ -173,13 +181,17 @@ public class BulkController {
             return ResponseEntity.notFound().build();
         }
 
-        if(bulk.get().getCreator().getId().equals(user.getId()) ) {
-            throw new PermissionDeniedDataAccessException("User doesnt have access to this bulk deployment", new Throwable());
+        if (!bulk.get().getCreator().getId().equals(user.getId()) && user.getRoles().stream().noneMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
+            log.error("Bulk data {}, user data {}", bulk.get().getCreator().getId(), user.getId());
+            throw new PermissionDeniedDataAccessException("User doesn't have access to this bulk deployment", new Throwable());
         }
         if (removeApps) {
-            bulkApplicationService.deleteAppInstancesFromBulk(mapToView(bulk.get(), BulkDeploymentView.class));
+            bulkApplicationService.deleteAppInstancesFromBulk(bulk.get());
         }
-        bulkDeploymentRepository.delete(bulk.get());
+//        bulkDeploymentRepository.delete(bulk.get());
+        bulk.get().setDeleted(true);
+        bulk.get().setState(BulkDeploymentState.REMOVED);
+        bulkDeploymentRepository.save(bulk.get());
         return ResponseEntity.ok().build();
     }
 
@@ -206,7 +218,7 @@ public class BulkController {
         try {
             bulkView.setCreator(getUserView(bulk.getCreator().getId()));
         } catch (Exception ex) {
-            log.error("Can not find creator for {} - creatorId:  {}", bulk.getId(), bulk.getCreator().getId());
+            log.error("Can't find user who requested bulk {} (provided id: {})", bulk.getId(), bulk.getCreator().getId());
             return null;
         }
         mapDetails(bulk, bulkView);
@@ -217,11 +229,11 @@ public class BulkController {
         BulkDeploymentView bulkView = modelMapper.map(deployment, BulkDeploymentView.class);
         try {
             bulkView.setCreator(getUserView(deployment.getCreator().getId()));
-            return null;
         } catch (Exception ex) {
-            log.error("Can not find creator for {} - creatorId:  {}", deployment.getId(), deployment.getCreator().getId());
+            log.error("Can't find user who requested bulk {} (provided id: {})", deployment.getId(), deployment.getCreator().getId());
         }
         mapDetails(deployment, bulkView);
+
         return bulkView;
     }
 
@@ -246,6 +258,14 @@ public class BulkController {
         User user = userService.findById(id)
                 .orElseThrow();
         return modelMapper.map(user, UserViewMinimal.class);
+    }
+
+    private List<BulkDeployment> filter(Boolean showDeleted, List<BulkDeployment> deployments) {
+        if(showDeleted) {
+            return deployments;
+        } else {
+            return deployments.stream().filter(d -> !d.getDeleted()).collect(Collectors.toList());
+        }
     }
 
 }

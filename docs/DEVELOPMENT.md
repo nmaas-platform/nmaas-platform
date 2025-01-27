@@ -2,9 +2,8 @@
 
 ### Technologies
 
-* Java 11
-* Spring
-* Spring Boot (2.7+)
+* Java 17
+* Spring Boot (3.2+)
 * freemarker
 * Gitlab4j
 * Flyway
@@ -13,7 +12,7 @@
 ### Running nmaas Platform on local machine
 
 #### Prerequisites
-Install Java 11 jdk
+Install Java 17 jdk
 
 #### Running the software
 In order to build and run the nmaas Platform software locally execute *./gradlew bootRun* in project root directory.

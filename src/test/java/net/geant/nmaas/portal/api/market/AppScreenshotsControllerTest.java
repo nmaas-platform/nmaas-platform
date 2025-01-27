@@ -6,7 +6,9 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.FileStorageService;
+import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -20,16 +22,23 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+class AppScreenshotsControllerTest {
 
-public class AppScreenshotsControllerTest {
-
-    private FileStorageService fileStorageService = mock(FileStorageService.class);
-
-    private ApplicationBaseService applicationBaseService = mock(ApplicationBaseService.class);
+    private final ApplicationService applicationService = mock(ApplicationService.class);
+    private final ApplicationBaseService applicationBaseService = mock(ApplicationBaseService.class);
+    private final UserService userService = mock(UserService.class);
+    private final FileStorageService fileStorageService = mock(FileStorageService.class);
 
     private AppScreenshotsController appScreenshotsController;
 
@@ -37,10 +46,13 @@ public class AppScreenshotsControllerTest {
     private ApplicationBase appWithLogo;
 
     @BeforeEach
-    public void setup() {
-        this.appScreenshotsController = new AppScreenshotsController(fileStorageService);
-        this.appScreenshotsController.appBaseService = applicationBaseService;
-        this.appScreenshotsController.modelMapper = new ModelMapper();
+    void setup() {
+        this.appScreenshotsController = new AppScreenshotsController(
+                new ModelMapper(),
+                applicationService,
+                applicationBaseService,
+                userService,
+                fileStorageService);
 
         app = new ApplicationBase(1L, "name");
         when(applicationBaseService.findByName("name")).thenReturn(app);
@@ -68,7 +80,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldGetErrorWhenAppLogoIsNotDefined() {
+    void shouldGetErrorWhenAppLogoIsNotDefined() {
         ResponseEntity<InputStreamResource> re = null;
         try {
             re = this.appScreenshotsController.getLogo(app.getId());
@@ -81,7 +93,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldUpdateLogoWhenExists() {
+    void shouldUpdateLogoWhenExists() {
 
         MultipartFile mf = mock(MultipartFile.class);
         FileInfo newLogo = new FileInfo("newLogo", "image/png");
@@ -95,7 +107,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldCreateLogoWhenNotExists() {
+    void shouldCreateLogoWhenNotExists() {
         MultipartFile mf = mock(MultipartFile.class);
         FileInfo newLogo = new FileInfo("newLogo", "image/png");
         when(fileStorageService.store(mf)).thenReturn(newLogo);
@@ -107,7 +119,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldDeleteLogoIfExists() {
+    void shouldDeleteLogoIfExists() {
 
         this.appScreenshotsController.deleteLogo(appWithLogo.getId());
 
@@ -116,7 +128,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void onDeleteShouldDoNothingWhenLogoDoesNotExists() {
+    void onDeleteShouldDoNothingWhenLogoDoesNotExists() {
         this.appScreenshotsController.deleteLogo(app.getId());
 
         verify(fileStorageService, times(0)).remove(any(FileInfo.class));
@@ -124,13 +136,13 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldGetScreenshotsInfo() {
+    void shouldGetScreenshotsInfo() {
         List<UserFile> result = this.appScreenshotsController.getScreenshotsInfo(appWithLogo.getId());
         assertEquals(2, result.size());
     }
 
     @Test
-    public void shouldUploadScreenshot() {
+    void shouldUploadScreenshot() {
         MultipartFile mf = mock(MultipartFile.class);
         FileInfo newScreenshot = new FileInfo("newScreenshot", "image/png");
         when(fileStorageService.store(mf)).thenReturn(newScreenshot);
@@ -142,7 +154,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldDeleteAllScreenshots() {
+    void shouldDeleteAllScreenshots() {
         this.appScreenshotsController.deleteScreenshots(appWithLogo.getId());
 
         verify(fileStorageService, times(2)).remove(any(FileInfo.class));
@@ -150,7 +162,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldDeleteSingleScreenshot() {
+    void shouldDeleteSingleScreenshot() {
         this.appScreenshotsController.deleteScreenshot(appWithLogo.getId(), 1L);
 
         verify(fileStorageService, times(1)).remove(any(FileInfo.class));
@@ -159,7 +171,7 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenScreenshotToDeleteNotFound() {
+    void shouldThrowExceptionWhenScreenshotToDeleteNotFound() {
         MissingElementException me = assertThrows(MissingElementException.class, () -> {
             this.appScreenshotsController.deleteScreenshot(app.getId(), 12L);
         });
@@ -169,19 +181,20 @@ public class AppScreenshotsControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenScreenshotNotFound() {
+    void shouldThrowExceptionWhenScreenshotNotFound() {
         MissingElementException me = assertThrows(MissingElementException.class, () -> {
             this.appScreenshotsController.getScreenshot(app.getId(), 12L);
         });
 
         assertTrue(me.getMessage().contains("12"));
         assertTrue(me.getMessage().contains(String.valueOf(app.getId())));
+        Long appWithLogoId = appWithLogo.getId();
 
         me = assertThrows(MissingElementException.class, () -> {
-            this.appScreenshotsController.getScreenshot(appWithLogo.getId(), 13L);
+            this.appScreenshotsController.getScreenshot(appWithLogoId, 13L);
         });
 
         assertTrue(me.getMessage().contains("13"));
-        assertTrue(me.getMessage().contains(String.valueOf(appWithLogo.getId())));
+        assertTrue(me.getMessage().contains(String.valueOf(appWithLogoId)));
     }
 }

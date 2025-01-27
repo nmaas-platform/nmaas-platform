@@ -1193,6 +1193,7 @@
       }
     },
     "BUTTON_INVALIDATE": "Invalidate",
+    "BUTTON_DELETE": "Delete",
     "NO_TOKENS": "No tokens",
     "NEW_TOKEN": "Add new token"
   },

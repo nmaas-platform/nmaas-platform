@@ -3,10 +3,10 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.*;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * DTO for {@link net.geant.nmaas.portal.persistent.entity.Application}

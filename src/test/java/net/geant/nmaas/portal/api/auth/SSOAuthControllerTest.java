@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -18,7 +19,6 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -49,7 +49,7 @@ public class SSOAuthControllerTest {
     private final HttpServletRequest request = mock(HttpServletRequest.class);
 
     @BeforeEach
-    void setup(){
+    void setup() {
         ssoAuthController = new SSOAuthController(users, domains, jwtTokenService, configurationManager, SSOConfigManager, userLoginService);
         when(request.getHeader(any())).thenReturn("empty");
     }
@@ -113,7 +113,7 @@ public class SSOAuthControllerTest {
         when(userSSOLoginData.getUsername()).thenReturn("johny");
         User user = new User("johny", true);
         when(users.findBySamlToken(any())).thenReturn(Optional.empty());
-        when(users.register(any(), any())).thenReturn(user);
+        when(users.register((UserSSOLogin) any(), any())).thenReturn(user);
         Domain global = mock(Domain.class);
         when(domains.getGlobalDomain()).thenReturn(Optional.of(global));
 
@@ -133,7 +133,7 @@ public class SSOAuthControllerTest {
         when(userSSOLoginData.getUsername()).thenReturn("johny");
         User user = new User("johny", true);
         when(users.findBySamlToken(any())).thenReturn(Optional.of(user));
-        when(users.register(any(), any())).thenReturn(user);
+        when(users.register((UserSSOLogin) any(), any())).thenReturn(user);
         Domain global = mock(Domain.class);
         when(domains.getGlobalDomain()).thenReturn(Optional.of(global));
 
@@ -155,7 +155,7 @@ public class SSOAuthControllerTest {
         when(userSSOLoginData.getUsername()).thenReturn("johny");
         User user = new User("johny", true);
         when(users.findBySamlToken(any())).thenReturn(Optional.empty());
-        when(users.register(any(), any())).thenThrow(ObjectAlreadyExistsException.class);
+        when(users.register((UserSSOLogin) any(), any())).thenThrow(ObjectAlreadyExistsException.class);
         Domain global = mock(Domain.class);
         when(domains.getGlobalDomain()).thenReturn(Optional.of(global));
 
@@ -173,7 +173,7 @@ public class SSOAuthControllerTest {
         when(userSSOLoginData.getUsername()).thenReturn("johny");
         User user = new User("johny", true);
         when(users.findBySamlToken(any())).thenReturn(Optional.empty());
-        when(users.register(any(), any())).thenReturn(user);
+        when(users.register((UserSSOLogin) any(), any())).thenReturn(user);
         Domain global = mock(Domain.class);
         when(domains.getGlobalDomain()).thenReturn(Optional.empty());
 
@@ -195,7 +195,7 @@ public class SSOAuthControllerTest {
         when(user.isEnabled()).thenReturn(true);
         when(user.getRoles()).thenReturn(new ArrayList<>()); // if no roles, then he is not an admin
         when(users.findBySamlToken(any())).thenReturn(Optional.of(user));
-        when(users.register(any(), any())).thenReturn(user);
+        when(users.register((UserSSOLogin) any(), any())).thenReturn(user);
         Domain global = mock(Domain.class);
         when(domains.getGlobalDomain()).thenReturn(Optional.of(global));
 
@@ -208,7 +208,7 @@ public class SSOAuthControllerTest {
     }
 
     @Test
-    void whenUserIsAdminAndApplicationIsUnderMaintenanceThenShouldLogin(){
+    void whenUserIsAdminAndApplicationIsUnderMaintenanceThenShouldLogin() {
         ConfigurationView configuration = new ConfigurationView();
         configuration.setSsoLoginAllowed(true);
         configuration.setMaintenance(true);
@@ -220,9 +220,11 @@ public class SSOAuthControllerTest {
         when(user.isEnabled()).thenReturn(true);
         UserRole userRole = mock(UserRole.class);
         when(userRole.getRole()).thenReturn(Role.ROLE_SYSTEM_ADMIN);
-        when(user.getRoles()).thenReturn(new ArrayList<UserRole>(){{add(userRole);}});
+        when(user.getRoles()).thenReturn(new ArrayList<UserRole>() {{
+            add(userRole);
+        }});
         when(users.findBySamlToken(any())).thenReturn(Optional.of(user));
-        when(users.register(any(), any())).thenReturn(user);
+        when(users.register((UserSSOLogin) any(), any())).thenReturn(user);
         Domain global = mock(Domain.class);
         when(domains.getGlobalDomain()).thenReturn(Optional.of(global));
 

@@ -1,16 +1,16 @@
 package net.geant.nmaas.nmservice.configuration.entities;
 
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.orchestration.Identifier;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * Stores information tha allow to connect to git repository created on GitLab.
@@ -55,7 +55,7 @@ public class GitLabProject {
      * Internal GitLab project id
      */
     @Column(nullable = false)
-    private Integer projectId;
+    private Long projectId;
 
     /**
      * URL that can be directly used in "git clone" command with SSH
@@ -69,7 +69,7 @@ public class GitLabProject {
     @Column
     private String webhookToken;
 
-    public GitLabProject(Identifier deploymentId, String accessUser, String accessPassword, String accessUrl, String cloneUrl, Integer projectId) {
+    public GitLabProject(Identifier deploymentId, String accessUser, String accessPassword, String accessUrl, String cloneUrl, Long projectId) {
         this.deploymentId = deploymentId;
         this.accessUser = accessUser;
         this.accessPassword = accessPassword;

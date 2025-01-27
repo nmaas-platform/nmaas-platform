@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Email;
+import jakarta.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.List;
 

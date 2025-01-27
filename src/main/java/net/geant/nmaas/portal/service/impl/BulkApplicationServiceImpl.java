@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
@@ -14,12 +15,14 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
+import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
 import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
+import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -39,7 +42,6 @@ import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
@@ -47,7 +49,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.StyledEditorKit;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
@@ -71,6 +73,7 @@ import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
 import static net.geant.nmaas.portal.api.market.AppInstanceController.createDescriptiveDeploymentId;
+import static net.geant.nmaas.portal.api.market.AppInstanceController.mapAppInstanceState;
 
 @Service
 @RequiredArgsConstructor
@@ -108,6 +111,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
         // create base bulk deployment record
         BulkDeployment bulkDeployment = createBulkDeployment(creator);
+        bulkDeployment.setDeleted(false);
 
         appInstanceSpecs.forEach(applicationSpec -> {
             AppInstance instance = null;
@@ -326,19 +330,27 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @Override
-    public void deleteAppInstancesFromBulk(BulkDeploymentView bulk) {
-        List<BulkDeploymentEntryView> apps = bulk.getEntries();
-        for (BulkDeploymentEntryView app : apps) {
+    public void deleteAppInstancesFromBulk(BulkDeployment bulk) {
+        List<BulkDeploymentEntry> apps = bulk.getEntries();
+        for (BulkDeploymentEntry app : apps) {
+            //update state to removed
+            app.setState(BulkDeploymentState.REMOVED);
             Long appInstanceId = Long.valueOf(findAppDetail(app, BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
             AppInstance appInstance = instanceService.find(appInstanceId)
                     .orElseThrow(() -> new ObjectNotFoundException("App instance not found"));
 
             appLifecycleManager.removeApplication(appInstance.getInternalId());
-            instanceService.delete(appInstanceId);
+//            instanceService.delete(appInstanceId);
+            bulkDeploymentEntryRepository.save(app);
         }
     }
 
     private String findAppDetail(BulkDeploymentEntryView app, String key) {
+        return Optional.ofNullable(app.getDetails().get(key))
+                .orElseThrow(() -> new ObjectNotFoundException(key + " not found"));
+    }
+
+    private String findAppDetail(BulkDeploymentEntry app, String key) {
         return Optional.ofNullable(app.getDetails().get(key))
                 .orElseThrow(() -> new ObjectNotFoundException(key + " not found"));
     }
@@ -381,11 +393,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
         }
-
         //only update if state changed
         if ( oldState != null && !oldState.equals(bulkDeployment.getState())) {
             logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
-            bulkDeploymentRepository.save(bulkDeployment);
+            bulkDeployment= bulkDeploymentRepository.save(bulkDeployment);
         }
         return bulkDeployment;
     }
