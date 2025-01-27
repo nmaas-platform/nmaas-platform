@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -74,7 +75,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_MANAGER;
 
 @RestController
 @RequestMapping("/api")
-@Log4j2
+@Slf4j
 public class UsersController {
 
     private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";

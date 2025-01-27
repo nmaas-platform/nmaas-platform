@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.market;
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/basic/registration")
-@Log4j2
+@Slf4j
 public class RegistrationController {
 
 	private final UserService usersService;

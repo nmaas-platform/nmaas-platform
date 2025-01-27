@@ -3,7 +3,7 @@ package net.geant.nmaas.externalservices.gitlab;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
@@ -19,7 +19,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Component
 @NoArgsConstructor
 @Setter(AccessLevel.PACKAGE)
-@Log4j2
+@Slf4j
 public class GitLabManager {
 
     private static final String GITLAB_API_NAMESPACE = "/api/v4";

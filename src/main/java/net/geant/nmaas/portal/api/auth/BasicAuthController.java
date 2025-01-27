@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.Pong;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -34,7 +35,7 @@ import static java.lang.String.format;
 
 @RestController
 @AllArgsConstructor
-@Log4j2
+@Slf4j
 @RequestMapping("/api/auth/basic")
 public class BasicAuthController {
 

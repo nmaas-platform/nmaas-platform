@@ -1,10 +1,11 @@
 package net.geant.nmaas.utils.ssh;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Predicate;
 
-@Log4j2
+@Slf4j
 public class SingleCommandExecutor {
 
 	private final String hostname;

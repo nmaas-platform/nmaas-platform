@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/apps/instances")
-@Log4j2
+@Slf4j
 public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
@@ -213,7 +213,7 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
                                                      @PathVariable String username,
-                                                     Pageable pageable){
+                                                     Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         return getUserDomainAppInstances(domainId, username, pageable);
@@ -465,7 +465,7 @@ public class AppInstanceController extends AppBaseController {
         // get user data to be removed from members
         List<User> usersToRemove = oldMembers.stream().filter(m -> toRemoveMemberUsernames.contains(m.getUsername())).collect(Collectors.toList());
 
-        usersToRemove.forEach( r -> {
+        usersToRemove.forEach(r -> {
             RemoveUserFromRepositoryGitlabEvent event = new RemoveUserFromRepositoryGitlabEvent(
                     "AppInstance members list update",
                     r.getUsername(),
@@ -474,8 +474,8 @@ public class AppInstanceController extends AppBaseController {
             eventPublisher.publishEvent(event);
         });
 
-        usersToAdd.forEach( a -> {
-            if(a.getSshKeys().isEmpty()) {
+        usersToAdd.forEach(a -> {
+            if (a.getSshKeys().isEmpty()) {
                 log.info(String.format("[ADD USER TO GITLAB REPO] User [%s] does not have any ssh keys, skipping", a.getUsername()));
             } else {
                 AddUserToRepositoryGitlabEvent event = new AddUserToRepositoryGitlabEvent(
@@ -493,6 +493,7 @@ public class AppInstanceController extends AppBaseController {
 
     /**
      * provides deployment statistics/current number of applications of each type
+     *
      * @return result map
      */
     @GetMapping("/statistics")
@@ -707,7 +708,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private void logPageable(Pageable p) {
-        log.trace("Page number: " + p.getPageNumber() + "\tPage size:" +p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
+        log.trace("Page number: " + p.getPageNumber() + "\tPage size:" + p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
     }
 
     private boolean isPageableValidForAppInstance(Pageable p) {

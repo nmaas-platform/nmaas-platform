@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
@@ -14,13 +14,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Log4j2
+@Slf4j
 public class DcnRequestVerificationTask extends BaseDcnTask {
 
     private DomainDcnDetailsRepository repository;
 
     @Autowired
-    public DcnRequestVerificationTask(DomainDcnDetailsRepository repository){
+    public DcnRequestVerificationTask(DomainDcnDetailsRepository repository) {
         this.repository = repository;
     }
 
@@ -28,10 +28,10 @@ public class DcnRequestVerificationTask extends BaseDcnTask {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void trigger(DcnVerifyRequestActionEvent event) {
-    	try{
-	        final String domain = event.getRelatedTo();
-	        providersManager.getDcnDeploymentProvider(domain).verifyRequest(domain, constructDcnSpec(domain));
-    	} catch(Exception ex){
+        try {
+            final String domain = event.getRelatedTo();
+            providersManager.getDcnDeploymentProvider(domain).verifyRequest(domain, constructDcnSpec(domain));
+        } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }

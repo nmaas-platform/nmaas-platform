@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 @Component
 @Profile("env_kubernetes")
-@Log4j2
+@Slf4j
 public class GitLabEventsListener {
 
     private final KubernetesRepositoryManager repositoryManager;

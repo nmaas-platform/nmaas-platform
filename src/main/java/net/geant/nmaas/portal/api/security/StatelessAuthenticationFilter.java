@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.security;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
 import org.springframework.security.core.Authentication;
@@ -16,7 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Log4j2
+@Slf4j
 public class StatelessAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 	TokenAuthenticationService tokenService;

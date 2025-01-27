@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.api;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -28,8 +28,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/api/orchestration/deployments")
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class AppDeploymentMonitorRestController {
+
 
     private final AppDeploymentMonitor deploymentMonitor;
     private final ModelMapper modelMapper;
@@ -66,7 +67,7 @@ public class AppDeploymentMonitorRestController {
      * @param deploymentId application deployment identifier
      * @return application access information
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
-     * @throws InvalidAppStateException if deployment didn't complete yet
+     * @throws InvalidAppStateException     if deployment didn't complete yet
      */
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping(value = "{deploymentId}/access")
