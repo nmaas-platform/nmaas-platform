@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.api.domain.SSHKeyView;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -22,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class SSHKeysController {
 
     private final SSHKeyService keysService;

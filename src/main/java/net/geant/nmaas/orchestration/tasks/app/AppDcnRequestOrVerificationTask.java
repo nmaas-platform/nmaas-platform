@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class AppDcnRequestOrVerificationTask {
 
     private final DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
@@ -38,7 +38,7 @@ public class AppDcnRequestOrVerificationTask {
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final String domain = appDeploymentRepositoryManager.loadDomain(deploymentId);
-            switch(providersManager.getDcnDeploymentProvider(domain).checkState(domain)) {
+            switch (providersManager.getDcnDeploymentProvider(domain).checkState(domain)) {
                 case NONE:
                 case REMOVED:
                     return dcnDeploymentEvent(domain);
@@ -47,7 +47,7 @@ public class AppDcnRequestOrVerificationTask {
                 case PROCESSED:
                     return noEvent();
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }

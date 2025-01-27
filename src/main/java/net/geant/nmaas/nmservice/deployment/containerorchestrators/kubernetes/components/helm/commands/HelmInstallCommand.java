@@ -1,13 +1,14 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand;
 
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Log4j2
+@Slf4j
 public class HelmInstallCommand extends HelmCommand {
 
     private static final String INSTALL = "install";

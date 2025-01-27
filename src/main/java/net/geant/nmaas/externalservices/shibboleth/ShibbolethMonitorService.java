@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.shibboleth;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
@@ -16,7 +16,7 @@ import java.net.URL;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class ShibbolethMonitorService extends MonitorService {
 
     private final ConfigurationManager configurationManager;

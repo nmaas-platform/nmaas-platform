@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AccessToken;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -21,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tokens")
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class CustomAccessTokenController {
 
     private final CustomAccessTokenService accessTokenService;

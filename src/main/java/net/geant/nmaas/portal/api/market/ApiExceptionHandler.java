@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookException;
 import net.geant.nmaas.portal.api.domain.ApiError;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
@@ -29,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestControllerAdvice
-@Log4j2
+@Slf4j
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(value = { AuthenticationException.class,

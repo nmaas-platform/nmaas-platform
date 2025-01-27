@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
@@ -45,7 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  */
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
@@ -184,7 +184,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     Map<String, String> getMapFromJson(String inputJson) {
         try {
-            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() { });
+            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {
+            });
         } catch (IOException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }

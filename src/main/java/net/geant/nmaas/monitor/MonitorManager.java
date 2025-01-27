@@ -2,6 +2,7 @@ package net.geant.nmaas.monitor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class MonitorManager {
 
     private final MonitorRepository repository;

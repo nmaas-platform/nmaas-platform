@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.service.AclService.Permissions;
@@ -14,7 +15,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Component
-@Log4j2
+@Slf4j
 public class AppInstancePermissionCheck extends BasePermissionCheck {
 
 	static final String APPINSTANCE = "appInstance";

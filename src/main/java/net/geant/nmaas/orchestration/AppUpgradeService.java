@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class AppUpgradeService {
 
     private static final int EVENT_PROCESSING_DELAY_IN_MILLIS = 5000;

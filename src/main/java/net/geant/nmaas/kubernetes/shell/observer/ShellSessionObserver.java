@@ -1,7 +1,7 @@
 package net.geant.nmaas.kubernetes.shell.observer;
 
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
  * it OBSERVES event source (e.g. ssh session) and emits events to event emitter
  */
 @Getter
-@Log4j2
+@Slf4j
 public class ShellSessionObserver implements Observer, Serializable {
 
     private static final Long DEFAULT_HEARTBEAT_INTERVAL_MS = 30000L;
@@ -44,7 +44,7 @@ public class ShellSessionObserver implements Observer, Serializable {
         this.executor = Executors.newSingleThreadExecutor();
         this.executor.execute(() -> {
             try {
-                for(long i = 0L; i < SSE_TIMEOUT_24H_MS/DEFAULT_HEARTBEAT_INTERVAL_MS; i++) {
+                for (long i = 0L; i < SSE_TIMEOUT_24H_MS / DEFAULT_HEARTBEAT_INTERVAL_MS; i++) {
                     SseEmitter.SseEventBuilder builder = SseEmitter.event()
                             .name("heartbeat")
                             .id(Long.toString(i))
@@ -68,8 +68,9 @@ public class ShellSessionObserver implements Observer, Serializable {
 
     /**
      * method called by observable, it passes results directly to the output SSE
+     *
      * @param observable ssh connection observable
-     * @param o message
+     * @param o          message
      */
     @Override
     public void update(Observable observable, Object o) {

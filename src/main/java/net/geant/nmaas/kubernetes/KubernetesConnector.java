@@ -4,12 +4,13 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecListener;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.InputStream;
 
-@Log4j2
+@Slf4j
 public abstract class KubernetesConnector implements AsyncConnector {
 
     public static class SimpleListener implements ExecListener {

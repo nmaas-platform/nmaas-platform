@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Log4j2
+@Slf4j
 public class SshConnectionShellSessionObservableTest {
 
     public final String PUB_KEY = SshSessionConnectorDefaultData.SSH_PUB_KEY_X509;
@@ -43,7 +43,7 @@ public class SshConnectionShellSessionObservableTest {
     }
 
     @Getter
-    @Log4j2
+    @Slf4j
     private static class TestObserver implements Observer {
 
         private final List<String> messages = new ArrayList<>();

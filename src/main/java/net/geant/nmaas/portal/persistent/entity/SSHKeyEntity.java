@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
@@ -19,6 +20,7 @@ import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
 
 @Entity
@@ -26,7 +28,7 @@ import java.util.Base64;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
-@Log4j2
+@Slf4j
 @Audited
 public class SSHKeyEntity implements Serializable {
 
@@ -69,7 +71,7 @@ public class SSHKeyEntity implements Serializable {
             this.fingerprint = Base64.getEncoder().encodeToString(result);
         } catch (NoSuchAlgorithmException e) {
             log.warn(String.format("Exception caught (%s)", e.getMessage()));
-            log.warn(e.getStackTrace());
+            log.warn(Arrays.toString(e.getStackTrace()));
         }
     }
 

@@ -1,6 +1,7 @@
 package net.geant.nmaas.monitor;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Configuration
-@Log4j2
+@Slf4j
 public class MonitorConfig {
 
     @Bean

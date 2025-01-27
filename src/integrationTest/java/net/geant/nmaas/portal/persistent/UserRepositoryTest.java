@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-@Log4j2
+@Slf4j
 public class UserRepositoryTest {
 
 	private static final String DOMAIN = "userdom";

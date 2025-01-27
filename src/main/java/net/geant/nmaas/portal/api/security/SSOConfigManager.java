@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.security;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.auth.SSOView;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 @Getter
 @Component
 @ApplicationScope
-@Log4j2
+@Slf4j
 public class SSOConfigManager {
 
     @Value("${sso.loginUrl}")
