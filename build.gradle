@@ -110,7 +110,8 @@ dependencies {
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
     implementation 'org.hibernate.orm:hibernate-envers:6.5.0.Final'
-    implementation('org.flywaydb:flyway-core')
+    implementation('org.flywaydb:flyway-core:11.2.0')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.2.0'
 
 //    implementation('io.jsonwebtoken:jjwt:0.9.1')
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
