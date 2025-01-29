@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.auth.Registration;
-import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -306,16 +305,6 @@ public class UserServiceImplTest {
             when(userRepository.existsByEmail(registration.getEmail())).thenReturn(true);
             userService.register(registration, domain, null);
         });
-    }
-
-    @Test
-    void shouldRegisterSSOUser() {
-        UserSSOLogin ssoUser = new UserSSOLogin("test|1234|id");
-        Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, false, "0 */1 * * * ?", 2));
-        User user = userService.register(ssoUser, domain);
-        verify(userRepository, times(1)).save(any());
-        assertEquals(user.getSamlToken(), ssoUser.getUsername());
     }
 
     @Test
