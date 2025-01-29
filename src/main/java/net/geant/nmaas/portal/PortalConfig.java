@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -31,7 +31,7 @@ import java.util.Optional;
 @Configuration
 @RequiredArgsConstructor
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
-@Log4j2
+@Slf4j
 public class PortalConfig {
 
 	private final PasswordEncoder passwordEncoder;

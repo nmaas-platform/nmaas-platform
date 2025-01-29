@@ -2,18 +2,19 @@ package net.geant.nmaas.kubernetes.shell.observable;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * PoC for command execution, does echo
  */
-@Log4j2
+@Slf4j
 public class EchoShellSessionObservable extends GenericShellSessionObservable implements Serializable {
 
     private final String sessionId;
@@ -28,13 +29,13 @@ public class EchoShellSessionObservable extends GenericShellSessionObservable im
         map.put("session", this.sessionId);
         map.put("date", LocalDateTime.now());
         map.put("command", commandRequest);
-        try{
+        try {
             String result = objectMapper.writeValueAsString(map);
             this.setChanged();
             this.notifyObservers(result); // send update to observers
         } catch (JsonProcessingException e) {
             log.warn(String.format("Exception caught (%s)", e.getMessage()));
-            log.warn(e.getStackTrace());
+            log.warn(Arrays.toString(e.getStackTrace()));
             log.info("Failed to send command execution result");
         }
     }

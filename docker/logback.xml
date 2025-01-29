@@ -1,0 +1,87 @@
+<configuration>
+
+    <property name="LOGS_DIR" value="/nmaas/files/log" />
+
+    <appender name="nmaas-console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%-15.15thread] %-5level %45.45logger{36}:%4.4line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="nmaas-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_DIR}/nmaas.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_DIR}/nmaas.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-15.15thread] %-5level %45.45logger{36}:%4.4line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="net.geant.nmaas.portal.api.security" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="org.hibernate" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="sun.rmi" level="ERROR" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="org.apache" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="org.flyway.core" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="com.zaxxer.hikari" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="org.quartz" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="io.swagger.v3" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="net.schmizz" level="ERROR" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="io.grpc.netty.shaded.io" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <logger name="org.postgresql" level="ERROR" additivity="false">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </logger>
+
+    <root level="DEBUG">
+        <appender-ref ref="nmaas-file" />
+        <appender-ref ref="nmaas-console" />
+    </root>
+
+</configuration>

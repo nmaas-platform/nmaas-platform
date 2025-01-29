@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
-import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.kubernetes.KubernetesConnector;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.KubernetesConnector;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@Log4j2
+@Slf4j
 public class AsyncConnectorFactoryIntTest {
 
     @Autowired

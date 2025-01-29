@@ -4,7 +4,7 @@ import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class JanitorService {
 
     private final KubernetesClusterNamespaceService namespaceService;

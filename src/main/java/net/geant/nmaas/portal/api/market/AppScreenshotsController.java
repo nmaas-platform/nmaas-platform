@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.api.domain.FileInfoView;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
@@ -38,7 +39,7 @@ import net.geant.nmaas.portal.service.FileStorageService;
 
 @RestController
 @RequestMapping("/api/apps/{appId}")
-@Log4j2
+@Slf4j
 public class AppScreenshotsController extends AppBaseController {
 	
 	private final FileStorageService fileStorage;

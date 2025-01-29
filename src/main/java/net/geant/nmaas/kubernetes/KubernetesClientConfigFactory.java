@@ -5,6 +5,7 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ import jakarta.annotation.PreDestroy;
  * (to avoid multiple creation of client entity)
  */
 @Component
-@Log4j2
+@Slf4j
 public class KubernetesClientConfigFactory {
 
     @Value("${nmaas.kubernetes.incluster:true}")

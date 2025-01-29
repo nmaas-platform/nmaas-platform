@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.kubernetes.observable;
 
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.shell.observable.SshConnectionShellSessionObservable;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.utils.ssh.SshSessionConnector;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Log4j2
+@Slf4j
 public class SshConnectionShellSessionObservableTest {
 
     public final String PUB_KEY = SshSessionConnectorDefaultData.SSH_PUB_KEY_X509;
@@ -43,7 +43,7 @@ public class SshConnectionShellSessionObservableTest {
     }
 
     @Getter
-    @Log4j2
+    @Slf4j
     private static class TestObserver implements Observer {
 
         private final List<String> messages = new ArrayList<>();
@@ -80,7 +80,7 @@ public class SshConnectionShellSessionObservableTest {
         String line4 = "some another line\r\n";
         underTest.executeCommand(new K8sShellCommandRequest(line4, ""));
 
-        assertEquals(4*3, to.getMessages().size());
+        assertEquals(4 * 3, to.getMessages().size());
 
         underTest.complete();
     }

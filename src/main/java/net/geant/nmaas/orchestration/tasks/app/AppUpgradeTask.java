@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -33,7 +33,7 @@ import static net.geant.nmaas.orchestration.AppUpgradeStatus.SUCCESS;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class AppUpgradeTask {
 
     private final NmServiceDeploymentProvider serviceDeployment;
@@ -55,7 +55,7 @@ public class AppUpgradeTask {
                     event.getAppUpgradeMode(),
                     event.getApplicationId(),
                     application.getAppDeploymentSpec().getKubernetesTemplate());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logGenericError(ex);
         }
     }
@@ -75,7 +75,7 @@ public class AppUpgradeTask {
                     .status(SUCCESS)
                     .timestamp(new Date()).build());
             sendAppUpgradeNotificationEmail(deploymentId, event.getPreviousApplicationId());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logGenericError(ex);
         }
     }
@@ -93,7 +93,7 @@ public class AppUpgradeTask {
                     .mode(event.getAppUpgradeMode())
                     .status(FAILURE)
                     .timestamp(new Date()).build());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logGenericError(ex);
         }
     }

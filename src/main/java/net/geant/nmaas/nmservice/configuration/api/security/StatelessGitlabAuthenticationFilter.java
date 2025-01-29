@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.api.security;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@Log4j2
+@Slf4j
 public class StatelessGitlabAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String GITLAB_TOKEN_HEADER = "X-Gitlab-Token";
@@ -36,7 +36,7 @@ public class StatelessGitlabAuthenticationFilter extends AbstractAuthenticationP
         // obtain uri
         String uri = request.getRequestURI();
         log.debug("URI: " + uri);
-        if(incomingToken == null) {
+        if (incomingToken == null) {
             throw new GitlabTokenAuthenticationException("No token provided");
         }
         String[] element = uri.split("/");
@@ -45,11 +45,11 @@ public class StatelessGitlabAuthenticationFilter extends AbstractAuthenticationP
         log.debug("Webhook id: " + id);
         // find matching gitlab project in database
         Optional<GitLabProject> candidate = this.repository.findByWebhookId(id);
-        if(!candidate.isPresent()) {
+        if (!candidate.isPresent()) {
             throw new GitlabTokenAuthenticationException("No matching gitlab project found");
         }
         String projectToken = candidate.get().getWebhookToken();
-        if(incomingToken.equals(projectToken)) {
+        if (incomingToken.equals(projectToken)) {
             return new UsernamePasswordAuthenticationToken(id, null, null);
         } else {
             throw new GitlabTokenAuthenticationException("Invalid webhook token");

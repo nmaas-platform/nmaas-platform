@@ -1,0 +1,1 @@
+ALTER TABLE bulk_deployment add column deleted boolean default false;

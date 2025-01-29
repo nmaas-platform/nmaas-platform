@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
@@ -53,7 +53,7 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
 @Component
 @Profile("env_kubernetes")
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class GitLabConfigHandler implements GitConfigHandler {
 
     private final KubernetesRepositoryManager repositoryManager;
@@ -69,9 +69,9 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * Creates a new GitLab user if one with given username does not exist already and adds / replaces his SSH keys
      *
      * @param userUsername username of the new user
-     * @param userEmail email of the new user
-     * @param userName full name of the new user
-     * @param userSshKeys list of SSH keys of the new user
+     * @param userEmail    email of the new user
+     * @param userName     full name of the new user
+     * @param userSshKeys  list of SSH keys of the new user
      * @throws FileTransferException if a problem with during user creation is encountered
      */
     @Override
@@ -121,9 +121,9 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * Information on how to access the repository is stored in {@link GitLabProject} object.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param member username of an existing user to be added as a member for created repository
+     * @param member       username of an existing user to be added as a member for created repository
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
-     * @throws FileTransferException if a problem with repository creation is encountered
+     * @throws FileTransferException        if a problem with repository creation is encountered
      */
     @Override
     @Loggable(LogLevel.DEBUG)
@@ -260,10 +260,10 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * Uploads a set of configuration files to a GitLab repository
      *
      * @param deploymentId unique identifier of service deployment
-     * @param configIds list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
+     * @param configIds    list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in the database
-     * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in the database
-     * @throws FileTransferException if any error occurs during communication with the git repository API
+     * @throws ConfigFileNotFoundException  if any of the configuration files for which an identifier is given could not be found in the database
+     * @throws FileTransferException        if any error occurs during communication with the git repository API
      */
     @Override
     @Loggable(LogLevel.DEBUG)
@@ -292,8 +292,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
      *
      * @param deploymentId unique identifier of service deployment
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
-     * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in database
-     * @throws FileTransferException if any error occurs during communication with the git repository API
+     * @throws ConfigFileNotFoundException  if any of the configuration files for which an identifier is given could not be found in database
+     * @throws FileTransferException        if any error occurs during communication with the git repository API
      */
     @Override
     @Loggable(LogLevel.DEBUG)

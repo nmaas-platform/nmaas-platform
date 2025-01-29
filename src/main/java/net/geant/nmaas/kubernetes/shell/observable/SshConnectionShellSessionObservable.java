@@ -1,11 +1,15 @@
 package net.geant.nmaas.kubernetes.shell.observable;
 
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.AsyncConnector;
+import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,7 +17,7 @@ import java.util.concurrent.Executors;
  * this class is responsible for maintaining ssh connection and command execution logic
  * currently does nothing but echo
  */
-@Log4j2
+@Slf4j
 @NoArgsConstructor
 public class SshConnectionShellSessionObservable extends GenericShellSessionObservable implements Serializable {
 

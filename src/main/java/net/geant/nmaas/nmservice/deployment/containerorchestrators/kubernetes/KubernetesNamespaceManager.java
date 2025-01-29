@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("env_kubernetes")
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 public class KubernetesNamespaceManager {
 
