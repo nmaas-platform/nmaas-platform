@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.K8sPodInfo;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.portal.service.K8sShellService;
@@ -30,7 +30,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pods/shell")
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class PodShellController {
 
     private final K8sShellService k8sShellService;

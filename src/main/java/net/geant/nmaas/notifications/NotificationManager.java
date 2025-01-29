@@ -9,7 +9,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * This class handles notifications/emails sending logic
  */
 @Service
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 public class NotificationManager {
 
@@ -124,7 +124,7 @@ public class NotificationManager {
         if (mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)) {
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
-        if(mailAttributes.getMailType().equals(MailType.NEW_BULK_LOGIN) || mailAttributes.getMailType().equals(MailType.NEW_BULK_SSO_LOGIN)){
+        if (mailAttributes.getMailType().equals(MailType.NEW_BULK_LOGIN) || mailAttributes.getMailType().equals(MailType.NEW_BULK_SSO_LOGIN)) {
             mailAttributes.setAddressees(List.of(convertEmailToUserView((mailAttributes.getOtherAttributes().get("email").toString()))));
         }
         if (List.of(MailType.REGISTRATION, MailType.APP_NEW, MailType.NEW_SSO_LOGIN, MailType.APP_UPGRADE_SUMMARY)
@@ -133,9 +133,9 @@ public class NotificationManager {
         }
         if (List.of(MailType.APP_DEPLOYED, MailType.APP_UPGRADED, MailType.APP_UPGRADE_POSSIBLE)
                 .contains(mailAttributes.getMailType())) {
-            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole((String)mailAttributes.getOtherAttributes().get("domainName")));
+            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName")));
             if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
-                userService.findByUsername((String)mailAttributes.getOtherAttributes().get("owner"))
+                userService.findByUsername((String) mailAttributes.getOtherAttributes().get("owner"))
                         .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));
             }
         }
@@ -150,20 +150,23 @@ public class NotificationManager {
         if (List.of(MailType.CONTACT_FORM, MailType.ISSUE_REPORT, MailType.NEW_DOMAIN_REQUEST, MailType.VLAB_REQUEST)
                 .contains(mailAttributes.getMailType())) {
             List<UserView> base = userService.findAllUsersWithAdminRole();
-            Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
+            Optional<String> contactFormKey = Optional.ofNullable((String) mailAttributes.getOtherAttributes().get("subType"));
             if (mailAttributes.getMailType().equals(MailType.VLAB_REQUEST)) {
                 Object datesObject = mailAttributes.getOtherAttributes().get("dates");
                 ObjectMapper objectMapper = new ObjectMapper();
-                List<Object> datesList = objectMapper.convertValue(datesObject, new TypeReference<List<Object>>() {});
-                Map<String,Object> dates = objectMapper.convertValue(datesList.get(0), new TypeReference<Map<String, Object>>() {});
-
-                dates.forEach((k,v) -> {
-                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(v.toString());
-                    mailAttributes.getOtherAttributes().put(k,offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                List<Object> datesList = objectMapper.convertValue(datesObject, new TypeReference<List<Object>>() {
+                });
+                Map<String, Object> dates = objectMapper.convertValue(datesList.get(0), new TypeReference<Map<String, Object>>() {
                 });
 
-                List<VlabAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<VlabAppListElement>>() {});
-                mailAttributes.getOtherAttributes().put("appList",appList.stream().map(VlabAppListElement::getAppListName).collect(Collectors.joining(", "))) ;
+                dates.forEach((k, v) -> {
+                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(v.toString());
+                    mailAttributes.getOtherAttributes().put(k, offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                });
+
+                List<VlabAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<VlabAppListElement>>() {
+                });
+                mailAttributes.getOtherAttributes().put("appList", appList.stream().map(VlabAppListElement::getAppListName).collect(Collectors.joining(", ")));
 
             }
             if (contactFormKey.isEmpty()) {
@@ -197,10 +200,10 @@ public class NotificationManager {
      */
     private void customizeMessage(LanguageMailContentView mailContent, MailAttributes mailAttributes) {
         if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
-            mailContent.setSubject((String)mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
+            mailContent.setSubject((String) mailAttributes.getOtherAttributes().getOrDefault(MailTemplateElements.TITLE, "NMAAS: Broadcast message")); //set subject from other params
         }
         if (mailAttributes.getMailType().equals(MailType.CONTACT_FORM)) {
-            Optional<String> contactFormKey = Optional.ofNullable((String)mailAttributes.getOtherAttributes().get("subType"));
+            Optional<String> contactFormKey = Optional.ofNullable((String) mailAttributes.getOtherAttributes().get("subType"));
             Optional<FormType> formType = this.formTypeService.findOne(
                     contactFormKey.orElseThrow(() -> new ProcessingException("Contact form subType not found"))
             );
@@ -234,12 +237,12 @@ public class NotificationManager {
 
     private String getContent(String content, Map<String, Object> otherAttributes) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(
-                new Template(
-                        MailTemplateElements.CONTENT,
-                        new StringReader(content),
-                        new Configuration(Configuration.VERSION_2_3_28)
-                ),
-                otherAttributes)
+                        new Template(
+                                MailTemplateElements.CONTENT,
+                                new StringReader(content),
+                                new Configuration(Configuration.VERSION_2_3_28)
+                        ),
+                        otherAttributes)
                 .replace("\n", "<br/>"); // replace end line characters with html break
     }
 

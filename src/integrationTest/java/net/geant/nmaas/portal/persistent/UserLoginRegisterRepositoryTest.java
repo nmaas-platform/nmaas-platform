@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistent;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -25,7 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-@Log4j2
+@Slf4j
 public class UserLoginRegisterRepositoryTest {
 
     private static final String DOMAIN = "userdom";
@@ -45,7 +45,7 @@ public class UserLoginRegisterRepositoryTest {
         domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
         User tester = new User("tester", true, "test123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
         tester.setEmail("test@test.com");
-        User admin = new User("testadmin", true, "testadmin123", domainRepository.findByName(DOMAIN).get() , Role.ROLE_SYSTEM_ADMIN);
+        User admin = new User("testadmin", true, "testadmin123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_SYSTEM_ADMIN);
         admin.setEmail("admin@test.com");
         admin.getRoles().add(new UserRole(admin, domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER));
         userRepository.save(tester);

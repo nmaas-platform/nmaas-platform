@@ -3,6 +3,8 @@ package net.geant.nmaas.portal.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -35,7 +37,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@Log4j2
+@Slf4j
 public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     public static final String DELETED_MARKER = "_DELETED_";

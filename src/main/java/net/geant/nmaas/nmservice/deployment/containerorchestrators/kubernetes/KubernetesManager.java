@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
@@ -46,7 +46,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -62,7 +66,7 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
  */
 @Component
 @Profile("env_kubernetes")
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
 public class KubernetesManager implements ContainerOrchestrator {
 

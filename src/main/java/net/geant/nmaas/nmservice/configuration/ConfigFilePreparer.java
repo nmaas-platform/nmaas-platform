@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
@@ -31,7 +31,7 @@ import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.g
 
 @Component
 @NoArgsConstructor
-@Log4j2
+@Slf4j
 class ConfigFilePreparer {
 
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "targets";

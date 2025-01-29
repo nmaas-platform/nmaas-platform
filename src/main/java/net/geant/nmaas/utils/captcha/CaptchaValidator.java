@@ -4,13 +4,14 @@ import java.util.Map;
 import java.util.Objects;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-@Log4j2
+@Slf4j
 public class CaptchaValidator {
     // set default value to `not_provided`
     @Value("${captcha.secret:not_provided}")

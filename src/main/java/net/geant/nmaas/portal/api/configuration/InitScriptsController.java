@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.configuration;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.InitScriptsStateService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/init")
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class InitScriptsController {
 
     private boolean initInProgress = false;

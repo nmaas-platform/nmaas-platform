@@ -1,7 +1,7 @@
 package net.geant.nmaas.scheduling;
 
 import com.google.common.base.Strings;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
-@Log4j2
+@Slf4j
 public class BulkDeploymentScheduleConfig {
 
     public static final String BULK_DEPLOYMENT_JOB = "BulkDeploymentJob";

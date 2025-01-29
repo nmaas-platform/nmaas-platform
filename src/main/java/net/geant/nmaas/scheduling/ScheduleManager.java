@@ -3,6 +3,7 @@ package net.geant.nmaas.scheduling;
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import org.quartz.Job;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -29,7 +31,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class ScheduleManager {
 
     private final Scheduler scheduler;
@@ -132,7 +134,7 @@ public class ScheduleManager {
             return scheduler.checkExists(jobKey(name));
         } catch (SchedulerException e) {
             log.warn(String.format("Exception caught (%s)", e.getMessage()));
-            log.warn(e.getStackTrace());
+            log.warn(Arrays.toString(e.getStackTrace()));
         }
         return false;
     }
