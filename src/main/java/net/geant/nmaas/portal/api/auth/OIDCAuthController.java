@@ -38,11 +38,9 @@ public class OIDCAuthController {
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser) {
 
         User user = userService
-                .existsByUsername("oidc_"
-                        + oidcUser.getAttribute("preferred_username"))
+                .existsByUsername(oidcUser.getAttribute("preferred_username"))
                 ? userService
-                .findByUsername("oidc_"
-                        + oidcUser.getAttribute("preferred_username"))
+                .findByUsername(oidcUser.getAttribute("preferred_username"))
                 .orElseThrow()
                 : registerNewUser(oidcUser);
 

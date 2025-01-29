@@ -116,13 +116,6 @@ spring.data.web.pageable.default-page-size=1000
 spring.mvc.favicon.enabled=false
 spring.devtools.add-properties=false
 
-# ------------------------ #
-# SAML proxy configuration #
-# ------------------------ #
-sso.loginUrl=${SSO_URL_LOGIN}
-sso.logoutUrl=${SSO_URL_LOGOUT}
-sso.timeout=${SSO_TIMEOUT}
-sso.key=${SSO_KEY}
 
 # ------------------ #
 # OIDC configuration #
