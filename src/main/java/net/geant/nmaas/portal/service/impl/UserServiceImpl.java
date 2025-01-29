@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
         String generatedString = Base64.getEncoder().encodeToString(array);
 
         User newUser = new User(
-                "oidc_" + attributes.get("preferred_username").toString(),
+                attributes.get("preferred_username").toString(),
                 true,
                 generatedString,
                 globalDomain,
@@ -157,6 +157,7 @@ public class UserServiceImpl implements UserService {
         newUser.setEmail(attributes.get("email").toString());
         newUser.setLastname(attributes.get("family_name").toString());
         newUser.setFirstname(attributes.get("given_name").toString());
+        newUser.setSamlToken(attributes.get("sub").toString());
         newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 
         userRepository.save(newUser);
