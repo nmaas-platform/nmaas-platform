@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.bulk;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueService;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
@@ -52,6 +53,7 @@ public class BulkController {
     private final BulkDeploymentRepository bulkDeploymentRepository;
     private final UserService userService;
     private final ModelMapper modelMapper;
+
 
     @PostMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
@@ -205,6 +207,12 @@ public class BulkController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
         return ResponseEntity.ok(mapToView(this.bulkApplicationService.updateState(id)));
+    }
+
+    @GetMapping("/queue/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    public ResponseEntity<BulkQueueDetails> getQueueDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(bulkApplicationService.getQueueDetails(id));
     }
 
     private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {
