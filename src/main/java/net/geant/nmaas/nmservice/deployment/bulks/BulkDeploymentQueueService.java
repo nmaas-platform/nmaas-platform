@@ -10,8 +10,6 @@ import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
-import net.geant.nmaas.portal.api.bulk.BulkQueueDetails;
-import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.service.BulkApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -19,7 +17,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -112,7 +109,6 @@ public class BulkDeploymentQueueService {
         long ongoingDeployments = queue.stream().filter(e -> e.getState().equals(QueryEntryState.IN_PROGRESS)).count();
         return parallelDeploymentsLimit - ongoingDeployments;
     }
-
 
 
 }
