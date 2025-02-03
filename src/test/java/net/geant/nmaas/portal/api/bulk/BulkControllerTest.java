@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.bulk;
 
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueService;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -41,6 +42,7 @@ public class BulkControllerTest {
     private final Principal principalMock = mock(Principal.class);
 
     private final ModelMapper modelMapper = new ModelMapper();
+
 
     private final BulkController bulkController = new BulkController(bulkCsvProcessor, bulkDomainService, bulkApplicationService,
             bulkDeploymentRepository, userService, modelMapper);

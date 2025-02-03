@@ -5,6 +5,7 @@ import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEve
 import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
+import net.geant.nmaas.portal.api.bulk.BulkQueueDetails;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
@@ -38,5 +39,7 @@ public interface BulkApplicationService {
     Boolean validateDomainsList(Set<String> domainsName);
 
     void setBulkEntryToProcessing(Long bulkEntryId);
+
+    BulkQueueDetails getQueueDetails(Long bulkId);
 
 }
