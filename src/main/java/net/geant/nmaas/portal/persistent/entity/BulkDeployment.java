@@ -55,4 +55,6 @@ public class BulkDeployment {
 
     private Boolean deleted;
 
+    private OffsetDateTime completionDate;
+
 }

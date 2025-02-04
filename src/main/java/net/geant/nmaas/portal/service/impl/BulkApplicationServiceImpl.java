@@ -303,12 +303,14 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     boolean stateChanged = false;
                     if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.COMPLETED);
+                        d.setCompletionDate(OffsetDateTime.now());
                         stateChanged = true;
                     } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.REMOVED);
                         stateChanged = true;
                     } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()) || BulkDeploymentState.REMOVED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.FAILED);
+                        d.setCompletionDate(OffsetDateTime.now());
                         stateChanged = true;
                     } else if (d.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.PARTIALLY_FAILED);
@@ -380,10 +382,12 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         BulkDeploymentState oldState = bulkDeployment.getState();
         if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.COMPLETED);
+            bulkDeployment.setCompletionDate(OffsetDateTime.now());
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.REMOVED);
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()) || BulkDeploymentState.REMOVED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.FAILED);
+            bulkDeployment.setCompletionDate(OffsetDateTime.now());
         } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
         }

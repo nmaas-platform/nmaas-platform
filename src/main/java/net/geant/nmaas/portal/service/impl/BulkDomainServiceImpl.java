@@ -110,6 +110,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         bulkDeployment.setEntries(bulkDeploymentEntries);
         if (bulkDeploymentEntries.stream().allMatch(entry -> entry.getState().equals(COMPLETED))) {
             bulkDeployment.setState(COMPLETED);
+            bulkDeployment.setCompletionDate(OffsetDateTime.now());
         } else if (bulkDeploymentEntries.stream().anyMatch(entry -> entry.getState().equals(FAILED))) {
             bulkDeployment.setState(FAILED);
         }

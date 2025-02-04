@@ -2,7 +2,7 @@
 
 export APPID=1
 
-for NAME in /nmaas/init/data/apps/*.json; do
+for NAME in /apps/*.json; do
   echo
   echo "appid=" $APPID
   # to extract filename including the extension:
@@ -10,7 +10,7 @@ for NAME in /nmaas/init/data/apps/*.json; do
   # to extract app name from $FILENAME
   export APPNAME=${FILENAME%.*}
   # get real app name from json:
-  export REALAPPNAME=$(jq -r '.applicationBase.name' $NAME)
+  export REALAPPNAME=$(python -c "import sys, json; print(json.load(open('$NAME'))['applicationBase']['name'])")
   # check if app name contains spaces, and replace them with %20 for use in curl api call
   if [[ "$REALAPPNAME" == *" "* ]]
   then
@@ -25,7 +25,7 @@ for NAME in /nmaas/init/data/apps/*.json; do
 		echo "app id=" $APPID
 		echo "Adding " $REALAPPNAME
 		# to find out the app logo file type:
-    for IMAGETYPE in /nmaas/init/data/apps/images/logo/$APPNAME.*; do
+    for IMAGETYPE in /apps/images/logo/$APPNAME.*; do
      	EXTENSION="${IMAGETYPE##*.}"
 	    if [ "$EXTENSION" = "svg" ]; then
         CONTENT_TYPE="image/svg+xml"
@@ -42,11 +42,11 @@ for NAME in /nmaas/init/data/apps/*.json; do
 		# add logo
 		curl --silent -X POST --header "Authorization: Bearer $TOKEN" -F "file=@/nmaas/init/data/apps/images/logo/$APPNAME.$EXTENSION;type=$CONTENT_TYPE" $API_URL/apps/$APPID/logo
 		# add all screenshots
-		for SCREENSHOT in /nmaas/init/data/apps/images/screenshots/$APPNAME/*; do
-			curl --silent -X POST --header "Authorization: Bearer $TOKEN" -F "file=@/nmaas/init/data/apps/images/screenshots/$APPNAME/"${SCREENSHOT##*/}";type=image/png" $API_URL/apps/$APPID/screenshots
-		done
+#		for SCREENSHOT in /nmaas/init/data/apps/images/screenshots/$APPNAME/*; do
+#			curl --silent -X POST --header "Authorization: Bearer $TOKEN" -F "file=@/nmaas/init/data/apps/images/screenshots/$APPNAME/"${SCREENSHOT##*/}";type=image/png" $API_URL/apps/$APPID/screenshots
+#		done
 		# activate the app "
-		curl --silent -X PATCH $API_URL/apps/state/$APPID --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @/nmaas/init/data/apps/activations/active.json
+#		curl --silent -X PATCH $API_URL/apps/state/$APPID --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @/nmaas/init/data/apps/activations/active.json
 	else
 		echo $REALAPPNAME "already exists"
 	fi
