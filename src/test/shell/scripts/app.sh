@@ -2,7 +2,7 @@
 
 export APPID=1
 
-for NAME in /apps/*.json; do
+for NAME in /nmaas/init/data/apps/*.json; do
   echo
   echo "appid=" $APPID
   # to extract filename including the extension:
@@ -20,12 +20,12 @@ for NAME in /apps/*.json; do
     NAMEEXISTS=$(curl --silent --header "Authorization: Bearer $TOKEN" $API_URL/apps/base/name/"$REALAPPNAME" | jq -r '.name')
   fi
 	# if the app is not installed
-  if [ "$NAMEEXISTS" != "$REALAPPNAME" ]
-  then
+        if [ "$NAMEEXISTS" != "$REALAPPNAME" ]
+        then
 		echo "app id=" $APPID
 		echo "Adding " $REALAPPNAME
 		# to find out the app logo file type:
-    for IMAGETYPE in /apps/images/logo/$APPNAME.*; do
+    for IMAGETYPE in /nmaas/init/data/apps/images/logo/$APPNAME.*; do
      	EXTENSION="${IMAGETYPE##*.}"
 	    if [ "$EXTENSION" = "svg" ]; then
         CONTENT_TYPE="image/svg+xml"
