@@ -10,7 +10,7 @@ for NAME in /nmaas/init/data/apps/*.json; do
   # to extract app name from $FILENAME
   export APPNAME=${FILENAME%.*}
   # get real app name from json:
-  export REALAPPNAME=$(python -c "import sys, json; print(json.load(open('$NAME'))['applicationBase']['name'])")
+  export REALAPPNAME=$(jq -r '.applicationBase.name' $NAME)
   # check if app name contains spaces, and replace them with %20 for use in curl api call
   if [[ "$REALAPPNAME" == *" "* ]]
   then
@@ -20,8 +20,8 @@ for NAME in /nmaas/init/data/apps/*.json; do
     NAMEEXISTS=$(curl --silent --header "Authorization: Bearer $TOKEN" $API_URL/apps/base/name/"$REALAPPNAME" | jq -r '.name')
   fi
 	# if the app is not installed
-        if [ "$NAMEEXISTS" != "$REALAPPNAME" ]
-        then
+  if [ "$NAMEEXISTS" != "$REALAPPNAME" ]
+  then
 		echo "app id=" $APPID
 		echo "Adding " $REALAPPNAME
 		# to find out the app logo file type:
@@ -42,11 +42,11 @@ for NAME in /nmaas/init/data/apps/*.json; do
 		# add logo
 		curl --silent -X POST --header "Authorization: Bearer $TOKEN" -F "file=@/nmaas/init/data/apps/images/logo/$APPNAME.$EXTENSION;type=$CONTENT_TYPE" $API_URL/apps/$APPID/logo
 		# add all screenshots
-#		for SCREENSHOT in /nmaas/init/data/apps/images/screenshots/$APPNAME/*; do
-#			curl --silent -X POST --header "Authorization: Bearer $TOKEN" -F "file=@/nmaas/init/data/apps/images/screenshots/$APPNAME/"${SCREENSHOT##*/}";type=image/png" $API_URL/apps/$APPID/screenshots
-#		done
+		for SCREENSHOT in /nmaas/init/data/apps/images/screenshots/$APPNAME/*; do
+			curl --silent -X POST --header "Authorization: Bearer $TOKEN" -F "file=@/nmaas/init/data/apps/images/screenshots/$APPNAME/"${SCREENSHOT##*/}";type=image/png" $API_URL/apps/$APPID/screenshots
+		done
 		# activate the app "
-#		curl --silent -X PATCH $API_URL/apps/state/$APPID --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @/nmaas/init/data/apps/activations/active.json
+		curl --silent -X PATCH $API_URL/apps/state/$APPID --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @/nmaas/init/data/apps/activations/active.json
 	else
 		echo $REALAPPNAME "already exists"
 	fi
