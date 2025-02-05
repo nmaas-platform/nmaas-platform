@@ -24,7 +24,6 @@ import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectHook;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -51,7 +50,6 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
  * It is assumed that valid address and credentials of the repository API are provided through properties file.
  */
 @Component
-@Profile("env_kubernetes")
 @RequiredArgsConstructor
 @Slf4j
 public class GitLabConfigHandler implements GitConfigHandler {
@@ -130,11 +128,11 @@ public class GitLabConfigHandler implements GitConfigHandler {
     public void createRepository(Identifier deploymentId, String member) {
         String domain = repositoryManager.loadDomain(deploymentId);
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
-        log.info(String.format("Retrieving or creating user %s", member));
+        log.info("Retrieving or creating user {}", member);
         Long gitLabUserId = getUserId(prepareGitLabUsername(member));
-        log.info(String.format("Retrieving or creating group %s", domain));
+        log.info("Retrieving or creating group {}", domain);
         Long gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        log.info(String.format("Creating project %s within the group %s", descriptiveDeploymentId, domain));
+        log.info("Creating project {} within the group {}", descriptiveDeploymentId, domain);
         Long gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
         log.info("Adding member to the project");
         addMemberToProject(gitLabProjectId, gitLabUserId);
@@ -240,7 +238,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             ProjectHook hook = new ProjectHook();
             hook.setPushEvents(true);
             String completeWebhookUrl = getWebhookUrl(webhookId);
-            log.info(String.format("completeWebhookUrl: %s", completeWebhookUrl));
+            log.info("completeWebhookUrl: {}", completeWebhookUrl);
             gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());

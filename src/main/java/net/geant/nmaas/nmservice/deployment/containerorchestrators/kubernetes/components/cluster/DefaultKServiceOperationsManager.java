@@ -5,11 +5,9 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("env_kubernetes")
 public class DefaultKServiceOperationsManager implements KServiceOperationsManager {
 
     @Override

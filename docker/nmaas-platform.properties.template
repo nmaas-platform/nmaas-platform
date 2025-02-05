@@ -3,9 +3,8 @@
 # --------------- #
 #   profiles are used to customise platform operations in following areas
 #   - container orchestrator (options: env_kubernetes)
-#   - dcn setup (options: dcn_manual, dcn_none)
 #   - database (options: db_memory, db_standalone)
-spring.profiles.active=env_kubernetes, dcn_manual, db_standalone
+spring.profiles.active=env_kubernetes, db_standalone
 
 # ---------------- #
 # General settings #
@@ -58,7 +57,7 @@ db.standalone.password=${POSTGRESQL_PASSWORD}
 spring.flyway.enabled=true
 spring.flyway.locations=classpath:/db/migration
 spring.flyway.out-of-order=true
-#Hibernate settings
+# Hibernate settings
 spring.jpa.properties.hibernate.id.db_structure_naming_strategy=legacy
 spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true
 
