@@ -2,14 +2,19 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueEntry;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueRepository;
+import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueService;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
+import net.geant.nmaas.portal.api.bulk.BulkQueueDetails;
+import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -51,12 +56,14 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@Slf4j
 public class BulkApplicationServiceImplTest {
 
     private static final String TEST_APP_NAME = "testApplication";
@@ -76,6 +83,8 @@ public class BulkApplicationServiceImplTest {
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository = mock(BulkDeploymentQueueRepository.class);
+
+    private final BulkDeploymentQueueService bulkDeploymentQueueService = mock(BulkDeploymentQueueService.class);
 
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
             domainService, applicationSubscriptionService, userService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
@@ -185,10 +194,10 @@ public class BulkApplicationServiceImplTest {
         user.setId(1L);
         BulkDeployment bAppToBeCompleted = new BulkDeployment(
                 1L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2, false);
+                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2, false,null);
         BulkDeployment bAppProcessing = new BulkDeployment(
                 2L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2, false);
+                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2, false,null);
         when(bulkDeploymentRepository.findByTypeAndState(APPLICATION, PROCESSING))
                 .thenReturn(List.of(bAppToBeCompleted, bAppProcessing));
 
@@ -199,6 +208,65 @@ public class BulkApplicationServiceImplTest {
         verify(bulkDeploymentRepository, times(1)).save(bulkDeploymentArgumentCaptor.capture());
         assertEquals(COMPLETED, bulkDeploymentArgumentCaptor.getValue().getState());
     }
+
+    @Test
+    void shouldGetQueueDetails() {
+        List<BulkDeploymentQueueEntry> queueEntries = new ArrayList<>();
+        queueEntries.add(BulkDeploymentQueueEntry.builder().id(1L).bulkEntryId(1L).deploymentId(new Identifier()).state(BulkDeploymentQueueEntry.QueryEntryState.WAITING).build());
+        queueEntries.add(BulkDeploymentQueueEntry.builder().id(2L).bulkEntryId(2L).deploymentId(new Identifier()).state(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS).build());
+        when(bulkDeploymentQueueRepository.findAll()).thenReturn(queueEntries);
+        List<BulkDeploymentEntry> bulkEntries = new ArrayList<>();
+        bulkEntries.add(BulkDeploymentEntry.builder().id(1L).type(APPLICATION).state(PENDING).created(true).build());
+        bulkEntries.add(BulkDeploymentEntry.builder().id(2L).type(APPLICATION).state(PENDING).created(true).build());
+        when(bulkDeploymentEntryRepository.findAll()).thenReturn(bulkEntries);
+
+        BulkDeployment bulkDeployment = new BulkDeployment();
+        bulkDeployment.getEntries().addAll(bulkDeploymentEntryRepository.findAll());
+        bulkDeployment.setParallelDeploymentsLimit(1);
+        when(bulkDeploymentRepository.findBulkIdByBulkEntryId(anyLong())).thenReturn(1L);
+        when(bulkDeploymentRepository.findById(1L)).thenReturn(Optional.of(bulkDeployment));
+
+
+        bulkDeploymentQueueService.handleQueue();
+        BulkQueueDetails details = bulkApplicationService.getQueueDetails(1L);
+
+        assertEquals(details.getJobInQueue(), 1);
+        assertEquals(1,details.getJobInProcess());
+        assertEquals(1L, details.getJobInProcessId());
+        assertEquals(1, details.getBulkJobInQueue());
+        assertEquals(0, details.getJobDone());
+    }
+
+    @Test
+    void shouldGetQueueDetailsGlobal() {
+        List<BulkDeploymentQueueEntry> queueEntries = new ArrayList<>();
+        queueEntries.add(BulkDeploymentQueueEntry.builder().id(1L).bulkEntryId(1L).deploymentId(new Identifier()).state(BulkDeploymentQueueEntry.QueryEntryState.WAITING).build());
+        queueEntries.add(BulkDeploymentQueueEntry.builder().id(2L).bulkEntryId(2L).deploymentId(new Identifier()).state(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS).build());
+        when(bulkDeploymentQueueRepository.findAll()).thenReturn(queueEntries);
+        List<BulkDeploymentEntry> bulkEntries = new ArrayList<>();
+        bulkEntries.add(BulkDeploymentEntry.builder().id(1L).type(APPLICATION).state(PENDING).created(true).build());
+        bulkEntries.add(BulkDeploymentEntry.builder().id(2L).type(APPLICATION).state(PENDING).created(true).build());
+        bulkEntries.add(BulkDeploymentEntry.builder().id(3L).type(APPLICATION).state(PENDING).created(true).build());
+        when(bulkDeploymentEntryRepository.findAll()).thenReturn(bulkEntries);
+
+        BulkDeployment bulkDeployment = new BulkDeployment();
+        bulkDeployment.getEntries().addAll(bulkDeploymentEntryRepository.findAll());
+        bulkDeployment.setParallelDeploymentsLimit(1);
+        when(bulkDeploymentRepository.findBulkIdByBulkEntryId(anyLong())).thenReturn(1L);
+        when(bulkDeploymentRepository.findById(1L)).thenReturn(Optional.of(bulkDeployment));
+
+
+        bulkDeploymentQueueService.handleQueue();
+        BulkQueueDetails details = bulkApplicationService.getQueueDetails(1L);
+
+        assertEquals(details.getJobInQueue(), 1);
+        assertEquals(1,details.getJobInProcess());
+        assertEquals(1L, details.getJobInProcessId());
+        assertEquals(1, details.getBulkJobInQueue());
+        assertEquals(1, details.getJobDone());
+    }
+
+
 
     private static UserViewMinimal testUser() {
         UserViewMinimal testUser = new UserViewMinimal();

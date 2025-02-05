@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVWriter;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,14 +16,13 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
-import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentTriggeredEvent;
 import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
+import net.geant.nmaas.portal.api.bulk.BulkQueueDetails;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -48,22 +48,18 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.StyledEditorKit;
-import jakarta.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
@@ -73,7 +69,6 @@ import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
 import static net.geant.nmaas.portal.api.market.AppInstanceController.createDescriptiveDeploymentId;
-import static net.geant.nmaas.portal.api.market.AppInstanceController.mapAppInstanceState;
 
 @Service
 @RequiredArgsConstructor
@@ -219,7 +214,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         Boolean result = true;
         for (String domainName : domainsName) {
             if (!domainService.existsDomain(domainName)) {
-                result= false;
+                result = false;
             }
         }
         return result;
@@ -308,12 +303,14 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     boolean stateChanged = false;
                     if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.COMPLETED);
+                        d.setCompletionDate(OffsetDateTime.now());
                         stateChanged = true;
-                    }  else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.REMOVED);
                         stateChanged = true;
-                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()) ||  BulkDeploymentState.REMOVED.equals(e.getState()))) {
+                    } else if (d.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()) || BulkDeploymentState.REMOVED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.FAILED);
+                        d.setCompletionDate(OffsetDateTime.now());
                         stateChanged = true;
                     } else if (d.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
                         d.setState(BulkDeploymentState.PARTIALLY_FAILED);
@@ -358,7 +355,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Override
     public void setBulkEntryToProcessing(Long bulkEntryId) {
         Optional<BulkDeploymentEntry> entry = bulkDeploymentEntryRepository.findById(bulkEntryId);
-        if(entry.isPresent()) {
+        if (entry.isPresent()) {
             BulkDeploymentEntry ent = entry.get();
             ent.setState(BulkDeploymentState.PROCESSING);
             bulkDeploymentEntryRepository.save(ent);
@@ -376,7 +373,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
 
-
     private BulkDeployment updateStateBulk(BulkDeployment bulkDeployment) {
         bulkDeployment.getEntries().forEach(this::updateEntryState);
         return updateMainBulkState(bulkDeployment);
@@ -386,17 +382,19 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         BulkDeploymentState oldState = bulkDeployment.getState();
         if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.COMPLETED);
+            bulkDeployment.setCompletionDate(OffsetDateTime.now());
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.REMOVED);
-        } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState())||  BulkDeploymentState.REMOVED.equals(e.getState())) ) {
+        } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()) || BulkDeploymentState.REMOVED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.FAILED);
+            bulkDeployment.setCompletionDate(OffsetDateTime.now());
         } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
         }
         //only update if state changed
-        if ( oldState != null && !oldState.equals(bulkDeployment.getState())) {
+        if (oldState != null && !oldState.equals(bulkDeployment.getState())) {
             logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
-            bulkDeployment= bulkDeploymentRepository.save(bulkDeployment);
+            bulkDeployment = bulkDeploymentRepository.save(bulkDeployment);
         }
         return bulkDeployment;
     }
@@ -446,7 +444,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
     }
 
-    private  BulkDeployment createBulkDeployment(UserViewMinimal creator) {
+    private BulkDeployment createBulkDeployment(UserViewMinimal creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(BulkType.APPLICATION);
         bulkDeployment.setState(BulkDeploymentState.PROCESSING);
@@ -495,7 +493,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         List<BulkAppDetails> result = new ArrayList<>();
 
         bulkDeployment.getEntries().forEach(deployment -> {
-            if( !(deployment.getState() == BulkDeploymentState.REMOVED || deployment.getState() == BulkDeploymentState.FAILED)) {
+            if (!(deployment.getState() == BulkDeploymentState.REMOVED || deployment.getState() == BulkDeploymentState.FAILED)) {
                 try {
                     Long instanceId = Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
                     AppInstance instance = instanceService.find(instanceId).orElseThrow();
@@ -528,7 +526,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                             .accessMethod(accessMethodParameters)
                             .build();
                     result.add(details);
-                } catch ( Exception ex) {
+                } catch (Exception ex) {
                     log.error("Can not prepare details for {} - ex: {}", Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID)), ex);
                 }
 
@@ -602,6 +600,41 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Transactional
     public void updateBulkApplicationStatus() {
         this.bulkDeploymentRepository.findByType(BulkType.APPLICATION).forEach(this::updateStateBulk);
+    }
+
+    @Override
+    public BulkQueueDetails getQueueDetails(Long bulkId) {
+       List<BulkDeploymentQueueEntry> queue =  bulkDeploymentQueueRepository.findAll();
+       return getBulkQueueDetails(queue, bulkId);
+
+    }
+
+    private BulkQueueDetails getBulkQueueDetails(List<BulkDeploymentQueueEntry> queue, Long bulkId) {
+        long ongoingDeployments = queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS)).count();
+        Optional<BulkDeploymentQueueEntry> entry = queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.IN_PROGRESS)).findFirst();
+        long ongoingDeploymentsId = entry.isPresent() ? bulkDeploymentRepository.findBulkIdByBulkEntryId(entry.get().getBulkEntryId()) : 0L; // bulk id of current deployment
+        long jobsInQueue = queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.WAITING)).count(); // jobs waiting in queue
+        long jobsInQueueBulk = 0; // jobs waiting in queue from this bulk
+
+        Optional<BulkDeployment> deployment = bulkDeploymentRepository.findById(bulkId);
+        long jobDone = 0;
+        if (deployment.isPresent()) {
+            long allJobsInBulk = deployment.get().getEntries().size();
+            List<Long> entriesIdList = deployment.get().getEntries().stream().map(BulkDeploymentEntry::getId).toList();
+            jobsInQueueBulk = queue.stream().filter(e -> e.getState().equals(BulkDeploymentQueueEntry.QueryEntryState.WAITING)).filter(e -> entriesIdList.contains(e.getBulkEntryId())).count();
+            jobDone = allJobsInBulk - jobsInQueueBulk - ongoingDeployments;
+        }
+
+
+        return BulkQueueDetails.builder()
+                .jobInProcess(ongoingDeployments)
+                .jobInProcessId(ongoingDeploymentsId)
+                .jobDone(jobDone)
+                .jobInQueue(jobsInQueue)
+                .bulkJobInQueue(jobsInQueueBulk)
+                .build();
+
+
     }
 
 }

@@ -53,6 +53,7 @@ public class BulkController {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
+
     @PostMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
@@ -205,6 +206,12 @@ public class BulkController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
         return ResponseEntity.ok(mapToView(this.bulkApplicationService.updateState(id)));
+    }
+
+    @GetMapping("/queue/{id}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    public ResponseEntity<BulkQueueDetails> getQueueDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(bulkApplicationService.getQueueDetails(id));
     }
 
     private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {
