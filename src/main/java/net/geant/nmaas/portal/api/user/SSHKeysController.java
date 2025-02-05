@@ -20,6 +20,8 @@ import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -47,8 +49,47 @@ public class SSHKeysController {
         this.keysService.invalidate(owner, id);
     }
 
+    @GetMapping("/user/keys/view/{id}")
+    public List<SSHKeyView> getAllByUserId(Principal principal, @PathVariable Long id) {
+        User requester = this.getUser(principal);
+        if(!isAdmin(requester)){
+            throw new IllegalArgumentException("You need admin privileges to view user keys.");
+        }
+        User user = this.getUser(id);
+        return this.keysService.findAllByUser(user);
+    }
+
+    @PutMapping("/user/keys/view/{id}")
+    public void createUserKey(Principal principal, @PathVariable Long id, @RequestBody @Valid SSHKeyRequest request) {
+        User requester = this.getUser(principal);
+        if(!isAdmin(requester)){
+            throw new IllegalArgumentException("You need admin privileges to view user keys.");
+        }
+        User user = this.getUser(id);
+        this.keysService.create(request, user);
+    }
+
+    @DeleteMapping("/user/keys/view/{userId}/{keyId}")
+    public void invalidateUserKey(Principal principal, @PathVariable Long keyId, @PathVariable Long userId) {
+        User requester = this.getUser(principal);
+        if(!isAdmin(requester)){
+            throw new IllegalArgumentException("You need admin privileges to view user keys.");
+        }
+        User owner = this.getUser(userId);
+        this.keysService.invalidate(owner, keyId);
+    }
+
+
     private User getUser(Principal principal) {
         return this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    private User getUser(Long id) {
+        return this.userService.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
     }
 
 }
