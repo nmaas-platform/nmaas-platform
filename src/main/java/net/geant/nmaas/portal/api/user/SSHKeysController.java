@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.api.domain.SSHKeyView;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import net.geant.nmaas.portal.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,7 @@ public class SSHKeysController {
         this.keysService.invalidate(owner, id);
     }
 
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/user/keys/view/{id}")
     public List<SSHKeyView> getAllByUserId(Principal principal, @PathVariable Long id) {
         User requester = this.getUser(principal);
@@ -59,6 +61,7 @@ public class SSHKeysController {
         return this.keysService.findAllByUser(user);
     }
 
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PutMapping("/user/keys/view/{id}")
     public void createUserKey(Principal principal, @PathVariable Long id, @RequestBody @Valid SSHKeyRequest request) {
         User requester = this.getUser(principal);
@@ -69,6 +72,7 @@ public class SSHKeysController {
         this.keysService.create(request, user);
     }
 
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @DeleteMapping("/user/keys/view/{userId}/{keyId}")
     public void invalidateUserKey(Principal principal, @PathVariable Long keyId, @PathVariable Long userId) {
         User requester = this.getUser(principal);
