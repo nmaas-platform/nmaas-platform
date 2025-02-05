@@ -194,10 +194,10 @@ public class BulkApplicationServiceImplTest {
         user.setId(1L);
         BulkDeployment bAppToBeCompleted = new BulkDeployment(
                 1L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2, false);
+                new ArrayList<>(List.of(new BulkDeploymentEntry(10L, APPLICATION, COMPLETED, true, null))), 2, false,null);
         BulkDeployment bAppProcessing = new BulkDeployment(
                 2L, user, OffsetDateTime.now(), PROCESSING, APPLICATION,
-                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2, false);
+                new ArrayList<>(List.of(new BulkDeploymentEntry(11L, APPLICATION, PROCESSING, true, null))),2, false,null);
         when(bulkDeploymentRepository.findByTypeAndState(APPLICATION, PROCESSING))
                 .thenReturn(List.of(bAppToBeCompleted, bAppProcessing));
 

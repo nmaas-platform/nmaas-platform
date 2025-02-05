@@ -1227,7 +1227,8 @@
       "DOMAIN_CODENAME" : "Codename domeny",
       "USER_ID" : "Id użytkownika",
       "EMAIL" : "Email",
-      "USER_NAME" : "Nazwa użytkownika"
+      "USER_NAME" : "Nazwa użytkownika",
+      "COMPLETION_DATE" : "Data zakończenia"
     },
     "DOMAIN": {
       "INFO": "Additional information will be added later",

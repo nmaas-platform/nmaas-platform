@@ -29,4 +29,5 @@ public class BulkDeploymentViewS {
 
     private Integer parallelDeploymentsLimit;
     private Boolean deleted;
+    private OffsetDateTime completionDate;
 }
