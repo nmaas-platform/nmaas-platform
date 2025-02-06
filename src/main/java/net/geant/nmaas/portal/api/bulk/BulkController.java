@@ -53,7 +53,6 @@ public class BulkController {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-
     @PostMapping("/domains")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
