@@ -1,8 +1,6 @@
 package net.geant.nmaas.portal.api;
 
-import net.geant.nmaas.portal.ApiSecurityConfig;
-import net.geant.nmaas.portal.ConvertersConfig;
-import net.geant.nmaas.portal.PersistentConfig;
+import jakarta.servlet.Filter;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -17,11 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import jakarta.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-@ContextConfiguration(classes = {ApiSecurityConfig.class, ConvertersConfig.class, PersistentConfig.class})
+@ContextConfiguration
 public class BaseControllerTestSetup {
 
 	protected final static String ADMIN_USERNAME = "admin";

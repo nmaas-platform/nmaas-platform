@@ -43,7 +43,6 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -65,9 +64,8 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
  * Implements service deployment mechanism on Kubernetes cluster.
  */
 @Component
-@Profile("env_kubernetes")
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class KubernetesManager implements ContainerOrchestrator {
 
     public static final String RANDOM_ARGUMENT_EXPRESSION_PREFIX = "RANDOM_";

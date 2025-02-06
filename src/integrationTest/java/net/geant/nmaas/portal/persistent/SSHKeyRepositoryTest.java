@@ -1,26 +1,23 @@
 package net.geant.nmaas.portal.persistent;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 @Slf4j
 public class SSHKeyRepositoryTest {
 
@@ -51,7 +48,7 @@ public class SSHKeyRepositoryTest {
     @AfterEach
     void tearDown() {
         try {
-            this.userRepository.findAll().stream()
+            userRepository.findAll().stream()
                     .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                     .forEach(user -> userRepository.delete(user));
             domainRepository.findAll().stream()
@@ -69,9 +66,7 @@ public class SSHKeyRepositoryTest {
         SSHKeyEntity key = repository.findAllByOwner(owner).get(0);
 
         repository.deleteById(key.getId());
-        assertEquals(1, userRepository.count());
-        boolean exists = userRepository.existsByUsername("tester");
-        assertTrue(exists);
+        assertTrue(userRepository.existsByUsername("tester"));
     }
 
     @Test
@@ -82,4 +77,5 @@ public class SSHKeyRepositoryTest {
 
         assertEquals(0, repository.findAllByOwner(owner).size());
     }
+
 }

@@ -6,17 +6,22 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.projections.AppDeploymentCount;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class AppDeploymentRepositoryIntTest {
 
     private static final String DOMAIN = "domain1";
@@ -33,10 +38,13 @@ public class AppDeploymentRepositoryIntTest {
     @Autowired
     private DomainRepository domainRepository;
 
+    @BeforeEach
     @AfterEach
     void cleanRepositories() {
         repository.deleteAll();
-        domainRepository.deleteAll();
+        domainRepository.findAll().stream()
+                .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+                .forEach(domain -> domainRepository.delete(domain));
     }
 
     @Test
@@ -45,16 +53,20 @@ public class AppDeploymentRepositoryIntTest {
         AppDeployment storedAppDeployment = repository.save(appDeployment);
         assertThat(storedAppDeployment.getId()).isNotNull();
 
-        appDeployment = repository.findById(storedAppDeployment.getId()).get();
+        appDeployment = repository.findById(storedAppDeployment.getId()).orElseThrow();
         appDeployment.setConfiguration(new AppConfiguration("configuration-string"));
 
         repository.save(appDeployment);
 
         assertThat(repository.count()).isOne();
-        assertThat(repository.findByDeploymentId(DEPLOYMENT_ID_1)).isPresent();
-        assertThat(repository.getStateByDeploymentId(DEPLOYMENT_ID_1).get()).isEqualTo(AppDeploymentState.REQUESTED);
-        assertThat(repository.getDomainByDeploymentId(DEPLOYMENT_ID_1).get()).isEqualTo(DOMAIN_CODENAME);
-        assertThat(repository.findByDomainAndState(DOMAIN_CODENAME, AppDeploymentState.REQUESTED).size()).isOne();
+        assertThat(repository.findByDeploymentId(DEPLOYMENT_ID_1))
+                .isPresent();
+        assertThat(repository.getStateByDeploymentId(DEPLOYMENT_ID_1).orElseThrow())
+                .isEqualTo(AppDeploymentState.REQUESTED);
+        assertThat(repository.getDomainByDeploymentId(DEPLOYMENT_ID_1).orElseThrow())
+                .isEqualTo(DOMAIN_CODENAME);
+        assertThat(repository.findByDomainAndState(DOMAIN_CODENAME, AppDeploymentState.REQUESTED).size())
+                .isOne();
 
         AppDeployment appDeployment2 = new AppDeployment();
         appDeployment2.setDeploymentId(DEPLOYMENT_ID_2);
@@ -64,11 +76,13 @@ public class AppDeploymentRepositoryIntTest {
         appDeployment2.setDeploymentName(DEPLOYMENT_NAME_2);
 
         repository.save(appDeployment2);
-        assertThat(repository.findByDomainAndState(DOMAIN_CODENAME, AppDeploymentState.REQUESTED).size()).isEqualTo(2);
+        assertThat(repository.findByDomainAndState(DOMAIN_CODENAME, AppDeploymentState.REQUESTED).size())
+                .isEqualTo(2);
 
         repository.deleteAll();
         assertThat(repository.count()).isZero();
-        assertThat(repository.findByDomainAndState(DOMAIN_CODENAME, AppDeploymentState.REQUESTED).size()).isZero();
+        assertThat(repository.findByDomainAndState(DOMAIN_CODENAME, AppDeploymentState.REQUESTED).size())
+                .isZero();
     }
 
     @Test

@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
 
-    private DcnRepositoryManager dcnRepositoryManager;
-    private ApplicationEventPublisher applicationEventPublisher;
-    private DcnDeploymentType dcnDeploymentType;
+    private final DcnRepositoryManager dcnRepositoryManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final DcnDeploymentType dcnDeploymentType;
 
     @Autowired
     public ManualDcnDeploymentExecutor(DcnRepositoryManager dcnRepositoryManager, ApplicationEventPublisher applicationEventPublisher) {

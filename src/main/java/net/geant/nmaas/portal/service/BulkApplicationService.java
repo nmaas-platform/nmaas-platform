@@ -36,7 +36,7 @@ public interface BulkApplicationService {
 
     void updateEntryStateById(Long entryId);
 
-    Boolean validateDomainsList(Set<String> domainsName);
+    boolean validateDomainsList(Set<String> domainsName);
 
     void setBulkEntryToProcessing(Long bulkEntryId);
 

@@ -210,14 +210,13 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @Override
-    public Boolean validateDomainsList(Set<String> domainsName) {
-        Boolean result = true;
+    public boolean validateDomainsList(Set<String> domainsName) {
         for (String domainName : domainsName) {
             if (!domainService.existsDomain(domainName)) {
-                result = false;
+                return false;
             }
         }
-        return result;
+        return true;
     }
 
     private static Map<String, String> mapToDeploymentParameters(MultiValuedMap<String, String> parsedParameters) {

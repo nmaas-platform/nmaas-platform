@@ -7,14 +7,12 @@ import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("env_kubernetes")
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class KubernetesNamespaceManager {
 
     private final JanitorService janitorService;

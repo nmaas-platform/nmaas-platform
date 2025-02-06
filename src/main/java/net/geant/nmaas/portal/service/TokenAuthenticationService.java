@@ -32,12 +32,12 @@ public class TokenAuthenticationService {
 
 	public Authentication getAuthentication(HttpServletRequest httpRequest) {
 		String authHeader = httpRequest.getHeader(AUTH_HEADER);
-		if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " "))
+		if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " ")) {
 			throw new AuthenticationMethodNotSupportedException(AUTH_HEADER + " contains unsupported method.");
-
+		}
 		String token = authHeader.substring(AUTH_METHOD.length() + 1);
 
-		log.error("Jwt token auth service: {} {} ", jwtTokenService.getClaims(token).getSubject(),jwtTokenService.getClaims(token).get("scopes") );
+		log.trace("Jwt token auth service: {} {} ", jwtTokenService.getClaims(token).getSubject(),jwtTokenService.getClaims(token).get("scopes") );
 
 		String username = jwtTokenService.getClaims(token).getSubject();
 		Object scopes = jwtTokenService.getClaims(token).get("scopes");

@@ -8,7 +8,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.re
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.ServiceStorageVolumeRepository;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,6 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType.SHARED;
 
 @Component
-@Profile("env_kubernetes")
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class KubernetesRepositoryManager extends NmServiceRepositoryManager<KubernetesNmServiceInfo> {
 

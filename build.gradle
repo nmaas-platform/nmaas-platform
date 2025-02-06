@@ -69,7 +69,6 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-
 }
 
 dependencies {
@@ -113,7 +112,7 @@ dependencies {
     implementation('org.flywaydb:flyway-core:11.2.0')
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.2.0'
 
-//    implementation('io.jsonwebtoken:jjwt:0.9.1')
+    //implementation('io.jsonwebtoken:jjwt:0.9.1')
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -126,7 +125,6 @@ dependencies {
     implementation('io.micrometer:micrometer-registry-prometheus:1.11.2')
 
     implementation 'ch.qos.logback:logback-core:1.5.16'
-
 
     // SSH library
     implementation('com.hierynomus:sshj:0.32.0')

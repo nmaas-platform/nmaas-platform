@@ -7,14 +7,17 @@ import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataJpaTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class ApplicationSubscriptionRepositoryTest {
 	
 	@Autowired
@@ -28,11 +31,9 @@ public class ApplicationSubscriptionRepositoryTest {
 	
 	private ApplicationBase app1, app2, app3;
 	private Domain domain1, domain2, domain3;
-	private ApplicationSubscription appSub1, appSub2, appSub3;
-	
+
 	@BeforeEach
 	public void setUp() {
-
 		app1 = new ApplicationBase("APP1");
 		app1.setOwner("");
 		app2 = new ApplicationBase("APP2");
@@ -45,14 +46,17 @@ public class ApplicationSubscriptionRepositoryTest {
 		app3 = appRepo.save(app3);
 		appRepo.flush();
 
+		domainRepo.findAll().stream()
+				.filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+				.forEach(domain -> domainRepo.delete(domain));
 		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false));
 		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2",false));
 		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3",false));
 		domainRepo.flush();
-		
-		appSub1 = appSubRepo.save(new ApplicationSubscription(domain1, app1, true));
-		appSub2 = appSubRepo.save(new ApplicationSubscription(domain2, app1, false));
-		appSub3 = appSubRepo.save(new ApplicationSubscription(domain1, app2, true));
+
+		appSubRepo.save(new ApplicationSubscription(domain1, app1, true));
+		appSubRepo.save(new ApplicationSubscription(domain2, app1, false));
+		appSubRepo.save(new ApplicationSubscription(domain1, app2, true));
 		appSubRepo.flush();
 	}
 	
@@ -87,12 +91,10 @@ public class ApplicationSubscriptionRepositoryTest {
 	@Test
 	public void testFindAllByDomainWithActive() {
 		assertEquals(2, appSubRepo.findAllByDomain(domain1, true, null).getContent().size());
-		
 		assertEquals(0, appSubRepo.findAllByDomain(domain2, true, null).getContent().size());
 		assertEquals(1, appSubRepo.findAllByDomain(domain2, false, null).getContent().size());
 	}
-	
-	
+
 	@Test
 	public void testFindAllByIdDomain() {
 		assertEquals(2, appSubRepo.findAllByIdDomainAndActiveAndDeletedFalse(domain1, true).size());
@@ -110,14 +112,11 @@ public class ApplicationSubscriptionRepositoryTest {
 	@Test
 	public void testFindAllByApplicationWithActive() {
 		assertEquals(1, appSubRepo.findAllByApplication(app1, true, null).getContent().size());
-		
 		assertEquals(1, appSubRepo.findAllByApplication(app1, false, null).getContent().size());
 		assertEquals(1, appSubRepo.findAllByApplication(app2, true, null).getContent().size());
-		
 		assertEquals(0, appSubRepo.findAllByApplication(app3, true, null).getContent().size());
 		assertEquals(0, appSubRepo.findAllByApplication(app3, false, null).getContent().size());
 	}
-	
 	
 	@Test
 	public void testFindAllByIdApplication() {
@@ -129,10 +128,8 @@ public class ApplicationSubscriptionRepositoryTest {
 	@Test
 	public void testFindAllByIdApplicationWithActive() {
 		assertEquals(1, appSubRepo.findAllByIdApplicationAndActive(app1, true, null).getContent().size());
-		
 		assertEquals(1, appSubRepo.findAllByIdApplicationAndActive(app1, false, null).getContent().size());
 		assertEquals(1, appSubRepo.findAllByIdApplicationAndActive(app2, true, null).getContent().size());
-		
 		assertEquals(0, appSubRepo.findAllByIdApplicationAndActive(app3, true, null).getContent().size());
 		assertEquals(0, appSubRepo.findAllByIdApplicationAndActive(app3, false, null).getContent().size());
 	}

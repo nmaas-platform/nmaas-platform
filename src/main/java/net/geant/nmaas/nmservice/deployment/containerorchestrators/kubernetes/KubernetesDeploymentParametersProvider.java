@@ -6,7 +6,6 @@ import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManag
 import net.geant.nmaas.orchestration.AppDeploymentParametersProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -25,7 +24,6 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 
 @Component
 @RequiredArgsConstructor
-@Profile("env_kubernetes")
 public class KubernetesDeploymentParametersProvider implements AppDeploymentParametersProvider {
 
     private final KubernetesClusterDeploymentManager deploymentManager;
