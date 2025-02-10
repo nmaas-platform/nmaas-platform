@@ -66,7 +66,7 @@ public class SSHKeysController {
     public void createUserKey(Principal principal, @PathVariable Long id, @RequestBody @Valid SSHKeyRequest request) {
         User requester = this.getUser(principal);
         if(!isAdmin(requester)){
-            throw new IllegalArgumentException("You need admin privileges to view user keys.");
+            throw new IllegalArgumentException("You need admin privileges to edit user keys.");
         }
         User user = this.getUser(id);
         this.keysService.create(request, user);
@@ -77,7 +77,7 @@ public class SSHKeysController {
     public void invalidateUserKey(Principal principal, @PathVariable Long keyId, @PathVariable Long userId) {
         User requester = this.getUser(principal);
         if(!isAdmin(requester)){
-            throw new IllegalArgumentException("You need admin privileges to view user keys.");
+            throw new IllegalArgumentException("You need admin privileges to delete user keys.");
         }
         User owner = this.getUser(userId);
         this.keysService.invalidate(owner, keyId);

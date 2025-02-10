@@ -1152,7 +1152,7 @@
       "FINGERPRINT": "Odcisk palca",
       "ACTIONS": "Akcje"
     },
-    "BUTTON_INVALIDATE": "Unieważnij",
+    "BUTTON_INVALIDATE": "Usuń",
     "NO_KEYS": "Brak dodanych kluczy",
     "BUTTON_NEW_KEY": "Dodaj nowy klucz",
     "MODAL": {
