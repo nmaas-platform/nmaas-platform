@@ -287,7 +287,7 @@ public class NotificationManagerTest {
 
         when(userService.findByEmail(adminUsers.get(0).getEmail())).thenReturn(adminUsers.get(0));
         when(userService.findByEmail(external)).thenThrow(new IllegalArgumentException("test message"));
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, true, true, "en", true, true, emails, true, true, true, "0 */1 * * * ?", 2));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, true, true, "en", true, true, emails, true, true, true, "0 */1 * * * ?", 2, 60));
 
         notificationManager.prepareAndSendMail(ma);
 
