@@ -574,7 +574,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
         } catch (Exception e) {
             log.error("Exception while preparing bulk deployment details CSV content", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
