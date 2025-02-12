@@ -331,7 +331,8 @@
     "BULK_DOMAINS_ALLOW_FOR_SSO_ACCOUNTS" : "Allow for creation or update of a SSO-enabled account in bulk process",
     "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS" : "Send notification email for new accounts created in bulk process",
     "BULK_DEPLOYMENT_CRON" : "Bulk deployment job cron",
-    "BULK_DEPLOYMENT_LIMIT" : "Bulk deployment parallel limit"
+    "BULK_DEPLOYMENT_LIMIT" : "Bulk deployment parallel limit",
+    "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Bulk deployment queue refresh (seconds)"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails de l'organisation",
@@ -1249,7 +1250,7 @@
       "HEADER" : "Bulk application deployments",
       "VIEW_HEADER" : "Bulk application deployment",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
-      "DEPLOYMENTS" : "Instances deployments",
+      "DEPLOYMENTS" : "Deployment Details",
       "NAVIGATION" : "New bulk application deployment",
       "INSTANCE_ID" : "Instance Id",
       "INSTANCE_NAME": "Instance name",

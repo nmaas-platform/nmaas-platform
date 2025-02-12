@@ -64,7 +64,7 @@ public class BulkController {
                 UserViewMinimal user = modelMapper.map(userFromDb, UserViewMinimal.class);
                 return ResponseEntity.ok(bulkDomainService.handleBulkCreation(csvDomains, user));
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException(e.getMessage());
             }
         } else {
             log.warn("Incorrect domains input file format");
@@ -99,7 +99,7 @@ public class BulkController {
             } catch (MissingElementException ex) {
                 throw ex;
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getMessage());
             }
         } else {
             log.warn("Incorrect applications input file format");

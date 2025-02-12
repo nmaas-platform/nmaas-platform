@@ -69,7 +69,7 @@ public class BulkCsvProcessorImpl implements BulkCsvProcessor {
             return beanBuilderExample(tempFile.toPath(), outputType);
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ProcessingException(e.getMessage());
         }
     }
 

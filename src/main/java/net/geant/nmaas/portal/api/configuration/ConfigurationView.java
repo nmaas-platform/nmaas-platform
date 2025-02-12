@@ -49,4 +49,6 @@ public class ConfigurationView {
 
     private Integer parallelDeploymentsLimit;
 
+    private Integer bulkDeploymentQueueRefresh;
+
 }
