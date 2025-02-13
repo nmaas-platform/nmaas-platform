@@ -33,6 +33,8 @@ public class OIDCAuthController {
 
     @Value("${portal.address}")
     private String portalAddress;
+    @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri:http://localhost:8080/realms/geant}")
+    private String oidcAddress;
 
 
     @GetMapping("/api/oidc/success")
@@ -60,7 +62,7 @@ public class OIDCAuthController {
     @GetMapping("/api/oidc/logout/{oidcToken}")
     public RedirectView logout(@PathVariable String oidcToken) {
 
-        String logoutUrl = "http://localhost:8080/realms/geant/protocol/openid-connect/logout";
+        String logoutUrl = oidcAddress + "/protocol/openid-connect/logout";
         return new RedirectView(logoutUrl + "?id_token_hint=" + oidcToken);
 
     }
