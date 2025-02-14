@@ -165,6 +165,7 @@ public class PortalConfig {
 						.registrationDomainSelectionEnabled(this.showDomainRegistrationSelector)
 						.bulkDeploymentJobCron(bulkDeploymentCron)
 						.parallelDeploymentsLimit(bulkDeploymentPerPeriod)
+						.bulkDeploymentTimeThreshold(10)
 						.bulkDeploymentQueueRefresh(60)
 						.build();
 				try {
