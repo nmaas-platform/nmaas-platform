@@ -23,15 +23,6 @@ public enum ServiceType {
             return new MonitorEntryView(this, 1L, TimeFormat.H);
         }
     },
-    SHIBBOLETH{
-        @Override
-        public String getName(){return "SHIBBOLETH";}
-
-        @Override
-        public MonitorEntryView getDefaultMonitorEntry() {
-            return new MonitorEntryView(this, 1L, TimeFormat.H);
-        }
-    },
     DATABASE{
         @Override
         public String getName(){return "DATABASE";}
