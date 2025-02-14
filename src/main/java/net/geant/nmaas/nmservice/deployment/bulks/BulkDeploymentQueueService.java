@@ -34,10 +34,10 @@ public class BulkDeploymentQueueService {
 
     public void handleQueue() {
         List<BulkDeploymentQueueEntry> queue = queueRepository.findAll();
-        log.debug("Handling bulk queue (total entries {})", queue.size());
         if (queue.isEmpty()) {
             return;
         }
+        log.debug("Handling bulk queue (total entries {})", queue.size());
 
         updateBulkStatusForCompletedOrFailedAndRemoveThemFromQueue();
         triggerConfiguration();

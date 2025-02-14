@@ -3,12 +3,6 @@ DIR=/nmaas/platform
 FILE=$(ls $DIR | grep .jar)
 cd $DIR
 
-if [[ -z "${PLATFORM_PORT}" ]]; then
-  cp $DIR/config/nmaas-platform.properties.default $DIR/nmaas-platform.properties
-else
-  envsubst < $DIR/config/nmaas-platform.properties.template > $DIR/nmaas-platform.properties
-fi
-
 mkdir -p /root/.ssh
 cp /nmaas/.ssh/id_rsa /root/.ssh/id_rsa
 chmod 600 /root/.ssh/id_rsa
