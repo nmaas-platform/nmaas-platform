@@ -3,9 +3,9 @@ package net.geant.nmaas.monitor;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 
 public enum ServiceType {
-    GITLAB{
+    GITLAB {
         @Override
-        public String getName(){
+        public String getName() {
             return "GITLAB";
         }
 
@@ -14,27 +14,33 @@ public enum ServiceType {
             return new MonitorEntryView(this, 1L, TimeFormat.H);
         }
     },
-    HELM{
+    HELM {
         @Override
-        public String getName(){return "HELM";}
+        public String getName() {
+            return "HELM";
+        }
 
         @Override
         public MonitorEntryView getDefaultMonitorEntry() {
             return new MonitorEntryView(this, 1L, TimeFormat.H);
         }
     },
-    DATABASE{
+    DATABASE {
         @Override
-        public String getName(){return "DATABASE";}
+        public String getName() {
+            return "DATABASE";
+        }
 
         @Override
         public MonitorEntryView getDefaultMonitorEntry() {
             return new MonitorEntryView(this, 5L, TimeFormat.MIN);
         }
     },
-    JANITOR{
+    JANITOR {
         @Override
-        public String getName(){return "JANITOR";}
+        public String getName() {
+            return "JANITOR";
+        }
 
         @Override
         public MonitorEntryView getDefaultMonitorEntry() {
@@ -43,5 +49,6 @@ public enum ServiceType {
     };
 
     public abstract String getName();
+
     public abstract MonitorEntryView getDefaultMonitorEntry();
 }

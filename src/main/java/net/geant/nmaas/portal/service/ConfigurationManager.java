@@ -7,4 +7,5 @@ public interface ConfigurationManager {
     Long setConfiguration(ConfigurationView configuration);
     ConfigurationView getConfiguration();
     void updateConfiguration(Long id, ConfigurationView updatedConfiguration);
+
 }
