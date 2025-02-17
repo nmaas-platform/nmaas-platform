@@ -27,7 +27,7 @@ public class MonitorEntry {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private ServiceType serviceName;
 
     @Enumerated(EnumType.STRING)
