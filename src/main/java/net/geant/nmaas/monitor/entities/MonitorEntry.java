@@ -3,6 +3,7 @@ package net.geant.nmaas.monitor.entities;
 import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +30,7 @@ public class MonitorEntry {
     @Enumerated
     private ServiceType serviceName;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private MonitorStatus status = MonitorStatus.NOT_CHECKED;
 
     private Date lastCheck;

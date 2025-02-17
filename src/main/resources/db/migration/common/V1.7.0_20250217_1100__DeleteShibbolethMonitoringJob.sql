@@ -1,0 +1,1 @@
+DELETE FROM monitor_entry;
