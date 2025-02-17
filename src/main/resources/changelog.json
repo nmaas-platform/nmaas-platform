@@ -1,6 +1,17 @@
 {
   "versions" : [
     {
+      "verNo" : "1.7.0",
+      "date" : "(2025/-/-)",
+      "topic" : [
+        {
+          "title" : "--",
+          "tags" : "[Enhancement]",
+          "description" : "--"
+        }
+      ]
+    },
+    {
       "verNo" : "1.6.5",
       "date" : "(2025/01/15)",
       "topic" : [
