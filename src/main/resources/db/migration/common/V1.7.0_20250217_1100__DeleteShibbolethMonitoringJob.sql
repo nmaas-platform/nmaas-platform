@@ -1,1 +1,1 @@
-DELETE FROM monitor_entry WHERE service_name = 'SHIBBOLETH';
+DELETE FROM monitor_entry;
