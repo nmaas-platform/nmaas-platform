@@ -22,9 +22,7 @@ import java.util.ArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -48,7 +46,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     void init() {
         mvc = createMVC();
         user = UsersHelper.ADMIN;
-        if(intRepo.findAll().stream().noneMatch(lang -> lang.getLanguage().equalsIgnoreCase("en"))){
+        if (intRepo.findAll().stream().noneMatch(lang -> lang.getLanguage().equalsIgnoreCase("en"))) {
             intRepo.save(new InternationalizationView("en", true, "{\"content\":\"content\"}").getAsInternationalizationSimple());
         }
     }
@@ -65,15 +63,15 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     @Test
     void shouldAddNewConfiguration() throws Exception {
         repository.deleteAll();
-        ConfigurationView configuration = new ConfigurationView(1L, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60);
+        ConfigurationView configuration = new ConfigurationView(null, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60);
         mvc.perform(post(URL_PREFIX)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user))
-                .content(new ObjectMapper().writeValueAsString(configuration))
-                .accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(user))
+                        .content(new ObjectMapper().writeValueAsString(configuration))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         MvcResult mvcResult = mvc.perform(get(URL_PREFIX).contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andReturn();
         assertThat(mvcResult.getResponse().getContentAsString(), containsString("\"maintenance\":true"));
     }
@@ -83,15 +81,15 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
         Long id = repository.findAll().get(0).getId();
         ConfigurationView configuration = new ConfigurationView(1L, true, false, "en", false, false, new ArrayList<>(), true, true, true, "0 */1 * * * ?", 2, 60);
         configuration.setId(id);
-        mvc.perform(put(URL_PREFIX+"/{id}",id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user))
-                .content(new ObjectMapper().writeValueAsString(configuration))
-                .accept(MediaType.APPLICATION_JSON))
+        mvc.perform(put(URL_PREFIX + "/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(user))
+                        .content(new ObjectMapper().writeValueAsString(configuration))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
         MvcResult mvcResult = mvc.perform(get(URL_PREFIX)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(user)))
                 .andReturn();
         assertThat(mvcResult.getResponse().getContentAsString(), containsString("\"maintenance\":true"));
     }
