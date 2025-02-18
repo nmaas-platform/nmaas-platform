@@ -1152,7 +1152,7 @@
       "FINGERPRINT": "Fingerprint",
       "ACTIONS": "Actions"
     },
-    "BUTTON_INVALIDATE": "Invalidate",
+    "BUTTON_INVALIDATE": "Remove",
     "NO_KEYS": "No keys available",
     "BUTTON_NEW_KEY": "Add new key",
     "MODAL": {
