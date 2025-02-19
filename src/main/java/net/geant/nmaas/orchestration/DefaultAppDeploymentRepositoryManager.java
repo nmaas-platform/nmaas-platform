@@ -1,6 +1,5 @@
 package net.geant.nmaas.orchestration;
 
-import io.micrometer.core.instrument.util.StringUtils;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
@@ -13,6 +12,7 @@ import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void store(AppDeployment appDeployment) {
-        if(repository.findByDeploymentId(appDeployment.getDeploymentId()).isPresent()) {
+        if (repository.findByDeploymentId(appDeployment.getDeploymentId()).isPresent()) {
             throw new InvalidDeploymentIdException("Deployment with id " + appDeployment.getDeploymentId() + " already exists in the repository.");
         }
         appDeployment.addChangeOfStateToHistory(null, appDeployment.getState());
@@ -43,7 +43,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void update(AppDeployment appDeployment) {
         repository.save(appDeployment);
     }
@@ -141,7 +141,7 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
-    public List<AppDeploymentHistory> loadStateHistory(Identifier deploymentId){
+    public List<AppDeploymentHistory> loadStateHistory(Identifier deploymentId) {
         return load(deploymentId).getHistory();
     }
 

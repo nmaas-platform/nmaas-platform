@@ -49,6 +49,7 @@ public class OrchestratorManagerControllerIntTest {
 
     private static final String DOMAIN = "domain";
     private static final String DEPLOYMENT_NAME = "deploymentName";
+
     private Identifier applicationId;
     private Identifier deploymentId;
     private AppConfiguration appConfiguration;

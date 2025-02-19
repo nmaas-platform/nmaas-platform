@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -12,14 +13,8 @@ import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -43,13 +38,13 @@ public class AppConfigurationController {
         AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         boolean valid = validJSON(configuration.getJsonInput());
-        log.error("Configuration = " + configuration.getJsonInput());
+        log.debug("Provided configuration = {}", configuration.getJsonInput());
         if (!valid) {
-            throw new ProcessingException("Configuration is not in valid JSON format");
+            throw new ProcessingException("Configuration is not in a valid JSON format");
         }
 
         if (configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0) {
-            throw new ProcessingException("Storage space cannot be less or equal 0");
+            throw new ProcessingException("Storage space cannot be less or equal to 0");
         }
 
         if (!instances.validateAgainstAppConfiguration(appInstance, configuration)) {
@@ -105,4 +100,5 @@ public class AppConfigurationController {
     public String getConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId) {
         return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE)).getConfiguration();
     }
+
 }

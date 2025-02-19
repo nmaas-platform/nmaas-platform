@@ -13,13 +13,7 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
+import net.geant.nmaas.orchestration.events.app.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -135,7 +129,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                     configuration.getAccessCredentials());
         }
         /*
-         * NMAAS-967
          * if terms acceptance is required, perform check actions
          */
         if (appDeployment.isTermsAcceptanceRequired()) {
@@ -153,15 +146,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
             if (termsAcceptanceStatement != null && termsAcceptanceStatement.equalsIgnoreCase("yes")) {
                 // OK
-                log.info(String.format(
-                        "Application usage terms were accepted: application [%s], instance id [%s], content [%s], statement [%s], by [%s], at: [%s]",
-                        appDeployment.getAppName(),
-                        appDeployment.getInstanceId(),
-                        termsContent,
-                        termsAcceptanceStatement,
-                        initiator,
-                        now.format(DateTimeFormatter.ISO_DATE_TIME)
-                ));
+                log.info("Application usage terms were accepted: application [{}], instance id [{}], content [{}], statement [{}], by [{}], at: [{}]", appDeployment.getAppName(), appDeployment.getInstanceId(), termsContent, termsAcceptanceStatement, initiator, now.format(DateTimeFormatter.ISO_DATE_TIME));
                 appTermsAcceptanceService.addTermsAcceptanceEntry(
                         appDeployment.getAppName(),
                         appDeployment.getInstanceId(),
@@ -174,9 +159,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 // Terms were not accepted by they should
                 throw new ProcessingException("Application usage terms acceptance is required, however terms were not accepted");
             }
-
         }
+
         deploymentRepositoryManager.update(appDeployment);
+
         if (appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
