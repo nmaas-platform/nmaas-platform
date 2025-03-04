@@ -142,14 +142,14 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
                 )
                 .oauth2Login(oAuth2 -> oAuth2
-                                .userInfoEndpoint(Customizer.withDefaults())
-                                .authorizationEndpoint(authorization -> authorization
-                                        .authorizationRequestResolver(resolver)
-                                )
-                                .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
-                                .redirectionEndpoint(redirection -> redirection
-                                        .baseUri("/api/login/oauth2/code/*")
-                                )
+                        .userInfoEndpoint(Customizer.withDefaults())
+                        .authorizationEndpoint(authorization -> authorization
+                                .authorizationRequestResolver(resolver)
+                        )
+                        .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/api/login/oauth2/code/*")
+                        )
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
