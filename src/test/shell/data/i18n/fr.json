@@ -1187,6 +1187,8 @@
       "NAME": "Name",
       "BUTTON_ADD": "Submit",
       "BUTTON_CANCEL": "Cancel",
+      "TOKEN_COPY" : "Please copy access token below. This token will no be presented to you again. Be sure to save it.",
+      "TOKEN_SAVED" : "I saved token and now close this window",
       "ERROR": {
         "NAME_REQUIRED": "Name is required",
         "NAME_MINLENGTH": "Name must have at least 1 character",
