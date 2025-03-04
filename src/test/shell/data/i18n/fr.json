@@ -1187,7 +1187,7 @@
       "NAME": "Name",
       "BUTTON_ADD": "Submit",
       "BUTTON_CANCEL": "Cancel",
-      "TOKEN_COPY" : "Please copy and save the newly generated access token displayed below. This token will no be presented to you again.",
+      "TOKEN_COPY" : "Please copy and save the newly generated access token displayed below. This token will not be presented to you again.",
       "TOKEN_SAVED" : "Close (token saved)",
       "COPY" : "Copy",
       "ERROR": {
