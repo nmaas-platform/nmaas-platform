@@ -1189,6 +1189,7 @@
       "BUTTON_CANCEL": "Cancel",
       "TOKEN_COPY" : "Please copy and save the newly generated access token displayed below. This token will no be presented to you again.",
       "TOKEN_SAVED" : "Close (token saved)",
+      "COPY" : "Copy",
       "ERROR": {
         "NAME_REQUIRED": "Name is required",
         "NAME_MINLENGTH": "Name must have at least 1 character",
