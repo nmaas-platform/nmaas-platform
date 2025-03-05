@@ -33,7 +33,7 @@ public interface UserService {
 
     boolean existsById(Long id);
 
-    User register(OidcUser user, Domain globalDomain);
+    boolean existsBySamlToken(String token);
 
     User register(Registration registration, Domain globalDomain, Domain domain);
 
