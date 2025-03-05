@@ -139,28 +139,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(OidcUser oidcUser, Domain globalDomain) {
-
-        Map<String, Object> attributes = oidcUser.getAttributes();
-        byte[] array = new byte[16];
-        new SecureRandom().nextBytes(array);
-        String generatedString = Base64.getEncoder().encodeToString(array);
-
-        User newUser = new User(
-                attributes.get("preferred_username").toString(),
-                true,
-                generatedString,
-                globalDomain,
-                Role.ROLE_GUEST);
-        newUser.setEmail(attributes.get("email").toString());
-        newUser.setLastname(attributes.get("family_name").toString());
-        newUser.setFirstname(attributes.get("given_name").toString());
-        newUser.setSamlToken(attributes.get("sub").toString());
-        newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
-
-        userRepository.save(newUser);
-        return newUser;
-
+    public boolean existsBySamlToken(String token) {
+        checkParam(token);
+        return userRepository.existsBySamlToken(token);
     }
 
     @Override
@@ -297,6 +278,11 @@ public class UserServiceImpl implements UserService {
     private void checkParam(User user) {
         if (user == null)
             throw new IllegalArgumentException("user is null");
+    }
+
+    private void checkParamSaml(String samlToken) {
+        if (samlToken == null)
+            throw new IllegalArgumentException("samlToken is null");
     }
 
     @Override

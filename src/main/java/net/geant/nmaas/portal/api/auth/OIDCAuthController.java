@@ -27,6 +27,8 @@ public class OIDCAuthController {
 
     private final UserService userService;
 
+    private final OidcUserService oidcUserService;
+
     private final JWTTokenService jwtTokenService;
 
     private final DomainService domains;
@@ -40,22 +42,25 @@ public class OIDCAuthController {
     @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser) {
 
-        User user = userService
-                .existsByUsername(oidcUser.getAttribute("preferred_username"))
-                ? userService
-                .findByUsername(oidcUser.getAttribute("preferred_username"))
-                .orElseThrow()
-                : registerNewUser(oidcUser);
-
-        String redirectUrl = portalAddress
-                + "/login-success?token="
-                + jwtTokenService.getToken(user)
-                + "&refresh_token="
-                + jwtTokenService.getRefreshToken(user)
-                + "&oidc_token="
-                + oidcUser.getIdToken().getTokenValue();
-        return new RedirectView(redirectUrl);
-
+        try {
+            User user = oidcUserService.checkUser(oidcUser);
+            String redirectUrl = portalAddress
+                    + "/login-success?token="
+                    + jwtTokenService.getToken(user)
+                    + "&refresh_token="
+                    + jwtTokenService.getRefreshToken(user)
+                    + "&oidc_token="
+                    + oidcUser.getIdToken().getTokenValue();
+            return new RedirectView(redirectUrl);
+        } catch (ExternalUserMatchException exception) {
+            //TODO handle this exception on the portal
+            String logoutUrl = oidcAddress + "/protocol/openid-connect/logout";
+            return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
+        } catch (ExternalUserCanNotBeLinked exception) {
+            //TODO handle this exception on the portal
+            String logoutUrl = oidcAddress + "/protocol/openid-connect/logout";
+            return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
+        }
     }
 
 
