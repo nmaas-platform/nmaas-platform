@@ -66,21 +66,6 @@ public class OIDCAuthController {
         return new RedirectView(logoutUrl + "?id_token_hint=" + oidcToken);
 
     }
-
-
-    private User registerNewUser(OidcUser oidcUser) {
-
-        try {
-            return userService
-                    .register(oidcUser,
-                            domains.getGlobalDomain().orElseThrow(MissingElementException::new)
-                    );
-        } catch (ObjectAlreadyExistsException e) {
-            throw new SignupException("User already exists");
-        } catch (MissingElementException e) {
-            throw new SignupException("Domain not found");
-        }
-    }
 }
 
 
