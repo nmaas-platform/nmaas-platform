@@ -44,7 +44,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
-            if(nsd.isConfigFileRepositoryRequired()) {
+            if (nsd.isConfigFileRepositoryRequired()) {
                 configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
@@ -66,7 +66,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nmServiceDeployment.getApplicationId(), nmServiceDeployment.getAppConfiguration());
-            if(nmServiceDeployment.isConfigFileRepositoryRequired()) {
+            if (nmServiceDeployment.isConfigFileRepositoryRequired()) {
                 configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
                 janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
             }

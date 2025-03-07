@@ -708,7 +708,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private void logPageable(Pageable p) {
-        log.trace("Page number: " + p.getPageNumber() + "\tPage size:" + p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
+        log.trace("Page number: {}\tPage size:{}\tPage offset:{}\tSort:{}", p.getPageNumber(), p.getPageSize(), p.getOffset(), p.getSort());
     }
 
     private boolean isPageableValidForAppInstance(Pageable p) {
