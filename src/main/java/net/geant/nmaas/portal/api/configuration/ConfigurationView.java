@@ -51,4 +51,6 @@ public class ConfigurationView {
 
     private Integer bulkDeploymentQueueRefresh;
 
+    private String deploymentPrefix;
+
 }
