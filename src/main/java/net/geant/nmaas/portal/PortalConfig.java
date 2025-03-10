@@ -166,6 +166,7 @@ public class PortalConfig {
 						.bulkDeploymentJobCron(bulkDeploymentCron)
 						.parallelDeploymentsLimit(bulkDeploymentPerPeriod)
 						.bulkDeploymentQueueRefresh(60)
+						.deploymentPrefix("")
 						.build();
 				try {
 					this.configurationManager.setConfiguration(configurationView);
