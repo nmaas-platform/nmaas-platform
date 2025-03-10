@@ -39,10 +39,12 @@ import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.InputStreamResource;
@@ -68,7 +70,6 @@ import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
 import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
-import static net.geant.nmaas.portal.api.market.AppInstanceController.createDescriptiveDeploymentId;
 
 @Service
 @RequiredArgsConstructor
@@ -94,6 +95,12 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final ModelMapper modelMapper;
 
     private final BulkDeploymentQueueRepository bulkDeploymentQueueRepository;
+
+    private final ConfigurationManager configurationManager;
+
+
+    @Value("${portal.config.deploymentPrefix}")
+    private boolean useDeploymentPrefix;
 
     @Override
     public BulkDeploymentViewS handleBulkDeployment(String applicationName, List<CsvApplication> appInstanceSpecs, UserViewMinimal creator, Integer limit) {
@@ -207,6 +214,20 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         BulkDeployment bulk = bulkDeploymentRepository.save(bulkDeployment);
         updateStateBulk(bulk);
         return modelMapper.map(bulk, BulkDeploymentViewS.class);
+    }
+
+    private Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
+        if(useDeploymentPrefix) {
+            return Identifier.newInstance(
+                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix() ,
+                            domain,
+                            appName.replace(" ", ""),
+                            String.valueOf(appInstanceNumber)).toLowerCase());
+        } else {
+            return Identifier.newInstance(
+                    String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
+            );
+        }
     }
 
     @Override

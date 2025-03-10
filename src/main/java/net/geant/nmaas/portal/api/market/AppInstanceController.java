@@ -38,10 +38,12 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -82,6 +84,12 @@ public class AppInstanceController extends AppBaseController {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final ConfigurationManager configurationManager;
+
+
+    @Value("${portal.config.deploymentPrefix}")
+    private boolean useDeploymentPrefix;
+
     @Autowired
     public AppInstanceController(ModelMapper modelMapper,
                                  ApplicationService applicationService,
@@ -92,7 +100,8 @@ public class AppInstanceController extends AppBaseController {
                                  ApplicationInstanceService instanceService,
                                  DomainService domainService,
                                  AppDeploymentRepositoryManager appDeploymentRepositoryManager,
-                                 ApplicationEventPublisher eventPublisher) {
+                                 ApplicationEventPublisher eventPublisher,
+                                 ConfigurationManager configurationManager) {
         super(modelMapper, applicationService, appBaseService, userService);
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
@@ -100,6 +109,7 @@ public class AppInstanceController extends AppBaseController {
         this.domainService = domainService;
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.eventPublisher = eventPublisher;
+        this.configurationManager = configurationManager;
     }
 
     /*
@@ -296,10 +306,18 @@ public class AppInstanceController extends AppBaseController {
         return new Id(appInstance.getId());
     }
 
-    public static Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
-        return Identifier.newInstance(
-                String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
-        );
+    public Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
+        if(useDeploymentPrefix) {
+            return Identifier.newInstance(
+                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix() ,
+                            domain,
+                            appName.replace(" ", ""),
+                            String.valueOf(appInstanceNumber)).toLowerCase());
+        } else {
+            return Identifier.newInstance(
+                    String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
+            );
+        }
     }
 
     @DeleteMapping("/{appInstanceId}")

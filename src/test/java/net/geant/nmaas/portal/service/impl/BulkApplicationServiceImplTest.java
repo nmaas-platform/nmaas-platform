@@ -32,6 +32,7 @@ import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.BulkApplicationService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
@@ -86,9 +87,11 @@ public class BulkApplicationServiceImplTest {
 
     private final BulkDeploymentQueueService bulkDeploymentQueueService = mock(BulkDeploymentQueueService.class);
 
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+
     final BulkApplicationService bulkApplicationService = new BulkApplicationServiceImpl(applicationBaseService, applicationService,
             domainService, applicationSubscriptionService, userService, applicationInstanceService, appDeploymentMonitor, appLifecycleManager,
-            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository);
+            bulkDeploymentRepository, bulkDeploymentEntryRepository, modelMapper, bulkDeploymentQueueRepository, configurationManager);
 
     @Test
     void shouldHandleBulkDeployment() throws JsonProcessingException {
