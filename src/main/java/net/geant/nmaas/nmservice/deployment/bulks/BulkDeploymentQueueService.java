@@ -148,10 +148,13 @@ public class BulkDeploymentQueueService {
         BulkDeployment bulkDeployment = bulkDeploymentRepository.findByBulkEntryId(bulkEntryId);
         List<Long> entriesId =  bulkDeployment.getEntries().stream().map(BulkDeploymentEntry::getId).toList();
         entriesId.forEach(entry ->  {
-            Optional<BulkDeploymentQueueEntry> optional = queueRepository.findByBulkEntryId(bulkEntryId);
+            queueRepository.findAll().forEach(each -> log.warn("In queue: {} {} {}", each.getId(), each.getBulkEntryId(), each.getDeploymentId()));
+            Optional<BulkDeploymentQueueEntry> optional = queueRepository.findByBulkEntryId(entry);
+            log.warn("Found from bulk {} entries {} in queue. Deleting .. ? {}", bulkDeployment.getId(), entry, optional.isPresent());
             if(optional.isPresent()) {
-                queueRepository.delete(optional.get());
-                bulkApplicationService.setBulkToCancel(optional.get());
+                log.warn("Delete {} / {}", optional.get().getDeploymentId(), optional.get().getBulkEntryId());
+                queueRepository.deleteById(optional.get().getId());
+                bulkApplicationService.setBulkToCancel(optional.get(), bulkDeployment);
             }
         });
 

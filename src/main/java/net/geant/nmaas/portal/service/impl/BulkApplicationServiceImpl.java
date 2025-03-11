@@ -399,9 +399,10 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             bulkDeployment.setCompletionDate(OffsetDateTime.now());
         } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
+        } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.CANCELED.equals(e.getState()))) {
+            bulkDeployment.setState(BulkDeploymentState.CANCELED);
         } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.CANCELED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_CANCELED);
-
         }
         //only update if state changed
         if (oldState != null && !oldState.equals(bulkDeployment.getState())) {
@@ -422,6 +423,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
     private void updateEntryState(BulkDeploymentEntry entry) {
         try {
+            if (entry.getState().equals(BulkDeploymentState.CANCELED)) {
+                throw new IllegalStateException("Bulk state is CANCELED. Do not update this bulk.");
+            }
             Long instanceId = Long.valueOf(entry.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID));
             AppInstance instance = instanceService.find(instanceId).orElseThrow();
 
@@ -456,18 +460,20 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
     }
 
-    public void setBulkToCancel(BulkDeploymentQueueEntry queueEntry ) {
+    public void setBulkToCancel(BulkDeploymentQueueEntry queueEntry, BulkDeployment bulkDeployment) {
         try {
             AppDeploymentState state = appDeploymentRepositoryManager.loadState(queueEntry.getDeploymentId());
-            if( !(state.isInFailedState() || state.isInRunningState()) ) {
+            if (!(state.isInFailedState() || state.isInRunningState())) {
                 Optional<BulkDeploymentEntry> entry = bulkDeploymentEntryRepository.findById(queueEntry.getBulkEntryId());
-                if(entry.isPresent()) {
+                if (entry.isPresent()) {
                     BulkDeploymentEntry bulkDeploymentEntry = entry.get();
                     bulkDeploymentEntry.setState(BulkDeploymentState.CANCELED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
+                    log.warn("Bulk set to CANCELED correctly.");
                 }
-
             }
+            log.warn("Setting main bulk STATE");
+            updateMainBulkState(bulkDeployment);
         } catch (Exception e) {
             log.error("Problem with setting bulk state to canceled.");
         }
@@ -633,8 +639,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
 
     @Override
     public BulkQueueDetails getQueueDetails(Long bulkId) {
-       List<BulkDeploymentQueueEntry> queue =  bulkDeploymentQueueRepository.findAll();
-       return getBulkQueueDetails(queue, bulkId);
+        List<BulkDeploymentQueueEntry> queue = bulkDeploymentQueueRepository.findAll();
+        return getBulkQueueDetails(queue, bulkId);
 
     }
 

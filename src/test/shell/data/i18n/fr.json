@@ -1266,7 +1266,9 @@
       "COMPLETED" : "Completed",
       "FAILED" : "Failed",
       "PARTIALLY_FAILED" : "Partially failed",
-      "REMOVED" : "Removed"
+      "REMOVED" : "Removed",
+      "CANCELED" : "Canceled",
+      "PARTIALLY_CANCELED" : "Partially canceled"
 
     },
     "REMOVE" : {

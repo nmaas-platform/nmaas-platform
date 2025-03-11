@@ -14,7 +14,6 @@ import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.io.InputStreamResource;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -47,6 +46,6 @@ public interface BulkApplicationService {
 
     Optional<BulkDeploymentEntry> getBulkEntry(Long bulkEntryId);
 
-    void setBulkToCancel(BulkDeploymentQueueEntry queueEntry );
+    void setBulkToCancel(BulkDeploymentQueueEntry queueEntry, BulkDeployment bulkDeployment);
 
 }
