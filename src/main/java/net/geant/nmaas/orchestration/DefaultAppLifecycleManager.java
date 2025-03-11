@@ -16,8 +16,10 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -48,6 +50,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private final JanitorService janitorService;
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
+    private final ConfigurationManager configurationManager;
+    @Value("${portal.config.deploymentPrefix}")
+    private boolean useDeploymentPrefix;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -55,6 +60,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier deployApplication(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
+        if(useDeploymentPrefix) {
+            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() +"-"+ appDeployment.getDeploymentName());
+        }
         deploymentRepositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
@@ -66,6 +74,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier initApplicationDeployment(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
+        if(useDeploymentPrefix) {
+            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix()  +"-"+ appDeployment.getDeploymentName());
+        }
         deploymentRepositoryManager.store(appDeployment);
         return deploymentId;
     }
