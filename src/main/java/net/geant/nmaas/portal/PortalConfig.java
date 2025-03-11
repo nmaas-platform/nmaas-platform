@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
@@ -166,7 +167,7 @@ public class PortalConfig {
 						.bulkDeploymentJobCron(bulkDeploymentCron)
 						.parallelDeploymentsLimit(bulkDeploymentPerPeriod)
 						.bulkDeploymentQueueRefresh(60)
-						.deploymentPrefix("")
+						.deploymentPrefix(UUID.randomUUID().toString().substring(0,3))
 						.build();
 				try {
 					this.configurationManager.setConfiguration(configurationView);
