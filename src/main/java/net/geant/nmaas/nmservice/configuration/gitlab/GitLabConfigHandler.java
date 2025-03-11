@@ -65,7 +65,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     @Value("${nmaas.platform.webhooks.baseurl}")
     private String webhooksBaseUrl;
 
-    @Value("${portal.config.deploymentPrefix}")
+    @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
 
     /**

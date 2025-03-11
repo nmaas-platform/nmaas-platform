@@ -99,7 +99,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final ConfigurationManager configurationManager;
 
 
-    @Value("${portal.config.deploymentPrefix}")
+    @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
 
     @Override

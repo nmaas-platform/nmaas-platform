@@ -51,7 +51,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
     private final ConfigurationManager configurationManager;
-    @Value("${portal.config.deploymentPrefix}")
+    @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
 
     @Override
