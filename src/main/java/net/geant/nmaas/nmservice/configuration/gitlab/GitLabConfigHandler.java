@@ -170,8 +170,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
                 return group.get().getId();
             } else {
                 if (useDeploymentPrefix) {
-                    gitLabManager.groups().addGroup(groupName(getPrefix() + domain), groupPath(getPrefix() + domain));
-                    Long groupId = gitLabManager.groups().getGroup(groupPath(getPrefix() + domain)).getId();
+                    gitLabManager.groups().addGroup(groupName(getPrefix()+ "-" + domain), groupPath(getPrefix() + "-" + domain));
+                    Long groupId = gitLabManager.groups().getGroup(groupPath(getPrefix() + "-" + domain)).getId();
                     gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
                     return groupId;
                 } else {
