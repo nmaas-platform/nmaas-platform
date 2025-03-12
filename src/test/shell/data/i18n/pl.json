@@ -332,7 +332,8 @@
     "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS" : "Send notification email for new accounts created in bulk process",
     "BULK_DEPLOYMENT_CRON" : "Cron grupowego uruchomienia aplikacji",
     "BULK_DEPLOYMENT_LIMIT" : "Limit jednoczesnego uruchamiania aplikacji ",
-    "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Odświeżanie statystyk kolejki (w sekundach)"
+    "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Odświeżanie statystyk kolejki (w sekundach)",
+    "DEPLOYMENT_PREFIX" : "Prefix instancji"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",

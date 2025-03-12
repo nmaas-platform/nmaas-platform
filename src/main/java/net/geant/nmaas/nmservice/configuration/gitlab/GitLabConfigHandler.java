@@ -16,6 +16,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
@@ -57,11 +58,15 @@ public class GitLabConfigHandler implements GitConfigHandler {
     private final KubernetesRepositoryManager repositoryManager;
     private final NmServiceConfigFileRepository configurations;
     private final GitLabManager gitLabManager;
+    private final ConfigurationManager configurationManager;
 
     private static final String LOG_PREFIX = "GITLAB: ";
 
     @Value("${nmaas.platform.webhooks.baseurl}")
     private String webhooksBaseUrl;
+
+    @Value("${nmaas.platform.multi-instance}")
+    private boolean useDeploymentPrefix;
 
     /**
      * Creates a new GitLab user if one with given username does not exist already and adds / replaces his SSH keys
@@ -164,10 +169,18 @@ public class GitLabConfigHandler implements GitConfigHandler {
             if (group.isPresent()) {
                 return group.get().getId();
             } else {
-                gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
-                Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
-                gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
-                return groupId;
+                if (useDeploymentPrefix) {
+                    gitLabManager.groups().addGroup(groupName(getPrefix()+ "-" + domain), groupPath(getPrefix() + "-" + domain));
+                    Long groupId = gitLabManager.groups().getGroup(groupPath(getPrefix() + "-" + domain)).getId();
+                    gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
+                    return groupId;
+                } else {
+                    gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
+                    Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
+                    gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
+                    return groupId;
+                }
+
             }
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
@@ -299,7 +312,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         loadGitlabProject(deploymentId).ifPresent(p -> removeProject(p.getProjectId()));
     }
 
-    private void removeProject(Long projectId){
+    private void removeProject(Long projectId) {
         gitLabManager.projects().getOptionalProject(projectId).ifPresent(p -> {
             try {
                 gitLabManager.projects().deleteProject(projectId);
@@ -324,6 +337,10 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId) {
         return repositoryManager.loadGitLabProject(deploymentId);
+    }
+
+    private String getPrefix() {
+        return configurationManager.getConfiguration().getDeploymentPrefix();
     }
 
 }
