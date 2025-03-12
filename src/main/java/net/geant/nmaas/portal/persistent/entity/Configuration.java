@@ -76,6 +76,9 @@ public class Configuration {
     @Column(name = "parallel_deployments_time_threshold", nullable = false)
     private Integer bulkDeploymentTimeThreshold;
 
+    @Column(nullable = true, length = 5)
+    private String deploymentPrefix;
+
     public Configuration(
             boolean maintenance,
             boolean ssoLoginAllowed,

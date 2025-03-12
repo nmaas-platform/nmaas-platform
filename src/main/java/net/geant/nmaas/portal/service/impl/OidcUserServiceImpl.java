@@ -1,0 +1,135 @@
+package net.geant.nmaas.portal.service.impl;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.api.exception.ExternalUserCanNotBeLinked;
+import net.geant.nmaas.portal.api.exception.ExternalUserMatchException;
+import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.OidcUserService;
+import net.geant.nmaas.portal.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class OidcUserServiceImpl implements OidcUserService {
+
+    private final UserService userService;
+
+    private final DomainService domains;
+
+    private final UserRepository userRepository;
+
+    private final ConfigurationManager configurationManager;
+
+    @Value("${oidc.allowedLinkingUsersByEmail:false}")
+    private boolean allowedLinkingUsersByEmail;
+
+
+    @Override
+    public User checkUser(OidcUser oidcUser) {
+
+        String oidcUserSub = oidcUser.getAttribute("sub");
+        String oidcUserEmail = oidcUser.getAttribute("email");
+        String oidcUserPreferredUsername = oidcUser.getAttribute("preferred_username");
+
+        boolean existUserBySamlToken = userService
+                .existsBySamlToken(oidcUserSub);
+        boolean existUserByUsernameAsSamlToken = userService
+                .existsBySamlToken(oidcUserPreferredUsername);
+        boolean existUserByEmail = userService
+                .existsByEmail(oidcUserEmail);
+
+        if (existUserBySamlToken) {
+            return userService
+                    .findBySamlToken(oidcUserSub)
+                    .orElseThrow();
+        } else if (existUserByUsernameAsSamlToken) {
+            User user = userService
+                    .findBySamlToken(oidcUserPreferredUsername)
+                    .orElseThrow();
+            if (user.getEmail().equals(oidcUserEmail)) {
+                user.setSamlToken(oidcUserSub);
+                userService.update(user);
+                return user;
+            } else {
+                throw new ExternalUserMatchException("External user "
+                        + oidcUserPreferredUsername
+                        + " does not match internal user ");
+            }
+        } else if (existUserByEmail) {
+
+            if (allowedLinkingUsersByEmail) {
+                return linkUser(oidcUserEmail, oidcUserSub);
+            } else {
+                throw new ExternalUserCanNotBeLinked("External user "
+                        + oidcUserPreferredUsername
+                        + " cannot be linked to an internal user ");
+            }
+        } else {
+            return registerNewUser(oidcUser);
+        }
+    }
+
+    @Override
+    public User registerNewUser(OidcUser oidcUser) {
+        try {
+            return register(oidcUser,
+                    domains.getGlobalDomain().orElseThrow(MissingElementException::new)
+            );
+        } catch (ObjectAlreadyExistsException e) {
+            throw new SignupException("User already exists");
+        } catch (MissingElementException e) {
+            throw new SignupException("Domain not found");
+        }
+    }
+
+    @Override
+    public User register(OidcUser oidcUser, Domain globalDomain) {
+
+        Map<String, Object> attributes = oidcUser.getAttributes();
+        byte[] array = new byte[16];
+        new SecureRandom().nextBytes(array);
+        String generatedString = Base64.getEncoder().encodeToString(array);
+
+        User newUser = new User(
+                oidcUser.getAttribute("preferred_username"),
+                true,
+                generatedString,
+                globalDomain,
+                Role.ROLE_GUEST);
+        newUser.setEmail(oidcUser.getAttribute("email"));
+        newUser.setLastname(oidcUser.getAttribute("family_name"));
+        newUser.setFirstname(oidcUser.getAttribute("given_name"));
+        newUser.setSamlToken(oidcUser.getAttribute("sub"));
+        newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
+
+        userRepository.save(newUser);
+        return newUser;
+    }
+
+    private User linkUser(String email, String samlToken) {
+
+        User user = userService.findByEmail(email);
+        user.setSamlToken(samlToken);
+
+        userService.update(user);
+        return user;
+    }
+
+
+}

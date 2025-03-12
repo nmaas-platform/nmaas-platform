@@ -52,6 +52,7 @@ public class SecurityConfig {
     private static final String AUTH_OIDC_LOGIN_PAGE = "/api/oauth2/authorization/my-oidc";
     private static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
     private static final String AUTH_OIDC_SUCCESS = "/api/oidc/success";
+    private static final String AUTH_LOGOUT = "/api/oidc/logout/*";
     private static final String AUTH_OIDC = "/api/oidc/**";
     private static final String AUTH_CODE = "/api/login/oauth2/code";
 
@@ -71,6 +72,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
             new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
             new AntPathRequestMatcher(AUTH_OIDC),
+            new AntPathRequestMatcher(AUTH_LOGOUT),
             new AntPathRequestMatcher(AUTH_CODE),
             new AntPathRequestMatcher("/favicon.ico"),
             new AntPathRequestMatcher("/api/info/**"),
@@ -140,14 +142,14 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
                 )
                 .oauth2Login(oAuth2 -> oAuth2
-                                .userInfoEndpoint(Customizer.withDefaults())
-                                .authorizationEndpoint(authorization -> authorization
-                                        .authorizationRequestResolver(resolver)
-                                )
-                                .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
-                                .redirectionEndpoint(redirection -> redirection
-                                        .baseUri("/api/login/oauth2/code/*")
-                                )
+                        .userInfoEndpoint(Customizer.withDefaults())
+                        .authorizationEndpoint(authorization -> authorization
+                                .authorizationRequestResolver(resolver)
+                        )
+                        .defaultSuccessUrl(AUTH_OIDC_SUCCESS, true)
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/api/login/oauth2/code/*")
+                        )
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType.MAIN;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType.SHARED;
@@ -38,7 +37,7 @@ public class KubernetesRepositoryManager extends NmServiceRepositoryManager<Kube
         KubernetesNmServiceInfo serviceInfo = loadService(deploymentId);
         List<ServiceStorageVolume> storageVolumes = serviceInfo.getStorageVolumes().stream()
                 .filter(v -> Arrays.asList(MAIN, SHARED).contains(v.getType()))
-                .collect(Collectors.toList());
+                .toList();
         storageVolumes.forEach(v -> {
             v.setSize(storageSpace);
             storageVolumeRepository.save(v);

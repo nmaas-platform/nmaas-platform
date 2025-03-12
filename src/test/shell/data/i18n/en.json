@@ -332,7 +332,8 @@
     "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS" : "Send notification email for new accounts created in bulk process",
     "BULK_DEPLOYMENT_CRON" : "Bulk deployment job cron",
     "BULK_DEPLOYMENT_LIMIT" : "Bulk deployment parallel limit",
-    "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Bulk deployment queue refresh (seconds)"
+    "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Bulk deployment queue refresh (seconds)",
+    "DEPLOYMENT_PREFIX" : "Deployment prefix"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",
@@ -1153,7 +1154,7 @@
       "FINGERPRINT": "Fingerprint",
       "ACTIONS": "Actions"
     },
-    "BUTTON_INVALIDATE": "Invalidate",
+    "BUTTON_INVALIDATE": "Remove",
     "NO_KEYS": "No keys available",
     "BUTTON_NEW_KEY": "Add new key",
     "MODAL": {
@@ -1187,6 +1188,9 @@
       "NAME": "Name",
       "BUTTON_ADD": "Submit",
       "BUTTON_CANCEL": "Cancel",
+      "TOKEN_COPY" : "Please copy and save the newly generated access token displayed below. This token will not be presented to you again.",
+      "TOKEN_SAVED" : "Close (token saved)",
+      "COPY" : "Copy",
       "ERROR": {
         "NAME_REQUIRED": "Name is required",
         "NAME_MINLENGTH": "Name must have at least 1 character",

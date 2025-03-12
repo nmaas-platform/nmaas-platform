@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
@@ -38,10 +39,12 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,8 +59,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.Arrays;
@@ -82,6 +83,12 @@ public class AppInstanceController extends AppBaseController {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final ConfigurationManager configurationManager;
+
+
+    @Value("${nmaas.platform.multi-instance}")
+    private boolean useDeploymentPrefix;
+
     @Autowired
     public AppInstanceController(ModelMapper modelMapper,
                                  ApplicationService applicationService,
@@ -92,7 +99,8 @@ public class AppInstanceController extends AppBaseController {
                                  ApplicationInstanceService instanceService,
                                  DomainService domainService,
                                  AppDeploymentRepositoryManager appDeploymentRepositoryManager,
-                                 ApplicationEventPublisher eventPublisher) {
+                                 ApplicationEventPublisher eventPublisher,
+                                 ConfigurationManager configurationManager) {
         super(modelMapper, applicationService, appBaseService, userService);
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
@@ -100,6 +108,7 @@ public class AppInstanceController extends AppBaseController {
         this.domainService = domainService;
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.eventPublisher = eventPublisher;
+        this.configurationManager = configurationManager;
     }
 
     /*
@@ -234,6 +243,7 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public AppInstanceViewExtended getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                                   @NotNull Principal principal) {
+        log.warn("Handling getAppInstance request");
         AppInstance appInstance = instanceService.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
         return mapAppInstanceExtended(appInstance);
@@ -296,10 +306,18 @@ public class AppInstanceController extends AppBaseController {
         return new Id(appInstance.getId());
     }
 
-    public static Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
-        return Identifier.newInstance(
-                String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
-        );
+    public Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
+        if(useDeploymentPrefix) {
+            return Identifier.newInstance(
+                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix() ,
+                            domain,
+                            appName.replace(" ", ""),
+                            String.valueOf(appInstanceNumber)).toLowerCase());
+        } else {
+            return Identifier.newInstance(
+                    String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
+            );
+        }
     }
 
     @DeleteMapping("/{appInstanceId}")
@@ -457,7 +475,7 @@ public class AppInstanceController extends AppBaseController {
                 .map(this::getUser)
                 .filter(u -> !u.getSshKeys().isEmpty()) // skip users with no ssh keys
                 .filter(u -> u.getRoles().stream().anyMatch(r -> r.getDomain().getId().equals(appInstance.getDomain().getId()))) // allow only users with role in app instance domain
-                .collect(Collectors.toList()); // retrieve users from usernames to be added to members
+                .toList(); // retrieve users from usernames to be added to members
 
         appInstance.getMembers().addAll(new HashSet<>(usersToAdd));
         this.instanceService.update(appInstance);
@@ -621,6 +639,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceViewExtended mapAppInstanceExtended(AppInstance appInstance) {
+        log.warn("Mapping application instance to extended view");
         if (appInstance == null) {
             return null;
         }
@@ -642,6 +661,8 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceBase addAppInstanceBaseProperties(AppInstanceBase ai, AppInstance appInstance) {
+        log.warn("Adding application instance base properties");
+
         try {
             ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
@@ -663,8 +684,9 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
-
         addAppInstanceBaseProperties(ai, appInstance);
+
+        log.warn("Adding application instance properties");
 
         Identifier identifier = appInstance.getInternalId();
         try {
@@ -708,12 +730,12 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private void logPageable(Pageable p) {
-        log.trace("Page number: " + p.getPageNumber() + "\tPage size:" + p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
+        log.trace("Page number: {}\tPage size:{}\tPage offset:{}\tSort:{}", p.getPageNumber(), p.getPageSize(), p.getOffset(), p.getSort());
     }
 
     private boolean isPageableValidForAppInstance(Pageable p) {
-        List<String> sortProperties = p.getSort().get().map(Sort.Order::getProperty).collect(Collectors.toList());
-        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
+        List<String> sortProperties = p.getSort().get().map(Sort.Order::getProperty).toList();
+        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields()).map(Field::getName).toList();
 
         Set<String> sortSet = new HashSet<>(sortProperties);
         Set<String> classSet = new HashSet<>(classProperties);

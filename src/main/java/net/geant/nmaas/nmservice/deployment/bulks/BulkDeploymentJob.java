@@ -16,7 +16,7 @@ public class BulkDeploymentJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        log.debug("Triggering bulk deployment job...");
+        log.trace("Triggering bulk deployment job...");
         service.handleQueue();
     }
 

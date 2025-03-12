@@ -1,26 +1,29 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.user.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserApiToken;
 import net.geant.nmaas.portal.persistent.repositories.UserApiTokenRepository;
 import net.geant.nmaas.portal.service.CustomAccessTokenService;
+import net.geant.nmaas.portal.service.impl.security.SecretPasswordService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
 
     private final UserApiTokenRepository userApiTokenRepository;
+
+    private final SecretPasswordService secretPasswordService;
 
     @Override
     public void invalidate(Long id) {
@@ -32,10 +35,10 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
     @Override
     public void delete(Long id) {
         UserApiToken token = findToken(id);
-        if(!token.isValid()) {
+        if (!token.isValid()) {
             token.setDeleted(true);
             userApiTokenRepository.save(token);
-        }else {
+        } else {
             throw new IllegalArgumentException("Token is still valid, can not delete valid token");
         }
 
@@ -44,12 +47,18 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
     @Override
     public UserApiTokenView createToken(User user, String name) {
         List<UserApiToken> tokens = userApiTokenRepository.findAllByUserIdAndName(user.getId(), name);
-        if(!tokens.isEmpty() && tokens.stream().anyMatch(c -> !c.isDeleted())) {
+        if (!tokens.isEmpty() && tokens.stream().anyMatch(c -> !c.isDeleted())) {
             throw new DataConflictException("Token name is already in use.");
         }
 
         UserApiToken token = createNewToken(user, name);
-        return mapToView(userApiTokenRepository.save(token)) ;
+        String hashedValued = secretPasswordService.hashSecret(token.getTokenValue());
+        UserApiTokenView view = mapToView(token);
+        token.setTokenValue(hashedValued);
+        log.warn("Token value is : {}, hashed : {}", view.getTokenValue(), hashedValued);
+        token = userApiTokenRepository.save(token);
+        view.setId(token.getId());
+        return view;
     }
 
     @Override
@@ -68,7 +77,7 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
         token.setValid(true);
         token.setDeleted(false);
         return token;
-        }
+    }
 
     private String generateToken() {
         // uuid is a placeholder for now

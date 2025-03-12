@@ -53,4 +53,6 @@ public class ConfigurationView {
 
     private Integer bulkDeploymentTimeThreshold;
 
+    private String deploymentPrefix;
+
 }

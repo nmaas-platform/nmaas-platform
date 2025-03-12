@@ -4,17 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class NmServiceDeployment {
 
     private Identifier deploymentId;
@@ -41,6 +44,9 @@ public class NmServiceDeployment {
         nmServiceDeployment.ownerSshKeys = appDeploymentOwner.getSshKeys();
         nmServiceDeployment.configFileRepositoryRequired = appDeployment.isConfigFileRepositoryRequired();
         nmServiceDeployment.configUpdateEnabled = appDeployment.isConfigUpdateEnabled();
+        if (Objects.isNull(appDeployment.getConfiguration())) {
+            log.warn("Application configuration of deployment {} is null", appDeployment.getDescriptiveDeploymentId());
+        }
         nmServiceDeployment.appConfiguration = appDeployment.getConfiguration();
         return nmServiceDeployment;
     }

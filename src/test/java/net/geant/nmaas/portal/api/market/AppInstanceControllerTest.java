@@ -31,6 +31,7 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +76,8 @@ public class AppInstanceControllerTest {
     private final ApplicationService applicationService = mock(ApplicationService.class);
     private final ApplicationBaseService applicationBaseService = mock(ApplicationBaseService.class);
     private final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
     private AppInstanceController appInstanceController;
 
@@ -128,7 +131,8 @@ public class AppInstanceControllerTest {
                 applicationInstanceService,
                 domainService,
                 appDeploymentRepositoryManager,
-                applicationEventPublisher
+                applicationEventPublisher,
+                configurationManager
         );
 
         when(pageable.getOffset()).thenReturn(0L);
