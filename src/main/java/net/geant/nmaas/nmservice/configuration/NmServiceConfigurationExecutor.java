@@ -52,7 +52,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                 }
                 janitorService.createOrReplaceConfigMap(nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
             }
-            notifyStateChangeListeners(deploymentId, CONFIGURED);
+            notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
