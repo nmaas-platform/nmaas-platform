@@ -69,7 +69,7 @@ public class BulkDeploymentQueueService {
                     if(entryOptional.isPresent()) {
                        String startTime = entryOptional.get().getDetails().get(PROCESSING_TIME);
                        long secondsBetween = Duration.between(OffsetDateTime.parse(startTime), OffsetDateTime.now()).getSeconds();
-                       if(secondsBetween > configurationManager.getConfiguration().getBulkDeploymentTimeThreshold() * 2 ) {
+                       if(secondsBetween > configurationManager.getConfiguration().getBulkDeploymentTimeThreshold() * 60 ) {
                            log.warn("Deployment {} exited the time limit for deployment. Bulk is going to be canceled. ", e.getDeploymentId());
                            cancelCurrentBulk(e.getBulkEntryId());
                        }
