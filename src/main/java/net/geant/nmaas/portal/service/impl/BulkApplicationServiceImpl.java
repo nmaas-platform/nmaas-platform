@@ -392,6 +392,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.COMPLETED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.COMPLETED);
             bulkDeployment.setCompletionDate(OffsetDateTime.now());
+        } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.CANCELED.equals(e.getState()))) {
+            bulkDeployment.setState(BulkDeploymentState.PARTIALLY_CANCELED);
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.REMOVED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.REMOVED);
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.FAILED.equals(e.getState()) || BulkDeploymentState.REMOVED.equals(e.getState()))) {
