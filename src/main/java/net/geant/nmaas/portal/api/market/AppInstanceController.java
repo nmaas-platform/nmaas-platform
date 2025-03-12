@@ -87,7 +87,7 @@ public class AppInstanceController extends AppBaseController {
     private final ConfigurationManager configurationManager;
 
 
-    @Value("${portal.config.deploymentPrefix}")
+    @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
 
     @Autowired
