@@ -94,7 +94,7 @@ public class BulkDomainServiceIntTest {
         CsvDomain csvDomain2 = new CsvDomain("test5", "user2", "user2@test.com", null, "group1", false);
         List<CsvDomain> input = List.of(csvDomain1, csvDomain2);
         configurationRepository.save(modelMapper.map(
-                ConfigurationView.builder().id(null).defaultLanguage("en").bulkDomainsAllowForSsoAccounts(false).parallelDeploymentsLimit(2).bulkDeploymentJobCron("* * * *").bulkDeploymentQueueRefresh(60).bulkDeploymentTimeThreshold(10).build(), Configuration.class));
+                ConfigurationView.builder().id(1L).defaultLanguage("en").bulkDomainsAllowForSsoAccounts(false).parallelDeploymentsLimit(2).bulkDeploymentJobCron("* * * *").bulkDeploymentQueueRefresh(60).bulkDeploymentTimeThreshold(10).build(), Configuration.class));
         UserViewMinimal creator = new UserViewMinimal();
         creator.setId(1L);
         creator.setUsername("admin");
