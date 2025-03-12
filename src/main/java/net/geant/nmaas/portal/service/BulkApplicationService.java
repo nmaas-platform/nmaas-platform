@@ -46,6 +46,8 @@ public interface BulkApplicationService {
 
     Optional<BulkDeploymentEntry> getBulkEntry(Long bulkEntryId);
 
-    void setBulkToCancel(BulkDeploymentQueueEntry queueEntry, BulkDeployment bulkDeployment);
+    void setBulkToCancel(BulkDeploymentQueueEntry queueEntry);
+
+    void updateMainState(BulkDeployment bulkDeployment);
 
 }

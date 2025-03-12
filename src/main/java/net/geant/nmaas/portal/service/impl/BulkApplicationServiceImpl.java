@@ -403,9 +403,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             bulkDeployment.setState(BulkDeploymentState.PARTIALLY_FAILED);
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.CANCELED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.CANCELED);
-        } else if (bulkDeployment.getEntries().stream().anyMatch(e -> BulkDeploymentState.CANCELED.equals(e.getState()))) {
-            bulkDeployment.setState(BulkDeploymentState.PARTIALLY_CANCELED);
         }
+        log.warn("Bulk main state {} ",bulkDeployment.getState());
         //only update if state changed
         if (oldState != null && !oldState.equals(bulkDeployment.getState())) {
             logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
@@ -462,7 +461,8 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
     }
 
-    public void setBulkToCancel(BulkDeploymentQueueEntry queueEntry, BulkDeployment bulkDeployment) {
+    @Override
+    public void setBulkToCancel(BulkDeploymentQueueEntry queueEntry) {
         try {
             AppDeploymentState state = appDeploymentRepositoryManager.loadState(queueEntry.getDeploymentId());
             if (!(state.isInFailedState() || state.isInRunningState())) {
@@ -472,12 +472,20 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     bulkDeploymentEntry.setState(BulkDeploymentState.CANCELED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
                     log.warn("Bulk set to CANCELED correctly.");
+                    appLifecycleManager.removeApplication(queueEntry.getDeploymentId());
                 }
             }
-            log.warn("Setting main bulk STATE");
-            updateMainBulkState(bulkDeployment);
         } catch (Exception e) {
             log.error("Problem with setting bulk state to canceled.");
+        }
+    }
+
+    @Override
+    public void updateMainState(BulkDeployment bulkDeployment) {
+        Optional<BulkDeployment> refreshed = bulkDeploymentRepository.findById(bulkDeployment.getId());
+        if(refreshed.isPresent()) {
+            log.warn("Setting main bulk STATE");
+            updateMainBulkState(refreshed.get());
         }
     }
 
