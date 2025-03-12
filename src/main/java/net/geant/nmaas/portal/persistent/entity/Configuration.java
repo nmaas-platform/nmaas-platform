@@ -73,6 +73,9 @@ public class Configuration {
     @Column(name = "bulk_deployment_queue_refresh_seconds", nullable = false)
     private Integer bulkDeploymentQueueRefresh;
 
+    @Column(nullable = true, length = 5)
+    private String deploymentPrefix;
+
     public Configuration(
             boolean maintenance,
             boolean ssoLoginAllowed,

@@ -33,8 +33,7 @@ public class AppConfigurationTask {
             final AppDeploymentOwner appDeploymentOwner = repositoryManager.loadOwner(deploymentId);
             configurationProvider.configureNmService(NmServiceDeployment.fromAppDeployment(appDeployment, appDeploymentOwner));
         } catch (Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            log.error("Exception during task execution", ex);
         }
     }
 

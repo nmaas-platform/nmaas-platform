@@ -65,7 +65,7 @@ class ConfigFilePreparer {
             storeConfigurationInRepository(config);
             configIds.add(configId);
         }
-        log.debug(String.format("Returning configuration files identifiers %s", configIds));
+        log.debug("Returning configuration files identifiers {}", configIds);
         return configIds;
     }
 

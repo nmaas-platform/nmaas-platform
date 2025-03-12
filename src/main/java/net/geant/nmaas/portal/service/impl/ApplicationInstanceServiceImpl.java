@@ -151,6 +151,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public Optional<AppInstance> find(Long appInstanceId) {
         checkParam(appInstanceId);
         return appInstanceRepo.findById(appInstanceId);
