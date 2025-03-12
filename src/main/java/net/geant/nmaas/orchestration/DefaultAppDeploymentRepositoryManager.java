@@ -66,7 +66,6 @@ public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepos
     }
 
     @Override
-    @Transactional
     public AppDeployment load(Identifier deploymentId) {
         return repository.findByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentNotFoundMessage(deploymentId)));

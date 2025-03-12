@@ -43,8 +43,8 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         Identifier deploymentId = nsd.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED);
-            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
             if (nsd.isConfigFileRepositoryRequired()) {
+                List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
                 configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
