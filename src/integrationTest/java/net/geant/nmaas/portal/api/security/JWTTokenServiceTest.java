@@ -41,11 +41,11 @@ public class JWTTokenServiceTest {
 		assertNotNull(token);
 		
 		Claims claims = tokenService.getClaims(token);
-		Object scopes = claims.get("scopes");
-		assertNotNull(scopes);
-		assertTrue(scopes instanceof List<?>);
+		Object tokenRoles = claims.get("roles");
+		assertNotNull(tokenRoles);
+		assertTrue(tokenRoles instanceof List<?>);
 		@SuppressWarnings("unchecked")
-		List<Map<String,String>> list = (List<Map<String,String>>)scopes;
+		List<Map<String,String>> list = (List<Map<String,String>>)tokenRoles;
 		assertEquals(2, list.size());
 	}
 

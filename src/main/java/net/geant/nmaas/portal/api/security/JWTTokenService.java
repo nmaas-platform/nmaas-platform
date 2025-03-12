@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
@@ -53,10 +54,7 @@ public class JWTTokenService {
 					.setIssuer(jwtSettings.getIssuer())
 					.setIssuedAt(new Date())
 					.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
-					.claim(SCOPES, user.getRoles().stream()
-							.filter(role -> role.getDomain().isActive())
-							.map(role -> new SimpleGrantedAuthority(role.getAuthority()))
-							.collect(Collectors.toList()))
+					.claim("roles", user.getRoles().stream().map(role -> role.getRole().toString()).toArray(String[]::new))
 					.claim(LANGUAGE, user.getSelectedLanguage())
 					.signWith(getSignInKey(jwtSettings.getSigningKey()), SignatureAlgorithm.HS512)
 					.compact();
