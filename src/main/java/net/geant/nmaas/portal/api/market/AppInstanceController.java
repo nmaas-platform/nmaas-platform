@@ -243,7 +243,6 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public AppInstanceViewExtended getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                                   @NotNull Principal principal) {
-        log.warn("Handling getAppInstance request");
         AppInstance appInstance = instanceService.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
         return mapAppInstanceExtended(appInstance);
@@ -494,7 +493,7 @@ public class AppInstanceController extends AppBaseController {
 
         usersToAdd.forEach(a -> {
             if (a.getSshKeys().isEmpty()) {
-                log.info(String.format("[ADD USER TO GITLAB REPO] User [%s] does not have any ssh keys, skipping", a.getUsername()));
+                log.info("[ADD USER TO GITLAB REPO] User [{}] does not have any ssh keys, skipping", a.getUsername());
             } else {
                 AddUserToRepositoryGitlabEvent event = new AddUserToRepositoryGitlabEvent(
                         "AppInstance members list update",
@@ -639,7 +638,6 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceViewExtended mapAppInstanceExtended(AppInstance appInstance) {
-        log.warn("Mapping application instance to extended view");
         if (appInstance == null) {
             return null;
         }
@@ -661,8 +659,6 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceBase addAppInstanceBaseProperties(AppInstanceBase ai, AppInstance appInstance) {
-        log.warn("Adding application instance base properties");
-
         try {
             ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
@@ -685,8 +681,6 @@ public class AppInstanceController extends AppBaseController {
 
     private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
         addAppInstanceBaseProperties(ai, appInstance);
-
-        log.warn("Adding application instance properties");
 
         Identifier identifier = appInstance.getInternalId();
         try {
