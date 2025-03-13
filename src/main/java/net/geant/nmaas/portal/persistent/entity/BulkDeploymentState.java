@@ -7,5 +7,7 @@ public enum BulkDeploymentState {
     FAILED,
     PARTIALLY_FAILED,
 
-    REMOVED
+    REMOVED,
+    CANCELED,
+    PARTIALLY_CANCELED
 }
