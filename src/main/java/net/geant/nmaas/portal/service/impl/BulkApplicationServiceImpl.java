@@ -81,9 +81,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private static final int DEFAULT_DELAY_IN_SECONDS = 15;
     private static final String CSV_HEADER_PARAM_PREFIX = "param.";
     private static final String EMPTY_VALUE = "<EMPTY>";
-
     private static final String PROCESSING_TIME = "START_PROCESSING_TIME";
-
 
     private final ApplicationBaseService applicationBaseService;
     private final ApplicationService applicationService;
@@ -103,7 +101,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     private final ConfigurationManager configurationManager;
-
 
     @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
@@ -223,9 +220,9 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     private Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
-        if(useDeploymentPrefix) {
+        if (useDeploymentPrefix) {
             return Identifier.newInstance(
-                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix() ,
+                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix(),
                             domain,
                             appName.replace(" ", ""),
                             String.valueOf(appInstanceNumber)).toLowerCase());
@@ -425,7 +422,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         } else if (bulkDeployment.getEntries().stream().allMatch(e -> BulkDeploymentState.CANCELED.equals(e.getState()))) {
             bulkDeployment.setState(BulkDeploymentState.CANCELED);
         }
-        log.warn("Bulk main state {} ",bulkDeployment.getState());
+        log.warn("Bulk main state {} ", bulkDeployment.getState());
         //only update if state changed
         if (oldState != null && !oldState.equals(bulkDeployment.getState())) {
             logBulkStateUpdate(bulkDeployment.getId(), bulkDeployment.getState().name());
@@ -433,7 +430,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         }
         return bulkDeployment;
     }
-
 
     @Override
     @Transactional
@@ -504,7 +500,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     @Override
     public void updateMainState(BulkDeployment bulkDeployment) {
         Optional<BulkDeployment> refreshed = bulkDeploymentRepository.findById(bulkDeployment.getId());
-        if(refreshed.isPresent()) {
+        if (refreshed.isPresent()) {
             log.warn("Setting main bulk STATE");
             updateMainBulkState(refreshed.get());
         }
@@ -519,7 +515,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
         bulkDeployment.setEntries(new ArrayList<>());
         return bulkDeployment;
     }
-
 
     private Map<String, String> prepareBulkApplicationDeploymentDetailsMap(AppInstance appInstance, CsvApplication applicationSpec, String errorMessage, Application application) {
         Map<String, String> details = prepareBulkApplicationDeploymentDetailsMap(appInstance, application);
@@ -593,7 +588,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                             .build();
                     result.add(details);
                 } catch (Exception ex) {
-                    log.error("Can not prepare details for {} - ex: {}", Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID)), ex);
+                    log.error("Can not prepare details for {}", Long.valueOf(deployment.getDetails().get(BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID)), ex);
                 }
 
             }
@@ -691,7 +686,6 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
             jobDone = allJobsInBulk - jobsInQueueBulk - ongoingDeployments;
         }
 
-
         return BulkQueueDetails.builder()
                 .jobInProcess(ongoingDeployments)
                 .jobInProcessId(ongoingDeploymentsId)
@@ -699,12 +693,11 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                 .jobInQueue(jobsInQueue)
                 .bulkJobInQueue(jobsInQueueBulk)
                 .build();
-
-
     }
 
     @Override
     public Optional<BulkDeploymentEntry> getBulkEntry(Long bulkEntryId) {
         return bulkDeploymentEntryRepository.findById(bulkEntryId);
     }
+
 }
