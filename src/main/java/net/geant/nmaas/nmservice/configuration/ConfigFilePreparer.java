@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.convertToFreemarkerTemplate;
@@ -47,7 +48,9 @@ class ConfigFilePreparer {
         log.debug("Adding default set of model parameters");
         appConfigurationModel.putAll(deploymentParametersProvider.deploymentParameters(deploymentId));
         log.debug("Adding user provided model parameters");
-        appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
+        if (Objects.nonNull(appConfiguration)) {
+            appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
+        }
         log.debug("Adding bean model parameters");
         appConfigurationModel.put("helper", new ConfigFilePreparerHelper());
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
