@@ -79,7 +79,7 @@ class ConfigFilePreparer {
                     configFileDirectory,
                     stringWriter.toString());
         } catch (TemplateException
-                | IOException e) {
+                 | IOException e) {
             throw new ConfigTemplateHandlingException("Caught some exception during configuration file building from template and user data -> " + e.getMessage());
         }
     }
@@ -90,7 +90,7 @@ class ConfigFilePreparer {
             return;
         }
         List<String> ipAddresses = devices.stream()
-                .map(device -> (String)((Map)device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
+                .map(device -> (String) ((Map) device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
                 .collect(Collectors.toList());
         nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }

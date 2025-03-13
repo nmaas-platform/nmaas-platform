@@ -60,8 +60,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier deployApplication(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
-        if(useDeploymentPrefix) {
-            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() +"-"+ appDeployment.getDeploymentName());
+        if (useDeploymentPrefix) {
+            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() + "-" + appDeployment.getDeploymentName());
         }
         deploymentRepositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
@@ -74,8 +74,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier initApplicationDeployment(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
-        if(useDeploymentPrefix) {
-            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix()  +"-"+ appDeployment.getDeploymentName());
+        if (useDeploymentPrefix) {
+            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() + "-" + appDeployment.getDeploymentName());
         }
         deploymentRepositoryManager.store(appDeployment);
         return deploymentId;

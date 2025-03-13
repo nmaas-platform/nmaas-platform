@@ -1,15 +1,5 @@
 package net.geant.nmaas.orchestration.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import net.geant.nmaas.orchestration.Identifier;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.Type;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +12,14 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import net.geant.nmaas.orchestration.Identifier;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
 
 import java.util.ArrayList;
@@ -46,45 +44,63 @@ public class AppDeployment {
     @Column(name = "id")
     private Long id;
 
-    /** Unique identifier of this deployment. */
+    /**
+     * Unique identifier of this deployment.
+     */
     @ToString.Include
     @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
-    /** Code Name of the client domain for this deployment. */
+    /**
+     * Code Name of the client domain for this deployment.
+     */
     @ToString.Include
     @Column(nullable = false)
     private String domain;
 
-    /** Identifier of the application being deployed. */
+    /**
+     * Identifier of the application being deployed.
+     */
     @Column(nullable = false)
     private Identifier applicationId;
 
-    /** Name of the deployment provided by the user. */
+    /**
+     * Name of the deployment provided by the user.
+     */
     @ToString.Include(name = "appInstanceName")
     @Column(nullable = false)
     private String deploymentName;
 
-    /** Current deployment state. */
+    /**
+     * Current deployment state.
+     */
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private AppDeploymentState state = AppDeploymentState.REQUESTED;
 
-    /** Initial application configuration provided by the user. */
+    /**
+     * Initial application configuration provided by the user.
+     */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppConfiguration configuration;
 
-    /** Store all deployment state changes */
+    /**
+     * Store all deployment state changes
+     */
     @OneToMany(mappedBy = "app", orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default
     private List<AppDeploymentHistory> history = new ArrayList<>();
 
-    /** Indicates if GitLab instance is required during deployment */
+    /**
+     * Indicates if GitLab instance is required during deployment
+     */
     @Column(nullable = false)
     private boolean configFileRepositoryRequired;
 
-    /** Indicates if configuration updates during runtime are supported */
+    /**
+     * Indicates if configuration updates during runtime are supported
+     */
     @Column(nullable = false)
     private boolean configUpdateEnabled;
 
@@ -97,7 +113,9 @@ public class AppDeployment {
     @Column(nullable = false)
     private boolean termsAcceptanceRequired;
 
-    /** Contains information about deployment fails */
+    /**
+     * Contains information about deployment fails
+     */
     @Lob
     @JdbcType(VarcharJdbcType.class)
     @Column(columnDefinition = "TEXT")
@@ -109,11 +127,13 @@ public class AppDeployment {
 
     private Long instanceId;
 
-    /** Globally unique descriptive application deployment identifier */
+    /**
+     * Globally unique descriptive application deployment identifier
+     */
     @Column(nullable = false)
     private Identifier descriptiveDeploymentId;
 
-    public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState){
+    public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState) {
         history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
     }
 
