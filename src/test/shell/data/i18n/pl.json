@@ -1271,7 +1271,9 @@
       "COMPLETED" : "Zakończone",
       "FAILED" : "Nieudane",
       "PARTIALLY_FAILED" : "Częściowo nieudane",
-      "REMOVED" : "Usunięta"
+      "REMOVED" : "Usunięta",
+      "CANCELED" : "Anulowane",
+      "PARTIALLY_CANCELED" : "Częściowo anulowane"
     },
     "REMOVE" : {
       "HEADER" : "Usuń grupę",
