@@ -278,7 +278,8 @@ public class KubernetesManager implements ContainerOrchestrator {
         inputAccessMethods.forEach(m -> {
             ServiceAccessMethod updated = copy(m);
             switch (m.getType()) {
-                case INTERNAL, LOCAL -> {}
+                case INTERNAL, LOCAL -> {
+                }
                 case DEFAULT -> updated.setUrl(serviceExternalUrl);
                 case EXTERNAL -> updated.setUrl(updated.getName().toLowerCase() + "-" + serviceExternalUrl);
                 case PUBLIC -> {
@@ -362,7 +363,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             username = deployParameters.get(HelmChartIngressVariable.ACCESS_USER);
             return username + "@" + ipAddress;
         } else {
-            return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
+            return "SSH" .equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
         }
     }
 
@@ -379,10 +380,12 @@ public class KubernetesManager implements ContainerOrchestrator {
                         if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
                             Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
                             janitorService.checkServiceExists(serviceName, service.getDomain());
-                            String username;
-                            username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
-                            m.setUrl(username != null && !username.isEmpty()?
-                                    username + "@" + serviceName.value(): serviceName.value());
+                            String lbServiceIp = janitorService.retrieveServiceIp(serviceName, service.getDomain());
+                            String username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
+                            String ipWithPortString = getIpAddressWithPort(lbServiceIp, m.getDeployParameters());
+                            m.setUrl(username != null && !username.isEmpty() ?
+                                    username + "@" + serviceName.value() + " : " + m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER)
+                                    : getUserAtIpAddressUrl(ipWithPortString, m.getProtocol(), m.getDeployParameters()));
                         }
                         return m;
                     })
