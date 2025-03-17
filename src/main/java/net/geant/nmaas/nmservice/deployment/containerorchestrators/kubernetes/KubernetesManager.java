@@ -382,7 +382,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                             janitorService.checkServiceExists(serviceName, service.getDomain());
                             String username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
                             m.setUrl(username != null && !username.isEmpty()?
-                                    username + "@" + serviceName.value()+":" : serviceName.value());
+                                    username + "@" + serviceName.value() : serviceName.value());
                             if(m.getDeployParameters().containsKey(HelmChartIngressVariable.K8S_SERVICE_PORT)) {
                                 m.setUrl(m.getUrl() + ":" + m.getDeployParameters().get(HelmChartIngressVariable.K8S_SERVICE_PORT));
                             }
