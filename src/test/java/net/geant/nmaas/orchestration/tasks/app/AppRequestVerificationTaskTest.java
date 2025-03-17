@@ -37,7 +37,7 @@ public class AppRequestVerificationTaskTest {
     }
 
     @Test
-    public void shouldTriggerRequestVerify() {
+    public void shouldTriggerRequestVerify() throws InterruptedException {
         when(deployments.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().applicationId(Identifier.newInstance(10L)).build()));
         when(applications.findById(any(Long.class))).thenReturn(Optional.of(new Application()));
         task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
@@ -45,7 +45,7 @@ public class AppRequestVerificationTaskTest {
     }
 
     @Test
-    public void shouldNotTriggerRequestVerifyIfExceptionRaised() {
+    public void shouldNotTriggerRequestVerifyIfExceptionRaised() throws InterruptedException {
         when(deployments.findByDeploymentId(deploymentId2)).thenReturn(Optional.empty());
         task.trigger(new AppVerifyRequestActionEvent(this, deploymentId2));
         verifyNoMoreInteractions(deploy);
