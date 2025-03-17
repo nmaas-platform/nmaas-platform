@@ -28,7 +28,8 @@ public class AppConfigurationTask {
     @EventListener
     @Transactional
     @Loggable(LogLevel.INFO)
-    public void trigger(AppApplyConfigurationActionEvent event) {
+    public void trigger(AppApplyConfigurationActionEvent event) throws InterruptedException {
+        Thread.sleep(1000);
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = repositoryManager.load(deploymentId);

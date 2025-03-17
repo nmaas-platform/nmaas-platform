@@ -40,4 +40,6 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
 
     @Query("SELECT d.appName AS applicationName, COUNT(d.appName) AS count FROM AppDeployment AS d WHERE d.state = 'APPLICATION_DEPLOYMENT_VERIFIED' GROUP BY d.appName")
     List<AppDeploymentCount> countAllRunningByAppName();
+
+    boolean existsByDeploymentId(Identifier deploymentId);
 }

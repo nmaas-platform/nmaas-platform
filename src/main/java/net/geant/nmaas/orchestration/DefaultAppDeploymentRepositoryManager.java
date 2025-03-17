@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
@@ -23,19 +23,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DefaultAppDeploymentRepositoryManager implements AppDeploymentRepositoryManager {
 
-    private AppDeploymentRepository repository;
-
-    private UserRepository userRepository;
-
-    private SSHKeyRepository sshKeyRepository;
+    private final AppDeploymentRepository repository;
+    private final UserRepository userRepository;
+    private final SSHKeyRepository sshKeyRepository;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void store(AppDeployment appDeployment) {
-        if (repository.findByDeploymentId(appDeployment.getDeploymentId()).isPresent()) {
+        if (repository.existsByDeploymentId(appDeployment.getDeploymentId())) {
             throw new InvalidDeploymentIdException("Deployment with id " + appDeployment.getDeploymentId() + " already exists in the repository.");
         }
         appDeployment.addChangeOfStateToHistory(null, appDeployment.getState());
