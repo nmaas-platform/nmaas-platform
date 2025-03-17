@@ -23,7 +23,7 @@ public class AppRestartTask {
             serviceDeployment.restartService(event.getRelatedTo());
         } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            log.error("Error reported at {}", timestamp, ex);
         }
     }
 

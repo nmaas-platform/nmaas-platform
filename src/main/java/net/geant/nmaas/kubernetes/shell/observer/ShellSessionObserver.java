@@ -76,10 +76,10 @@ public class ShellSessionObserver implements Observer, Serializable {
     public void update(Observable observable, Object o) {
         try {
             this.emitter.send(o);
-            log.debug("Message:\t" + o.toString());
+            log.debug("Message: {}", o);
         } catch (IOException e) {
             this.emitter.completeWithError(e);
-            log.error("Failed to send message:\t" + o.toString());
+            log.error("Failed to send message: {}", o);
             log.error(e.getMessage());
         }
     }
