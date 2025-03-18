@@ -384,7 +384,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                             m.setUrl(username != null && !username.isEmpty() ?
                                     username + "@" + serviceName.value() : serviceName.value());
                             if (m.getDeployParameters().containsKey(HelmChartIngressVariable.K8S_SERVICE_PORT)) {
-                                m.setUrl(m.getUrl() + ":" + m.getDeployParameters().get(HelmChartIngressVariable.K8S_SERVICE_PORT));
+                                m.setUrl(m.getUrl() + " (port: " + m.getDeployParameters().get(HelmChartIngressVariable.K8S_SERVICE_PORT) + ")");
                             }
                         }
                         return m;

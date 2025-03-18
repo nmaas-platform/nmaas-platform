@@ -30,11 +30,11 @@ gitProperties {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.25.5'
+        artifact = 'com.google.protobuf:protoc:4.29.3'
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.64.0'
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.69.1'
             //path = './protoc-gen-grpc-java.exe'
         }
     }
@@ -133,10 +133,10 @@ dependencies {
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:6.13.5')
 
-    implementation('com.google.protobuf:protobuf-java:3.25.5')
-    implementation('io.grpc:grpc-netty-shaded:1.62.2')
-    implementation('io.grpc:grpc-protobuf:1.62.2')
-    implementation('io.grpc:grpc-stub:1.62.2')
+    implementation('com.google.protobuf:protobuf-java:4.29.3')
+    implementation('io.grpc:grpc-netty-shaded:1.69.1')
+    implementation('io.grpc:grpc-protobuf:1.69.1')
+    implementation('io.grpc:grpc-stub:1.69.1')
 
     implementation('com.opencsv:opencsv:5.9')
 
