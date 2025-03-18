@@ -40,11 +40,16 @@ public class TokenAuthenticationService {
 
         String username = jwtTokenService.getClaims(token).getSubject();
         Object roles = jwtTokenService.getClaims(token).get("roles");
+        Object globalRole = jwtTokenService.getClaims(token).get("global_role");
 
-        Set<SimpleGrantedAuthority> authorities = null;
-
+        Set<SimpleGrantedAuthority> authorities  = new HashSet<>();
+        if (globalRole instanceof List<?>) {
+            for (Object role : (List<?>) globalRole) {
+                authorities.add(new SimpleGrantedAuthority(role.toString()));
+            }
+        }
+        authorities.add(new SimpleGrantedAuthority(globalRole.toString()));
         if (roles instanceof List<?>) {
-            authorities = new HashSet<>();
             for (Object role : (List<?>) roles) {
                 authorities.add(new SimpleGrantedAuthority(role.toString()));
             }
