@@ -74,11 +74,11 @@ public class PodShellController {
     /**
      * This method is responsible for completing session, closing and removing connection
      * @param principal - principal
-     * @param sessionId - session identifier
+     * @param id - session identifier
      */
     @DeleteMapping(value = "/{id}")
-    public void complete(Principal principal, @PathVariable String sessionId) {
-        k8sShellService.teardownShellSession(sessionId);
+    public void complete(Principal principal, @PathVariable String id) {
+        k8sShellService.teardownShellSession(id);
     }
 
     /**
