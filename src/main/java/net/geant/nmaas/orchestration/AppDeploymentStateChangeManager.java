@@ -149,7 +149,7 @@ public class AppDeploymentStateChangeManager {
                 .findFirst()
                 .orElse("");
 
-        if(!url.startsWith("https://")) {
+        if (!(url.startsWith("https://") || url.startsWith("http://"))) {
             url = "https://" + url;
         }
         return url;
