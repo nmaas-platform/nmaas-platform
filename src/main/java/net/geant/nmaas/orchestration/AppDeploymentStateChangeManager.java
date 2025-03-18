@@ -131,12 +131,7 @@ public class AppDeploymentStateChangeManager {
     private MailAttributes getMailAttributes(AppDeployment appDeployment) {
         return MailAttributes.builder()
                 .otherAttributes(Map.of(
-                        "accessURL", deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
-                                .getServiceAccessMethods().stream()
-                                .filter(m -> !Arrays.asList(ServiceAccessMethodType.INTERNAL, ServiceAccessMethodType.LOCAL).contains(m.getType()))
-                                .map(ServiceAccessMethodView::getUrl)
-                                .findFirst()
-                                .orElse(""),
+                        "accessURL", prepareDeployUrl(appDeployment),
                         "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                         "owner", appDeployment.getOwner(),
                         "appInstanceName", appDeployment.getDeploymentName(),
@@ -144,6 +139,20 @@ public class AppDeploymentStateChangeManager {
                 ))
                 .mailType(MailType.APP_DEPLOYED)
                 .build();
+    }
+
+    private String prepareDeployUrl(AppDeployment appDeployment) {
+        String url = deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
+                .getServiceAccessMethods().stream()
+                .filter(m -> !Arrays.asList(ServiceAccessMethodType.INTERNAL, ServiceAccessMethodType.LOCAL).contains(m.getType()))
+                .map(ServiceAccessMethodView::getUrl)
+                .findFirst()
+                .orElse("");
+
+        if (!(url.startsWith("https://") || url.startsWith("http://"))) {
+            url = "https://" + url;
+        }
+        return url;
     }
 
     private MailAttributes getMailAttributes(AppDeployment appDeployment, String error) {
