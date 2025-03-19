@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.constraints.NotNull;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -25,6 +27,11 @@ public class ProfileController {
     public UserView retrieveLoggedUser(@NotNull Principal principal) {
         User user = this.getUser(principal.getName());
         return this.modelMapper.map(user, UserView.class);
+    }
+    @GetMapping("/user/roles")
+    public List<?> retrieveLoggedUsersRoles(@NotNull Principal principal) {
+        User user = this.getUser(principal.getName());
+        return this.modelMapper.map(user.getRoles(), List.class);
     }
 
     private User getUser(String username) {
