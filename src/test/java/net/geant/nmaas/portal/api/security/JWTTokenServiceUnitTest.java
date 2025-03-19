@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -62,9 +63,9 @@ class JWTTokenServiceUnitTest {
         when(jwtSettings.getSigningKey()).thenReturn(signingKey);
         when(jwtSettings.getIssuer()).thenReturn("testIssuer");
         when(jwtSettings.getTokenValidFor()).thenReturn(3600000L); // 1h
-        Domain domain = mock(Domain.class);
-        User user = new User("testUser", true, "", domain, mock(Role.class));
-        UserRole role = new UserRole(user, domain, Role.ROLE_USER);
+        Domain domain = new Domain("GLOBAL", "globalTestDomain");
+        User user = new User("testUser", true, "", domain, Role.ROLE_GUEST);
+        UserRole role = new UserRole(user, domain, Role.ROLE_GUEST);
         List<UserRole> roles = List.of(role);
         user.setRoles(roles);
 
@@ -78,8 +79,9 @@ class JWTTokenServiceUnitTest {
 
     @Test
     void shouldGenerateTokenSuccessfullyAndHaveRoles() {
+        jwtTokenService.globalDomain = "GLOBAL";
         String signingKey = "xJNy3aPz2PqY6+X7sZKc7Jt8T+ZP5lJZ9xH3Hh6Jc6oZP5lJZ9xH3Hh6Jc6oZP5lJZ9xH3Hh6Jc6o+X3sZKc7Jt8T+ZP5lJZ9xH3Hh6Jc6o=";
-        Domain domain = mock(Domain.class);
+        Domain domain = new Domain("GLOBAL", "globalTestDomain");
         User user = new User("testUser", true, "", domain, mock(Role.class));
         UserRole role = new UserRole(user, domain, Role.ROLE_USER);
         List<UserRole> roles = List.of(role);
@@ -93,6 +95,6 @@ class JWTTokenServiceUnitTest {
         Claims claims = jwtTokenService.getClaims(token);
 
         assertNotNull(claims);
-        assertEquals(claims.get("roles"), List.of("ROLE_USER"));
+        assertEquals(List.of("ROLE_USER"),claims.get("global_role"));
     }
 }

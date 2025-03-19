@@ -79,11 +79,13 @@ class TokenAuthenticationServiceTest {
         String validHeader = AUTH_METHOD + " " + token;
         String username = "testUser";
 
-        List<String> roles = Arrays.asList("ROLE_USER", "ROLE_ADMIN");
+        List<String> roles = List.of("ROLE_USER");
+        List<String> globalRole = List.of("ROLE_ADMIN");
 
         Claims mockClaims = mock(Claims.class);
         when(mockClaims.getSubject()).thenReturn(username);
         when(mockClaims.get("roles")).thenReturn(roles);
+        when(mockClaims.get("global_role")).thenReturn(globalRole);
 
         when(jwtTokenService.getClaims(token)).thenReturn(mockClaims);
 

@@ -48,7 +48,6 @@ public class TokenAuthenticationService {
                 authorities.add(new SimpleGrantedAuthority(role.toString()));
             }
         }
-        authorities.add(new SimpleGrantedAuthority(globalRole.toString()));
         if (roles instanceof List<?>) {
             for (Object role : (List<?>) roles) {
                 authorities.add(new SimpleGrantedAuthority(role.toString()));
