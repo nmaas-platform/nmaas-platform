@@ -105,7 +105,7 @@ public class DomainController extends AppBaseController {
 
 		if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
 				|| user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
-				&& (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_VL_DOMAIN_ADMIN))) {
+				&& (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
 
 			return modelMapper.map(domain, DomainView.class);
 		}
