@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.NoArgsConstructor;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -33,7 +32,7 @@ public class GenericPermissionCheck extends BasePermissionCheck {
 		permMatrix.put(Role.ROLE_USER, new Permissions[] {});
 		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {});
 		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {});
-		permMatrix.put(Role.ROLE_VL_MANAGER, new Permissions[] {});
+		permMatrix.put(Role.ROLE_GROUP_MANAGER, new Permissions[] {});
 		permMatrix.put(Role.ROLE_VL_DOMAIN_ADMIN, new Permissions[] {});
 	}
 

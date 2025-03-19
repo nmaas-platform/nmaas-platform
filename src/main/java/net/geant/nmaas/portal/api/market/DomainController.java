@@ -270,7 +270,7 @@ public class DomainController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')" )
 	public List<DomainGroupView> getDomainGroups(Principal principal) {
 		User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
-		if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_VL_MANAGER))) {
+		if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
 			return domainGroupService.getAllDomainGroups().stream().filter(group -> group.getManagers().stream()
 					.anyMatch(groupUser -> groupUser.getId().equals(user.getId()))).collect(Collectors.toList());
 		}

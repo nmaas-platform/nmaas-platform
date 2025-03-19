@@ -70,7 +70,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_MANAGER;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
 
 @RestController
 @RequestMapping("/api")
@@ -495,7 +495,7 @@ public class UsersController {
         final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 
         if (domain.equals(globalDomain)) {
-            if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST, ROLE_VL_MANAGER).noneMatch(allowed -> allowed == role))) {
+            if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST, ROLE_GROUP_MANAGER).noneMatch(allowed -> allowed == role))) {
                 throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
             }
         } else {
@@ -623,7 +623,7 @@ public class UsersController {
         List<User> allUsers = this.userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
-                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN) || role.getRole().equals(ROLE_VL_MANAGER)))
+                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN) || role.getRole().equals(ROLE_GROUP_MANAGER)))
                 .collect(Collectors.toList());
 
         return allUsers.stream()
