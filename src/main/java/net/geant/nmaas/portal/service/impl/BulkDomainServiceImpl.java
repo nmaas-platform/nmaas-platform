@@ -210,7 +210,9 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             } else {
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
                 User user = userService.findByUsername(creator.getUsername()).orElseThrow(() -> new MissingElementException("User not found"));
-                userRoleRepository.save(new UserRole(user, domain, ROLE_VL_DOMAIN_ADMIN));
+                if (!userService.hasPrivilege(user, domain, ROLE_VL_DOMAIN_ADMIN)) {
+                    userRoleRepository.save(new UserRole(user, domain, ROLE_VL_DOMAIN_ADMIN));
+                }
             }
         });
     }
