@@ -593,7 +593,7 @@ public class UsersController {
     }
 
     @GetMapping(value = "/users/search", params = {"searchPart"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
         List<UserViewMinimal> result = new ArrayList<>();
         String search = searchPart.toLowerCase();
@@ -616,7 +616,7 @@ public class UsersController {
     }
 
     @GetMapping(value = "/users/search/managers", params = {"searchPart"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchGroupManagers(@RequestParam(required = false) String searchPart) {
         String search = searchPart.toLowerCase();
 
