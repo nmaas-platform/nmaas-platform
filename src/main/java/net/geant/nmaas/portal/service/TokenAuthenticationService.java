@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
@@ -10,48 +11,50 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Service
 @Slf4j
 public class TokenAuthenticationService {
 
-	private static final String AUTH_HEADER = "Authorization";
-	private static final String AUTH_METHOD = "Bearer";
-	
-	private final JWTTokenService jwtTokenService;
+    private static final String AUTH_HEADER = "Authorization";
+    private static final String AUTH_METHOD = "Bearer";
 
-	@Autowired
-	public TokenAuthenticationService(JWTTokenService jwtTokenService) {
-		this.jwtTokenService = jwtTokenService;
-	}
+    private final JWTTokenService jwtTokenService;
 
-	public Authentication getAuthentication(HttpServletRequest httpRequest) {
-		String authHeader = httpRequest.getHeader(AUTH_HEADER);
-		if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " ")) {
-			throw new AuthenticationMethodNotSupportedException(AUTH_HEADER + " contains unsupported method.");
-		}
-		String token = authHeader.substring(AUTH_METHOD.length() + 1);
+    @Autowired
+    public TokenAuthenticationService(JWTTokenService jwtTokenService) {
+        this.jwtTokenService = jwtTokenService;
+    }
 
-		log.trace("Jwt token auth service: {} {} ", jwtTokenService.getClaims(token).getSubject(),jwtTokenService.getClaims(token).get("scopes") );
+    public Authentication getAuthentication(HttpServletRequest httpRequest) {
+        String authHeader = httpRequest.getHeader(AUTH_HEADER);
+        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " ")) {
+            throw new AuthenticationMethodNotSupportedException(AUTH_HEADER + " contains unsupported method.");
+        }
+        String token = authHeader.substring(AUTH_METHOD.length() + 1);
 
-		String username = jwtTokenService.getClaims(token).getSubject();
-		Object scopes = jwtTokenService.getClaims(token).get("scopes");
+        log.trace("Jwt token auth service: {} {} ", jwtTokenService.getClaims(token).getSubject(), jwtTokenService.getClaims(token).get("roles"));
 
-		Set<SimpleGrantedAuthority> authorities = null;
+        String username = jwtTokenService.getClaims(token).getSubject();
+        Object roles = jwtTokenService.getClaims(token).get("roles");
+        Object globalRole = jwtTokenService.getClaims(token).get("global_role");
 
-		if (scopes instanceof List<?>) {
-			authorities = new HashSet<>();
-			for (Map<String, String> authority : (List<Map<String, String>>) scopes)
-				for (String role : authority.values())
-					authorities.add(new SimpleGrantedAuthority(role.substring(role.indexOf(':') + 1)));
-		}
+        Set<SimpleGrantedAuthority> authorities  = new HashSet<>();
+        if (globalRole instanceof List<?>) {
+            for (Object role : (List<?>) globalRole) {
+                authorities.add(new SimpleGrantedAuthority(role.toString()));
+            }
+        }
+        if (roles instanceof List<?>) {
+            for (Object role : (List<?>) roles) {
+                authorities.add(new SimpleGrantedAuthority(role.toString()));
+            }
+        }
 
-		return new UsernamePasswordAuthenticationToken(username, null, authorities);
-	}
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+    }
 
 }

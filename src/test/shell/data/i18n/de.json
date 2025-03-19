@@ -1078,8 +1078,8 @@
       "ROLE_GUEST": "Guest",
       "ROLE_INCOMPLETE":  "Account creation in progress",
       "ROLE_NOT_ACCEPTED" : "Account not active yet",
-      "ROLE_VL_MANAGER" : "Virtual lab manager",
-      "ROLE_VL_DOMAIN_ADMIN" : "Virtual lab domain admin"
+      "ROLE_GROUP_MANAGER" : "Virtual lab manager",
+      "ROLE_GROUP_DOMAIN_ADMIN" : "Virtual lab domain admin"
     }
   },
   "PAGINATION": {

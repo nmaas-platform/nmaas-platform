@@ -82,7 +82,7 @@ public class DomainController extends AppBaseController {
 
 	@GetMapping
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
 	public List<DomainView> getDomains() {
 		return domainService.getDomains().stream()
 				.map(d -> {
@@ -105,7 +105,7 @@ public class DomainController extends AppBaseController {
 
 		if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
 				|| user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
-				&& (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_VL_DOMAIN_ADMIN))) {
+				&& (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
 
 			return modelMapper.map(domain, DomainView.class);
 		}
@@ -244,7 +244,7 @@ public class DomainController extends AppBaseController {
 
 	@PostMapping("/group")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')" )
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')" )
 	public Id createDomainGroup(@RequestBody DomainGroupView domainGroup) {
 		if (domainGroupService.existDomainGroup(domainGroup.getName(), domainGroup.getCodename())) {
 			throw new ProcessingException("Domain group already exists.");
@@ -260,17 +260,17 @@ public class DomainController extends AppBaseController {
 
 	@DeleteMapping("/group/{domainGroupId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
 	public void deleteDomainGroup(@PathVariable Long domainGroupId) {
 		this.domainGroupService.deleteDomainGroup(domainGroupId);
 	}
 
 	@GetMapping("/group")
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')" )
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')" )
 	public List<DomainGroupView> getDomainGroups(Principal principal) {
 		User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new IllegalArgumentException("User not found"));
-		if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_VL_MANAGER))) {
+		if (user.getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_GROUP_MANAGER))) {
 			return domainGroupService.getAllDomainGroups().stream().filter(group -> group.getManagers().stream()
 					.anyMatch(groupUser -> groupUser.getId().equals(user.getId()))).collect(Collectors.toList());
 		}
@@ -279,7 +279,7 @@ public class DomainController extends AppBaseController {
 
 	@GetMapping("/group/{domainGroupId}")
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')" )
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')" )
 	public DomainGroupView getDomainGroup(@PathVariable Long domainGroupId, Principal principal) throws AccessDeniedException {
 		DomainGroupView domainGroupView = domainGroupService.getDomainGroup(domainGroupId);
 		if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
@@ -292,7 +292,7 @@ public class DomainController extends AppBaseController {
 
 	@PostMapping("/group/{domainGroupCodeName}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
 	public DomainGroupView addDomainsToGroup(@PathVariable String domainGroupCodeName,
 											 @RequestBody List<Long> domainIds) {
 		return domainGroupService.addDomainsToGroup(
@@ -302,7 +302,7 @@ public class DomainController extends AppBaseController {
 
 	@PatchMapping("/group/{domainGroupId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
 	public DomainGroupView deleteDomainFromGroup(@PathVariable Long domainGroupId, @RequestBody Long domainId) {
 		return domainGroupService.deleteDomainFromGroup(
 				domainService.findDomain(domainId).orElseThrow(() -> new IllegalArgumentException(String.format("Domain with id %s doesn't exist", domainId))),
@@ -311,7 +311,7 @@ public class DomainController extends AppBaseController {
 
 	@PutMapping("/group/{domainGroupId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
 	public Id updateDomainGroup(@PathVariable Long domainGroupId, @RequestBody DomainGroupView domainGroupView, Principal principal) throws AccessDeniedException {
 		DomainGroupView domainGroup = domainGroupService.getDomainGroup(domainGroupId);
 		if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||
@@ -326,7 +326,7 @@ public class DomainController extends AppBaseController {
 
 	@PutMapping("/group/members/{domainGroupId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
 	public DomainGroupView updateDomainGroupMembers(@PathVariable Long domainGroupId, @RequestBody List<UserViewMinimal> members, Principal principal) throws AccessDeniedException {
 		DomainGroupView domainGroup = domainGroupService.getDomainGroup(domainGroupId);
 		if (getUser(principal.getName()).getRoles().stream().anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN)) ||

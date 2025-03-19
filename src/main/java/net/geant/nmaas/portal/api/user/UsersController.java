@@ -69,8 +69,8 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_MANAGER;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
 
 @RestController
 @RequestMapping("/api")
@@ -495,11 +495,11 @@ public class UsersController {
         final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException(GLOBAL_DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 
         if (domain.equals(globalDomain)) {
-            if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST, ROLE_VL_MANAGER).noneMatch(allowed -> allowed == role))) {
+            if ((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST, ROLE_GROUP_MANAGER).noneMatch(allowed -> allowed == role))) {
                 throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
             }
         } else {
-            if (Stream.of(ROLE_GUEST, ROLE_USER, ROLE_DOMAIN_ADMIN, ROLE_VL_DOMAIN_ADMIN).noneMatch(allowed -> allowed == role)) {
+            if (Stream.of(ROLE_GUEST, ROLE_USER, ROLE_DOMAIN_ADMIN, ROLE_GROUP_DOMAIN_ADMIN).noneMatch(allowed -> allowed == role)) {
                 throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
             }
         }
@@ -593,7 +593,7 @@ public class UsersController {
     }
 
     @GetMapping(value = "/users/search", params = {"searchPart"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchUser(@RequestParam(required = false) String searchPart, @RequestParam(required = false) Long domainId) {
         List<UserViewMinimal> result = new ArrayList<>();
         String search = searchPart.toLowerCase();
@@ -616,14 +616,14 @@ public class UsersController {
     }
 
     @GetMapping(value = "/users/search/managers", params = {"searchPart"})
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")
     public List<UserViewMinimal> searchGroupManagers(@RequestParam(required = false) String searchPart) {
         String search = searchPart.toLowerCase();
 
         List<User> allUsers = this.userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
-                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN) || role.getRole().equals(ROLE_VL_MANAGER)))
+                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN) || role.getRole().equals(ROLE_GROUP_MANAGER)))
                 .collect(Collectors.toList());
 
         return allUsers.stream()

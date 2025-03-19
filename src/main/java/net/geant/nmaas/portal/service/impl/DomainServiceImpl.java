@@ -328,7 +328,7 @@ public class DomainServiceImpl implements DomainService {
         User user = getUser(userId);
 
         if (userRoleRepository.findByDomainAndUserAndRole(domain, user, role) == null) {
-            if (role != Role.ROLE_VL_DOMAIN_ADMIN) {
+            if (role != Role.ROLE_GROUP_DOMAIN_ADMIN) {
                 removePreviousRoleInDomain(domain, user);
             }
             userRoleRepository.save(new UserRole(user, domain, role));
@@ -481,7 +481,7 @@ public class DomainServiceImpl implements DomainService {
         });
         userToDelete.forEach(userId -> {
             domainGroup.getDomains().forEach(domain -> {
-                this.removeMemberRole(domain.getId(), userId, Role.ROLE_VL_DOMAIN_ADMIN);
+                this.removeMemberRole(domain.getId(), userId, Role.ROLE_GROUP_DOMAIN_ADMIN);
             });
         });
     }
@@ -490,7 +490,7 @@ public class DomainServiceImpl implements DomainService {
     public void updateRolesInDomainGroupByUsers(DomainGroupView view) {
         view.getDomains().forEach(domain -> {
             view.getManagers().forEach(user -> {
-                this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
+                this.addMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
             });
         });
     }
@@ -504,7 +504,7 @@ public class DomainServiceImpl implements DomainService {
 
         toDeleteRole.forEach(user -> {
             view.getDomains().forEach(domain -> {
-                this.removeMemberRole(domain.getId(), user.getId(), Role.ROLE_VL_DOMAIN_ADMIN);
+                this.removeMemberRole(domain.getId(), user.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN);
             });
         });
 
