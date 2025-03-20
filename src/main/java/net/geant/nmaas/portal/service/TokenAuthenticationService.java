@@ -53,7 +53,7 @@ public class TokenAuthenticationService {
             String username = jwtTokenService.getClaims(token).getSubject();
             Object roles = jwtTokenService.getClaims(token).get("roles");
             Object globalRole = jwtTokenService.getClaims(token).get("global_role");
-            Set<SimpleGrantedAuthority> authorities  = new HashSet<>();
+            Set<SimpleGrantedAuthority> authorities = new HashSet<>();
             if (globalRole instanceof List<?>) {
                 for (Object role : (List<?>) globalRole) {
                     authorities.add(new SimpleGrantedAuthority(role.toString()));
@@ -64,23 +64,23 @@ public class TokenAuthenticationService {
                     authorities.add(new SimpleGrantedAuthority(role.toString()));
                 }
             }
-	    return new UsernamePasswordAuthenticationToken(username, null, authorities);
-         } else if (isUUIDToken(token)) {
-	    User user = secretPasswordService.findUserBasedOnToken(token, userApiTokenRepository.findAllByValid(true));
-	    Set<SimpleGrantedAuthority> authorities = user.getRoles().stream().filter(role -> role.getDomain().isActive()).map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toSet());
-	    return new UsernamePasswordAuthenticationToken(user.getUsername(), null, authorities);
-	 } else {
-	    throw new AuthenticationMethodNotSupportedException("Not supported token type");
-	 }
+            return new UsernamePasswordAuthenticationToken(username, null, authorities);
+        } else if (isUUIDToken(token)) {
+            User user = secretPasswordService.findUserBasedOnToken(token, userApiTokenRepository.findAllByValid(true));
+            Set<SimpleGrantedAuthority> authorities = user.getRoles().stream().filter(role -> role.getDomain().isActive()).map(role -> new SimpleGrantedAuthority(role.getRole().authority())).collect(Collectors.toSet());
+            return new UsernamePasswordAuthenticationToken(user.getUsername(), null, authorities);
+        } else {
+            throw new AuthenticationMethodNotSupportedException("Not supported token type");
+        }
     }
 
     private boolean isUUIDToken(String token) {
-	return UUID_PATTERN.matcher(token).matches();
+        return UUID_PATTERN.matcher(token).matches();
     }
 
     private boolean isJWTToken(String token) {
-	// JWT has three parts separated by dots
-	return token.split("\\.").length == 3;
+        // JWT has three parts separated by dots
+        return token.split("\\.").length == 3;
     }
 
 }
