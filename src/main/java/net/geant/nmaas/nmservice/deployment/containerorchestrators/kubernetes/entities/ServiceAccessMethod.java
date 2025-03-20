@@ -90,4 +90,17 @@ public class ServiceAccessMethod {
         return serviceAccessMethod;
     }
 
+    public static ServiceAccessMethod copy(ServiceAccessMethod method) {
+        ServiceAccessMethod copy = new ServiceAccessMethod();
+        copy.setId(method.getId());
+        copy.setName(method.getName());
+        copy.setType(method.getType());
+        copy.setProtocol(method.getProtocol());
+        copy.setCondition(method.getCondition());
+        copy.setEnabled(method.isEnabled());
+        copy.setDeployParameters(method.getDeployParameters());
+        copy.setUrl(method.getUrl());
+        return copy;
+    }
+
 }

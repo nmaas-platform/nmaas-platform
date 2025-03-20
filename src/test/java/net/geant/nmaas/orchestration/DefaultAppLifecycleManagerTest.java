@@ -15,6 +15,7 @@ import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -50,9 +51,11 @@ public class DefaultAppLifecycleManagerTest {
 
     private DefaultAppLifecycleManager appLifecycleManager;
 
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+
     @BeforeEach
     void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService, appTermsAcceptanceService);
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService, appTermsAcceptanceService, configurationManager);
     }
 
     @Test

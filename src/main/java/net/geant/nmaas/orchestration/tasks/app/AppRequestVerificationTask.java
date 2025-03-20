@@ -30,7 +30,8 @@ public class AppRequestVerificationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void trigger(AppVerifyRequestActionEvent event) {
+    public void trigger(AppVerifyRequestActionEvent event) throws InterruptedException {
+        Thread.sleep(1000);
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
@@ -42,7 +43,7 @@ public class AppRequestVerificationTask {
                     application.getAppDeploymentSpec());
         } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            log.error("Error reported at {}", timestamp, ex);
         }
     }
 

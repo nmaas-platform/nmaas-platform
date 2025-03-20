@@ -6,6 +6,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.GroupApi;
 import org.gitlab4j.api.ProjectApi;
@@ -21,8 +22,10 @@ import java.util.Optional;
 
 import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,10 +36,12 @@ public class GitLabConfigHandlerTest {
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
 
     private GitLabConfigHandler handler;
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+
 
     @BeforeEach
     void setup() {
-        handler = new GitLabConfigHandler(repositoryManager, null, gitLabManager);
+        handler = new GitLabConfigHandler(repositoryManager, null, gitLabManager, configurationManager);
     }
 
     @Test
@@ -110,10 +115,10 @@ public class GitLabConfigHandlerTest {
         when(repositoryManager.loadDescriptiveDeploymentId(deploymentId)).thenReturn(descriptiveDeploymentId);
         when(repositoryManager.loadDomain(deploymentId)).thenReturn("DOMAIN");
 
-        handler.createRepository(deploymentId,"test@user.eu");
+        handler.createRepository(deploymentId, "test@user.eu");
 
         verify(userApi).getOptionalUser("test_user.eu");
         verify(projectApi).addMember(350L, 120L, PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL);
     }
-    
+
 }

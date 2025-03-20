@@ -32,7 +32,7 @@ public class ConfigFilePreparerHelper {
 
     static Map<String, Object> createModelEntriesFromUserInput(AppConfiguration appConfiguration) {
         try {
-            return new ObjectMapper().readValue(appConfiguration.getJsonInput(), new TypeReference<Map<String, Object>>() {});
+            return new ObjectMapper().readValue(appConfiguration.getJsonInput(), new TypeReference<>() {});
         } catch (IOException e) {
             throw new UserConfigHandlingException("Wasn't able to map json configuration to model map -> " + e.getMessage());
         }
@@ -54,7 +54,7 @@ public class ConfigFilePreparerHelper {
             generatedConfigId = UUID.randomUUID().toString();
         } while(configurations.stream()
                 .map(NmServiceConfiguration::getConfigId)
-                .collect(Collectors.toList())
+                .toList()
                 .contains(generatedConfigId)
         );
         return generatedConfigId;

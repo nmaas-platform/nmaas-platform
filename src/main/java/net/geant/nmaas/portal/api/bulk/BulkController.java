@@ -54,7 +54,7 @@ public class BulkController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/domains")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> uploadDomains(@NotNull Principal principal, @RequestParam("file") MultipartFile file) {
         log.info("Processing new bulk domain deployment request");
         if (bulkCsvProcessor.isCSVFormat(file)) {
@@ -73,7 +73,7 @@ public class BulkController {
     }
 
     @PostMapping("/apps")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> uploadApplications(
             @NotNull Principal principal,
             @RequestParam("appName") String applicationName,
@@ -114,14 +114,14 @@ public class BulkController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentView> getDeploymentRecord(@PathVariable Long id) {
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
         return ResponseEntity.ok(mapToView(bulk, BulkDeploymentView.class));
     }
 
     @GetMapping(value = "/app/csv/{id}", produces = "text/csv")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<InputStreamResource> getDeploymentDetailsInCSV(@PathVariable Long id) {
         log.info("Processing bulk application deployment details request");
         BulkDeployment bulk = bulkDeploymentRepository.findById(id).orElseThrow();
@@ -144,7 +144,7 @@ public class BulkController {
     }
 
     @GetMapping("/domains/vl")
-    @PreAuthorize("hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
@@ -159,7 +159,7 @@ public class BulkController {
     }
 
     @GetMapping("/apps/vl")
-    @PreAuthorize("hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Missing user " + principal.getName()));
 
@@ -168,7 +168,7 @@ public class BulkController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<Void> removeBulkDeployment(
             @PathVariable Long id,
             @RequestParam(name = "removeAll") boolean removeApps,
@@ -202,13 +202,13 @@ public class BulkController {
     }
 
     @GetMapping("/refresh/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
         return ResponseEntity.ok(mapToView(this.bulkApplicationService.updateState(id)));
     }
 
     @GetMapping("/queue/{id}")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_VL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkQueueDetails> getQueueDetails(@PathVariable Long id) {
         return ResponseEntity.ok(bulkApplicationService.getQueueDetails(id));
     }

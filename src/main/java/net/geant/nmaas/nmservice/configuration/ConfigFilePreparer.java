@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.convertToFreemarkerTemplate;
@@ -47,7 +48,9 @@ class ConfigFilePreparer {
         log.debug("Adding default set of model parameters");
         appConfigurationModel.putAll(deploymentParametersProvider.deploymentParameters(deploymentId));
         log.debug("Adding user provided model parameters");
-        appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
+        if (Objects.nonNull(appConfiguration)) {
+            appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
+        }
         log.debug("Adding bean model parameters");
         appConfigurationModel.put("helper", new ConfigFilePreparerHelper());
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
@@ -65,7 +68,7 @@ class ConfigFilePreparer {
             storeConfigurationInRepository(config);
             configIds.add(configId);
         }
-        log.debug(String.format("Returning configuration files identifiers %s", configIds));
+        log.debug("Returning configuration files identifiers {}", configIds);
         return configIds;
     }
 
@@ -79,7 +82,7 @@ class ConfigFilePreparer {
                     configFileDirectory,
                     stringWriter.toString());
         } catch (TemplateException
-                | IOException e) {
+                 | IOException e) {
             throw new ConfigTemplateHandlingException("Caught some exception during configuration file building from template and user data -> " + e.getMessage());
         }
     }
@@ -90,7 +93,7 @@ class ConfigFilePreparer {
             return;
         }
         List<String> ipAddresses = devices.stream()
-                .map(device -> (String)((Map)device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
+                .map(device -> (String) ((Map) device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
                 .collect(Collectors.toList());
         nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }

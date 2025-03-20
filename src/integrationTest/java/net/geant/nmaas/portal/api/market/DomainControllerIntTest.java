@@ -340,7 +340,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
        when(principalMock.getName()).thenReturn("testUser");
         User user = new User("testUser");
         user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN_ADMIN);
+        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_GROUP_DOMAIN_ADMIN);
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 
@@ -371,7 +371,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(principalMock.getName()).thenReturn("admin");
         User user = new User("admin");
         user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN_ADMIN);
+        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_GROUP_DOMAIN_ADMIN);
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 

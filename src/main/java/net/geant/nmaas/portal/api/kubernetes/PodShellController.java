@@ -51,34 +51,34 @@ public class PodShellController {
     /**
      * Returns stream of events happening on the shell
      * @param principal - principal
-     * @param sessionId - session identifier
+     * @param id - session identifier
      * @return SSE stream of events
      */
     @CrossOrigin
     @GetMapping(value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter getShell(Principal principal, @PathVariable String sessionId) {
-        return k8sShellService.getEmitterForShellSession(sessionId);
+    public SseEmitter getShell(Principal principal, @PathVariable String id) {
+        return k8sShellService.getEmitterForShellSession(id);
     }
 
     /**
      * Sending commands to the shell
      * @param principal - principal
-     * @param sessionId - session identifier
+     * @param id - session identifier
      * @param commandRequest - command or signal to be executed
      */
     @PostMapping(value = "/{id}/command")
-    public void execute(Principal principal, @PathVariable String sessionId, @RequestBody K8sShellCommandRequest commandRequest) {
-        k8sShellService.executeShellCommand(sessionId, commandRequest);
+    public void execute(Principal principal, @PathVariable String id, @RequestBody K8sShellCommandRequest commandRequest) {
+        k8sShellService.executeShellCommand(id, commandRequest);
     }
 
     /**
      * This method is responsible for completing session, closing and removing connection
      * @param principal - principal
-     * @param sessionId - session identifier
+     * @param id - session identifier
      */
     @DeleteMapping(value = "/{id}")
-    public void complete(Principal principal, @PathVariable String sessionId) {
-        k8sShellService.teardownShellSession(sessionId);
+    public void complete(Principal principal, @PathVariable String id) {
+        k8sShellService.teardownShellSession(id);
     }
 
     /**

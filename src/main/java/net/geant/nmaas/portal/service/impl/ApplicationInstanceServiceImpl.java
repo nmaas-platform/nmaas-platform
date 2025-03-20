@@ -144,7 +144,6 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     @Override
-    @Loggable(LogLevel.DEBUG)
     public Optional<AppInstance> findByInternalId(Identifier deploymentId) {
         checkParam(deploymentId);
         return appInstanceRepo.findByInternalId(deploymentId);

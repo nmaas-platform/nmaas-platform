@@ -15,6 +15,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -26,15 +28,18 @@ public class AppConfigurationTask {
     @EventListener
     @Transactional
     @Loggable(LogLevel.INFO)
-    public void trigger(AppApplyConfigurationActionEvent event) {
+    public void trigger(AppApplyConfigurationActionEvent event) throws InterruptedException {
+        Thread.sleep(1000);
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = repositoryManager.load(deploymentId);
+            if (Objects.isNull(appDeployment.getConfiguration())) {
+                log.warn("Application configuration of deployment {} is null", appDeployment.getDescriptiveDeploymentId());
+            }
             final AppDeploymentOwner appDeploymentOwner = repositoryManager.loadOwner(deploymentId);
             configurationProvider.configureNmService(NmServiceDeployment.fromAppDeployment(appDeployment, appDeploymentOwner));
         } catch (Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            log.error("Exception during task execution", ex);
         }
     }
 
