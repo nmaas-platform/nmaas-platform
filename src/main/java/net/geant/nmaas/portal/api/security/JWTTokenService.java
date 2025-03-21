@@ -40,6 +40,15 @@ public class JWTTokenService {
     }
 
     public String getToken(User user) {
+
+        String preferredUsername;
+
+        if(user.getFirstname() != null && !user.getFirstname().isEmpty()) {
+            preferredUsername = user.getFirstname();
+        }else{
+            preferredUsername = user.getUsername();
+        }
+
         if (user == null || StringUtils.isEmpty(user.getUsername())) {
             throw new IllegalArgumentException("User or username is not set");
         }
@@ -54,6 +63,7 @@ public class JWTTokenService {
                 .setIssuer(jwtSettings.getIssuer())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
+                .claim("preferred_username", preferredUsername)
                 .claim("global_role", user.getRoles().stream()
                         .filter(
                                 role ->
