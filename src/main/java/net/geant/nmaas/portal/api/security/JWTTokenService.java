@@ -43,14 +43,13 @@ public class JWTTokenService {
 
         String preferredUsername;
 
+        if (user == null || StringUtils.isEmpty(user.getUsername())) {
+            throw new IllegalArgumentException("User or username is not set");
+        }
         if(user.getFirstname() != null && !user.getFirstname().isEmpty()) {
             preferredUsername = user.getFirstname();
         }else{
             preferredUsername = user.getUsername();
-        }
-
-        if (user == null || StringUtils.isEmpty(user.getUsername())) {
-            throw new IllegalArgumentException("User or username is not set");
         }
         log.error("Get request for a token");
         log.error("user = {} {} {}", user.getId(), user.getUsername(), user.getSelectedLanguage());
