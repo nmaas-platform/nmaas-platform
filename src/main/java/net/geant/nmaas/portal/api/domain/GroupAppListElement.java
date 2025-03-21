@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VlabAppListElement {
+public class GroupAppListElement {
 
     private String appListName;
 
