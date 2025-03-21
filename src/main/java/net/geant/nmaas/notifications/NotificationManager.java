@@ -18,7 +18,7 @@ import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.domain.VlabAppListElement;
+import net.geant.nmaas.portal.api.domain.GroupAppListElement;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -164,9 +164,9 @@ public class NotificationManager {
                     mailAttributes.getOtherAttributes().put(k, offsetDateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                 });
 
-                List<VlabAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<VlabAppListElement>>() {
+                List<GroupAppListElement> appList = objectMapper.convertValue(mailAttributes.getOtherAttributes().get("appList"), new TypeReference<List<GroupAppListElement>>() {
                 });
-                mailAttributes.getOtherAttributes().put("appList", appList.stream().map(VlabAppListElement::getAppListName).collect(Collectors.joining(", ")));
+                mailAttributes.getOtherAttributes().put("appList", appList.stream().map(GroupAppListElement::getAppListName).collect(Collectors.joining(", ")));
 
             }
             if (contactFormKey.isEmpty()) {

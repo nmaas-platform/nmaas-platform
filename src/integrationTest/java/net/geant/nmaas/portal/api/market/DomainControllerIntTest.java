@@ -389,7 +389,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
 
         MvcResult result = mvc.perform(get("/api/domains/group/1")
-                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN_VL_MANAGER))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
