@@ -95,6 +95,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/mail/type", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/monitor/all", HttpMethod.GET.name())
     };
+
     private static final RequestMatcher[] AUTH_AUTHENTICATED_LIST = {
             new AntPathRequestMatcher("/api/orchestration/deployments/**/state"),
             new AntPathRequestMatcher("/api/orchestration/deployments/**/access"),
@@ -102,7 +103,6 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/management/**"),
             new AntPathRequestMatcher("/api/**")
     };
-
 
     private static final SkipPathRequestMatcher skipPathRequestMatcher =
             new SkipPathRequestMatcher(
