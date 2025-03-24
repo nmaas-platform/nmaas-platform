@@ -7,6 +7,7 @@ import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectReposit
 import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -94,36 +95,46 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/mail/type", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/monitor/all", HttpMethod.GET.name())
     };
+    private static final RequestMatcher[] AUTH_AUTHENTICATED_LIST = {
+            new AntPathRequestMatcher("/api/orchestration/deployments/**/state"),
+            new AntPathRequestMatcher("/api/orchestration/deployments/**/access"),
+            new AntPathRequestMatcher("/api/orchestration/deployments/**"),
+            new AntPathRequestMatcher("/api/management/**"),
+            new AntPathRequestMatcher("/api/**")
+    };
 
-    private static final SkipPathRequestMatcher skipPathRequestMatcher = new SkipPathRequestMatcher(
-            new AntPathRequestMatcher[]{
-                    new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
-                    new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
-                    new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
-                    new AntPathRequestMatcher(AUTH_SSO_LOGIN),
-                    new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
-                    new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
-                    new AntPathRequestMatcher(AUTH_OIDC),
-                    new AntPathRequestMatcher(AUTH_CODE),
-                    new AntPathRequestMatcher("/api-docs/**"),
-                    new AntPathRequestMatcher("/actuator/**"),
-                    new AntPathRequestMatcher("/favicon.ico"),
-                    new AntPathRequestMatcher("/api/configuration/**", "GET"),
-                    new AntPathRequestMatcher("/api/auth/sso", "GET"),
-                    new AntPathRequestMatcher("/api/info/**"),
-                    new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
-                    new AntPathRequestMatcher("/api/content/**"),
-                    new AntPathRequestMatcher("/api/users/reset/**"),
-                    new AntPathRequestMatcher("/api/mail"),
-                    new AntPathRequestMatcher("/api/monitor/all", "GET"),
-                    new AntPathRequestMatcher("/api/mail/type", "GET"),
-                    new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
-                    new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
-                    new AntPathRequestMatcher("/api/gitlab/webhooks/**")
-            }
-    );
+
+    private static final SkipPathRequestMatcher skipPathRequestMatcher =
+            new SkipPathRequestMatcher(
+                    new AntPathRequestMatcher[]{
+                            new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
+                            new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
+                            new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+                            new AntPathRequestMatcher(AUTH_SSO_LOGIN),
+                            new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
+                            new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
+                            new AntPathRequestMatcher(AUTH_OIDC),
+                            new AntPathRequestMatcher(AUTH_CODE),
+                            new AntPathRequestMatcher("/api-docs/**"),
+                            new AntPathRequestMatcher("/actuator/**"),
+                            new AntPathRequestMatcher("/favicon.ico"),
+                            new AntPathRequestMatcher("/api/configuration/**", "GET"),
+                            new AntPathRequestMatcher("/api/auth/sso", "GET"),
+                            new AntPathRequestMatcher("/api/info/**"),
+                            new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
+                            new AntPathRequestMatcher("/api/content/**"),
+                            new AntPathRequestMatcher("/api/users/reset/**"),
+                            new AntPathRequestMatcher("/api/mail"),
+                            new AntPathRequestMatcher("/api/monitor/all", "GET"),
+                            new AntPathRequestMatcher("/api/mail/type", "GET"),
+                            new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
+                            new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
+                            new AntPathRequestMatcher("/api/gitlab/webhooks/**")
+                    }
+            );
 
     @Bean
+    @ConditionalOnProperty(name = "portal.config.ssoLoginAllowed", havingValue = "true")
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
 
         DefaultOAuth2AuthorizationRequestResolver resolver =
@@ -135,11 +146,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(httpRequest -> httpRequest
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/orchestration/deployments/**/state")).authenticated()
-                        .requestMatchers(new AntPathRequestMatcher("/api/orchestration/deployments/**/access")).authenticated()
-                        .requestMatchers(new AntPathRequestMatcher("/api/orchestration/deployments/**")).authenticated()
-                        .requestMatchers(new AntPathRequestMatcher("/api/management/**")).authenticated()
-                        .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
+                        .requestMatchers(AUTH_AUTHENTICATED_LIST).authenticated()
                 )
                 .oauth2Login(oAuth2 -> oAuth2
                         .userInfoEndpoint(Customizer.withDefaults())
@@ -153,6 +160,31 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(statelessAuthFilter(skipPathRequestMatcher,
+                                null,
+                                tokenAuthenticationService),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        gitlabTokenFilter("/api/gitlab/webhooks/**",
+                                null,
+                                gitLabProjectRepository),
+                        StatelessAuthenticationFilter.class
+                )
+                .build();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "portal.config.ssoLoginAllowed", havingValue = "false")
+    public SecurityFilterChain securityFilterChainBasic(HttpSecurity httpSecurity) throws Exception {
+
+        return httpSecurity
+                .cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(httpRequest -> httpRequest
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(AUTH_AUTHENTICATED_LIST).authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .addFilterBefore(statelessAuthFilter(skipPathRequestMatcher,
                                 null,
                                 tokenAuthenticationService),
