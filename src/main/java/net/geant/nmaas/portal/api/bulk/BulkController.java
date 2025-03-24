@@ -143,7 +143,7 @@ public class BulkController {
         return ResponseEntity.ok(mapToViewList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.DOMAIN))));
     }
 
-    @GetMapping("/domains/vl")
+    @GetMapping("/domains/group")
     @PreAuthorize("hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<List<BulkDeploymentViewS>> getDomainDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName())
@@ -160,7 +160,7 @@ public class BulkController {
         return ResponseEntity.ok(mapToViewList(filter(deleted, bulkDeploymentRepository.findByType(BulkType.APPLICATION))));
     }
 
-    @GetMapping("/apps/vl")
+    @GetMapping("/apps/group")
     @PreAuthorize("hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<List<BulkDeploymentViewS>> getAppDeploymentRecordsRestrictedToOwner(Principal principal) {
         User user = this.userService.findByUsername(principal.getName())
