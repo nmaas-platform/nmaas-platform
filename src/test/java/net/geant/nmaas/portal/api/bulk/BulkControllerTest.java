@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.bulk;
 
-import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentQueueService;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -43,7 +42,6 @@ public class BulkControllerTest {
 
     private final ModelMapper modelMapper = new ModelMapper();
 
-
     private final BulkController bulkController = new BulkController(bulkCsvProcessor, bulkDomainService, bulkApplicationService,
             bulkDeploymentRepository, userService, modelMapper);
 
@@ -85,7 +83,7 @@ public class BulkControllerTest {
     }
 
     @Test
-    void shouldProcessBulkApplicationRequest() throws IOException {
+    void shouldProcessBulkApplicationRequest() {
         assertThrows(MissingElementException.class, () -> {
             MultipartFile file = new MockMultipartFile("test.csv", "test.csv", "text/csv", "content".getBytes());
             when(bulkCsvProcessor.isCSVFormat(any())).thenReturn(true);
@@ -94,33 +92,25 @@ public class BulkControllerTest {
 
             ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", 2, file);
         });
-
-//        verify(bulkCsvProcessor).processApplicationSpecs(any());
-//        verify(bulkApplicationService).handleBulkDeployment(any(), any(), any());
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-
     }
 
     @Test
-    void shouldGetDomainBulksAsVLManager() {
+    void shouldGetDomainBulksAsGroupManager() {
         when(principalMock.getName()).thenReturn("user");
         User user = new User("user");
         user.setId(10L);
         when(userService.findByUsername("user")).thenReturn(Optional.of(user));
         when(userService.findById(10L)).thenReturn(Optional.of(user));
-        List<BulkDeployment> bulks = new ArrayList<>();
         BulkDeployment viewS = new BulkDeployment();
         viewS.setType(BulkType.DOMAIN);
         viewS.setCreator(user);
         viewS.setDeleted(false);
-        bulks.add(viewS);
         when(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).thenReturn(List.of(viewS));
         assertEquals(1, Objects.requireNonNull(bulkController.getDomainDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
     }
 
-
     @Test
-    void shouldGetAppBulksAsVLManager() {
+    void shouldGetAppBulksAsGroupManager() {
         when(principalMock.getName()).thenReturn("user");
         User user = new User("user");
         user.setId(10L);
@@ -144,4 +134,5 @@ public class BulkControllerTest {
         when(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).thenReturn(bulks);
         assertEquals(1, Objects.requireNonNull(bulkController.getAppDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
     }
+
 }

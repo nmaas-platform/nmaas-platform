@@ -249,6 +249,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         bulkDeployment.setState(PENDING);
         bulkDeployment.setCreator(userService.findById(creator.getId()).orElseThrow(() ->new MissingElementException("User with this ID not found")));
         bulkDeployment.setCreationDate(OffsetDateTime.now());
+        bulkDeployment.setDeleted(false);
         return bulkDeployment;
     }
 
