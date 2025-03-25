@@ -333,6 +333,7 @@
     "BULK_DEPLOYMENT_CRON" : "Cron grupowego uruchomienia aplikacji",
     "BULK_DEPLOYMENT_LIMIT" : "Limit jednoczesnego uruchamiania aplikacji ",
     "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Odświeżanie statystyk kolejki (w sekundach)",
+    "BULK_DEPLOYMENT_THRESHOLD" : "Limit czasu dla uruchamiania aplikacji ( w sekundach)",
     "DEPLOYMENT_PREFIX" : "Prefix instancji"
   },
   "DOMAIN_DETAILS": {
