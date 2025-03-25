@@ -333,6 +333,7 @@
     "BULK_DEPLOYMENT_CRON" : "Bulk deployment job cron",
     "BULK_DEPLOYMENT_LIMIT" : "Bulk deployment parallel limit",
     "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Bulk deployment queue refresh (seconds)",
+    "BULK_DEPLOYMENT_THRESHOLD" : "Bulk deployment time threshold (seconds)",
     "DEPLOYMENT_PREFIX" : "Deployment prefix"
   },
   "DOMAIN_DETAILS": {
