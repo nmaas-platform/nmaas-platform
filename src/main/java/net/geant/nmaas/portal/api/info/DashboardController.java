@@ -20,14 +20,16 @@ public class DashboardController {
 
     @GetMapping("/admin")
     public DashboardView getDashboardAdmin() {
-        DashboardView view = dashboardService.getSystemDomainDashboard();
+        DashboardView view = dashboardService.getSystemDashboard();
         log.error("View : {}", view.toString());
 
         return view;
     }
 
-    @GetMapping("/domain")
-    public void getDashboardDomain() {
-        ;
+    @GetMapping("/domain/{id}")
+    public DomainDashboardView getDashboardDomain(@PathVariable Long id) {
+        DomainDashboardView view = dashboardService.getSystemDomainDashboard(id);
+        log.error("View : {}", view.toString());
+        return view;
     }
 }

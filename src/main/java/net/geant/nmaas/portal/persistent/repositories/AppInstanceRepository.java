@@ -55,4 +55,6 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 	@Query("select ai FROM AppInstance ai where ai.createdAt >= :sinceTime")
 	List<AppInstance> findAllInTimePeriod(@Param("sinceTime") long sinceTime);
 
+	int countAllByOwner(User user);
+
 }
