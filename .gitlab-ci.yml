@@ -75,4 +75,5 @@ mend:
     - |
       export PRODUCT_VERSION=$(echo $CI_COMMIT_BRANCH | cut -c 9-)
       export PROJECT_VERSION=$PRODUCT_VERSION
+      - chmod +x ./ws/run_ws.sh 
       ./ws/run_ws.sh
