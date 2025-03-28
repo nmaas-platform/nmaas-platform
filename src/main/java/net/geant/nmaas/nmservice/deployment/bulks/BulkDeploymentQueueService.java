@@ -156,7 +156,7 @@ public class BulkDeploymentQueueService {
             if (optional.isPresent()) {
                 log.warn("Delete {} / {}", optional.get().getDeploymentId(), optional.get().getBulkEntryId());
                 queueRepository.deleteById(optional.get().getId());
-                bulkApplicationService.setBulkToCancel(optional.get());
+                bulkApplicationService.cancelBulkEntry(optional.get());
             }
         });
         bulkApplicationService.updateMainState(bulkDeployment);

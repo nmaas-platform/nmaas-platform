@@ -13,7 +13,13 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.*;
+import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -227,8 +233,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) {
-        if (!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
-            eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+        try {
+            if (!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
+                eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+            }
+        } catch (InvalidDeploymentIdException e) {
+            log.warn("Application deployment {} not found for removal. Skipping.", deploymentId, e);
         }
     }
 

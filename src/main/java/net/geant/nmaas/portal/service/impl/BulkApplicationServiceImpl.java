@@ -479,7 +479,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
     }
 
     @Override
-    public void setBulkToCancel(BulkDeploymentQueueEntry queueEntry) {
+    public void cancelBulkEntry(BulkDeploymentQueueEntry queueEntry) {
         try {
             AppDeploymentState state = appDeploymentRepositoryManager.loadState(queueEntry.getDeploymentId());
             if (!(state.isInFailedState() || state.isInRunningState())) {
@@ -488,7 +488,7 @@ public class BulkApplicationServiceImpl implements BulkApplicationService {
                     BulkDeploymentEntry bulkDeploymentEntry = entry.get();
                     bulkDeploymentEntry.setState(BulkDeploymentState.CANCELED);
                     bulkDeploymentEntryRepository.save(bulkDeploymentEntry);
-                    log.warn("Bulk set to CANCELED correctly.");
+                    log.warn("Bulk set to CANCELED correctly. Proceeding with application instance removal.");
                     appLifecycleManager.removeApplication(queueEntry.getDeploymentId());
                 }
             }
