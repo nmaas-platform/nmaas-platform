@@ -43,8 +43,8 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         Identifier deploymentId = nsd.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED);
-            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
-            if(nsd.isConfigFileRepositoryRequired()) {
+            if (nsd.isConfigFileRepositoryRequired()) {
+                List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
                 configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
@@ -52,7 +52,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                 }
                 janitorService.createOrReplaceConfigMap(nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
             }
-            notifyStateChangeListeners(deploymentId, CONFIGURED);
+            notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
@@ -66,7 +66,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nmServiceDeployment.getApplicationId(), nmServiceDeployment.getAppConfiguration());
-            if(nmServiceDeployment.isConfigFileRepositoryRequired()) {
+            if (nmServiceDeployment.isConfigFileRepositoryRequired()) {
                 configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
                 janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
             }

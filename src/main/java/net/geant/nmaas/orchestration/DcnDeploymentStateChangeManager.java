@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
@@ -15,15 +15,15 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@Log4j2
+@Slf4j
 public class DcnDeploymentStateChangeManager {
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized ApplicationEvent triggerActionOnStateChange(DcnDeploymentStateChangeEvent event) {
-        try{
+        try {
             return triggerActionEventIfRequired(event.getDomain(), event.getState()).orElse(null);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
             return null;

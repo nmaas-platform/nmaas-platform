@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
@@ -22,8 +22,10 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -45,7 +47,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  */
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
@@ -54,6 +56,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private final JanitorService janitorService;
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
+    private final ConfigurationManager configurationManager;
+    @Value("${nmaas.platform.multi-instance}")
+    private boolean useDeploymentPrefix;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -61,6 +66,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier deployApplication(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
+        if (useDeploymentPrefix) {
+            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() + "-" + appDeployment.getDeploymentName());
+        }
         deploymentRepositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
@@ -72,6 +80,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier initApplicationDeployment(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
         appDeployment.setDeploymentId(deploymentId);
+        if (useDeploymentPrefix) {
+            appDeployment.setDeploymentName(configurationManager.getConfiguration().getDeploymentPrefix() + "-" + appDeployment.getDeploymentName());
+        }
         deploymentRepositoryManager.store(appDeployment);
         return deploymentId;
     }
@@ -135,7 +146,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                     configuration.getAccessCredentials());
         }
         /*
-         * NMAAS-967
          * if terms acceptance is required, perform check actions
          */
         if (appDeployment.isTermsAcceptanceRequired()) {
@@ -153,15 +163,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
             if (termsAcceptanceStatement != null && termsAcceptanceStatement.equalsIgnoreCase("yes")) {
                 // OK
-                log.info(String.format(
-                        "Application usage terms were accepted: application [%s], instance id [%s], content [%s], statement [%s], by [%s], at: [%s]",
-                        appDeployment.getAppName(),
-                        appDeployment.getInstanceId(),
-                        termsContent,
-                        termsAcceptanceStatement,
-                        initiator,
-                        now.format(DateTimeFormatter.ISO_DATE_TIME)
-                ));
+                log.info("Application usage terms were accepted: application [{}], instance id [{}], content [{}], statement [{}], by [{}], at: [{}]", appDeployment.getAppName(), appDeployment.getInstanceId(), termsContent, termsAcceptanceStatement, initiator, now.format(DateTimeFormatter.ISO_DATE_TIME));
                 appTermsAcceptanceService.addTermsAcceptanceEntry(
                         appDeployment.getAppName(),
                         appDeployment.getInstanceId(),
@@ -174,9 +176,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 // Terms were not accepted by they should
                 throw new ProcessingException("Application usage terms acceptance is required, however terms were not accepted");
             }
-
         }
+
         deploymentRepositoryManager.update(appDeployment);
+
         if (appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)) {
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
@@ -184,7 +187,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     Map<String, String> getMapFromJson(String inputJson) {
         try {
-            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() { });
+            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {
+            });
         } catch (IOException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
@@ -229,8 +233,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) {
-        if (!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
-            eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+        try {
+            if (!AppDeploymentState.APPLICATION_REMOVED.equals(deploymentRepositoryManager.loadState(deploymentId))) {
+                eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+            }
+        } catch (InvalidDeploymentIdException e) {
+            log.warn("Application deployment {} not found for removal. Skipping.", deploymentId, e);
         }
     }
 

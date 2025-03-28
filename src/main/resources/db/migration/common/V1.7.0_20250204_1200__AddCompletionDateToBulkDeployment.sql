@@ -1,0 +1,1 @@
+ALTER TABLE bulk_deployment add column completion_date timestamp default null;

@@ -27,8 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class GitLabWebhookControllerIntTest {
 
-    private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
-    private NmServiceConfigurationProvider configurationProvider = mock(NmServiceConfigurationProvider.class);
+    private final KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
+    private final NmServiceConfigurationProvider configurationProvider = mock(NmServiceConfigurationProvider.class);
 
     private MockMvc mvc;
 

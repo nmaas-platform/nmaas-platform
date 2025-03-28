@@ -96,10 +96,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(domainService.existsDomain(TEST_DOMAIN_NAME)).thenReturn(false);
         when(domainService.createDomain(any())).thenReturn(getDefaultDomain());
         MvcResult result = mvc.perform(post("/api/domains")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getDefaultDomainRequest("test")))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(getDefaultDomainRequest("test")))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -113,10 +113,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         domainRequest.setName("GLOBAL");
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/domains")
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(domainRequest))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(domainRequest))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotAcceptable());
         });
     }
@@ -127,10 +127,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
         request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(put("/api/domains/" + request.getId())
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -142,10 +142,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.setApplicationStatePerDomain(new ArrayList<>());
         request.getDomainDcnDetails().setCustomerNetworks(Collections.singletonList(new CustomerNetwork(null, InetAddress.getByName("1.1.1.1"), 24)));
         mvc.perform(put("/api/domains/" + request.getId())
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(domainService).updateDomain(any());
     }
@@ -156,10 +156,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.setId(999L);
         assertDoesNotThrow(() -> {
             mvc.perform(put("/api/domains/" + TEST_DOMAIN_ID)
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotAcceptable());
         });
     }
@@ -170,10 +170,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.getDomainTechDetails().setExternalServiceDomain("external-domain");
         request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(put("/api/domains/" + request.getId())
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -185,10 +185,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.getDomainTechDetails().setKubernetesNamespace("namespace");
         request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(patch("/api/domains/" + request.getId())
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -202,10 +202,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.setDomainTechDetails(techDetails);
         request.setApplicationStatePerDomain(new ArrayList<>());
         MvcResult result = mvc.perform(patch("/api/domains/" + request.getId())
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN1_ADMIN))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN1_ADMIN))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -220,10 +220,10 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         request.setId(123L);
         assertDoesNotThrow(() -> {
             mvc.perform(patch("/api/domains/" + id)
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.OPERATOR))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotAcceptable());
         });
     }
@@ -232,8 +232,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldChangeDomainState() {
         assertDoesNotThrow(() -> {
             mvc.perform(patch("/api/domains/" + TEST_DOMAIN_ID + "/state?active=false")
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         });
     }
@@ -242,8 +242,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldEnableDcnConfiguredFlag() throws Exception {
         when(domainService.changeDcnConfiguredFlag(TEST_DOMAIN_ID, true)).thenReturn(getDefaultDomain());
         MvcResult result = mvc.perform(patch("/api/domains/" + TEST_DOMAIN_ID + "/dcn?configured=true")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         verify(domainService).changeDcnConfiguredFlag(TEST_DOMAIN_ID, true);
@@ -254,8 +254,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldDisableDcnConfiguredFlag() throws Exception {
         when(domainService.changeDcnConfiguredFlag(TEST_DOMAIN_ID, false)).thenReturn(getDefaultDomain());
         MvcResult result = mvc.perform(patch("/api/domains/" + TEST_DOMAIN_ID + "/dcn?configured=false")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         verify(domainService).changeDcnConfiguredFlag(TEST_DOMAIN_ID, false);
@@ -267,8 +267,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(domainService.removeDomain(TEST_DOMAIN_ID)).thenReturn(true);
         assertDoesNotThrow(() -> {
             mvc.perform(delete("/api/domains/" + TEST_DOMAIN_ID)
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         });
     }
@@ -277,8 +277,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     void shouldNotDeleteDomain() {
         assertDoesNotThrow(() -> {
             mvc.perform(delete("/api/domains/" + 1234)
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         });
     }
@@ -288,8 +288,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(userService.findByUsername(ADMIN_USERNAME)).thenReturn(Optional.of(UsersHelper.ADMIN));
         when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
         MvcResult result = mvc.perform(get("/api/domains/{domainId}", TEST_DOMAIN_ID)
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         DomainView domain = objectMapper.readValue(result.getResponse().getContentAsString(), DomainView.class);
@@ -303,8 +303,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(domainService.findDomain(2345L)).thenReturn(Optional.empty());
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/domains/{domainId}", 2345)
-                    .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isInternalServerError());
         });
     }
@@ -312,8 +312,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldGetDomains() throws Exception {
         MvcResult result = mvc.perform(get("/api/domains")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -327,8 +327,8 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
         when(domainService.getUserDomains(1L)).thenReturn(Sets.newSet(getDefaultDomain(), getGlobalDomain()));
         MvcResult result = mvc.perform(get("/api/domains/my")
-                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-                .accept(MediaType.APPLICATION_JSON))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
@@ -336,11 +336,11 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetMyDomainGroupAsVL() throws Exception {
-       when(principalMock.getName()).thenReturn("testUser");
+    void shouldGetMyDomainGroupAsGroupManager() throws Exception {
+        when(principalMock.getName()).thenReturn("testUser");
         User user = new User("testUser");
         user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN_ADMIN);
+        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_GROUP_DOMAIN_ADMIN);
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 
@@ -367,17 +367,17 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetOneDomainGroupAsVL() throws Exception {
+    void shouldGetOneDomainGroupAsGroupManager() throws Exception {
         when(principalMock.getName()).thenReturn("admin");
         User user = new User("admin");
         user.setId(1L);
-        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN_ADMIN);
+        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_GROUP_DOMAIN_ADMIN);
         user.setRoles(List.of(userRole));
         when(userService.findByUsername(any())).thenReturn(Optional.of(user));
 
         DomainGroupView group1 = new DomainGroupView();
         group1.setId(1L);
-        User user1 = new User("vl_admin", true);
+        User user1 = new User("gmanager", true);
         user1.setId(1L);
 
         group1.setManagers(List.of(modelMapper.map(user1, UserViewMinimal.class)));
@@ -389,7 +389,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
 
         MvcResult result = mvc.perform(get("/api/domains/group/1")
-                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.DOMAIN_VL_MANAGER))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ROLE_GROUP_MANAGER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -397,36 +397,11 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
     }
 
-//    @Test
-//    void shouldNotGetOneDomainGroupAsVL() throws Exception {
-//        when(principalMock.getName()).thenReturn("testUser");
-//        User user = new User("testUser");
-//        user.setId(1L);
-//        UserRole userRole = new UserRole(user, getGlobalDomain(), Role.ROLE_VL_DOMAIN);
-//        user.setRoles(List.of(userRole));
-//        when(userService.findByUsername(any())).thenReturn(Optional.of(user));
-//
-//        DomainGroupView group1 = new DomainGroupView();
-//        group1.setId(1L);
-//        group1.setAccessUsers(List.of(new UserViewAccess(1L, "testUser", "Test", "USER")));
-//        DomainGroupView group2 = new DomainGroupView();
-//        group2.setId(2L);
-//        group2.setAccessUsers(List.of(new UserViewAccess(2L, "testUser2", "Test2", "USER2")));
-//
-//        when(domainGroupService.getDomainGroup(any())).thenReturn(group1);
-//
-//        ResultActions result = mvc.perform(get("/api/domains/group/2")
-//                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().is5xxServerError());
-//    }
-
-
     private Domain getGlobalDomain() {
         return new Domain(1L, "GLOBAL", "GLOBAL", true);
     }
 
-    private Domain getDefaultDomain(){
+    private Domain getDefaultDomain() {
         Domain domain = new Domain(TEST_DOMAIN_ID, TEST_DOMAIN_NAME, TEST_DOMAIN_NAME, true);
         domain.setDomainDcnDetails(new DomainDcnDetails());
         domain.getDomainDcnDetails().setDcnConfigured(false);
@@ -443,4 +418,5 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         domain.getDomainDcnDetails().setDcnConfigured(false);
         return domain;
     }
+
 }

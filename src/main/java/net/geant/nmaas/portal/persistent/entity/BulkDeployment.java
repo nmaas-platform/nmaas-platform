@@ -53,4 +53,8 @@ public class BulkDeployment {
 
     private Integer parallelDeploymentsLimit;
 
+    private Boolean deleted;
+
+    private OffsetDateTime completionDate;
+
 }

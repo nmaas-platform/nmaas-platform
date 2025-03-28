@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -14,7 +14,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@Log4j2
+@Slf4j
 @AllArgsConstructor
 public class AppConfigurationVerificationTask {
 
@@ -31,7 +31,7 @@ public class AppConfigurationVerificationTask {
             if (appDeployment.getConfiguration() != null) {
                 eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, e);
         }

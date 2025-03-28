@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.orchestration.Identifier;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
+import org.hibernate.type.descriptor.jdbc.VarcharJdbcType;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -43,7 +45,8 @@ public class AppInstance extends DomainAware implements Serializable {
 	
 	@Basic(fetch = FetchType.LAZY)
 	@Lob
-//	@Type(type = "text")
+	@JdbcType(VarcharJdbcType.class)
+	@Column(columnDefinition = "TEXT")
 	String configuration;
 
 	@CreatedDate

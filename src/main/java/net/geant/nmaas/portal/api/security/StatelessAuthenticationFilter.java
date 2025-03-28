@@ -1,6 +1,10 @@
 package net.geant.nmaas.portal.api.security;
 
-import lombok.extern.log4j.Log4j2;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
 import org.springframework.security.core.Authentication;
@@ -10,13 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Log4j2
+@Slf4j
 public class StatelessAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 	TokenAuthenticationService tokenService;
@@ -29,7 +29,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String reqText = request.getRequestURI() != null ? request.getRequestURI() : "empty";
-		log.error("Request: " + reqText);
+        log.trace("Request: {}", reqText);
 		try {
 			return tokenService.getAuthentication(request);
 		} catch(Exception ex) {
@@ -40,7 +40,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		log.error("Authentication: " + authResult);
+        log.trace("Authentication: {}", authResult);
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		context.setAuthentication(authResult);
 		SecurityContextHolder.setContext(context);
@@ -51,7 +51,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		log.error("Authentication unsuccessful");
+		log.trace("Authentication unsuccessful");
 		SecurityContextHolder.clearContext();
 		getFailureHandler().onAuthenticationFailure(request, response, failed);
 	}

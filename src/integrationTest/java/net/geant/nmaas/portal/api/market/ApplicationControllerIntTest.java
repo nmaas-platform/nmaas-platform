@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.HelmChartRepositoryView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
@@ -69,7 +70,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = "spring.cache.type=none")
-@Log4j2
+@Slf4j
 @Import(TestCacheConfig.class)
 class ApplicationControllerIntTest extends BaseControllerTestSetup {
 

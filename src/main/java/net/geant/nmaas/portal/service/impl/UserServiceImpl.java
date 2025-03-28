@@ -4,12 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
-import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -17,7 +16,6 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -51,7 +49,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -60,9 +58,9 @@ public class UserServiceImpl implements UserService {
     private final ConfigurationManager configurationManager;
     private final ModelMapper modelMapper;
 
-	private final ApplicationEventPublisher eventPublisher;
-	private final JWTTokenService jwtTokenService;
-	private final DomainGroupService domainGroupService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final JWTTokenService jwtTokenService;
+    private final DomainGroupService domainGroupService;
 
     @Value("${portal.address}")
     @Setter
@@ -141,27 +139,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(OidcUser oidcUser, Domain globalDomain) {
-
-        Map<String, Object> attributes = oidcUser.getAttributes();
-        byte[] array = new byte[16];
-        new SecureRandom().nextBytes(array);
-        String generatedString = Base64.getEncoder().encodeToString(array);
-
-        User newUser = new User(
-                "oidc_" + attributes.get("preferred_username").toString(),
-                true,
-                generatedString,
-                globalDomain,
-                Role.ROLE_GUEST);
-        newUser.setEmail(attributes.get("email").toString());
-        newUser.setLastname(attributes.get("family_name").toString());
-        newUser.setFirstname(attributes.get("given_name").toString());
-        newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
-
-        userRepository.save(newUser);
-        return newUser;
-
+    public boolean existsBySamlToken(String token) {
+        checkParam(token);
+        return userRepository.existsBySamlToken(token);
     }
 
     @Override
@@ -185,51 +165,40 @@ public class UserServiceImpl implements UserService {
         return newUser;
     }
 
+
     @Override
-    public User register(UserSSOLogin userSSO, Domain globalDomain) {
-        byte[] array = new byte[16]; // random password
-        new SecureRandom().nextBytes(array);
-        String generatedString = Base64.getEncoder().encodeToString(array);
-        User newUser = new User("thirdparty-" + System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
-        newUser.setSamlToken(userSSO.getUsername()); // TODO: check if it's truly unique!
+    public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
+        if (userRepository.existsByUsername(csvUser.getAdminUserName()) || userRepository.existsByEmail(csvUser.getEmail())) {
+            throw new SignupException("User already exists");
+        }
+        String temporaryPassword = RandomStringUtils.random(16);
+        log.info("Creating user {} with temporary password", csvUser.getAdminUserName());
+        User newUser = new User(csvUser.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
+        newUser.setEmail(csvUser.getEmail());
+        newUser.setEnabled(true);
         newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
+        newUser.setTermsOfUseAccepted(true);
+        newUser.setPrivacyPolicyAccepted(true);
+        newUser.setFirstname(csvUser.getAdminUserName());
+        newUser.setLastname(csvUser.getAdminUserName());
+        if (domain != null) {
+            newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
+        }
+        boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
+        // set user saml_token to email address if a sso account requested
+        if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
+            if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
+                newUser.setSamlToken(csvUser.getEmail());
+                if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
+            } else {
+                if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
+            }
+        } else {
+            if (sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
+        }
         userRepository.save(newUser);
         return newUser;
     }
-
-	@Override
-	public User registerBulk(CsvDomain csvUser, Domain globalDomain, Domain domain) {
-		if (userRepository.existsByUsername(csvUser.getAdminUserName()) || userRepository.existsByEmail(csvUser.getEmail())) {
-			throw new SignupException("User already exists");
-		}
-		String temporaryPassword = RandomStringUtils.random(16);
-		log.info("Creating user {} with temporary password", csvUser.getAdminUserName());
-		User newUser = new User(csvUser.getAdminUserName(), false, passwordEncoder.encode(temporaryPassword), globalDomain, Role.ROLE_GUEST);
-		newUser.setEmail(csvUser.getEmail());
-		newUser.setEnabled(true);
-		newUser.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
-		newUser.setTermsOfUseAccepted(true);
-		newUser.setPrivacyPolicyAccepted(true);
-		newUser.setFirstname(csvUser.getAdminUserName());
-		newUser.setLastname(csvUser.getAdminUserName());
-		if (domain != null) {
-			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
-		}
-		boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
-		// set user saml_token to email address if a sso account requested
-		if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
-			if (csvUser.getSsoEnabled() != null && csvUser.getSsoEnabled()) {
-				newUser.setSamlToken(csvUser.getEmail());
-				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_SSO_LOGIN);
-			}else {
-				if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
-			}
-		} else {
-			if(sendMails) this.sendMail(newUser, MailType.NEW_BULK_LOGIN);
-		}
-		userRepository.save(newUser);
-		return newUser;
-	}
 
     @Override
     public void update(User user) {
@@ -241,20 +210,20 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
     }
 
-	@Override
-	public void delete(User user) {
-		checkParam(user);
-		checkParam(user.getId());
-		domainGroupService.deleteUserFromAllDomainsGroups(user);
-		userRepository.delete(user);
-	}
+    @Override
+    public void delete(User user) {
+        checkParam(user);
+        checkParam(user.getId());
+        domainGroupService.deleteUserFromAllDomainsGroups(user);
+        userRepository.delete(user);
+    }
 
-	@Override
-	public void deleteById(Long userId) {
-		checkParam(userId);
-		domainGroupService.deleteUserFromAllDomainsGroups(userRepository.getReferenceById(userId));
-		userRepository.deleteById(userId);
-	}
+    @Override
+    public void deleteById(Long userId) {
+        checkParam(userId);
+        domainGroupService.deleteUserFromAllDomainsGroups(userRepository.getReferenceById(userId));
+        userRepository.deleteById(userId);
+    }
 
     @Override
     @Transactional
@@ -309,6 +278,11 @@ public class UserServiceImpl implements UserService {
     private void checkParam(User user) {
         if (user == null)
             throw new IllegalArgumentException("user is null");
+    }
+
+    private void checkParamSaml(String samlToken) {
+        if (samlToken == null)
+            throw new IllegalArgumentException("samlToken is null");
     }
 
     @Override

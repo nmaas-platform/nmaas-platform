@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
@@ -43,15 +43,18 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod.DEFAULT_INTERNAL_SSH_ACCESS_USERNAME;
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod.copy;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.INTERNAL;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.LOCAL;
@@ -61,9 +64,8 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
  * Implements service deployment mechanism on Kubernetes cluster.
  */
 @Component
-@Profile("env_kubernetes")
-@Log4j2
 @RequiredArgsConstructor
+@Slf4j
 public class KubernetesManager implements ContainerOrchestrator {
 
     public static final String RANDOM_ARGUMENT_EXPRESSION_PREFIX = "RANDOM_";
@@ -272,23 +274,22 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     private Set<ServiceAccessMethod> populateAccessMethodsWithUrl(Set<ServiceAccessMethod> inputAccessMethods, String serviceExternalUrl, String servicePublicUrl) {
-        Set<ServiceAccessMethod> accessMethods = inputAccessMethods.stream()
-                .filter(m -> m.isOfType(INTERNAL) || m.isOfType(LOCAL))
-                .collect(Collectors.toSet());
-        accessMethods.addAll(inputAccessMethods.stream()
-                .filter(m -> m.isOfType(DEFAULT))
-                .peek(m -> m.setUrl(serviceExternalUrl))
-                .collect(Collectors.toSet()));
-        accessMethods.addAll(inputAccessMethods.stream()
-                .filter(m -> m.isOfType(EXTERNAL))
-                .peek(m -> m.setUrl(m.getName().toLowerCase() + "-" + serviceExternalUrl))
-                .collect(Collectors.toSet()));
-        if (servicePublicUrl != null) {
-            accessMethods.addAll(inputAccessMethods.stream()
-                    .filter(m -> m.isOfType(PUBLIC))
-                    .peek(m -> m.setUrl(servicePublicUrl))
-                    .collect(Collectors.toSet()));
-        }
+        Set<ServiceAccessMethod> accessMethods = new HashSet<>();
+        inputAccessMethods.forEach(m -> {
+            ServiceAccessMethod updated = copy(m);
+            switch (m.getType()) {
+                case INTERNAL, LOCAL -> {
+                }
+                case DEFAULT -> updated.setUrl(serviceExternalUrl);
+                case EXTERNAL -> updated.setUrl(updated.getName().toLowerCase() + "-" + serviceExternalUrl);
+                case PUBLIC -> {
+                    if (servicePublicUrl != null) {
+                        updated.setUrl(servicePublicUrl);
+                    }
+                }
+            }
+            accessMethods.add(updated);
+        });
         return accessMethods;
     }
 
@@ -379,10 +380,12 @@ public class KubernetesManager implements ContainerOrchestrator {
                         if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
                             Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
                             janitorService.checkServiceExists(serviceName, service.getDomain());
-                            String username;
-                            username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
-                            m.setUrl(username != null && !username.isEmpty()?
-                                    username + "@" + serviceName.value(): serviceName.value());
+                            String username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
+                            m.setUrl(username != null && !username.isEmpty() ?
+                                    username + "@" + serviceName.value() : serviceName.value());
+                            if (m.getDeployParameters().containsKey(HelmChartIngressVariable.K8S_SERVICE_PORT)) {
+                                m.setUrl(m.getUrl() + " (port: " + m.getDeployParameters().get(HelmChartIngressVariable.K8S_SERVICE_PORT) + ")");
+                            }
                         }
                         return m;
                     })

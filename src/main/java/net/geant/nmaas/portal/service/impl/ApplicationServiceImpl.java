@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -36,7 +37,7 @@ import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.Applicat
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class ApplicationServiceImpl implements ApplicationService {
 
 	private final ApplicationRepository applicationRepository;

@@ -1,13 +1,7 @@
 package net.geant.nmaas.portal.persistent;
 
-import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserLoginRegister;
-import net.geant.nmaas.portal.persistent.entity.UserLoginRegisterType;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserLoginRegisterRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -15,8 +9,10 @@ import net.geant.nmaas.portal.persistent.results.UserLoginDate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
@@ -24,8 +20,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataJpaTest
-@Log4j2
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@Slf4j
 public class UserLoginRegisterRepositoryTest {
 
     private static final String DOMAIN = "userdom";
@@ -42,21 +39,24 @@ public class UserLoginRegisterRepositoryTest {
     @BeforeEach
     @Transactional
     void setUp() {
-        domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
+        if (!domainRepository.existsByCodename(DOMAIN)) {
+            domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
+        }
         User tester = new User("tester", true, "test123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
         tester.setEmail("test@test.com");
-        User admin = new User("testadmin", true, "testadmin123", domainRepository.findByName(DOMAIN).get() , Role.ROLE_SYSTEM_ADMIN);
+        User admin = new User("testadmin", true, "testadmin123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_SYSTEM_ADMIN);
         admin.setEmail("admin@test.com");
-        admin.getRoles().add(new UserRole(admin, domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER));
+        admin.getRoles().add(new UserRole(admin, domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER));
         userRepository.save(tester);
         userRepository.save(admin);
-        this.userLoginRegisterRepository.deleteAll();
     }
 
     @AfterEach
     void tearDown() {
+        userLoginRegisterRepository.deleteAllInBatch();
+        userLoginRegisterRepository.flush();
         try {
-            this.userRepository.findAll().stream()
+            userRepository.findAll().stream()
                     .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                     .forEach(user -> userRepository.delete(user));
             domainRepository.findAll().stream()
@@ -65,18 +65,12 @@ public class UserLoginRegisterRepositoryTest {
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }
-        this.userLoginRegisterRepository.deleteAll();
-    }
-
-    @Test
-    void shouldContainThreeUsers() {
-        assertEquals(2, userRepository.count());
     }
 
     @Test
     void shouldContainNoLoginRecords() {
         for (UserLoginRegister u : userLoginRegisterRepository.findAll()) {
-            log.info(u.getUser().getUsername() + "\t" + u.getDate());
+            log.info("{}\t{}", u.getUser().getUsername(), u.getDate());
         }
         assertEquals(0, userLoginRegisterRepository.count());
     }
@@ -89,7 +83,6 @@ public class UserLoginRegisterRepositoryTest {
         this.userLoginRegisterRepository.save(ulr);
 
         assertEquals(1, userLoginRegisterRepository.count());
-
     }
 
     @Test

@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,11 +26,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
-@ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
-@Log4j2
+@Slf4j
 public class PortalConfig {
 
 	private final PasswordEncoder passwordEncoder;
@@ -61,14 +60,14 @@ public class PortalConfig {
 				domains.createGlobalDomain();				
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
-				if(admin.isEmpty()) {
+				if (admin.isEmpty()) {
 					addUser("admin", adminPassword, adminEmail, Role.ROLE_SYSTEM_ADMIN);
 				}
 			}
 
 			private void addUser(String username, String password, String email, Role role) {
 				Optional<Domain> globalDomain = domains.getGlobalDomain();
-				if(globalDomain.isPresent()) {
+				if (globalDomain.isPresent()) {
 					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
 					user.setEmail(email);
 					user.setSelectedLanguage(this.defaultLanguage);
@@ -80,7 +79,7 @@ public class PortalConfig {
 	}
 
 	@Bean
-	public InitializingBean insertDefaultTos(){
+	public InitializingBean insertDefaultTos() {
 		return new InitializingBean() {
 
 			@Autowired
@@ -93,15 +92,15 @@ public class PortalConfig {
 			@Transactional
 			public void afterPropertiesSet() {
 				Optional<Content> defaultAcceptableUsePolicy = contentRepository.findByName("aup");
-				if(defaultAcceptableUsePolicy.isEmpty()){
+				if (defaultAcceptableUsePolicy.isEmpty()) {
 					try {
 						addContentToDatabase("aup", "Acceptable Use Policy", readContent("classpath:aup.txt"));
-					}catch (IOException err) {
+					} catch (IOException err) {
 						throw new ProcessingException(err.getMessage());
 					}
 				}
 				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("privacy");
-				if(defaultPrivacyPolicy.isEmpty()){
+				if (defaultPrivacyPolicy.isEmpty()) {
 					try {
 						addContentToDatabase("privacy", "Privacy Policy", readContent("classpath:privacy.txt"));
 					} catch (IOException err) {
@@ -156,7 +155,7 @@ public class PortalConfig {
 			private ConfigurationManager configurationManager;
 
 			@Override
-			public void afterPropertiesSet() throws Exception {
+			public void afterPropertiesSet() {
 				ConfigurationView configurationView = ConfigurationView.builder()
 						.maintenance(this.maintenance)
 						.ssoLoginAllowed(this.ssoLoginAllowed)
@@ -167,6 +166,9 @@ public class PortalConfig {
 						.registrationDomainSelectionEnabled(this.showDomainRegistrationSelector)
 						.bulkDeploymentJobCron(bulkDeploymentCron)
 						.parallelDeploymentsLimit(bulkDeploymentPerPeriod)
+						.bulkDeploymentTimeThreshold(600)
+						.bulkDeploymentQueueRefresh(60)
+						.deploymentPrefix(UUID.randomUUID().toString().substring(0,3))
 						.build();
 				try {
 					this.configurationManager.setConfiguration(configurationView);

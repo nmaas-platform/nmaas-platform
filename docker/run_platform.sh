@@ -3,12 +3,6 @@ DIR=/nmaas/platform
 FILE=$(ls $DIR | grep .jar)
 cd $DIR
 
-if [[ -z "${PLATFORM_PORT}" ]]; then
-  cp $DIR/config/nmaas-platform.properties.default $DIR/nmaas-platform.properties
-else
-  envsubst < $DIR/config/nmaas-platform.properties.template > $DIR/nmaas-platform.properties
-fi
-
 mkdir -p /root/.ssh
 cp /nmaas/.ssh/id_rsa /root/.ssh/id_rsa
 chmod 600 /root/.ssh/id_rsa
@@ -26,4 +20,4 @@ else
   PGPASSWORD=${POSTGRESQL_PASSWORD} createdb ${POSTGRESQL_DBNAME} -h "${POSTGRESQL_HOST}" -p ${POSTGRESQL_PORT} -U "${POSTGRESQL_USERNAME}" ${POSTGRESQL_DBNAME}
 fi
 
-java -Djava.security.egd=file:/dev/./urandom -Dlog4j.configurationFile=config/log4j2-spring.json -jar $FILE --spring.config.name=nmaas-platform
+java -Djava.security.egd=file:/dev/./urandom -Dlogging.config=/nmaas/platform/config/logback.xml -jar $FILE

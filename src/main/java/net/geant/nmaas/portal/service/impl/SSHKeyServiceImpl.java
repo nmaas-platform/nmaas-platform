@@ -62,7 +62,7 @@ public class SSHKeyServiceImpl implements SSHKeyService {
 
         if(this.repository.existsByKeyValue(request.getKey())) {
             log.error("Can not add existing key to another user.");
-            throw new IllegalArgumentException("Can not add this key.");
+            throw new IllegalArgumentException("Key duplicated, cannot be added.");
         }
 
         SSHKeyEntity newSSHKeyEntity = new SSHKeyEntity(owner, request.getName(), request.getKey());

@@ -20,7 +20,6 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -32,13 +31,10 @@ import java.util.stream.Collectors;
 import static net.geant.nmaas.externalservices.kubernetes.model.IngressResourceConfigOption.DEPLOY_FROM_CHART;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.RANDOM_ARGUMENT_EXPRESSION_PREFIX;
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.PUBLIC;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.*;
 
 @Component
 @RequiredArgsConstructor
-@Profile("env_kubernetes")
 public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "domain";

@@ -3,8 +3,7 @@ package net.geant.nmaas.kubernetes;
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class KubernetesConnectorHelper {
 
     private static final String SHELL_ACCESS_ENABLED_POD_LABEL = "shell-access-enabled";

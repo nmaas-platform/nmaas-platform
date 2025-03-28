@@ -2,13 +2,17 @@ package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.api.user.SSHKeysController;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,6 +29,8 @@ public class SSHKeyControllerTest {
     private Principal present = mock(Principal.class);
     private Principal absent = mock(Principal.class);
 
+    private Principal adminPrincipal = mock(Principal.class);
+
     private User presentUser;
 
     @BeforeEach
@@ -32,11 +38,17 @@ public class SSHKeyControllerTest {
 
         when(present.getName()).thenReturn("present");
         when(absent.getName()).thenReturn("absent");
+        when(adminPrincipal.getName()).thenReturn("admin");
 
         this.presentUser = new User("present");
 
+       User admin = new User("admin");
+       admin.setRoles( List.of(new UserRole(new User("admin", true), new Domain("name", "name"), Role.ROLE_SYSTEM_ADMIN)));
+
         when(this.userService.findByUsername("present")).thenReturn(Optional.of(presentUser));
         when(this.userService.findByUsername("absent")).thenReturn(Optional.empty());
+        when(this.userService.findByUsername("admin")).thenReturn(Optional.of(admin));
+        when(this.userService.findById(1L)).thenReturn(Optional.of(presentUser));
 
         this.sut = new SSHKeysController(sshKeyService, userService);
     }
@@ -69,6 +81,39 @@ public class SSHKeyControllerTest {
         SSHKeyRequest request = new SSHKeyRequest("name", "key");
 
         this.sut.create(present, request);
+
+        verify(sshKeyService, times(1)).create(request, presentUser);
+    }
+
+    @Test
+    public void shouldGetUserKeyById() {
+        this.sut.getAllByUserId(adminPrincipal, 1L);
+
+        verify(sshKeyService, times(1)).findAllByUser(presentUser);
+    }
+
+    @Test
+    public void shouldGetUserKeyByIdTriggerError() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
+            this.sut.getAllByUserId(present, 1L);
+        });
+
+        assertEquals("You need admin privileges to view user keys.", e.getMessage());
+    }
+
+
+    @Test
+    public void shouldInvalidateKeyUser() {
+        this.sut.invalidateUserKey(adminPrincipal,12L, 1L);
+
+        verify(sshKeyService, times(1)).invalidate(presentUser, 12L);
+    }
+
+    @Test
+    public void shouldCreateKeyFromRequestForUser() {
+        SSHKeyRequest request = new SSHKeyRequest("name", "key");
+
+        this.sut.createUserKey(adminPrincipal, 1L, request);
 
         verify(sshKeyService, times(1)).create(request, presentUser);
     }

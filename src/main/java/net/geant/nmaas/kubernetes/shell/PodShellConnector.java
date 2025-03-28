@@ -2,14 +2,14 @@ package net.geant.nmaas.kubernetes.shell;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.KubernetesConnector;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-@Log4j2
+@Slf4j
 public class PodShellConnector extends KubernetesConnector {
 
     protected ExecWatch watch;

@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
@@ -16,6 +16,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +25,6 @@ import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectHook;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -51,27 +51,30 @@ import static net.geant.nmaas.nmservice.configuration.gitlab.GitLabConfigHelper.
  * It is assumed that valid address and credentials of the repository API are provided through properties file.
  */
 @Component
-@Profile("env_kubernetes")
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class GitLabConfigHandler implements GitConfigHandler {
 
     private final KubernetesRepositoryManager repositoryManager;
     private final NmServiceConfigFileRepository configurations;
     private final GitLabManager gitLabManager;
+    private final ConfigurationManager configurationManager;
 
     private static final String LOG_PREFIX = "GITLAB: ";
 
     @Value("${nmaas.platform.webhooks.baseurl}")
     private String webhooksBaseUrl;
 
+    @Value("${nmaas.platform.multi-instance}")
+    private boolean useDeploymentPrefix;
+
     /**
      * Creates a new GitLab user if one with given username does not exist already and adds / replaces his SSH keys
      *
      * @param userUsername username of the new user
-     * @param userEmail email of the new user
-     * @param userName full name of the new user
-     * @param userSshKeys list of SSH keys of the new user
+     * @param userEmail    email of the new user
+     * @param userName     full name of the new user
+     * @param userSshKeys  list of SSH keys of the new user
      * @throws FileTransferException if a problem with during user creation is encountered
      */
     @Override
@@ -121,20 +124,20 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * Information on how to access the repository is stored in {@link GitLabProject} object.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param member username of an existing user to be added as a member for created repository
+     * @param member       username of an existing user to be added as a member for created repository
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
-     * @throws FileTransferException if a problem with repository creation is encountered
+     * @throws FileTransferException        if a problem with repository creation is encountered
      */
     @Override
     @Loggable(LogLevel.DEBUG)
     public void createRepository(Identifier deploymentId, String member) {
         String domain = repositoryManager.loadDomain(deploymentId);
         Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
-        log.info(String.format("Retrieving or creating user %s", member));
+        log.info("Retrieving or creating user {}", member);
         Long gitLabUserId = getUserId(prepareGitLabUsername(member));
-        log.info(String.format("Retrieving or creating group %s", domain));
+        log.info("Retrieving or creating group {}", domain);
         Long gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        log.info(String.format("Creating project %s within the group %s", descriptiveDeploymentId, domain));
+        log.info("Creating project {} within the group {}", descriptiveDeploymentId, domain);
         Long gitLabProjectId = createProjectWithinGroup(gitLabGroupId, descriptiveDeploymentId);
         log.info("Adding member to the project");
         addMemberToProject(gitLabProjectId, gitLabUserId);
@@ -166,11 +169,11 @@ public class GitLabConfigHandler implements GitConfigHandler {
             if (group.isPresent()) {
                 return group.get().getId();
             } else {
-                gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
-                Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
-                gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
-                return groupId;
-            }
+                    gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
+                    Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
+                    gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
+                    return groupId;
+                }
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
         }
@@ -240,7 +243,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             ProjectHook hook = new ProjectHook();
             hook.setPushEvents(true);
             String completeWebhookUrl = getWebhookUrl(webhookId);
-            log.info(String.format("completeWebhookUrl: %s", completeWebhookUrl));
+            log.info("completeWebhookUrl: {}", completeWebhookUrl);
             gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());
@@ -260,10 +263,10 @@ public class GitLabConfigHandler implements GitConfigHandler {
      * Uploads a set of configuration files to a GitLab repository
      *
      * @param deploymentId unique identifier of service deployment
-     * @param configIds list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
+     * @param configIds    list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in the database
-     * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in the database
-     * @throws FileTransferException if any error occurs during communication with the git repository API
+     * @throws ConfigFileNotFoundException  if any of the configuration files for which an identifier is given could not be found in the database
+     * @throws FileTransferException        if any error occurs during communication with the git repository API
      */
     @Override
     @Loggable(LogLevel.DEBUG)
@@ -292,8 +295,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
      *
      * @param deploymentId unique identifier of service deployment
      * @throws InvalidDeploymentIdException if a service for given deployment identifier could not be found in database
-     * @throws ConfigFileNotFoundException if any of the configuration files for which an identifier is given could not be found in database
-     * @throws FileTransferException if any error occurs during communication with the git repository API
+     * @throws ConfigFileNotFoundException  if any of the configuration files for which an identifier is given could not be found in database
+     * @throws FileTransferException        if any error occurs during communication with the git repository API
      */
     @Override
     @Loggable(LogLevel.DEBUG)
@@ -301,7 +304,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         loadGitlabProject(deploymentId).ifPresent(p -> removeProject(p.getProjectId()));
     }
 
-    private void removeProject(Long projectId){
+    private void removeProject(Long projectId) {
         gitLabManager.projects().getOptionalProject(projectId).ifPresent(p -> {
             try {
                 gitLabManager.projects().deleteProject(projectId);
@@ -326,6 +329,10 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId) {
         return repositoryManager.loadGitLabProject(deploymentId);
+    }
+
+    private String getPrefix() {
+        return configurationManager.getConfiguration().getDeploymentPrefix();
     }
 
 }

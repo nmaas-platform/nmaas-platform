@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class AppAutoDeploymentMonitorTask {
 
     private final AppDeploymentMonitor appDeploymentMonitor;

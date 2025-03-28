@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserLoginRegister;
 import net.geant.nmaas.portal.persistent.entity.UserLoginRegisterType;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Log4j2
+@Slf4j
 @NoArgsConstructor
 public class UserLoginRegisterServiceImpl implements UserLoginRegisterService {
 

@@ -53,7 +53,7 @@ import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.COMPL
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.FAILED;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PENDING;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_VL_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
 
 @Service
 @Slf4j
@@ -108,8 +108,10 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         });
 
         bulkDeployment.setEntries(bulkDeploymentEntries);
+        bulkDeployment.setDeleted(false);
         if (bulkDeploymentEntries.stream().allMatch(entry -> entry.getState().equals(COMPLETED))) {
             bulkDeployment.setState(COMPLETED);
+            bulkDeployment.setCompletionDate(OffsetDateTime.now());
         } else if (bulkDeploymentEntries.stream().anyMatch(entry -> entry.getState().equals(FAILED))) {
             bulkDeployment.setState(FAILED);
         }
@@ -205,9 +207,13 @@ public class BulkDomainServiceImpl implements BulkDomainService {
                 domainGroupService.createDomainGroup(new DomainGroupView(null, groupName, groupName, null, null, List.of(creator)));
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
                 User user = userService.findByUsername(creator.getUsername()).orElseThrow(() -> new MissingElementException("User not found"));
-                userRoleRepository.save(new UserRole(user, domain, ROLE_VL_DOMAIN_ADMIN));
+                userRoleRepository.save(new UserRole(user, domain, ROLE_GROUP_DOMAIN_ADMIN));
             } else {
                 domainGroupService.addDomainsToGroup(List.of(domain), groupName);
+                User user = userService.findByUsername(creator.getUsername()).orElseThrow(() -> new MissingElementException("User not found"));
+                if (!userService.hasPrivilege(user, domain, ROLE_GROUP_DOMAIN_ADMIN)) {
+                    userRoleRepository.save(new UserRole(user, domain, ROLE_GROUP_DOMAIN_ADMIN));
+                }
             }
         });
     }
@@ -244,6 +250,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         bulkDeployment.setState(PENDING);
         bulkDeployment.setCreator(userService.findById(creator.getId()).orElseThrow(() ->new MissingElementException("User with this ID not found")));
         bulkDeployment.setCreationDate(OffsetDateTime.now());
+        bulkDeployment.setDeleted(false);
         return bulkDeployment;
     }
 

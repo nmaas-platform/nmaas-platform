@@ -25,12 +25,12 @@ public class ConfigFilePreparerTest {
     private ConfigFilePreparer configFilePreparer;
 
     @BeforeEach
-    public void init() {
-        configFilePreparer = new ConfigFilePreparer();
+    void init() {
+        configFilePreparer = new ConfigFilePreparer(null, null, null, null);
     }
 
     @Test
-    public void shouldBuildConfigFromElkTemplate() {
+    void shouldBuildConfigFromElkTemplate() {
         assertDoesNotThrow(() -> {
             ConfigFileTemplate elkConfigTemplate1 = new ConfigFileTemplate();
             elkConfigTemplate1.setConfigFileName("kibana.yml");
@@ -50,7 +50,7 @@ public class ConfigFilePreparerTest {
     }
 
     @Test
-    public void shouldBuildConfigFromLibrenmsTemplate() {
+    void shouldBuildConfigFromLibrenmsTemplate() {
         assertDoesNotThrow(() -> {
             ConfigFileTemplate librenmsConfigTemplate1 = new ConfigFileTemplate();
             librenmsConfigTemplate1.setConfigFileName("addhosts.cfg");
@@ -86,7 +86,7 @@ public class ConfigFilePreparerTest {
     }
 
     @Test
-    public void shouldBuildConfigFromOxidizedTemplate() {
+    void shouldBuildConfigFromOxidizedTemplate() {
         assertDoesNotThrow(() -> {
             ConfigFileTemplate oxidizedConfigTemplate1 = new ConfigFileTemplate();
             oxidizedConfigTemplate1.setConfigFileName("config");
@@ -136,7 +136,7 @@ public class ConfigFilePreparerTest {
     }
 
     @Test
-    public void shouldBuildConfigFromTemplateAndDeploymentParameters() {
+    void shouldBuildConfigFromTemplateAndDeploymentParameters() {
         assertDoesNotThrow(() -> {
             ConfigFileTemplate template1 = new ConfigFileTemplate();
             template1.setConfigFileName("config.yml");

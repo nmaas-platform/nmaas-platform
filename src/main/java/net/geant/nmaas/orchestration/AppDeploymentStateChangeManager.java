@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
@@ -35,7 +35,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class AppDeploymentStateChangeManager {
 
     private final DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
@@ -78,8 +78,8 @@ public class AppDeploymentStateChangeManager {
             }
             if (newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED
                     && deploymentRepositoryManager.isFirstTimeDeployment(event.getDeploymentId())) {
-                    eventPublisher.publishEvent(
-                            new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
+                eventPublisher.publishEvent(
+                        new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
             }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
@@ -122,28 +122,37 @@ public class AppDeploymentStateChangeManager {
             deploymentRepositoryManager.loadAllWaitingForDcn(event.getRelatedTo())
                     .forEach(d -> eventPublisher.publishEvent(
                             new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "")));
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at {}", timestamp, ex);
         }
     }
 
-    private MailAttributes getMailAttributes(AppDeployment appDeployment){
+    private MailAttributes getMailAttributes(AppDeployment appDeployment) {
         return MailAttributes.builder()
                 .otherAttributes(Map.of(
-                        "accessURL", deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
-                                .getServiceAccessMethods().stream()
-                                .filter(m -> !Arrays.asList(ServiceAccessMethodType.INTERNAL, ServiceAccessMethodType.LOCAL).contains(m.getType()))
-                                .map(ServiceAccessMethodView::getUrl)
-                                .findFirst()
-                                .orElse(""),
+                        "accessURL", prepareDeployUrl(appDeployment),
                         "domainName", deploymentRepositoryManager.loadDomainName(appDeployment.getDeploymentId()),
                         "owner", appDeployment.getOwner(),
-                        "appInstanceName",appDeployment.getDeploymentName(),
-                        "appName",appDeployment.getAppName()
+                        "appInstanceName", appDeployment.getDeploymentName(),
+                        "appName", appDeployment.getAppName()
                 ))
                 .mailType(MailType.APP_DEPLOYED)
                 .build();
+    }
+
+    private String prepareDeployUrl(AppDeployment appDeployment) {
+        String url = deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId())
+                .getServiceAccessMethods().stream()
+                .filter(m -> !Arrays.asList(ServiceAccessMethodType.INTERNAL, ServiceAccessMethodType.LOCAL).contains(m.getType()))
+                .map(ServiceAccessMethodView::getUrl)
+                .findFirst()
+                .orElse("");
+
+        if (!(url.startsWith("https://") || url.startsWith("http://"))) {
+            url = "https://" + url;
+        }
+        return url;
     }
 
     private MailAttributes getMailAttributes(AppDeployment appDeployment, String error) {

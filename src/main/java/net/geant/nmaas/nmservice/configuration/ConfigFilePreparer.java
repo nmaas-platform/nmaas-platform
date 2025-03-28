@@ -2,8 +2,8 @@ package net.geant.nmaas.nmservice.configuration;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
@@ -13,7 +13,6 @@ import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentParametersProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.convertToFreemarkerTemplate;
@@ -30,32 +30,27 @@ import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.c
 import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.generateNewConfigId;
 
 @Component
-@NoArgsConstructor
-@Log4j2
+@RequiredArgsConstructor
+@Slf4j
 class ConfigFilePreparer {
 
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "targets";
     private static final String DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY = "ipAddress";
 
-    @Autowired
-    private NmServiceConfigFileRepository configurations;
-
-    @Autowired
-    private ConfigFileTemplatesRepository templatesRepository;
-
-    @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
-
-    @Autowired
-    private AppDeploymentParametersProvider deploymentParametersProvider;
+    private final NmServiceConfigFileRepository configurations;
+    private final ConfigFileTemplatesRepository templatesRepository;
+    private final NmServiceRepositoryManager nmServiceRepositoryManager;
+    private final AppDeploymentParametersProvider deploymentParametersProvider;
 
     List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration) {
-        log.debug(String.format("Generating configuration files for %s", deploymentId.value()));
+        log.debug("Generating configuration files for {}", deploymentId.value());
         Map<String, Object> appConfigurationModel = new HashMap<>();
         log.debug("Adding default set of model parameters");
         appConfigurationModel.putAll(deploymentParametersProvider.deploymentParameters(deploymentId));
         log.debug("Adding user provided model parameters");
-        appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
+        if (Objects.nonNull(appConfiguration)) {
+            appConfigurationModel.putAll(createModelEntriesFromUserInput(appConfiguration));
+        }
         log.debug("Adding bean model parameters");
         appConfigurationModel.put("helper", new ConfigFilePreparerHelper());
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
@@ -73,7 +68,7 @@ class ConfigFilePreparer {
             storeConfigurationInRepository(config);
             configIds.add(configId);
         }
-        log.debug(String.format("Returning configuration files identifiers %s", configIds));
+        log.debug("Returning configuration files identifiers {}", configIds);
         return configIds;
     }
 
@@ -87,7 +82,7 @@ class ConfigFilePreparer {
                     configFileDirectory,
                     stringWriter.toString());
         } catch (TemplateException
-                | IOException e) {
+                 | IOException e) {
             throw new ConfigTemplateHandlingException("Caught some exception during configuration file building from template and user data -> " + e.getMessage());
         }
     }
@@ -98,7 +93,7 @@ class ConfigFilePreparer {
             return;
         }
         List<String> ipAddresses = devices.stream()
-                .map(device -> (String)((Map)device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
+                .map(device -> (String) ((Map) device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
                 .collect(Collectors.toList());
         nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }

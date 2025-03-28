@@ -2,6 +2,7 @@ stages:
   - test
   - sonar
   - build
+  - mend
 
 test:
   stage: test
@@ -62,3 +63,16 @@ build_and_push_release_image:
       docker build -t $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG .
       docker push $DOCKER_REPOSITORY_LOCAL:$IMAGE_TAG
       docker logout $DOCKER_REPOSITORY
+
+mend:
+  stage: mend
+  only:
+    - /^release/
+  variables:
+    PRODUCT_NAME: "nmaas"
+    PROJECT_NAME: "nmaas-platform"
+  script:
+    - |
+      export PRODUCT_VERSION=$(echo $CI_COMMIT_BRANCH | cut -c 9-)
+      export PROJECT_VERSION=$PRODUCT_VERSION
+      ./run_ws.sh

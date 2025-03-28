@@ -331,7 +331,10 @@
     "BULK_DOMAINS_ALLOW_FOR_SSO_ACCOUNTS" : "Allow for creation or update of a SSO-enabled account in bulk process",
     "BULK_DOMAINS_SEND_EMAIL_FOR_NEW_ACCOUNTS" : "Send notification email for new accounts created in bulk process",
     "BULK_DEPLOYMENT_CRON" : "Cron grupowego uruchomienia aplikacji",
-    "BULK_DEPLOYMENT_LIMIT" : "Limit jednoczesnego uruchamiania aplikacji "
+    "BULK_DEPLOYMENT_LIMIT" : "Limit jednoczesnego uruchamiania aplikacji ",
+    "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Odświeżanie statystyk kolejki (w sekundach)",
+    "BULK_DEPLOYMENT_THRESHOLD" : "Limit czasu dla uruchamiania aplikacji ( w sekundach)",
+    "DEPLOYMENT_PREFIX" : "Prefix instancji"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
@@ -1077,8 +1080,8 @@
       "ROLE_GUEST": "Gość",
       "ROLE_INCOMPLETE":  "Konto w trakcie tworzenia",
       "ROLE_NOT_ACCEPTED" : "Konto jeszcze nie zaakceptowane",
-      "ROLE_VL_MANAGER" : "Administrator wirtualnych laboratoriów",
-      "ROLE_VL_DOMAIN_ADMIN" : "WL administrator domeny"
+      "ROLE_GROUP_MANAGER" : "Administrator wirtualnych laboratoriów",
+      "ROLE_GROUP_DOMAIN_ADMIN" : "WL administrator domeny"
     }
   },
   "PAGINATION": {
@@ -1152,7 +1155,7 @@
       "FINGERPRINT": "Odcisk palca",
       "ACTIONS": "Akcje"
     },
-    "BUTTON_INVALIDATE": "Unieważnij",
+    "BUTTON_INVALIDATE": "Usuń",
     "NO_KEYS": "Brak dodanych kluczy",
     "BUTTON_NEW_KEY": "Dodaj nowy klucz",
     "MODAL": {
@@ -1186,6 +1189,9 @@
       "NAME": "Name",
       "BUTTON_ADD": "Submit",
       "BUTTON_CANCEL": "Cancel",
+      "TOKEN_COPY" : "Please copy and save the newly generated access token displayed below. This token will not be presented to you again.",
+      "TOKEN_SAVED" : "Close (token saved)",
+      "COPY" : "Copy",
       "ERROR": {
         "NAME_REQUIRED": "Name is required",
         "NAME_MINLENGTH": "Name must have at least 1 character",
@@ -1193,6 +1199,7 @@
       }
     },
     "BUTTON_INVALIDATE": "Invalidate",
+    "BUTTON_DELETE": "Usuń",
     "NO_TOKENS": "No tokens",
     "NEW_TOKEN": "Add new token"
   },
@@ -1226,7 +1233,8 @@
       "DOMAIN_CODENAME" : "Codename domeny",
       "USER_ID" : "Id użytkownika",
       "EMAIL" : "Email",
-      "USER_NAME" : "Nazwa użytkownika"
+      "USER_NAME" : "Nazwa użytkownika",
+      "COMPLETION_DATE" : "Data zakończenia"
     },
     "DOMAIN": {
       "INFO": "Additional information will be added later",
@@ -1264,7 +1272,9 @@
       "COMPLETED" : "Zakończone",
       "FAILED" : "Nieudane",
       "PARTIALLY_FAILED" : "Częściowo nieudane",
-      "REMOVED" : "Usunięta"
+      "REMOVED" : "Usunięta",
+      "CANCELED" : "Anulowane",
+      "PARTIALLY_CANCELED" : "Częściowo anulowane"
     },
     "REMOVE" : {
       "HEADER" : "Usuń grupę",

@@ -1,7 +1,8 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -38,10 +39,12 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -56,8 +59,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.Arrays;
@@ -69,7 +70,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/apps/instances")
-@Log4j2
+@Slf4j
 public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
@@ -82,6 +83,12 @@ public class AppInstanceController extends AppBaseController {
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final ConfigurationManager configurationManager;
+
+
+    @Value("${nmaas.platform.multi-instance}")
+    private boolean useDeploymentPrefix;
+
     @Autowired
     public AppInstanceController(ModelMapper modelMapper,
                                  ApplicationService applicationService,
@@ -92,7 +99,8 @@ public class AppInstanceController extends AppBaseController {
                                  ApplicationInstanceService instanceService,
                                  DomainService domainService,
                                  AppDeploymentRepositoryManager appDeploymentRepositoryManager,
-                                 ApplicationEventPublisher eventPublisher) {
+                                 ApplicationEventPublisher eventPublisher,
+                                 ConfigurationManager configurationManager) {
         super(modelMapper, applicationService, appBaseService, userService);
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
@@ -100,6 +108,7 @@ public class AppInstanceController extends AppBaseController {
         this.domainService = domainService;
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.eventPublisher = eventPublisher;
+        this.configurationManager = configurationManager;
     }
 
     /*
@@ -213,7 +222,7 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
                                                      @PathVariable String username,
-                                                     Pageable pageable){
+                                                     Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         return getUserDomainAppInstances(domainId, username, pageable);
@@ -296,10 +305,18 @@ public class AppInstanceController extends AppBaseController {
         return new Id(appInstance.getId());
     }
 
-    public static Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
-        return Identifier.newInstance(
-                String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
-        );
+    public Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
+        if(useDeploymentPrefix) {
+            return Identifier.newInstance(
+                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix() ,
+                            domain,
+                            appName.replace(" ", ""),
+                            String.valueOf(appInstanceNumber)).toLowerCase());
+        } else {
+            return Identifier.newInstance(
+                    String.join("-", domain, appName.replace(" ", ""), String.valueOf(appInstanceNumber)).toLowerCase()
+            );
+        }
     }
 
     @DeleteMapping("/{appInstanceId}")
@@ -457,7 +474,7 @@ public class AppInstanceController extends AppBaseController {
                 .map(this::getUser)
                 .filter(u -> !u.getSshKeys().isEmpty()) // skip users with no ssh keys
                 .filter(u -> u.getRoles().stream().anyMatch(r -> r.getDomain().getId().equals(appInstance.getDomain().getId()))) // allow only users with role in app instance domain
-                .collect(Collectors.toList()); // retrieve users from usernames to be added to members
+                .toList(); // retrieve users from usernames to be added to members
 
         appInstance.getMembers().addAll(new HashSet<>(usersToAdd));
         this.instanceService.update(appInstance);
@@ -465,7 +482,7 @@ public class AppInstanceController extends AppBaseController {
         // get user data to be removed from members
         List<User> usersToRemove = oldMembers.stream().filter(m -> toRemoveMemberUsernames.contains(m.getUsername())).collect(Collectors.toList());
 
-        usersToRemove.forEach( r -> {
+        usersToRemove.forEach(r -> {
             RemoveUserFromRepositoryGitlabEvent event = new RemoveUserFromRepositoryGitlabEvent(
                     "AppInstance members list update",
                     r.getUsername(),
@@ -474,9 +491,9 @@ public class AppInstanceController extends AppBaseController {
             eventPublisher.publishEvent(event);
         });
 
-        usersToAdd.forEach( a -> {
-            if(a.getSshKeys().isEmpty()) {
-                log.info(String.format("[ADD USER TO GITLAB REPO] User [%s] does not have any ssh keys, skipping", a.getUsername()));
+        usersToAdd.forEach(a -> {
+            if (a.getSshKeys().isEmpty()) {
+                log.info("[ADD USER TO GITLAB REPO] User [{}] does not have any ssh keys, skipping", a.getUsername());
             } else {
                 AddUserToRepositoryGitlabEvent event = new AddUserToRepositoryGitlabEvent(
                         "AppInstance members list update",
@@ -493,6 +510,7 @@ public class AppInstanceController extends AppBaseController {
 
     /**
      * provides deployment statistics/current number of applications of each type
+     *
      * @return result map
      */
     @GetMapping("/statistics")
@@ -662,7 +680,6 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private AppInstanceView addAppInstanceProperties(AppInstanceView ai, AppInstance appInstance) {
-
         addAppInstanceBaseProperties(ai, appInstance);
 
         Identifier identifier = appInstance.getInternalId();
@@ -707,12 +724,12 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private void logPageable(Pageable p) {
-        log.trace("Page number: " + p.getPageNumber() + "\tPage size:" +p.getPageSize() + "\tPage offset:" + p.getOffset() + "\tSort:" + p.getSort());
+        log.trace("Page number: {}\tPage size:{}\tPage offset:{}\tSort:{}", p.getPageNumber(), p.getPageSize(), p.getOffset(), p.getSort());
     }
 
     private boolean isPageableValidForAppInstance(Pageable p) {
-        List<String> sortProperties = p.getSort().get().map(Sort.Order::getProperty).collect(Collectors.toList());
-        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
+        List<String> sortProperties = p.getSort().get().map(Sort.Order::getProperty).toList();
+        List<String> classProperties = Arrays.stream(AppInstance.class.getDeclaredFields()).map(Field::getName).toList();
 
         Set<String> sortSet = new HashSet<>(sortProperties);
         Set<String> classSet = new HashSet<>(classProperties);

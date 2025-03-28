@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.NmServiceDeployment;
 import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookException;
@@ -14,23 +14,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Log4j2
-@AllArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/gitlab/webhooks")
 public class GitLabWebhookController {
 
-    private KubernetesRepositoryManager repositoryManager;
-
-    private NmServiceConfigurationProvider configurationProvider;
+    private final KubernetesRepositoryManager repositoryManager;
+    private final NmServiceConfigurationProvider configurationProvider;
 
     @PostMapping("/{id}")
     public void triggerWebhook(@PathVariable String id) {
         try {
-            log.info("Triggered webhook with id: " + id);
+            log.info("Triggered webhook with id: {}", id);
             KubernetesNmServiceInfo service = repositoryManager.loadServiceByGitLabProjectWebhookId(id);
             if (service.getState().isOnline() || NmServiceDeploymentState.VERIFICATION_FAILED.equals(service.getState())) {
-                log.info("Triggering configuration reload for service: " + service.getDescriptiveDeploymentId());
+                log.info("Triggering configuration reload for service: {}", service.getDescriptiveDeploymentId());
                 configurationProvider.reloadNmService(NmServiceDeployment.builder()
                         .deploymentId(service.getDeploymentId())
                         .descriptiveDeploymentId(service.getDescriptiveDeploymentId())

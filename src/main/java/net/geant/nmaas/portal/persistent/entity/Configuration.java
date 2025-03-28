@@ -70,6 +70,15 @@ public class Configuration {
     @Column(name = "parallel_deployments_limit", nullable = false)
     private Integer parallelDeploymentsLimit;
 
+    @Column(name = "bulk_deployment_queue_refresh_seconds", nullable = false)
+    private Integer bulkDeploymentQueueRefresh;
+
+    @Column(name = "parallel_deployments_time_threshold", nullable = false)
+    private Integer bulkDeploymentTimeThreshold;
+
+    @Column(nullable = true, length = 5)
+    private String deploymentPrefix;
+
     public Configuration(
             boolean maintenance,
             boolean ssoLoginAllowed,
@@ -90,6 +99,7 @@ public class Configuration {
         this.registrationDomainSelectionEnabled = registrationDomainSelectionEnabled;
         this.bulkDomainsAllowForSsoAccounts = bulkDomainsAllowForSsoAccounts;
         this.bulkDomainsSendEmailForNewAccounts = bulkDomainsSendEmailForNewAccounts;
+        this.bulkDeploymentQueueRefresh = 60;
     }
 
     public void setAppInstanceFailureEmailList(List<String> emails) {

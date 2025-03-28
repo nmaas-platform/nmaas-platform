@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.auth.Registration;
-import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -34,11 +33,9 @@ public interface UserService {
 
     boolean existsById(Long id);
 
-    User register(OidcUser user, Domain globalDomain);
+    boolean existsBySamlToken(String token);
 
     User register(Registration registration, Domain globalDomain, Domain domain);
-
-    User register(UserSSOLogin userSSO, Domain globalDomain);
 
     User registerBulk(CsvDomain userCSV, Domain globalDomain, Domain domain);
 

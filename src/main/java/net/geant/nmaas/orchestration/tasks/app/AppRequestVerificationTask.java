@@ -1,10 +1,10 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @AllArgsConstructor
-@Log4j2
+@Slf4j
 public class AppRequestVerificationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
@@ -30,8 +30,9 @@ public class AppRequestVerificationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void trigger(AppVerifyRequestActionEvent event) {
-        try{
+    public void trigger(AppVerifyRequestActionEvent event) throws InterruptedException {
+        Thread.sleep(1000);
+        try {
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
             final Application application = appRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue())).orElseThrow(() ->
@@ -40,9 +41,9 @@ public class AppRequestVerificationTask {
                     deploymentId,
                     appDeployment,
                     application.getAppDeploymentSpec());
-        } catch(Exception ex){
+        } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            log.error("Error reported at {}", timestamp, ex);
         }
     }
 
