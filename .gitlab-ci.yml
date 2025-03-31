@@ -66,7 +66,7 @@ build_and_push_release_image:
 
 mend:
   stage: mend
-  image: eclipse-temurin:17-jre-alpine
+  image: eclipse-temurin:17-jre-jammy
   only:
     - /^release/
   variables:
@@ -76,7 +76,6 @@ mend:
     - |
       export PRODUCT_VERSION=$(echo $CI_COMMIT_BRANCH | cut -c 9-)
       export PROJECT_VERSION=$PRODUCT_VERSION
-      apk update && apk add curl
       chmod +x ./gradlew
       curl -LJO https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar
       java -jar wss-unified-agent.jar -userKey ${MEND_USER_KEY} -apiKey ${MEND_API_KEY} -projectVersion ${PROJECT_VERSION} -project ${PROJECT_NAME} -productVersion ${PRODUCT_VERSION} -product ${PRODUCT_NAME} -c ./ws/ws.config -d ./
