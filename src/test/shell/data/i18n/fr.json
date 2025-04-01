@@ -93,6 +93,10 @@
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Il est impossible de se connecter au composant système",
     "USER_DISABLED_MESSAGE": "User is disabled"
   },
+  "ACCOUNT_LINKING": {
+    "HEADER": "Association de comptes",
+    "INFO": "Vous essayez de vous connecter à un compte local qui existe déjà dans notre système avec l'adresse e-mail que vous avez fournie. Veuillez entrer votre mot de passe pour vérifier votre identité et confirmer la liaison des comptes."
+  },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instance de test nmaas",
     "BODY": "Veuillez noter qu'il s'agit d'une instance de test nmaas. Les mesures d'isolation de l'utilisateur et de sécurité des données ne sont pas aussi strictes que sur l'instance de production. N'utilisez pas cette instance pour surveiller un équipement réel.",

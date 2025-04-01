@@ -93,6 +93,10 @@
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Systemkomponenten-Login kann nicht durchgeführt werden",
     "USER_DISABLED_MESSAGE": "User is disabled"
   },
+  "ACCOUNT_LINKING": {
+    "HEADER": "Verknüpfung von Konten",
+    "INFO": "Sie versuchen, sich bei einem lokalen Konto anzumelden, das mit der von Ihnen angegebenen E-Mail-Adresse bereits in unserem System existiert. Bitte geben Sie Ihr Passwort ein, um Ihre Identität zu bestätigen und die Verknüpfung der Konten zu bestätigen."
+  },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "nmaas Testinstanz",
     "BODY": "Bitte beachten Sie, dass dies eine Test-nmaas-Instanz ist. Die Benutzerisolations- und Datensicherheitsmaßnahmen sind nicht so streng wie in der Produktionsinstanz. Verwenden Sie diese Instanz nicht zur Überwachung realer Geräte.",

@@ -93,6 +93,10 @@
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed",
     "USER_DISABLED_MESSAGE": "User is disabled"
   },
+  "ACCOUNT_LINKING": {
+    "HEADER": "Account linking",
+    "INFO": "You are trying to log in to an local account that already exists in our system with the email address you provided. Please enter your password to verify it's You and confirm linking of these accounts."
+  },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "nmaas test instance",
     "BODY": "Please be aware that this is a test nmaas instance. The user isolation and data security measures are not so strict as on the production instance. Do not use this instance to monitor real equipment.",
