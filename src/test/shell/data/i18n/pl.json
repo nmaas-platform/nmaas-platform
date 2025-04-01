@@ -95,7 +95,8 @@
   },
   "ACCOUNT_LINKING": {
     "HEADER": "Powiązanie kont",
-    "INFO": "Próbujesz zalogować się na lokalne konto, które już istnieje w naszym systemie dla podanego adresu e-mail. Wprowadź swoje hasło, aby potwierdzić swoją tożsamość i zatwierdzić połączenie kont."
+    "INFO": "Próbujesz zalogować się na lokalne konto, które już istnieje w naszym systemie dla podanego adresu e-mail. Wprowadź swoje hasło, aby potwierdzić swoją tożsamość i zatwierdzić połączenie kont.",
+    "CONFIRM": "Potwierdź"
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instancja testowa nmaas",

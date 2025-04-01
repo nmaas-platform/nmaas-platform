@@ -95,7 +95,9 @@
   },
   "ACCOUNT_LINKING": {
     "HEADER": "Association de comptes",
-    "INFO": "Vous essayez de vous connecter à un compte local qui existe déjà dans notre système avec l'adresse e-mail que vous avez fournie. Veuillez entrer votre mot de passe pour vérifier votre identité et confirmer la liaison des comptes."
+    "INFO": "Vous essayez de vous connecter à un compte local qui existe déjà dans notre système avec l'adresse e-mail que vous avez fournie. Veuillez entrer votre mot de passe pour vérifier votre identité et confirmer la liaison des comptes.",
+    "CONFIRM": "Confirm"
+
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instance de test nmaas",

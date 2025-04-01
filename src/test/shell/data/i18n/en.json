@@ -95,7 +95,8 @@
   },
   "ACCOUNT_LINKING": {
     "HEADER": "Account linking",
-    "INFO": "You are trying to log in to an local account that already exists in our system with the email address you provided. Please enter your password to verify it's You and confirm linking of these accounts."
+    "INFO": "You are trying to log in to an local account that already exists in our system with the email address you provided. Please enter your password to verify it's You and confirm linking of these accounts.",
+    "CONFIRM": "Confirm"
   },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "nmaas test instance",
