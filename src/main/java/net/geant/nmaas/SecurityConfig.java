@@ -53,6 +53,7 @@ public class SecurityConfig {
     private static final String AUTH_OIDC_LOGIN_PAGE = "/api/oauth2/authorization/my-oidc";
     private static final String AUTH_OIDC_LOGIN = "/api/auth/oidc/login";
     private static final String AUTH_OIDC_SUCCESS = "/api/oidc/success";
+    private static final String AUTH_OIDC_LINK = "/api/oidc/link";
     private static final String AUTH_LOGOUT = "/api/oidc/logout/*";
     private static final String AUTH_OIDC = "/api/oidc/**";
     private static final String AUTH_CODE = "/api/login/oauth2/code";
@@ -146,6 +147,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(httpRequest -> httpRequest
                         .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(AUTH_OIDC_LINK).permitAll()
                         .requestMatchers(AUTH_AUTHENTICATED_LIST).authenticated()
                 )
                 .oauth2Login(oAuth2 -> oAuth2

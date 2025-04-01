@@ -88,13 +88,5 @@ class OidcUserServiceImplTest {
         assertThrows(ExternalUserMatchException.class, () -> oidcUserService.checkUser(oidcUser));
     }
 
-    @Test
-    void shouldThrowExceptionWhenLinkingNotAllowed() {
-
-        //when
-        when(userService.existsByEmail("test@example.com")).thenReturn(true);
-        //then
-        assertThrows(ExternalUserCanNotBeLinked.class, () -> oidcUserService.checkUser(oidcUser));
-    }
 
 }

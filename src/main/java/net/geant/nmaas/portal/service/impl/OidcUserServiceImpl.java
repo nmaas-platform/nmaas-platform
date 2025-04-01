@@ -71,16 +71,7 @@ public class OidcUserServiceImpl implements OidcUserService {
                         + oidcUserPreferredUsername
                         + " does not match internal user ");
             }
-        } else if (existUserByEmail) {
-
-            if (allowedLinkingUsersByEmail) {
-                return linkUser(oidcUserEmail, oidcUserSub);
-            } else {
-                throw new ExternalUserCanNotBeLinked("External user "
-                        + oidcUserPreferredUsername
-                        + " cannot be linked to an internal user ");
-            }
-        } else {
+        }  else {
             return registerNewUser(oidcUser);
         }
     }
@@ -122,10 +113,32 @@ public class OidcUserServiceImpl implements OidcUserService {
         return newUser;
     }
 
-    private User linkUser(String email, String samlToken) {
+    @Override
+    public boolean externalUserRequiredLinking(OidcUser oidcUser) {
+
+        String oidcUserSub = oidcUser.getAttribute("sub");
+        String oidcUserEmail = oidcUser.getAttribute("email");
+        String oidcUserPreferredUsername = oidcUser.getAttribute("preferred_username");
+
+        boolean existUserBySamlToken = userService
+                .existsBySamlToken(oidcUserSub);
+        boolean existUserByUsernameAsSamlToken = userService
+                .existsBySamlToken(oidcUserPreferredUsername);
+        boolean existUserByEmail = userService
+                .existsByEmail(oidcUserEmail);
+
+        if(existUserBySamlToken || existUserByUsernameAsSamlToken) {
+            return false;
+        }else return existUserByEmail;
+    }
+
+    @Override
+    public User linkUser(String email, String samlToken, String firstName, String lastName) {
 
         User user = userService.findByEmail(email);
         user.setSamlToken(samlToken);
+        user.setFirstname(firstName);
+        user.setLastname(lastName);
 
         userService.update(user);
         return user;

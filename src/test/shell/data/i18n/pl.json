@@ -93,6 +93,11 @@
     "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Błąd logowania do systemu",
     "USER_DISABLED_MESSAGE": "Użytkownik jest nieaktywny"
   },
+  "ACCOUNT_LINKING": {
+    "HEADER": "Powiązanie kont",
+    "INFO": "Próbujesz zalogować się na lokalne konto, które już istnieje w naszym systemie dla podanego adresu e-mail. Wprowadź swoje hasło, aby potwierdzić swoją tożsamość i zatwierdzić połączenie kont.",
+    "CONFIRM": "Potwierdź"
+  },
   "TEST_INSTANCE_MODAL": {
     "HEADER": "Instancja testowa nmaas",
     "BODY": "Pamiętaj, że jest to testowa instancja nmaas. Izolacja użytkowników oraz środki zabezpieczenia danych nie są tak rygorystyczne, jak w przypadku instancji produkcyjnej. Nie używaj tej instancji do monitorowania rzeczywistych urządzeń.",
