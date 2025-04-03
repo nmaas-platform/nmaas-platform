@@ -32,9 +32,7 @@ import static org.mockito.Mockito.when;
 public class KubernetesConnectorHelperTest {
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
-
     private final KubernetesClientConfigFactory configFactory = mock(KubernetesClientConfigFactory.class);
-
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
 
     private KubernetesConnectorHelper helper;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.utils.ssh;
+package net.geant.nmaas.utils.bash;
 
 import java.util.function.Predicate;
 

@@ -18,7 +18,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import net.geant.nmaas.utils.ssh.CommandExecutionException;
+import net.geant.nmaas.utils.bash.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
