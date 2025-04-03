@@ -75,7 +75,7 @@ class TokenAuthenticationServiceTest {
     @Test
     void shouldReturnAuthenticationWhenAuthHeaderIsValid() {
         // given
-        String token = "token123";
+        String token = "example.jwt.token";
         String validHeader = AUTH_METHOD + " " + token;
         String username = "testUser";
 
@@ -104,7 +104,7 @@ class TokenAuthenticationServiceTest {
     @Test
     void shouldReturnAuthenticationWithNoAuthoritiesWhenRolesAreNotList() {
         // given
-        String token = "token123";
+        String token = "example.jwt.token";
         String validHeader = AUTH_METHOD + " " + token;
         String username = "testUser";
 
