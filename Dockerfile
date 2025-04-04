@@ -4,20 +4,39 @@ COPY . /build/
 WORKDIR /build/
 
 RUN chmod +x ./gradlew \
-    && ./gradlew -Dorg.gradle.daemon=false build
+    && ./gradlew -Dorg.gradle.daemon=false build -x test
 
 FROM eclipse-temurin:17-jre-alpine
 
 LABEL maintainer=nmaas@lists.geant.org
 
+ARG USERNAME=nmaas
+ARG USER_UID=1000
+ARG USER_GID=1000
+# Note: Latest version of kubectl may be found at https://github.com/kubernetes/kubernetes/releases
+ARG KUBE_LATEST_VERSION="v1.16.3"
+# Note: Latest version of helm may be found at https://github.com/kubernetes/helm/releases
+ARG HELM_VERSION="v3.9.3"
+
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
-COPY docker/run_platform.sh /nmaas/scripts/run_platform.sh
+COPY docker/docker_entrypoint.sh /nmaas/scripts/docker_entrypoint.sh
 COPY docker/logback.xml /nmaas/platform/config/logback.xml
 COPY docker/do-ntp.sh /etc/periodic/hourly/do-ntp.sh
-COPY docker/ssh-config /root/.ssh/config
+
+RUN addgroup -g $USER_GID $USERNAME \
+    && adduser --disabled-password -u $USER_UID -G $USERNAME $USERNAME
 
 RUN apk --no-cache add gettext postgresql-client \
     && mkdir /nmaas/files \
-    && chmod +x /nmaas/scripts/run_platform.sh
+    && chmod +x /nmaas/scripts/docker_entrypoint.sh \
+    && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl \
+    && wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
+    && chmod +x /usr/local/bin/helm
 
-CMD /nmaas/scripts/run_platform.sh && tail -f /dev/null
+RUN chown -R $USERNAME:$USERNAME /nmaas/files
+USER $USERNAME
+
+ENTRYPOINT /nmaas/scripts/docker_entrypoint.sh
+
+CMD ls /home
