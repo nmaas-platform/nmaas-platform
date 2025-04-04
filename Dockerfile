@@ -35,7 +35,7 @@ RUN apk --no-cache add gettext postgresql-client \
     && chmod +x /usr/local/bin/helm
 
 RUN chown -R $USERNAME:$USERNAME /nmaas/files \
-    && chown -R $USERNAME:$USERNAME /nmaas/platform \
+    && chown -R $USERNAME:$USERNAME /nmaas/platform
 
 USER $USERNAME
 
