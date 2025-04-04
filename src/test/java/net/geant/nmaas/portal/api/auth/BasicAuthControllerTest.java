@@ -21,55 +21,53 @@ import static org.mockito.Mockito.when;
 
 public class BasicAuthControllerTest {
 
+    private final DomainService domains = mock(DomainService.class);
+    private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+    private final UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
+
     private BasicAuthController basicAuthController;
 
-    private DomainService domains = mock(DomainService.class);
-
-    private PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-
-    private UserLoginRegisterService userLoginService = mock(UserLoginRegisterService.class);
-
     @BeforeEach
-    public void setup(){
+    void setup() {
         basicAuthController = new BasicAuthController(null, domains, passwordEncoder, null, null, userLoginService);
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
     }
 
     @Test
-    public void testValidateWithValidUserNameAndPassword() throws AuthenticationException {
+    void testValidateWithValidUserNameAndPassword() throws AuthenticationException {
         basicAuthController.validate("TEST", "TEST", "TEST", true);
     }
 
     @Test
-    public void testValidateWithInvalidUserNameAndValidPassword() throws AuthenticationException {
+    void testValidateWithInvalidUserNameAndValidPassword() throws AuthenticationException {
         assertThrows(AuthenticationException.class, () -> {
             basicAuthController.validate(null, "TEST", "TEST", true);
         });
     }
 
     @Test
-    public void testValidateWithValidUserNameAndInvalidPassword() throws AuthenticationException {
+    void testValidateWithValidUserNameAndInvalidPassword() throws AuthenticationException {
         assertThrows(AuthenticationException.class, () -> {
             basicAuthController.validate("TEST", null, "TEST", true);
         });
     }
 
     @Test
-    public void testValidateWithInvalidUserNameAndInvalidPassword() throws AuthenticationException {
+    void testValidateWithInvalidUserNameAndInvalidPassword() throws AuthenticationException {
         assertThrows(AuthenticationException.class, () -> {
             basicAuthController.validate(null, null, "TEST", true);
         });
     }
 
     @Test
-    public void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
+    void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
         assertThrows(AuthenticationException.class, () -> {
             basicAuthController.validate("TEST", "TEST", "TEST", false);
         });
     }
 
     @Test
-    public void testValidateWithValidUserNameAndWrongPassword() throws AuthenticationException {
+    void testValidateWithValidUserNameAndWrongPassword() throws AuthenticationException {
         assertThrows(AuthenticationException.class, () -> {
             when(passwordEncoder.matches(any(), any())).thenReturn(false);
             basicAuthController.validate("TEST", "TEST", "TEST", true);
@@ -77,7 +75,7 @@ public class BasicAuthControllerTest {
     }
 
     @Test
-    public void shouldNotChangeUserRoles() {
+    void shouldNotChangeUserRoles() {
         User user = new User("testUser");
         user.setPrivacyPolicyAccepted(true);
         user.setTermsOfUseAccepted(true);
@@ -86,7 +84,7 @@ public class BasicAuthControllerTest {
     }
 
     @Test
-    public void shouldAddIncompleteRoleToUser() {
+    void shouldAddIncompleteRoleToUser() {
         when(domains.getGlobalDomain()).thenReturn(Optional.of(new Domain("name", "codename")));
         User user = new User("testUser");
         user.setPrivacyPolicyAccepted(false);

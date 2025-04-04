@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
-import net.geant.nmaas.utils.ssh.CommandExecutionException;
+import net.geant.nmaas.utils.bash.CommandExecutionException;
 import org.springframework.stereotype.Service;
 
 @Service

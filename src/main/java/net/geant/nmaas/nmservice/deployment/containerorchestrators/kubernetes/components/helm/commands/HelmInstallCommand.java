@@ -16,13 +16,13 @@ public class HelmInstallCommand extends HelmCommand {
     /**
      * Creates {@link HelmInstallCommand} with provided custom input
      *
-     * @param helmVersion version of Helm in use
-     * @param namespace namespace to install the release into
-     * @param releaseName release name
-     * @param values a map of key - value pairs to customize the release installation
-     * @param chartName chart name for download from repository
+     * @param helmVersion  version of Helm in use
+     * @param namespace    namespace to install the release into
+     * @param releaseName  release name
+     * @param values       a map of key - value pairs to customize the release installation
+     * @param chartName    chart name for download from repository
      * @param chartVersion chart version from download from repository
-     * @param enableTls flag indicating if tls option should be added
+     * @param enableTls    flag indicating if tls option should be added
      * @return complete command object
      */
     public static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls) {
@@ -41,10 +41,10 @@ public class HelmInstallCommand extends HelmCommand {
     /**
      * Creates {@link HelmInstallCommand} with provided custom input and local chart archive
      *
-     * @param helmVersion version of Helm in use
-     * @param namespace namespace to install the release into
-     * @param releaseName release name
-     * @param values a map of key - value pairs to customize the release installation
+     * @param helmVersion  version of Helm in use
+     * @param namespace    namespace to install the release into
+     * @param releaseName  release name
+     * @param values       a map of key - value pairs to customize the release installation
      * @param chartArchive complete path to the release chart archive
      * @return complete command object
      */
@@ -75,7 +75,7 @@ public class HelmInstallCommand extends HelmCommand {
     }
 
     public static String commaSeparatedValuesString(Map<String, String> values) {
-        values.entrySet().forEach(e -> log.info(e.getKey() + " " + e.getValue()));
+        values.forEach((key, value) -> log.info("{} {}", key, value));
         return values.entrySet().stream()
                 .map(entry -> {
                     if (entry.getKey().contains(TEXT_TO_REPLACE_WITH_VALUE)) {
