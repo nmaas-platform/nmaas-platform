@@ -34,7 +34,9 @@ RUN apk --no-cache add gettext postgresql-client \
     && wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm
 
-RUN chown -R $USERNAME:$USERNAME /nmaas/files
+RUN chown -R $USERNAME:$USERNAME /nmaas/files \
+    && chown -R $USERNAME:$USERNAME /nmaas/platform \
+
 USER $USERNAME
 
 ENTRYPOINT /nmaas/scripts/docker_entrypoint.sh
