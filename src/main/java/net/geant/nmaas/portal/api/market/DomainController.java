@@ -19,6 +19,7 @@ import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -36,9 +37,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,6 +50,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.AccessDeniedException;
@@ -142,7 +146,11 @@ public class DomainController extends AppBaseController {
 			}
 
 			return new Id(domain.getId());
-		} catch (InvalidDomainException e) {
+
+		} catch (IllegalArgumentException e) {
+			throw new DataConflictException(e.getMessage());
+		}
+		 catch (InvalidDomainException e) {
 			throw new ProcessingException(e.getMessage());
 		}
 	}
@@ -365,4 +373,9 @@ public class DomainController extends AppBaseController {
 		this.domainService.updateAnnotation(id, annotation);
 	}
 
+	@ExceptionHandler(DataConflictException.class)
+	@ResponseStatus(code = HttpStatus.CONFLICT)
+	public String handleDataConfigException(DataConflictException e){
+		return e.getMessage();
+	}
 }
