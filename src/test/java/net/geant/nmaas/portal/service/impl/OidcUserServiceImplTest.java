@@ -66,27 +66,15 @@ class OidcUserServiceImplTest {
         //given
         User existingUser = new User("testuser");
         existingUser.setEmail("test@example.com");
+        existingUser.setSamlToken("test@example.com");
         //when
-        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
-        when(userService.existsBySamlToken("testuser")).thenReturn(true);
-        when(userService.findBySamlToken("testuser")).thenReturn(Optional.of(existingUser));
+        when(userService.existsByEmail("test@example.com")).thenReturn(true);
+        when(userService.findByEmail("test@example.com")).thenReturn(existingUser);
         User result = oidcUserService.checkUser(oidcUser);
         //then
         assertEquals(existingUser, result);
     }
 
-    @Test
-    void shouldThrowExceptionWhenPreferredUsernameDoesNotMatchEmail() {
-        //given
-        User existingUser = new User("testuser");
-        existingUser.setEmail("diffrent@example.com");
-        //when
-        when(userService.existsBySamlToken("test-sub")).thenReturn(false);
-        when(userService.existsBySamlToken("testuser")).thenReturn(true);
-        when(userService.findBySamlToken("testuser")).thenReturn(Optional.of(existingUser));
-        //then
-        assertThrows(ExternalUserMatchException.class, () -> oidcUserService.checkUser(oidcUser));
-    }
 
 
 }
