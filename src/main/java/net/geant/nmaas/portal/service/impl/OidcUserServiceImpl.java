@@ -121,7 +121,7 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         if(userService.existsByEmail(oidcUserEmail)){
             User user = userService.findByEmail(oidcUserEmail);
-            return user.getSamlToken().isEmpty();
+            return user.getSamlToken() == null || user.getSamlToken().isEmpty();
         }
         return false;
     }
