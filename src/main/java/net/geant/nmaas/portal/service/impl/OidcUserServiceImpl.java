@@ -49,31 +49,23 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         boolean existUserBySamlToken = userService
                 .existsBySamlToken(oidcUserSub);
-        boolean existUserByUsernameAsSamlToken = userService
-                .existsBySamlToken(oidcUserPreferredUsername);
-        boolean existsUserBySamlTokenAsEmail = userService
-                .existsBySamlToken(oidcUserEmail);
 
         if (existUserBySamlToken) {
             return userService
                     .findBySamlToken(oidcUserSub)
                     .orElseThrow();
-        } else if (existUserByUsernameAsSamlToken || existsUserBySamlTokenAsEmail) {
-            User user = userService
-                    .findBySamlToken(oidcUserPreferredUsername)
-                    .orElseThrow();
-            if (user.getEmail().equals(oidcUserEmail)) {
+        }
+        if(userService.existsByEmail(oidcUserEmail)) {
+            User user = userService.findByEmail(oidcUserEmail);
+            if (user.getSamlToken().equals(oidcUserEmail)
+                    || user.getSamlToken().equals(oidcUserPreferredUsername)) {
                 user.setSamlToken(oidcUserSub);
                 userService.update(user);
                 return user;
-            } else {
-                throw new ExternalUserMatchException("External user "
-                        + oidcUserPreferredUsername
-                        + " does not match internal user ");
-            }
-        } else {
-            return registerNewUser(oidcUser);
+                }
         }
+        return registerNewUser(oidcUser);
+
     }
 
     @Override
