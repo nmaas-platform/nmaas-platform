@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.api.exception.ExternalUserCanNotBeLinked;
-import net.geant.nmaas.portal.api.exception.ExternalUserMatchException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +26,12 @@ import java.util.Map;
 public class OidcUserServiceImpl implements OidcUserService {
 
     private final UserService userService;
-
     private final DomainService domains;
-
     private final UserRepository userRepository;
-
     private final ConfigurationManager configurationManager;
 
     @Value("${oidc.allowedLinkingUsersByEmail:false}")
     private boolean allowedLinkingUsersByEmail;
-
 
     @Override
     public User checkUser(OidcUser oidcUser) {
@@ -55,14 +48,14 @@ public class OidcUserServiceImpl implements OidcUserService {
                     .findBySamlToken(oidcUserSub)
                     .orElseThrow();
         }
-        if(userService.existsByEmail(oidcUserEmail)) {
+        if (userService.existsByEmail(oidcUserEmail)) {
             User user = userService.findByEmail(oidcUserEmail);
             if (user.getSamlToken().equals(oidcUserEmail)
                     || user.getSamlToken().equals(oidcUserPreferredUsername)) {
                 user.setSamlToken(oidcUserSub);
                 userService.update(user);
                 return user;
-                }
+            }
         }
         return registerNewUser(oidcUser);
 
@@ -103,7 +96,7 @@ public class OidcUserServiceImpl implements OidcUserService {
     }
 
     @Override
-    public boolean externalUserRequiredLinking(OidcUser oidcUser) {
+    public boolean externalUserRequiresLinking(OidcUser oidcUser) {
 
         String oidcUserEmail = oidcUser.getAttribute("email");
 

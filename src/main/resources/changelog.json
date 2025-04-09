@@ -1,6 +1,17 @@
 {
   "versions" : [
     {
+      "verNo" : "1.7.1",
+      "date" : "(2025/04/10)",
+      "topic" : [
+        {
+          "title" : "Authentication and user access improvements",
+          "tags" : "[Enhancement]",
+          "description" : "JWT size reduction and account linking mechanism"
+        }
+      ]
+    },
+    {
       "verNo" : "1.7.0",
       "date" : "(2025/04/02)",
       "topic" : [

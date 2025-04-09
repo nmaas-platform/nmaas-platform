@@ -114,7 +114,7 @@ class OIDCAuthControllerTest {
         when(idToken.getTokenValue()).thenReturn("oidc-token");
         when(oidcUser.getIdToken()).thenReturn(idToken);
 
-        when(oidcUserService.externalUserRequiredLinking(any())).thenReturn(false);
+        when(oidcUserService.externalUserRequiresLinking(any())).thenReturn(false);
 
         Constructor<User> userConstructor = User.class.getDeclaredConstructor();
         userConstructor.setAccessible(true);
@@ -147,7 +147,7 @@ class OIDCAuthControllerTest {
         when(idToken.getTokenValue()).thenReturn("oidc-token");
         when(oidcUser.getIdToken()).thenReturn(idToken);
 
-        when(oidcUserService.externalUserRequiredLinking(any())).thenReturn(true);
+        when(oidcUserService.externalUserRequiresLinking(any())).thenReturn(true);
 
         // when
         RedirectView result = oidcAuthController.oidcLoginSuccess(oidcUser, request);

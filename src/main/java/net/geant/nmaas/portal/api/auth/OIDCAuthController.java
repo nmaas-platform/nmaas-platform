@@ -101,7 +101,7 @@ public class OIDCAuthController {
 
     @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
-        if (oidcUserService.externalUserRequiredLinking(oidcUser)) {
+        if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
             String linkingRedirectUrl = portalAddress
                     + "/login-linking?oidc_token="
                     + oidcUser.getIdToken().getTokenValue();
