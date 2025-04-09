@@ -58,8 +58,7 @@ public class OidcUserServiceImpl implements OidcUserService {
             return userService
                     .findBySamlToken(oidcUserSub)
                     .orElseThrow();
-        } else if (existUserByUsernameAsSamlToken
-                || existsUserBySamlTokenAsEmail) {
+        } else if (existUserByUsernameAsSamlToken || existsUserBySamlTokenAsEmail) {
             User user = userService
                     .findBySamlToken(oidcUserPreferredUsername)
                     .orElseThrow();
@@ -80,9 +79,7 @@ public class OidcUserServiceImpl implements OidcUserService {
     @Override
     public User registerNewUser(OidcUser oidcUser) {
         try {
-            return register(oidcUser,
-                    domains.getGlobalDomain().orElseThrow(MissingElementException::new)
-            );
+            return register(oidcUser, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
         } catch (ObjectAlreadyExistsException e) {
             throw new SignupException("User already exists");
         } catch (MissingElementException e) {
@@ -93,7 +90,6 @@ public class OidcUserServiceImpl implements OidcUserService {
     @Override
     public User register(OidcUser oidcUser, Domain globalDomain) {
 
-        Map<String, Object> attributes = oidcUser.getAttributes();
         byte[] array = new byte[16];
         new SecureRandom().nextBytes(array);
         String generatedString = Base64.getEncoder().encodeToString(array);
@@ -119,10 +115,11 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         String oidcUserEmail = oidcUser.getAttribute("email");
 
-        if(userService.existsByEmail(oidcUserEmail)){
-            User user = userService.findByEmail(oidcUserEmail);
+        if (userService.existsByEmail(oidcUserEmail)) {
+            final User user = userService.findByEmail(oidcUserEmail);
             return user.getSamlToken() == null || user.getSamlToken().isEmpty();
         }
+
         return false;
     }
 
@@ -137,6 +134,5 @@ public class OidcUserServiceImpl implements OidcUserService {
         userService.update(user);
         return user;
     }
-
 
 }
