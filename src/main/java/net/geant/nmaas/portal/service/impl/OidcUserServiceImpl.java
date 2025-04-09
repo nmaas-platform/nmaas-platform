@@ -51,14 +51,15 @@ public class OidcUserServiceImpl implements OidcUserService {
                 .existsBySamlToken(oidcUserSub);
         boolean existUserByUsernameAsSamlToken = userService
                 .existsBySamlToken(oidcUserPreferredUsername);
-        boolean existUserByEmail = userService
-                .existsByEmail(oidcUserEmail);
+        boolean existsUserBySamlTokenAsEmail = userService
+                .existsBySamlToken(oidcUserEmail);
 
         if (existUserBySamlToken) {
             return userService
                     .findBySamlToken(oidcUserSub)
                     .orElseThrow();
-        } else if (existUserByUsernameAsSamlToken) {
+        } else if (existUserByUsernameAsSamlToken
+                || existsUserBySamlTokenAsEmail) {
             User user = userService
                     .findBySamlToken(oidcUserPreferredUsername)
                     .orElseThrow();
@@ -71,7 +72,7 @@ public class OidcUserServiceImpl implements OidcUserService {
                         + oidcUserPreferredUsername
                         + " does not match internal user ");
             }
-        }  else {
+        } else {
             return registerNewUser(oidcUser);
         }
     }
@@ -116,20 +117,13 @@ public class OidcUserServiceImpl implements OidcUserService {
     @Override
     public boolean externalUserRequiredLinking(OidcUser oidcUser) {
 
-        String oidcUserSub = oidcUser.getAttribute("sub");
         String oidcUserEmail = oidcUser.getAttribute("email");
-        String oidcUserPreferredUsername = oidcUser.getAttribute("preferred_username");
 
-        boolean existUserBySamlToken = userService
-                .existsBySamlToken(oidcUserSub);
-        boolean existUserByUsernameAsSamlToken = userService
-                .existsBySamlToken(oidcUserPreferredUsername);
-        boolean existUserByEmail = userService
-                .existsByEmail(oidcUserEmail);
-
-        if(existUserBySamlToken || existUserByUsernameAsSamlToken) {
-            return false;
-        }else return existUserByEmail;
+        if(userService.existsByEmail(oidcUserEmail)){
+            User user = userService.findByEmail(oidcUserEmail);
+            return user.getSamlToken().isEmpty();
+        }
+        return false;
     }
 
     @Override
