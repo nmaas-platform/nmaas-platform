@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.utils.ssh.Command;
+import net.geant.nmaas.utils.bash.Command;
 
 public abstract class HelmCommand implements Command {
 
@@ -24,7 +24,7 @@ public abstract class HelmCommand implements Command {
     }
 
     protected static void addTlsOptionIfRequired(String helmVersion, boolean enableTls, StringBuilder sb) {
-        if(HELM_VERSION_2.equals(helmVersion) && enableTls){
+        if (HELM_VERSION_2.equals(helmVersion) && enableTls) {
             sb.append(SPACE).append(TLS);
         }
     }

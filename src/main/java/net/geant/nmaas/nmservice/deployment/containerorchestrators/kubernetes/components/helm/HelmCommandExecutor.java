@@ -10,9 +10,9 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmUpgradeCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmVersionCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.utils.ssh.CommandExecutionException;
-import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
-import net.geant.nmaas.utils.ssh.SshConnectionException;
+import net.geant.nmaas.utils.bash.CommandExecutionException;
+import net.geant.nmaas.utils.bash.CommandExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,14 +25,11 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 @Component
 public class HelmCommandExecutor {
 
+    @Autowired
+    CommandExecutor commandExecutor;
+
     @Value("${helm.version:v3}")
     String helmVersion;
-
-    @Value("${helm.address}")
-    String helmAddress;
-
-    @Value("${helm.username}")
-    String helmUsername;
 
     @Value("${helm.useLocalCharts}")
     Boolean useLocalCharts;
@@ -73,9 +70,8 @@ public class HelmCommandExecutor {
                         enableTls
                 );
             }
-            singleCommandExecutor().executeSingleCommand(command);
-        } catch (SshConnectionException
-                | CommandExecutionException e) {
+            commandExecutor.execute(command);
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
         }
     }
@@ -105,9 +101,8 @@ public class HelmCommandExecutor {
             } else {
                 throw new CommandExecutionException("Unknown Helm version in use: " + helmVersion);
             }
-            singleCommandExecutor().executeSingleCommand(command);
-        } catch (SshConnectionException
-                | CommandExecutionException e) {
+            commandExecutor.execute(command);
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm delete command -> " + e.getMessage());
         }
     }
@@ -124,16 +119,15 @@ public class HelmCommandExecutor {
                     releaseName,
                     enableTls
             );
-            String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
+            String output = commandExecutor.executeWithOutput(command);
             return parseStatus(output);
-        } catch (SshConnectionException
-                | CommandExecutionException e) {
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm status command -> " + e.getMessage());
         }
     }
 
     HelmPackageStatus parseStatus(String output) {
-        if(HELM_VERSION_2.equals(helmVersion) && output.contains("STATUS: DEPLOYED")) {
+        if (HELM_VERSION_2.equals(helmVersion) && output.contains("STATUS: DEPLOYED")) {
             return HelmPackageStatus.DEPLOYED;
         } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion) && output.contains("STATUS: deployed")) {
             return HelmPackageStatus.DEPLOYED;
@@ -149,10 +143,9 @@ public class HelmCommandExecutor {
                     namespace,
                     enableTls
             );
-            String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
+            String output = commandExecutor.executeWithOutput(command);
             return Arrays.asList(output.split("\n"));
-        } catch (SshConnectionException
-                | CommandExecutionException e) {
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm list command -> " + e.getMessage());
         }
     }
@@ -178,38 +171,32 @@ public class HelmCommandExecutor {
                         enableTls
                 );
             }
-            singleCommandExecutor().executeSingleCommand(command);
-        } catch (SshConnectionException e) {
+            commandExecutor.execute(command);
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm upgrade command -> " + e.getMessage());
         }
     }
 
     void executeVersionCommand() {
-        try{
-            singleCommandExecutor().executeSingleCommand(
-                    HelmVersionCommand.command(helmVersion, enableTls)
-            );
-        } catch (SshConnectionException e) {
+        try {
+            commandExecutor.execute(HelmVersionCommand.command(helmVersion, enableTls));
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm version command -> " + e.getMessage());
         }
     }
 
-    private SingleCommandExecutor singleCommandExecutor() {
-        return SingleCommandExecutor.getExecutor(helmAddress, helmUsername);
-    }
-
     void executeHelmRepoUpdateCommand() {
-        try{
-            singleCommandExecutor().executeSingleCommand(HelmRepoUpdateCommand.command());
-        } catch (SshConnectionException e) {
+        try {
+            commandExecutor.execute(HelmRepoUpdateCommand.command());
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm repository update command -> " + e.getMessage());
         }
     }
 
     void executeHelmRepoAddCommand(String repoName, String repoUrl) {
-        try{
-            singleCommandExecutor().executeSingleCommand(HelmRepoAddCommand.command(repoName, repoUrl));
-        } catch (SshConnectionException e) {
+        try {
+            commandExecutor.execute(HelmRepoAddCommand.command(repoName, repoUrl));
+        } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm repository add command -> " + e.getMessage());
         }
     }

@@ -2,12 +2,32 @@
   "versions" : [
     {
       "verNo" : "1.7.0",
-      "date" : "(2025/-/-)",
+      "date" : "(2025/04/02)",
       "topic" : [
         {
-          "title" : "--",
+          "title" : "Integration with OIDC-compliant IdP",
+          "tags" : "[New feature]",
+          "description" : "Moved away from the custom SAML-based IdP integration in favor of adding OIDC support"
+        },
+        {
+          "title" : "Major dependencies upgrade",
           "tags" : "[Enhancement]",
-          "description" : "--"
+          "description" : "Upgraded to Java 17 and Spring Boot to version 3.4"
+        },
+        {
+          "title" : "Improved bulk application deployment views",
+          "tags" : "[Enhancement]",
+          "description" : "Added bulk deployment status and progress information on the bulk details view and summary information about all ongoing deployments"
+        },
+        {
+          "title" : "User access token management",
+          "tags" : "[New feature]",
+          "description" : "Added possibility for users to generate personal access tokens to be used for interaction with the API bypassing the Portal"
+        },
+        {
+          "title" : "Applied caching for improved performance",
+          "tags" : "[Enhancement]",
+          "description" : "Implemented data caching mechanism to speed up application catalog view load time"
         }
       ]
     },

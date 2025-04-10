@@ -24,7 +24,7 @@ public class ContentControllerTest {
     private final ContentController contentController = new ContentController(repository, modelMapper);
 
     @Test
-    public void shouldGetContent(){
+    void shouldGetContent(){
         when(repository.findByName(CONTENT.getName())).thenReturn(Optional.of(CONTENT));
         ContentView contentView = this.contentController.getContent(CONTENT.getName());
         assertEquals(CONTENT.getName(), contentView.getName());
@@ -33,7 +33,7 @@ public class ContentControllerTest {
     }
 
     @Test
-    public void shouldThrowAnExceptionWhenContentNotFound(){
+    void shouldThrowAnExceptionWhenContentNotFound(){
         assertThrows(ProcessingException.class, () -> {
             when(repository.findByName(CONTENT.getName())).thenReturn(Optional.empty());
             contentController.getContent(CONTENT.getName());
