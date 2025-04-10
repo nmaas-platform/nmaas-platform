@@ -151,9 +151,15 @@ public class ClusterService {
                 ClusterManager updated = entity.get();
                 updated.setName(cluster.getName());
                 updated.setDescription(cluster.getDescription());
+                updated.setCodename(cluster.getCodename());
                 updated.setModificationDate(OffsetDateTime.now());
+                updated.setIngress( modelMapper.map(cluster.getIngress(), KClusterIngress.class) );
+
+                updated.setDeployment( modelMapper.map(cluster.getDeployment(), KClusterDeployment.class) );
+
+                updated = clusterManagerRepository.save(updated);
                 //TODO : implement file update logic
-                return modelMapper.map( clusterManagerRepository.save(updated), ClusterManagerView.class);
+                return modelMapper.map( updated, ClusterManagerView.class);
 
             }
         }

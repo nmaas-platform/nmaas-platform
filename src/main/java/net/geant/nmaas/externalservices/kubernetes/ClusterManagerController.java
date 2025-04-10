@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,7 +62,7 @@ public class ClusterManagerController {
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ClusterManagerView updateKubernetesCluster(@PathVariable Long id, @RequestBody ClusterManagerView view) {
         return clusterService.updateCluster(view, id);
     }

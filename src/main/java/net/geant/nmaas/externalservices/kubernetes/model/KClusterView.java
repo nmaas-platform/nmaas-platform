@@ -19,6 +19,8 @@ public class KClusterView {
     @Setter
     public static class KClusterDeploymentView {
 
+        private Long id;
+
         private NamespaceConfigOption namespaceConfigOption;
 
         private String defaultNamespace;
@@ -43,6 +45,8 @@ public class KClusterView {
     @Getter
     @Setter
     public static class KClusterIngressView {
+
+        private Long id;
 
         private IngressControllerConfigOption controllerConfigOption;
 
