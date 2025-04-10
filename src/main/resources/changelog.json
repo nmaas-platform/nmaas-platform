@@ -17,7 +17,7 @@
       "topic" : [
         {
           "title" : "Integration with OIDC-compliant IdP",
-          "tags" : "[New feature]",
+          "tags" : "[New Feature]",
           "description" : "Moved away from the custom SAML-based IdP integration in favor of adding OIDC support"
         },
         {
