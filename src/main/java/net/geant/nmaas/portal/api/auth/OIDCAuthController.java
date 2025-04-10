@@ -41,29 +41,20 @@ import static java.lang.String.format;
 public class OIDCAuthController {
 
     private final OidcUserService oidcUserService;
-
     private final JWTTokenService jwtTokenService;
-
     private final UserLoginRegisterService loginRegisterService;
-
     private final UserService userService;
-
     private final PasswordEncoder passwordEncoder;
-
     private final DomainService domains;
-
     private final ConfigurationManager configurationManager;
-
 
     @Value("${portal.address}")
     private String portalAddress;
     @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri:http://localhost:8080/realms/geant}")
     private String oidcAddress;
 
-
     @PostMapping("api/oidc/link")
     public UserOidcToken oidcLinkedSuccess(@RequestBody final OidcLogin oidcLogin, HttpServletRequest request) {
-
         User user = userService.findByEmail(oidcLogin.email());
         try {
             validate(
@@ -81,14 +72,12 @@ public class OIDCAuthController {
             throw new AuthenticationException(ae.getMessage());
         }
         checkUserApprovals(user);
-        if (
-                configurationManager.getConfiguration().isMaintenance()
-                        && user.getRoles().stream().noneMatch(
-                        value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN)
-                )
-        ) {
+
+        if (configurationManager.getConfiguration().isMaintenance()
+                && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
+
         this.loginRegisterService.registerNewSuccessfulLogin(
                 user,
                 request.getHeader(HttpHeaders.HOST),
@@ -108,20 +97,16 @@ public class OIDCAuthController {
                 jwtTokenService.getRefreshToken(linkedUser),
                 oidcLogin.oidcToken()
         );
-
-
     }
 
     @GetMapping("/api/oidc/success")
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
-
-        if (oidcUserService.externalUserRequiredLinking(oidcUser)) {
+        if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
             String linkingRedirectUrl = portalAddress
                     + "/login-linking?oidc_token="
                     + oidcUser.getIdToken().getTokenValue();
             return new RedirectView(linkingRedirectUrl);
         }
-
 
         try {
             User user = oidcUserService.checkUser(oidcUser);
@@ -152,12 +137,9 @@ public class OIDCAuthController {
 
     @GetMapping("/api/oidc/logout/{oidcToken}")
     public RedirectView logout(@PathVariable String oidcToken) {
-
         String logoutUrl = oidcAddress + "/protocol/openid-connect/logout";
         return new RedirectView(logoutUrl + "?id_token_hint=" + oidcToken);
-
     }
-
 
     void validate(String email, String providedPassword, String actualPassword, boolean isEnabled) {
         validateConditionAndLogMessage(email == null || providedPassword == null,
@@ -168,7 +150,7 @@ public class OIDCAuthController {
 
     void checkUserApprovals(User user) {
         if (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted()) {
-            log.info(format("Check during login: Terms of Use or Privacy Policy were not accepted by user [%s]", user.getUsername()));
+            log.info("Check during login: Terms of Use or Privacy Policy were not accepted by user [{}]", user.getUsername());
             user.setNewRoles(ImmutableSet.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
         }
     }

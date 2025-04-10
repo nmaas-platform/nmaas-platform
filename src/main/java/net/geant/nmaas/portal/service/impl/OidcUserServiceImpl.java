@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.api.exception.ExternalUserCanNotBeLinked;
-import net.geant.nmaas.portal.api.exception.ExternalUserMatchException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +26,12 @@ import java.util.Map;
 public class OidcUserServiceImpl implements OidcUserService {
 
     private final UserService userService;
-
     private final DomainService domains;
-
     private final UserRepository userRepository;
-
     private final ConfigurationManager configurationManager;
 
     @Value("${oidc.allowedLinkingUsersByEmail:false}")
     private boolean allowedLinkingUsersByEmail;
-
 
     @Override
     public User checkUser(OidcUser oidcUser) {
@@ -49,39 +42,29 @@ public class OidcUserServiceImpl implements OidcUserService {
 
         boolean existUserBySamlToken = userService
                 .existsBySamlToken(oidcUserSub);
-        boolean existUserByUsernameAsSamlToken = userService
-                .existsBySamlToken(oidcUserPreferredUsername);
-        boolean existUserByEmail = userService
-                .existsByEmail(oidcUserEmail);
 
         if (existUserBySamlToken) {
             return userService
                     .findBySamlToken(oidcUserSub)
                     .orElseThrow();
-        } else if (existUserByUsernameAsSamlToken) {
-            User user = userService
-                    .findBySamlToken(oidcUserPreferredUsername)
-                    .orElseThrow();
-            if (user.getEmail().equals(oidcUserEmail)) {
+        }
+        if (userService.existsByEmail(oidcUserEmail)) {
+            User user = userService.findByEmail(oidcUserEmail);
+            if (user.getSamlToken().equals(oidcUserEmail)
+                    || user.getSamlToken().equals(oidcUserPreferredUsername)) {
                 user.setSamlToken(oidcUserSub);
                 userService.update(user);
                 return user;
-            } else {
-                throw new ExternalUserMatchException("External user "
-                        + oidcUserPreferredUsername
-                        + " does not match internal user ");
             }
-        }  else {
-            return registerNewUser(oidcUser);
         }
+        return registerNewUser(oidcUser);
+
     }
 
     @Override
     public User registerNewUser(OidcUser oidcUser) {
         try {
-            return register(oidcUser,
-                    domains.getGlobalDomain().orElseThrow(MissingElementException::new)
-            );
+            return register(oidcUser, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
         } catch (ObjectAlreadyExistsException e) {
             throw new SignupException("User already exists");
         } catch (MissingElementException e) {
@@ -92,7 +75,6 @@ public class OidcUserServiceImpl implements OidcUserService {
     @Override
     public User register(OidcUser oidcUser, Domain globalDomain) {
 
-        Map<String, Object> attributes = oidcUser.getAttributes();
         byte[] array = new byte[16];
         new SecureRandom().nextBytes(array);
         String generatedString = Base64.getEncoder().encodeToString(array);
@@ -114,22 +96,16 @@ public class OidcUserServiceImpl implements OidcUserService {
     }
 
     @Override
-    public boolean externalUserRequiredLinking(OidcUser oidcUser) {
+    public boolean externalUserRequiresLinking(OidcUser oidcUser) {
 
-        String oidcUserSub = oidcUser.getAttribute("sub");
         String oidcUserEmail = oidcUser.getAttribute("email");
-        String oidcUserPreferredUsername = oidcUser.getAttribute("preferred_username");
 
-        boolean existUserBySamlToken = userService
-                .existsBySamlToken(oidcUserSub);
-        boolean existUserByUsernameAsSamlToken = userService
-                .existsBySamlToken(oidcUserPreferredUsername);
-        boolean existUserByEmail = userService
-                .existsByEmail(oidcUserEmail);
+        if (userService.existsByEmail(oidcUserEmail)) {
+            final User user = userService.findByEmail(oidcUserEmail);
+            return user.getSamlToken() == null || user.getSamlToken().isEmpty();
+        }
 
-        if(existUserBySamlToken || existUserByUsernameAsSamlToken) {
-            return false;
-        }else return existUserByEmail;
+        return false;
     }
 
     @Override
@@ -143,6 +119,5 @@ public class OidcUserServiceImpl implements OidcUserService {
         userService.update(user);
         return user;
     }
-
 
 }

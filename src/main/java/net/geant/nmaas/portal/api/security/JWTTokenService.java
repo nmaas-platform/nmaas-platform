@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("jwtTokenService")
 @NoArgsConstructor
@@ -82,7 +83,7 @@ public class JWTTokenService {
                                 role ->
                                         role.getRole().toString()
                         )
-                        .toArray(String[]::new)
+                        .collect(Collectors.toSet())
                 )
                 .claim(LANGUAGE, user.getSelectedLanguage())
                 .signWith(getSignInKey(jwtSettings.getSigningKey()), SignatureAlgorithm.HS512)
