@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.exception.ExternalUserMatchException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -43,18 +44,25 @@ public class OidcUserServiceImpl implements OidcUserService {
         boolean existUserBySamlToken = userService
                 .existsBySamlToken(oidcUserSub);
 
-        if (existUserBySamlToken) {
+        if (existUserBySamlToken) { //exist by saml_token and everything is correct
             return userService
                     .findBySamlToken(oidcUserSub)
                     .orElseThrow();
         }
-        if (userService.existsByEmail(oidcUserEmail)) {
+
+        if (userService.existsByEmail(oidcUserEmail)) {//exist by email needs work with this account
             User user = userService.findByEmail(oidcUserEmail);
+            //check if user with given email have older SamlToken as Email or Username
             if (user.getSamlToken().equals(oidcUserEmail)
                     || user.getSamlToken().equals(oidcUserPreferredUsername)) {
                 user.setSamlToken(oidcUserSub);
                 userService.update(user);
                 return user;
+            }else{
+                throw new ExternalUserMatchException("External user "
+                        + oidcUserSub
+                        + " does not match internal user with SamlToken " +
+                        user.getSamlToken());
             }
         }
         return registerNewUser(oidcUser);
