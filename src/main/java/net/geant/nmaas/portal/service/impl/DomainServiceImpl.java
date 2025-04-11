@@ -52,6 +52,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 
 @Service
@@ -369,6 +371,19 @@ public class DomainServiceImpl implements DomainService {
     public void removeMemberRole(Long domainId, Long userId, Role role) {
         checkParams(domainId, userId);
         checkParams(role);
+        //if deleting group_manager role delete also group_domain_admin
+        if(role.equals(ROLE_GROUP_MANAGER)) {
+           Optional<User> user = userService.findById(userId);
+           if(user.isPresent()) {
+               List<UserRole> roles = user.get().getRoles().stream().filter(r -> r.getRole().equals(ROLE_GROUP_DOMAIN_ADMIN)).toList();
+                roles.forEach(r -> {
+                    userRoleRepository.deleteBy(userId, r.getDomain().getId(), r.getRole());
+                    log.info("Deleting role {} from domain {} for user {} as part of ROLE_GROUP_MANAGER removal", r.getRole(), r.getDomain().getCodename(), userId);
+                });
+                domainGroupService.deleteUserFromAllDomainsGroups(user.get());
+                log.info("Delete user {} from all domain groups", user.get().getId());
+           }
+        }
         userRoleRepository.deleteBy(userId, domainId, role);
     }
 
