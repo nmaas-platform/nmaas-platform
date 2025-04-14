@@ -74,7 +74,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     private void handleTags(ApplicationBase base) {
         List<Tag> tags = base.getTags().stream()
                 .map(tag -> tagRepository.findByName(tag.getName()).orElse(new Tag(tag.getName())))
-                .collect(Collectors.toList());
+                .toList();
         base.setTags(new HashSet<>(tags));
     }
 
@@ -139,16 +139,16 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public List<ApplicationBaseViewS> findAllActiveAppsSmall() {
-        log.debug("Loading information about all applications");
+        log.trace("Loading information about all applications");
         LocalDateTime beginning = LocalDateTime.now();
         List<ApplicationBaseS> allSmall = appBaseRepository.findAllSmall();
         LocalDateTime end = LocalDateTime.now();
-        log.debug("Loaded base data from db in {}ms", end.toInstant(ZoneOffset.UTC).toEpochMilli() - beginning.toInstant(ZoneOffset.UTC).toEpochMilli());
+        log.trace("Loaded base data from db in {}ms", end.toInstant(ZoneOffset.UTC).toEpochMilli() - beginning.toInstant(ZoneOffset.UTC).toEpochMilli());
         List<ApplicationBaseViewS> result = allSmall.stream()
                 .map(app -> modelMapper.map(app, ApplicationBaseViewS.class))
                 .collect(Collectors.toList());
         LocalDateTime finish = LocalDateTime.now();
-        log.debug("Complete data is ready after next {}ms", finish.toInstant(ZoneOffset.UTC).toEpochMilli() - end.toInstant(ZoneOffset.UTC).toEpochMilli());
+        log.trace("Complete data is ready after next {}ms", finish.toInstant(ZoneOffset.UTC).toEpochMilli() - end.toInstant(ZoneOffset.UTC).toEpochMilli());
         return result;
     }
 
