@@ -2,12 +2,17 @@
   "versions" : [
     {
       "verNo" : "1.7.1",
-      "date" : "(2025/04/10)",
+      "date" : "(2025/04/14)",
       "topic" : [
         {
-          "title" : "Authentication and user access improvements",
+          "title" : "Authentication and user access enhancements",
           "tags" : "[Enhancement]",
-          "description" : "JWT size reduction and account linking mechanism"
+          "description" : "JWT size reduction and improved account linking mechanism"
+        },
+        {
+          "title" : "User role management improvements",
+          "tags" : "[Enhancement]",
+          "description" : "Properly handing role removal action and removed obsolete calls to the backend API"
         }
       ]
     },
