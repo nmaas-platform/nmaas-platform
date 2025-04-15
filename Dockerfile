@@ -27,14 +27,14 @@ RUN addgroup -g $USER_GID $USERNAME \
     && adduser --disabled-password -u $USER_UID -G $USERNAME $USERNAME
 
 RUN apk --no-cache add gettext postgresql-client \
-    && mkdir /nmaas/files \
     && chmod +x /nmaas/scripts/docker_entrypoint.sh \
     && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm
 
-RUN chown -R $USERNAME:$USERNAME /nmaas/files/log \
+RUN mkdir -p /nmaas/files/log && chown -R $USERNAME:$USERNAME /nmaas/files/log \
+    && mkdir -p /nmaas/files/upload && chown -R $USERNAME:$USERNAME /nmaas/files/upload \
     && chown -R $USERNAME:$USERNAME /nmaas/platform
 
 USER $USERNAME

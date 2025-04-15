@@ -21,9 +21,6 @@ DIR=/nmaas/platform
 FILE=$(ls $DIR | grep .jar)
 cd $DIR
 
-mkdir -p /nmaas/files/upload
-mkdir -p /nmaas/files/log
-
 until PGPASSWORD=${POSTGRESQL_PASSWORD} psql -h "${POSTGRESQL_HOST}" -p ${POSTGRESQL_PORT} -U "${POSTGRESQL_USERNAME}" -d "postgres" -c '\l'; do
   sleep 1s
 done
