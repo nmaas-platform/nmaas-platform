@@ -175,7 +175,16 @@
     "SMTP_SERVER_HOSTNAME": "Nom d'hôte du serveur SMTP",
     "SMTP_SERVER_PORT": "Port du serveur SMTP",
     "SMTP_SERVER_USERNAME": "Nom d'utilisateur du serveur SMTP",
-    "SMTP_SERVER_PASSWORD": "Mot de passe du serveur SMTP"
+    "SMTP_SERVER_PASSWORD": "Mot de passe du serveur SMTP",
+    "TITLE_GENERAL" : "General cluster information",
+    "GENERAL" : "Basic information",
+    "NAME" : "Cluster name",
+    "CODENAME" : "Cluster codename",
+    "ID" : "Cluster id",
+    "DESCRIPTION" : "Description",
+    "CREATION_DATE" : "Creation date",
+    "MODIFICATION_DATE" : "Modification date",
+    "PATH_TO_CONFIG" : "Path to config file"
   },
   "GITLAB": {
     "TITLE": "Configuration de GitLab",
