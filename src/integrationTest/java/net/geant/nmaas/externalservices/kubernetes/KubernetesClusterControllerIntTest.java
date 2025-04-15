@@ -22,7 +22,7 @@ public class KubernetesClusterControllerIntTest {
 
     private static final String KUBERNETES_CLUSTER_JSON =
                 "{" +
-                    "\"ingress\":{\"id\":null\"," +
+                    "\"ingress\":{\"id\":null," +
                         "\"controllerConfigOption\":\"USE_EXISTING\"," +
                         "\"supportedIngressClass\":\"ingress-class\"," +
                         "\"publicIngressClass\":\"public\"," +
@@ -36,7 +36,7 @@ public class KubernetesClusterControllerIntTest {
                         "\"issuerOrWildcardName\":\"test-issuer\"," +
                         "\"ingressPerDomain\":true" +
                     "}," +
-                    "\"deployment\":{\"id\":null\"," +
+                    "\"deployment\":{\"id\":null," +
                         "\"namespaceConfigOption\":\"USE_DOMAIN_NAMESPACE\"," +
                         "\"defaultNamespace\":\"test-namespace\"," +
                         "\"defaultStorageClass\":\"storageClass\"," +
