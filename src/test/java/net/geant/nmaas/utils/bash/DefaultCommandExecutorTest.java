@@ -16,7 +16,7 @@ public class DefaultCommandExecutorTest {
         String output = executor.executeWithOutput(new Command() {
             @Override
             public String asString() {
-                return "helm";
+                return "whoami";
             }
 
             @Override
