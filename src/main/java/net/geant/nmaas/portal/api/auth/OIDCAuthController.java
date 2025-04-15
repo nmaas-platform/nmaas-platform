@@ -71,7 +71,7 @@ public class OIDCAuthController {
             );
             throw new AuthenticationException(ae.getMessage());
         }
-        checkUserApprovals(user);
+//        checkUserApprovals(user);
 
         if (configurationManager.getConfiguration().isMaintenance()
                 && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {

@@ -26,11 +26,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JWTTokenService {
 
-    private JWTSettings jwtSettings;
-
     private static final String SCOPES = "scopes";
-
     private static final String LANGUAGE = "language";
+
+    private JWTSettings jwtSettings;
 
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
@@ -47,16 +46,16 @@ public class JWTTokenService {
         if (user == null || StringUtils.isEmpty(user.getUsername())) {
             throw new IllegalArgumentException("User or username is not set");
         }
-        if(user.getFirstname() != null && !user.getFirstname().isEmpty()) {
+        if (user.getFirstname() != null && !user.getFirstname().isEmpty()) {
             preferredUsername = user.getFirstname();
-        }else{
+        } else {
             preferredUsername = user.getUsername();
         }
-        log.error("Get request for a token");
-        log.error("user = {} {} {}", user.getId(), user.getUsername(), user.getSelectedLanguage());
-        log.error("jwtSigningKey= {}", jwtSettings.getSigningKey());
+        log.trace("Get request for a token");
+        log.trace("user = {} {} {}", user.getId(), user.getUsername(), user.getSelectedLanguage());
+        log.trace("jwtSigningKey= {}", jwtSettings.getSigningKey());
         user.getRoles().forEach(role -> {
-            log.error("Role = {} {} {} {}", role.getRole().toString(), role.getAuthority(), role.getDomain().getCodename(), role.getUser().getId());
+            log.trace("Role = {} {} {} {}", role.getRole().toString(), role.getAuthority(), role.getDomain().getCodename(), role.getUser().getId());
         });
         String result = Jwts.builder()
                 .setSubject(user.getUsername())
@@ -88,7 +87,7 @@ public class JWTTokenService {
                 .claim(LANGUAGE, user.getSelectedLanguage())
                 .signWith(getSignInKey(jwtSettings.getSigningKey()), SignatureAlgorithm.HS512)
                 .compact();
-        log.error(result);
+        log.trace(result);
         return result;
     }
 
