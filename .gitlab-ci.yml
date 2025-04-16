@@ -6,7 +6,7 @@ stages:
 
 test:
   stage: test
-  image: openjdk:17-jdk-slim
+  image: openjdk:21-jdk-slim
   tags:
     - docker
   script:
@@ -15,7 +15,7 @@ test:
 
 sonar:
   stage: sonar
-  image: openjdk:17-jdk-slim
+  image: openjdk:21-jdk-slim
   only:
     - develop
     - /^release/
@@ -66,7 +66,7 @@ build_and_push_release_image:
 
 mend:
   stage: mend
-  image: openjdk:17-jdk-slim
+  image: openjdk:21-jdk-slim
   only:
     - /^release/
   variables:
