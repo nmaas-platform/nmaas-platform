@@ -123,7 +123,7 @@ dependencies {
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.11.12')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.14.6')
 
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:6.13.5')
@@ -141,7 +141,7 @@ dependencies {
     implementation('com.opencsv:opencsv:5.9')
 
     // Tests
-    testImplementation('org.mockito:mockito-core:5.16.1')
+    testImplementation('org.mockito:mockito-core:5.17.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
