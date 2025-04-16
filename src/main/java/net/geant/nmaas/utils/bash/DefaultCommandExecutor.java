@@ -13,7 +13,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
     @Override
     public void execute(Command command) throws CommandExecutionException {
         try {
-            new ProcessBuilder(command.asString()).start();
+            new ProcessBuilder(command.asString().split(" ")).start();
         } catch (IOException e) {
             throw new CommandExecutionException(e.getMessage());
         }
@@ -22,7 +22,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
     @Override
     public String executeWithOutput(Command command) throws CommandExecutionException {
         try {
-            Process process = new ProcessBuilder(command.asString()).start();
+            Process process = new ProcessBuilder(command.asString().split(" ")).start();
             final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             log.debug("Output: {}", output);
             return output;
