@@ -40,5 +40,3 @@ RUN mkdir -p /nmaas/files/log && chown -R $USERNAME:$USERNAME /nmaas/files/log \
 USER $USERNAME
 
 ENTRYPOINT /nmaas/scripts/docker_entrypoint.sh
-
-CMD ls /home

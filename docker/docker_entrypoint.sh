@@ -21,12 +21,7 @@ DIR=/nmaas/platform
 FILE=$(ls $DIR | grep .jar)
 cd $DIR
 
-echo "Running as user"
-whoami
-
-echo "Check directories"
-ls -al /nmaas
-
+echo "Waiting for database to become ready"
 until PGPASSWORD=${POSTGRESQL_PASSWORD} psql -h "${POSTGRESQL_HOST}" -p ${POSTGRESQL_PORT} -U "${POSTGRESQL_USERNAME}" -d "postgres" -c '\l'; do
   sleep 1s
 done
@@ -34,7 +29,7 @@ done
 if PGPASSWORD=${POSTGRESQL_PASSWORD} psql -h "${POSTGRESQL_HOST}" -p ${POSTGRESQL_PORT} -U "${POSTGRESQL_USERNAME}" -lqt | cut -d \| -f 1 | grep -qw ${POSTGRESQL_DBNAME}; then
   echo "Database is already exists"
 else
-  echo "Database needs to be created. Creating ..."
+  echo "Database needs to be created. Creating now ..."
   PGPASSWORD=${POSTGRESQL_PASSWORD} createdb ${POSTGRESQL_DBNAME} -h "${POSTGRESQL_HOST}" -p ${POSTGRESQL_PORT} -U "${POSTGRESQL_USERNAME}" ${POSTGRESQL_DBNAME}
 fi
 
