@@ -110,15 +110,19 @@ dependencies {
     // Database
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
+
+    // Database audit trail
     implementation 'org.hibernate.orm:hibernate-envers:6.5.0.Final'
+
+    // Database migrations
     implementation('org.flywaydb:flyway-core:11.2.0')
     runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.2.0'
-
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
 
     implementation('org.freemarker:freemarker:2.3.34')
 
     implementation('com.vdurmont:semver4j:3.1.0')
+
+    // nmaas statistics extracted from the database
     implementation('io.micrometer:micrometer-registry-prometheus:1.11.12')
 
     // Kubernetes API client
@@ -152,12 +156,12 @@ processResources {
 test {
     useJUnitPlatform()
     systemProperties 'property': 'value'
-    ignoreFailures = true
+    ignoreFailures = false
     afterTest { desc, result ->
         println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
     }
     jacoco {
-        destinationFile = file("$buildDir/jacoco/test.exec")
+        destinationFile = layout.buildDirectory.file("jacoco/test.exec").get().asFile
         excludes = [
                 '**/inventory/janitor/**',
                 '**/exception/**',
@@ -175,7 +179,7 @@ tasks.register('integrationTestOnly', Test) {
         println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
     }
     jacoco {
-        destinationFile = file("$buildDir/jacoco/integrationTest.exec")
+        destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
         excludes = [
                 '**/inventory/janitor/**',
                 '**/exception/**',
@@ -193,7 +197,7 @@ tasks.register('integrationTest', Test) {
         println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
     }
     jacoco {
-        destinationFile = file("$buildDir/jacoco/integrationTest.exec")
+        destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
         excludes = [
                 '**/inventory/janitor/**',
                 '**/exception/**',
@@ -204,7 +208,7 @@ tasks.register('integrationTest', Test) {
 }
 
 jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = "0.8.13"
     reportsDirectory = layout.buildDirectory.dir('jacoco')
 }
 
@@ -220,7 +224,6 @@ jacocoTestReport {
             fileTree(dir: it, exclude: ['**/inventory/janitor/**',])
         }))
     }
-
 }
 
 jacocoTestCoverageVerification {
