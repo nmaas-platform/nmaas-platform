@@ -21,6 +21,12 @@ DIR=/nmaas/platform
 FILE=$(ls $DIR | grep .jar)
 cd $DIR
 
+echo "Running as user"
+whoami
+
+echo "Check directories"
+ls -al /nmaas
+
 until PGPASSWORD=${POSTGRESQL_PASSWORD} psql -h "${POSTGRESQL_HOST}" -p ${POSTGRESQL_PORT} -U "${POSTGRESQL_USERNAME}" -d "postgres" -c '\l'; do
   sleep 1s
 done
