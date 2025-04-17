@@ -34,7 +34,7 @@ protobuf {
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.71.0'
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.72.0'
         }
     }
     generateProtoTasks {
@@ -133,9 +133,9 @@ dependencies {
 
     // GRPC communication with Janitor
     implementation('com.google.protobuf:protobuf-java:4.30.2')
-    implementation('io.grpc:grpc-netty-shaded:1.71.0')
-    implementation('io.grpc:grpc-protobuf:1.71.0')
-    implementation('io.grpc:grpc-stub:1.71.0')
+    implementation('io.grpc:grpc-netty-shaded:1.72.0')
+    implementation('io.grpc:grpc-protobuf:1.72.0')
+    implementation('io.grpc:grpc-stub:1.72.0')
 
     // CSV processing
     implementation('com.opencsv:opencsv:5.9')
