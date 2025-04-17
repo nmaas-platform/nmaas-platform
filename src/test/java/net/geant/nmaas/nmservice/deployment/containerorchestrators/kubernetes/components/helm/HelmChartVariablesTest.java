@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class HelmChartVariablesTest {
 
     @Test
-    public void shouldGenerateProperPersistenceVariablesForStorageVolume() {
+    void shouldGenerateProperPersistenceVariablesForStorageVolume() {
         Map<HelmChartPersistenceVariable, String> pvMapMain = new HashMap<>();
         pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "main.persistence.enabled");
         pvMapMain.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "main.persistence.size");
@@ -33,45 +33,26 @@ public class HelmChartVariablesTest {
         pvMapSecond.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "secondary.persistence.size");
         ServiceStorageVolume serviceStorageVolumeSecond = new ServiceStorageVolume(ServiceStorageVolumeType.SHARED, 5, pvMapSecond);
 
-        Map<String, String> variables = HelmChartVariables.persistenceVariablesMap(
-                Sets.newHashSet(serviceStorageVolumeMain, serviceStorageVolumeSecond),
-                Optional.of("storageClass"),
-                "descriptiveDeploymentId"
-        );
+        Map<String, String> variables = HelmChartVariables.persistenceVariablesMap(Sets.newHashSet(serviceStorageVolumeMain, serviceStorageVolumeSecond), Optional.of("storageClass"), "descriptiveDeploymentId");
         assertThat(variables.size(), is(6));
-        assertTrue(variables.entrySet().containsAll(Arrays.asList(
-                Maps.immutableEntry("main.persistence.enabled", "true"),
-                Maps.immutableEntry("main.persistence.size", "2Gi"),
-                Maps.immutableEntry("main.persistence.storageClass", "storageClass"),
-                Maps.immutableEntry("secondary.persistence.enabled", "true"),
-                Maps.immutableEntry("secondary.persistence.name", "descriptiveDeploymentId"),
-                Maps.immutableEntry("secondary.persistence.size", "5Gi")
-        )));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(Maps.immutableEntry("main.persistence.enabled", "true"), Maps.immutableEntry("main.persistence.size", "2Gi"), Maps.immutableEntry("main.persistence.storageClass", "storageClass"), Maps.immutableEntry("secondary.persistence.enabled", "true"), Maps.immutableEntry("secondary.persistence.name", "descriptiveDeploymentId"), Maps.immutableEntry("secondary.persistence.size", "5Gi"))));
     }
 
     @Test
-    public void shouldGenerateProperPersistenceVariablesWithoutStorageClass() {
+    void shouldGenerateProperPersistenceVariablesWithoutStorageClass() {
         Map<HelmChartPersistenceVariable, String> pvMap = new HashMap<>();
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_ENABLED, "persistence.enabled");
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_NAME, "persistence.name");
         pvMap.put(HelmChartPersistenceVariable.PERSISTENCE_STORAGE_SPACE, "persistence.size");
         ServiceStorageVolume serviceStorageVolume = new ServiceStorageVolume(ServiceStorageVolumeType.MAIN, 2, pvMap);
 
-        Map<String, String> variables = HelmChartVariables.persistenceVariablesMap(
-                Sets.newHashSet(serviceStorageVolume),
-                Optional.empty(),
-                "descriptiveDeploymentId"
-        );
+        Map<String, String> variables = HelmChartVariables.persistenceVariablesMap(Sets.newHashSet(serviceStorageVolume), Optional.empty(), "descriptiveDeploymentId");
         assertThat(variables.size(), is(3));
-        assertTrue(variables.entrySet().containsAll(Arrays.asList(
-                Maps.immutableEntry("persistence.enabled", "true"),
-                Maps.immutableEntry("persistence.name", "descriptiveDeploymentId"),
-                Maps.immutableEntry("persistence.size", "2Gi")
-        )));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(Maps.immutableEntry("persistence.enabled", "true"), Maps.immutableEntry("persistence.name", "descriptiveDeploymentId"), Maps.immutableEntry("persistence.size", "2Gi"))));
     }
 
     @Test
-    public void shouldGenerateProperIngressVariablesForDefaultAccessMethod() {
+    void shouldGenerateProperIngressVariablesForDefaultAccessMethod() {
         ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
         serviceAccessMethod.setType(ServiceAccessMethodType.DEFAULT);
         serviceAccessMethod.setName("default");
@@ -84,26 +65,13 @@ public class HelmChartVariablesTest {
         ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_HOSTS, "ingress.tls.host");
         serviceAccessMethod.setDeployParameters(ingressVariables);
 
-        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
-                true,
-                Sets.newHashSet(serviceAccessMethod),
-                "iClassTest",
-                null,
-                false,
-                "issuer",
-                true);
+        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(true, Sets.newHashSet(serviceAccessMethod), "iClassTest", null, false, "issuer", true);
         assertThat(variables.size(), is(5));
-        assertTrue(variables.entrySet().containsAll(Arrays.asList(
-                Maps.immutableEntry("ingress.enabled", "true"),
-                Maps.immutableEntry("ingress.host", "{default.url}"),
-                Maps.immutableEntry("app.fqdn=%VALUE%", "default.url"),
-                Maps.immutableEntry("ingress.class", "iClassTest"),
-                Maps.immutableEntry("ingress.tls", "false")
-        )));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(Maps.immutableEntry("ingress.enabled", "true"), Maps.immutableEntry("ingress.host", "{default.url}"), Maps.immutableEntry("app.fqdn=%VALUE%", "default.url"), Maps.immutableEntry("ingress.class", "iClassTest"), Maps.immutableEntry("ingress.tls", "false"))));
     }
 
     @Test
-    public void shouldGenerateProperIngressVariablesForDefaultAccessMethodWithCustomValuePlacement() {
+    void shouldGenerateProperIngressVariablesForDefaultAccessMethodWithCustomValuePlacement() {
         ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
         serviceAccessMethod.setType(ServiceAccessMethodType.DEFAULT);
         serviceAccessMethod.setName("default");
@@ -116,26 +84,13 @@ public class HelmChartVariablesTest {
         ingressVariables.put(HelmChartIngressVariable.INGRESS_TLS_HOSTS, "ingress.tls.host=%VALUE%");
         serviceAccessMethod.setDeployParameters(ingressVariables);
 
-        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
-                true,
-                Sets.newHashSet(serviceAccessMethod),
-                "iClassTest",
-                "publicIngressClassTest",
-                true,
-                "issuer",
-                true);
+        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(true, Sets.newHashSet(serviceAccessMethod), "iClassTest", "publicIngressClassTest", true, "issuer", true);
         assertThat(variables.size(), is(5));
-        assertTrue(variables.entrySet().containsAll(Arrays.asList(
-                Maps.immutableEntry("ingress.enabled", "true"),
-                Maps.immutableEntry("ingress.host=%VALUE%", "default.url"),
-                Maps.immutableEntry("ingress.class", "iClassTest"),
-                Maps.immutableEntry("ingress.tls", "true"),
-                Maps.immutableEntry("ingress.tls.host=%VALUE%", "default.url")
-        )));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(Maps.immutableEntry("ingress.enabled", "true"), Maps.immutableEntry("ingress.host=%VALUE%", "default.url"), Maps.immutableEntry("ingress.class", "iClassTest"), Maps.immutableEntry("ingress.tls", "true"), Maps.immutableEntry("ingress.tls.host=%VALUE%", "default.url"))));
     }
 
     @Test
-    public void shouldGenerateProperIngressVariablesForPublicAccessMethod() {
+    void shouldGenerateProperIngressVariablesForPublicAccessMethod() {
         ServiceAccessMethod serviceAccessMethod = new ServiceAccessMethod();
         serviceAccessMethod.setType(ServiceAccessMethodType.PUBLIC);
         serviceAccessMethod.setName("public");
@@ -146,51 +101,19 @@ public class HelmChartVariablesTest {
         ingressVariables.put(HelmChartIngressVariable.INGRESS_CLASS, "ingress.class,app.label");
         serviceAccessMethod.setDeployParameters(ingressVariables);
 
-        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
-                true,
-                Sets.newHashSet(serviceAccessMethod),
-                "iClassTest",
-                "publicIngressClassTest",
-                true,
-                "issuer",
-                true);
+        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(true, Sets.newHashSet(serviceAccessMethod), "iClassTest", "publicIngressClassTest", true, "issuer", true);
         assertThat(variables.size(), is(4));
-        assertTrue(variables.entrySet().containsAll(Arrays.asList(
-                Maps.immutableEntry("ingress.enabled", "true"),
-                Maps.immutableEntry("ingress.hosts", "{public.url}"),
-                Maps.immutableEntry("ingress.class", "publicIngressClassTest"),
-                Maps.immutableEntry("app.label", "publicIngressClassTest")
-        )));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(Maps.immutableEntry("ingress.enabled", "true"), Maps.immutableEntry("ingress.hosts", "{public.url}"), Maps.immutableEntry("ingress.class", "publicIngressClassTest"), Maps.immutableEntry("app.label", "publicIngressClassTest"))));
     }
 
     @Test
-    public void shouldGenerateProperIngressVariablesForExternalAccessMethods() {
+    void shouldGenerateProperIngressVariablesForExternalAccessMethods() {
         ServiceAccessMethod serviceAccessMethod1 = getTestServiceExternalAccessMethod(1);
         ServiceAccessMethod serviceAccessMethod2 = getTestServiceExternalAccessMethod(2);
 
-        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(
-                true,
-                Sets.newHashSet(serviceAccessMethod1, serviceAccessMethod2),
-                "iClassTest",
-                null,
-                true,
-                "issuer",
-                false);
+        Map<String, String> variables = HelmChartVariables.ingressVariablesMap(true, Sets.newHashSet(serviceAccessMethod1, serviceAccessMethod2), "iClassTest", null, true, "issuer", false);
         assertThat(variables.size(), is(12));
-        assertTrue(variables.entrySet().containsAll(Arrays.asList(
-                Maps.immutableEntry("ingress.enabled1", "true"),
-                Maps.immutableEntry("ingress.host1", "{external.url1}"),
-                Maps.immutableEntry("ingress.class1", "iClassTest"),
-                Maps.immutableEntry("ingress.tls1", "true"),
-                Maps.immutableEntry("ingress.letsencrypt1", "false"),
-                Maps.immutableEntry("ingress.enabled2", "true"),
-                Maps.immutableEntry("ingress.issuer2", "issuer"),
-                Maps.immutableEntry("ingress.host2", "{external.url2}"),
-                Maps.immutableEntry("ingress.class2", "iClassTest"),
-                Maps.immutableEntry("ingress.tls2", "true"),
-                Maps.immutableEntry("ingress.letsencrypt2", "false"),
-                Maps.immutableEntry("ingress.issuer2", "issuer")
-        )));
+        assertTrue(variables.entrySet().containsAll(Arrays.asList(Maps.immutableEntry("ingress.enabled1", "true"), Maps.immutableEntry("ingress.host1", "{external.url1}"), Maps.immutableEntry("ingress.class1", "iClassTest"), Maps.immutableEntry("ingress.tls1", "true"), Maps.immutableEntry("ingress.letsencrypt1", "false"), Maps.immutableEntry("ingress.enabled2", "true"), Maps.immutableEntry("ingress.issuer2", "issuer"), Maps.immutableEntry("ingress.host2", "{external.url2}"), Maps.immutableEntry("ingress.class2", "iClassTest"), Maps.immutableEntry("ingress.tls2", "true"), Maps.immutableEntry("ingress.letsencrypt2", "false"), Maps.immutableEntry("ingress.issuer2", "issuer"))));
     }
 
     private ServiceAccessMethod getTestServiceExternalAccessMethod(int number) {

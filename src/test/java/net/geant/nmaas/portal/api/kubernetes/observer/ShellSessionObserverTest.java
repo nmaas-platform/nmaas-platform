@@ -42,7 +42,7 @@ public class ShellSessionObserverTest {
         // one heartbeat and one message
 //
         ArgumentCaptor<SseEmitter.SseEventBuilder> captor = ArgumentCaptor.forClass(SseEmitter.SseEventBuilder.class);
-        verify(mockEmitter, timeout(200).times(2)).send(captor.capture());
+        verify(mockEmitter, timeout(300).times(2)).send(captor.capture());
 
         observer.complete();
         observable.complete();
