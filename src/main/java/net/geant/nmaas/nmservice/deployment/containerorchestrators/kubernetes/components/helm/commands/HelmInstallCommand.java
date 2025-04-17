@@ -38,26 +38,6 @@ public class HelmInstallCommand extends HelmCommand {
         return new HelmInstallCommand(sb.toString());
     }
 
-    /**
-     * Creates {@link HelmInstallCommand} with provided custom input and local chart archive
-     *
-     * @param helmVersion  version of Helm in use
-     * @param namespace    namespace to install the release into
-     * @param releaseName  release name
-     * @param values       a map of key - value pairs to customize the release installation
-     * @param chartArchive complete path to the release chart archive
-     * @return complete command object
-     */
-    public static HelmInstallCommand commandWithArchive(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartArchive, boolean enableTls) {
-        StringBuilder sb = buildBaseInstallCommand(helmVersion, namespace, releaseName, values);
-        if (chartArchive == null || chartArchive.isEmpty()) {
-            throw new IllegalArgumentException("Path to chart archive can't be null or empty");
-        }
-        sb.append(SPACE).append(chartArchive);
-        addTlsOptionIfRequired(helmVersion, enableTls, sb);
-        return new HelmInstallCommand(sb.toString());
-    }
-
     private static StringBuilder buildBaseInstallCommand(String helmVersion, String namespace, String releaseName, Map<String, String> values) {
         if (releaseName == null || releaseName.isEmpty()) {
             throw new IllegalArgumentException("Name of the release can't be null nor empty");

@@ -31,14 +31,8 @@ public class HelmCommandExecutor {
     @Value("${helm.version:v3}")
     String helmVersion;
 
-    @Value("${helm.useLocalCharts}")
-    Boolean useLocalCharts;
-
     @Value("${helm.repositoryName}")
     String helmRepositoryName;
-
-    @Value("${helm.chartsDirectory}")
-    String helmChartsDirectory;
 
     @Value("${helm.enableTls:false}")
     Boolean enableTls;
@@ -49,42 +43,19 @@ public class HelmCommandExecutor {
 
     private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         try {
-            HelmInstallCommand command;
-            if (Boolean.TRUE.equals(useLocalCharts)) {
-                command = HelmInstallCommand.commandWithArchive(
-                        helmVersion,
-                        namespace,
-                        releaseName,
-                        arguments,
-                        constructChartArchivePath(template.getArchive()),
-                        enableTls
-                );
-            } else {
-                command = HelmInstallCommand.commandWithRepo(
-                        helmVersion,
-                        namespace,
-                        releaseName,
-                        arguments,
-                        constructChartNameWithRepo(template.getChart().getName()),
-                        template.getChart().getVersion(),
-                        enableTls
-                );
-            }
+            HelmInstallCommand command = HelmInstallCommand.commandWithRepo(
+                    helmVersion,
+                    namespace,
+                    releaseName,
+                    arguments,
+                    constructChartNameWithRepo(template.getChart().getName()),
+                    template.getChart().getVersion(),
+                    enableTls
+            );
             commandExecutor.execute(command);
         } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
         }
-    }
-
-    private String constructChartArchivePath(String chartArchiveName) {
-        return baseChartArchivePath() + chartArchiveName;
-    }
-
-    private String baseChartArchivePath() {
-        String hostChartsDirectory = helmChartsDirectory;
-        if (!hostChartsDirectory.endsWith("/"))
-            return hostChartsDirectory.concat("/");
-        return hostChartsDirectory;
     }
 
     String constructChartNameWithRepo(String chartName) {
@@ -152,25 +123,14 @@ public class HelmCommandExecutor {
 
     void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template) {
         try {
-            HelmUpgradeCommand command;
-            if (Boolean.TRUE.equals(useLocalCharts)) {
-                command = HelmUpgradeCommand.commandWithArchive(
-                        helmVersion,
-                        namespace,
-                        releaseName,
-                        constructChartArchivePath(template.getArchive()),
-                        enableTls
-                );
-            } else {
-                command = HelmUpgradeCommand.commandWithRepo(
-                        helmVersion,
-                        namespace,
-                        releaseName,
-                        constructChartNameWithRepo(template.getChart().getName()),
-                        template.getChart().getVersion(),
-                        enableTls
-                );
-            }
+            HelmUpgradeCommand command = HelmUpgradeCommand.commandWithRepo(
+                    helmVersion,
+                    namespace,
+                    releaseName,
+                    constructChartNameWithRepo(template.getChart().getName()),
+                    template.getChart().getVersion(),
+                    enableTls
+            );
             commandExecutor.execute(command);
         } catch (CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm upgrade command -> " + e.getMessage());

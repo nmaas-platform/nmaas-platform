@@ -14,7 +14,7 @@ public class DefaultCommandExecutorTest {
 
     @Disabled
     @Test
-    void shouldRunHelmCommand() throws IOException {
+    void shouldRunExampleCommand() throws IOException {
         String output = executor.executeWithOutput(new Command() {
             @Override
             public String asString() {
