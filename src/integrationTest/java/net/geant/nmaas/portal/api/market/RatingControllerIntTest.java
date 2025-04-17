@@ -12,8 +12,8 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
@@ -32,13 +32,13 @@ public class RatingControllerIntTest extends BaseControllerTestSetup {
     private static final long TEST_APP_ID = 5L;
     private static final long ADMIN_USER_ID = 1L;
 
-    @MockBean
+    @MockitoBean
     private ApplicationBaseService appBaseService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
-    @MockBean
+    @MockitoBean
     private RatingRepository ratingRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();

@@ -26,9 +26,9 @@ import org.mockito.internal.util.collections.Sets;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.net.InetAddress;
@@ -59,19 +59,19 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
     private static final Long TEST_DOMAIN_ID = 15L;
     private static final String TEST_DOMAIN_NAME = "defdom";
 
-    @MockBean
+    @MockitoBean
     private DomainService domainService;
 
-    @MockBean
+    @MockitoBean
     private DomainGroupService domainGroupService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
-    @MockBean
+    @MockitoBean
     private ApplicationStatePerDomainService applicationStatePerDomainService;
 
-    @MockBean
+    @MockitoBean
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired

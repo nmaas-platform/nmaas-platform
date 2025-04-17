@@ -35,9 +35,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -61,31 +61,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
-    @SpyBean
+    @MockitoSpyBean
     private DomainService domainService;
 
-    @SpyBean
+    @MockitoSpyBean
     private UserService userService;
 
-    @MockBean
+    @MockitoBean
     private ApplicationService applicationService;
 
-    @SpyBean
+    @MockitoSpyBean
     private ModelMapper modelMapper;
 
-    @MockBean
+    @MockitoBean
     private ApplicationInstanceService applicationInstanceService;
 
-    @MockBean
+    @MockitoBean
     private AppInstanceRepository applicationInstanceRepository;
 
-    @MockBean
+    @MockitoBean
     private AppLifecycleManager appLifecycleManager;
 
-    @MockBean
+    @MockitoBean
     private ApplicationBaseRepository applicationBaseRepository;
 
-    @MockBean
+    @MockitoBean
     private AppDeploymentMonitor appDeploymentMonitor;
 
     @BeforeEach
