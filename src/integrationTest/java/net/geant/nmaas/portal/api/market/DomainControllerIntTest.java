@@ -86,6 +86,7 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         mvc = createMVC();
         when(domainService.getDomains()).thenReturn(Arrays.asList(getDefaultDomain(), getGlobalDomain()));
         when(domainService.findDomain(TEST_DOMAIN_ID)).thenReturn(Optional.of(getDefaultDomain()));
+        when(domainService.findDomain(TEST_DOMAIN_NAME)).thenReturn(Optional.of(getDefaultDomain()));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(getGlobalDomain()));
         when(domainService.getAppStatesFromGroups(getDefaultDomain())).thenReturn(getDefaultDomain());
         when(domainService.getAppStatesFromGroups(getGlobalDomain())).thenReturn(getGlobalDomain());
@@ -288,6 +289,19 @@ public class DomainControllerIntTest extends BaseControllerTestSetup {
         when(userService.findByUsername(ADMIN_USERNAME)).thenReturn(Optional.of(UsersHelper.ADMIN));
         when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
         MvcResult result = mvc.perform(get("/api/domains/{domainId}", TEST_DOMAIN_ID)
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        DomainView domain = objectMapper.readValue(result.getResponse().getContentAsString(), DomainView.class);
+        assertEquals(TEST_DOMAIN_NAME, domain.getName());
+    }
+
+    @Test
+    void shouldGetDomainByName() throws Exception {
+        when(userService.findByUsername(ADMIN_USERNAME)).thenReturn(Optional.of(UsersHelper.ADMIN));
+        when(userService.findById(1L)).thenReturn(Optional.of(UsersHelper.ADMIN));
+        MvcResult result = mvc.perform(get("/api/domains/name/{domainName}", TEST_DOMAIN_NAME)
                         .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
