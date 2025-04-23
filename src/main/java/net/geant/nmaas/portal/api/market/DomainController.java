@@ -116,6 +116,27 @@ public class DomainController extends AppBaseController {
 		//otherwise base view
 		return modelMapper.map(domain, DomainBaseWithState.class);
 	}
+
+	@GetMapping("/name/{domainName}")
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
+	public DomainBase getDomainByName(@PathVariable(value = "domainName") String domainName, @NotNull Principal principal) {
+		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
+		Domain domain = domainService.findDomain(domainName).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
+		// if is system admin or domain admin than return full view
+		Long domainId = domain.getId();
+		// check groups status of app
+		domain = domainService.getAppStatesFromGroups(domain);
+
+		if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
+				|| user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
+				&& (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
+
+			return modelMapper.map(domain, DomainView.class);
+		}
+		//otherwise base view
+		return modelMapper.map(domain, DomainBaseWithState.class);
+	}
 	
 	@GetMapping("/my")
 	@Transactional(readOnly = true)
