@@ -183,7 +183,10 @@
     "DESCRIPTION" : "Opis",
     "CREATION_DATE" : "Data utworzenia",
     "MODIFICATION_DATE" : "Data modyfikacji",
-    "PATH_TO_CONFIG" : "Ścieżka do pliku konfiguracyjnego"
+    "PATH_TO_CONFIG" : "Ścieżka do pliku konfiguracyjnego",
+    "CONFIGURATION" : "Ustawienia klastrów",
+    "CONNECT_CLUSTER" : "Dodaj nowy klaster",
+    "SAVE" : "Zapisz klaster"
   },
   "GITLAB": {
     "TITLE": "Konfiguracja GitLab",
