@@ -182,7 +182,10 @@
     "DESCRIPTION" : "Description",
     "CREATION_DATE" : "Creation date",
     "MODIFICATION_DATE" : "Modification date",
-    "PATH_TO_CONFIG" : "Path to config file"
+    "PATH_TO_CONFIG" : "Path to config file",
+    "CONFIGURATION" : "Cluster configuration",
+    "CONNECT_CLUSTER" : "Connect new cluster",
+    "SAVE" : "Save cluster"
   },
   "GITLAB": {
     "TITLE": "GitLab Konfiguration",
