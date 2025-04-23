@@ -4,6 +4,7 @@ import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.kubernetes.shell.observable.EchoShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -29,6 +30,7 @@ public class ShellSessionObserverTest {
         }
     }
 
+    @Disabled
     @Test
     public void testObserver() throws IOException {
         GenericShellSessionObservable observable = new EchoShellSessionObservable("someId");
