@@ -134,7 +134,7 @@ class OIDCAuthControllerTest {
         assertTrue(result.getUrl().contains("login-success"));
         assertTrue(result.getUrl().contains("token=jwt-token"));
         assertTrue(result.getUrl().contains("refresh_token=refresh-token"));
-        assertTrue(result.getUrl().contains("oidc_token=oidc-token"));
+        assertTrue(result.getUrl().contains("oidc-token=oidc-token"));
 
         verify(loginRegisterService).registerNewSuccessfulLogin(eq(user), any(), any(), any());
     }
@@ -153,6 +153,6 @@ class OIDCAuthControllerTest {
         RedirectView result = oidcAuthController.oidcLoginSuccess(oidcUser, request);
 
         // then
-        assertTrue(result.getUrl().contains("/login-linking?oidc_token=oidc-token"));
+        assertTrue(result.getUrl().contains("/login-linking?oidc-token=oidc-token"));
     }
 }
