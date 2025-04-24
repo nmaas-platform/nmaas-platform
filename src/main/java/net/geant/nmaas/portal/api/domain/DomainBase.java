@@ -8,10 +8,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DomainBase {
-    Long id;
 
+    Long id;
     String name;
     String codename;
     boolean active;
     boolean deleted;
+
 }
