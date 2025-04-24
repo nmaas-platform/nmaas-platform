@@ -8,6 +8,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -23,7 +24,7 @@ public class EncryptionService {
     @Value("${security.encryption.algorithm}")
     private String algorithm;
 
-    public String encrypt(String plainText) throws Exception {
+    public String encrypt(String plainText) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(algorithm);
         SecretKey key = getKey();
 
@@ -41,7 +42,7 @@ public class EncryptionService {
         return Base64.getEncoder().encodeToString(combinedData);
     }
 
-    public String decrypt(String encryptedText) throws Exception {
+    public String decrypt(String encryptedText) throws GeneralSecurityException {
         byte[] decodedData = Base64.getDecoder().decode(encryptedText);
 
         byte[] iv = new byte[IV_LENGTH];

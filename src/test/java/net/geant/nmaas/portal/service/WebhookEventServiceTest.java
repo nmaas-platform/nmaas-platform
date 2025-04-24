@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,14 +36,14 @@ class WebhookEventServiceTest {
     private WebhookEvent webhookEvent;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() throws GeneralSecurityException {
         webhookEventDto = new WebhookEventDto(1L, "webhook", "https://example.com/webhook", WebhookEventType.APPLICATION_DEPLOYMENT);
         webhookEvent = new WebhookEvent(1L, "webhook", "https://example.com/webhook", WebhookEventType.APPLICATION_DEPLOYMENT);
         webhookEventService.create(webhookEventDto);
     }
 
     @Test
-    void crudWebhookEvent() throws Exception {
+    void crudWebhookEvent() throws GeneralSecurityException {
         webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_CREATION, "xxxxyyyy", "Authorization");
         webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_CREATION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization");
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
@@ -69,7 +70,7 @@ class WebhookEventServiceTest {
     }
 
     @Test
-    void shouldGetAllWebhookEvents() throws Exception {
+    void shouldGetAllWebhookEvents() throws GeneralSecurityException {
         // when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");
         when(webhookEventRepository.findAll()).thenReturn(Arrays.asList(webhookEvent));
 
@@ -85,7 +86,7 @@ class WebhookEventServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenWebhookNotFound() throws Exception {
+    void shouldThrowExceptionWhenWebhookNotFound() throws GeneralSecurityException {
         // when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");
         when(webhookEventRepository.findById(999L)).thenReturn(Optional.empty());
 

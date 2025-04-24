@@ -10,8 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class WebhookEventService {
@@ -28,19 +28,19 @@ public class WebhookEventService {
         this.modelMapper = modelMapper;
     }
 
-    public WebhookEvent create(WebhookEventDto webhookEventDto) throws Exception {
+    public WebhookEvent create(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = new WebhookEvent();
         setWebhookEvent(webhookEvent, webhookEventDto);
         return webhookRepository.save(webhookEvent);
     }
 
-    public void update(WebhookEventDto webhookEventDto) throws Exception {
+    public void update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId()).orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
         setWebhookEvent(webhookEvent, webhookEventDto);
         webhookRepository.save(webhookEvent);
     }
 
-    private void setWebhookEvent(WebhookEvent webhookEvent, WebhookEventDto webhookEventDto) throws Exception {
+    private void setWebhookEvent(WebhookEvent webhookEvent, WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         webhookEvent.setName(webhookEventDto.getName());
         webhookEvent.setTargetUrl(webhookEventDto.getTargetUrl());
         webhookEvent.setEventType(webhookEventDto.getEventType());
@@ -58,18 +58,18 @@ public class WebhookEventService {
                 {
                     try {
                         x.setTokenValue(x.getTokenValue() == null ? null : encryptionService.decrypt(x.getTokenValue()));
-                    } catch (Exception e) {
+                    } catch (GeneralSecurityException e) {
                         throw new RuntimeException(e);
                     }
                     return modelMapper.map(x, WebhookEventDto.class);
-                }).collect(Collectors.toList());
+                }).toList();
     }
 
     public List<WebhookEvent> getWebhooksByEvent(WebhookEventType webhookEventType) {
         return webhookRepository.findByEventType(webhookEventType);
     }
 
-    public WebhookEventDto getById(Long id) throws Exception {
+    public WebhookEventDto getById(Long id) throws GeneralSecurityException {
         WebhookEvent event = webhookRepository.findById(id)
                 .orElseThrow(() -> new MissingElementException(String.format("WebhookEventType with id: %d cannot be found", id)));
         event.setTokenValue(event.getTokenValue() == null ? null : encryptionService.decrypt(event.getTokenValue()));
