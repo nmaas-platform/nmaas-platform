@@ -129,7 +129,7 @@ dependencies {
     implementation('io.fabric8:kubernetes-client:6.13.5')
 
     // GitLab API client
-    implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.9' // version 6 for jakarta
+    implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.10' // version 6 for jakarta
 
     // GRPC communication with Janitor
     implementation('com.google.protobuf:protobuf-java:4.30.2')
