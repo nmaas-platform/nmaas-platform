@@ -96,6 +96,17 @@ public class DomainController extends AppBaseController {
 				.toList();
 	}
 
+	@GetMapping("/base")
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+	public List<DomainBase> getDomainsBase() {
+		return domainService.getDomains().stream()
+				.map(d -> {
+					return modelMapper.map(d, DomainBase.class);
+				})
+				.toList();
+	}
+
 	@GetMapping("/{domainId}")
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
