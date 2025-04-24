@@ -10,7 +10,7 @@ public class UserRefreshToken {
 	private String refreshToken;
 	
 	@JsonCreator
-	public UserRefreshToken(@JsonProperty(value = "refresh-token", required=true) String refreshToken) {
+	public UserRefreshToken(@JsonProperty(value = "refreshToken", required=true) String refreshToken) {
 		this.refreshToken = refreshToken;
 	}
 	

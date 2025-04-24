@@ -103,7 +103,7 @@ public class OIDCAuthController {
     public RedirectView oidcLoginSuccess(@AuthenticationPrincipal OidcUser oidcUser, HttpServletRequest request) {
         if (oidcUserService.externalUserRequiresLinking(oidcUser)) {
             String linkingRedirectUrl = portalAddress
-                    + "/login-linking?oidc_token="
+                    + "/login-linking?oidc-token="
                     + oidcUser.getIdToken().getTokenValue();
             return new RedirectView(linkingRedirectUrl);
         }
@@ -115,7 +115,7 @@ public class OIDCAuthController {
                     + jwtTokenService.getToken(user)
                     + "&refresh_token="
                     + jwtTokenService.getRefreshToken(user)
-                    + "&oidc_token="
+                    + "&oidc-token="
                     + oidcUser.getIdToken().getTokenValue();
             loginRegisterService.registerNewSuccessfulLogin(
                     user,
