@@ -113,7 +113,7 @@ public class OIDCAuthController {
             String redirectUrl = portalAddress
                     + "/login-success?token="
                     + jwtTokenService.getToken(user)
-                    + "&refresh_token="
+                    + "&refresh-token="
                     + jwtTokenService.getRefreshToken(user)
                     + "&oidc-token="
                     + oidcUser.getIdToken().getTokenValue();
