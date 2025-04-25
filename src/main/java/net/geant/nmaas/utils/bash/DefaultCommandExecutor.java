@@ -24,7 +24,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
 
     private String executeInternal(Command command) throws CommandExecutionException {
         try {
-            log.info("Executing: {}", command);
+            log.info("Executing: {}", command.toString());
             Process process = new ProcessBuilder(command.asString().split(" ")).start();
             final String errorOutput = new String(process.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
             if (Strings.isNotEmpty(errorOutput)) {
