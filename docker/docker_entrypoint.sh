@@ -17,6 +17,9 @@ export KUBERNETES_SERVICE_HOST=kubernetes.default
 export KUBERNETES_SERVICE_PORT=443
 EOF
 
+mkdir -p /nmaas/files/upload
+mkdir -p /nmaas/files/log
+
 DIR=/nmaas/platform
 FILE=$(ls $DIR | grep .jar)
 cd $DIR
