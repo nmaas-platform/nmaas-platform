@@ -104,7 +104,7 @@ dependencies {
     implementation('org.springdoc:springdoc-openapi-ui:1.8.0')
 
     implementation('org.modelmapper:modelmapper:3.2.3')
-    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.2')
+    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.3')
     implementation('org.apache.commons:commons-lang3:3.17.0')
 
     // Database
