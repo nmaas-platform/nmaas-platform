@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +24,6 @@ public class DashboardView {
     private List<DashboardDeploymentsView> instanceCountInPeriodDetails;
     private Map<String, Integer> popularApps;
 
-
-
     @Override
     public String toString() {
         return new StringJoiner(", ", DashboardView.class.getSimpleName() + "[", "]")
@@ -37,4 +34,5 @@ public class DashboardView {
                 .add("popularApps=" + (popularApps != null ? popularApps.toString() : "null"))
                 .toString();
     }
+
 }

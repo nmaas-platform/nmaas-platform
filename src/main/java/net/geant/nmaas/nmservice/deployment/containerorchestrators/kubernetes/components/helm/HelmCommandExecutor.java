@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmDeleteCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmListCommand;
@@ -26,16 +27,18 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 public class HelmCommandExecutor {
 
     @Autowired
-    CommandExecutor commandExecutor;
+    private CommandExecutor commandExecutor;
 
+    @Setter
     @Value("${helm.version:v3}")
-    String helmVersion;
+    private String helmVersion;
 
+    @Setter
     @Value("${helm.repositoryName}")
-    String helmRepositoryName;
+    private String helmRepositoryName;
 
     @Value("${helm.enableTls:false}")
-    Boolean enableTls;
+    private Boolean enableTls;
 
     void executeHelmInstallCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         executeInstall(namespace, releaseName, template, arguments);

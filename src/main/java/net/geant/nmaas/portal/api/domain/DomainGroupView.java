@@ -1,12 +1,11 @@
 package net.geant.nmaas.portal.api.domain;
 
-
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,5 @@ public class DomainGroupView {
     private List<ApplicationStatePerDomainView> applicationStatePerDomain;
 
     private List<UserViewMinimal> managers = new ArrayList<>();
-
 
 }

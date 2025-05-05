@@ -33,8 +33,7 @@ RUN apk --no-cache add gettext postgresql-client \
     && wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm
 
-RUN mkdir -p /nmaas/files/log && chown -R $USERNAME:$USERNAME /nmaas/files/log \
-    && mkdir -p /nmaas/files/upload && chown -R $USERNAME:$USERNAME /nmaas/files/upload \
+RUN mkdir -p /nmaas/files && chown -R $USERNAME:$USERNAME /nmaas/files \
     && chown -R $USERNAME:$USERNAME /nmaas/platform
 
 USER $USERNAME

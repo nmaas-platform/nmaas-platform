@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.kubernetes;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.externalservices.kubernetes.model.KClusterView;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/api/management/kubernetes")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class KubernetesClusterController {
 
-    private KubernetesClusterIngressManager kClusterIngressManager;
-
-    private KubernetesClusterDeploymentManager kClusterDeploymentManager;
+    private final KubernetesClusterIngressManager kClusterIngressManager;
+    private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
