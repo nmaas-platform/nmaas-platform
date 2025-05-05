@@ -6,6 +6,7 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
@@ -27,11 +28,13 @@ import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepositor
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -75,6 +78,8 @@ class DomainServiceTest {
     DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
     DomainGroupService domainGroupService;
     DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
+    WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
+    ScheduleManager scheduleManager = mock(ScheduleManager.class);
 
     DomainService domainService;
 
@@ -87,7 +92,7 @@ class DomainServiceTest {
                 namespaceValidator, domainRepository,
                 domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
-                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository);
+                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository, webhookEventRepository, scheduleManager);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 

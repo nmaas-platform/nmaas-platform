@@ -6,14 +6,18 @@ import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.orchestration.jobs.WebhookJob;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -94,6 +99,27 @@ public class ScheduleManager {
             scheduler.deleteJob(jobKey(name));
         } catch (SchedulerException e){
             throw new IllegalStateException("Deleting scheduled job failed due to " + e.getMessage());
+        }
+    }
+
+    public void createOneTimeJob( Class<? extends Job> jobClass, String jobName, Map<String, Object> parameters) {
+        try {
+            JobKey jobKey = new JobKey(jobName);
+            JobDetail jobDetail = newJob(jobClass).withIdentity(jobKey).setJobData(new JobDataMap(parameters)).build();
+
+            Trigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(jobName)
+                    .startNow()
+                    .build();
+
+            scheduler.scheduleJob(jobDetail, trigger);
+
+            // Attach listener
+            OneTimeJobListener listener = new OneTimeJobListener(scheduler, jobKey);
+            scheduler.getListenerManager().addJobListener(listener, KeyMatcher.keyEquals(jobKey));
+
+        } catch (SchedulerException e) {
+            throw new IllegalStateException(e.getMessage());
         }
     }
 

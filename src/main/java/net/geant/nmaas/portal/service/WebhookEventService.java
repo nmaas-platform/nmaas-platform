@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class WebhookEventService {
@@ -65,8 +66,8 @@ public class WebhookEventService {
                 }).toList();
     }
 
-    public List<WebhookEvent> getWebhooksByEvent(WebhookEventType webhookEventType) {
-        return webhookRepository.findByEventType(webhookEventType);
+    public Stream<Long> findIdByEventType(WebhookEventType webhookEventType) {
+        return webhookRepository.findIdByEventType(webhookEventType);
     }
 
     public WebhookEventDto getById(Long id) throws GeneralSecurityException {

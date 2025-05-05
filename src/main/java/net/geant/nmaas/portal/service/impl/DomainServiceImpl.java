@@ -6,6 +6,7 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
+import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
@@ -25,13 +26,16 @@ import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,6 +84,8 @@ public class DomainServiceImpl implements DomainService {
     private final DomainGroupService domainGroupService;
     private final ApplicationEventPublisher eventPublisher;
     private final DomainAnnotationsRepository domainAnnotationsRepository;
+    private final WebhookEventRepository webhookEventRepository;
+    private final ScheduleManager scheduleManager;
 
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
@@ -96,7 +103,9 @@ public class DomainServiceImpl implements DomainService {
                              ApplicationStatePerDomainService applicationStatePerDomainService,
                              DomainGroupService domainGroupService,
                              ApplicationEventPublisher eventPublisher,
-                             DomainAnnotationsRepository domainAnnotationsRepository
+                             DomainAnnotationsRepository domainAnnotationsRepository,
+                             WebhookEventRepository webhookEventRepository,
+                             ScheduleManager scheduleManager
     ) {
         this.validator = validator;
         this.namespaceValidator = namespaceValidator;
@@ -111,6 +120,8 @@ public class DomainServiceImpl implements DomainService {
         this.domainGroupService = domainGroupService;
         this.eventPublisher = eventPublisher;
         this.domainAnnotationsRepository = domainAnnotationsRepository;
+        this.webhookEventRepository = webhookEventRepository;
+        this.scheduleManager = scheduleManager;
     }
 
     @Override
@@ -188,6 +199,8 @@ public class DomainServiceImpl implements DomainService {
             if (!saved.getName().equals(globalDomain)) {
                 eventPublisher.publishEvent(new DomainCreatedEvent(this, new DomainCreatedEvent.DomainSpec(saved.getId(), saved.getName(), saved.getCodename(), request.getAnnotations())));
             }
+            //call existing webhooks
+            webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION).forEach(id -> scheduleManager.createOneTimeJob(DomainCreationJob.class, "DomainCreation_" + id + "_" + saved.getId(), Map.of("webhookId", id, "domainId", saved.getId())));
             return saved;
         } catch (Exception ex) {
             throw new ProcessingException("Unable to create new domain with given name or codename.");
