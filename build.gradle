@@ -138,7 +138,7 @@ dependencies {
     implementation('io.grpc:grpc-stub:1.72.0')
 
     // CSV processing
-    implementation('com.opencsv:opencsv:5.10')
+    implementation('com.opencsv:opencsv:5.11')
 
     // Tests
     testImplementation('org.mockito:mockito-core:5.17.0')
