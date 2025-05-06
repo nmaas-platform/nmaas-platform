@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,5 +34,7 @@ public class ClusterManagerView {
     private KClusterView.KClusterIngressView ingress;
 
     private KClusterView.KClusterDeploymentView deployment;
+
+    private List<String> domainNames;
 
 }

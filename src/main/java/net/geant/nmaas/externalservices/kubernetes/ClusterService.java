@@ -9,16 +9,15 @@ import net.geant.nmaas.externalservices.kubernetes.model.ClusterManager;
 import net.geant.nmaas.externalservices.kubernetes.model.ClusterManagerView;
 import net.geant.nmaas.externalservices.kubernetes.model.KClusterDeployment;
 import net.geant.nmaas.externalservices.kubernetes.model.KClusterIngress;
-import net.geant.nmaas.externalservices.kubernetes.model.KClusterView;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.service.DomainService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,7 +26,9 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,18 +38,21 @@ import java.util.stream.Collectors;
 public class ClusterService {
 
     private final ClusterManagerRepository clusterManagerRepository;
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final static ModelMapper modelMapper = new ModelMapper();
 
     private final KubernetesClusterIngressManager kClusterIngressManager;
 
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
+
+    private final DomainService domainService;
 
 
     public ClusterManagerView getClusterView(Long id) {
         Optional<ClusterManager> cluster = clusterManagerRepository.findById(id);
 
         if (cluster.isPresent()) {
-            return modelMapper.map(cluster.get(), ClusterManagerView.class);
+            return toView(cluster.get());
+
         } else {
             throw new IllegalArgumentException("Cluster not found");
         }
@@ -57,7 +61,7 @@ public class ClusterService {
     public List<ClusterManagerView> getAllClusterView() {
         List<ClusterManager> clusters = clusterManagerRepository.findAll();
 
-        return clusters.stream().map(c -> modelMapper.map(c, ClusterManagerView.class)).collect(Collectors.toList());
+        return clusters.stream().map(ClusterService::toView).collect(Collectors.toList());
     }
 
     public ClusterManager getCluster(Long id) {
@@ -94,9 +98,10 @@ public class ClusterService {
         log.debug("Filed saved in: " + savedPath);
         entity.setPathConfigFile(savedPath);
 
+
         ClusterManager cluster = this.clusterManagerRepository.save(entity);
         log.debug("Cluster saved: {}", cluster.toString());
-        return modelMapper.map(cluster, ClusterManagerView.class);
+        return toView(cluster);
 
     }
 
@@ -125,6 +130,11 @@ public class ClusterService {
                                 .clusterConfigFile(file.toString())
                                 .deployment(deployment)
                                 .ingress(ingress)
+                                .domains(view.getDomainNames().stream().map(d -> {
+                                            Optional<Domain> dom = domainService.findDomain(d);
+                                            return dom.orElse(null);
+                                        }
+                                ).toList())
                                 .build(),
                         file);
 
@@ -141,32 +151,41 @@ public class ClusterService {
         return null;
     }
 
-    public ClusterManagerView updateCluster(ClusterManagerView cluster, Long id ) {
+    public ClusterManagerView updateCluster(ClusterManagerView cluster, Long id) {
         Optional<ClusterManager> entity = clusterManagerRepository.findById(id);
 
 
         if (entity.isPresent()) {
             checkRequest(entity.get(), cluster, id);
-            if(entity.get().getId().equals(id) && entity.get().getId().equals(cluster.getId())) {
+            if (entity.get().getId().equals(id) && entity.get().getId().equals(cluster.getId())) {
                 ClusterManager updated = entity.get();
                 updated.setName(cluster.getName());
                 updated.setDescription(cluster.getDescription());
                 updated.setCodename(cluster.getCodename());
                 updated.setModificationDate(OffsetDateTime.now());
-                updated.setIngress( modelMapper.map(cluster.getIngress(), KClusterIngress.class) );
 
-                updated.setDeployment( modelMapper.map(cluster.getDeployment(), KClusterDeployment.class) );
+                updated.setDomains(cluster.getDomainNames().stream()
+                        .map(d -> {
+                            Optional<Domain> dom = domainService.findDomain(d);
+                            return dom.orElse(null);
+                        })
+                        .filter(Objects::nonNull) // Ensure no null values are added
+                        .collect(Collectors.toCollection(ArrayList::new))); // Use ArrayList for mutability
+
+                updated.setIngress(modelMapper.map(cluster.getIngress(), KClusterIngress.class));
+
+                updated.setDeployment(modelMapper.map(cluster.getDeployment(), KClusterDeployment.class));
 
                 updated = clusterManagerRepository.save(updated);
                 //TODO : implement file update logic
-                return modelMapper.map( updated, ClusterManagerView.class);
+                return toView(updated);
 
             }
         }
 
 
-        throw new IllegalArgumentException("Cluster with id: " + id+ " is missing. Can not update.");
-        }
+        throw new IllegalArgumentException("Cluster with id: " + id + " is missing. Can not update.");
+    }
 
     private void checkRequest(ClusterManagerView view) {
         if (view.getName() == null) {
@@ -204,7 +223,7 @@ public class ClusterService {
         return hexString.toString();
     }
 
-    private void checkRequest(ClusterManager entity, ClusterManagerView view,  Long id) {
+    private void checkRequest(ClusterManager entity, ClusterManagerView view, Long id) {
         if (view.getName() == null) {
             throw new IllegalArgumentException("Name of the cluster is null");
         }
@@ -214,5 +233,10 @@ public class ClusterService {
 
     }
 
+    public static ClusterManagerView toView(ClusterManager clusterManager) {
+        ClusterManagerView view = modelMapper.map(clusterManager, ClusterManagerView.class);
+        view.setDomainNames(clusterManager.getDomains().stream().map(Domain::getName).toList());
+        return view;
+    }
 
 }
