@@ -42,13 +42,13 @@ public class MonitorController {
     @PostMapping("/{serviceName}/execute")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void executeJobNow(@PathVariable String serviceName){
+    public void executeJobNow(@PathVariable String serviceName) {
         MonitorService service = getMonitorService(serviceName);
         service.checkStatus();
     }
 
     private MonitorService getMonitorService(String serviceName) {
-        return monitorServices.stream().filter(s->s.getServiceType().getName().equals(serviceName.toUpperCase()))
+        return monitorServices.stream().filter(s -> s.getServiceType().getName().equals(serviceName.toUpperCase()))
                 .findAny()
                 .orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", serviceName)));
     }
@@ -64,28 +64,28 @@ public class MonitorController {
     @DeleteMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void deleteMonitorEntryAndJob(@PathVariable String serviceName){
+    public void deleteMonitorEntryAndJob(@PathVariable String serviceName) {
         this.scheduleManager.deleteJob(serviceName);
         this.monitorManager.deleteMonitorEntry(serviceName);
     }
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<MonitorEntryView> getAllMonitorEntries(){
+    public List<MonitorEntryView> getAllMonitorEntries() {
         return this.monitorManager.getAllMonitorEntries();
     }
 
     @GetMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public MonitorEntryView getMonitorEntry(@PathVariable String serviceName){
+    public MonitorEntryView getMonitorEntry(@PathVariable String serviceName) {
         return this.monitorManager.getMonitorEntries(serviceName);
     }
 
     @PatchMapping("/{serviceName}/resume")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void resumeJob(@PathVariable String serviceName){
+    public void resumeJob(@PathVariable String serviceName) {
         scheduleManager.resumeJob(serviceName);
         monitorManager.changeJobState(serviceName, true);
     }
@@ -93,7 +93,7 @@ public class MonitorController {
     @PatchMapping("/{serviceName}/pause")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    public void pauseJob(@PathVariable String serviceName){
+    public void pauseJob(@PathVariable String serviceName) {
         scheduleManager.pauseJob(serviceName);
         monitorManager.changeJobState(serviceName, false);
     }

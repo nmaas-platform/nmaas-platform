@@ -76,7 +76,7 @@ public class MonitorManager {
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName)));
     }
 
-    public void changeJobState(String serviceName, boolean active){
+    public void changeJobState(String serviceName, boolean active) {
         MonitorEntry monitorEntry = this.repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName.toUpperCase())));
         monitorEntry.setActive(active);
@@ -88,10 +88,12 @@ public class MonitorManager {
     }
 
     private void validateMonitorEntryUpdate(Date lastCheck, MonitorStatus status) {
-        if(status == null)
+        if (status == null) {
             throw new IllegalStateException("Status cannot be null");
-        if(lastCheck == null || lastCheck.after(new Date()))
+        }
+        if (lastCheck == null || lastCheck.after(new Date())) {
             throw new IllegalStateException("Last check date cannot be null or from future");
+        }
     }
 
     private void validateMonitorEntryUpdate(MonitorEntryView monitorEntryView) {

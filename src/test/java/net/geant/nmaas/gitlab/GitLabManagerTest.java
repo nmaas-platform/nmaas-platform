@@ -1,11 +1,13 @@
-package net.geant.nmaas.externalservices.gitlab;
+package net.geant.nmaas.gitlab;
 
-import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GitLabManagerTest {
 

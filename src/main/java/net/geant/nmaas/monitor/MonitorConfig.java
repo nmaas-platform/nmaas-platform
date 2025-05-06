@@ -50,7 +50,7 @@ public class MonitorConfig {
                             if (service.isPresent()) {
                                 scheduleManager.createJob(service.get(), monitorEntry);
                             } else {
-                                log.warn(String.format("Monitor service for %s not found or is not schedulable", serviceType));
+                                log.warn("Monitor service for {} not found or is not schedulable", serviceType);
                             }
                         });
             }

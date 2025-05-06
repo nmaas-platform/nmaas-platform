@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.gitlab.exceptions;
+package net.geant.nmaas.gitlab.exceptions;
 
 public class GitLabNotFoundException extends RuntimeException {
     public GitLabNotFoundException(String message){

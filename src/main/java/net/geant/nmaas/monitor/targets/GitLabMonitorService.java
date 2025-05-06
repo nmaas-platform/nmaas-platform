@@ -1,8 +1,9 @@
-package net.geant.nmaas.externalservices.gitlab;
+package net.geant.nmaas.monitor.targets;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import net.geant.nmaas.externalservices.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.gitlab.GitLabManager;
+import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
