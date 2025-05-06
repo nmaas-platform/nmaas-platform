@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.kubernetes;
 
+import net.geant.nmaas.externalservices.kubernetes.api.KubernetesClusterController;
 import net.geant.nmaas.portal.api.market.ApiExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

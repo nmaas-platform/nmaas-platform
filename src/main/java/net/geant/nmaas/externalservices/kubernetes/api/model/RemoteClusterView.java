@@ -1,5 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes.model;
-
+package net.geant.nmaas.externalservices.kubernetes.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ClusterManagerView {
+public class RemoteClusterView {
 
     private Long id;
 

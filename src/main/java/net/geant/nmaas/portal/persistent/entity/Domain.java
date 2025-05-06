@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
-import net.geant.nmaas.externalservices.kubernetes.model.ClusterManager;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -76,7 +76,7 @@ public class Domain implements Serializable {
 	private List<DomainGroup> groups = new ArrayList<>();
 
 	@ManyToMany(mappedBy = "domains")
-	private List<ClusterManager> clusters = new ArrayList<>();
+	private List<KCluster> clusters = new ArrayList<>();
 
 	public Domain(String name, String codename) {
 		super();

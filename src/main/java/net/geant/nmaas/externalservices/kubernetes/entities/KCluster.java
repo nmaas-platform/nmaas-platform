@@ -1,16 +1,16 @@
-package net.geant.nmaas.externalservices.kubernetes.model;
+package net.geant.nmaas.externalservices.kubernetes.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,16 +19,17 @@ import lombok.Setter;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "k_cluster")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
-public class ClusterManager {
+public class KCluster {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,9 +66,9 @@ public class ClusterManager {
 
     @ManyToMany()
     @JoinTable(
-        name = "clusters_domains",
-        joinColumns = @JoinColumn(name = "cluster_id"),
-        inverseJoinColumns = @JoinColumn(name = "domain_id")
+            name = "k_clusters_domains",
+            joinColumns = @JoinColumn(name = "k_cluster_id"),
+            inverseJoinColumns = @JoinColumn(name = "domain_id")
     )
     private List<Domain> domains = new ArrayList<>();
 
@@ -77,7 +78,7 @@ public class ClusterManager {
 
     @Override
     public String toString() {
-        return "ClusterManager{" +
+        return "KCluster{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", codename='" + codename + '\'' +

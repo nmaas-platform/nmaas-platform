@@ -1,9 +1,13 @@
-package net.geant.nmaas.externalservices.kubernetes.model;
+package net.geant.nmaas.externalservices.kubernetes.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.NamespaceConfigOption;
 
 @NoArgsConstructor
 @AllArgsConstructor

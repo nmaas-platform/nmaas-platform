@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.model.ClusterConfigView;
-import net.geant.nmaas.externalservices.kubernetes.model.ClusterManager;
-import net.geant.nmaas.externalservices.kubernetes.model.ClusterManagerView;
-import net.geant.nmaas.externalservices.kubernetes.model.KClusterDeployment;
-import net.geant.nmaas.externalservices.kubernetes.model.KClusterIngress;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
+import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
+import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import org.modelmapper.ModelMapper;
@@ -35,38 +35,31 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ClusterService {
+public class RemoteClusterManager {
 
-    private final ClusterManagerRepository clusterManagerRepository;
     private final static ModelMapper modelMapper = new ModelMapper();
 
+    private final KClusterRepository KClusterRepository;
     private final KubernetesClusterIngressManager kClusterIngressManager;
-
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
-
     private final DomainService domainService;
 
-
-    public ClusterManagerView getClusterView(Long id) {
-        Optional<ClusterManager> cluster = clusterManagerRepository.findById(id);
-
+    public RemoteClusterView getClusterView(Long id) {
+        Optional<KCluster> cluster = KClusterRepository.findById(id);
         if (cluster.isPresent()) {
             return toView(cluster.get());
-
         } else {
             throw new IllegalArgumentException("Cluster not found");
         }
     }
 
-    public List<ClusterManagerView> getAllClusterView() {
-        List<ClusterManager> clusters = clusterManagerRepository.findAll();
-
-        return clusters.stream().map(ClusterService::toView).collect(Collectors.toList());
+    public List<RemoteClusterView> getAllClusterView() {
+        List<KCluster> clusters = KClusterRepository.findAll();
+        return clusters.stream().map(RemoteClusterManager::toView).collect(Collectors.toList());
     }
 
-    public ClusterManager getCluster(Long id) {
-        Optional<ClusterManager> cluster = clusterManagerRepository.findById(id);
-
+    public KCluster getCluster(Long id) {
+        Optional<KCluster> cluster = KClusterRepository.findById(id);
         if (cluster.isPresent()) {
             return cluster.get();
         } else {
@@ -75,8 +68,7 @@ public class ClusterService {
     }
 
     public File getFileFromCluster(Long id) {
-        ClusterManager cluster = getCluster(id);
-
+        KCluster cluster = getCluster(id);
         return new File(cluster.getPathConfigFile());
     }
 
@@ -91,21 +83,19 @@ public class ClusterService {
         return filePath.toString();
     }
 
-    public ClusterManagerView saveCluster(ClusterManager entity, MultipartFile file) throws IOException, NoSuchAlgorithmException {
+    public RemoteClusterView saveCluster(KCluster entity, MultipartFile file) throws IOException, NoSuchAlgorithmException {
         checkRequest(entity);
 
         String savedPath = saveFileToTmp(file);
-        log.debug("Filed saved in: " + savedPath);
+        log.debug("Filed saved in: {}", savedPath);
         entity.setPathConfigFile(savedPath);
 
-
-        ClusterManager cluster = this.clusterManagerRepository.save(entity);
+        KCluster cluster = this.KClusterRepository.save(entity);
         log.debug("Cluster saved: {}", cluster.toString());
         return toView(cluster);
-
     }
 
-    public ClusterManagerView readClusterFile(ClusterManagerView view, MultipartFile file) {
+    public RemoteClusterView readClusterFile(RemoteClusterView view, MultipartFile file) {
         checkRequest(view);
 
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -121,7 +111,7 @@ public class ClusterService {
                 log.error("One cluster provided, create view and return ");
                 KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
                 KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressView(), KClusterIngress.class);
-                return saveCluster(ClusterManager.builder()
+                return saveCluster(KCluster.builder()
                                 .name(view.getName())
                                 .description(view.getDescription())
                                 .creationDate(OffsetDateTime.now())
@@ -151,14 +141,13 @@ public class ClusterService {
         return null;
     }
 
-    public ClusterManagerView updateCluster(ClusterManagerView cluster, Long id) {
-        Optional<ClusterManager> entity = clusterManagerRepository.findById(id);
-
+    public RemoteClusterView updateCluster(RemoteClusterView cluster, Long id) {
+        Optional<KCluster> entity = KClusterRepository.findById(id);
 
         if (entity.isPresent()) {
             checkRequest(entity.get(), cluster, id);
             if (entity.get().getId().equals(id) && entity.get().getId().equals(cluster.getId())) {
-                ClusterManager updated = entity.get();
+                KCluster updated = entity.get();
                 updated.setName(cluster.getName());
                 updated.setDescription(cluster.getDescription());
                 updated.setCodename(cluster.getCodename());
@@ -176,18 +165,17 @@ public class ClusterService {
 
                 updated.setDeployment(modelMapper.map(cluster.getDeployment(), KClusterDeployment.class));
 
-                updated = clusterManagerRepository.save(updated);
+                updated = KClusterRepository.save(updated);
                 //TODO : implement file update logic
                 return toView(updated);
 
             }
         }
 
-
         throw new IllegalArgumentException("Cluster with id: " + id + " is missing. Can not update.");
     }
 
-    private void checkRequest(ClusterManagerView view) {
+    private void checkRequest(RemoteClusterView view) {
         if (view.getName() == null) {
             throw new IllegalArgumentException("Name of the cluster is null");
         }
@@ -196,7 +184,7 @@ public class ClusterService {
         }
     }
 
-    private void checkRequest(ClusterManager entity) {
+    private void checkRequest(KCluster entity) {
         if (entity.getName() == null) {
             throw new IllegalArgumentException("Name of the cluster is null");
         }
@@ -223,7 +211,7 @@ public class ClusterService {
         return hexString.toString();
     }
 
-    private void checkRequest(ClusterManager entity, ClusterManagerView view, Long id) {
+    private void checkRequest(KCluster entity, RemoteClusterView view, Long id) {
         if (view.getName() == null) {
             throw new IllegalArgumentException("Name of the cluster is null");
         }
@@ -233,9 +221,9 @@ public class ClusterService {
 
     }
 
-    public static ClusterManagerView toView(ClusterManager clusterManager) {
-        ClusterManagerView view = modelMapper.map(clusterManager, ClusterManagerView.class);
-        view.setDomainNames(clusterManager.getDomains().stream().map(Domain::getName).toList());
+    public static RemoteClusterView toView(KCluster KCluster) {
+        RemoteClusterView view = modelMapper.map(KCluster, RemoteClusterView.class);
+        view.setDomainNames(KCluster.getDomains().stream().map(Domain::getName).toList());
         return view;
     }
 

@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes.model;
+package net.geant.nmaas.externalservices.kubernetes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

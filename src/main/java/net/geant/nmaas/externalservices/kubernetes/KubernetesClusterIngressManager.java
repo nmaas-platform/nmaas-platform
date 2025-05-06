@@ -3,10 +3,10 @@ package net.geant.nmaas.externalservices.kubernetes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.kubernetes.model.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.model.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.model.IngressResourceConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.model.KClusterView;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,14 +66,14 @@ public class KubernetesClusterIngressManager {
     }
 
     public String getExternalServiceDomain(String codename) {
-        if(Boolean.TRUE.equals(this.getIngressPerDomain())){
+        if (Boolean.TRUE.equals(this.getIngressPerDomain())) {
             return domainTechDetailsRepository.findByDomainCodename(codename)
-                    .orElseThrow(()-> new IllegalArgumentException("Domain not found")).getExternalServiceDomain();
+                    .orElseThrow(() -> new IllegalArgumentException("Domain not found")).getExternalServiceDomain();
         }
         return this.getExternalServiceDomain();
     }
 
-    KClusterView.KClusterIngressView getKClusterIngressView() {
+    public KClusterView.KClusterIngressView getKClusterIngressView() {
         KClusterView.KClusterIngressView kClusterIngressView = new KClusterView.KClusterIngressView();
         kClusterIngressView.setControllerConfigOption(this.controllerConfigOption);
         kClusterIngressView.setSupportedIngressClass(this.supportedIngressClass);

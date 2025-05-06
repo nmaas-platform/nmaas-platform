@@ -1,6 +1,8 @@
-package net.geant.nmaas.monitor;
+package net.geant.nmaas.monitor.api;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.monitor.MonitorManager;
+import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.scheduling.ScheduleManager;

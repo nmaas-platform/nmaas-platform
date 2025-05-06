@@ -1,11 +1,12 @@
-package net.geant.nmaas.externalservices.kubernetes.model;
+package net.geant.nmaas.externalservices.kubernetes.entities;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "k_cluster_deployment")
 @Setter
 @Getter
 @Builder
@@ -24,6 +26,7 @@ public class KClusterDeployment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private NamespaceConfigOption namespaceConfigOption;
 
     private String defaultNamespace;
@@ -42,6 +45,4 @@ public class KClusterDeployment {
 
     private Boolean forceDedicatedWorkers;
 
-    @OneToOne(mappedBy = "deployment", cascade = CascadeType.ALL)
-    private ClusterManager clusterManager;
 }

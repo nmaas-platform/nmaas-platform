@@ -1,8 +1,9 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.externalservices.kubernetes.api;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.externalservices.kubernetes.model.KClusterView;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

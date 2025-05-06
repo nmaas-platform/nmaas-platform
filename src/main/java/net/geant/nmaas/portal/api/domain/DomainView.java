@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.kubernetes.model.ClusterManagerView;
+import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
 
 import java.util.List;
 
@@ -19,6 +19,6 @@ public class DomainView extends DomainBase {
 
 	List<DomainGroupViewS> groups;
 
-	List<ClusterManagerView> clusters;
+	List<RemoteClusterView> clusters;
 
 }
