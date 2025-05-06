@@ -47,7 +47,7 @@ public class ClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping
-    public ClusterManagerView createKKubernetesCluster(@RequestPart("file") MultipartFile file, @RequestPart("data") String viewString) {
+    public ClusterManagerView createKubernetesCluster(@RequestPart("file") MultipartFile file, @RequestPart("data") String viewString) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         ClusterManagerView cluster = null;

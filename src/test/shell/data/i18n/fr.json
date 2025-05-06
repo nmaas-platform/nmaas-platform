@@ -187,7 +187,8 @@
     "PATH_TO_CONFIG" : "Path to config file",
     "CONFIGURATION" : "Cluster configuration",
     "CONNECT_CLUSTER" : "Connect new cluster",
-    "SAVE" : "Save cluster"
+    "SAVE" : "Save cluster",
+    "DOMAIN": "Domain"
   },
   "GITLAB": {
     "TITLE": "Configuration de GitLab",

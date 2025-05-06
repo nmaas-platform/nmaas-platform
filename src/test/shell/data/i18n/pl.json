@@ -186,7 +186,8 @@
     "PATH_TO_CONFIG" : "Ścieżka do pliku konfiguracyjnego",
     "CONFIGURATION" : "Ustawienia klastrów",
     "CONNECT_CLUSTER" : "Dodaj nowy klaster",
-    "SAVE" : "Zapisz klaster"
+    "SAVE" : "Zapisz klaster",
+    "DOMAIN": "Domena"
   },
   "GITLAB": {
     "TITLE": "Konfiguracja GitLab",
