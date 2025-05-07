@@ -66,4 +66,4 @@ alter table if exists k_clusters_domains
 alter table if exists k_clusters_domains
        add constraint FKch3yhxvbwsutlu14hcw2vah3k
        foreign key (k_cluster_id)
-       references cluster_manager;
+       references k_cluster;
