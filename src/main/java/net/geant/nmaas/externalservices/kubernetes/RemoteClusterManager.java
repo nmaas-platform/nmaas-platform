@@ -2,6 +2,10 @@ package net.geant.nmaas.externalservices.kubernetes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
@@ -232,7 +236,21 @@ public class RemoteClusterManager {
     public void updateAllClusterState() {
         List<KCluster> kClusters = KClusterRepository.findAll();
         kClusters.forEach(cluster -> {
-            cluster.setState(KClusterState.UP);
+            Config config = Config.fromKubeconfig(null, null, cluster.getClusterConfigFile());
+            try (KubernetesClient client = new DefaultKubernetesClient(config)) {
+                client.namespaces().list();
+                //try to download namespace list to make sure connection to cluster is working
+                cluster.setState(KClusterState.UP);
+
+            } catch (KubernetesClientException e) {
+               log.error("Can not connect to cluster {}", cluster.getCodename());
+               log.error(e.getMessage());
+                cluster.setState(KClusterState.UP);
+            } catch (RuntimeException ex ) {
+                log.error("Runtime error while checking health of cluster {}", ex.getMessage());
+                cluster.setState(KClusterState.UNKNOWN);
+            }
+
         });
         KClusterRepository.saveAll(kClusters);
     }
