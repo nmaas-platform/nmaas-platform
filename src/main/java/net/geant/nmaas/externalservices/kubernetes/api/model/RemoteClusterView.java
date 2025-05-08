@@ -41,4 +41,6 @@ public class RemoteClusterView {
 
     private KClusterState state;
 
+    private OffsetDateTime  currentStateSince;
+
 }

@@ -126,6 +126,7 @@ public class RemoteClusterManager {
                                 .deployment(deployment)
                                 .ingress(ingress)
                                 .state(KClusterState.UNKNOWN)
+                                .currentStateSince(OffsetDateTime.now())
                                 .domains(view.getDomainNames().stream().map(d -> {
                                             Optional<Domain> dom = domainService.findDomain(d);
                                             return dom.orElse(null);
@@ -241,14 +242,16 @@ public class RemoteClusterManager {
                 client.namespaces().list();
                 //try to download namespace list to make sure connection to cluster is working
                 cluster.setState(KClusterState.UP);
-
+                cluster.setCurrentStateSince(OffsetDateTime.now());
             } catch (KubernetesClientException e) {
                log.error("Can not connect to cluster {}", cluster.getCodename());
                log.error(e.getMessage());
                 cluster.setState(KClusterState.UP);
+                cluster.setCurrentStateSince(OffsetDateTime.now());
             } catch (RuntimeException ex ) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
                 cluster.setState(KClusterState.UNKNOWN);
+                cluster.setCurrentStateSince(OffsetDateTime.now());
             }
 
         });

@@ -77,6 +77,9 @@ public class KCluster {
     @Enumerated(EnumType.STRING)
     private KClusterState state;
 
+    @Column(nullable = false)
+    private OffsetDateTime currentStateSince;
+
     public List<Domain> getDomains() {
         return domains != null ? domains : new ArrayList<>();
     }

@@ -34,15 +34,24 @@ public class ClusterHealthCheckConfig {
             @Autowired
             private ConfigurationManager configurationManager;
 
-            @Value("${nmaas.service.bulk-deployment.cron}")
-            String bulkDeploymentCron;
+            @Value("${nmaas.service.health-check.cron}")
+            String healthCheckJobCron;
 
             @Override
             @Transactional
             public void afterPropertiesSet() {
-                String bulkDeploymentCronFromDb = configurationManager.getConfiguration().getBulkDeploymentJobCron();
-                log.error("Adding new job for health check cluster ...");
-                this.scheduleManager.createJob(clusterMonitoringJob, CLUSTER_HEALTH_CHECK, bulkDeploymentCronFromDb);
+                String healthCheckJobCronDb = configurationManager.getConfiguration().getHealthCheckJobCron();
+                if (!Strings.isNullOrEmpty(healthCheckJobCronDb)) {
+                    log.debug("Scheduling cluster health check job based on cron loaded from the database");
+                    this.scheduleManager.createJob(clusterMonitoringJob, CLUSTER_HEALTH_CHECK, healthCheckJobCron);
+                    log.error("Adding new job for health check cluster ...");
+                } else if (Strings.isNullOrEmpty(healthCheckJobCron)) {
+                    log.warn("Bulk deployment cron expression not provided");
+                } else {
+                    this.scheduleManager.createJob(clusterMonitoringJob, CLUSTER_HEALTH_CHECK, healthCheckJobCron);
+                    log.error("Adding new job for health check cluster ...");
+                }
+
             }
         };
     }
