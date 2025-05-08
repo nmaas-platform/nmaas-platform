@@ -241,17 +241,23 @@ public class RemoteClusterManager {
             try (KubernetesClient client = new DefaultKubernetesClient(config)) {
                 client.namespaces().list();
                 //try to download namespace list to make sure connection to cluster is working
-                cluster.setState(KClusterState.UP);
-                cluster.setCurrentStateSince(OffsetDateTime.now());
+                if(!cluster.getState().equals(KClusterState.UP)) {
+                    cluster.setState(KClusterState.UP);
+                    cluster.setCurrentStateSince(OffsetDateTime.now());
+                }
             } catch (KubernetesClientException e) {
                log.error("Can not connect to cluster {}", cluster.getCodename());
                log.error(e.getMessage());
-                cluster.setState(KClusterState.UP);
-                cluster.setCurrentStateSince(OffsetDateTime.now());
+                if(!cluster.getState().equals(KClusterState.DOWN)) {
+                    cluster.setState(KClusterState.DOWN);
+                    cluster.setCurrentStateSince(OffsetDateTime.now());
+                }
             } catch (RuntimeException ex ) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
-                cluster.setState(KClusterState.UNKNOWN);
-                cluster.setCurrentStateSince(OffsetDateTime.now());
+                if(!cluster.getState().equals(KClusterState.UNKNOWN)) {
+                    cluster.setState(KClusterState.UNKNOWN);
+                    cluster.setCurrentStateSince(OffsetDateTime.now());
+                }
             }
 
         });
