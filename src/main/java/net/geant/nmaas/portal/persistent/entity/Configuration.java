@@ -79,6 +79,9 @@ public class Configuration {
     @Column(nullable = true, length = 5)
     private String deploymentPrefix;
 
+    @Column(name = "health_check_job_cron", nullable = false)
+    private String healthCheckJobCron;
+
     public Configuration(
             boolean maintenance,
             boolean ssoLoginAllowed,

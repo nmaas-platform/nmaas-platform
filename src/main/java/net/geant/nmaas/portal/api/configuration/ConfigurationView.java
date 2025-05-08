@@ -55,4 +55,7 @@ public class ConfigurationView {
 
     private String deploymentPrefix;
 
+    private String healthCheckJobCron;
+
+
 }
