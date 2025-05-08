@@ -8,6 +8,7 @@ import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
+import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
 import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
@@ -120,6 +121,7 @@ public class RemoteClusterManager {
                                 .clusterConfigFile(file.toString())
                                 .deployment(deployment)
                                 .ingress(ingress)
+                                .state(KClusterState.UNKNOWN)
                                 .domains(view.getDomainNames().stream().map(d -> {
                                             Optional<Domain> dom = domainService.findDomain(d);
                                             return dom.orElse(null);
@@ -225,6 +227,14 @@ public class RemoteClusterManager {
         RemoteClusterView view = modelMapper.map(KCluster, RemoteClusterView.class);
         view.setDomainNames(KCluster.getDomains().stream().map(Domain::getName).toList());
         return view;
+    }
+
+    public void updateAllClusterState() {
+        List<KCluster> kClusters = KClusterRepository.findAll();
+        kClusters.forEach(cluster -> {
+            cluster.setState(KClusterState.UP);
+        });
+        KClusterRepository.saveAll(kClusters);
     }
 
 }
