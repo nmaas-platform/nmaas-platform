@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.security.EncryptionService;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
@@ -24,6 +25,8 @@ import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
+import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
@@ -33,11 +36,17 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.portal.service.WebhookEventService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.quartz.JobListener;
+import org.quartz.ListenerManager;
+import org.quartz.Matcher;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
@@ -45,6 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,11 +64,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.mockito.Mockito.doNothing;
 
 class DomainServiceTest {
 
@@ -79,7 +91,11 @@ class DomainServiceTest {
     DomainGroupService domainGroupService;
     DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
     WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
-    ScheduleManager scheduleManager = mock(ScheduleManager.class);
+    Scheduler scheduler = mock(Scheduler.class);
+    ListenerManager listenerManager = mock(ListenerManager.class);
+    ScheduleManager scheduleManager;
+    EncryptionService encryptionService = mock(EncryptionService.class);
+    WebhookEventService webhookEventService;
 
     DomainService domainService;
 
@@ -88,12 +104,14 @@ class DomainServiceTest {
         validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
         domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
+        scheduleManager = new ScheduleManager( scheduler);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
                 domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
                 modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository, webhookEventRepository, scheduleManager);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
+        webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper);
     }
 
     @Test
@@ -117,18 +135,45 @@ class DomainServiceTest {
     }
 
     @Test
-    void shouldCreateDomain() {
+    void shouldCreateDomain() throws SchedulerException {
+        // Setup webhook event
+        WebhookEvent webhookEvent = new WebhookEvent(1L, "webhook", "https://example.com/webhook", WebhookEventType.DOMAIN_CREATION, null, null);
+        when(webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION))
+                .thenReturn(Stream.of(1L));
+        when(webhookEventRepository.findById(1L))
+                .thenReturn(Optional.of(webhookEvent));
+
+        // Setup domain
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(name, codename);
-        when(domainRepository.save(domain)).thenReturn(domain);
+        domain.setId(10L);
+        when(domainRepository.save(any(Domain.class))).thenReturn(domain);
+        when(scheduler.getListenerManager()).thenReturn(listenerManager);
+        doNothing().when(listenerManager).addJobListener(any(JobListener.class), any(Matcher.class));
 
+        // Create domain
         Domain result = this.domainService.createDomain(new DomainRequest(name, codename, true));
 
+        // Verify event was published
         verify(eventPublisher).publishEvent(any(DomainCreatedEvent.class));
-        assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
+
+        // Verify webhook job was scheduled with correct parameters
+        verify(scheduler, times(1)).scheduleJob(
+            argThat(jobDetail -> 
+                jobDetail.getKey().getName().equals("DomainCreation_1_10") &&
+                jobDetail.getJobClass().equals(DomainCreationJob.class)
+            ),
+            argThat(trigger -> 
+                trigger.getKey().getName().equals("DomainCreation_1_10")
+            )
+        );
+
+        // Verify domain was created correctly
+        assertThat("Codenames are not the same", result.getCodename().equals(codename));
         assertThat("Active is false", result.isActive());
     }
+
 
     @Test
     void shouldNotCreateDomainWithInvalidCodename() {
