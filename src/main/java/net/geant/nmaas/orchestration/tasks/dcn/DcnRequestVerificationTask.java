@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
@@ -13,14 +14,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Component
 @Slf4j
 public class DcnRequestVerificationTask extends BaseDcnTask {
 
-    private DomainDcnDetailsRepository repository;
+    private final DomainDcnDetailsRepository repository;
 
     @Autowired
-    public DcnRequestVerificationTask(DomainDcnDetailsRepository repository) {
+    public DcnRequestVerificationTask(DcnDeploymentProvidersManager providersManager, DomainDcnDetailsRepository repository) {
+        super(providersManager);
         this.repository = repository;
     }
 
@@ -32,8 +36,7 @@ public class DcnRequestVerificationTask extends BaseDcnTask {
             final String domain = event.getRelatedTo();
             providersManager.getDcnDeploymentProvider(domain).verifyRequest(domain, constructDcnSpec(domain));
         } catch (Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
+            log.error("Error reported at {}", LocalDateTime.now(), ex);
         }
     }
 

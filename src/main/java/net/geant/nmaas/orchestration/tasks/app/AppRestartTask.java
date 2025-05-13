@@ -9,6 +9,8 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -22,8 +24,7 @@ public class AppRestartTask {
         try {
             serviceDeployment.restartService(event.getRelatedTo());
         } catch (Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at {}", timestamp, ex);
+            log.error("Error reported at {}", LocalDateTime.now(), ex);
         }
     }
 

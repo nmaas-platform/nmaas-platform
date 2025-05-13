@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -34,8 +36,7 @@ public class AppConfigurationUpdateTask {
             final AppDeploymentOwner appDeploymentOwner = repositoryManager.loadOwner(deploymentId);
             configurationProvider.updateNmService(NmServiceDeployment.fromAppDeployment(appDeployment, appDeploymentOwner));
         } catch (Exception e) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, e);
+            log.error("Error reported at {}", LocalDateTime.now(), e);
         }
     }
 }

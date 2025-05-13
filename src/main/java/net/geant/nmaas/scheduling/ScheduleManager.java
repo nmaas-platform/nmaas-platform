@@ -46,12 +46,12 @@ public class ScheduleManager {
         validateJobDescriptor(jobDescriptor);
         try {
             if (scheduler.checkExists(jobKey(jobDescriptor.getServiceName().getName()))) {
-                log.error(String.format("Job with name %s already exists", jobDescriptor.getServiceName()));
+                log.error("Job with name {} already exists", jobDescriptor.getServiceName());
                 throw new IllegalStateException(String.format("Job with name %s already exists", jobDescriptor.getServiceName()));
             } else {
                 JobDetail jobDetail = newJob(service.getClass()).withIdentity(jobDescriptor.getServiceName().getName()).build();
                 Trigger trigger = jobDescriptor.buildTrigger();
-                log.info("Scheduling job: " + jobDescriptor.getServiceName().toString());
+                log.info("Scheduling job: {}", jobDescriptor.getServiceName().toString());
                 scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), false);
             }
         } catch (SchedulerException e) {

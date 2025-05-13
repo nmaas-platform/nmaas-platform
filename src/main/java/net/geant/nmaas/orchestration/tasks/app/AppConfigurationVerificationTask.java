@@ -13,6 +13,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @Slf4j
 @AllArgsConstructor
@@ -32,8 +34,7 @@ public class AppConfigurationVerificationTask {
                 eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
             }
         } catch (Exception e) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, e);
+            log.error("Error reported at {}", LocalDateTime.now(), e);
         }
     }
 
