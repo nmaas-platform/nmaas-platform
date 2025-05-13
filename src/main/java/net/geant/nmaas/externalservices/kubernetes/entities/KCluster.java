@@ -52,7 +52,7 @@ public class KCluster {
     @Column(nullable = false)
     private OffsetDateTime modificationDate;
 
-    @Column(nullable = false, length = 6000)
+    @Column(nullable = false, length = 8000)
     private String clusterConfigFile;
 
     @Column(nullable = false)
