@@ -187,7 +187,11 @@
     "CONFIGURATION" : "Ustawienia klastrów",
     "CONNECT_CLUSTER" : "Dodaj nowy klaster",
     "SAVE" : "Zapisz klaster",
-    "DOMAIN": "Domena"
+    "DOMAIN": "Domena",
+    "STATE" : "Stan",
+    "UP" : "Aktywny",
+    "DOWN" : "Nieaktywny",
+    "UNKOWN" : "Nieznany"
   },
   "GITLAB": {
     "TITLE": "Konfiguracja GitLab",
@@ -352,7 +356,8 @@
     "BULK_DEPLOYMENT_LIMIT" : "Limit jednoczesnego uruchamiania aplikacji ",
     "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Odświeżanie statystyk kolejki (w sekundach)",
     "BULK_DEPLOYMENT_THRESHOLD" : "Limit czasu dla uruchamiania aplikacji ( w sekundach)",
-    "DEPLOYMENT_PREFIX" : "Prefix instancji"
+    "DEPLOYMENT_PREFIX" : "Prefix instancji",
+    "CLUSTER_HEALTH_CHECK" : "Cron sprawdzania połączenia klastrów"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",

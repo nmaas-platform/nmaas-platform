@@ -151,6 +151,9 @@ public class PortalConfig {
 			@Value("${nmaas.service.bulk-deployment.cron}")
 			String bulkDeploymentCron;
 
+			@Value("${nmaas.service.health-check.cron}")
+			String healthCheckJobCron;
+
 			@Autowired
 			private ConfigurationManager configurationManager;
 
@@ -169,6 +172,7 @@ public class PortalConfig {
 						.bulkDeploymentTimeThreshold(600)
 						.bulkDeploymentQueueRefresh(60)
 						.deploymentPrefix(UUID.randomUUID().toString().substring(0,3))
+						.healthCheckJobCron(healthCheckJobCron)
 						.build();
 				try {
 					this.configurationManager.setConfiguration(configurationView);

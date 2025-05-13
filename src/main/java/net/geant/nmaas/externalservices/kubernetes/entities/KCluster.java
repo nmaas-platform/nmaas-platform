@@ -3,6 +3,8 @@ package net.geant.nmaas.externalservices.kubernetes.entities;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -72,6 +74,12 @@ public class KCluster {
     )
     private List<Domain> domains = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private KClusterState state;
+
+    @Column(nullable = false)
+    private OffsetDateTime currentStateSince;
+
     public List<Domain> getDomains() {
         return domains != null ? domains : new ArrayList<>();
     }
@@ -88,6 +96,7 @@ public class KCluster {
                 ", domain= " + domains +
                 ", clusterConfigFile='" + clusterConfigFile + '\'' +
                 ", pathConfigFile='" + pathConfigFile + '\'' +
+                ", state='" + state + '\'' +
                 ", ingress=" + (ingress != null ? ingress.getId() : "null") +
                 ", deployment=" + (deployment != null ? deployment.getId() : "null") +
                 '}';
