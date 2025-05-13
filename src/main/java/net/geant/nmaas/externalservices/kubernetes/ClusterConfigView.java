@@ -125,10 +125,14 @@ public class ClusterConfigView {
     @NoArgsConstructor
     public static class UserToken {
         private String token;
+        @JsonProperty("client-certificate-data")
+        private String client_certificate_data;
+        @JsonProperty("client-key-data")
+        private String client_key_data;
 
         @Override
         public String toString() {
-            return "{ token: " + token + " }";
+            return "{ token: " + token + ", client certificate data: " + client_certificate_data + ", client key data: " +client_key_data + " }";
         }
     }
 }

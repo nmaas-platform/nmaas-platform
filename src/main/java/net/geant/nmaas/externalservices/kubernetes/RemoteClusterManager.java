@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -122,7 +126,7 @@ public class RemoteClusterManager {
                                 .creationDate(OffsetDateTime.now())
                                 .modificationDate(OffsetDateTime.now())
                                 .codename(configView.getClusters().stream().findFirst().get().getName())
-                                .clusterConfigFile(file.toString())
+                                .clusterConfigFile( new String(file.getBytes()))
                                 .deployment(deployment)
                                 .ingress(ingress)
                                 .state(KClusterState.UNKNOWN)
@@ -237,31 +241,41 @@ public class RemoteClusterManager {
     public void updateAllClusterState() {
         List<KCluster> kClusters = KClusterRepository.findAll();
         kClusters.forEach(cluster -> {
-            Config config = Config.fromKubeconfig(null, null, cluster.getClusterConfigFile());
-            try (KubernetesClient client = new DefaultKubernetesClient(config)) {
-                client.namespaces().list();
-                //try to download namespace list to make sure connection to cluster is working
-                if(!cluster.getState().equals(KClusterState.UP)) {
-                    cluster.setState(KClusterState.UP);
-                    cluster.setCurrentStateSince(OffsetDateTime.now());
-                }
+            Config config = null;
+            try {
+                config = Config.fromKubeconfig(Files.readString(Path.of(cluster.getPathConfigFile())));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                KubernetesClient client = new KubernetesClientBuilder().withConfig(config).build();
+                log.debug("Get kubernetes version , something works {}",client.getKubernetesVersion().getPlatform());
+                //try to download kubernetes version to make sure connection to cluster is working
+                updateStateIfNeeded(cluster, KClusterState.UP);
+
             } catch (KubernetesClientException e) {
-               log.error("Can not connect to cluster {}", cluster.getCodename());
-               log.error(e.getMessage());
-                if(!cluster.getState().equals(KClusterState.DOWN)) {
-                    cluster.setState(KClusterState.DOWN);
-                    cluster.setCurrentStateSince(OffsetDateTime.now());
-                }
+                log.error("Can not connect to cluster {}", cluster.getCodename());
+                log.error(e.getMessage());
+                updateStateIfNeeded(cluster, KClusterState.DOWN);
+
             } catch (RuntimeException ex ) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
-                if(!cluster.getState().equals(KClusterState.UNKNOWN)) {
-                    cluster.setState(KClusterState.UNKNOWN);
-                    cluster.setCurrentStateSince(OffsetDateTime.now());
-                }
+                updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
+
+            } catch (Exception ex) {
+                log.error("Caught unexpected exception: {}", ex.getMessage(), ex);
             }
 
         });
         KClusterRepository.saveAll(kClusters);
+    }
+
+
+    private void updateStateIfNeeded(KCluster cluster, KClusterState newState) {
+        if (!cluster.getState().equals(newState)) {
+            cluster.setState(newState);
+            cluster.setCurrentStateSince(OffsetDateTime.now());
+        }
     }
 
 }
