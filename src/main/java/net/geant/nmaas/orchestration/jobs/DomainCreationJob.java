@@ -22,10 +22,11 @@ import java.security.GeneralSecurityException;
 @Slf4j
 @Component
 public class DomainCreationJob extends WebhookJob {
+
     private final DomainService domainService;
 
     @Autowired
-    public DomainCreationJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, DomainService domainService){
+    public DomainCreationJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, DomainService domainService) {
         super(restClient, webhookEventService, modelMapper);
         this.domainService = domainService;
     }
