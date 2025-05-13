@@ -1,1 +1,1 @@
-alter table k_cluster alter COLUMN cluster_config_file TYPE varchar(8000) not null;
+alter table k_cluster alter COLUMN cluster_config_file TYPE varchar(8000);
