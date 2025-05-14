@@ -192,7 +192,7 @@
     "STATE" : "State",
     "UP" : "Up",
     "DOWN" : "Down",
-    "UNKOWN" : "Unknown"
+    "UNKNOWN" : "Unknown"
   },
   "GITLAB": {
     "TITLE": "Configuration de GitLab",
