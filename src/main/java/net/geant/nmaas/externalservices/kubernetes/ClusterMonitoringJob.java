@@ -17,6 +17,8 @@ public class ClusterMonitoringJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.error("Triggering cluster health check...");
+        remoteClusterManager.restoreFileIfMissing();
+        log.warn("File checked, everything looks fine. Next time: Update clusters state.");
         remoteClusterManager.updateAllClusterState();
     }
 }

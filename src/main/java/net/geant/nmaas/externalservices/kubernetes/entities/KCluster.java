@@ -80,6 +80,9 @@ public class KCluster {
     @Column(nullable = false)
     private OffsetDateTime currentStateSince;
 
+    @Column(nullable = false)
+    private String contactEmail;
+
     public List<Domain> getDomains() {
         return domains != null ? domains : new ArrayList<>();
     }
@@ -97,6 +100,7 @@ public class KCluster {
                 ", clusterConfigFile='" + clusterConfigFile + '\'' +
                 ", pathConfigFile='" + pathConfigFile + '\'' +
                 ", state='" + state + '\'' +
+                ", email='" + contactEmail + '\'' +
                 ", ingress=" + (ingress != null ? ingress.getId() : "null") +
                 ", deployment=" + (deployment != null ? deployment.getId() : "null") +
                 '}';

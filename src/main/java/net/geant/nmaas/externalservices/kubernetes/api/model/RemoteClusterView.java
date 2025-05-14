@@ -43,4 +43,6 @@ public class RemoteClusterView {
 
     private OffsetDateTime  currentStateSince;
 
+    private String contactEmail;
+
 }

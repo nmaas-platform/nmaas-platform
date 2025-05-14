@@ -25,5 +25,6 @@ public enum MailType {
 
     NEW_BULK_SSO_LOGIN,
     NEW_BULK_LOGIN,
-    VLAB_REQUEST
+    VLAB_REQUEST,
+    CLUSTER_UNAVAILABLE
 }
