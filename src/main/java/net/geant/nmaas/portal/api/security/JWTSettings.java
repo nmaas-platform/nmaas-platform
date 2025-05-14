@@ -1,11 +1,13 @@
 package net.geant.nmaas.portal.api.security;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.impl.crypto.MacProvider;
+
+import javax.crypto.KeyGenerator;
 
 @Component
 @Getter
@@ -14,8 +16,18 @@ public class JWTSettings {
 	public enum Scopes {
 		REFRESH_TOKEN;
 	}
-	
-	@Value("${jwt.tokenValidFor}")
+	KeyGenerator keyGenerator;
+
+    {
+        try {
+            keyGenerator = KeyGenerator.getInstance("HmacSha256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Value("${jwt.tokenValidFor}")
 	private Long tokenValidFor;
 
 	@Value("${jwt.resetTokenValidFor}")
@@ -28,7 +40,7 @@ public class JWTSettings {
 	private String issuer;
 	
 	@Value("${jwt.signingKey}")
-	private String signingKey = MacProvider.generateKey().toString();
+	private String signingKey = String.valueOf(keyGenerator.generateKey());
 	
 	@Value("${jwt.refreshTokenValidFor}")
 	private Long refreshTokenExpTime;
