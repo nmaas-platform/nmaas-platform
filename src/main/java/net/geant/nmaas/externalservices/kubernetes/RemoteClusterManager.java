@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -251,8 +252,9 @@ public class RemoteClusterManager {
             Config config = null;
             try {
                 config = Config.fromKubeconfig(Files.readString(Path.of(cluster.getPathConfigFile())));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException  e) {
+                log.error("IO error with accesing the file {}", e.getMessage());
+                updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
             }
             try {
                 KubernetesClient client = new KubernetesClientBuilder().withConfig(config).build();
@@ -266,7 +268,7 @@ public class RemoteClusterManager {
                 updateStateIfNeeded(cluster, KClusterState.DOWN);
 //                sendMail(cluster);
 
-            } catch (RuntimeException ex) {
+            }  catch (RuntimeException  ex) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
 //                sendMail(cluster);
