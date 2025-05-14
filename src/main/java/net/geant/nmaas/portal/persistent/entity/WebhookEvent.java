@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "webhook")
+@Table(name = "webhooks")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -41,7 +41,7 @@ public class WebhookEvent {
     @Column
     private String authorizationHeader;
 
-    public WebhookEvent (Long id, String name, String targetUrl, WebhookEventType eventType){
+    public WebhookEvent(Long id, String name, String targetUrl, WebhookEventType eventType) {
         this.id = id;
         this.name = name;
         this.targetUrl = targetUrl;
