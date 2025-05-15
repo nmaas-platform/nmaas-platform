@@ -27,79 +27,80 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @RestControllerAdvice
 @Slf4j
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(value = { AuthenticationException.class,
-								BasicAuthenticationException.class,
-								AuthenticationMethodNotSupportedException.class,
-								MissingTokenException.class,
-								TokenAuthenticationException.class,
-			                    AccessDeniedException.class,
-								ExpiredJwtException.class})
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public ApiError handleAuthenticationException(WebRequest req, Exception ex) {
-		return createApiError(ex, HttpStatus.UNAUTHORIZED);
-	}
-	
-	@ExceptionHandler(value = { MissingElementException.class, InvalidWebhookException.class})
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ApiError handleMissingElementException(WebRequest req, Exception ex) {
-		return createApiError(ex, HttpStatus.NOT_FOUND);
-	}
-	
-	@ExceptionHandler(value = { SignupException.class })
-	@ResponseStatus(HttpStatus.CONFLICT)
-	public ApiError handleSignupException(WebRequest req, MarketException ex) {
-		return createApiError(ex, HttpStatus.CONFLICT);
-	}
-	
-	@ExceptionHandler(value = { ProcessingException.class, UndergoingMaintenanceException.class})
-	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-	public ApiError handleProcessingException(WebRequest req, MarketException ex) {
-		return createApiError(ex, HttpStatus.NOT_ACCEPTABLE);
-	}
+    @ExceptionHandler(value = {AuthenticationException.class,
+            BasicAuthenticationException.class,
+            AuthenticationMethodNotSupportedException.class,
+            MissingTokenException.class,
+            TokenAuthenticationException.class,
+            AccessDeniedException.class,
+            ExpiredJwtException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleAuthenticationException(WebRequest req, Exception ex) {
+        return createApiError(ex, HttpStatus.UNAUTHORIZED);
+    }
 
-	@ExceptionHandler(value = { StorageException.class })
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ApiError handleStorageException(WebRequest req, MarketException ex) {
-		return createApiError(ex, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+    @ExceptionHandler(value = {MissingElementException.class, InvalidWebhookException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleMissingElementException(WebRequest req, Exception ex) {
+        return createApiError(ex, HttpStatus.NOT_FOUND);
+    }
 
-	@ExceptionHandler(value = { MarketException.class })
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ApiError handleMarketException(WebRequest req, MarketException ex) {
-		return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+    @ExceptionHandler(value = {SignupException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleSignupException(WebRequest req, MarketException ex) {
+        return createApiError(ex, HttpStatus.CONFLICT);
+    }
 
-	@ExceptionHandler(value = { Exception.class })
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ApiError handleException(WebRequest req, Exception ex) {
-		return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+    @ExceptionHandler(value = {ProcessingException.class, UndergoingMaintenanceException.class})
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public ApiError handleProcessingException(WebRequest req, MarketException ex) {
+        return createApiError(ex, HttpStatus.NOT_ACCEPTABLE);
+    }
 
-	@ExceptionHandler(IOException.class)
-	@ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-	public ApiError exceptionHandler(IOException e, HttpServletRequest request) {
-		if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
-			log.debug("Detected `Broken pipe` IOException after executing: " + request.getRequestURL().toString());
-			return null;
-		} else {
-			return createApiError(e, HttpStatus.SERVICE_UNAVAILABLE);
-		}
-	}
+    @ExceptionHandler(value = {StorageException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleStorageException(WebRequest req, MarketException ex) {
+        return createApiError(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-	private ApiError createApiErrorAndLogStacktrace(Exception ex, HttpStatus status) {
-		long timestamp = System.currentTimeMillis();
-		log.error("Error reported at " + timestamp, ex);
-		return new ApiError(ex.getMessage(), timestamp, status);
-	}
+    @ExceptionHandler(value = {MarketException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleMarketException(WebRequest req, MarketException ex) {
+        return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-	private ApiError createApiError(Exception ex, HttpStatus status){
-		long timestamp = System.currentTimeMillis();
-		return new ApiError(ex.getMessage(), timestamp, status);
-	}
+    @ExceptionHandler(value = {Exception.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleException(WebRequest req, Exception ex) {
+        return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ApiError exceptionHandler(IOException e, HttpServletRequest request) {
+        if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
+            log.debug("Detected `Broken pipe` IOException after executing: {}", request.getRequestURL().toString());
+            return null;
+        } else {
+            return createApiError(e, HttpStatus.SERVICE_UNAVAILABLE);
+        }
+    }
+
+    private ApiError createApiErrorAndLogStacktrace(Exception ex, HttpStatus status) {
+        long timestamp = System.currentTimeMillis();
+        log.error("Error reported at {}", LocalDateTime.now(), ex);
+        return new ApiError(ex.getMessage(), timestamp, status);
+    }
+
+    private ApiError createApiError(Exception ex, HttpStatus status) {
+        long timestamp = System.currentTimeMillis();
+        return new ApiError(ex.getMessage(), timestamp, status);
+    }
 
 }

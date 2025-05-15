@@ -184,7 +184,7 @@
     "CREATION_DATE" : "Data utworzenia",
     "MODIFICATION_DATE" : "Data modyfikacji",
     "PATH_TO_CONFIG" : "Ścieżka do pliku konfiguracyjnego",
-    "CONFIGURATION" : "Ustawienia klastrów",
+    "CONFIGURATION" : "Zdalne klastry",
     "CONNECT_CLUSTER" : "Dodaj nowy klaster",
     "SAVE" : "Zapisz klaster",
     "DOMAIN": "Domena",
