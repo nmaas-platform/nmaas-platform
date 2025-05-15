@@ -1,5 +1,5 @@
 {
-  "mailType": "CLUSTER_UNAVAILABLE",
+  "mailType": "REMOTE_CLUSTER_UNAVAILABLE",
   "globalInformation": {
     "LOGO_ALT": "GÉANT logo",
     "PORTAL_LOGO_ALT": "nmaas logo",
