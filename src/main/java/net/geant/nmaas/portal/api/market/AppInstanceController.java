@@ -85,7 +85,6 @@ public class AppInstanceController extends AppBaseController {
 
     private final ConfigurationManager configurationManager;
 
-
     @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
 
@@ -101,7 +100,7 @@ public class AppInstanceController extends AppBaseController {
                                  AppDeploymentRepositoryManager appDeploymentRepositoryManager,
                                  ApplicationEventPublisher eventPublisher,
                                  ConfigurationManager configurationManager) {
-        super(modelMapper, applicationService, appBaseService, userService);
+        super(modelMapper, userService, applicationService, appBaseService);
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instanceService = instanceService;
@@ -306,9 +305,9 @@ public class AppInstanceController extends AppBaseController {
     }
 
     public Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
-        if(useDeploymentPrefix) {
+        if (useDeploymentPrefix) {
             return Identifier.newInstance(
-                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix() ,
+                    String.join("-", configurationManager.getConfiguration().getDeploymentPrefix(),
                             domain,
                             appName.replace(" ", ""),
                             String.valueOf(appInstanceNumber)).toLowerCase());

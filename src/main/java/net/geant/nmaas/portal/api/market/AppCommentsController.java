@@ -1,12 +1,15 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.api.domain.CommentRequest;
 import net.geant.nmaas.portal.api.domain.CommentView;
+import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Comment;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
@@ -16,40 +19,42 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.domain.CommentRequest;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/apps/{appId}/comments")
 public class AppCommentsController extends AppBaseController {
 
-    private final CommentRepository commentRepo;
-    private final UserRepository userRepo;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public AppCommentsController(ModelMapper modelMapper,
                                  ApplicationService applicationService,
                                  ApplicationBaseService appBaseService,
                                  UserService userService,
-                                 CommentRepository commentRepo,
-                                 UserRepository userRepo) {
-        super(modelMapper, applicationService, appBaseService, userService);
-        this.commentRepo = commentRepo;
-        this.userRepo = userRepo;
+                                 CommentRepository commentRepository,
+                                 UserRepository userRepository) {
+        super(modelMapper, userService, applicationService, appBaseService);
+        this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
     @PreAuthorize("hasPermission(null, 'comment', 'READ')")
     public List<CommentView> getComments(@PathVariable(value = "appId") Long appId, Pageable pageable) {
         ApplicationBase app = getBaseApp(appId);
-        Page<Comment> page = commentRepo.findByApplication(app, pageable);
+        Page<Comment> page = commentRepository.findByApplication(app, pageable);
         return page.getContent().stream().map(comment -> {
                     CommentView c = modelMapper.map(comment, CommentView.class);
                     if (comment.getParent() != null)
@@ -73,8 +78,9 @@ public class AppCommentsController extends AppBaseController {
     public Id addComment(@PathVariable(value = "appId") Long appId, @RequestBody CommentRequest comment, Principal principal) {
         ApplicationBase app = getBaseApp(appId);
 
-        if (comment.getComment() == null || comment.getComment().isEmpty())
+        if (comment.getComment() == null || comment.getComment().isEmpty()) {
             throw new IllegalArgumentException("Comment cannot be empty");
+        }
 
         Long parentId = comment.getParentId();
 
@@ -82,10 +88,11 @@ public class AppCommentsController extends AppBaseController {
         //This should be fixed in modelmapper configuration
         comment.setParentId(null);
         Comment persistentComment = modelMapper.map(comment, Comment.class);
-        if (persistentComment.getId() != null)
+        if (persistentComment.getId() != null) {
             throw new IllegalStateException("New comment cannot have id.");
+        }
 
-        User user = userRepo.findByUsername(principal.getName()).orElseThrow(() ->
+        User user = userRepository.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException("User not found."));
 
         persistentComment.setApplication(app);
@@ -104,8 +111,7 @@ public class AppCommentsController extends AppBaseController {
                 throw new ProcessingException("Unable to add comment to different application");
             persistentComment.setParent(persistentParentComment);
         }
-        commentRepo.save(persistentComment);
-
+        commentRepository.save(persistentComment);
 
         return new Id(persistentComment.getId());
     }
@@ -113,7 +119,7 @@ public class AppCommentsController extends AppBaseController {
     @PostMapping(value = "/{commentId}")
     @PreAuthorize("hasPermission(null, 'comment', 'WRITE')")
     @Transactional
-    public void editComment(@PathVariable(value = "appId", required = true) Long appId, @PathVariable(value = "commentId", required = true) Long commentId, @RequestBody(required = true) CommentRequest comment, Principal principal) {
+    public void editComment(@PathVariable(value = "appId") Long appId, @PathVariable(value = "commentId", required = true) Long commentId, @RequestBody(required = true) CommentRequest comment, Principal principal) {
         throw new ProcessingException("Comment editing not supported.");
     }
 
@@ -123,14 +129,14 @@ public class AppCommentsController extends AppBaseController {
     public void deleteComment(@PathVariable(value = "commentId") Long commentId) {
         Comment comment = getComment(commentId);
         comment.setDeleted(true);
-        commentRepo.save(comment);
+        commentRepository.save(comment);
     }
 
     private Comment getComment(Long commentId) {
-        if (commentId == null)
+        if (commentId == null) {
             throw new MissingElementException("Missing comment id.");
-        return commentRepo.findById(commentId).orElseThrow(() -> new MissingElementException("Comment id=" + commentId + " not found."));
+        }
+        return commentRepository.findById(commentId).orElseThrow(() -> new MissingElementException("Comment id=" + commentId + " not found."));
     }
-
 
 }
