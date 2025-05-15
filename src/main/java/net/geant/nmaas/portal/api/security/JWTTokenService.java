@@ -150,11 +150,21 @@ public class JWTTokenService {
     }
 
     public Claims getClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(jwtSettings.getSigningKey()).build().parseClaimsJws(token).getBody();
+//        return Jwts.parserBuilder().setSigningKey(jwtSettings.getSigningKey()).build().parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .setSigningKey(jwtSettings.getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public Claims getResetClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(jwtSettings.getResetSigningKey()).build().parseClaimsJws(token).getBody();
+//        return Jwts.parserBuilder().setSigningKey(jwtSettings.getResetSigningKey()).build().parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .setSigningKey(jwtSettings.getResetSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private Key getSignInKey(String secretKey) {
