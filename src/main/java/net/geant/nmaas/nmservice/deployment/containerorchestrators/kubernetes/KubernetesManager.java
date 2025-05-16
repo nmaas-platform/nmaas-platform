@@ -176,7 +176,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.TRACE)
     public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId) {
         try {
             clusterValidator.checkClusterStatusAndPrerequisites();
@@ -186,7 +186,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.TRACE)
     public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) {
         try {
             if (configFileRepositoryRequired) {
