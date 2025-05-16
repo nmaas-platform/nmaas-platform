@@ -45,7 +45,7 @@
       "subject": "nmaas: Cluster jest niedostępny",
       "template": {
         "HEADER": "Drogi ${username}",
-        "CONTENT": "<p> Cluster <b>${clusterCodename}</b> is unavailable.</p> <p><b> Cluster ID:<b> ${clusterId}</p> <p><b> Cluster CodeName:<b> ${clusterCodename}</p> <p>Please contact the administration for further information.</p>",
+        "CONTENT": "<p> Cluster <b>${clusterCodename}</b> is unavailable.</p> <p><b> Cluster ID:</b> ${clusterId}</p> <p><b> Cluster CodeName:</b> ${clusterCodename}</p> <p> <i>Please contact the administration for further information. </i></p>",
         "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
