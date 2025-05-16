@@ -107,6 +107,7 @@ public class RemoteClusterManager {
 
         KCluster cluster = this.clusterRepository.save(entity);
         log.debug("Cluster saved: {}", cluster.toString());
+        sendMail(cluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
         return toView(cluster);
     }
 
@@ -265,12 +266,11 @@ public class RemoteClusterManager {
                 log.error("Can not connect to cluster {}", cluster.getCodename());
                 log.error(e.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.DOWN);
-//                sendMail(cluster);
+
 
             }  catch (RuntimeException  ex) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
-//                sendMail(cluster);
 
             } catch (Exception ex) {
                 log.error("Caught unexpected exception: {}", ex.getMessage(), ex);
@@ -285,17 +285,20 @@ public class RemoteClusterManager {
         if (!cluster.getState().equals(newState)) {
             cluster.setState(newState);
             cluster.setCurrentStateSince(OffsetDateTime.now());
+            if(cluster.getState().equals(KClusterState.DOWN) || cluster.getState().equals(KClusterState.UNKNOWN)) {
+                sendMail(cluster, MailType.REMOTE_CLUSTER_UNAVAILABLE);
+            };
         }
     }
 
-    private void sendMail(KCluster kCluster) {
+    private void sendMail(KCluster kCluster, MailType mailType) {
         UserView recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
         Map<String, Object> attr = new HashMap<>();
         attr.put("clusterId", kCluster.getId());
         attr.put("clusterCodename", kCluster.getCodename());
         attr.put("clusterName", kCluster.getName());
         MailAttributes mailAttributes = MailAttributes.builder()
-                .mailType(MailType.REMOTE_CLUSTER_UNAVAILABLE)
+                .mailType(mailType)
                 .otherAttributes(attr)
                 .addressees(Collections.singletonList(recipient))
                 .build();
