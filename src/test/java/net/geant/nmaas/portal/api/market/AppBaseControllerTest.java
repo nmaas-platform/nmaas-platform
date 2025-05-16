@@ -33,7 +33,7 @@ class AppBaseControllerTest {
 
     @BeforeEach
     void setup() {
-        this.appBaseController = new AppBaseController(modelMapper, appService, appBaseService, userService);
+        this.appBaseController = new AppBaseController(modelMapper, userService, appService, appBaseService);
     }
 
     @Test

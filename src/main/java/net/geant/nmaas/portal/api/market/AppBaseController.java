@@ -1,27 +1,30 @@
 package net.geant.nmaas.portal.api.market;
 
-import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
-import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 
-@RequiredArgsConstructor
-public class AppBaseController {
+public class AppBaseController extends BaseController {
 
-	protected final ModelMapper modelMapper;
 	protected final ApplicationService applicationService;
 	protected final ApplicationBaseService appBaseService;
-	protected final UserService userService;
 
-    protected Application getApp(Long appId) {
+	@Autowired
+	public AppBaseController(ModelMapper modelMapper, UserService userService, ApplicationService applicationService, ApplicationBaseService appBaseService) {
+		super(modelMapper, userService);
+		this.applicationService = applicationService;
+		this.appBaseService = appBaseService;
+	}
+
+	protected Application getApp(Long appId) {
 		if (appId == null) {
 			throw new MissingElementException("Missing application id.");
 		}
@@ -40,20 +43,6 @@ public class AppBaseController {
 			throw new MissingElementException("Missing application id.");
 		}
     	return appBaseService.getBaseApp(appBaseId);
-	}
-
-	protected User getUser(String username) {
-		if (username == null) {
-			throw new MissingElementException("Missing username.");
-		}
-		return userService.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
-	}
-
-	protected User getUser(Long userId) {
-		if (userId == null) {
-			throw new MissingElementException("Missing username.");
-		}
-		return userService.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
 	}
 
 	protected Set<ApplicationVersion> getVersions(Long appBaseId) {

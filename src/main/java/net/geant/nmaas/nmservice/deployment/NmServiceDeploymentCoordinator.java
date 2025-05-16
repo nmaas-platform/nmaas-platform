@@ -71,7 +71,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     int serviceDeploymentCheckMaxWaitTime;
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.TRACE)
     public void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec deploymentSpec) {
         try {
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
@@ -84,14 +84,14 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.TRACE)
     public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) {
         try {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
             orchestrator.prepareDeploymentEnvironment(deploymentId, configFileRepositoryRequired);
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
-                | ContainerOrchestratorInternalErrorException e) {
+                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED, e.getMessage());
             throw new CouldNotPrepareEnvironmentException("NM Service deployment environment preparation failed -> " + e.getMessage());
         }
@@ -105,7 +105,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.deployNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, DEPLOYED);
         } catch (CouldNotDeployNmServiceException
-                | ContainerOrchestratorInternalErrorException e) {
+                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED, e.getMessage());
             throw new CouldNotDeployNmServiceException("NM Service deployment failed -> " + e.getMessage());
         }
@@ -128,10 +128,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             }
             throw new ContainerCheckFailedException("Maximum wait time for container deployment exceeded");
         } catch (ContainerCheckFailedException
-                | ContainerOrchestratorInternalErrorException e) {
+                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED, e.getMessage());
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
-        } catch(InterruptedException e){
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
@@ -178,7 +178,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.removeNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (CouldNotRemoveNmServiceException
-                | ContainerOrchestratorInternalErrorException e) {
+                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, REMOVAL_FAILED, e.getMessage());
             throw new CouldNotRemoveNmServiceException("NM Service removal failed -> " + e.getMessage());
         }
@@ -192,7 +192,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.restartNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, RESTARTED);
         } catch (CouldNotRestartNmServiceException
-                | ContainerOrchestratorInternalErrorException e) {
+                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
             throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
         }
@@ -208,7 +208,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             event.addDetail(NmServiceDeploymentStateChangeEvent.EventDetailType.NEW_APPLICATION_ID, targetApplicationId.value());
             applicationEventPublisher.publishEvent(event);
         } catch (CouldNotUpgradeKubernetesServiceException
-                | ContainerOrchestratorInternalErrorException e) {
+                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, UPGRADE_FAILED, e.getMessage());
             throw new CouldNotUpgradeKubernetesServiceException("NM Service upgrade failed -> " + e.getMessage());
         }
