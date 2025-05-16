@@ -8,10 +8,10 @@
   "templates": [
     {
       "language": "en",
-      "subject": "nmaas: Cluster support",
+      "subject": "nmaas: Remote cluster support",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
+        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterCodename}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -19,11 +19,10 @@
     },
     {
       "language": "fr",
-      "subject": "nmaas: Cluster is unavailable",
+      "subject": "nmaas: Remote cluster support",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
-
+        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterCodename}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -31,10 +30,10 @@
     },
     {
       "language": "de",
-      "subject": "nmaas: Cluster is unavailable",
+      "subject": "nmaas: Remote cluster support",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
+        "CONTENT": "<p>Your email address was set as a support contact for remote cluster <b>${clusterCodename}</b> added to nmaas.</p>  <p>If you do not agree or consider this as a mistake please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -42,10 +41,10 @@
     },
     {
       "language": "pl",
-      "subject": "nmaas: Cluster jest niedostępny",
+      "subject": "nmaas: Wsparcie zdalnego klastra",
       "template": {
         "HEADER": "Drogi ${username}",
-        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
+        "CONTENT": "<p>Twój adres e-mail został ustawiony jako kontakt pomocy technicznej dla zdalnego klastra <b>${clusterCodename}</b> dodanego do nmaas.</p> <p>Jeśli się z tym nie zgadzasz lub uważasz to za pomyłkę, skontaktuj się z administratorem nmaas, aby uzyskać dalsze informacje.</p>",
         "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
