@@ -183,9 +183,14 @@
     "CREATION_DATE" : "Creation date",
     "MODIFICATION_DATE" : "Modification date",
     "PATH_TO_CONFIG" : "Path to config file",
-    "CONFIGURATION" : "Cluster configuration",
+    "CONFIGURATION" : "Remote clusters",
     "CONNECT_CLUSTER" : "Connect new cluster",
-    "SAVE" : "Save cluster"
+    "SAVE" : "Save cluster",
+    "DOMAIN": "Domain",
+    "STATE" : "State",
+    "UP" : "Up",
+    "DOWN" : "Down",
+    "UNKNOWN" : "Unknown"
   },
   "GITLAB": {
     "TITLE": "GitLab Konfiguration",
@@ -350,7 +355,8 @@
     "BULK_DEPLOYMENT_LIMIT" : "Bulk deployment parallel limit",
     "BULK_DEPLOYMENT_QUEUE_REFRESH" : "Bulk deployment queue refresh (seconds)",
     "BULK_DEPLOYMENT_THRESHOLD" : "Bulk deployment time threshold (seconds)",
-    "DEPLOYMENT_PREFIX" : "Deployment prefix"
+    "DEPLOYMENT_PREFIX" : "Deployment prefix",
+    "CLUSTER_HEALTH_CHECK" : "Cluster health check job cron"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain Details",

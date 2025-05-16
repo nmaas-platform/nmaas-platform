@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.kubernetes;
 
-import net.geant.nmaas.externalservices.kubernetes.model.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.model.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;

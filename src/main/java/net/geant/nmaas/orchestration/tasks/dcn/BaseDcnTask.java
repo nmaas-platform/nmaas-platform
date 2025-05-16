@@ -1,11 +1,11 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
-import org.springframework.beans.factory.annotation.Autowired;
 
+@RequiredArgsConstructor
 abstract class BaseDcnTask {
 
-    @Autowired
-    DcnDeploymentProvidersManager providersManager;
+    protected final DcnDeploymentProvidersManager providersManager;
 
 }

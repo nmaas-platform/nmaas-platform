@@ -29,14 +29,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebhookEventController {
 
-    private final WebhookEventService webhookEventService;
-
     private static final String UNABLE_TO_CHANGE_WEBHOOK_EVENT = "Unable to change WebhookEvent";
+
+    private final WebhookEventService webhookEventService;
 
     @PostMapping
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public ResponseEntity<Id> createWebhook(@RequestBody @Valid WebhookEventDto webhook)  {
+    public ResponseEntity<Id> createWebhook(@RequestBody @Valid WebhookEventDto webhook) {
         WebhookEvent webhookEvent = null;
         try {
             webhookEvent = webhookEventService.create(webhook);
@@ -49,7 +49,7 @@ public class WebhookEventController {
     @PutMapping("/{id}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public void updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook){
+    public void updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook) {
         if (!id.equals(webhook.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_WEBHOOK_EVENT);
         }
@@ -75,6 +75,7 @@ public class WebhookEventController {
         return ResponseEntity.ok(webhookEventService.getById(id));
 
     }
+
     @GetMapping
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")

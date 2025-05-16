@@ -4,8 +4,8 @@ plugins {
     id 'jacoco'
     id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.gorylenko.gradle-git-properties' version '2.4.2'
-    id 'org.sonarqube' version '6.1.0.5360'
+    id 'com.gorylenko.gradle-git-properties' version '2.5.0'
+    id 'org.sonarqube' version '6.2.0.5505'
     id 'com.google.protobuf' version '0.9.5'
 }
 
@@ -30,7 +30,7 @@ gitProperties {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:4.30.2'
+        artifact = 'com.google.protobuf:protoc:4.31.0'
     }
     plugins {
         grpc {
@@ -97,9 +97,9 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.security:spring-security-oauth2-client'
 
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     implementation('org.springdoc:springdoc-openapi-ui:1.8.0')
 
@@ -112,27 +112,27 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:6.6.13.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:6.6.15.Final'
 
     // Database migrations
-    implementation('org.flywaydb:flyway-core:11.2.0')
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.2.0'
+    implementation('org.flywaydb:flyway-core:11.8.2')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
 
     implementation('org.freemarker:freemarker:2.3.34')
 
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.14.6')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.15.0')
 
     // Kubernetes API client
-    implementation('io.fabric8:kubernetes-client:6.13.5')
+    implementation('io.fabric8:kubernetes-client:7.2.0')
 
     // GitLab API client
     implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.10' // version 6 for jakarta
 
     // GRPC communication with Janitor
-    implementation('com.google.protobuf:protobuf-java:4.30.2')
+    implementation('com.google.protobuf:protobuf-java:4.31.0')
     implementation('io.grpc:grpc-netty-shaded:1.72.0')
     implementation('io.grpc:grpc-protobuf:1.72.0')
     implementation('io.grpc:grpc-stub:1.72.0')

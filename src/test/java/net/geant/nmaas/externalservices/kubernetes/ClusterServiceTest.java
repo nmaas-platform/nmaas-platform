@@ -1,27 +1,28 @@
 package net.geant.nmaas.externalservices.kubernetes;
 
-import net.geant.nmaas.externalservices.kubernetes.model.ClusterManager;
-import net.geant.nmaas.externalservices.kubernetes.model.ClusterManagerView;
+import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ClusterServiceTest {
 
     @Mock
-    private ClusterManagerRepository clusterManagerRepository;
+    private KClusterRepository KClusterRepository;
 
     @Mock
     private KubernetesClusterIngressManager kClusterIngressManager;
@@ -30,9 +31,9 @@ class ClusterServiceTest {
     private KubernetesClusterDeploymentManager kClusterDeploymentManager;
 
     @InjectMocks
-    private ClusterService clusterService;
+    private RemoteClusterManager remoteClusterManager;
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @BeforeEach
     void setUp() {
@@ -40,39 +41,38 @@ class ClusterServiceTest {
     }
 
     @Test
-    void getClusterView_validId_returnsClusterManagerView() {
+    void getClusterView_validId_returnsRemoteClusterView() {
         Long id = 1L;
-        ClusterManager clusterManager = ClusterManager.builder().id(id).name("Cluster").description("Description").build();
-        ClusterManagerView clusterManagerView = modelMapper.map(clusterManager, ClusterManagerView.class);
+        KCluster remoteCluster = KCluster.builder().id(id).name("Cluster").description("Description").build();
+        RemoteClusterView remoteClusterView = modelMapper.map(remoteCluster, RemoteClusterView.class);
+        when(KClusterRepository.findById(id)).thenReturn(Optional.of(remoteCluster));
 
-        when(clusterManagerRepository.findById(id)).thenReturn(Optional.of(clusterManager));
+        RemoteClusterView result = remoteClusterManager.getClusterView(id);
 
-        ClusterManagerView result = clusterService.getClusterView(id);
-
-        assertEquals(clusterManagerView.getName(), result.getName());
-        verify(clusterManagerRepository, times(1)).findById(id);
+        assertEquals(remoteClusterView.getName(), result.getName());
+        verify(KClusterRepository, times(1)).findById(id);
     }
 
     @Test
     void getClusterView_invalidId_throwsException() {
         Long id = 100L;
-        when(clusterManagerRepository.findById(id)).thenReturn(Optional.empty());
+        when(KClusterRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> clusterService.getClusterView(id));
-        verify(clusterManagerRepository, times(1)).findById(id);
+        assertThrows(IllegalArgumentException.class, () -> remoteClusterManager.getClusterView(id));
+        verify(KClusterRepository, times(1)).findById(id);
     }
 
     @Test
     void getAllClusterView_returnsClusterManagerViews() {
-        ClusterManager cluster1 = ClusterManager.builder().id(1L).name("Cluster1").build();
-        ClusterManager cluster2 = ClusterManager.builder().id(2L).name("Cluster2").build();
+        KCluster cluster1 = KCluster.builder().id(1L).name("Cluster1").build();
+        KCluster cluster2 = KCluster.builder().id(2L).name("Cluster2").build();
 
-        when(clusterManagerRepository.findAll()).thenReturn(List.of(cluster1, cluster2));
+        when(KClusterRepository.findAll()).thenReturn(List.of(cluster1, cluster2));
 
-        List<ClusterManagerView> result = clusterService.getAllClusterView();
+        List<RemoteClusterView> result = remoteClusterManager.getAllClusterView();
 
         assertEquals(2, result.size());
-        verify(clusterManagerRepository, times(1)).findAll();
+        verify(KClusterRepository, times(1)).findAll();
     }
 
 //    @Test

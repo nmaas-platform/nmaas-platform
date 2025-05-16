@@ -3,8 +3,8 @@ package net.geant.nmaas.externalservices.kubernetes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.kubernetes.model.KClusterView;
-import net.geant.nmaas.externalservices.kubernetes.model.NamespaceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
+import net.geant.nmaas.externalservices.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
+
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -60,7 +61,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
     }
 
     public Optional<String> getStorageClass(String domain) {
-        Optional <DomainTechDetails> foundDomain = domainTechDetailsRepository.findByDomainCodename(domain);
+        Optional<DomainTechDetails> foundDomain = domainTechDetailsRepository.findByDomainCodename(domain);
         if (foundDomain.isPresent() && StringUtils.isNotEmpty(foundDomain.get().getKubernetesStorageClass())) {
             return Optional.of(foundDomain.get().getKubernetesStorageClass());
         }
@@ -104,9 +105,11 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
         return Optional.ofNullable(smtpServerPassword);
     }
 
-    public String getSMTPFromDefaultDomain() { return smtpFromDefaultDomain; }
+    public String getSMTPFromDefaultDomain() {
+        return smtpFromDefaultDomain;
+    }
 
-    KClusterView.KClusterDeploymentView getKClusterDeploymentView() {
+    public KClusterView.KClusterDeploymentView getKClusterDeploymentView() {
         KClusterView.KClusterDeploymentView kClusterDeploymentView = new KClusterView.KClusterDeploymentView();
         kClusterDeploymentView.setNamespaceConfigOption(this.namespaceConfigOption);
         kClusterDeploymentView.setDefaultNamespace(this.defaultNamespace);

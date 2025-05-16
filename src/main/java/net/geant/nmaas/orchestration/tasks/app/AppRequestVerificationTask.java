@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Component
 @AllArgsConstructor
 @Slf4j
@@ -42,8 +44,7 @@ public class AppRequestVerificationTask {
                     appDeployment,
                     application.getAppDeploymentSpec());
         } catch (Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at {}", timestamp, ex);
+            log.error("Error reported at {}", LocalDateTime.now(), ex);
         }
     }
 

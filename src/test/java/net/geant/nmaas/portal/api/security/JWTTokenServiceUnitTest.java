@@ -74,7 +74,7 @@ class JWTTokenServiceUnitTest {
 
         assertNotNull(token);
         assertTrue(token.length() > 0);
-        assertDoesNotThrow(() -> Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token));
+        assertDoesNotThrow(() -> Jwts.parser().setSigningKey(signingKey).build().parseClaimsJws(token));
     }
 
     @Test

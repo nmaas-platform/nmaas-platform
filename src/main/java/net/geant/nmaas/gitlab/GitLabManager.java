@@ -1,0 +1,74 @@
+package net.geant.nmaas.gitlab;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.GroupApi;
+import org.gitlab4j.api.ProjectApi;
+import org.gitlab4j.api.RepositoryFileApi;
+import org.gitlab4j.api.UserApi;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import static com.google.common.base.Preconditions.checkArgument;
+
+@Component
+@NoArgsConstructor
+@Setter(AccessLevel.PACKAGE)
+@Slf4j
+public class GitLabManager {
+
+    private static final String GITLAB_API_NAMESPACE = "/api/v4";
+
+    @Value("${gitlab.apiUrl}")
+    private String gitLabApiUrl;
+
+    @Value("${gitlab.token}")
+    private String gitLabToken;
+
+    public String getGitLabApiUrl() {
+        return this.gitLabApiUrl;
+    }
+
+    public GroupApi groups() {
+        return api().getGroupApi();
+    }
+
+    public ProjectApi projects() {
+        return api().getProjectApi();
+    }
+
+    public UserApi users() {
+        return api().getUserApi();
+    }
+
+    public RepositoryFileApi repositoryFiles() {
+        return api().getRepositoryFileApi();
+    }
+
+    private GitLabApi api() {
+        return new GitLabApi(GitLabApi.ApiVersion.V4, getApiUrl(), this.gitLabToken);
+    }
+
+    String getApiUrl() {
+        return gitLabApiUrl.endsWith(GITLAB_API_NAMESPACE)
+                ? gitLabApiUrl.substring(0, gitLabApiUrl.length() - GITLAB_API_NAMESPACE.length())
+                : gitLabApiUrl;
+    }
+
+    public void validateGitLabInstance() {
+        checkArgument(this.gitLabApiUrl != null && !this.gitLabApiUrl.isEmpty(), "GitLab api URL is null or empty");
+        checkArgument(this.gitLabToken != null && !this.gitLabToken.isEmpty(), "GitLab token is null or empty");
+        try {
+            api().getVersion();
+            log.trace("GitLab instance is running");
+        } catch (GitLabApiException e) {
+            throw new GitLabInvalidConfigurationException("GitLab instance doesn't respond -> " + e.getMessage());
+        }
+    }
+
+}

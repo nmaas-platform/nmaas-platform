@@ -23,7 +23,6 @@ public abstract class WebhookJob implements Job {
                 .uri(webhook.getTargetUrl())
                 .body(payload);
 
-
         if ("Authorization".equals(webhook.getAuthorizationHeader())) {
             request.header("Authorization", "Bearer " + webhook.getTokenValue());
         } else if (webhook.getAuthorizationHeader() != null) {
@@ -51,4 +50,5 @@ public abstract class WebhookJob implements Job {
             throw new WebServiceCommunicationException("Webhook call failed: " + error.getMessage());
         }
     }
+
 }

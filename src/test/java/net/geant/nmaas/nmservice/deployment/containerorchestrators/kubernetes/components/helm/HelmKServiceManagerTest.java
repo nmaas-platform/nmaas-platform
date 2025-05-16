@@ -3,8 +3,8 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.externalservices.kubernetes.model.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.model.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;

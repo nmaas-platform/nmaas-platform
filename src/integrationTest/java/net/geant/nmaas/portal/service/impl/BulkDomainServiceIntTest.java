@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import jakarta.transaction.Transactional;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
@@ -13,6 +14,7 @@ import net.geant.nmaas.portal.persistent.repositories.BulkDeploymentRepository;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 @Rollback
 public class BulkDomainServiceIntTest {
+
+    @MockitoBean
+    private JanitorService janitorService;
+    @MockitoBean
+    private WebhookEventRepository webhookEventRepository;
 
     @Autowired
     private BulkDeploymentRepository bulkDeploymentRepository;
@@ -94,7 +101,16 @@ public class BulkDomainServiceIntTest {
         CsvDomain csvDomain2 = new CsvDomain("test5", "user2", "user2@test.com", null, "group1", false);
         List<CsvDomain> input = List.of(csvDomain1, csvDomain2);
         configurationRepository.save(modelMapper.map(
-                ConfigurationView.builder().id(1L).defaultLanguage("en").bulkDomainsAllowForSsoAccounts(false).parallelDeploymentsLimit(2).bulkDeploymentJobCron("* * * *").bulkDeploymentQueueRefresh(60).bulkDeploymentTimeThreshold(10).build(), Configuration.class));
+                ConfigurationView.builder()
+                        .id(1L)
+                        .defaultLanguage("en")
+                        .bulkDomainsAllowForSsoAccounts(false)
+                        .parallelDeploymentsLimit(2)
+                        .bulkDeploymentJobCron("* * * *")
+                        .bulkDeploymentQueueRefresh(60)
+                        .bulkDeploymentTimeThreshold(10)
+                        .healthCheckJobCron(" 0 */1 * * * ?").build(),
+                Configuration.class));
         UserViewMinimal creator = new UserViewMinimal();
         creator.setId(1L);
         creator.setUsername("admin");
