@@ -20,6 +20,7 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class RemoteClusterManager {
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserService userService;
 
 
     public RemoteClusterView getClusterView(Long id) {
@@ -292,7 +294,13 @@ public class RemoteClusterManager {
     }
 
     private void sendMail(KCluster kCluster, MailType mailType) {
-        UserView recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
+        UserView recipient;
+        if(userService.existsByEmail(kCluster.getContactEmail())) {
+             recipient = modelMapper.map( userService.findByEmail(kCluster.getContactEmail()), UserView.class);
+        } else {
+            recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
+        }
+
         Map<String, Object> attr = new HashMap<>();
         attr.put("clusterId", kCluster.getId());
         attr.put("clusterCodename", kCluster.getCodename());
