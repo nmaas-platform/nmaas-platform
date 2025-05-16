@@ -1,0 +1,1 @@
+alter table k_cluster add COLUMN contact_email varchar(255) not null;

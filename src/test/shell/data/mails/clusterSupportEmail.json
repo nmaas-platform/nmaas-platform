@@ -1,0 +1,55 @@
+{
+  "mailType": "REMOTE_CLUSTER_WELCOME_SUPPORT",
+  "globalInformation": {
+    "LOGO_ALT": "GÉANT logo",
+    "PORTAL_LOGO_ALT": "nmaas logo",
+    "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
+  },
+  "templates": [
+    {
+      "language": "en",
+      "subject": "nmaas: Cluster support",
+      "template": {
+        "HEADER": "Dear ${username}",
+        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
+        "SENDER": "Best regards,<br />nmaas Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "fr",
+      "subject": "nmaas: Cluster is unavailable",
+      "template": {
+        "HEADER": "Dear ${username}",
+        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
+
+        "SENDER": "Best regards,<br />nmaas Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "de",
+      "subject": "nmaas: Cluster is unavailable",
+      "template": {
+        "HEADER": "Dear ${username}",
+        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
+        "SENDER": "Best regards,<br />nmaas Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": ""
+      }
+    },
+    {
+      "language": "pl",
+      "subject": "nmaas: Cluster jest niedostępny",
+      "template": {
+        "HEADER": "Drogi ${username}",
+        "CONTENT": "<p>Your email address is added to support remote cluster <b>${clusterCodename}</b>. </p>  <p>If you do not agree or do not proceed this action please contact administration for further information.</p>",
+        "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
+        "SENDER_POLICY": ""
+      }
+    }
+  ]
+}

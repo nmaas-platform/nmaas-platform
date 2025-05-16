@@ -3,30 +3,31 @@ package net.geant.nmaas.externalservices.kubernetes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
 import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
+import net.geant.nmaas.notifications.MailAttributes;
+import net.geant.nmaas.notifications.NotificationEvent;
+import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
-import java.net.SocketTimeoutException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +37,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,13 +52,15 @@ public class RemoteClusterManager {
 
     private final static ModelMapper modelMapper = new ModelMapper();
 
-    private final KClusterRepository KClusterRepository;
+    private final KClusterRepository clusterRepository;
     private final KubernetesClusterIngressManager kClusterIngressManager;
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
+    private final ApplicationEventPublisher eventPublisher;
+
 
     public RemoteClusterView getClusterView(Long id) {
-        Optional<KCluster> cluster = KClusterRepository.findById(id);
+        Optional<KCluster> cluster = clusterRepository.findById(id);
         if (cluster.isPresent()) {
             return toView(cluster.get());
         } else {
@@ -63,12 +69,12 @@ public class RemoteClusterManager {
     }
 
     public List<RemoteClusterView> getAllClusterView() {
-        List<KCluster> clusters = KClusterRepository.findAll();
+        List<KCluster> clusters = clusterRepository.findAll();
         return clusters.stream().map(RemoteClusterManager::toView).collect(Collectors.toList());
     }
 
     public KCluster getCluster(Long id) {
-        Optional<KCluster> cluster = KClusterRepository.findById(id);
+        Optional<KCluster> cluster = clusterRepository.findById(id);
         if (cluster.isPresent()) {
             return cluster.get();
         } else {
@@ -99,8 +105,9 @@ public class RemoteClusterManager {
         log.debug("Filed saved in: {}", savedPath);
         entity.setPathConfigFile(savedPath);
 
-        KCluster cluster = this.KClusterRepository.save(entity);
+        KCluster cluster = this.clusterRepository.save(entity);
         log.debug("Cluster saved: {}", cluster.toString());
+        sendMail(cluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
         return toView(cluster);
     }
 
@@ -126,10 +133,11 @@ public class RemoteClusterManager {
                                 .creationDate(OffsetDateTime.now())
                                 .modificationDate(OffsetDateTime.now())
                                 .codename(configView.getClusters().stream().findFirst().get().getName())
-                                .clusterConfigFile( new String(file.getBytes()))
+                                .clusterConfigFile(new String(file.getBytes()))
                                 .deployment(deployment)
                                 .ingress(ingress)
                                 .state(KClusterState.UNKNOWN)
+                                .contactEmail(view.getContactEmail())
                                 .currentStateSince(OffsetDateTime.now())
                                 .domains(view.getDomainNames().stream().map(d -> {
                                             Optional<Domain> dom = domainService.findDomain(d);
@@ -153,7 +161,7 @@ public class RemoteClusterManager {
     }
 
     public RemoteClusterView updateCluster(RemoteClusterView cluster, Long id) {
-        Optional<KCluster> entity = KClusterRepository.findById(id);
+        Optional<KCluster> entity = clusterRepository.findById(id);
 
         if (entity.isPresent()) {
             checkRequest(entity.get(), cluster, id);
@@ -176,7 +184,7 @@ public class RemoteClusterManager {
 
                 updated.setDeployment(modelMapper.map(cluster.getDeployment(), KClusterDeployment.class));
 
-                updated = KClusterRepository.save(updated);
+                updated = clusterRepository.save(updated);
                 //TODO : implement file update logic
                 return toView(updated);
 
@@ -239,17 +247,18 @@ public class RemoteClusterManager {
     }
 
     public void updateAllClusterState() {
-        List<KCluster> kClusters = KClusterRepository.findAll();
+        List<KCluster> kClusters = clusterRepository.findAll();
         kClusters.forEach(cluster -> {
             Config config = null;
             try {
                 config = Config.fromKubeconfig(Files.readString(Path.of(cluster.getPathConfigFile())));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException  e) {
+                log.error("IO error with accesing the file {}", e.getMessage());
+                updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
             }
             try {
                 KubernetesClient client = new KubernetesClientBuilder().withConfig(config).build();
-                log.debug("Get kubernetes version , something works {}",client.getKubernetesVersion().getPlatform());
+                log.debug("Get kubernetes version , something works {}", client.getKubernetesVersion().getPlatform());
                 //try to download kubernetes version to make sure connection to cluster is working
                 updateStateIfNeeded(cluster, KClusterState.UP);
 
@@ -258,7 +267,8 @@ public class RemoteClusterManager {
                 log.error(e.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.DOWN);
 
-            } catch (RuntimeException ex ) {
+
+            }  catch (RuntimeException  ex) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
 
@@ -267,7 +277,7 @@ public class RemoteClusterManager {
             }
 
         });
-        KClusterRepository.saveAll(kClusters);
+        clusterRepository.saveAll(kClusters);
     }
 
 
@@ -275,7 +285,50 @@ public class RemoteClusterManager {
         if (!cluster.getState().equals(newState)) {
             cluster.setState(newState);
             cluster.setCurrentStateSince(OffsetDateTime.now());
+            if(cluster.getState().equals(KClusterState.DOWN) || cluster.getState().equals(KClusterState.UNKNOWN)) {
+                sendMail(cluster, MailType.REMOTE_CLUSTER_UNAVAILABLE);
+            };
         }
     }
 
+    private void sendMail(KCluster kCluster, MailType mailType) {
+        UserView recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
+        Map<String, Object> attr = new HashMap<>();
+        attr.put("clusterId", kCluster.getId());
+        attr.put("clusterCodename", kCluster.getCodename());
+        attr.put("clusterName", kCluster.getName());
+        MailAttributes mailAttributes = MailAttributes.builder()
+                .mailType(mailType)
+                .otherAttributes(attr)
+                .addressees(Collections.singletonList(recipient))
+                .build();
+
+        this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+
+    }
+
+    public void restoreFileIfMissing() {
+        List<KCluster> clusters = clusterRepository.findAll();
+        clusters.forEach(cluster -> {
+            if (!isFileAvailable(cluster.getPathConfigFile())) {
+                MultipartFile file = new StringMultipartFile("file",
+                        "config.yaml",
+                        "application/x-yaml",
+                        cluster.getClusterConfigFile());
+                try {
+                    String savedPath = saveFileToTmp(file);
+                    cluster.setPathConfigFile(savedPath);
+                    this.clusterRepository.save(cluster);
+                } catch (IOException | NoSuchAlgorithmException e) {
+                    log.error("Problem with resaved kubernetes config file from string to TMP folder. {}", e.getMessage());
+                }
+            }
+        });
+    }
+
+
+    public boolean isFileAvailable(String pathStr) {
+        Path path = Paths.get(pathStr);
+        return Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path);
+    }
 }
