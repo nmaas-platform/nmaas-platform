@@ -103,7 +103,7 @@ class DomainServiceTest {
     void setup() {
         validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, webhookEventRepository, scheduleManager, modelMapper);
         scheduleManager = new ScheduleManager( scheduler);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
