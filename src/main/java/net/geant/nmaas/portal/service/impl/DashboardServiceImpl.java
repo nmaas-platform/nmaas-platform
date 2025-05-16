@@ -64,6 +64,9 @@ public class DashboardServiceImpl implements DashboardService {
             applicationDeploymentCountPerName.put(name, appInstanceRepo.countByName(name));
         });
 
+        //filter not deployed application
+        applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
+
 
         return DashboardView.builder()
                 .domainsCount(domainRepository.count())
