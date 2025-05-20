@@ -192,7 +192,8 @@
     "DOWN" : "Down",
     "UNKNOWN" : "Unknown",
     "DETAILS" : "Details",
-    "STATE_SINCE" : "State last change"
+    "STATE_SINCE" : "State last change",
+    "CONTACT_MAIL" : "Contact mail"
   },
   "GITLAB": {
     "TITLE": "GitLab Konfiguration",
@@ -1307,5 +1308,19 @@
   },
   "SHARED" : {
     "TOGGLE" : "Toggle all"
+  },
+  "WEBHOOKS" : {
+    "TITLE" : "Webhooks settings",
+    "TITLE_SHORT" : "Webhooks",
+    "ID" : "Id",
+    "NAME" : "Name",
+    "TARGET_URL" : "Target Url",
+    "TYPE" : "Webhook type",
+    "TOKEN" : "Token value",
+    "AUTH" : "Authorization header",
+    "DOMAIN_CREATION" : "Domain creation",
+    "APPLICATION_DEPLOYMENT" : "Application deployment",
+    "USER_ASSIGNMENT" : "User assignment",
+    "DOMAIN_GROUP_CHANGE" : "Domain group change"
   }
 }
