@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DomainTest {
 
     @Test
-    public void shouldBeEqual() {
+    void shouldBeEqual() {
         final String commonName = "name";
         final String commonCodeName = "codename";
         assertEquals(new Domain(commonName, commonCodeName), new Domain(commonName, commonCodeName));

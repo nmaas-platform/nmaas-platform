@@ -1,9 +1,11 @@
-package net.geant.nmaas.monitor;
+package net.geant.nmaas.scheduling;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.monitor.MonitorManager;
+import net.geant.nmaas.monitor.MonitorService;
+import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
-import net.geant.nmaas.scheduling.ScheduleManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

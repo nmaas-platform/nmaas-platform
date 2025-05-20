@@ -23,7 +23,7 @@ public abstract class MonitorService implements Job {
         this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), status);
     }
 
-    protected boolean schedulable() {
+    public boolean schedulable() {
         return true;
     }
 

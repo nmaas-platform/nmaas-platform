@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RemoteClusterManager {
+public class RemoteClusterManager implements ClusterMonitoringService {
 
     private final KClusterRepository clusterRepository;
     private final KubernetesClusterIngressManager kClusterIngressManager;
@@ -240,14 +240,16 @@ public class RemoteClusterManager {
         return view;
     }
 
+    @Override
     public void updateAllClusterState() {
+        restoreFileIfMissing();
         List<KCluster> kClusters = clusterRepository.findAll();
         kClusters.forEach(cluster -> {
             Config config = null;
             try {
                 config = Config.fromKubeconfig(Files.readString(Path.of(cluster.getPathConfigFile())));
             } catch (IOException e) {
-                log.error("IO error with accesing the file {}", e.getMessage());
+                log.error("IO error with accessing the file {}", e.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
             }
 
