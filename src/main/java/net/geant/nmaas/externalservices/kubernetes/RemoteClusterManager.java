@@ -46,18 +46,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class RemoteClusterManager {
-
-    private final static ModelMapper modelMapper = new ModelMapper();
 
     private final KClusterRepository clusterRepository;
     private final KubernetesClusterIngressManager kClusterIngressManager;
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
     private final ApplicationEventPublisher eventPublisher;
-
+    private final ModelMapper modelMapper;
 
     public RemoteClusterView getClusterView(Long id) {
         Optional<KCluster> cluster = clusterRepository.findById(id);
@@ -70,7 +68,7 @@ public class RemoteClusterManager {
 
     public List<RemoteClusterView> getAllClusterView() {
         List<KCluster> clusters = clusterRepository.findAll();
-        return clusters.stream().map(RemoteClusterManager::toView).collect(Collectors.toList());
+        return clusters.stream().map(this::toView).collect(Collectors.toList());
     }
 
     public KCluster getCluster(Long id) {
@@ -151,9 +149,7 @@ public class RemoteClusterManager {
                 log.error("More than 1 cluster provided, not implemented yet");
             }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
 
@@ -187,7 +183,6 @@ public class RemoteClusterManager {
                 updated = clusterRepository.save(updated);
                 //TODO : implement file update logic
                 return toView(updated);
-
             }
         }
 
@@ -237,10 +232,9 @@ public class RemoteClusterManager {
         if (view.getCodename() == null) {
             throw new IllegalArgumentException("Codename of the cluster is null");
         }
-
     }
 
-    public static RemoteClusterView toView(KCluster KCluster) {
+    private RemoteClusterView toView(KCluster KCluster) {
         RemoteClusterView view = modelMapper.map(KCluster, RemoteClusterView.class);
         view.setDomainNames(KCluster.getDomains().stream().map(Domain::getName).toList());
         return view;
@@ -252,10 +246,11 @@ public class RemoteClusterManager {
             Config config = null;
             try {
                 config = Config.fromKubeconfig(Files.readString(Path.of(cluster.getPathConfigFile())));
-            } catch (IOException  e) {
+            } catch (IOException e) {
                 log.error("IO error with accesing the file {}", e.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
             }
+
             try {
                 KubernetesClient client = new KubernetesClientBuilder().withConfig(config).build();
                 log.debug("Get kubernetes version , something works {}", client.getKubernetesVersion().getPlatform());
@@ -266,12 +261,9 @@ public class RemoteClusterManager {
                 log.error("Can not connect to cluster {}", cluster.getCodename());
                 log.error(e.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.DOWN);
-
-
-            }  catch (RuntimeException  ex) {
+            } catch (RuntimeException ex) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
-
             } catch (Exception ex) {
                 log.error("Caught unexpected exception: {}", ex.getMessage(), ex);
             }
@@ -280,14 +272,13 @@ public class RemoteClusterManager {
         clusterRepository.saveAll(kClusters);
     }
 
-
     private void updateStateIfNeeded(KCluster cluster, KClusterState newState) {
         if (!cluster.getState().equals(newState)) {
             cluster.setState(newState);
             cluster.setCurrentStateSince(OffsetDateTime.now());
-            if(cluster.getState().equals(KClusterState.DOWN) || cluster.getState().equals(KClusterState.UNKNOWN)) {
+            if (cluster.getState().equals(KClusterState.DOWN) || cluster.getState().equals(KClusterState.UNKNOWN)) {
                 sendMail(cluster, MailType.REMOTE_CLUSTER_UNAVAILABLE);
-            };
+            }
         }
     }
 
@@ -304,7 +295,6 @@ public class RemoteClusterManager {
                 .build();
 
         this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
-
     }
 
     public void restoreFileIfMissing() {
@@ -326,9 +316,9 @@ public class RemoteClusterManager {
         });
     }
 
-
     public boolean isFileAvailable(String pathStr) {
         Path path = Paths.get(pathStr);
         return Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path);
     }
+
 }

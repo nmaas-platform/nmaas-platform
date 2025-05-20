@@ -7,9 +7,9 @@ import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Service;
 import org.quartz.Job;
 
-@Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class ClusterMonitoringJob implements Job {
 
     private final RemoteClusterManager remoteClusterManager;
@@ -21,4 +21,5 @@ public class ClusterMonitoringJob implements Job {
         log.info("File checked, everything looks fine. Next stage: Update clusters state.");
         remoteClusterManager.updateAllClusterState();
     }
+
 }
