@@ -192,6 +192,7 @@
     "UP" : "Up",
     "DOWN" : "Down",
     "UNKNOWN" : "Unknown",
+    "CONTACT_MAIL" : "Contact mail"
     "DETAILS" : "Details",
     "STATE_SINCE" : "State last change"
   },
@@ -1312,5 +1313,20 @@
   },
   "SHARED" : {
     "TOGGLE" : "Toggle all"
+  },
+  "WEBHOOKS" : {
+    "TITLE" : "Webhooks settings",
+    "TITLE_SHORT" : "Webhooks",
+    "ID" : "Id",
+    "NAME" : "Name",
+    "TARGET_URL" : "Target Url",
+    "TYPE" : "Webhook type",
+    "TOKEN" : "Token value",
+    "AUTH" : "Authorization header",
+    "DOMAIN_CREATION" : "Domain creation",
+    "APPLICATION_DEPLOYMENT" : "Application deployment",
+    "USER_ASSIGNMENT" : "User assignment",
+    "DOMAIN_GROUP_CHANGE" : "Domain group change",
+    "NEW" : "Add webhook"
   }
 }
