@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @DependsOn({"portalConfiguration"})
 @Slf4j
-public class BulkDeploymentScheduleConfig implements InitializingBean {
+public class BulkDeploymentScheduleInit implements InitializingBean {
 
     public static final String BULK_DEPLOYMENT_JOB = "BulkDeploymentJob";
 
@@ -24,10 +24,10 @@ public class BulkDeploymentScheduleConfig implements InitializingBean {
     private final String bulkDeploymentCron;
 
     @Autowired
-    public BulkDeploymentScheduleConfig(BulkDeploymentJob bulkDeploymentJob,
-                                        ScheduleManager scheduleManager,
-                                        ConfigurationManager configurationManager,
-                                        @Value("${nmaas.service.bulk-deployment.cron}") String bulkDeploymentCron) {
+    public BulkDeploymentScheduleInit(BulkDeploymentJob bulkDeploymentJob,
+                                      ScheduleManager scheduleManager,
+                                      ConfigurationManager configurationManager,
+                                      @Value("${nmaas.service.bulk-deployment.cron}") String bulkDeploymentCron) {
         this.bulkDeploymentJob = bulkDeploymentJob;
         this.scheduleManager = scheduleManager;
         this.configurationManager = configurationManager;

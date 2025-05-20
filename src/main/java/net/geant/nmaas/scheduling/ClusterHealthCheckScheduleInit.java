@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @DependsOn({"portalConfiguration"})
 @Slf4j
-public class ClusterHealthCheckInit implements InitializingBean {
+public class ClusterHealthCheckScheduleInit implements InitializingBean {
 
     public static final String CLUSTER_HEALTH_CHECK = "ClusterHealthCheck";
 
@@ -24,10 +24,10 @@ public class ClusterHealthCheckInit implements InitializingBean {
     private final String healthCheckJobCron;
 
     @Autowired
-    public ClusterHealthCheckInit(ClusterMonitoringJob clusterMonitoringJob,
-                                  ScheduleManager scheduleManager,
-                                  ConfigurationManager configurationManager,
-                                  @Value("${nmaas.service.health-check.cron}") String healthCheckJobCron) {
+    public ClusterHealthCheckScheduleInit(ClusterMonitoringJob clusterMonitoringJob,
+                                          ScheduleManager scheduleManager,
+                                          ConfigurationManager configurationManager,
+                                          @Value("${nmaas.service.health-check.cron}") String healthCheckJobCron) {
         this.clusterMonitoringJob = clusterMonitoringJob;
         this.scheduleManager = scheduleManager;
         this.configurationManager = configurationManager;

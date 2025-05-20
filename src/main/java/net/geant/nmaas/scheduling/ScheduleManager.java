@@ -2,11 +2,9 @@ package net.geant.nmaas.scheduling;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
-import net.geant.nmaas.orchestration.jobs.WebhookJob;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -45,13 +43,13 @@ public class ScheduleManager {
         JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
         try {
-            if (scheduler.checkExists(jobKey(jobDescriptor.getServiceName().getName()))) {
-                log.error("Job with name {} already exists", jobDescriptor.getServiceName());
-                throw new IllegalStateException(String.format("Job with name %s already exists", jobDescriptor.getServiceName()));
+            if (scheduler.checkExists(jobKey(jobDescriptor.serviceName().getName()))) {
+                log.error("Job with name {} already exists", jobDescriptor.serviceName());
+                throw new IllegalStateException(String.format("Job with name %s already exists", jobDescriptor.serviceName()));
             } else {
-                JobDetail jobDetail = newJob(service.getClass()).withIdentity(jobDescriptor.getServiceName().getName()).build();
+                JobDetail jobDetail = newJob(service.getClass()).withIdentity(jobDescriptor.serviceName().getName()).build();
                 Trigger trigger = jobDescriptor.buildTrigger();
-                log.info("Scheduling job: {}", jobDescriptor.getServiceName().toString());
+                log.info("Scheduling job: {}", jobDescriptor.serviceName().toString());
                 scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), false);
             }
         } catch (SchedulerException e) {
@@ -80,10 +78,10 @@ public class ScheduleManager {
         JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
         try{
-            Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()));
+            Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(jobDescriptor.serviceName().getName()));
             if (trigger != null) {
                 trigger = jobDescriptor.buildTrigger();
-                scheduler.rescheduleJob(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()), trigger);
+                scheduler.rescheduleJob(TriggerKey.triggerKey(jobDescriptor.serviceName().getName()), trigger);
                 if(!monitorEntryView.isActive()){
                     this.pauseJob(trigger.getJobKey().getName());
                 }
@@ -149,9 +147,9 @@ public class ScheduleManager {
     }
 
     private void validateJobDescriptor(JobDescriptor jobDescriptor){
-        if(jobDescriptor.getServiceName() == null)
+        if(jobDescriptor.serviceName() == null)
             throw new IllegalStateException("Service name cannot be null");
-        if(jobDescriptor.getCheckInterval() == null || jobDescriptor.getCheckInterval() <= 0)
+        if(jobDescriptor.checkInterval() == null || jobDescriptor.checkInterval() <= 0)
             throw new IllegalStateException("Check interval cannot be less or equal 0");
     }
 
