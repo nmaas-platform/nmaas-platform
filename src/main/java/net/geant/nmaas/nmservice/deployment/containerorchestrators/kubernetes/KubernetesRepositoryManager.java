@@ -1,11 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.ServiceAccessMethodRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.ServiceStorageVolumeRepository;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -25,11 +27,15 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class KubernetesRepositoryManager extends NmServiceRepositoryManager<KubernetesNmServiceInfo> {
 
-    @Autowired
-    private ServiceStorageVolumeRepository storageVolumeRepository;
+    private final ServiceStorageVolumeRepository storageVolumeRepository;
+    private final ServiceAccessMethodRepository accessMethodRepository;
 
     @Autowired
-    private ServiceAccessMethodRepository accessMethodRepository;
+    public KubernetesRepositoryManager(GitLabProjectRepository gitLabProjectRepository, NmServiceInfoRepository<KubernetesNmServiceInfo> repository, ServiceStorageVolumeRepository storageVolumeRepository, ServiceAccessMethodRepository accessMethodRepository) {
+        super(gitLabProjectRepository, repository);
+        this.storageVolumeRepository = storageVolumeRepository;
+        this.accessMethodRepository = accessMethodRepository;
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)

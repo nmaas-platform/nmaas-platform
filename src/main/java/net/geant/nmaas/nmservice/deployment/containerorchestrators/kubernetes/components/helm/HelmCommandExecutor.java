@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmDeleteCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand;
@@ -23,22 +24,27 @@ import java.util.Map;
 
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand.HELM_VERSION_2;
 
+@NoArgsConstructor
 @Component
 public class HelmCommandExecutor {
 
-    @Autowired
     private CommandExecutor commandExecutor;
-
     @Setter
-    @Value("${helm.version:v3}")
     private String helmVersion;
-
     @Setter
-    @Value("${helm.repositoryName}")
     private String helmRepositoryName;
-
-    @Value("${helm.enableTls:false}")
     private Boolean enableTls;
+
+    @Autowired
+    public HelmCommandExecutor(CommandExecutor commandExecutor,
+                               @Value("${helm.version:v3}") String helmVersion,
+                               @Value("${helm.repositoryName}") String helmRepositoryName,
+                               @Value("${helm.enableTls:false}") Boolean enableTls) {
+        this.commandExecutor = commandExecutor;
+        this.helmVersion = helmVersion;
+        this.helmRepositoryName = helmRepositoryName;
+        this.enableTls = enableTls;
+    }
 
     void executeHelmInstallCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         executeInstall(namespace, releaseName, template, arguments);

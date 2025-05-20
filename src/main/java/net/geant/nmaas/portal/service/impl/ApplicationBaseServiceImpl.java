@@ -1,10 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -21,7 +19,6 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,7 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
@@ -47,9 +44,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ApplicationEventPublisher eventPublisher;
     private final DomainService domainService;
-
-    @Autowired
-    protected ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     @Transactional
