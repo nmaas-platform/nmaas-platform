@@ -47,14 +47,16 @@ public class DashboardServiceImpl implements DashboardService {
 
 
     @Override
-    public DashboardView getSystemDashboard() {
+    public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
 
-        long weekTimestamp = System.currentTimeMillis() - Duration.ofDays(7).toMillis();
+        long startTimeStamp = System.currentTimeMillis() - startDate.toEpochSecond();
+        long endTimeStamp = System.currentTimeMillis() - endDate.toEpochSecond();
+
 
         List<String> baseNames = applicationBaseRepository.findAllNames();
         Map<String, Integer> applicationDeploymentCountPerName = new HashMap<>();
 
-        List<DashboardDeploymentsView> deploymentsViews = appInstanceRepo.findAllInTimePeriod(weekTimestamp)
+        List<DashboardDeploymentsView> deploymentsViews = appInstanceRepo.findAllInTimePeriod(startTimeStamp, endTimeStamp)
                 .stream().map(entry -> DashboardDeploymentsView.builder().user(entry.getOwner().getUsername())
                         .domainName(entry.getDomain().getName())
                         .applicationName(entry.getApplication().getName())
@@ -72,7 +74,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .domainsCount(domainRepository.count())
                 .userCount(userRepository.count())
                 .instanceCount(appInstanceRepo.count())
-                .instanceCountInPeriod(appInstanceRepo.countAllDeployedSinceTime(weekTimestamp))
+                .instanceCountInPeriod(appInstanceRepo.countAllDeployedSinceTime(startTimeStamp, endTimeStamp))
                 .instanceCountInPeriodDetails(deploymentsViews)
                 .popularApps(applicationDeploymentCountPerName).build();
     }
