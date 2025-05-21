@@ -49,11 +49,14 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 	@Query("select count(ai.id) FROM AppInstance ai  where ai.createdAt >= :sinceTime")
 	int countAllDeployedSinceTime(@Param("sinceTime") long sinceTime);
 
+	@Query("select count(ai.id) FROM AppInstance ai  where ai.createdAt >= :sinceTime AND ai.createdAt <= :endTime")
+	int countAllDeployedSinceTime(@Param("sinceTime") long sinceTime, @Param("sinceTime") long toTime);
+
 	@Query("select count(ai.id) FROM AppInstance ai JOIN AppDeployment ad on ad.deploymentId = ai.internalId where ai.application.name = ?1")
 	int countByName(String name);
 
-	@Query("select ai FROM AppInstance ai where ai.createdAt >= :sinceTime")
-	List<AppInstance> findAllInTimePeriod(@Param("sinceTime") long sinceTime);
+	@Query("select ai FROM AppInstance ai where ai.createdAt >= :sinceTime AND ai.createdAt <= :endTime")
+	List<AppInstance> findAllInTimePeriod(@Param("sinceTime") long start, @Param("endTime") long end);
 
 	int countAllByOwner(User user);
 
