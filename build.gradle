@@ -141,7 +141,7 @@ dependencies {
     implementation('com.opencsv:opencsv:5.11')
 
     // Tests
-    testImplementation('org.mockito:mockito-core:5.17.0')
+    testImplementation('org.mockito:mockito-core:5.18.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
