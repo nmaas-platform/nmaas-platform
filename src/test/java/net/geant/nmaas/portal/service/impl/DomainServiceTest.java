@@ -94,8 +94,6 @@ class DomainServiceTest {
     Scheduler scheduler = mock(Scheduler.class);
     ListenerManager listenerManager = mock(ListenerManager.class);
     ScheduleManager scheduleManager;
-    EncryptionService encryptionService = mock(EncryptionService.class);
-    WebhookEventService webhookEventService;
 
     DomainService domainService;
 
@@ -103,15 +101,14 @@ class DomainServiceTest {
     void setup() {
         validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
         scheduleManager = new ScheduleManager( scheduler);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, webhookEventRepository, scheduleManager, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
                 domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
                 modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository, webhookEventRepository, scheduleManager);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
-        webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper);
     }
 
     @Test
