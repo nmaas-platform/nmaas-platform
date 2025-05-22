@@ -453,7 +453,7 @@ public class AppInstanceControllerTest {
         when(applicationService.findApplication(appInstanceRequest.getApplicationId())).thenReturn(Optional.of(application));
 
         assertThrows(IllegalArgumentException.class, () -> {
-            this.appInstanceController.createAppInstance(appInstanceRequest, principal,domainId);
+            this.appInstanceController.createAppInstance(appInstanceRequest, principal,domainId, null);
         });
     }
 
