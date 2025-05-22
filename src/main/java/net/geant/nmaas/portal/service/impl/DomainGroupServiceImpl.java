@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
+import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -11,16 +13,21 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,6 +38,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     private final DomainGroupRepository domainGroupRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
+    private final WebhookEventRepository webhookEventRepository;
+    private final ScheduleManager scheduleManager;
 
 
     private final ModelMapper modelMapper;
@@ -55,6 +64,10 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
+
+        //call existing webhooks
+        DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId()+ "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "create","domainGroup",domainGroupView)));
         return modelMapper.map(domainGroupEntity, DomainGroupView.class);
     }
 
@@ -81,6 +94,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     @Override
     public void deleteDomainGroup(Long domainGroupId) {
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
+        DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
         List<Domain> toRemove = new ArrayList<>(domainGroup.getDomains());
         Iterator<Domain> iterator = toRemove.iterator();
         while (iterator.hasNext()) {
@@ -90,6 +104,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             iterator.remove();
         }
         domainGroupRepository.deleteById(domainGroupId);
+        //call existing webhooks
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroup.getId()+ "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "delete","domainGroup",domainGroupView)));
     }
 
     @Override
@@ -128,7 +144,11 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         }
 
         domainGroupRepository.save(domainGroup);
-        return modelMapper.map(domainGroup, DomainGroupView.class);
+
+        //call existing webhooks
+        DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId()+ "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "update","domainGroup",domainGroupView)));
+        return domainGroupView;
     }
 
     protected void checkParam(DomainGroupView domainGroup) {
