@@ -515,7 +515,9 @@
     "DEPLOY_BUTTON": "Installieren",
     "USE_DEFAULT_VERSION": "Standardversion verwenden",
     "SELECT_VERSION": "Version auswählen",
-    "AUTO_UPGRADES_ENABLED": "Automatische upgrades aktivieren"
+    "AUTO_UPGRADES_ENABLED": "Automatische upgrades aktivieren",
+    "REMOTE_CLUSTER" : "Use remote cluster",
+    "SELECT_CLUSTER": "Remote location"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Add members",
@@ -1321,6 +1323,8 @@
     "DOMAIN_CREATION" : "Domain creation",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "DOMAIN_GROUP_CHANGE" : "Domain group change"
+    "DOMAIN_GROUP_CHANGE" : "Domain group change",
+    "NEW" : "Add webhook",
+    "DETAILS" : "Webhooks details"
   }
 }

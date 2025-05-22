@@ -57,6 +57,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
@@ -252,7 +253,9 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public Id createAppInstance(@RequestBody AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal,
-                                @PathVariable Long domainId) {
+                                @PathVariable Long domainId,
+                                @RequestParam(name = "clusterId",required = false) Long clusterId) {
+        log.error("Cluster = {}", clusterId);
         Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
