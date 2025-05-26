@@ -24,7 +24,7 @@ class ClusterServiceTest {
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
-            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, null, null, modelMapper);
+            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, null, null, null, modelMapper);
 
     @Test
     void getClusterView_validId_returnsRemoteClusterView() {
