@@ -3,10 +3,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.gitlab.GitLabManager;
-import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.gitlab.GitLabManager;
+import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
@@ -367,8 +367,8 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
-    private Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
-        return componentName != null ?
+    static Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
+        return StringUtils.isNotEmpty(componentName) ?
                 Identifier.newInstance(releaseName + "-" + componentName) :
                 Identifier.newInstance(releaseName);
     }
