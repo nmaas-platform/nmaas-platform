@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ApplicationSubscriptionTest {
 
     @Test
-    public void shouldBeEqual() {
+    void shouldBeEqual() {
         assertEquals(
                 new ApplicationSubscription(
                         new Domain("name", "codename"),

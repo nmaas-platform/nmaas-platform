@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,15 @@ public class EncryptionService {
     private static final int GCM_TAG_LENGTH = 128;
     private static final int IV_LENGTH = 12;
 
-    @Value("${security.encryption.secret-key}")
-    private String secretKey;
+    private final String secretKey;
+    private final String algorithm;
 
-    @Value("${security.encryption.algorithm}")
-    private String algorithm;
+    @Autowired
+    public EncryptionService(@Value("${security.encryption.secret-key}") String secretKey,
+                             @Value("${security.encryption.algorithm}") String algorithm) {
+        this.secretKey = secretKey;
+        this.algorithm = algorithm;
+    }
 
     public String encrypt(String plainText) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(algorithm);

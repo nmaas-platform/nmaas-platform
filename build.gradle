@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '3.4.5'
+    id 'org.springframework.boot' version '3.4.6'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.gorylenko.gradle-git-properties' version '2.5.0'
     id 'org.sonarqube' version '6.2.0.5505'
@@ -88,7 +88,6 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-mail')
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
-    implementation('org.springframework.boot:spring-boot-devtools')
     implementation('org.springframework.boot:spring-boot-starter-quartz')
     implementation('org.springframework.boot:spring-boot-starter-validation')
     implementation 'org.springframework.boot:spring-boot-starter-cache'
@@ -112,7 +111,7 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:6.6.15.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:6.6.16.Final'
 
     // Database migrations
     implementation('org.flywaydb:flyway-core:11.8.2')
@@ -126,7 +125,7 @@ dependencies {
     implementation('io.micrometer:micrometer-registry-prometheus:1.15.0')
 
     // Kubernetes API client
-    implementation('io.fabric8:kubernetes-client:7.3.0')
+    implementation('io.fabric8:kubernetes-client:7.3.1')
 
     // GitLab API client
     implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.10' // version 6 for jakarta
@@ -141,7 +140,7 @@ dependencies {
     implementation('com.opencsv:opencsv:5.11')
 
     // Tests
-    testImplementation('org.mockito:mockito-core:5.17.0')
+    testImplementation('org.mockito:mockito-core:5.18.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')

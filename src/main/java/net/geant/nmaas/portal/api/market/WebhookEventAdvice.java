@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice(assignableTypes = WebhookEventController.class)
+@Slf4j
 public class WebhookEventAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -18,6 +20,8 @@ public class WebhookEventAdvice {
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
+
+        log.warn("Responding with 400 with errors: {}", errors);
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }

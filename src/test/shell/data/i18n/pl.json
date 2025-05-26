@@ -192,6 +192,7 @@
     "UP" : "Aktywny",
     "DOWN" : "Nieaktywny",
     "UNKNOWN" : "Nieznany",
+    "CONTACT_MAIL" : "Email kontaktowy",
     "DETAILS" : "Detale",
     "STATE_SINCE" : "Stan od"
   },
@@ -515,7 +516,9 @@
     "DEPLOY_BUTTON": "Uruchom",
     "USE_DEFAULT_VERSION": "Użyj domyślnej wersji",
     "SELECT_VERSION": "Wybierz wersję",
-    "AUTO_UPGRADES_ENABLED": "Włącz automatyczne aktualizacje"
+    "AUTO_UPGRADES_ENABLED": "Włącz automatyczne aktualizacje",
+    "REMOTE_CLUSTER" : "Uruchomienie na zewnęntrzym klastrze",
+    "SELECT_CLUSTER": "Zdalna lokalizacja"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Dodaj użytkowników",
@@ -1310,5 +1313,21 @@
   },
   "SHARED" : {
     "TOGGLE" : "Toggle all"
+  },
+  "WEBHOOKS" : {
+    "TITLE" : "Webhooks settings",
+    "TITLE_SHORT" : "Webhooks",
+    "ID" : "Id",
+    "NAME" : "Name",
+    "TARGET_URL" : "Target Url",
+    "TYPE" : "Webhook type",
+    "TOKEN" : "Token value",
+    "AUTH" : "Authorization header",
+    "DOMAIN_CREATION" : "Domain creation",
+    "APPLICATION_DEPLOYMENT" : "Application deployment",
+    "USER_ASSIGNMENT" : "User assignment",
+    "DOMAIN_GROUP_CHANGE" : "Domain group change",
+    "NEW" : "Add webhook",
+    "DETAILS" : "Webhooks details"
   }
 }
