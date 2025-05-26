@@ -70,8 +70,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         //filter not deployed application
         applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
-        log.warn("Start stamp {} / end stamp {}", startTimeStamp, endTimeStamp);
-        log.warn("Result: {}", appInstanceRepo.countAllDeployedSinceTime(startTimeStamp, endTimeStamp));
+        log.info("Start stamp {} / end stamp {}", startTimeStamp, endTimeStamp);
 
         return DashboardView.builder()
                 .domainsCount(domainRepository.count())
