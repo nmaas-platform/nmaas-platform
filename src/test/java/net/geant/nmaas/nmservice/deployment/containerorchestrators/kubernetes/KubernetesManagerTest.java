@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.collect.Sets;
-import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -142,11 +143,11 @@ public class KubernetesManagerTest {
         Map<HelmChartIngressVariable, String> sshAccessUserDeploymentParameters = new HashMap<>();
         sshAccessUserDeploymentParameters.put(HelmChartIngressVariable.ACCESS_USER, "testUser");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "ssh-service-with-access-user", null, "SSH", sshAccessUserDeploymentParameters));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public",null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public", null));
         Map<HelmChartIngressVariable, String> dataAccessUserDeploymentParameters = new HashMap<>();
         dataAccessUserDeploymentParameters.put(HelmChartIngressVariable.ACCESS_USER, "testUser");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service-with-access-user", null, "DATA", dataAccessUserDeploymentParameters));
-        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public",null));
+        accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.PUBLIC, "public-service", null, "Public", null));
         Map<HelmChartIngressVariable, String> dataAccessDeploymentParameters = new HashMap<>();
         dataAccessDeploymentParameters.put(HelmChartIngressVariable.K8S_SERVICE_SUFFIX, "component1");
         accessMethods.add(new ServiceAccessMethod(ServiceAccessMethodType.INTERNAL, "data-service", null, "DATA", dataAccessDeploymentParameters));
@@ -319,14 +320,14 @@ public class KubernetesManagerTest {
     }
 
     @Test
-    void shouldVerifyRequest () {
+    void shouldVerifyRequest() {
         assertDoesNotThrow(() -> {
             manager.verifyRequestAndObtainInitialDeploymentDetails(DEPLOYMENT_ID);
         });
     }
 
     @Test
-    void shouldVerifyRequestAndThrowException () {
+    void shouldVerifyRequestAndThrowException() {
         assertThrows(ContainerOrchestratorInternalErrorException.class, () -> {
             doThrow(new KClusterCheckException("")).when(clusterValidator).checkClusterStatusAndPrerequisites();
             manager.verifyRequestAndObtainInitialDeploymentDetails(DEPLOYMENT_ID);
@@ -356,7 +357,7 @@ public class KubernetesManagerTest {
         verify(repositoryManager, times(1)).updateKServiceAccessMethods(accessMethodsArg.capture());
         assertEquals(10, accessMethodsArg.getValue().size());
         assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
-                        m.isOfType(ServiceAccessMethodType.DEFAULT)
+                m.isOfType(ServiceAccessMethodType.DEFAULT)
                         && m.getName().equals("Default")
                         && m.getProtocol().equals("Web")
                         && m.getUrl().equals("base.url")));
@@ -397,9 +398,9 @@ public class KubernetesManagerTest {
         assertDoesNotThrow(() -> {
             when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
             when(janitorService.checkIfReady(any(), any())).thenReturn(true);
-            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId"),"domain"))
+            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId"), "domain"))
                     .thenReturn("192.168.100.1");
-            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId-component1"),"domain"))
+            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId-component1"), "domain"))
                     .thenReturn("192.168.100.2");
             doThrow(new JanitorResponseException("")).when(janitorService).checkServiceExists(any(), any());
 
@@ -487,10 +488,10 @@ public class KubernetesManagerTest {
 
         assertEquals(2, appUiAccessDetails.getServiceAccessMethods().size());
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
-            m.getType().equals(ServiceAccessMethodType.EXTERNAL)
-                    && m.getName().equals("web-service")
-                    && m.getProtocol().equals("Web")
-                    && m.getUrl().equals("app1.nmaas.eu")
+                m.getType().equals(ServiceAccessMethodType.EXTERNAL)
+                        && m.getName().equals("web-service")
+                        && m.getProtocol().equals("Web")
+                        && m.getUrl().equals("app1.nmaas.eu")
         ));
         assertTrue(appUiAccessDetails.getServiceAccessMethods().stream().anyMatch(m ->
                 m.getType().equals(ServiceAccessMethodType.INTERNAL)
@@ -498,6 +499,16 @@ public class KubernetesManagerTest {
                         && m.getProtocol().equals("SSH")
                         && m.getUrl().equals("192.168.1.1")
         ));
+    }
+
+    @Test
+    void shouldBuildDeploymentNameForCheck() {
+        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", "componentName"))
+                .isEqualTo(Identifier.newInstance("releaseName-componentName"));
+        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", null))
+                .isEqualTo(Identifier.newInstance("releaseName"));
+        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", ""))
+                .isEqualTo(Identifier.newInstance("releaseName"));
     }
 
 }
