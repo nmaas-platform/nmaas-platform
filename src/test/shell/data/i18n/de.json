@@ -193,7 +193,8 @@
     "UNKNOWN" : "Unknown",
     "DETAILS" : "Details",
     "STATE_SINCE" : "State last change",
-    "CONTACT_MAIL" : "Contact mail"
+    "CONTACT_MAIL" : "Contact mail",
+    "REMOVE" : "Remove cluster"
   },
   "GITLAB": {
     "TITLE": "GitLab Konfiguration",
@@ -1325,6 +1326,7 @@
     "USER_ASSIGNMENT" : "User assignment",
     "DOMAIN_GROUP_CHANGE" : "Domain group change",
     "NEW" : "Add webhook",
-    "DETAILS" : "Webhooks details"
+    "DETAILS" : "Webhooks details",
+    "SAVE" : "Save webhook"
   }
 }
