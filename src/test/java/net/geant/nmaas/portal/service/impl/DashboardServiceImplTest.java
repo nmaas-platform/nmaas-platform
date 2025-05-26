@@ -158,4 +158,45 @@ void getSystemDashboardShouldCalculateCorrectTimestamps() {
     assert endTimestamp > 0;
     assert startTimestamp > endTimestamp;
 }
+
+    @Test
+    void countAllDeployedSinceTimeShouldReturnCorrectCount() {
+        long sinceTime = 1000L;
+        long toTime = 2000L;
+        int expectedCount = 7;
+
+        when(appInstanceRepo.countAllDeployedSinceTime(sinceTime, toTime)).thenReturn(expectedCount);
+
+        int actualCount = appInstanceRepo.countAllDeployedSinceTime(sinceTime, toTime);
+
+        assert actualCount == expectedCount;
+        org.mockito.Mockito.verify(appInstanceRepo).countAllDeployedSinceTime(sinceTime, toTime);
+    }
+
+    @Test
+    void getSystemDashboardShouldCallCountAllDeployedSinceTimeWithCorrectArguments() {
+        OffsetDateTime startDate = OffsetDateTime.now().minusDays(2);
+        OffsetDateTime endDate = OffsetDateTime.now();
+
+        when(domainRepository.count()).thenReturn(1L);
+        when(userRepository.count()).thenReturn(1L);
+        when(appInstanceRepo.count()).thenReturn(1L);
+        when(appInstanceRepo.countAllDeployedSinceTime(org.mockito.ArgumentMatchers.anyLong(), org.mockito.ArgumentMatchers.anyLong())).thenReturn(5);
+        when(applicationBaseRepository.findAllNames()).thenReturn(Collections.emptyList());
+        when(appInstanceRepo.findAllInTimePeriod(org.mockito.ArgumentMatchers.anyLong(), org.mockito.ArgumentMatchers.anyLong())).thenReturn(Collections.emptyList());
+
+        dashboardService.getSystemDashboard(startDate, endDate);
+
+        ArgumentCaptor<Long> sinceCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<Long> toCaptor = ArgumentCaptor.forClass(Long.class);
+
+        org.mockito.Mockito.verify(appInstanceRepo).countAllDeployedSinceTime(sinceCaptor.capture(), toCaptor.capture());
+
+        long sinceTime = sinceCaptor.getValue();
+        long toTime = toCaptor.getValue();
+
+        assert sinceTime > 0;
+        assert toTime > 0;
+        assert sinceTime < toTime;
+    }
 }

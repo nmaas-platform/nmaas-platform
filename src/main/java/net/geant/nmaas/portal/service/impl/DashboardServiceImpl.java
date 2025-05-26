@@ -49,8 +49,10 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
 
-        long startTimeStamp = System.currentTimeMillis() - startDate.toEpochSecond();
-        long endTimeStamp = System.currentTimeMillis() - endDate.toEpochSecond();
+        log.warn("Start date {} / end date {}", startDate, endDate);
+
+        long startTimeStamp = startDate.toEpochSecond();
+        long endTimeStamp = endDate.toEpochSecond();
 
 
         List<String> baseNames = applicationBaseRepository.findAllNames();
@@ -68,7 +70,8 @@ public class DashboardServiceImpl implements DashboardService {
 
         //filter not deployed application
         applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
-
+        log.warn("Start stamp {} / end stamp {}", startTimeStamp, endTimeStamp);
+        log.warn("Result: {}", appInstanceRepo.countAllDeployedSinceTime(startTimeStamp, endTimeStamp));
 
         return DashboardView.builder()
                 .domainsCount(domainRepository.count())
