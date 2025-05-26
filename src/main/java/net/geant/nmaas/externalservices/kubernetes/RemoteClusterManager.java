@@ -105,10 +105,22 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         log.debug("Filed saved in: {}", savedPath);
         entity.setPathConfigFile(savedPath);
 
-        KCluster cluster = this.clusterRepository.save(entity);
-        log.debug("Cluster saved: {}", cluster.toString());
+        KCluster cluster = clusterRepository.save(entity);
+        log.debug("Cluster saved: {}", cluster);
         sendMail(cluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
         return toView(cluster);
+    }
+
+    private void checkRequest(KCluster entity) {
+        if (entity.getName() == null) {
+            throw new IllegalArgumentException("Name of the cluster is null");
+        }
+        if (entity.getCodename() == null) {
+            throw new IllegalArgumentException("Codename of the cluster is null");
+        }
+        if (entity.getDescription() == null) {
+            throw new IllegalArgumentException("Description of the cluster is null");
+        }
     }
 
     public RemoteClusterView readClusterFile(RemoteClusterView view, MultipartFile file) {
@@ -139,7 +151,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
                                 .state(KClusterState.UNKNOWN)
                                 .contactEmail(view.getContactEmail())
                                 .currentStateSince(OffsetDateTime.now())
-                                .domains(!view.getDomainNames().isEmpty() ?  view.getDomainNames().stream().map(d -> {
+                                .domains(!view.getDomainNames().isEmpty() ? view.getDomainNames().stream().map(d -> {
                                             Optional<Domain> dom = domainService.findDomain(d);
                                             return dom.orElse(null);
                                         }
@@ -200,18 +212,6 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         }
     }
 
-    private void checkRequest(KCluster entity) {
-        if (entity.getName() == null) {
-            throw new IllegalArgumentException("Name of the cluster is null");
-        }
-        if (entity.getCodename() == null) {
-            throw new IllegalArgumentException("Codename of the cluster is null");
-        }
-        if (entity.getDescription() == null) {
-            throw new IllegalArgumentException("Description of the cluster is null");
-        }
-    }
-
     private static String computeSHA256(MultipartFile file) throws IOException, NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         try (InputStream is = file.getInputStream();
@@ -244,7 +244,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
 
     @Override
     public void updateAllClusterState() {
-        restoreFileIfMissing();
+        restoreKubeconfigFileIfMissing();
         List<KCluster> kClusters = clusterRepository.findAll();
         kClusters.forEach(cluster -> {
             Config config = null;
@@ -262,8 +262,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
                 updateStateIfNeeded(cluster, KClusterState.UP);
 
             } catch (KubernetesClientException e) {
-                log.error("Can not connect to cluster {}", cluster.getCodename());
-                log.error(e.getMessage());
+                log.warn("Can't connect to cluster {} (message: {})", cluster.getCodename(), e.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.DOWN);
             } catch (RuntimeException ex) {
                 log.error("Runtime error while checking health of cluster {}", ex.getMessage());
@@ -288,8 +287,8 @@ public class RemoteClusterManager implements ClusterMonitoringService {
 
     private void sendMail(KCluster kCluster, MailType mailType) {
         UserView recipient;
-        if(userService.existsByEmail(kCluster.getContactEmail())) {
-             recipient = modelMapper.map( userService.findByEmail(kCluster.getContactEmail()), UserView.class);
+        if (userService.existsByEmail(kCluster.getContactEmail())) {
+            recipient = modelMapper.map(userService.findByEmail(kCluster.getContactEmail()), UserView.class);
         } else {
             recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
         }
@@ -307,7 +306,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }
 
-    public void restoreFileIfMissing() {
+    private void restoreKubeconfigFileIfMissing() {
         List<KCluster> clusters = clusterRepository.findAll();
         clusters.forEach(cluster -> {
             if (!isFileAvailable(cluster.getPathConfigFile())) {
@@ -326,7 +325,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         });
     }
 
-    public boolean isFileAvailable(String pathStr) {
+    private boolean isFileAvailable(String pathStr) {
         Path path = Paths.get(pathStr);
         return Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path);
     }
