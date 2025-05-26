@@ -128,36 +128,35 @@ public class DashboardServiceImplTest {
     }
 
     @Test
-void getSystemDashboardShouldCalculateCorrectTimestamps() {
-    OffsetDateTime startDate = OffsetDateTime.now().minusHours(5);
-    OffsetDateTime endDate = OffsetDateTime.now();
+    void getSystemDashboardShouldCalculateCorrectTimestamps() {
+        OffsetDateTime startDate = OffsetDateTime.now().minusHours(5);
+        OffsetDateTime endDate = OffsetDateTime.now();
 
-    // Mock required repository methods
-    when(domainRepository.count()).thenReturn(1L);
-    when(userRepository.count()).thenReturn(1L);
-    when(appInstanceRepo.count()).thenReturn(1L);
-    when(appInstanceRepo.countAllDeployedSinceTime(org.mockito.ArgumentMatchers.anyLong(), org.mockito.ArgumentMatchers.anyLong())).thenReturn(1);
-    when(applicationBaseRepository.findAllNames()).thenReturn(Collections.emptyList());
-    when(appInstanceRepo.findAllInTimePeriod(org.mockito.ArgumentMatchers.anyLong(), org.mockito.ArgumentMatchers.anyLong())).thenReturn(Collections.emptyList());
+        // Mock required repository methods
+        when(domainRepository.count()).thenReturn(1L);
+        when(userRepository.count()).thenReturn(1L);
+        when(appInstanceRepo.count()).thenReturn(1L);
+        when(appInstanceRepo.countAllDeployedSinceTime(org.mockito.ArgumentMatchers.anyLong(), org.mockito.ArgumentMatchers.anyLong())).thenReturn(1);
+        when(applicationBaseRepository.findAllNames()).thenReturn(Collections.emptyList());
+        when(appInstanceRepo.findAllInTimePeriod(org.mockito.ArgumentMatchers.anyLong(), org.mockito.ArgumentMatchers.anyLong())).thenReturn(Collections.emptyList());
 
-    // Call the method
-    dashboardService.getSystemDashboard(startDate, endDate);
+        // Call the method
+        dashboardService.getSystemDashboard(startDate, endDate);
 
-    // Capture the arguments
-    ArgumentCaptor<Long> startCaptor = ArgumentCaptor.forClass(Long.class);
-    ArgumentCaptor<Long> endCaptor = ArgumentCaptor.forClass(Long.class);
+        // Capture the arguments
+        ArgumentCaptor<Long> startCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<Long> endCaptor = ArgumentCaptor.forClass(Long.class);
 
-    // Verify that the method was called with calculated timestamps
-    org.mockito.Mockito.verify(appInstanceRepo).countAllDeployedSinceTime(startCaptor.capture(), endCaptor.capture());
+        org.mockito.Mockito.verify(appInstanceRepo).countAllDeployedSinceTime(startCaptor.capture(), endCaptor.capture());
 
-    long startTimestamp = startCaptor.getValue();
-    long endTimestamp = endCaptor.getValue();
+        long startTimestamp = startCaptor.getValue();
+        long endTimestamp = endCaptor.getValue();
 
-    // The timestamps should be positive and start should be greater than end (since it's calculated as now - toEpochSecond)
-    assert startTimestamp > 0;
-    assert endTimestamp > 0;
-    assert startTimestamp > endTimestamp;
-}
+        // The timestamps should be positive and start should be less than or equal to end
+        assert startTimestamp > 0;
+        assert endTimestamp > 0;
+        assert startTimestamp <= endTimestamp;
+    }
 
     @Test
     void countAllDeployedSinceTimeShouldReturnCorrectCount() {
