@@ -20,6 +20,7 @@ import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -37,8 +38,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,8 +47,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class RemoteClusterManager implements ClusterMonitoringService {
 
     private final KClusterRepository clusterRepository;
@@ -55,6 +56,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     public RemoteClusterView getClusterView(Long id) {
@@ -285,7 +287,13 @@ public class RemoteClusterManager implements ClusterMonitoringService {
     }
 
     private void sendMail(KCluster kCluster, MailType mailType) {
-        UserView recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
+        UserView recipient;
+        if(userService.existsByEmail(kCluster.getContactEmail())) {
+             recipient = modelMapper.map( userService.findByEmail(kCluster.getContactEmail()), UserView.class);
+        } else {
+            recipient = UserView.builder().email(kCluster.getContactEmail()).username(kCluster.getContactEmail()).selectedLanguage("EN").build();
+        }
+
         Map<String, Object> attr = new HashMap<>();
         attr.put("clusterId", kCluster.getId());
         attr.put("clusterCodename", kCluster.getCodename());
