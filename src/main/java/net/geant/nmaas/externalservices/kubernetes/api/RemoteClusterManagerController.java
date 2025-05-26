@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +58,12 @@ public class RemoteClusterManagerController {
     @PutMapping("/{id}")
     public RemoteClusterView updateKubernetesCluster(@PathVariable Long id, @RequestBody RemoteClusterView view) {
         return remoteClusterManager.updateCluster(view, id);
+    }
+
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    @DeleteMapping("/{id}")
+    public void deleteCluster(@PathVariable Long id) {
+         remoteClusterManager.removeCluster(id);
     }
 
 }
