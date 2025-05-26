@@ -331,4 +331,16 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         return Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path);
     }
 
+    public void removeCluster(Long id) {
+        try {
+            if(clusterRepository.existsById(id)) {
+                this.clusterRepository.deleteById(id);
+            }
+        } catch (RuntimeException ex) {
+            log.warn("Can not delete cluster {}", id);
+            log.error("Exception: {}", ex.getMessage());
+        }
+
+    }
+
 }
