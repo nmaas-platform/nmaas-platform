@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.*;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
@@ -24,6 +25,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -34,6 +37,9 @@ class ServiceDeploymentWithKubernetesTest {
 
 	@Autowired
 	private KubernetesRepositoryManager repositoryManager;
+
+	@Autowired
+	private RemoteClusterManager remoteClusterManager;
 
 	private static final Identifier deploymentId = Identifier.newInstance(1L);
 
@@ -93,6 +99,7 @@ class ServiceDeploymentWithKubernetesTest {
 				.applicationId(Identifier.newInstance("appId"))
 				.deploymentName("deploy")
 				.configFileRepositoryRequired(false)
+				.remoteClusterId(1L)
 				.appName("AppName").build();
 	}
 
