@@ -57,7 +57,7 @@ public class HelmCommandPreparationTest {
                         RELEASE_NAME,
                         null,
                         CHART_NAME_WITH_REPO,
-                        null, false).asString(),
+                        null, false, null).asString(),
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO));
         assertThat(
                 HelmInstallCommand.commandWithRepo(
@@ -66,7 +66,7 @@ public class HelmCommandPreparationTest {
                         RELEASE_NAME,
                         null,
                         CHART_NAME_WITH_REPO,
-                        CHART_VERSION, false).asString(),
+                        CHART_VERSION, false, null).asString(),
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO_WITH_VERSION));
     }
 
@@ -79,7 +79,7 @@ public class HelmCommandPreparationTest {
                         RELEASE_NAME,
                         null,
                         CHART_NAME_WITH_REPO,
-                        null, false).asString(),
+                        null, false, null).asString(),
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_FOR_v3_USING_CHART_FROM_REPO));
         assertThat(
                 HelmInstallCommand.commandWithRepo(
@@ -88,7 +88,7 @@ public class HelmCommandPreparationTest {
                         RELEASE_NAME,
                         null,
                         CHART_NAME_WITH_REPO,
-                        CHART_VERSION, false).asString(),
+                        CHART_VERSION, false, null).asString(),
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_FOR_V3_USING_CHART_FROM_REPO_WITH_VERSION));
     }
 
@@ -101,7 +101,7 @@ public class HelmCommandPreparationTest {
                         RELEASE_NAME,
                         null,
                         CHART_NAME_WITH_REPO,
-                        null, true).asString(),
+                        null, true, null).asString(),
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO + TLS));
         assertThat(
                 HelmInstallCommand.commandWithRepo(
@@ -110,7 +110,7 @@ public class HelmCommandPreparationTest {
                         RELEASE_NAME,
                         null,
                         CHART_NAME_WITH_REPO,
-                        CHART_VERSION, true).asString(),
+                        CHART_VERSION, true, null).asString(),
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO_WITH_VERSION + TLS));
     }
 
@@ -127,7 +127,7 @@ public class HelmCommandPreparationTest {
                         arguments,
                         CHART_NAME_WITH_REPO,
                         CHART_VERSION,
-                        false).asString(),
+                        false, null).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
                         containsString("testPersistenceName"),
                         containsString("testStorageClass"))
@@ -147,7 +147,7 @@ public class HelmCommandPreparationTest {
                         arguments,
                         CHART_NAME_WITH_REPO,
                         CHART_VERSION,
-                        true).asString(),
+                        true, null).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
                         containsString("testPersistenceName"),
                         containsString("testStorageClass"),

@@ -5,6 +5,11 @@ import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManag
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
+import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
+import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
+import net.geant.nmaas.externalservices.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -18,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -119,7 +125,8 @@ public class HelmKServiceManagerTest {
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 k8sTemplateArg.capture(),
-                argumentsArg.capture(), null
+                argumentsArg.capture(),
+                eq(null)
         );
         assertThat(argumentsArg.getValue()).isNotEmpty();
         assertThat(argumentsArg.getValue().size()).isEqualTo(11);
@@ -142,8 +149,9 @@ public class HelmKServiceManagerTest {
         verify(helmCommandExecutor, times(1)).executeHelmInstallCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
-                any(),
-                any(), null
+                any(KubernetesTemplate.class),
+                any(Map.class),
+                eq(null)
         );
     }
 
@@ -226,6 +234,65 @@ public class HelmKServiceManagerTest {
                 eq("descriptiveDeploymentId"),
                 any(KubernetesTemplate.class)
         );
+    }
+
+    @Test
+    void shouldDeployServiceWithKubeconfigPath() {
+        when(namespaceService.namespace("domain")).thenReturn("namespace");
+        when(ingressManager.getResourceConfigOption()).thenReturn(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        when(ingressManager.getIngressPerDomain()).thenReturn(false);
+        when(ingressManager.getSupportedIngressClass()).thenReturn("testIngressClass");
+        when(ingressManager.getTlsSupported()).thenReturn(true);
+        when(ingressManager.getIssuerOrWildcardName()).thenReturn("testIssuerName");
+        when(ingressManager.getCertificateConfigOption()).thenReturn(IngressCertificateConfigOption.USE_LETSENCRYPT);
+
+
+        KClusterDeployment mockDeployment = KClusterDeployment.builder()
+                .namespaceConfigOption(NamespaceConfigOption.CREATE_NAMESPACE)
+                .defaultNamespace("default-namespace")
+                .defaultStorageClass("default-storage-class")
+                .smtpServerHostname("smtp.example.com")
+                .smtpServerPort(587)
+                .smtpServerUsername("user@example.com")
+                .smtpServerPassword("password")
+                .smtpFromDefaultDomain("example.com")
+                .forceDedicatedWorkers(true)
+                .build();
+
+        KClusterIngress mockIngress = KClusterIngress.builder().resourceConfigOption(IngressResourceConfigOption.NOT_USED).build();
+
+
+        KCluster mockCluster = KCluster.builder()
+                .id(1L)
+                .name("TestCluster")
+                .codename("test-cluster")
+                .description("Mocked Kubernetes Cluster")
+                .creationDate(OffsetDateTime.now())
+                .modificationDate(OffsetDateTime.now())
+                .clusterConfigFile("mock-cluster-config")
+                .pathConfigFile("mock/path/to/kubeconfig")
+                .state(KClusterState.UNKNOWN)
+                .currentStateSince(OffsetDateTime.now())
+                .contactEmail("test@example.com")
+                .deployment(mockDeployment)
+                .ingress(mockIngress)
+                .build();
+
+        KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+        service.setRemoteCluster(mockCluster);
+        when(repositoryManager.loadService(deploymentId)).thenReturn(service);
+
+        manager.deployService(deploymentId);
+
+        ArgumentCaptor<String> kubeconfigPathArg = ArgumentCaptor.forClass(String.class);
+        verify(helmCommandExecutor, times(1)).executeHelmInstallCommand(
+                eq("namespace"),
+                eq("descriptiveDeploymentId"),
+                any(KubernetesTemplate.class),
+                any(Map.class),
+                kubeconfigPathArg.capture()
+        );
+        assertThat(kubeconfigPathArg.getValue()).isEqualTo("mock/path/to/kubeconfig");
     }
 
 }
