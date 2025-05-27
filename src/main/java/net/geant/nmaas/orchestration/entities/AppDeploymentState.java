@@ -551,12 +551,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
             //TODO discous about correct next state
-            return APPLICATION_CONFIGURED;
-        }
-
-        @Override
-        public boolean isInRunningState() {
-            return true;
+//            return APPLICATION_CONFIGURED;
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
     };
 
