@@ -200,7 +200,7 @@ public class DomainServiceImpl implements DomainService {
                 eventPublisher.publishEvent(new DomainCreatedEvent(this, new DomainCreatedEvent.DomainSpec(saved.getId(), saved.getName(), saved.getCodename(), request.getAnnotations())));
             }
             //call existing webhooks
-//            webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION).forEach(id -> scheduleManager.createOneTimeJob(DomainCreationJob.class, "DomainCreation_" + id + "_" + saved.getId(), Map.of("webhookId", id, "domainId", saved.getId())));
+            webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION).forEach(id -> scheduleManager.createOneTimeJob(DomainCreationJob.class, "DomainCreation_" + id + "_" + saved.getId(), Map.of("webhookId", id, "domainId", saved.getId())));
             return saved;
         } catch (Exception ex) {
             throw new ProcessingException("Unable to create new domain with given name or codename.");
