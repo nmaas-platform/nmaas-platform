@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.user;
 
-import net.geant.nmaas.portal.api.exception.ValidationError;
-import net.geant.nmaas.portal.api.exception.ValidationErrorBuilder;
+import net.geant.nmaas.portal.api.exceptions.ValidationError;
+import net.geant.nmaas.portal.api.exceptions.ValidationErrorBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;

@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.configuration;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.service.ConfigurationManager;

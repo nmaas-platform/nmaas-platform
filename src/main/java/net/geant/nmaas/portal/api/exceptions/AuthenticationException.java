@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.exception;
+package net.geant.nmaas.portal.api.exceptions;
 
 public class AuthenticationException extends MarketException {
 

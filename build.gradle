@@ -247,9 +247,7 @@ jacocoTestCoverageVerification {
             ]
             excludes = [
                     '**.model*',
-                    '**.exceptions**',
-                    '**.exception**',
-                    'net.geant.nmaas.portal.api.bulk'
+                    '**.exceptions**'
             ]
             limit {
                 counter = 'INSTRUCTION'
@@ -260,8 +258,7 @@ jacocoTestCoverageVerification {
         rule {
             element = 'PACKAGE'
             includes = [
-                    'net.geant.nmaas.orchestration.**',
-                    'net.geant.nmaas.portal.api.bulk'
+                    'net.geant.nmaas.orchestration.**'
             ]
             excludes = [
                     '**.model*',

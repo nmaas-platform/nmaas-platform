@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.StorageException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.StorageException;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
 import net.geant.nmaas.portal.persistent.repositories.FileInfoRepository;
 import net.geant.nmaas.portal.service.FileStorageService;

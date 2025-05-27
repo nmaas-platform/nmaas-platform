@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.exception;
+package net.geant.nmaas.portal.api.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

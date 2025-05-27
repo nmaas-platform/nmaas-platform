@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.exception;
+package net.geant.nmaas.portal.api.exceptions;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;

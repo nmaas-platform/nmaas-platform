@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.configuration;
+package net.geant.nmaas.portal.api.configuration.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,6 +56,5 @@ public class ConfigurationView {
     private String deploymentPrefix;
 
     private String healthCheckJobCron;
-
 
 }

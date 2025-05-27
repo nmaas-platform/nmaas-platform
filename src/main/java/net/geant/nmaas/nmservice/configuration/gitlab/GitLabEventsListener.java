@@ -9,7 +9,7 @@ import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepos
 import net.geant.nmaas.nmservice.configuration.gitlab.events.UserSshKeysUpdatedGitlabEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

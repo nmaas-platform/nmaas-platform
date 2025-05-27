@@ -3,7 +3,6 @@ package net.geant.nmaas.notifications.types.service;
 import net.geant.nmaas.notifications.types.model.FormTypeRequest;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.persistence.repository.FormTypeRepository;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.info;
 
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.domain.ContentView;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import org.modelmapper.ModelMapper;

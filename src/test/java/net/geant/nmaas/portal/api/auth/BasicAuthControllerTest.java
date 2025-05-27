@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.auth;
 
-import net.geant.nmaas.portal.api.exception.AuthenticationException;
+import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
