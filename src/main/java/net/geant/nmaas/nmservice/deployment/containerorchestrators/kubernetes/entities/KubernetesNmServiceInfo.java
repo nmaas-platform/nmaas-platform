@@ -42,7 +42,7 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     private Set<ServiceAccessMethod> accessMethods;
 
     @ManyToOne
-    @JoinColumn(name = "kcluster_id", referencedColumnName = "id")
+    @JoinColumn(name = "k_cluster_id", referencedColumnName = "id")
     private KCluster remoteCluster;
 
     public KubernetesNmServiceInfo () {

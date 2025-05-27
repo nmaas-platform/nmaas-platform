@@ -1,5 +1,5 @@
 ALTER TABLE kubernetes_nm_service_info
-ADD COLUMN kcluster_id integer;
+ADD COLUMN k_cluster_id integer;
 
 ALTER TABLE kubernetes_nm_service_info
 ADD CONSTRAINT fk_kubernetes_nm_service_info_kcluster
