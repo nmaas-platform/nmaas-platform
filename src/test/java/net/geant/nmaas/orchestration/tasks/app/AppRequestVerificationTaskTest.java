@@ -42,6 +42,7 @@ public class AppRequestVerificationTaskTest {
     public void shouldTriggerRequestVerify() throws InterruptedException {
         when(deployments.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().applicationId(Identifier.newInstance(10L)).build()));
         when(applications.findById(any(Long.class))).thenReturn(Optional.of(new Application()));
+        when(remoteClusterManager.clusterExist(any())).thenReturn(true);
         task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
         verify(deploy, times(1)).verifyRequest(any(Identifier.class), any(AppDeployment.class), isNull());
     }
