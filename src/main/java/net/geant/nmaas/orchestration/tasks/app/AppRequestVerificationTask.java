@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -29,6 +30,8 @@ public class AppRequestVerificationTask {
     private AppDeploymentRepository repository;
     private ApplicationRepository appRepository;
 
+    private RemoteClusterManager remoteClusterManager;
+
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -39,6 +42,9 @@ public class AppRequestVerificationTask {
             final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
             final Application application = appRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue())).orElseThrow(() ->
                     new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
+            if(!remoteClusterManager.clusterExist(appDeployment.getRemoteClusterId())) {
+                throw new InvalidDeploymentIdException("Wrong remote cluster Id");
+            }
             serviceDeployment.verifyRequest(
                     deploymentId,
                     appDeployment,

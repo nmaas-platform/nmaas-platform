@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
@@ -81,6 +82,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private final KubernetesClusterIngressManager ingressManager;
     private final GitLabManager gitLabManager;
     private final JanitorService janitorService;
+    private final RemoteClusterManager remoteClusterManager;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -97,12 +99,25 @@ public class KubernetesManager implements ContainerOrchestrator {
             throw new NmServiceRequestVerificationException(iae.getMessage());
         }
 
-        KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo(
-                deploymentId,
-                appDeployment.getDeploymentName(),
-                appDeployment.getDomain(),
-                appDeployment.getDescriptiveDeploymentId()
-        );
+        KubernetesNmServiceInfo serviceInfo;
+        //verify cluster
+        if(remoteClusterManager.clusterExist(appDeployment.getRemoteClusterId())) {
+            serviceInfo = new KubernetesNmServiceInfo(
+                    deploymentId,
+                    appDeployment.getDeploymentName(),
+                    appDeployment.getDomain(),
+                    appDeployment.getDescriptiveDeploymentId(),
+                    remoteClusterManager.getCluster(appDeployment.getRemoteClusterId()));
+        } else {
+            serviceInfo = new KubernetesNmServiceInfo(
+                    deploymentId,
+                    appDeployment.getDeploymentName(),
+                    appDeployment.getDomain(),
+                    appDeployment.getDescriptiveDeploymentId()
+            );
+        }
+
+
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
