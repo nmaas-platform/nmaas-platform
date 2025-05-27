@@ -49,13 +49,13 @@ public class WebhookEventController {
     @PutMapping("/{id}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public void updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook) {
+    public ResponseEntity<WebhookEventDto> updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook) {
         if (!id.equals(webhook.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_WEBHOOK_EVENT);
         }
 
         try {
-            webhookEventService.update(webhook);
+            return ResponseEntity.ok(webhookEventService.update(webhook));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
