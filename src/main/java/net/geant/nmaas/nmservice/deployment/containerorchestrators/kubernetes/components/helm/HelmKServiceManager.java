@@ -75,7 +75,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 namespaceService.namespace(serviceInfo.getDomain()),
                 serviceInfo.getDescriptiveDeploymentId().getValue(),
                 serviceInfo.getKubernetesTemplate(),
-                createArgumentsMap(serviceInfo)
+                createArgumentsMap(serviceInfo),
+                serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
         );
     }
 
