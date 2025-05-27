@@ -119,7 +119,7 @@ public class HelmKServiceManagerTest {
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 k8sTemplateArg.capture(),
-                argumentsArg.capture()
+                argumentsArg.capture(), null
         );
         assertThat(argumentsArg.getValue()).isNotEmpty();
         assertThat(argumentsArg.getValue().size()).isEqualTo(11);
@@ -143,7 +143,7 @@ public class HelmKServiceManagerTest {
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
                 any(),
-                any()
+                any(), null
         );
     }
 

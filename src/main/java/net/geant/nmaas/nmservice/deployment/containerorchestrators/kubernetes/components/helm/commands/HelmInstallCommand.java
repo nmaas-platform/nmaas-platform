@@ -25,7 +25,7 @@ public class HelmInstallCommand extends HelmCommand {
      * @param enableTls    flag indicating if tls option should be added
      * @return complete command object
      */
-    public static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls) {
+    public static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls, String kubeConfigPath) {
         StringBuilder sb = buildBaseInstallCommand(helmVersion, namespace, releaseName, values);
         if (chartName == null || chartName.isEmpty()) {
             throw new IllegalArgumentException("Chart name can't be null or empty");
@@ -35,6 +35,10 @@ public class HelmInstallCommand extends HelmCommand {
             sb.append(SPACE).append(OPTION_VERSION).append(SPACE).append(chartVersion);
         }
         addTlsOptionIfRequired(helmVersion, enableTls, sb);
+
+        if(kubeConfigPath != null && !kubeConfigPath.isEmpty()) {
+            sb.append(SPACE).append(KUBECONFIG).append(SPACE).append(kubeConfigPath);
+        }
         return new HelmInstallCommand(sb.toString());
     }
 
