@@ -349,7 +349,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
 
     }
 
-    public boolean clusterExist(Long id) {
+    public boolean clusterExists(Long id) {
         return clusterRepository.existsById(id);
     }
 

@@ -107,7 +107,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                 appDeployment.getDescriptiveDeploymentId()
         );
         //verify cluster
-        if(remoteClusterManager.clusterExist(appDeployment.getRemoteClusterId())) {
+        if(remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
            serviceInfo.setRemoteCluster(remoteClusterManager.getCluster(appDeployment.getRemoteClusterId()));
         }
 
