@@ -75,7 +75,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .instanceCountInPeriod(appInstanceRepository.countAllDeployedInTimePeriod(startTimeStamp, endTimeStamp))
                 .instanceCountInPeriodDetails(deploymentsViews)
                 .popularApps(applicationDeploymentCountPerName).build();
-        log.info("Response: {}", systemView.toString());
+        log.debug("Response: {}", systemView.toString());
         return systemView;
     }
 
@@ -116,7 +116,7 @@ public class DashboardServiceImpl implements DashboardService {
                     .applicationDeployed(appsDeployed)
                     .applicationUpgradeStatus(upgradePossible)
                     .build();
-            log.info("Response: {}", view.toString());
+            log.debug("Response: {}", view.toString());
             return view;
         } else {
             log.error("Domain {} not present. Returning empty...", domainId);

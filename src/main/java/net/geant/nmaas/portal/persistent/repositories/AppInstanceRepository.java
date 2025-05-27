@@ -41,7 +41,7 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 
     @Modifying
     @Query("update AppInstance ai set ai.application = :application, ai.previousApplicationId = :previousApplicationId where ai.id = :id")
-    void updateApplication(@Param(value = "id") long id, @Param(value = "previousApplicationId") long previousApplicationId, @Param(value = "application") Application application);
+    void updateApplication(@Param(value = "id") Long id, @Param(value = "previousApplicationId") Long previousApplicationId, @Param(value = "application") Application application);
 
     @Query("SELECT COUNT(ai.id) FROM AppInstance ai JOIN AppDeployment ad ON ad.deploymentId = ai.internalId WHERE ai.name = :name AND ai.domain.codename = :domain AND ad.state NOT IN" +
             "('APPLICATION_REMOVED'," +
@@ -51,16 +51,16 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
     int isNameAvailableInDomain(@Param(value = "name") String name, @Param(value = "domain") String domain);
 
     @Query("SELECT COUNT(ai.id) FROM AppInstance ai WHERE ai.createdAt >= :sinceTime")
-    int countAllDeployedSince(@Param("sinceTime") long sinceTime);
+    int countAllDeployedSince(@Param("sinceTime") Long sinceTime);
 
     @Query("SELECT COUNT(ai.id) FROM AppInstance ai WHERE ai.createdAt >= :sinceTime AND ai.createdAt < :endTime")
-    int countAllDeployedInTimePeriod(@Param("sinceTime") long sinceTime, @Param("endTime") long endTime);
+    int countAllDeployedInTimePeriod(@Param("sinceTime") Long sinceTime, @Param("endTime") Long endTime);
 
     @Query("SELECT COUNT(ai.id) FROM AppInstance ai JOIN AppDeployment ad ON ad.deploymentId = ai.internalId WHERE ai.application.name = ?1")
     int countByName(String name);
 
     @Query("SELECT ai FROM AppInstance ai WHERE ai.createdAt >= :sinceTime AND ai.createdAt <= :endTime")
-    List<AppInstance> findAllInTimePeriod(@Param("sinceTime") long sinceTime, @Param("endTime") long endTime);
+    List<AppInstance> findAllInTimePeriod(@Param("sinceTime") Long sinceTime, @Param("endTime") Long endTime);
 
     int countAllByOwner(User user);
 

@@ -26,8 +26,8 @@ public class GeneralInformationController {
 
     @GetMapping(value = "/changelog", produces = "application/json")
     public FileSystemResource getChangelog() throws IOException {
-        Path tempJsonFile = Files.createTempFile("changelog",".json");
-        try(InputStream inputStream = changelogPath.getInputStream()) {
+        Path tempJsonFile = Files.createTempFile("changelog", ".json");
+        try (InputStream inputStream = changelogPath.getInputStream()) {
             Files.copy(inputStream, tempJsonFile, StandardCopyOption.REPLACE_EXISTING);
         }
         return new FileSystemResource(tempJsonFile);

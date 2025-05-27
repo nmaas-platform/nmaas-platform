@@ -243,9 +243,11 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         }
     }
 
-    private RemoteClusterView toView(KCluster KCluster) {
-        RemoteClusterView view = modelMapper.map(KCluster, RemoteClusterView.class);
-        view.setDomainNames(KCluster.getDomains().stream().map(Domain::getName).toList());
+    private RemoteClusterView toView(KCluster kCluster) {
+        RemoteClusterView view = modelMapper.map(kCluster, RemoteClusterView.class);
+        if (Objects.nonNull(kCluster.getDomains())) {
+            view.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
+        }
         return view;
     }
 
