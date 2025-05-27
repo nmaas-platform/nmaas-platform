@@ -15,10 +15,11 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.utils.bash.CommandExecutionException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import net.geant.nmaas.utils.bash.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -114,12 +115,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static Map<String, String> removeRedundantParameters(Map<String, String> additionalParameters) {
         return additionalParameters.entrySet().stream().filter(entry ->
-                        !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
-                                && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
-                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
+                        && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
+        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Map<String, String> getIngressVariables(IngressResourceConfigOption ingressResourceConfigOption, Set<ServiceAccessMethod> externalAccessMethods, String domain){
+    private Map<String, String> getIngressVariables(IngressResourceConfigOption ingressResourceConfigOption, Set<ServiceAccessMethod> externalAccessMethods, String domain) {
         return HelmChartVariables.ingressVariablesMap(
                 DEPLOY_FROM_CHART.equals(ingressResourceConfigOption),
                 externalAccessMethods,
@@ -131,7 +132,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         );
     }
 
-    private String getIngressClass(String domain){
+    private String getIngressClass(String domain) {
         if (Boolean.TRUE.equals(ingressManager.getIngressPerDomain())) {
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
         }
@@ -189,6 +190,11 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
+    }
+
+    @Override
+    @Loggable(LogLevel.TRACE)
+    public void scaleDeployment(AppDeployment deployment, int replicas) {
     }
 
 }

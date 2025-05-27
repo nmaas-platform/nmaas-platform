@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -54,6 +55,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private final ApplicationEventPublisher eventPublisher;
     private final NmServiceRepositoryManager serviceRepositoryManager;
     private final JanitorService janitorService;
+    private final KServiceLifecycleManager kServiceLifecycleManager;
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
     private final ConfigurationManager configurationManager;
@@ -276,6 +278,28 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     public void updateApplicationStatus(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppVerifyServiceActionEvent(this, deploymentId));
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void scaleDown(Identifier deploymentId) {
+        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
+        kServiceLifecycleManager.scaleDeployment(appDeployment, 0);
+        appDeployment.setState(AppDeploymentState.SCALED_DOWN);
+
+        log.warn("Scaled down deployment NOT IMPLEMENT YET");
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void scaleUp(Identifier deploymentId) {
+        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
+        int replicas = 1;
+        kServiceLifecycleManager.scaleDeployment(appDeployment, replicas);
+
+        log.warn("Scaled up deployment NOT IMPLEMENT YET");
     }
 
 }
