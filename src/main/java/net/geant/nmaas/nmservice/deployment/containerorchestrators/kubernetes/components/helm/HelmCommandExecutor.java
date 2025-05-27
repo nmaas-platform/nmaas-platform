@@ -46,11 +46,11 @@ public class HelmCommandExecutor {
         this.enableTls = enableTls;
     }
 
-    void executeHelmInstallCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
-        executeInstall(namespace, releaseName, template, arguments);
+    void executeHelmInstallCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
+        executeInstall(namespace, releaseName, template, arguments, kubeConfigPath);
     }
 
-    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
+    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
         try {
             HelmInstallCommand command = HelmInstallCommand.commandWithRepo(
                     helmVersion,
@@ -59,7 +59,8 @@ public class HelmCommandExecutor {
                     arguments,
                     constructChartNameWithRepo(template.getChart().getName()),
                     template.getChart().getVersion(),
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             commandExecutor.execute(command);
         } catch (CommandExecutionException e) {

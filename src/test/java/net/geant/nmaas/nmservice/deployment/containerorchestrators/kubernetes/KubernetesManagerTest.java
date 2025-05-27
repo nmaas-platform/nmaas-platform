@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.collect.Sets;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
@@ -69,6 +70,7 @@ public class KubernetesManagerTest {
     private final KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
     private final JanitorService janitorService = mock(JanitorService.class);
+    private final RemoteClusterManager remoteClusterManager = mock(RemoteClusterManager.class);
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
@@ -82,7 +84,8 @@ public class KubernetesManagerTest {
             ingressResourceManager,
             ingressManager,
             gitLabManager,
-            janitorService
+            janitorService,
+            remoteClusterManager
     );
 
     @BeforeEach

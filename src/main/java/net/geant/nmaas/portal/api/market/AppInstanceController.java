@@ -297,6 +297,7 @@ public class AppInstanceController extends AppBaseController {
                 .owner(principal.getName())
                 .appName(app.getName())
                 .descriptiveDeploymentId(createDescriptiveDeploymentId(domain.getCodename(), app.getName(), appInstance.getId()))
+                .remoteClusterId(clusterId)
                 .build();
 
         Identifier internalId = appLifecycleManager.deployApplication(appDeployment);

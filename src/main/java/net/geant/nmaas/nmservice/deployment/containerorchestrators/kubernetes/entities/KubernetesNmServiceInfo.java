@@ -1,7 +1,10 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
 
@@ -38,12 +41,21 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ServiceAccessMethod> accessMethods;
 
+    @ManyToOne
+    @JoinColumn(name = "k_cluster_id", referencedColumnName = "id")
+    private KCluster remoteCluster;
+
     public KubernetesNmServiceInfo () {
         super();
     }
 
     public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId) {
         super(deploymentId, deploymentName, domain, descriptiveDeploymentId);
+    }
+
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Identifier descriptiveDeploymentId, KCluster kCluster) {
+        super(deploymentId, deploymentName, domain, descriptiveDeploymentId);
+        this.remoteCluster = kCluster;
     }
 
 }
