@@ -151,11 +151,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
                                 .state(KClusterState.UNKNOWN)
                                 .contactEmail(view.getContactEmail())
                                 .currentStateSince(OffsetDateTime.now())
-                                .domains(!view.getDomainNames().isEmpty() ? view.getDomainNames().stream().map(d -> {
-                                            Optional<Domain> dom = domainService.findDomain(d);
-                                            return dom.orElse(null);
-                                        }
-                                ).toList() : Collections.emptyList())
+                                .domains(prepareList(view))
                                 .build(),
                         file);
 
@@ -168,6 +164,17 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         }
 
         return null;
+    }
+
+    private List<Domain> prepareList(RemoteClusterView view) {
+        if (view == null || view.getDomainNames() == null) {
+            return Collections.emptyList();
+        }
+        return view.getDomainNames().stream().map(d -> {
+                    Optional<Domain> dom = domainService.findDomain(d);
+                    return dom.orElse(null);
+                }
+        ).toList();
     }
 
     public RemoteClusterView updateCluster(RemoteClusterView cluster, Long id) {
@@ -332,7 +339,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
 
     public void removeCluster(Long id) {
         try {
-            if(clusterRepository.existsById(id)) {
+            if (clusterRepository.existsById(id)) {
                 this.clusterRepository.deleteById(id);
             }
         } catch (RuntimeException ex) {

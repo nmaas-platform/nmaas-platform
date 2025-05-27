@@ -35,10 +35,11 @@ public class WebhookEventService {
         return webhookRepository.save(webhookEvent);
     }
 
-    public void update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
+    public WebhookEventDto update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId()).orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
         setWebhookEvent(webhookEvent, webhookEventDto);
-        webhookRepository.save(webhookEvent);
+        webhookEvent = webhookRepository.save(webhookEvent);
+        return modelMapper.map(webhookEvent, WebhookEventDto.class);
     }
 
     private void setWebhookEvent(WebhookEvent webhookEvent, WebhookEventDto webhookEventDto) throws GeneralSecurityException {
