@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.directory.InvalidAttributesException;
 import java.time.LocalDateTime;
 
 @Component
@@ -43,7 +44,7 @@ public class AppRequestVerificationTask {
             final Application application = appRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue())).orElseThrow(() ->
                     new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
             if(!remoteClusterManager.clusterExist(appDeployment.getRemoteClusterId())) {
-                throw new InvalidDeploymentIdException("Wrong remote cluster Id");
+                throw new InvalidAttributesException("Wrong remote cluster Id");
             }
             serviceDeployment.verifyRequest(
                     deploymentId,

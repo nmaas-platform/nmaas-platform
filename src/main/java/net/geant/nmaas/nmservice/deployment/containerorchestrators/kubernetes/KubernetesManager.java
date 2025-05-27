@@ -98,25 +98,18 @@ public class KubernetesManager implements ContainerOrchestrator {
         } catch (IllegalArgumentException iae) {
             throw new NmServiceRequestVerificationException(iae.getMessage());
         }
+        //todo
 
-        KubernetesNmServiceInfo serviceInfo;
+        KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo(
+                deploymentId,
+                appDeployment.getDeploymentName(),
+                appDeployment.getDomain(),
+                appDeployment.getDescriptiveDeploymentId()
+        );
         //verify cluster
         if(remoteClusterManager.clusterExist(appDeployment.getRemoteClusterId())) {
-            serviceInfo = new KubernetesNmServiceInfo(
-                    deploymentId,
-                    appDeployment.getDeploymentName(),
-                    appDeployment.getDomain(),
-                    appDeployment.getDescriptiveDeploymentId(),
-                    remoteClusterManager.getCluster(appDeployment.getRemoteClusterId()));
-        } else {
-            serviceInfo = new KubernetesNmServiceInfo(
-                    deploymentId,
-                    appDeployment.getDeploymentName(),
-                    appDeployment.getDomain(),
-                    appDeployment.getDescriptiveDeploymentId()
-            );
+           serviceInfo.setRemoteCluster(remoteClusterManager.getCluster(appDeployment.getRemoteClusterId()));
         }
-
 
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
