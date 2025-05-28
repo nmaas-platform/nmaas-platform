@@ -315,8 +315,8 @@
       "POPULAR": "Popularity",
       "DATE" : "Date added"
     },
-    "SCALE_UP": "Fortsetzen",
-    "SCALE_DOWN": "Pause"
+    "SCALED_UP": "Fortsetzen",
+    "SCALED_DOWN": "Pause"
   },
   "MONITOR": {
     "TITLE": "Überwachungsservice",

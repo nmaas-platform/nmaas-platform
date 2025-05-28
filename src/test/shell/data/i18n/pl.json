@@ -317,8 +317,8 @@
       "POPULAR": "Popularność",
       "DATE" : "Data dodania"
     },
-    "SCALE_UP": "Wznów",
-    "SCALE_DOWN": "Pauza"
+    "SCALED_UP": "Wznów",
+    "SCALED_DOWN": "Pauza"
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",

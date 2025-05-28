@@ -317,8 +317,8 @@
       "POPULAR": "Popularity",
       "DATE" : "Date added"
     },
-    "SCALE_UP": "Reprende",
-    "SCALE_DOWN": "Pause"
+    "SCALED_UP": "Reprende",
+    "SCALED_DOWN": "Pause"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
