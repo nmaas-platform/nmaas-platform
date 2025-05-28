@@ -156,7 +156,7 @@ public class BulkController {
 
         return ResponseEntity.ok(mapToViewList(filter(false, bulkDeploymentRepository.findByType(BulkType.DOMAIN))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     @GetMapping("/apps")
@@ -173,7 +173,7 @@ public class BulkController {
 
         return ResponseEntity.ok(mapToViewList(filter(false, bulkDeploymentRepository.findByType(BulkType.APPLICATION))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     @DeleteMapping("/{id}")
@@ -206,7 +206,7 @@ public class BulkController {
     private List<BulkDeploymentViewS> mapToViewList(List<BulkDeployment> deployments) {
         return deployments.stream()
                 .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/refresh/{id}")
@@ -224,7 +224,7 @@ public class BulkController {
     private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {
         return deployments.stream()
                 .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {

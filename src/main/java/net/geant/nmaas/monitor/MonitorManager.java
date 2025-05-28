@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -31,19 +30,19 @@ public class MonitorManager {
 
     public void createMonitorEntry(MonitorEntryView monitorEntryView) {
         validateMonitorEntryCreation(monitorEntryView);
-        this.repository.save(modelMapper.map(monitorEntryView, MonitorEntry.class));
+        repository.save(modelMapper.map(monitorEntryView, MonitorEntry.class));
     }
 
     public void updateMonitorEntry(MonitorEntryView monitorEntryView) {
-        MonitorEntry monitorEntry = this.repository.findByServiceName(monitorEntryView.getServiceName())
+        MonitorEntry monitorEntry = repository.findByServiceName(monitorEntryView.getServiceName())
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(monitorEntryView.getServiceName().getName())));
         validateMonitorEntryUpdate(monitorEntryView);
         monitorEntryView.setId(monitorEntry.getId());
-        this.repository.save(modelMapper.map(monitorEntryView, MonitorEntry.class));
+        repository.save(modelMapper.map(monitorEntryView, MonitorEntry.class));
     }
 
     public void updateMonitorEntry(Date lastCheck, ServiceType serviceType, MonitorStatus status) {
-        MonitorEntry monitorEntry = this.repository.findByServiceName(serviceType)
+        MonitorEntry monitorEntry = repository.findByServiceName(serviceType)
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceType.getName())));
         validateMonitorEntryUpdate(lastCheck, status);
         monitorEntry.setStatus(status);
@@ -54,33 +53,33 @@ public class MonitorManager {
         } else if (status.equals(MonitorStatus.FAILURE)) {
             eventPublisher.publishEvent(new NotificationEvent(this, getMailAttributes(serviceType.getName())));
         }
-        this.repository.save(monitorEntry);
+        repository.save(monitorEntry);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteMonitorEntry(String serviceName) {
-        if (this.repository.existsByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))) {
-            this.repository.deleteByServiceName(ServiceType.valueOf(serviceName.toUpperCase()));
+        if (repository.existsByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))) {
+            repository.deleteByServiceName(ServiceType.valueOf(serviceName.toUpperCase()));
         }
     }
 
     public List<MonitorEntryView> getAllMonitorEntries() {
-        return this.repository.findAll().stream()
-                .map(entity -> this.modelMapper.map(entity, MonitorEntryView.class))
-                .collect(Collectors.toList());
+        return repository.findAll().stream()
+                .map(entity -> modelMapper.map(entity, MonitorEntryView.class))
+                .toList();
     }
 
     public MonitorEntryView getMonitorEntries(String serviceName) {
-        return this.repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
-                .map(entity -> this.modelMapper.map(entity, MonitorEntryView.class))
+        return repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
+                .map(entity -> modelMapper.map(entity, MonitorEntryView.class))
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName)));
     }
 
     public void changeJobState(String serviceName, boolean active) {
-        MonitorEntry monitorEntry = this.repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
+        MonitorEntry monitorEntry = repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName.toUpperCase())));
         monitorEntry.setActive(active);
-        this.repository.save(monitorEntry);
+        repository.save(monitorEntry);
     }
 
     public boolean existsByServiceName(ServiceType serviceName) {

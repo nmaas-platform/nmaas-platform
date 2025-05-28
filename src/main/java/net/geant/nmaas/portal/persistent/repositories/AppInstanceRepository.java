@@ -50,16 +50,13 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
             "'FAILED_APPLICATION_REMOVED')")
     int isNameAvailableInDomain(@Param(value = "name") String name, @Param(value = "domain") String domain);
 
-    @Query("SELECT COUNT(ai.id) FROM AppInstance ai WHERE ai.createdAt >= :sinceTime")
-    int countAllDeployedSince(@Param("sinceTime") Long sinceTime);
-
-    @Query("SELECT COUNT(ai.id) FROM AppInstance ai WHERE ai.createdAt >= :sinceTime AND ai.createdAt < :endTime")
+    @Query(value = "SELECT COUNT(ai.id) FROM app_instance ai WHERE ai.created_at >= :sinceTime AND ai.created_at < :endTime", nativeQuery = true)
     int countAllDeployedInTimePeriod(@Param("sinceTime") Long sinceTime, @Param("endTime") Long endTime);
 
     @Query("SELECT COUNT(ai.id) FROM AppInstance ai JOIN AppDeployment ad ON ad.deploymentId = ai.internalId WHERE ai.application.name = ?1")
     int countByName(String name);
 
-    @Query("SELECT ai FROM AppInstance ai WHERE ai.createdAt >= :sinceTime AND ai.createdAt <= :endTime")
+    @Query(value = "SELECT * FROM app_instance ai WHERE ai.created_at >= :sinceTime AND ai.created_at <= :endTime", nativeQuery = true)
     List<AppInstance> findAllInTimePeriod(@Param("sinceTime") Long sinceTime, @Param("endTime") Long endTime);
 
     int countAllByOwner(User user);

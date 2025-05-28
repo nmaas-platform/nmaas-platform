@@ -129,7 +129,7 @@ public class DomainServiceImpl implements DomainService {
         return domainRepository.findAll()
                 .stream()
                 .filter(domain -> !domain.isDeleted())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -432,7 +432,7 @@ public class DomainServiceImpl implements DomainService {
         return this.userRoleRepository.findDomainMembers(domain).stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
                 .map(user -> modelMapper.map(user, UserView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -453,7 +453,7 @@ public class DomainServiceImpl implements DomainService {
                         app.setPvStorageSizeLimit(app.getPvStorageSizeLimit());
                     }
                     return app;
-                }).collect(Collectors.toList())
+                }).toList()
         );
 
         return domain;
