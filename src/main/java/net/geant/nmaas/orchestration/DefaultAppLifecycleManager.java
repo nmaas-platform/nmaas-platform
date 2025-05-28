@@ -285,7 +285,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void scaleDown(Identifier deploymentId) {
         AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
-        kServiceLifecycleManager.scaleDeployment(appDeployment, 0);
+        kServiceLifecycleManager.scaleDeployment(deploymentId, 0);
         appDeployment.setState(AppDeploymentState.SCALED_DOWN);
 
         log.warn("Scaled down deployment NOT IMPLEMENT YET");
@@ -295,9 +295,8 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void scaleUp(Identifier deploymentId) {
-        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
         int replicas = 1;
-        kServiceLifecycleManager.scaleDeployment(appDeployment, replicas);
+        kServiceLifecycleManager.scaleDeployment(deploymentId, replicas);
 
         log.warn("Scaled up deployment NOT IMPLEMENT YET");
     }

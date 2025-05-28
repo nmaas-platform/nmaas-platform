@@ -194,7 +194,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     @Override
     @Loggable(LogLevel.TRACE)
-    public void scaleDeployment(AppDeployment deployment, int replicas) {
+    public void scaleDeployment(Identifier deploymentId, int replicas) {
     }
 
 }
