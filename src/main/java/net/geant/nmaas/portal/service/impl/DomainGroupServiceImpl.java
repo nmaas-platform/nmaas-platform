@@ -64,8 +64,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
 
         //call existing webhooks
-        DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "create", "domainGroup", domainGroupView)));
+        //DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
+        //webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "create", "domainGroup", domainGroupView)));
         return modelMapper.map(domainGroupEntity, DomainGroupView.class);
     }
 

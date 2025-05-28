@@ -1322,7 +1322,7 @@
     "TITLE_SHORT" : "Webhooks",
     "ID" : "Id",
     "NAME" : "Name",
-    "TARGET_URL" : "Target Url",
+    "TARGET_URL" : "Target url",
     "TYPE" : "Webhook type",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
@@ -1332,7 +1332,7 @@
     "DOMAIN_GROUP_CHANGE" : "Domain group change",
     "NEW" : "Add webhook",
     "DETAILS" : "Webhooks details",
-    "SAVE" : "Save webhook",
-    "REMOVE" : "Remove webhook"
+    "SAVE" : "Save",
+    "REMOVE" : "Remove"
   }
 }
