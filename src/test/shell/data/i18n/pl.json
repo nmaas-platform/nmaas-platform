@@ -316,7 +316,9 @@
       "RATING": "Ocena",
       "POPULAR": "Popularność",
       "DATE" : "Data dodania"
-    }
+    },
+    "SCALE_UP": "Wznów",
+    "SCALE_DOWN": "Pauza"
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",

@@ -109,22 +109,5 @@ public class AppLifecycleManagerRestController {
         return ex.getMessage();
     }
 
-    /**
-     * @param deploymentId unique identifier of the deployed user application
-     */
-    @PutMapping("/{deploymentId}/scale-down")
-    public ResponseEntity<Void> scaleDownApp(@PathVariable String deploymentId) {
-        lifecycleManager.scaleDown(new Identifier(deploymentId));
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * @param deploymentId unique identifier of the deployed user application
-     */
-    @PutMapping("/{deploymentId}/scale-up")
-    public ResponseEntity<Void> scaleUpApp(@PathVariable String deploymentId) {
-        lifecycleManager.scaleUp(new Identifier(deploymentId));
-        return ResponseEntity.ok().build();
-    }
 
 }
