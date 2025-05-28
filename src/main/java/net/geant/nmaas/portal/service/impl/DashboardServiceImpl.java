@@ -44,8 +44,8 @@ public class DashboardServiceImpl implements DashboardService {
     public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
         log.info("Processing dashboard data request for period {} - {}", startDate, endDate);
 
-        long startTimeStamp = startDate.toEpochSecond();
-        long endTimeStamp = endDate.toEpochSecond();
+        long startTimeStamp = startDate.toEpochSecond() * 1000;
+        long endTimeStamp = endDate.toEpochSecond() * 1000;
         log.info("Period in timestamps: {} - {}", startTimeStamp, endTimeStamp);
 
         List<String> baseNames = applicationBaseRepository.findAllNames();
