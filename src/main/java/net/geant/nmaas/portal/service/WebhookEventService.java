@@ -36,10 +36,13 @@ public class WebhookEventService {
     }
 
     public WebhookEventDto update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
-        WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId()).orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
+        WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId())
+                .orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
         setWebhookEvent(webhookEvent, webhookEventDto);
         webhookEvent = webhookRepository.save(webhookEvent);
-        return modelMapper.map(webhookEvent, WebhookEventDto.class);
+        WebhookEventDto dto = modelMapper.map(webhookEvent, WebhookEventDto.class);
+        dto.setTokenValue(webhookEvent.getTokenValue() == null ? null : encryptionService.decrypt(webhookEvent.getTokenValue()));
+        return dto;
     }
 
     private void setWebhookEvent(WebhookEvent webhookEvent, WebhookEventDto webhookEventDto) throws GeneralSecurityException {
@@ -51,7 +54,8 @@ public class WebhookEventService {
     }
 
     public void remove(Long id) {
-        WebhookEvent webhookEvent = webhookRepository.findById(id).orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
+        WebhookEvent webhookEvent = webhookRepository.findById(id)
+                .orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
         webhookRepository.delete(webhookEvent);
     }
 
