@@ -1327,6 +1327,7 @@
     "DOMAIN_GROUP_CHANGE" : "Domain group change",
     "NEW" : "Add webhook",
     "DETAILS" : "Webhooks details",
-    "SAVE" : "Save webhook"
+    "SAVE" : "Save webhook",
+    "REMOVE" : "Remove webhook"
   }
 }
