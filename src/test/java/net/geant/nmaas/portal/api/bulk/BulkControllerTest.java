@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.service.BulkDomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -23,10 +24,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -91,22 +94,19 @@ public class BulkControllerTest {
             when(principalMock.getName()).thenReturn("user");
             when(userService.findByUsername("user")).thenReturn(Optional.of(new User("user")));
 
-            ResponseEntity<BulkDeploymentViewS> response = bulkController.uploadApplications(principalMock, "applicationName", 2, file);
+            bulkController.uploadApplications(principalMock, "applicationName", 2, file);
         });
     }
 
     @Test
     void shouldGetDomainBulksAsGroupManager() {
         when(principalMock.getName()).thenReturn("user");
-        User user = new User("user");
-        user.setId(10L);
-        when(userService.findByUsername("user")).thenReturn(Optional.of(user));
-        when(userService.findById(10L)).thenReturn(Optional.of(user));
         BulkDeployment viewS = new BulkDeployment();
         viewS.setType(BulkType.DOMAIN);
-        viewS.setCreator(user);
+        viewS.setCreator(setUpMockUser("user", 10L));
         viewS.setDeleted(false);
         when(bulkDeploymentRepository.findByType(BulkType.DOMAIN)).thenReturn(List.of(viewS));
+
         assertEquals(1, Objects.requireNonNull(bulkController.getDomainDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
     }
 
@@ -134,6 +134,93 @@ public class BulkControllerTest {
         bulks.add(base2);
         when(bulkDeploymentRepository.findByType(BulkType.APPLICATION)).thenReturn(bulks);
         assertEquals(1, Objects.requireNonNull(bulkController.getAppDeploymentRecordsRestrictedToOwner(principalMock).getBody()).size());
+    }
+
+    @Test
+    void shouldNotRemoveNotFoundBulkDeployment() {
+        when(principalMock.getName()).thenReturn("user");
+        setUpMockUser("user", 10L);
+        when(bulkDeploymentRepository.findById(5L)).thenReturn(Optional.empty());
+
+        ResponseEntity<Void> response = bulkController.removeBulkDeployment(5L, false, principalMock);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void shouldRemoveBulkDeployment() {
+        when(principalMock.getName()).thenReturn("user");
+
+        BulkDeployment bulk = new BulkDeployment();
+        bulk.setId(5L);
+        bulk.setType(BulkType.APPLICATION);
+        bulk.setCreator(setUpMockUser("user", 10L));
+        bulk.setDeleted(false);
+        when(bulkDeploymentRepository.findById(5L)).thenReturn(Optional.of(bulk));
+
+        ResponseEntity<Void> response = bulkController.removeBulkDeployment(5L, false, principalMock);
+
+        verifyNoInteractions(bulkApplicationService);
+        verify(bulkDeploymentRepository).save(any());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void shouldRemoveBulkDeploymentWithApplications() {
+        when(principalMock.getName()).thenReturn("user");
+
+        BulkDeployment bulk = new BulkDeployment();
+        bulk.setId(5L);
+        bulk.setType(BulkType.APPLICATION);
+        bulk.setCreator(setUpMockUser("user", 10L));
+        bulk.setDeleted(false);
+        when(bulkDeploymentRepository.findById(5L)).thenReturn(Optional.of(bulk));
+
+        ResponseEntity<Void> response = bulkController.removeBulkDeployment(5L, true, principalMock);
+
+        verify(bulkApplicationService).deleteAppInstancesFromBulk(bulk);
+        verify(bulkDeploymentRepository).save(any());
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void shouldForbidRemovalOfBulkDeploymentForNonCreator() {
+        when(principalMock.getName()).thenReturn("user");
+        setUpMockUser("user", 10L);
+
+        BulkDeployment bulk = new BulkDeployment();
+        bulk.setId(5L);
+        bulk.setType(BulkType.APPLICATION);
+        bulk.setCreator(setUpMockUser("creator", 11L));
+        bulk.setDeleted(false);
+        when(bulkDeploymentRepository.findById(5L)).thenReturn(Optional.of(bulk));
+
+        assertThrows(PermissionDeniedDataAccessException.class, () ->
+            bulkController.removeBulkDeployment(5L, true, principalMock)
+        );
+
+        verifyNoInteractions(bulkApplicationService);
+        verify(bulkDeploymentRepository, times(0)).save(any());
+    }
+
+    @Test
+    void shouldGetBulkDeploymentRefreshedState() {
+        BulkDeployment bulk = new BulkDeployment();
+        bulk.setId(5L);
+        bulk.setType(BulkType.APPLICATION);
+        bulk.setCreator(setUpMockUser("creator", 11L));
+        bulk.setDeleted(false);
+        when(bulkApplicationService.updateState(5L)).thenReturn(bulk);
+
+        ResponseEntity<BulkDeploymentViewS> response = bulkController.getRefreshedState(5L);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    private User setUpMockUser(String username, long id) {
+        User user = new User(username);
+        user.setId(id);
+        when(userService.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userService.findById(id)).thenReturn(Optional.of(user));
+        return user;
     }
 
 }

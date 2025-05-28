@@ -197,7 +197,6 @@ public class BulkController {
         if (removeApps) {
             bulkApplicationService.deleteAppInstancesFromBulk(bulk.get());
         }
-//        bulkDeploymentRepository.delete(bulk.get());
         bulk.get().setDeleted(true);
         bulk.get().setState(BulkDeploymentState.REMOVED);
         bulkDeploymentRepository.save(bulk.get());
@@ -213,7 +212,7 @@ public class BulkController {
     @GetMapping("/refresh/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
-        return ResponseEntity.ok(mapToView(this.bulkApplicationService.updateState(id)));
+        return ResponseEntity.ok(mapToView(bulkApplicationService.updateState(id)));
     }
 
     @GetMapping("/queue/{id}")

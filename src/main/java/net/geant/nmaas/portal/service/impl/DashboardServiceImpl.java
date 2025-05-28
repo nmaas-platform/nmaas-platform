@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -40,7 +39,6 @@ public class DashboardServiceImpl implements DashboardService {
     private final AppInstanceRepository appInstanceRepository;
     private final ApplicationBaseRepository applicationBaseRepository;
     private final UserLoginRegisterService userLoginRegisterService;
-
 
     @Override
     public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
