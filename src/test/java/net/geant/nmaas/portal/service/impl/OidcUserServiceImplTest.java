@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.exception.ExternalUserCanNotBeLinked;
-import net.geant.nmaas.portal.api.exception.ExternalUserMatchException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;

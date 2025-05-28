@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.security.EncryptionService;
 import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
@@ -23,7 +23,7 @@ public class WebhookEventService {
     private static final String WEBHOOK_EVENT_NOT_FOUND = "WebhookEvent not found.";
 
     @Autowired
-    public WebhookEventService(WebhookEventRepository webhookRepository, EncryptionService encryptionService, ModelMapper modelMapper){
+    public WebhookEventService(WebhookEventRepository webhookRepository, EncryptionService encryptionService, ModelMapper modelMapper) {
         this.webhookRepository = webhookRepository;
         this.encryptionService = encryptionService;
         this.modelMapper = modelMapper;
@@ -35,10 +35,14 @@ public class WebhookEventService {
         return webhookRepository.save(webhookEvent);
     }
 
-    public void update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
-        WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId()).orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
+    public WebhookEventDto update(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
+        WebhookEvent webhookEvent = webhookRepository.findById(webhookEventDto.getId())
+                .orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
         setWebhookEvent(webhookEvent, webhookEventDto);
-        webhookRepository.save(webhookEvent);
+        webhookEvent = webhookRepository.save(webhookEvent);
+        WebhookEventDto dto = modelMapper.map(webhookEvent, WebhookEventDto.class);
+        dto.setTokenValue(webhookEvent.getTokenValue() == null ? null : encryptionService.decrypt(webhookEvent.getTokenValue()));
+        return dto;
     }
 
     private void setWebhookEvent(WebhookEvent webhookEvent, WebhookEventDto webhookEventDto) throws GeneralSecurityException {
@@ -49,20 +53,22 @@ public class WebhookEventService {
         webhookEvent.setAuthorizationHeader(webhookEventDto.getAuthorizationHeader());
     }
 
-    public void remove(Long id){
-        WebhookEvent webhookEvent = webhookRepository.findById(id).orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
+    public void remove(Long id) {
+        WebhookEvent webhookEvent = webhookRepository.findById(id)
+                .orElseThrow(() -> new MissingElementException(WEBHOOK_EVENT_NOT_FOUND));
         webhookRepository.delete(webhookEvent);
     }
 
     public List<WebhookEventDto> getAllWebhooks() {
-        return webhookRepository.findAll().stream().map(x ->
-                {
+        return webhookRepository.findAll().stream()
+                .map(x -> {
                     try {
-                        x.setTokenValue(x.getTokenValue() == null ? null : encryptionService.decrypt(x.getTokenValue()));
+                        WebhookEventDto dto = modelMapper.map(x, WebhookEventDto.class);
+                        dto.setTokenValue(x.getTokenValue() == null ? null : encryptionService.decrypt(x.getTokenValue()));
+                        return dto;
                     } catch (GeneralSecurityException e) {
                         throw new RuntimeException(e);
                     }
-                    return modelMapper.map(x, WebhookEventDto.class);
                 }).toList();
     }
 
@@ -73,7 +79,8 @@ public class WebhookEventService {
     public WebhookEventDto getById(Long id) throws GeneralSecurityException {
         WebhookEvent event = webhookRepository.findById(id)
                 .orElseThrow(() -> new MissingElementException(String.format("WebhookEventType with id: %d cannot be found", id)));
-        event.setTokenValue(event.getTokenValue() == null ? null : encryptionService.decrypt(event.getTokenValue()));
-        return modelMapper.map(event, WebhookEventDto.class);
+        WebhookEventDto dto = modelMapper.map(event, WebhookEventDto.class);
+        dto.setTokenValue(event.getTokenValue() == null ? null : encryptionService.decrypt(event.getTokenValue()));
+        return dto;
     }
 }

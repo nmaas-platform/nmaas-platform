@@ -127,6 +127,8 @@ public class AppDeployment {
 
     private Long instanceId;
 
+    private Long remoteClusterId;
+
     /**
      * Globally unique descriptive application deployment identifier
      */

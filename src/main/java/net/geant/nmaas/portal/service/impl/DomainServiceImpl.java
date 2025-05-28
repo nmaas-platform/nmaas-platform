@@ -14,8 +14,8 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -129,7 +129,7 @@ public class DomainServiceImpl implements DomainService {
         return domainRepository.findAll()
                 .stream()
                 .filter(domain -> !domain.isDeleted())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -432,7 +432,7 @@ public class DomainServiceImpl implements DomainService {
         return this.userRoleRepository.findDomainMembers(domain).stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
                 .map(user -> modelMapper.map(user, UserView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -453,7 +453,7 @@ public class DomainServiceImpl implements DomainService {
                         app.setPvStorageSizeLimit(app.getPvStorageSizeLimit());
                     }
                     return app;
-                }).collect(Collectors.toList())
+                }).toList()
         );
 
         return domain;

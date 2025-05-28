@@ -151,11 +151,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
                                 .state(KClusterState.UNKNOWN)
                                 .contactEmail(view.getContactEmail())
                                 .currentStateSince(OffsetDateTime.now())
-                                .domains(!view.getDomainNames().isEmpty() ? view.getDomainNames().stream().map(d -> {
-                                            Optional<Domain> dom = domainService.findDomain(d);
-                                            return dom.orElse(null);
-                                        }
-                                ).toList() : Collections.emptyList())
+                                .domains(prepareList(view))
                                 .build(),
                         file);
 
@@ -168,6 +164,17 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         }
 
         return null;
+    }
+
+    private List<Domain> prepareList(RemoteClusterView view) {
+        if (view == null || view.getDomainNames() == null) {
+            return Collections.emptyList();
+        }
+        return view.getDomainNames().stream().map(d -> {
+                    Optional<Domain> dom = domainService.findDomain(d);
+                    return dom.orElse(null);
+                }
+        ).toList();
     }
 
     public RemoteClusterView updateCluster(RemoteClusterView cluster, Long id) {
@@ -236,9 +243,11 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         }
     }
 
-    private RemoteClusterView toView(KCluster KCluster) {
-        RemoteClusterView view = modelMapper.map(KCluster, RemoteClusterView.class);
-        view.setDomainNames(KCluster.getDomains().stream().map(Domain::getName).toList());
+    private RemoteClusterView toView(KCluster kCluster) {
+        RemoteClusterView view = modelMapper.map(kCluster, RemoteClusterView.class);
+        if (Objects.nonNull(kCluster.getDomains())) {
+            view.setDomainNames(kCluster.getDomains().stream().map(Domain::getName).toList());
+        }
         return view;
     }
 
@@ -332,7 +341,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
 
     public void removeCluster(Long id) {
         try {
-            if(clusterRepository.existsById(id)) {
+            if (clusterRepository.existsById(id)) {
                 this.clusterRepository.deleteById(id);
             }
         } catch (RuntimeException ex) {
@@ -340,6 +349,10 @@ public class RemoteClusterManager implements ClusterMonitoringService {
             log.error("Exception: {}", ex.getMessage());
         }
 
+    }
+
+    public boolean clusterExists(Long id) {
+        return clusterRepository.existsById(id);
     }
 
 }

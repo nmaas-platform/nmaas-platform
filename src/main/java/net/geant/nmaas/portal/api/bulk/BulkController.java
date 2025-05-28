@@ -3,8 +3,13 @@ package net.geant.nmaas.portal.api.bulk;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
+import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
 import net.geant.nmaas.portal.persistent.entity.BulkDeploymentState;
@@ -151,7 +156,7 @@ public class BulkController {
 
         return ResponseEntity.ok(mapToViewList(filter(false, bulkDeploymentRepository.findByType(BulkType.DOMAIN))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     @GetMapping("/apps")
@@ -168,7 +173,7 @@ public class BulkController {
 
         return ResponseEntity.ok(mapToViewList(filter(false, bulkDeploymentRepository.findByType(BulkType.APPLICATION))).stream()
                 .filter(bulk -> bulk.getCreator().getId().equals(user.getId()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     @DeleteMapping("/{id}")
@@ -192,7 +197,6 @@ public class BulkController {
         if (removeApps) {
             bulkApplicationService.deleteAppInstancesFromBulk(bulk.get());
         }
-//        bulkDeploymentRepository.delete(bulk.get());
         bulk.get().setDeleted(true);
         bulk.get().setState(BulkDeploymentState.REMOVED);
         bulkDeploymentRepository.save(bulk.get());
@@ -202,13 +206,13 @@ public class BulkController {
     private List<BulkDeploymentViewS> mapToViewList(List<BulkDeployment> deployments) {
         return deployments.stream()
                 .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/refresh/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
     public ResponseEntity<BulkDeploymentViewS> getRefreshedState(@PathVariable Long id) {
-        return ResponseEntity.ok(mapToView(this.bulkApplicationService.updateState(id)));
+        return ResponseEntity.ok(mapToView(bulkApplicationService.updateState(id)));
     }
 
     @GetMapping("/queue/{id}")
@@ -220,7 +224,7 @@ public class BulkController {
     private List<BulkDeploymentViewS> mapToView(List<BulkDeployment> deployments) {
         return deployments.stream()
                 .map(bulk -> mapToView(bulk, BulkDeploymentViewS.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private <T extends BulkDeploymentViewS> T mapToView(BulkDeployment bulk, Class<T> viewType) {

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
@@ -39,7 +40,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppStorageVolume;
 import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +82,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private final KubernetesClusterIngressManager ingressManager;
     private final GitLabManager gitLabManager;
     private final JanitorService janitorService;
+    private final RemoteClusterManager remoteClusterManager;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -96,6 +98,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         } catch (IllegalArgumentException iae) {
             throw new NmServiceRequestVerificationException(iae.getMessage());
         }
+        //todo
 
         KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo(
                 deploymentId,
@@ -103,6 +106,11 @@ public class KubernetesManager implements ContainerOrchestrator {
                 appDeployment.getDomain(),
                 appDeployment.getDescriptiveDeploymentId()
         );
+        //verify cluster
+        if(remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
+           serviceInfo.setRemoteCluster(remoteClusterManager.getCluster(appDeployment.getRemoteClusterId()));
+        }
+
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));

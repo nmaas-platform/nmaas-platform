@@ -16,7 +16,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -52,7 +51,7 @@ public class DomainServiceIntTest {
 
         domainService.createDomain(domainRequest1);
 
-        assertThat(domainService.getDomains().stream().map(Domain::getName).collect(Collectors.toList())).contains("GLOBAL", "domainName");
+        assertThat(domainService.getDomains().stream().map(Domain::getName).toList()).contains("GLOBAL", "domainName");
 
         Long domainId = domainService.findDomain("domainName").orElseThrow().getId();
         domainService.softRemoveDomain(domainId);

@@ -2,12 +2,11 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -29,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,15 +64,15 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
 
         //call existing webhooks
-        DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId()+ "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "create","domainGroup",domainGroupView)));
+        //DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
+        //webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "create", "domainGroup", domainGroupView)));
         return modelMapper.map(domainGroupEntity, DomainGroupView.class);
     }
 
     @Override
     public DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName) {
         DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).orElseThrow();
-        domains.forEach( domain -> {
+        domains.forEach(domain -> {
             log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), groupCodeName);
             if (!domainGroup.getDomains().contains(domain)) {
                 domainGroup.addDomain(domain);
@@ -105,7 +103,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         }
         domainGroupRepository.deleteById(domainGroupId);
         //call existing webhooks
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroup.getId()+ "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "delete","domainGroup",domainGroupView)));
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroup.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "delete", "domainGroup", domainGroupView)));
     }
 
     @Override
@@ -122,7 +120,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     public List<DomainGroupView> getAllDomainGroups() {
         return domainGroupRepository.findAll().stream()
                 .map(g -> modelMapper.map(g, DomainGroupView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -131,11 +129,14 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
         DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).orElseThrow();
-//        updateRolesInDomainsByUsers(view);
+        // updateRolesInDomainsByUsers(view);
         domainGroup.setCodename(view.getCodename());
         domainGroup.setName(view.getName());
-        domainGroup.setManagers(view.getManagers().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList()));
-        for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
+        domainGroup.setManagers(view.getManagers().stream()
+                .map(user -> modelMapper.map(user, User.class))
+                .toList()
+        );
+        for (ApplicationStatePerDomain appState : domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
                     appState.applyChangedState(appStateView);
@@ -147,7 +148,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
         //call existing webhooks
         DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId()+ "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "update","domainGroup",domainGroupView)));
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "update", "domainGroup", domainGroupView)));
         return domainGroupView;
     }
 
@@ -158,15 +159,16 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     public void deleteAppBaseFromAllAppState(ApplicationBase base) {
-        domainGroupRepository.findAll().forEach(d -> {
-          d.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base));
-        });
+        domainGroupRepository.findAll().forEach(d ->
+                d.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base))
+        );
     }
 
     @Override
     public void deleteUserFromAllDomainsGroups(User user) {
-        domainGroupRepository.findAll().forEach(d -> {
-            d.getManagers().remove(user);
-        });
+        domainGroupRepository.findAll().forEach(d ->
+                d.getManagers().remove(user)
+        );
     }
+
 }

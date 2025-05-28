@@ -15,6 +15,18 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.domain.AppInstanceBase;
+import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
+import net.geant.nmaas.portal.api.domain.AppInstanceState;
+import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
+import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
+import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistent.entity.*;
 import net.geant.nmaas.portal.service.*;
@@ -263,6 +275,7 @@ public class AppInstanceController extends AppBaseController {
                 .owner(principal.getName())
                 .appName(app.getName())
                 .descriptiveDeploymentId(createDescriptiveDeploymentId(domain.getCodename(), app.getName(), appInstance.getId()))
+                .remoteClusterId(clusterId)
                 .build();
 
         Identifier internalId = appLifecycleManager.deployApplication(appDeployment);

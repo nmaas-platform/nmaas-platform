@@ -7,6 +7,7 @@ import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManag
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -76,26 +77,41 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 namespaceService.namespace(serviceInfo.getDomain()),
                 serviceInfo.getDescriptiveDeploymentId().getValue(),
                 serviceInfo.getKubernetesTemplate(),
-                createArgumentsMap(serviceInfo)
+                createArgumentsMap(serviceInfo),
+                serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
         );
     }
 
     private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo) {
         Map<String, String> arguments = new HashMap<>();
-        if (deploymentManager.getForceDedicatedWorkers()) {
-            arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
-        }
+
         Set<ServiceStorageVolume> serviceStorageVolumes = serviceInfo.getStorageVolumes();
         if (!serviceStorageVolumes.isEmpty()) {
             arguments.putAll(getPersistenceVariables(serviceStorageVolumes, deploymentManager.getStorageClass(serviceInfo.getDomain()), serviceInfo.getDescriptiveDeploymentId().getValue()));
         }
-        Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
-        if (!externalAccessMethods.isEmpty()) {
-            arguments.putAll(getIngressVariables(ingressManager.getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain()));
+
+        if(serviceInfo.getRemoteCluster() == null) {
+            if (deploymentManager.getForceDedicatedWorkers()) {
+                arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
+            }
+            Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
+            if (!externalAccessMethods.isEmpty()) {
+                arguments.putAll(getIngressVariables(ingressManager.getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain()));
+            }
+        } else {
+            if (serviceInfo.getRemoteCluster().getDeployment().getForceDedicatedWorkers()) {
+                arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
+            }
+            Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
+            if (!externalAccessMethods.isEmpty()) {
+                arguments.putAll(getIngressVariables(serviceInfo.getRemoteCluster().getIngress().getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain()));
+            }
         }
+
         if (serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()) {
             arguments.putAll(removeRedundantParameters(serviceInfo.getAdditionalParameters()));
         }
+
         return arguments;
     }
 

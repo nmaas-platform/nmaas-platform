@@ -18,15 +18,15 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
-import net.geant.nmaas.portal.api.bulk.BulkAppDetails;
-import net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView;
-import net.geant.nmaas.portal.api.bulk.BulkDeploymentView;
-import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
-import net.geant.nmaas.portal.api.bulk.BulkQueueDetails;
+import net.geant.nmaas.portal.api.bulk.model.BulkAppDetails;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
+import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -65,13 +65,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID;
-import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
-import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME;
-import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME;
-import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
-import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
-import static net.geant.nmaas.portal.api.bulk.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
+import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_ID;
+import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_ID;
+import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_INSTANCE_NAME;
+import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_APP_NAME;
+import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
+import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
+import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_ERROR_MESSAGE;
 
 @Service
 @RequiredArgsConstructor

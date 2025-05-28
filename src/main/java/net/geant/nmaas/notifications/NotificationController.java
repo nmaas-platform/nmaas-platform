@@ -1,7 +1,7 @@
 package net.geant.nmaas.notifications;
 
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.portal.api.exception.AuthenticationException;
+import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.utils.captcha.ValidateCaptcha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

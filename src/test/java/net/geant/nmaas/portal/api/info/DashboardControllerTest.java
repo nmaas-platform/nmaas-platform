@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.api.info;
 
-import net.geant.nmaas.portal.api.info.DashboardView;
-import net.geant.nmaas.portal.api.info.DomainDashboardView;
 import net.geant.nmaas.portal.service.DashboardService;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +32,7 @@ public class DashboardControllerTest {
         Long domainId = 1L;
         DomainDashboardView domainDashboardView = DomainDashboardView.builder().build();
 
-        when(dashboardService.getSystemDomainDashboard(domainId)).thenReturn(domainDashboardView);
+        when(dashboardService.getDomainDashboard(domainId)).thenReturn(domainDashboardView);
 
         DomainDashboardView result = dashboardController.getDashboardDomain(domainId);
 

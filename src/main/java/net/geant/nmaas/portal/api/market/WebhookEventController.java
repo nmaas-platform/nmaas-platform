@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
 import net.geant.nmaas.portal.service.WebhookEventService;
 import org.springframework.http.ResponseEntity;
@@ -49,13 +49,13 @@ public class WebhookEventController {
     @PutMapping("/{id}")
     @Transactional
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-    public void updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook) {
+    public ResponseEntity<WebhookEventDto> updateWebhook(@PathVariable Long id, @RequestBody @Valid WebhookEventDto webhook) {
         if (!id.equals(webhook.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_WEBHOOK_EVENT);
         }
 
         try {
-            webhookEventService.update(webhook);
+            return ResponseEntity.ok(webhookEventService.update(webhook));
         } catch (GeneralSecurityException e) {
             throw new RuntimeException(e);
         }
