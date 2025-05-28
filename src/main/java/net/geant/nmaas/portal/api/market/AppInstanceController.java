@@ -5,50 +5,26 @@ import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
-import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.AppLifecycleState;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.*;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.events.app.AppScaleActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.AppInstanceBase;
-import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
-import net.geant.nmaas.portal.api.domain.AppInstanceState;
-import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.service.ApplicationBaseService;
-import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.portal.service.ApplicationService;
-import net.geant.nmaas.portal.service.ConfigurationManager;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.service.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,11 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -248,7 +220,7 @@ public class AppInstanceController extends AppBaseController {
     public Id createAppInstance(@RequestBody AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal,
                                 @PathVariable Long domainId,
-                                @RequestParam(name = "clusterId",required = false) Long clusterId) {
+                                @RequestParam(name = "clusterId", required = false) Long clusterId) {
         log.error("Cluster = {}", clusterId);
         Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domainService.findDomain(domainId)
@@ -757,22 +729,34 @@ public class AppInstanceController extends AppBaseController {
         }
         return pageable;
     }
+
     /**
      * @param deploymentId unique identifier of the deployed user application
      */
     @PutMapping("/{deploymentId}/scale-down")
-    public ResponseEntity<Void> scaleDownApp(@PathVariable String deploymentId) {
-        appLifecycleManager.scaleDown(new Identifier(deploymentId));
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void scaleDownApp(@PathVariable String deploymentId) {
+        eventPublisher.publishEvent(
+                new AppScaleActionEvent(
+                        this,
+                        new Identifier(deploymentId),
+                        ScaleDirection.DOWN)
+        );
     }
 
     /**
      * @param deploymentId unique identifier of the deployed user application
      */
     @PutMapping("/{deploymentId}/scale-up")
-    public ResponseEntity<Void> scaleUpApp(@PathVariable String deploymentId) {
-        appLifecycleManager.scaleUp(new Identifier(deploymentId));
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void scaleUpApp(@PathVariable String deploymentId) {
+
+        eventPublisher.publishEvent(
+                new AppScaleActionEvent(
+                        this,
+                        new Identifier(deploymentId),
+                        ScaleDirection.UP)
+        );
     }
 
 }
