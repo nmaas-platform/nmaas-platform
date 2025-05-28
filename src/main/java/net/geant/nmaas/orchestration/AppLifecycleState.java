@@ -218,6 +218,10 @@ public enum AppLifecycleState {
     APPLICATION_CONFIGURATION_REMOVAL_FAILED {
         @Override
         public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.APP_CONF_REMOVE_ERROR"; }
+    },
+    APPLICATION_SCALED_DOWN{
+        @Override
+        public String getUserFriendlyState(){ return "APP_INSTANCE.PROGRESS.APP_SCALED_DOWN"; }
     };
 
     public abstract String getUserFriendlyState();

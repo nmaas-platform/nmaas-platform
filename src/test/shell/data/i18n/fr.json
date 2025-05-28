@@ -316,7 +316,9 @@
       "RATING": "Rating",
       "POPULAR": "Popularity",
       "DATE" : "Date added"
-    }
+    },
+    "SCALED_UP": "Reprende",
+    "SCALED_DOWN": "Pause"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
