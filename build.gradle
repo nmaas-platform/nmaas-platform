@@ -30,7 +30,7 @@ gitProperties {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:4.31.0'
+        artifact = 'com.google.protobuf:protoc:4.31.1'
     }
     plugins {
         grpc {
@@ -131,7 +131,7 @@ dependencies {
     implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.10' // version 6 for jakarta
 
     // GRPC communication with Janitor
-    implementation('com.google.protobuf:protobuf-java:4.31.0')
+    implementation('com.google.protobuf:protobuf-java:4.31.1')
     implementation('io.grpc:grpc-netty-shaded:1.73.0')
     implementation('io.grpc:grpc-protobuf:1.73.0')
     implementation('io.grpc:grpc-stub:1.73.0')
