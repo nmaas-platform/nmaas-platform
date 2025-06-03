@@ -17,4 +17,5 @@ public class DashboardDeploymentsView {
     private String user;
     private String applicationName;
     private String applicationVersion;
+    private Long instanceId;
 }

@@ -55,6 +55,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .map(entry -> DashboardDeploymentsView.builder().user(entry.getOwner().getUsername())
                         .domainName(entry.getDomain().getName())
                         .applicationName(entry.getApplication().getName())
+                        .instanceId(entry.getId())
                         .applicationVersion(entry.getApplication().getVersion())
                         .build())
                 .toList();
