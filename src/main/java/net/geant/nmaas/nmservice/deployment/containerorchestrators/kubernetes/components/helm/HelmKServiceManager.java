@@ -102,7 +102,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             //case when deploy on remote cluster
         } else {
             if (!serviceStorageVolumes.isEmpty()) {
-                arguments.putAll(getPersistenceVariables(serviceStorageVolumes, serviceInfo.getRemoteCluster().getDeployment().getStorageClass(serviceInfo.getDomain()), serviceInfo.getDescriptiveDeploymentId().getValue()));
+                arguments.putAll(getPersistenceVariables(serviceStorageVolumes, serviceInfo.getRemoteCluster().getDeployment().getStorageClass(), serviceInfo.getDescriptiveDeploymentId().getValue()));
             }
             if (serviceInfo.getRemoteCluster().getDeployment().getForceDedicatedWorkers()) {
                 arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());

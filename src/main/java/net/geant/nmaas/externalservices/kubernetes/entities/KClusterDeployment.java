@@ -49,7 +49,7 @@ public class KClusterDeployment {
 
     private Boolean forceDedicatedWorkers;
 
-    public Optional<String> getStorageClass(String domain) {
+    public Optional<String> getStorageClass() {
         if (this.getDefaultStorageClass() != null && !this.getDefaultStorageClass().isEmpty()) {
             return Optional.of(this.getDefaultStorageClass());
         }
