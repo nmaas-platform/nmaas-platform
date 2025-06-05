@@ -1,7 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
@@ -16,7 +20,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.utils.bash.CommandExecutionException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -24,6 +27,9 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +43,7 @@ import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubern
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "domain";
@@ -48,6 +55,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     private final KubernetesClusterIngressManager ingressManager;
     private final HelmCommandExecutor helmCommandExecutor;
     private final DomainTechDetailsRepository domainTechDetailsRepository;
+
+    private KubernetesClient kubernetesClient;
 
     @Setter
     @Value("${helm.update.async.enabled}")
@@ -88,7 +97,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         Set<ServiceStorageVolume> serviceStorageVolumes = serviceInfo.getStorageVolumes();
 
 
-        if(serviceInfo.getRemoteCluster() == null) {
+        if (serviceInfo.getRemoteCluster() == null) {
             if (deploymentManager.getForceDedicatedWorkers()) {
                 arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
             }
@@ -153,8 +162,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         );
     }
 
-    private String getIngressClass(String domain, KCluster cluster ) {
-        if(cluster != null) {
+    private String getIngressClass(String domain, KCluster cluster) {
+        if (cluster != null) {
             return cluster.getIngress().getSupportedIngressClass();
         } else if (Boolean.TRUE.equals(ingressManager.getIngressPerDomain())) {
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
@@ -218,8 +227,26 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
-    @Loggable(LogLevel.TRACE)
     public void scaleDeployment(Identifier deploymentId, int replicas) {
-    }
 
+        KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        Config config = null;
+
+
+        try {
+            config = Config.fromKubeconfig(
+                    Files.readString(
+                            Path.of(serviceInfo.getRemoteCluster().getPathConfigFile()
+                            )));
+        } catch (IOException e) {
+            log.error("IO error with accessing the file {}", e.getMessage());
+        }
+
+        kubernetesClient = new KubernetesClientBuilder().withConfig(config).build();
+        kubernetesClient.apps()
+                .deployments()
+                .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
+                .withName(serviceInfo.getDeploymentId().getValue())
+                .scale(replicas);
+    }
 }
