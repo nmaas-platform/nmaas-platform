@@ -54,6 +54,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 public class UsersControllerTest {
@@ -386,7 +387,7 @@ public class UsersControllerTest {
 		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
 
-		verify(scheduler, VerificationModeFactory.noInteractions());
+		verifyNoInteractions(scheduler);
 	}
 
 	@Test
