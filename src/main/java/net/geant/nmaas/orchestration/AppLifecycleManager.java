@@ -90,14 +90,4 @@ public interface AppLifecycleManager {
      * @param deploymentId unique identifier of the deployed user application
      */
     void updateApplicationStatus(Identifier deploymentId);
-
-    /**
-     * @param deploymentId unique identifier of the deployed user application
-     */
-    void scaleDown(Identifier deploymentId);
-
-    /**
-     * @param deploymentId unique identifier of the deployed user application
-     */
-    void scaleUp(Identifier deploymentId);
 }
