@@ -57,7 +57,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @BeforeEach
     void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService, kServiceLifecycleManager, appTermsAcceptanceService, configurationManager);
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService, appTermsAcceptanceService, configurationManager);
     }
 
     @Test
