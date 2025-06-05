@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
+import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
+import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
@@ -14,13 +16,23 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
+import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.modelmapper.ModelMapper;
+import org.quartz.JobListener;
+import org.quartz.ListenerManager;
+import org.quartz.Matcher;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -30,12 +42,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -69,9 +84,15 @@ public class UsersControllerTest {
 
 	private final ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
 
+	WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
+	Scheduler scheduler = mock(Scheduler.class);
+	ListenerManager listenerManager = mock(ListenerManager.class);
+	ScheduleManager scheduleManager;
+
 	@BeforeEach
 	public void setup(){
-		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService, instanceService);
+		scheduleManager = new ScheduleManager(scheduler);
+		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService, instanceService, webhookEventRepository, scheduleManager);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
 		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
@@ -329,12 +350,31 @@ public class UsersControllerTest {
 	}
 
 	@Test
-	public void shouldAddUserRoleToCustomDomain(){
+	public void shouldAddUserRoleToCustomDomain() throws SchedulerException {
 		UserRoleView userRole = new UserRoleView();
 		userRole.setDomainId(DOMAIN.getId());
 		userRole.setRole(Role.ROLE_USER);
+		// Setup webhook event
+		WebhookEvent webhookEvent = new WebhookEvent(1L, "webhook", "https://example.com/webhook", WebhookEventType.USER_ASSIGNMENT, null, null);
+		when(webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT))
+				.thenReturn(Stream.of(1L));
+		when(webhookEventRepository.findById(1L))
+				.thenReturn(Optional.of(webhookEvent));
+		when(scheduler.getListenerManager()).thenReturn(listenerManager);
+		doNothing().when(listenerManager).addJobListener(any(JobListener.class), any(Matcher.class));
+
 		usersController.addUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).addMemberRole(DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
+		// Verify webhook job was scheduled
+		verify(scheduler, VerificationModeFactory.times(1)).scheduleJob(
+				argThat(jobDetail ->
+						jobDetail.getKey().getName().startsWith("UserDomainAssignmentJobCreate_1_user"+userList.get(0).getId()+"_domain2") &&
+								jobDetail.getJobClass().equals(UserDomainAssignmentJob.class)
+				),
+				argThat(trigger ->
+						trigger.getKey().getName().startsWith("UserDomainAssignmentJobCreate_1_user"+userList.get(0).getId()+"_domain2")
+				)
+		);
 	}
 
 	@Test
@@ -345,6 +385,8 @@ public class UsersControllerTest {
 		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
+
+		verify(scheduler, VerificationModeFactory.noInteractions());
 	}
 
 	@Test
@@ -396,10 +438,29 @@ public class UsersControllerTest {
 	}
 
 	@Test
-	public void shouldRemoveUserRole(){
+	public void shouldRemoveUserRole() throws SchedulerException {
 		String userRole = "ROLE_SYSTEM_ADMIN";
+		// Setup webhook event
+		WebhookEvent webhookEvent = new WebhookEvent(1L, "webhook", "https://example.com/webhook", WebhookEventType.USER_ASSIGNMENT, null, null);
+		when(webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT))
+				.thenReturn(Stream.of(1L));
+		when(webhookEventRepository.findById(1L))
+				.thenReturn(Optional.of(webhookEvent));
+		when(scheduler.getListenerManager()).thenReturn(listenerManager);
+		doNothing().when(listenerManager).addJobListener(any(JobListener.class), any(Matcher.class));
+
 		usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_SYSTEM_ADMIN);
+		// Verify webhook job was scheduled
+		verify(scheduler, VerificationModeFactory.times(1)).scheduleJob(
+				argThat(jobDetail ->
+						jobDetail.getKey().getName().startsWith("UserDomainAssignmentJobDelete_1_user"+userList.get(0).getId()+"_domain2") &&
+								jobDetail.getJobClass().equals(UserDomainAssignmentJob.class)
+				),
+				argThat(trigger ->
+						trigger.getKey().getName().startsWith("UserDomainAssignmentJobDelete_1_user"+userList.get(0).getId()+"_domain2")
+				)
+		);
 	}
 
 	@Test
