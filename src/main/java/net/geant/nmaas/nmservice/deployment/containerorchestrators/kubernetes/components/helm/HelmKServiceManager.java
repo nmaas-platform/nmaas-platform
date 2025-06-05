@@ -225,28 +225,4 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
-
-    @Override
-    public void scaleDeployment(Identifier deploymentId, int replicas) {
-
-        KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-        Config config = null;
-
-
-        try {
-            config = Config.fromKubeconfig(
-                    Files.readString(
-                            Path.of(serviceInfo.getRemoteCluster().getPathConfigFile()
-                            )));
-        } catch (IOException e) {
-            log.error("IO error with accessing the file {}", e.getMessage());
-        }
-
-        kubernetesClient = new KubernetesClientBuilder().withConfig(config).build();
-        kubernetesClient.apps()
-                .deployments()
-                .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
-                .withName(serviceInfo.getDeploymentId().getValue())
-                .scale(replicas);
-    }
 }
