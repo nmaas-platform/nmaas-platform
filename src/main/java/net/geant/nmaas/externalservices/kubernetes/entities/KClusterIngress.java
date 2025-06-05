@@ -53,4 +53,8 @@ public class KClusterIngress {
 
     private Boolean ingressPerDomain;
 
+    public String getExternalServiceDomain() {
+        return this.getExternalServiceDomain();
+    }
+
 }

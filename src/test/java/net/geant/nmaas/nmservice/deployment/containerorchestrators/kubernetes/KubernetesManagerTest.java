@@ -71,12 +71,14 @@ public class KubernetesManagerTest {
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
     private final JanitorService janitorService = mock(JanitorService.class);
     private final RemoteClusterManager remoteClusterManager = mock(RemoteClusterManager.class);
+    private final KubernetesDeploymentRemoteClusterParametersProvider remoteClusterParametersProvider  = mock(KubernetesDeploymentRemoteClusterParametersProvider.class);
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
     private final KubernetesManager manager = new KubernetesManager(
             repositoryManager,
             deploymentParametersProvider,
+            remoteClusterParametersProvider,
             clusterValidator,
             serviceLifecycleManager,
             serviceOperationsManager,
