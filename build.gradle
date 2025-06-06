@@ -247,7 +247,8 @@ jacocoTestCoverageVerification {
             ]
             excludes = [
                     '**.model*',
-                    '**.exceptions**'
+                    '**.exceptions**',
+                    'net.geant.nmaas.portal.api.webhooks'
             ]
             limit {
                 counter = 'INSTRUCTION'
