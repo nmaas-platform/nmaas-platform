@@ -327,7 +327,13 @@
       "DATE" : "Data dodania"
     },
     "SCALED_UP": "Wznów",
-    "SCALED_DOWN": "Pauza"
+    "SCALED_DOWN": "Pauza",
+    "CONFIRM_SCALEDOWN": {
+      "MESSAGE" : "Czy na pewno chcesz zatrzymać instancję?",
+      "HEADER" : "Potwierdzenie",
+      "ACCEPT" : "Tak",
+      "REJECT" : "Nie"
+    }
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",

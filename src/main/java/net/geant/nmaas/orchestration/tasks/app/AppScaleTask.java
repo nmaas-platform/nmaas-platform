@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AppScaleTask {
 
-    private final KServiceLifecycleManager kServiceLifecycleManager;
+    private final KServiceOperationsManager kserviceOperationsManager;
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
 
@@ -27,14 +28,14 @@ public class AppScaleTask {
                 appDeployment.setState(AppDeploymentState.SCALED_DOWN);
                 appDeploymentRepositoryManager.update(appDeployment);
 
-                kServiceLifecycleManager.scaleDeployment(event.getDeploymentId(), 0);
+                kserviceOperationsManager.scaleDeployment(event.getDeploymentId(), 0);
 
                 break;
             case UP:
                 appDeployment.setState(AppDeploymentState.APPLICATION_CONFIGURED);
                 appDeploymentRepositoryManager.update(appDeployment);
 
-                kServiceLifecycleManager.scaleDeployment(event.getDeploymentId(), 1);
+                kserviceOperationsManager.scaleDeployment(event.getDeploymentId(), 1);
 
                 break;
         }

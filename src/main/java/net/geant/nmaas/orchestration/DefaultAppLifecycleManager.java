@@ -14,13 +14,7 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
+import net.geant.nmaas.orchestration.events.app.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -55,7 +49,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private final ApplicationEventPublisher eventPublisher;
     private final NmServiceRepositoryManager serviceRepositoryManager;
     private final JanitorService janitorService;
-    private final KServiceLifecycleManager kServiceLifecycleManager;
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
     private final ConfigurationManager configurationManager;
@@ -278,27 +271,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     public void updateApplicationStatus(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppVerifyServiceActionEvent(this, deploymentId));
-    }
-
-    @Override
-    @Loggable(LogLevel.INFO)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void scaleDown(Identifier deploymentId) {
-        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
-        kServiceLifecycleManager.scaleDeployment(deploymentId, 0);
-        appDeployment.setState(AppDeploymentState.SCALED_DOWN);
-
-        log.warn("Scaled down deployment NOT IMPLEMENT YET");
-    }
-
-    @Override
-    @Loggable(LogLevel.INFO)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void scaleUp(Identifier deploymentId) {
-        int replicas = 1;
-        kServiceLifecycleManager.scaleDeployment(deploymentId, replicas);
-
-        log.warn("Scaled up deployment NOT IMPLEMENT YET");
     }
 
 }
