@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.webhooks;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

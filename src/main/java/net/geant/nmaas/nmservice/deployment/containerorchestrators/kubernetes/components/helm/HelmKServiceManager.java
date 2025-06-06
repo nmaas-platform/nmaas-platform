@@ -89,7 +89,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             arguments.putAll(getPersistenceVariables(serviceStorageVolumes, deploymentManager.getStorageClass(serviceInfo.getDomain()), serviceInfo.getDescriptiveDeploymentId().getValue()));
         }
 
-        if(serviceInfo.getRemoteCluster() == null) {
+        if (serviceInfo.getRemoteCluster() == null) {
             if (deploymentManager.getForceDedicatedWorkers()) {
                 arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
             }
@@ -130,12 +130,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static Map<String, String> removeRedundantParameters(Map<String, String> additionalParameters) {
         return additionalParameters.entrySet().stream().filter(entry ->
-                        !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
-                                && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
-                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
+                        && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
+        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Map<String, String> getIngressVariables(IngressResourceConfigOption ingressResourceConfigOption, Set<ServiceAccessMethod> externalAccessMethods, String domain){
+    private Map<String, String> getIngressVariables(IngressResourceConfigOption ingressResourceConfigOption, Set<ServiceAccessMethod> externalAccessMethods, String domain) {
         return HelmChartVariables.ingressVariablesMap(
                 DEPLOY_FROM_CHART.equals(ingressResourceConfigOption),
                 externalAccessMethods,
@@ -147,7 +147,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         );
     }
 
-    private String getIngressClass(String domain){
+    private String getIngressClass(String domain) {
         if (Boolean.TRUE.equals(ingressManager.getIngressPerDomain())) {
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
         }
