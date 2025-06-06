@@ -1,19 +1,25 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.utils.bash.CommandExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class HelmMonitorService extends MonitorService {
 
     private final HelmCommandExecutor helmCommandExecutor;
+
+    @Autowired
+    public HelmMonitorService(MonitorManager monitorManager, HelmCommandExecutor helmCommandExecutor) {
+        super(monitorManager);
+        this.helmCommandExecutor = helmCommandExecutor;
+    }
 
     @Override
     public void checkStatus() {

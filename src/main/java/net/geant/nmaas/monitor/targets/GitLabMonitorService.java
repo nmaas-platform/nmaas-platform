@@ -1,18 +1,24 @@
 package net.geant.nmaas.monitor.targets;
 
-import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class GitLabMonitorService extends MonitorService {
 
     private final GitLabManager gitLabManager;
+
+    @Autowired
+    public GitLabMonitorService(MonitorManager monitorManager, GitLabManager gitLabManager) {
+        super(monitorManager);
+        this.gitLabManager = gitLabManager;
+    }
 
     @Override
     public void checkStatus() {

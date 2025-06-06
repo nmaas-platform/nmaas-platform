@@ -1,9 +1,10 @@
 package net.geant.nmaas.monitor.targets;
 
-import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -11,10 +12,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @Service
-@RequiredArgsConstructor
 public class DatabaseMonitorService extends MonitorService {
 
     private final DataSource dataSource;
+
+    @Autowired
+    public DatabaseMonitorService(MonitorManager monitorManager, DataSource dataSource) {
+        super(monitorManager);
+        this.dataSource = dataSource;
+    }
 
     @Override
     public void checkStatus() {

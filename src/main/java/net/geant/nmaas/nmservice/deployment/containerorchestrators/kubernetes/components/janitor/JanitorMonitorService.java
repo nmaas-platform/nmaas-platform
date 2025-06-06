@@ -1,16 +1,22 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor;
 
-import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class JanitorMonitorService extends MonitorService {
 
     private final JanitorService janitorService;
+
+    @Autowired
+    public JanitorMonitorService(MonitorManager monitorManager, JanitorService janitorService) {
+        super(monitorManager);
+        this.janitorService = janitorService;
+    }
 
     @Override
     public void checkStatus() {
