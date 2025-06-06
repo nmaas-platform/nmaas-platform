@@ -195,7 +195,17 @@
     "CONTACT_MAIL" : "Contact mail",
     "DETAILS" : "Details",
     "STATE_SINCE" : "State last change",
-    "REMOVE" : "Remove cluster"
+    "REMOVE" : "Remove cluster",
+    "FILE": "Kubernetes config",
+    "WIZARD" : {
+      "ADD" : "Adding new remote cluster",
+      "STEP_1" : "General information",
+      "STEP_2" : "Basic cluster settings",
+      "STEP_3" : "Advance cluster settings",
+      "STEP_1_INFO" : "Kubernetes config file is required to proceed. Please fill text area with content of config.",
+      "STEP_2_INFO" : "Provide basic information about the cluster. You can also assign cluster to the domain.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster."
+    }
   },
   "GITLAB": {
     "TITLE": "GitLab configuration",
@@ -650,7 +660,7 @@
       "APP_RESTART_PROGRESS": "Application restart in progress",
       "APP_RESTART_SUCCESS": "Application restarted successfully",
       "APP_RESTART_FAILED": "Application restart failed",
-      "APP_UPDATE_PROGRESS": "Application configuration update in progress",
+        "APP_UPDATE_PROGRESS": "Application configuration update in progress",
       "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
       "APP_UPDATE_FAILED": "Application configuration update failed",
       "UNKNOWN": "Unknown state",

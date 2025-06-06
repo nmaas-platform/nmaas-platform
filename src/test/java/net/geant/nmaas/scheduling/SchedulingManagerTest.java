@@ -34,9 +34,7 @@ public class SchedulingManagerTest {
 
     @BeforeEach
     void setup() throws Exception {
-        gitLabMonitorService = new GitLabMonitorService();
-        gitLabMonitorService.setGitLabManager(gitLabManager);
-        gitLabMonitorService.setMonitorManager(monitorManager);
+        gitLabMonitorService = new GitLabMonitorService(monitorManager, gitLabManager);
         scheduleManager = new ScheduleManager(scheduler);
         when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(false);
     }

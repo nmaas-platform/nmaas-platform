@@ -37,8 +37,8 @@ public class JanitorService {
     public JanitorService(KubernetesClusterNamespaceService namespaceService, Environment env) {
         this.namespaceService = namespaceService;
         this.channel = ManagedChannelBuilder.forAddress(
-                env.getProperty("janitor.address"),
-                env.getProperty("janitor.port", Integer.class))
+                        env.getProperty("janitor.address"),
+                        env.getProperty("janitor.port", Integer.class))
                 .maxInboundMessageSize(Integer.MAX_VALUE)
                 .usePlaintext()
                 .build();
@@ -124,7 +124,7 @@ public class JanitorService {
         }
     }
 
-    boolean isJanitorAvailable(){
+    boolean isJanitorAvailable() {
         return Arrays.asList(ConnectivityState.CONNECTING, ConnectivityState.IDLE, ConnectivityState.READY).contains(this.channel.getState(false));
     }
 
@@ -132,16 +132,11 @@ public class JanitorService {
         log.trace("Checking if deployment {} in domain {} is ready", deploymentId.value(), domain);
         ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(deploymentId, domain));
-        switch (response.getStatus()) {
-            case OK:
-                return true;
-            case PENDING:
-                return false;
-            case FAILED:
-            case UNRECOGNIZED:
-            default:
-                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
-        }
+        return switch (response.getStatus()) {
+            case OK -> true;
+            case PENDING -> false;
+            default -> throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        };
     }
 
     public String retrieveServiceIp(Identifier serviceId, String domain) {

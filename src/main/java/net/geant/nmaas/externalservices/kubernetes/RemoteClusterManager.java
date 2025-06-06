@@ -8,6 +8,7 @@ import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
 import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
@@ -123,23 +124,23 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         }
     }
 
-    public RemoteClusterView readClusterFile(RemoteClusterView view, MultipartFile file) {
-        checkRequest(view);
+    public RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file) {
+        checkRequestRead(view);
 
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
         try {
             ClusterConfigView configView = yamlMapper.readValue(file.getInputStream(), ClusterConfigView.class);
 
-            log.error("Mapped {}", configView.toString());
+            log.info("Mapped {}", configView.toString());
 
             if (configView.getClusters().isEmpty()) {
-                log.error("No clusters info provided in configuration file");
+                log.info("No clusters info provided in configuration file");
             } else if (configView.getClusters().size() == 1) {
-                log.error("One cluster provided, create view and return ");
+                log.info("One cluster provided, create view and return ");
                 KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
                 KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressView(), KClusterIngress.class);
-                return saveCluster(KCluster.builder()
+                return toView(KCluster.builder()
                                 .name(view.getName())
                                 .description(view.getDescription())
                                 .creationDate(OffsetDateTime.now())
@@ -152,18 +153,58 @@ public class RemoteClusterManager implements ClusterMonitoringService {
                                 .contactEmail(view.getContactEmail())
                                 .currentStateSince(OffsetDateTime.now())
                                 .domains(prepareList(view))
-                                .build(),
-                        file);
+                                .build() );
 
             } else {
-                log.error("More than 1 cluster provided, not implemented yet");
+                log.info("More than 1 cluster provided, not implemented yet");
             }
 
-        } catch (IOException | NoSuchAlgorithmException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         return null;
+    }
+
+    public RemoteClusterView saveClusterFile(RemoteClusterView view, MultipartFile file) {
+        checkRequest(view);
+        try {
+                log.info("One cluster provided, create view and return ");
+                KClusterDeployment deployment;
+                KClusterIngress ingress;
+
+                if(view.getDeployment() != null) {
+                    deployment = modelMapper.map(view.getDeployment(), KClusterDeployment.class);
+                } else {
+                    deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
+                }
+
+                if(view.getIngress() != null) {
+                    ingress = modelMapper.map(view.getIngress(), KClusterIngress.class);
+                } else {
+                    ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
+                }
+
+
+                return saveCluster(KCluster.builder()
+                                .name(view.getName())
+                                .description(view.getDescription())
+                                .creationDate(OffsetDateTime.now())
+                                .modificationDate(OffsetDateTime.now())
+                                .codename(view.getCodename())
+                                .clusterConfigFile(new String(file.getBytes()))
+                                .deployment(deployment)
+                                .ingress(ingress)
+                                .state(KClusterState.UNKNOWN)
+                                .contactEmail(view.getContactEmail())
+                                .currentStateSince(OffsetDateTime.now())
+                                .domains(prepareList(view))
+                                .build(),
+                        file);
+
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<Domain> prepareList(RemoteClusterView view) {
@@ -216,6 +257,16 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         }
         if (view.getDescription() == null) {
             throw new IllegalArgumentException("Description of the cluster is null");
+        }
+        if (view.getCodename() == null) {
+            throw new IllegalArgumentException("Codename of the cluster is null");
+        }
+
+    }
+
+    private void checkRequestRead(RemoteClusterView view) {
+        if (view.getName() == null) {
+            throw new IllegalArgumentException("Name of the cluster is null");
         }
     }
 

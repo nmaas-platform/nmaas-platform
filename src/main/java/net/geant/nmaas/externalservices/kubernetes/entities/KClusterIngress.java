@@ -52,9 +52,4 @@ public class KClusterIngress {
     private String issuerOrWildcardName;
 
     private Boolean ingressPerDomain;
-
-    public String getExternalServiceDomain() {
-        return this.getExternalServiceDomain();
-    }
-
 }
