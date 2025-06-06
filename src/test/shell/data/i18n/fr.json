@@ -318,7 +318,13 @@
       "DATE" : "Date added"
     },
     "SCALED_UP": "Reprende",
-    "SCALED_DOWN": "Pause"
+    "SCALED_DOWN": "Pause",
+    "CONFIRM_SCALEDOWN": {
+      "MESSAGE": "Voulez-vous vraiment arrêter l'instance?",
+      "HEADER": "Confirmation",
+      "ACCEPT": "Oui",
+      "REJECT": "Non"
+    }
   },
   "MONITOR": {
     "TITLE": "Monitor service",

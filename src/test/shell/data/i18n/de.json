@@ -316,7 +316,13 @@
       "DATE" : "Date added"
     },
     "SCALED_UP": "Fortsetzen",
-    "SCALED_DOWN": "Pause"
+    "SCALED_DOWN": "Pause",
+    "CONFIRM_SCALEDOWN": {
+      "MESSAGE": "Möchten Sie die Instanz wirklich pausieren",
+      "HEADER": "Bestätigung",
+      "ACCEPT": "Ja",
+      "REJECT": "Nein"
+    }
   },
   "MONITOR": {
     "TITLE": "Überwachungsservice",
