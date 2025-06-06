@@ -52,5 +52,4 @@ public class KClusterIngress {
     private String issuerOrWildcardName;
 
     private Boolean ingressPerDomain;
-
 }

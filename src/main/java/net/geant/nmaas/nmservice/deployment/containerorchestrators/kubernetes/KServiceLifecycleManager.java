@@ -15,4 +15,7 @@ public interface KServiceLifecycleManager {
 
     void updateHelmRepo();
 
+    void scaleDeployment(Identifier deploymentId, int replicas);
+
+
 }

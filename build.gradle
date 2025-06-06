@@ -30,7 +30,7 @@ gitProperties {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:4.31.0'
+        artifact = 'com.google.protobuf:protoc:4.31.1'
     }
     plugins {
         grpc {
@@ -111,11 +111,11 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:6.6.16.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:6.6.17.Final'
 
     // Database migrations
-    implementation('org.flywaydb:flyway-core:11.8.2')
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
+    implementation('org.flywaydb:flyway-core:11.9.0')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.9.0'
 
     implementation('org.freemarker:freemarker:2.3.34')
 
@@ -131,13 +131,13 @@ dependencies {
     implementation 'org.gitlab4j:gitlab4j-api:6.0.0-rc.10' // version 6 for jakarta
 
     // GRPC communication with Janitor
-    implementation('com.google.protobuf:protobuf-java:4.31.0')
+    implementation('com.google.protobuf:protobuf-java:4.31.1')
     implementation('io.grpc:grpc-netty-shaded:1.73.0')
     implementation('io.grpc:grpc-protobuf:1.73.0')
     implementation('io.grpc:grpc-stub:1.73.0')
 
     // CSV processing
-    implementation('com.opencsv:opencsv:5.11')
+    implementation('com.opencsv:opencsv:5.11.1')
 
     // Tests
     testImplementation('org.mockito:mockito-core:5.18.0')
