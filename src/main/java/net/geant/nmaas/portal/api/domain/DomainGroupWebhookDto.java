@@ -11,4 +11,5 @@ public class DomainGroupWebhookDto {
 
     private DomainGroupView domainGroup;
     private String action;
+
 }

@@ -27,9 +27,6 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     private final KubernetesClusterNamespaceService namespaceService;
     private final KubernetesRepositoryManager repositoryManager;
 
-    private KubernetesClient kubernetesClient;
-
-
     @Override
     @Loggable(LogLevel.INFO)
     public void restartService(Identifier deploymentId) {
@@ -38,25 +35,21 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
 
     @Override
     public void scaleDeployment(Identifier deploymentId, int replicas) {
-
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-        Config config = null;
-
-
         try {
-            config = Config.fromKubeconfig(
+            final Config config = Config.fromKubeconfig(
                     Files.readString(
                             Path.of(serviceInfo.getRemoteCluster().getPathConfigFile()
                             )));
+            final KubernetesClient kubernetesClient = new KubernetesClientBuilder().withConfig(config).build();
+            kubernetesClient.apps()
+                    .deployments()
+                    .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
+                    .withName(serviceInfo.getDeploymentId().getValue())
+                    .scale(replicas);
         } catch (IOException e) {
             log.error("IO error with accessing the file {}", e.getMessage());
         }
-
-        kubernetesClient = new KubernetesClientBuilder().withConfig(config).build();
-        kubernetesClient.apps()
-                .deployments()
-                .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
-                .withName(serviceInfo.getDeploymentId().getValue())
-                .scale(replicas);
     }
+
 }

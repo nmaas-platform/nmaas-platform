@@ -775,7 +775,7 @@ public class AppInstanceController extends AppBaseController {
      */
     @PutMapping("/{deploymentId}/scale-down")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void scaleDownApp(@PathVariable String deploymentId) {
+    public void scaleDownAppInstance(@PathVariable String deploymentId) {
         eventPublisher.publishEvent(
                 new AppScaleActionEvent(
                         this,
@@ -789,8 +789,7 @@ public class AppInstanceController extends AppBaseController {
      */
     @PutMapping("/{deploymentId}/scale-up")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void scaleUpApp(@PathVariable String deploymentId) {
-
+    public void scaleUpAppInstance(@PathVariable String deploymentId) {
         eventPublisher.publishEvent(
                 new AppScaleActionEvent(
                         this,

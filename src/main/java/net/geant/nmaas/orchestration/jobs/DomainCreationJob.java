@@ -52,7 +52,7 @@ public class DomainCreationJob extends WebhookJob {
         } catch (MissingElementException e) {
             log.warn("Webhook or domain does not exist. DomainCreationJob is abandoned");
         } catch (WebServiceCommunicationException e) {
-            log.error("Failed to communicate with external system for the webhoook of domain creation with id {}", domainId);
+            log.error("Failed to communicate with external system for the webhook of domain creation with id {}", domainId);
             throw new JobExecutionException("Failed communication with external system");
         }
     }

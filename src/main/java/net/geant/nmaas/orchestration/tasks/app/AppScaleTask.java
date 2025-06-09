@@ -1,7 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -14,9 +13,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AppScaleTask {
 
-    private final KServiceOperationsManager kserviceOperationsManager;
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
-
+    private final KServiceOperationsManager kserviceOperationsManager;
 
     @EventListener
     public void handleScaleEvent(AppScaleActionEvent event) {
@@ -39,6 +37,5 @@ public class AppScaleTask {
 
                 break;
         }
-
     }
 }
