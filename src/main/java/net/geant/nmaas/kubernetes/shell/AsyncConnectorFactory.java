@@ -3,7 +3,7 @@ package net.geant.nmaas.kubernetes.shell;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
+import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AsyncConnectorFactory {
 
-    private final KubernetesClientConfigFactory configFactory;
+    private final KubernetesApiClientFactory configFactory;
 
     public AsyncConnector preparePodShellConnection(AppInstance appInstance, String podName) {
         final String namespace = appInstance.getDomain().getCodename();

@@ -6,8 +6,13 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Provides KubernetesClient instance with suitable configuration depending on the Platform deployment
@@ -15,7 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class KubernetesClientConfigFactory {
+public class KubernetesApiClientFactory {
 
     @Value("${nmaas.kubernetes.incluster:true}")
     private boolean inCluster;
@@ -39,6 +44,20 @@ public class KubernetesClientConfigFactory {
             this.client = new KubernetesClientBuilder().withConfig(getConfig()).build();
         }
         return this.client;
+    }
+
+    /**
+     * Client for remote cluster instantiated each time when requested
+     *
+     * @return KubernetesClient instance
+     */
+    public static KubernetesClient getClient(KCluster cluster) {
+        try {
+            final Config config = Config.fromKubeconfig(Files.readString(Path.of(cluster.getPathConfigFile())));
+            return new KubernetesClientBuilder().withConfig(config).build();
+        } catch (IOException e) {
+            throw new KubernetesClientSetupException(e);
+        }
     }
 
     /**

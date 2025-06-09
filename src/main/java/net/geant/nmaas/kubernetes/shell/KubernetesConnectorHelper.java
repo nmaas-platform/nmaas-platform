@@ -4,7 +4,7 @@ import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
+import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -23,7 +23,7 @@ public class KubernetesConnectorHelper {
     private static final String SHELL_ACCESS_ENABLED_POD_LABEL = "shell-access-enabled";
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
-    private final KubernetesClientConfigFactory configFactory;
+    private final KubernetesApiClientFactory configFactory;
     private final ApplicationInstanceService applicationInstanceService;
 
     public boolean checkAppInstanceSupportsSshAccess(Long appInstanceId) {

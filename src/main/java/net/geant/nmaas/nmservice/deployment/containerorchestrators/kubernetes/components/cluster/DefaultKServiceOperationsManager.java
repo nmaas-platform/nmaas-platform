@@ -6,7 +6,7 @@ import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
+import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -46,7 +46,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
                 );
                 client = new KubernetesClientBuilder().withConfig(config).build();
             } else {
-                client = new KubernetesClientConfigFactory().getClient();
+                client = new KubernetesApiClientFactory().getClient();
             }
             client.apps()
                     .deployments()

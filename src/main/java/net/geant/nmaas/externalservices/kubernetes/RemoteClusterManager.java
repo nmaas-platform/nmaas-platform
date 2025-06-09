@@ -2,19 +2,17 @@ package net.geant.nmaas.externalservices.kubernetes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
 import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
 import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
+import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
+import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -307,20 +305,14 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         restoreKubeconfigFileIfMissing();
         List<KCluster> kClusters = clusterRepository.findAll();
         kClusters.forEach(cluster -> {
-            Config config = null;
             try {
-                config = Config.fromKubeconfig(Files.readString(Path.of(cluster.getPathConfigFile())));
-            } catch (IOException e) {
-                log.error("IO error with accessing the file {}", e.getMessage());
-                updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
-            }
-
-            try {
-                KubernetesClient client = new KubernetesClientBuilder().withConfig(config).build();
-                log.debug("Get kubernetes version , something works {}", client.getKubernetesVersion().getPlatform());
-                //try to download kubernetes version to make sure connection to cluster is working
+                // trying to read kubernetes version to make sure connection to the cluster is working
+                String majorVersion = KubernetesApiClientFactory.getClient(cluster).getKubernetesVersion().getMajor();
+                log.debug("Received version information for cluster {} -> {}", cluster.getCodename(), majorVersion);
                 updateStateIfNeeded(cluster, KClusterState.UP);
-
+            } catch (KubernetesClientSetupException e) {
+                log.error("Error while setting up client for cluster {} (message: {})", cluster.getCodename(), e.getMessage());
+                updateStateIfNeeded(cluster, KClusterState.UNKNOWN);
             } catch (KubernetesClientException e) {
                 log.warn("Can't connect to cluster {} (message: {})", cluster.getCodename(), e.getMessage());
                 updateStateIfNeeded(cluster, KClusterState.DOWN);
