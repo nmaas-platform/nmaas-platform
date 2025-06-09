@@ -2,14 +2,12 @@ package net.geant.nmaas.kubernetes;
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import lombok.extern.log4j.Log4j2;
+import io.fabric8.kubernetes.client.KubernetesClientBuilder;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PreDestroy;
 
 /**
  * Provides KubernetesClient instance with suitable configuration depending on the Platform deployment
@@ -33,17 +31,19 @@ public class KubernetesClientConfigFactory {
 
     /**
      * Client is created only when necessary
+     *
      * @return KubernetesClient instance
      */
     public synchronized KubernetesClient getClient() {
         if (this.client == null) {
-            this.client = new DefaultKubernetesClient(getConfig());
+            this.client = new KubernetesClientBuilder().withConfig(getConfig()).build();
         }
         return this.client;
     }
 
     /**
      * Lazy configuration creation
+     *
      * @return KubernetesClient configuration
      */
     private Config getConfig() {
