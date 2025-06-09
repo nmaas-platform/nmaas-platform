@@ -403,6 +403,9 @@ public class RemoteClusterManager implements ClusterMonitoringService {
     }
 
     public boolean clusterExists(Long id) {
+        if(id == null) {
+            return false;
+        }
         return clusterRepository.existsById(id);
     }
 
