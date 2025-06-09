@@ -15,10 +15,10 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 # Note: Latest version of kubectl may be found at https://github.com/kubernetes/kubernetes/releases
 # renovate: datasource=github-releases depName=kubernetes/kubernetes
-ARG KUBE_LATEST_VERSION="v1.16.3"
+ENV KUBE_LATEST_VERSION="v1.16.3"
 # Note: Latest version of helm may be found at https://github.com/kubernetes/helm/releases
 # renovate: datasource=github-releases depName=helm/helm
-ARG HELM_VERSION="v3.9.3"
+ENV HELM_VERSION="v3.9.3"
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
 COPY docker/docker_entrypoint.sh /nmaas/scripts/docker_entrypoint.sh
