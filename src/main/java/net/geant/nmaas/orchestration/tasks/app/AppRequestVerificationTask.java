@@ -43,7 +43,7 @@ public class AppRequestVerificationTask {
             final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
             final Application application = appRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue())).orElseThrow(() ->
                     new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
-            if(!remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
+            if(appDeployment.getRemoteClusterId() != null && !remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
                 throw new InvalidAttributesException("Wrong remote cluster Id");
             }
             serviceDeployment.verifyRequest(
