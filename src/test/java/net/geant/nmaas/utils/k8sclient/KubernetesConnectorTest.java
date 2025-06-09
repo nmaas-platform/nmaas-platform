@@ -2,7 +2,7 @@ package net.geant.nmaas.utils.k8sclient;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
-import net.geant.nmaas.kubernetes.KubernetesConnector;
+import net.geant.nmaas.kubernetes.shell.KubernetesConnector;
 import net.geant.nmaas.kubernetes.shell.PodShellConnector;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;

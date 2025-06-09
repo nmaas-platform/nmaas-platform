@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
-import net.geant.nmaas.kubernetes.KubernetesConnectorHelper;
+import net.geant.nmaas.kubernetes.shell.KubernetesConnectorHelper;
 import net.geant.nmaas.portal.api.domain.K8sPodInfo;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;

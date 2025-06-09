@@ -1,4 +1,4 @@
-package net.geant.nmaas.kubernetes;
+package net.geant.nmaas.kubernetes.shell;
 
 import java.io.InputStream;
 import java.io.Serializable;

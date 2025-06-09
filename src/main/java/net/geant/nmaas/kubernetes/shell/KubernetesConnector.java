@@ -1,4 +1,4 @@
-package net.geant.nmaas.kubernetes;
+package net.geant.nmaas.kubernetes.shell;
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -47,7 +47,6 @@ public abstract class KubernetesConnector implements AsyncConnector {
     @Override
     public void close() {
         throw new NotImplementedException();
-
     }
 
     @Override

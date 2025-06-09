@@ -10,7 +10,7 @@ import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
-import net.geant.nmaas.kubernetes.KubernetesConnectorHelper;
+import net.geant.nmaas.kubernetes.shell.KubernetesConnectorHelper;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;

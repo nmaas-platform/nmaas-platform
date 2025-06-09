@@ -1,9 +1,10 @@
-package net.geant.nmaas.kubernetes;
+package net.geant.nmaas.kubernetes.shell;
 
 import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -34,17 +35,6 @@ public class KubernetesConnectorHelper {
                 .isAllowSshAccess();
         log.debug("... returning {}", sshAccessAllowed);
         return sshAccessAllowed;
-    }
-
-    public boolean checkAppInstanceSupportsLogAccess(Long appInstanceId) {
-        log.debug("Checking if application instance with id {} supports LOG access", appInstanceId);
-        boolean logAccessAllowed = this.applicationInstanceService.find(appInstanceId)
-                .orElseThrow(() -> new RuntimeException("App Instance not found"))
-                .getApplication()
-                .getAppDeploymentSpec()
-                .isAllowLogAccess();
-        log.debug("... returning {}", logAccessAllowed);
-        return logAccessAllowed;
     }
 
     public Map<String, String> getPodNamesForAppInstance(Long appInstanceId) {

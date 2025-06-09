@@ -141,22 +141,22 @@ public class RemoteClusterManager implements ClusterMonitoringService {
                 KClusterDeployment deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
                 KClusterIngress ingress = modelMapper.map(kClusterIngressManager.getKClusterIngressView(), KClusterIngress.class);
                 return toView(KCluster.builder()
-                                .name(view.getName())
-                                .description(view.getDescription())
-                                .creationDate(OffsetDateTime.now())
-                                .modificationDate(OffsetDateTime.now())
-                                .codename(configView.getClusters().stream().findFirst().get().getName())
-                                .clusterConfigFile(new String(file.getBytes()))
-                                .deployment(deployment)
-                                .ingress(ingress)
-                                .state(KClusterState.UNKNOWN)
-                                .contactEmail(view.getContactEmail())
-                                .currentStateSince(OffsetDateTime.now())
-                                .domains(prepareList(view))
-                                .build() );
+                        .name(view.getName())
+                        .description(view.getDescription())
+                        .creationDate(OffsetDateTime.now())
+                        .modificationDate(OffsetDateTime.now())
+                        .codename(configView.getClusters().stream().findFirst().get().getName())
+                        .clusterConfigFile(new String(file.getBytes()))
+                        .deployment(deployment)
+                        .ingress(ingress)
+                        .state(KClusterState.UNKNOWN)
+                        .contactEmail(view.getContactEmail())
+                        .currentStateSince(OffsetDateTime.now())
+                        .domains(prepareList(view))
+                        .build());
 
             } else {
-                log.info("More than 1 cluster provided, not implemented yet");
+                log.warn("More than 1 cluster provided, not implemented yet");
             }
 
         } catch (IOException e) {
@@ -169,38 +169,38 @@ public class RemoteClusterManager implements ClusterMonitoringService {
     public RemoteClusterView saveClusterFile(RemoteClusterView view, MultipartFile file) {
         checkRequest(view);
         try {
-                log.info("One cluster provided, create view and return ");
-                KClusterDeployment deployment;
-                KClusterIngress ingress;
+            log.info("One cluster provided, create view and return ");
+            KClusterDeployment deployment;
+            KClusterIngress ingress;
 
-                if(view.getDeployment() != null) {
-                    deployment = modelMapper.map(view.getDeployment(), KClusterDeployment.class);
-                } else {
-                    deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
-                }
+            if (view.getDeployment() != null) {
+                deployment = modelMapper.map(view.getDeployment(), KClusterDeployment.class);
+            } else {
+                deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
+            }
 
-                if(view.getIngress() != null) {
-                    ingress = modelMapper.map(view.getIngress(), KClusterIngress.class);
-                } else {
-                    ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
-                }
+            if (view.getIngress() != null) {
+                ingress = modelMapper.map(view.getIngress(), KClusterIngress.class);
+            } else {
+                ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
+            }
 
 
-                return saveCluster(KCluster.builder()
-                                .name(view.getName())
-                                .description(view.getDescription())
-                                .creationDate(OffsetDateTime.now())
-                                .modificationDate(OffsetDateTime.now())
-                                .codename(view.getCodename())
-                                .clusterConfigFile(new String(file.getBytes()))
-                                .deployment(deployment)
-                                .ingress(ingress)
-                                .state(KClusterState.UNKNOWN)
-                                .contactEmail(view.getContactEmail())
-                                .currentStateSince(OffsetDateTime.now())
-                                .domains(prepareList(view))
-                                .build(),
-                        file);
+            return saveCluster(KCluster.builder()
+                            .name(view.getName())
+                            .description(view.getDescription())
+                            .creationDate(OffsetDateTime.now())
+                            .modificationDate(OffsetDateTime.now())
+                            .codename(view.getCodename())
+                            .clusterConfigFile(new String(file.getBytes()))
+                            .deployment(deployment)
+                            .ingress(ingress)
+                            .state(KClusterState.UNKNOWN)
+                            .contactEmail(view.getContactEmail())
+                            .currentStateSince(OffsetDateTime.now())
+                            .domains(prepareList(view))
+                            .build(),
+                    file);
 
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -403,7 +403,7 @@ public class RemoteClusterManager implements ClusterMonitoringService {
     }
 
     public boolean clusterExists(Long id) {
-        if(id == null) {
+        if (id == null) {
             return false;
         }
         return clusterRepository.existsById(id);
