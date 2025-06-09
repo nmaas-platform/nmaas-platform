@@ -15,8 +15,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.security.EncryptionService;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
@@ -36,7 +35,6 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import net.geant.nmaas.portal.service.WebhookEventService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,8 +92,6 @@ class DomainServiceTest {
     Scheduler scheduler = mock(Scheduler.class);
     ListenerManager listenerManager = mock(ListenerManager.class);
     ScheduleManager scheduleManager;
-    EncryptionService encryptionService = mock(EncryptionService.class);
-    WebhookEventService webhookEventService;
 
     DomainService domainService;
 
@@ -103,15 +99,14 @@ class DomainServiceTest {
     void setup() {
         validator = new DefaultCodenameValidator("[a-z-]{2,12}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
         scheduleManager = new ScheduleManager( scheduler);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, webhookEventRepository, scheduleManager, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository,
                 domainDcnDetailsRepository, domainTechDetailsRepository, userService,
                 userRoleRepo, dcnRepositoryManager,
                 modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository, webhookEventRepository, scheduleManager);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
-        webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper);
     }
 
     @Test

@@ -194,7 +194,18 @@
     "UNKNOWN" : "Nieznany",
     "CONTACT_MAIL" : "Email kontaktowy",
     "DETAILS" : "Detale",
-    "STATE_SINCE" : "Stan od"
+    "STATE_SINCE" : "Stan od",
+    "REMOVE" : "Remove cluster",
+    "FILE": "Kubernetes config",
+    "WIZARD" : {
+      "ADD" : "Adding new remote cluster",
+      "STEP_1" : "General information",
+      "STEP_2" : "Basic cluster settings",
+      "STEP_3" : "Advance cluster settings",
+      "STEP_1_INFO" : "Kubernetes config file is required to proceed. Please fill text area with content of config.",
+      "STEP_2_INFO" : "Provide basic information about the cluster. You can also assign cluster to the domain.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster."
+    }
   },
   "GITLAB": {
     "TITLE": "Konfiguracja GitLab",
@@ -314,6 +325,14 @@
       "RATING": "Ocena",
       "POPULAR": "Popularność",
       "DATE" : "Data dodania"
+    },
+    "SCALED_UP": "Wznów",
+    "SCALED_DOWN": "Pauza",
+    "CONFIRM_SCALEDOWN": {
+      "MESSAGE" : "Czy na pewno chcesz zatrzymać instancję?",
+      "HEADER" : "Potwierdzenie",
+      "ACCEPT" : "Tak",
+      "REJECT" : "Nie"
     }
   },
   "MONITOR": {
@@ -516,7 +535,9 @@
     "DEPLOY_BUTTON": "Uruchom",
     "USE_DEFAULT_VERSION": "Użyj domyślnej wersji",
     "SELECT_VERSION": "Wybierz wersję",
-    "AUTO_UPGRADES_ENABLED": "Włącz automatyczne aktualizacje"
+    "AUTO_UPGRADES_ENABLED": "Włącz automatyczne aktualizacje",
+    "REMOTE_CLUSTER" : "Uruchomienie na zewnęntrzym klastrze",
+    "SELECT_CLUSTER": "Zdalna lokalizacja"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Dodaj użytkowników",
@@ -1324,6 +1345,10 @@
     "DOMAIN_CREATION" : "Domain creation",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "DOMAIN_GROUP_CHANGE" : "Domain group change"
+    "DOMAIN_GROUP_CHANGE" : "Domain group change",
+    "NEW" : "Add webhook",
+    "DETAILS" : "Webhooks details",
+    "SAVE" : "Save",
+    "REMOVE" : "Remove"
   }
 }

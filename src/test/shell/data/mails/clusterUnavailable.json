@@ -11,7 +11,7 @@
       "subject": "nmaas: Remote cluster is unavailable",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Internal nmaas monitoring indicates that cluster <b>${clusterCodename}</b> became unavailable.</p> <p><b> Cluster ID:<b> ${clusterId}</p> <p><b> Cluster CodeName:<b> ${clusterCodename}</p> <p>Please contact the nmaas administrator for further information.</p>",
+        "CONTENT": "<p>Internal nmaas monitoring indicates that cluster <b>${clusterCodename}</b> became unavailable.</p> <p><b> Cluster ID:</b> ${clusterId}</p> <p><b> Cluster CodeName:</b> ${clusterCodename}</p> <p>Please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -22,7 +22,7 @@
       "subject": "nmaas: Remote cluster is unavailable",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Internal nmaas monitoring indicates that cluster <b>${clusterCodename}</b> became unavailable.</p> <p><b> Cluster ID:<b> ${clusterId}</p> <p><b> Cluster CodeName:<b> ${clusterCodename}</p> <p>Please contact the nmaas administrator for further information.</p>",
+        "CONTENT": "<p>Internal nmaas monitoring indicates that cluster <b>${clusterCodename}</b> became unavailable.</p> <p><b> Cluster ID:</b> ${clusterId}</p> <p><b> Cluster CodeName:</b> ${clusterCodename}</p> <p>Please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -33,7 +33,7 @@
       "subject": "nmaas: Remote cluster is unavailable",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "<p>Internal nmaas monitoring indicates that cluster <b>${clusterCodename}</b> became unavailable.</p> <p><b> Cluster ID:<b> ${clusterId}</p> <p><b> Cluster CodeName:<b> ${clusterCodename}</p> <p>Please contact the nmaas administrator for further information.</p>",
+        "CONTENT": "<p>Internal nmaas monitoring indicates that cluster <b>${clusterCodename}</b> became unavailable.</p> <p><b> Cluster ID:</b> ${clusterId}</p> <p><b> Cluster CodeName:</b> ${clusterCodename}</p> <p>Please contact the nmaas administrator for further information.</p>",
         "SENDER": "Best regards,<br />nmaas Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": ""
@@ -44,7 +44,7 @@
       "subject": "nmaas: Zdalny klaster jest niedostępny",
       "template": {
         "HEADER": "Drogi ${username}",
-        "CONTENT": "<p>Wewnętrzny monitoring nmaas wskazuje, że klaster <b>${clusterCodename</b> stał się niedostępny.</p> <p><b> Identyfikator klastra:<b> ${clusterId</p> <p><b> Nazwa kodowa klastra:<b> ${clusterCodename</p> <p>Aby uzyskać więcej informacji, skontaktuj się z administratorem nmaas.</p>",
+        "CONTENT": "<p>Wewnętrzny monitoring nmaas wskazuje, że klaster <b>${clusterCodename</b> stał się niedostępny.</p> <p><b> Identyfikator klastra:</b> ${clusterId</p> <p><b> Nazwa kodowa klastra:</b> ${clusterCodename</p> <p>Aby uzyskać więcej informacji, skontaktuj się z administratorem nmaas.</p>",
         "SENDER": "Z pozdrowieniami,<br />Zespół nmaas",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""

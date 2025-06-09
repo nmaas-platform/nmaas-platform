@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.bulk.BulkDeploymentViewS;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 
 import java.util.List;

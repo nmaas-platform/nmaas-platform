@@ -5,7 +5,7 @@ import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
 import net.geant.nmaas.kubernetes.KubernetesConnectorHelper;
 import net.geant.nmaas.portal.api.domain.K8sPodInfo;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.K8sShellService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;

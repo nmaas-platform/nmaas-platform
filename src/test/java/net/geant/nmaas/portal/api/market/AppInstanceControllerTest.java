@@ -16,9 +16,8 @@ import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
 import net.geant.nmaas.portal.api.domain.ApplicationDTO;
 import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.UserBase;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -453,7 +452,7 @@ public class AppInstanceControllerTest {
         when(applicationService.findApplication(appInstanceRequest.getApplicationId())).thenReturn(Optional.of(application));
 
         assertThrows(IllegalArgumentException.class, () -> {
-            this.appInstanceController.createAppInstance(appInstanceRequest, principal,domainId);
+            this.appInstanceController.createAppInstance(appInstanceRequest, principal,domainId, null);
         });
     }
 

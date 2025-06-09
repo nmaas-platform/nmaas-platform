@@ -2,10 +2,12 @@ package net.geant.nmaas.portal.api.domain;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class DomainGroupView {
+@Builder
+public class DomainGroupView implements Serializable {
 
     @NotNull
     private Long id;
@@ -28,6 +31,7 @@ public class DomainGroupView {
 
     private List<ApplicationStatePerDomainView> applicationStatePerDomain;
 
+    @Builder.Default
     private List<UserViewMinimal> managers = new ArrayList<>();
 
 }

@@ -2,8 +2,9 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
@@ -48,6 +49,7 @@ public class DefaultAppLifecycleManagerTest {
     private final NmServiceRepositoryManager<KubernetesNmServiceInfo> serviceRepositoryManager = mock(KubernetesRepositoryManager.class);
     private final JanitorService janitorService = mock(JanitorService.class);
     private final AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
+    private final KServiceLifecycleManager kServiceLifecycleManager = mock(KServiceLifecycleManager.class);
 
     private DefaultAppLifecycleManager appLifecycleManager;
 
@@ -84,7 +86,7 @@ public class DefaultAppLifecycleManagerTest {
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getStorageSpace()).thenReturn(null);
         when(configurationView.getJsonInput()).thenReturn("");
-        appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST" );
+        appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
         verify(repositoryManager, times(1)).update(any());
         verify(serviceRepositoryManager, times(0)).updateStorageSpace(any(), anyInt());
         verify(serviceRepositoryManager, times(0)).addAdditionalParameters(any(), anyMap());
@@ -100,7 +102,7 @@ public class DefaultAppLifecycleManagerTest {
         when(configurationView.getAdditionalParameters()).thenReturn("{\"keyadd1\": \"valadd1\"}");
         when(configurationView.getMandatoryParameters()).thenReturn("{\"keyman1\": \"valman1\", \"keyman2\": \"valman2\"}");
         when(configurationView.getJsonInput()).thenReturn("");
-        appLifecycleManager.applyConfiguration(Identifier.newInstance(1L), configurationView, "TEST" );
+        appLifecycleManager.applyConfiguration(Identifier.newInstance(1L), configurationView, "TEST");
         ArgumentCaptor<Identifier> idArg = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<Map<String, String>> mapArg = ArgumentCaptor.forClass(Map.class);
         verify(serviceRepositoryManager, times(1)).updateStorageSpace(Identifier.newInstance(1L), 10);
@@ -115,7 +117,7 @@ public class DefaultAppLifecycleManagerTest {
         when(serviceRepositoryManager.loadService(any())).thenReturn(new KubernetesNmServiceInfo());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getJsonInput()).thenReturn("");
-        appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST" );
+        appLifecycleManager.applyConfiguration(new Identifier(), configurationView, "TEST");
         verify(eventPublisher, times(1)).publishEvent(any(AppApplyConfigurationActionEvent.class));
     }
 

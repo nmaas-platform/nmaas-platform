@@ -66,7 +66,7 @@ public class CustomAccessTokenServiceImpl implements CustomAccessTokenService {
         return userApiTokenRepository.findAllByUserId(userId).stream()
                 .filter(userApiToken -> !userApiToken.isDeleted())
                 .map(this::mapToView)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private UserApiToken createNewToken(User user, String name) {

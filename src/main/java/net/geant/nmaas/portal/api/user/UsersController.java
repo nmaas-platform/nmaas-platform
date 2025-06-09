@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.PasswordReset;
 import net.geant.nmaas.portal.api.domain.UserBase;
@@ -14,19 +15,22 @@ import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.persistent.results.UserLoginDate;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.scheduling.ScheduleManager;
 import net.geant.nmaas.utils.captcha.ValidateCaptcha;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -52,6 +56,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,6 +105,8 @@ public class UsersController {
     private final UserLoginRegisterService userLoginService;
 
     private final ApplicationInstanceService instanceService;
+    private final WebhookEventRepository webhookEventRepository;
+    private final ScheduleManager scheduleManager;
 
     @Autowired
     public UsersController(UserService userService,
@@ -109,7 +116,9 @@ public class UsersController {
                            JWTTokenService jwtTokenService,
                            ApplicationEventPublisher eventPublisher,
                            UserLoginRegisterService userLoginService,
-                           ApplicationInstanceService instanceService) {
+                           ApplicationInstanceService instanceService,
+                           WebhookEventRepository webhookEventRepository,
+                           ScheduleManager scheduleManager) {
         this.userService = userService;
         this.domainService = domainService;
         this.modelMapper = modelMapper;
@@ -118,6 +127,8 @@ public class UsersController {
         this.eventPublisher = eventPublisher;
         this.userLoginService = userLoginService;
         this.instanceService = instanceService;
+        this.webhookEventRepository = webhookEventRepository;
+        this.scheduleManager = scheduleManager;
     }
 
     @GetMapping("/users")
@@ -508,6 +519,9 @@ public class UsersController {
 
         try {
             domainService.addMemberRole(domain.getId(), user.getId(), role);
+            if (!domain.equals(globalDomain)){
+                webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT).forEach(id -> scheduleManager.createOneTimeJob(UserDomainAssignmentJob.class, "UserDomainAssignmentJobCreate_" + id + "_user" + user.getId()+ "_domain" + domain.getId()+"_" + LocalDateTime.now(), Map.of("webhookId", id, "domainId", domain.getId(), "userId", user.getId(), "role", role.name(), "action", "create")));
+            }
 
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
@@ -541,6 +555,10 @@ public class UsersController {
             domainService.removeMemberRole(domain.getId(), user.getId(), role);
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
+            final Domain globalDomain = domainService.getGlobalDomain().orElse(null);
+            if (!domain.equals(globalDomain)){
+                webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT).forEach(id -> scheduleManager.createOneTimeJob(UserDomainAssignmentJob.class, "UserDomainAssignmentJobDelete_" + id + "_user" + user.getId()+ "_domain" + domain.getId()+"_" + LocalDateTime.now(), Map.of("webhookId", id, "domainId", domain.getId(), "userId", user.getId(), "role", role.name(), "action", "delete")));
+            }
 
             log.info(String.format("User [%s] with role [%s] removed role [%s] of user name [%s] in domain [%d].",
                     principal.getName(),

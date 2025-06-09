@@ -31,7 +31,7 @@ public class DcnAdminController {
     public List<DcnView> listAllDcns() {
         return dcnRepositoryManager.loadAllNetworks().stream()
                 .map(DcnView::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

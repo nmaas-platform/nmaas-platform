@@ -58,7 +58,7 @@ public class KubernetesClientConfigFactory {
             log.info("Using in cluster Kubernetes client configuration");
             return new ConfigBuilder().build();
         } else {
-            log.info(String.format("Kubernetes API server master url: %s", master));
+            log.info("Kubernetes API server master url: {}", master);
             return new ConfigBuilder().withMasterUrl(master)
                     .withTrustCerts(true)
                     .withOauthToken(OAUTH_TOKEN)

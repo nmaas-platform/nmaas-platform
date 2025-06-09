@@ -195,7 +195,18 @@
     "UNKNOWN" : "Unknown",
     "CONTACT_MAIL" : "Contact mail",
     "DETAILS" : "Details",
-    "STATE_SINCE" : "State last change"
+    "STATE_SINCE" : "State last change",
+    "REMOVE" : "Remove cluster",
+    "FILE": "Kubernetes config",
+    "WIZARD" : {
+      "ADD" : "Adding new remote cluster",
+      "STEP_1" : "General information",
+      "STEP_2" : "Basic cluster settings",
+      "STEP_3" : "Advance cluster settings",
+      "STEP_1_INFO" : "Kubernetes config file is required to proceed. Please fill text area with content of config.",
+      "STEP_2_INFO" : "Provide basic information about the cluster. You can also assign cluster to the domain.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster."
+    }
   },
   "GITLAB": {
     "TITLE": "Configuration de GitLab",
@@ -315,6 +326,14 @@
       "RATING": "Rating",
       "POPULAR": "Popularity",
       "DATE" : "Date added"
+    },
+    "SCALED_UP": "Reprende",
+    "SCALED_DOWN": "Pause",
+    "CONFIRM_SCALEDOWN": {
+      "MESSAGE": "Voulez-vous vraiment arrêter l'instance?",
+      "HEADER": "Confirmation",
+      "ACCEPT": "Oui",
+      "REJECT": "Non"
     }
   },
   "MONITOR": {
@@ -517,7 +536,9 @@
     "DEPLOY_BUTTON": "Déployer",
     "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
     "SELECT_VERSION": "Sélectionnez la version",
-    "AUTO_UPGRADES_ENABLED": "Activer les mises à jour automatiques"
+    "AUTO_UPGRADES_ENABLED": "Activer les mises à jour automatiques",
+    "REMOTE_CLUSTER" : "Use remote cluster",
+    "SELECT_CLUSTER": "Remote location"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Add members",
@@ -1325,6 +1346,10 @@
     "DOMAIN_CREATION" : "Domain creation",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "DOMAIN_GROUP_CHANGE" : "Domain group change"
+    "DOMAIN_GROUP_CHANGE" : "Domain group change",
+    "NEW" : "Add webhook",
+    "DETAILS" : "Webhooks details",
+    "SAVE" : "Save",
+    "REMOVE" : "Remove"
   }
 }

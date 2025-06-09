@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,7 +108,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
         return repository.findAll().stream()
                 .map(InternationalizationSimple::getAsInternationalizationView)
                 .map(lang -> modelMapper.map(lang, InternationalizationBriefView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -136,7 +135,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
         return repository.findAll().stream()
                 .filter(InternationalizationSimple::isEnabled)
                 .map(InternationalizationSimple::getLanguage)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

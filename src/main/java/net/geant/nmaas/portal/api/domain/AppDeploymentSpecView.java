@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model.KubernetesTemplateView;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
 import jakarta.validation.constraints.NotNull;

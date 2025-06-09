@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -25,6 +26,7 @@ public class AppRequestVerificationTaskTest {
     private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
     private AppDeploymentRepository deployments = mock(AppDeploymentRepository.class);
     private ApplicationRepository applications = mock(ApplicationRepository.class);
+    private RemoteClusterManager remoteClusterManager = mock(RemoteClusterManager.class);
 
     private AppRequestVerificationTask task;
 
@@ -33,13 +35,14 @@ public class AppRequestVerificationTaskTest {
 
     @BeforeEach
     public void setup() {
-        task = new AppRequestVerificationTask(deploy, deployments, applications);
+        task = new AppRequestVerificationTask(deploy, deployments, applications, remoteClusterManager);
     }
 
     @Test
     public void shouldTriggerRequestVerify() throws InterruptedException {
         when(deployments.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().applicationId(Identifier.newInstance(10L)).build()));
         when(applications.findById(any(Long.class))).thenReturn(Optional.of(new Application()));
+        when(remoteClusterManager.clusterExists(any())).thenReturn(true);
         task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
         verify(deploy, times(1)).verifyRequest(any(Identifier.class), any(AppDeployment.class), isNull());
     }

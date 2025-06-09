@@ -541,6 +541,19 @@ public enum AppDeploymentState {
 
         @Override
         public boolean isInFailedState() { return true; }
+    },
+    SCALED_DOWN {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_SCALED_DOWN;
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            //TODO discous about correct next state
+//            return APPLICATION_CONFIGURED;
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
     };
 
     public abstract AppLifecycleState lifecycleState();

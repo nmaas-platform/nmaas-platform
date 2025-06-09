@@ -2,11 +2,13 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -16,9 +18,9 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.utils.bash.CommandExecutionException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import net.geant.nmaas.utils.bash.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -31,10 +33,13 @@ import java.util.stream.Collectors;
 import static net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption.DEPLOY_FROM_CHART;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.RANDOM_ARGUMENT_EXPRESSION_PREFIX;
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.*;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.PUBLIC;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "domain";
@@ -75,26 +80,45 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 namespaceService.namespace(serviceInfo.getDomain()),
                 serviceInfo.getDescriptiveDeploymentId().getValue(),
                 serviceInfo.getKubernetesTemplate(),
-                createArgumentsMap(serviceInfo)
+                createArgumentsMap(serviceInfo),
+                serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
         );
     }
 
     private Map<String, String> createArgumentsMap(KubernetesNmServiceInfo serviceInfo) {
         Map<String, String> arguments = new HashMap<>();
-        if (deploymentManager.getForceDedicatedWorkers()) {
-            arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
-        }
+
         Set<ServiceStorageVolume> serviceStorageVolumes = serviceInfo.getStorageVolumes();
-        if (!serviceStorageVolumes.isEmpty()) {
-            arguments.putAll(getPersistenceVariables(serviceStorageVolumes, deploymentManager.getStorageClass(serviceInfo.getDomain()), serviceInfo.getDescriptiveDeploymentId().getValue()));
+
+        if (serviceInfo.getRemoteCluster() == null) {
+            if (deploymentManager.getForceDedicatedWorkers()) {
+                arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
+            }
+            Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
+            if (!externalAccessMethods.isEmpty()) {
+                arguments.putAll(getIngressVariables(ingressManager.getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain(), null));
+            }
+            if (!serviceStorageVolumes.isEmpty()) {
+                arguments.putAll(getPersistenceVariables(serviceStorageVolumes, deploymentManager.getStorageClass(serviceInfo.getDomain()), serviceInfo.getDescriptiveDeploymentId().getValue()));
+            }
+            //case when deploy on remote cluster
+        } else {
+            if (!serviceStorageVolumes.isEmpty()) {
+                arguments.putAll(getPersistenceVariables(serviceStorageVolumes, serviceInfo.getRemoteCluster().getDeployment().getStorageClass(), serviceInfo.getDescriptiveDeploymentId().getValue()));
+            }
+            if (serviceInfo.getRemoteCluster().getDeployment().getForceDedicatedWorkers()) {
+                arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
+            }
+            Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
+            if (!externalAccessMethods.isEmpty()) {
+                arguments.putAll(getIngressVariables(serviceInfo.getRemoteCluster().getIngress().getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain(), serviceInfo.getRemoteCluster()));
+            }
         }
-        Set<ServiceAccessMethod> externalAccessMethods = serviceExternalAccessMethods(serviceInfo.getAccessMethods());
-        if (!externalAccessMethods.isEmpty()) {
-            arguments.putAll(getIngressVariables(ingressManager.getResourceConfigOption(), externalAccessMethods, serviceInfo.getDomain()));
-        }
+
         if (serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()) {
             arguments.putAll(removeRedundantParameters(serviceInfo.getAdditionalParameters()));
         }
+
         return arguments;
     }
 
@@ -114,16 +138,16 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static Map<String, String> removeRedundantParameters(Map<String, String> additionalParameters) {
         return additionalParameters.entrySet().stream().filter(entry ->
-                        !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
-                                && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
-                ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                !entry.getKey().contains(RANDOM_ARGUMENT_EXPRESSION_PREFIX)
+                        && !entry.getKey().contains(PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX)
+        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Map<String, String> getIngressVariables(IngressResourceConfigOption ingressResourceConfigOption, Set<ServiceAccessMethod> externalAccessMethods, String domain){
+    private Map<String, String> getIngressVariables(IngressResourceConfigOption ingressResourceConfigOption, Set<ServiceAccessMethod> externalAccessMethods, String domain, KCluster cluster) {
         return HelmChartVariables.ingressVariablesMap(
                 DEPLOY_FROM_CHART.equals(ingressResourceConfigOption),
                 externalAccessMethods,
-                getIngressClass(domain),
+                getIngressClass(domain, cluster),
                 ingressManager.getPublicIngressClass(),
                 ingressManager.getTlsSupported(),
                 ingressManager.getIssuerOrWildcardName(),
@@ -131,8 +155,10 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         );
     }
 
-    private String getIngressClass(String domain){
-        if (Boolean.TRUE.equals(ingressManager.getIngressPerDomain())) {
+    private String getIngressClass(String domain, KCluster cluster) {
+        if (cluster != null) {
+            return cluster.getIngress().getSupportedIngressClass();
+        } else if (Boolean.TRUE.equals(ingressManager.getIngressPerDomain())) {
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
         }
         return ingressManager.getSupportedIngressClass();
@@ -190,5 +216,4 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
-
 }

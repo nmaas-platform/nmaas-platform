@@ -84,6 +84,11 @@
         <appender-ref ref="nmaas-console"/>
     </logger>
 
+    <logger name="io.fabric8.kubernetes.client" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file"/>
+        <appender-ref ref="nmaas-console"/>
+    </logger>
+
     <root level="DEBUG">
         <appender-ref ref="nmaas-file" />
         <appender-ref ref="nmaas-console" />

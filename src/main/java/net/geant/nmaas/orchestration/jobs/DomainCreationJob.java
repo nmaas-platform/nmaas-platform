@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.DomainService;
@@ -45,16 +45,14 @@ public class DomainCreationJob extends WebhookJob {
             }
 
             Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(String.format("Domain with id: %d cannot be found", domainId)));
-            DomainView view = modelMapper.map(domain, DomainView.class);
-
-            callWebhook(webhook, view);
+            callWebhook(webhook, modelMapper.map(domain, DomainView.class));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
         } catch (MissingElementException e) {
             log.warn("Webhook or domain does not exist. DomainCreationJob is abandoned");
         } catch (WebServiceCommunicationException e) {
-            log.error("Failed to communicate with external system for the webhoook of domain creation with id {}", domainId);
+            log.error("Failed to communicate with external system for the webhook of domain creation with id {}", domainId);
             throw new JobExecutionException("Failed communication with external system");
         }
     }

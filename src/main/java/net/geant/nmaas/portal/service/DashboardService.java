@@ -7,7 +7,8 @@ import java.time.OffsetDateTime;
 
 public interface DashboardService {
 
-    public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate);
+    DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate);
 
-    public DomainDashboardView getSystemDomainDashboard(Long domainId);
+    DomainDashboardView getDomainDashboard(Long domainId);
+
 }

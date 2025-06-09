@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableSet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.portal.api.exception.AuthenticationException;
-import net.geant.nmaas.portal.api.exception.ExternalUserCanNotBeLinked;
-import net.geant.nmaas.portal.api.exception.ExternalUserMatchException;
-import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
+import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
+import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
+import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -50,7 +50,7 @@ public class OIDCAuthController {
 
     @Value("${portal.address}")
     private String portalAddress;
-    @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri:http://localhost:8080/realms/geant}")
+    @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri}")
     private String oidcAddress;
 
     @PostMapping("api/oidc/link")

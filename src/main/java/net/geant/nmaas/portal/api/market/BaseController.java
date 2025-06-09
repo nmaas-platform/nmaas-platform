@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;

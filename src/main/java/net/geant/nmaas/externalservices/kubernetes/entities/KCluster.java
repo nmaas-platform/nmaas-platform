@@ -66,6 +66,7 @@ public class KCluster {
     @JoinColumn(name = "deployment_id", referencedColumnName = "id")
     private KClusterDeployment deployment;
 
+    @Builder.Default
     @ManyToMany()
     @JoinTable(
             name = "k_clusters_domains",
