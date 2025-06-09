@@ -32,7 +32,7 @@ public class KubernetesConnectorHelper {
                 .getApplication()
                 .getAppDeploymentSpec()
                 .isAllowSshAccess();
-        log.debug(String.format("... returning %s", sshAccessAllowed));
+        log.debug("... returning {}", sshAccessAllowed);
         return sshAccessAllowed;
     }
 
@@ -43,12 +43,12 @@ public class KubernetesConnectorHelper {
                 .getApplication()
                 .getAppDeploymentSpec()
                 .isAllowLogAccess();
-        log.debug(String.format("... returning %s", logAccessAllowed));
+        log.debug("... returning {}", logAccessAllowed);
         return logAccessAllowed;
     }
 
     public Map<String, String> getPodNamesForAppInstance(Long appInstanceId) {
-        log.debug("Retrieving names of pods for application instance with id " + appInstanceId);
+        log.debug("Retrieving names of pods for application instance with id {}", appInstanceId);
         if (!checkAppInstanceSupportsSshAccess(appInstanceId)) {
             throw new ProcessingException(String.format("Can't retrieve pod names for application instance %s", appInstanceId));
         }

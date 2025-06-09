@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
@@ -44,8 +44,6 @@ public class JanitorServiceTest {
     private final ReadinessServiceBlockingStub readinessServiceBlockingStub = mock(ReadinessServiceBlockingStub.class);
     private final InformationServiceBlockingStub informationServiceBlockingStub = mock(InformationServiceBlockingStub.class);
 
-    JanitorService janitorService = new JanitorService(namespaceService, channel);
-
     private static final Identifier IDENTIFIER = Identifier.newInstance("deploymentId");
     private static final String DOMAIN = "test";
     private static final String USER = "user";
@@ -54,13 +52,15 @@ public class JanitorServiceTest {
     private static final ServiceResponse FAILED_SERVICE_RESPONSE = newBuilder().setStatus(FAILED).build();
     private static final ServiceResponse PENDING_SERVICE_RESPONSE = newBuilder().setStatus(PENDING).build();
 
+    JanitorService janitorService = new JanitorService(namespaceService, channel);
+
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(namespaceService.namespace(DOMAIN)).thenReturn("test");
     }
 
     @Test
-    public void shouldCreateOrReplaceConfigMap() {
+    void shouldCreateOrReplaceConfigMap() {
         assertDoesNotThrow(() -> {
             when(configServiceBlockingStub.createOrReplace(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
@@ -71,7 +71,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCreateOrReplaceConfigMapWithFailure() {
+    void shouldCreateOrReplaceConfigMapWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             when(configServiceBlockingStub.createOrReplace(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
@@ -82,7 +82,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldDeleteConfigMapIfExists() {
+    void shouldDeleteConfigMapIfExists() {
         assertDoesNotThrow(() -> {
             when(configServiceBlockingStub.deleteIfExists(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
@@ -93,7 +93,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldDeleteConfigMapIfExistsWithFailure() {
+    void shouldDeleteConfigMapIfExistsWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             when(configServiceBlockingStub.deleteIfExists(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
@@ -104,7 +104,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCreateOrReplaceBasicAuth() {
+    void shouldCreateOrReplaceBasicAuth() {
         assertDoesNotThrow(() -> {
             when(basicAuthServiceBlockingStub.createOrReplace(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
@@ -115,7 +115,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCreateOrReplaceBasicAuthWithFailure() {
+    void shouldCreateOrReplaceBasicAuthWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             when(basicAuthServiceBlockingStub.createOrReplace(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
@@ -126,7 +126,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldDeleteBasicAuthIfExists() {
+    void shouldDeleteBasicAuthIfExists() {
         assertDoesNotThrow(() -> {
             when(basicAuthServiceBlockingStub.deleteIfExists(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
@@ -137,7 +137,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldDeleteBasicAuthIfExistsWithFailure() {
+    void shouldDeleteBasicAuthIfExistsWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             when(basicAuthServiceBlockingStub.deleteIfExists(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
@@ -148,7 +148,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldDeleteTlsIfExists() {
+    void shouldDeleteTlsIfExists() {
         assertDoesNotThrow(() -> {
             when(certManagerServiceBlockingStub.deleteIfExists(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<CertManagerServiceGrpc> certManagerServiceGrpc = Mockito.mockStatic(CertManagerServiceGrpc.class)) {
@@ -159,7 +159,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldDeleteTlsIfExistsWithFailure() {
+    void shouldDeleteTlsIfExistsWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             when(certManagerServiceBlockingStub.deleteIfExists(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<CertManagerServiceGrpc> certManagerServiceGrpc = Mockito.mockStatic(CertManagerServiceGrpc.class)) {
@@ -170,19 +170,19 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCheckIfJanitorIsAvailable() {
+    void shouldCheckIfJanitorIsAvailable() {
         when(channel.getState(false)).thenReturn(ConnectivityState.READY);
         assertTrue(janitorService.isJanitorAvailable());
     }
 
     @Test
-    public void shouldCheckIfJanitorIsAvailableButItIsNot() {
+    void shouldCheckIfJanitorIsAvailableButItIsNot() {
         when(channel.getState(false)).thenReturn(ConnectivityState.SHUTDOWN);
         assertFalse(janitorService.isJanitorAvailable());
     }
 
     @Test
-    public void shouldCheckIfReady() {
+    void shouldCheckIfReady() {
         assertDoesNotThrow(() -> {
             when(readinessServiceBlockingStub.checkIfReady(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<ReadinessServiceGrpc> readinessServiceGrpc = Mockito.mockStatic(ReadinessServiceGrpc.class)) {
@@ -193,7 +193,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCheckIfReadyButItIsNot() {
+    void shouldCheckIfReadyButItIsNot() {
         assertDoesNotThrow(() -> {
             when(readinessServiceBlockingStub.checkIfReady(any())).thenReturn(PENDING_SERVICE_RESPONSE);
             try (MockedStatic<ReadinessServiceGrpc> readinessServiceGrpc = Mockito.mockStatic(ReadinessServiceGrpc.class)) {
@@ -204,7 +204,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCheckIfReadyWithFailure() {
+    void shouldCheckIfReadyWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             when(readinessServiceBlockingStub.checkIfReady(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<ReadinessServiceGrpc> readinessServiceGrpc = Mockito.mockStatic(ReadinessServiceGrpc.class)) {
@@ -215,7 +215,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldRetrieveServiceIp() {
+    void shouldRetrieveServiceIp() {
         assertDoesNotThrow(() -> {
             InfoServiceResponse response = InfoServiceResponse.newBuilder().setStatus(OK).setInfo("10.10.1.1").build();
             when(informationServiceBlockingStub.retrieveServiceIp(any())).thenReturn(response);
@@ -227,7 +227,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldRetrieveServiceIpWithFailure() {
+    void shouldRetrieveServiceIpWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             InfoServiceResponse response = InfoServiceResponse.newBuilder().setStatus(FAILED).build();
             when(informationServiceBlockingStub.retrieveServiceIp(any())).thenReturn(response);
@@ -239,7 +239,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCheckServiceExists() {
+    void shouldCheckServiceExists() {
         assertDoesNotThrow(() -> {
             InfoServiceResponse response = InfoServiceResponse.newBuilder().setStatus(OK).build();
             when(informationServiceBlockingStub.checkServiceExists(any())).thenReturn(response);
@@ -251,7 +251,7 @@ public class JanitorServiceTest {
     }
 
     @Test
-    public void shouldCheckServiceExistsWithFailure() {
+    void shouldCheckServiceExistsWithFailure() {
         assertThrows(JanitorResponseException.class, () -> {
             InfoServiceResponse response = InfoServiceResponse.newBuilder().setStatus(FAILED).build();
             when(informationServiceBlockingStub.checkServiceExists(any())).thenReturn(response);

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;

@@ -1,12 +1,11 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.HelmChartRepositoryView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model.HelmChartRepositoryView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model.KubernetesChartView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;

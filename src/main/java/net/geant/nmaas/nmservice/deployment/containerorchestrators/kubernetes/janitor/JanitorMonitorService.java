@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor;
 
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;

@@ -1,8 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +24,6 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +33,9 @@ import java.util.stream.Collectors;
 import static net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption.DEPLOY_FROM_CHART;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.RANDOM_ARGUMENT_EXPRESSION_PREFIX;
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.*;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.PUBLIC;
 
 @Component
 @RequiredArgsConstructor
@@ -55,8 +51,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     private final KubernetesClusterIngressManager ingressManager;
     private final HelmCommandExecutor helmCommandExecutor;
     private final DomainTechDetailsRepository domainTechDetailsRepository;
-
-    private KubernetesClient kubernetesClient;
 
     @Setter
     @Value("${helm.update.async.enabled}")
@@ -95,7 +89,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         Map<String, String> arguments = new HashMap<>();
 
         Set<ServiceStorageVolume> serviceStorageVolumes = serviceInfo.getStorageVolumes();
-
 
         if (serviceInfo.getRemoteCluster() == null) {
             if (deploymentManager.getForceDedicatedWorkers()) {
@@ -170,8 +163,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         }
         return ingressManager.getSupportedIngressClass();
     }
-
-    //czyli zwracać externalServiceDomain dla remote clustrów po prostu
 
     @Override
     @Loggable(LogLevel.TRACE)

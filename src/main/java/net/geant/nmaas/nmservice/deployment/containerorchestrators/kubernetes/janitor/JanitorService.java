@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;

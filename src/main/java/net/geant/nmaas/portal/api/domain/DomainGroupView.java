@@ -31,6 +31,7 @@ public class DomainGroupView implements Serializable {
 
     private List<ApplicationStatePerDomainView> applicationStatePerDomain;
 
+    @Builder.Default
     private List<UserViewMinimal> managers = new ArrayList<>();
 
 }

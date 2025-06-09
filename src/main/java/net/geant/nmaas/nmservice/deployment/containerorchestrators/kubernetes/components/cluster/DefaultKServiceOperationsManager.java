@@ -6,6 +6,7 @@ import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -37,12 +39,16 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     public void scaleDeployment(Identifier deploymentId, int replicas) {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
-            final Config config = Config.fromKubeconfig(
-                    Files.readString(
-                            Path.of(serviceInfo.getRemoteCluster().getPathConfigFile()
-                            )));
-            final KubernetesClient kubernetesClient = new KubernetesClientBuilder().withConfig(config).build();
-            kubernetesClient.apps()
+            KubernetesClient client;
+            if (Objects.nonNull(serviceInfo.getRemoteCluster())) {
+                final Config config = Config.fromKubeconfig(
+                        Files.readString(Path.of(serviceInfo.getRemoteCluster().getPathConfigFile()))
+                );
+                client = new KubernetesClientBuilder().withConfig(config).build();
+            } else {
+                client = new KubernetesClientConfigFactory().getClient();
+            }
+            client.apps()
                     .deployments()
                     .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
                     .withName(serviceInfo.getDeploymentId().getValue())

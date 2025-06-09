@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

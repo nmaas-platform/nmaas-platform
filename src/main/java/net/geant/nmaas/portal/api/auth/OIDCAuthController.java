@@ -50,7 +50,7 @@ public class OIDCAuthController {
 
     @Value("${portal.address}")
     private String portalAddress;
-    @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri:http://localhost:8080/realms/geant}")
+    @Value("${spring.security.oauth2.client.provider.my-oidc.issuer-uri}")
     private String oidcAddress;
 
     @PostMapping("api/oidc/link")
