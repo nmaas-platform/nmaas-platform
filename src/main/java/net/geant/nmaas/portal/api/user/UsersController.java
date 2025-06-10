@@ -641,7 +641,7 @@ public class UsersController {
         List<User> allUsers = this.userService.findAll().stream()
                 .filter(User::isEnabled)
                 .filter(user -> Objects.nonNull(user.getEmail()))
-                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN) || role.getRole().equals(ROLE_GROUP_MANAGER)))
+                .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_GROUP_MANAGER)))
                 .collect(Collectors.toList());
 
         return allUsers.stream()
