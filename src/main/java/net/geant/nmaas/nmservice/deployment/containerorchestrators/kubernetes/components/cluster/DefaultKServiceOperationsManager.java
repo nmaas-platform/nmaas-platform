@@ -26,6 +26,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
 
     private final KubernetesClusterNamespaceService namespaceService;
     private final KubernetesRepositoryManager repositoryManager;
+    private final KubernetesApiClientFactory kubernetesApiClientFactory;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -41,7 +42,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
             if (Objects.nonNull(serviceInfo.getRemoteCluster())) {
                 client = KubernetesApiClientFactory.getClient(serviceInfo.getRemoteCluster());
             } else {
-                client = new KubernetesApiClientFactory().getClient();
+                client = kubernetesApiClientFactory.getClient();
             }
             String kubernetesDeploymentId =
                     Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
