@@ -183,7 +183,6 @@ public class RemoteClusterManager implements ClusterMonitoringService {
                 ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
             }
 
-
             return saveCluster(KCluster.builder()
                             .name(view.getName())
                             .description(view.getDescription())

@@ -25,16 +25,12 @@ public class AppScaleTask {
             case DOWN:
                 appDeployment.setState(AppDeploymentState.SCALED_DOWN);
                 appDeploymentRepositoryManager.update(appDeployment);
-
                 kserviceOperationsManager.scaleDeployment(event.getDeploymentId(), 0);
-
                 break;
             case UP:
                 appDeployment.setState(AppDeploymentState.APPLICATION_CONFIGURED);
                 appDeploymentRepositoryManager.update(appDeployment);
-
                 kserviceOperationsManager.scaleDeployment(event.getDeploymentId(), 1);
-
                 break;
         }
     }

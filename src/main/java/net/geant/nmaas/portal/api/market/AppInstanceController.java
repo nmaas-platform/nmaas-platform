@@ -10,7 +10,7 @@ import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.orchestration.ScaleDirection;
+import net.geant.nmaas.orchestration.AppScaleDirection;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppScaleActionEvent;
@@ -780,7 +780,7 @@ public class AppInstanceController extends AppBaseController {
                 new AppScaleActionEvent(
                         this,
                         new Identifier(deploymentId),
-                        ScaleDirection.DOWN)
+                        AppScaleDirection.DOWN)
         );
     }
 
@@ -794,7 +794,7 @@ public class AppInstanceController extends AppBaseController {
                 new AppScaleActionEvent(
                         this,
                         new Identifier(deploymentId),
-                        ScaleDirection.UP)
+                        AppScaleDirection.UP)
         );
     }
 

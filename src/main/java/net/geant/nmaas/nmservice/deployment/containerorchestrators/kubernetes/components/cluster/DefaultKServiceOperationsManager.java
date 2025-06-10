@@ -1,12 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster;
 
-import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
+import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -16,9 +15,6 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Objects;
 
 @Component
@@ -41,10 +37,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
         try {
             KubernetesClient client;
             if (Objects.nonNull(serviceInfo.getRemoteCluster())) {
-                final Config config = Config.fromKubeconfig(
-                        Files.readString(Path.of(serviceInfo.getRemoteCluster().getPathConfigFile()))
-                );
-                client = new KubernetesClientBuilder().withConfig(config).build();
+                client = KubernetesApiClientFactory.getClient(serviceInfo.getRemoteCluster());
             } else {
                 client = new KubernetesApiClientFactory().getClient();
             }
@@ -53,8 +46,8 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
                     .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
                     .withName(serviceInfo.getDeploymentId().getValue())
                     .scale(replicas);
-        } catch (IOException e) {
-            log.error("IO error with accessing the file {}", e.getMessage());
+        } catch (KubernetesClientSetupException e) {
+            log.error(e.getMessage());
         }
     }
 

@@ -1,5 +1,7 @@
 package net.geant.nmaas.orchestration;
 
-public enum ScaleDirection {
+public enum AppScaleDirection {
+
     UP, DOWN
+
 }

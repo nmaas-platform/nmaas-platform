@@ -1,27 +1,20 @@
 package net.geant.nmaas.orchestration.events.app;
 
-import net.geant.nmaas.orchestration.ScaleDirection;
-import org.springframework.context.ApplicationEvent;
+import lombok.Getter;
+import net.geant.nmaas.orchestration.AppScaleDirection;
 import net.geant.nmaas.orchestration.Identifier;
+import org.springframework.context.ApplicationEvent;
 
-
+@Getter
 public class AppScaleActionEvent extends ApplicationEvent {
 
     private final Identifier deploymentId;
-    private final ScaleDirection direction;
+    private final AppScaleDirection direction;
 
-    public AppScaleActionEvent(Object source, Identifier deploymentId, ScaleDirection direction) {
+    public AppScaleActionEvent(Object source, Identifier deploymentId, AppScaleDirection direction) {
         super(source);
         this.deploymentId = deploymentId;
         this.direction = direction;
-    }
-
-    public Identifier getDeploymentId() {
-        return deploymentId;
-    }
-
-    public ScaleDirection getDirection() {
-        return direction;
     }
 
 }

@@ -1,7 +1,5 @@
 package net.geant.nmaas.externalservices.kubernetes.api.model;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +39,7 @@ public class RemoteClusterView {
 
     private KClusterState state;
 
-    private OffsetDateTime  currentStateSince;
+    private OffsetDateTime currentStateSince;
 
     private String contactEmail;
 
