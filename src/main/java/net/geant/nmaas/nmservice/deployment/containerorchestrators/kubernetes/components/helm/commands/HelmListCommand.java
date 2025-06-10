@@ -20,7 +20,7 @@ public class HelmListCommand extends HelmCommand {
     public static HelmListCommand command(String helmVersion, String namespace, boolean enableTls) {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(LIST).append(SPACE).append(LIST_OPTION);
-        if (HELM_VERSION_3.equals(helmVersion)) {
+        if (helmVersion.startsWith(HELM_VERSION_3)) {
             sb.append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
         }
         addTlsOptionIfRequired(helmVersion, enableTls, sb);

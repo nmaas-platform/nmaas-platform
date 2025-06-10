@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand.HELM_VERSION_2;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand.HELM_VERSION_3;
 
 @NoArgsConstructor
 @Component
@@ -75,9 +76,9 @@ public class HelmCommandExecutor {
     void executeHelmDeleteCommand(String namespace, String releaseName) {
         try {
             HelmCommand command;
-            if (HELM_VERSION_2.equals(helmVersion)) {
+            if (helmVersion.startsWith(HELM_VERSION_2)) {
                 command = HelmDeleteCommand.command(releaseName, enableTls);
-            } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion)) {
+            } else if (helmVersion.startsWith(HELM_VERSION_3)) {
                 command = HelmUninstallCommand.command(namespace, releaseName);
             } else {
                 throw new CommandExecutionException("Unknown Helm version in use: " + helmVersion);
@@ -108,9 +109,9 @@ public class HelmCommandExecutor {
     }
 
     HelmPackageStatus parseStatus(String output) {
-        if (HELM_VERSION_2.equals(helmVersion) && output.contains("STATUS: DEPLOYED")) {
+        if (helmVersion.startsWith(HELM_VERSION_2) && output.contains("STATUS: DEPLOYED")) {
             return HelmPackageStatus.DEPLOYED;
-        } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion) && output.contains("STATUS: deployed")) {
+        } else if (helmVersion.startsWith(HELM_VERSION_3) && output.contains("STATUS: deployed")) {
             return HelmPackageStatus.DEPLOYED;
         } else {
             return HelmPackageStatus.UNKNOWN;

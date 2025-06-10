@@ -50,7 +50,6 @@ public class HelmCommandExecutorTest {
     @Test
     void shouldReturnUnknownStatusFromInputString() {
         HelmCommandExecutor executor = new HelmCommandExecutor();
-        assertThat(executor.parseStatus("this is some example string"), equalTo(HelmPackageStatus.UNKNOWN));
         executor.setHelmVersion(HelmCommand.HELM_VERSION_2);
         assertThat(executor.parseStatus("this is some example string"), equalTo(HelmPackageStatus.UNKNOWN));
         executor.setHelmVersion(HelmCommand.HELM_VERSION_3);

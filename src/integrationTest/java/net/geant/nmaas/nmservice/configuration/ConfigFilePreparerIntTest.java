@@ -36,7 +36,7 @@ public class ConfigFilePreparerIntTest {
     private ConfigFilePreparer configFilePreparer;
 
     @Test
-    public void shouldGenerateConfigFiles() {
+    void shouldGenerateConfigFiles() {
         Identifier deploymentId = Identifier.newInstance("1");
         Identifier applicationId = Identifier.newInstance("2");
         Map<String, String> params = new HashMap<>();

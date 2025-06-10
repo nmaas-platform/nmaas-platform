@@ -21,7 +21,7 @@ public class HelmUpgradeCommand extends HelmCommand {
      * @return complete command object
      */
     public static HelmUpgradeCommand commandWithRepo(String helmVersion, String namespace, String releaseName, String chartName, String chartVersion, boolean enableTls) {
-        if (!HELM_VERSION_3.equals(helmVersion)) {
+        if (!helmVersion.startsWith(HELM_VERSION_3)) {
             throw new IllegalArgumentException("Upgrades are not supported for Helm v2");
         }
         if (releaseName == null || releaseName.isEmpty()) {
