@@ -16,6 +16,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -41,10 +43,14 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
             } else {
                 client = new KubernetesApiClientFactory().getClient();
             }
+            String kubernetesDeploymentId =
+                    Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.joining("-"));
             client.apps()
                     .deployments()
                     .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
-                    .withName(serviceInfo.getDeploymentId().getValue())
+                    .withName(kubernetesDeploymentId)
                     .scale(replicas);
         } catch (KubernetesClientSetupException e) {
             log.error(e.getMessage());
