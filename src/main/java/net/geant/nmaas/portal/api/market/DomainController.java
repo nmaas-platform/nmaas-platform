@@ -34,7 +34,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -81,7 +84,9 @@ public class DomainController extends AppBaseController {
     @GetMapping
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public List<DomainView> getDomains() {
+    public List<DomainView> getDomains(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+                                       @RequestParam(required = false) String searchValue,
+                                       @RequestParam(required = false, defaultValue = "false") boolean paginate) {
         return domainService.getDomains().stream()
                 .map(d -> {
                     d = domainService.getAppStatesFromGroups(d);
@@ -93,12 +98,15 @@ public class DomainController extends AppBaseController {
     @GetMapping("/base")
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
-    public List<DomainBase> getDomainsBase() {
-        return domainService.getDomains().stream()
-                .map(d -> {
-                    return modelMapper.map(d, DomainBase.class);
-                })
-                .toList();
+    public ResponseEntity<?> getDomainsBase(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+                                            @RequestParam(required = false) String searchValue,
+                                            @RequestParam(required = false, defaultValue = "false") boolean paginate
+    ) {
+        if (paginate) {
+            return new ResponseEntity<>(domainService.getDomainsBase(pageable, searchValue), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(domainService.getDomainsBase(searchValue), HttpStatus.OK);
+        }
     }
 
     @GetMapping("/{domainId}")
@@ -145,10 +153,10 @@ public class DomainController extends AppBaseController {
 
     @GetMapping("/my")
     @Transactional(readOnly = true)
-    public List<DomainBase> getMyDomains(@NotNull Principal principal) {
+    public List<DomainBase> getMyDomains(@NotNull Principal principal,  @RequestParam(required = false) String searchValue) {
         try {
             User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
-            return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, DomainBase.class)).collect(Collectors.toList());
+            return domainService.getUserDomains(user.getId(), searchValue).stream().map(d -> modelMapper.map(d, DomainBase.class)).collect(Collectors.toList());
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
         }
