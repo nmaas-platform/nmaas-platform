@@ -9,6 +9,7 @@ import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
@@ -31,6 +32,7 @@ import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepositor
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
+import net.geant.nmaas.portal.persistent.spec.DomainSpecification;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -44,6 +46,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,8 +136,54 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public Page<Domain> getDomains(Pageable pageable) {
-        return domainRepository.findAll(pageable);
+    public List<Domain> getDomains(String searchValue) {
+        if(searchValue == null || searchValue.isEmpty()) {
+           return domainRepository.findAll()
+                    .stream()
+                    .filter(domain -> !domain.isDeleted())
+                    .toList();
+        } else {
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            return domainRepository.findAll(searchSpec).stream()
+                    .filter(domain -> !domain.isDeleted())
+                    .toList();
+        }
+    }
+
+    @Override
+    public Page<Domain> getDomains(String searchValue, Pageable pageable) {
+        if(searchValue == null || searchValue.isEmpty()) {
+            return domainRepository.findAll(pageable);
+        } else {
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            return domainRepository.findAll(searchSpec, pageable);
+        }
+    }
+
+    @Override
+    public List<DomainBase> getDomainsBase(String searchValue) {
+        if(searchValue == null || searchValue.isEmpty()) {
+            return this.domainRepository.findAllBaseDomains();
+        } else {
+            log.warn("Search value = {}", searchValue);
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            List<Domain> domainPage = domainRepository.findAll(searchSpec);
+            return domainPage.stream().map(d -> modelMapper.map(d, DomainBase.class)).toList();
+        }
+
+    }
+
+    @Override
+    public Page<DomainBase> getDomainsBase(Pageable pageable, String searchValue) {
+        if(searchValue == null || searchValue.isEmpty()) {
+            return this.domainRepository.findAllBaseDomainsPageable(pageable);
+        } else {
+            log.warn("Search value = {}", searchValue);
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
+            return domainPage.map(DomainBase::fromEntity);
+        }
+
     }
 
     @Override
@@ -420,11 +469,21 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public Set<Domain> getUserDomains(Long userId) {
+    public Set<Domain> getUserDomains(Long userId, String searchValue) {
         checkParams(userId);
-        return getUser(userId).getRoles().stream()
-                .map(UserRole::getDomain)
-                .collect(Collectors.toSet());
+        if(searchValue == null || searchValue.isEmpty()) {
+            return getUser(userId).getRoles().stream()
+                    .map(UserRole::getDomain)
+                    .collect(Collectors.toSet());
+        } else {
+            Set<Domain> domainFromRoles = getUser(userId).getRoles().stream()
+                    .map(UserRole::getDomain)
+                    .collect(Collectors.toSet());
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            List<Domain> domainsFiltered = domainRepository.findAll(searchSpec);
+            return domainsFiltered.stream().filter(domainFromRoles::contains).collect(Collectors.toSet());
+        }
+
     }
 
     @Override
@@ -590,5 +649,4 @@ public class DomainServiceImpl implements DomainService {
     private void removeFromDomain(ApplicationBase base, Domain domain) {
         domain.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base));
     }
-
 }

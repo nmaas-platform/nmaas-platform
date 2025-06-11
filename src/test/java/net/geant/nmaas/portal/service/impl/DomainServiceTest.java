@@ -419,7 +419,7 @@ class DomainServiceTest {
         Domain domain = new Domain(1L, "testdom", "testdom");
         user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN)));
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        Set<Domain> result = this.domainService.getUserDomains(userId);
+        Set<Domain> result = this.domainService.getUserDomains(userId, null);
         assertThat("Result mismatch", result.contains(domain));
     }
 
