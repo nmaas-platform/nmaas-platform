@@ -135,7 +135,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroup.setName(view.getName());
         domainGroup.setManagers(view.getManagers().stream()
                 .map(user -> modelMapper.map(user, User.class))
-                .collect(Collectors.toList())
+                .collect(Collectors.toCollection(ArrayList::new))
         );
         for (ApplicationStatePerDomain appState : domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
