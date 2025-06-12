@@ -34,35 +34,35 @@ import static org.mockito.Mockito.when;
 
 public class DefaultAppDeploymentMonitorTest {
 
-    private Identifier deploymentId = Identifier.newInstance("deploymentId");
+    private final Identifier deploymentId = Identifier.newInstance("deploymentId");
 
-    private DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
-    private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
-    private NmServiceConfigurationProvider configure = mock(NmServiceConfigurationProvider.class);
+    private final DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
+    private final NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
+    private final NmServiceConfigurationProvider configure = mock(NmServiceConfigurationProvider.class);
 
     private DefaultAppDeploymentMonitor monitor;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         monitor = new DefaultAppDeploymentMonitor(repositoryManager, deploy, configure);
     }
 
     @Test
-    public void shouldReturnAllDeployments() {
+    void shouldReturnAllDeployments() {
         when(repositoryManager.loadAll()).thenReturn(Arrays.asList(new AppDeployment(), new AppDeployment()));
         List<AppDeployment> deployments = monitor.allDeployments();
         assertThat(deployments.size(), is(2));
     }
 
     @Test
-    public void shouldReturnState() {
+    void shouldReturnState() {
         when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
         AppLifecycleState state = monitor.state(deploymentId);
         assertThat(state, is(APPLICATION_DEPLOYED.lifecycleState()));
     }
 
     @Test
-    public void shouldReturnPreviousState() {
+    void shouldReturnPreviousState() {
         List<AppDeploymentHistory> stubHistory = Arrays.asList(
                 AppDeploymentHistory.builder()
                         .currentState(APPLICATION_DEPLOYED)
@@ -74,14 +74,14 @@ public class DefaultAppDeploymentMonitorTest {
                         .previousState(APPLICATION_DEPLOYED)
                         .timestamp(Date.from(Instant.now()))
                         .build()
-                );
+        );
         when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
         AppLifecycleState state = monitor.previousState(deploymentId);
         assertThat(state, is(AppLifecycleState.APPLICATION_DEPLOYED));
     }
 
     @Test
-    public void shouldReturnPreviousStateUnknown() {
+    void shouldReturnPreviousStateUnknown() {
         List<AppDeploymentHistory> stubHistory = Collections.singletonList(
                 AppDeploymentHistory.builder()
                         .currentState(APPLICATION_DEPLOYED)
@@ -94,7 +94,7 @@ public class DefaultAppDeploymentMonitorTest {
     }
 
     @Test
-    public void shouldReturnUserAccessDetails() {
+    void shouldReturnUserAccessDetails() {
         when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
         when(deploy.serviceAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails());
         AppUiAccessDetails accessDetails = monitor.userAccessDetails(deploymentId);
@@ -102,7 +102,7 @@ public class DefaultAppDeploymentMonitorTest {
     }
 
     @Test
-    public void shouldNotReturnUserAccessDetailsIfNotExist() {
+    void shouldNotReturnUserAccessDetailsIfNotExist() {
         assertThrows(InvalidDeploymentIdException.class, () -> {
             when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
             when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveNmServiceAccessDetailsException(""));
@@ -112,30 +112,30 @@ public class DefaultAppDeploymentMonitorTest {
     }
 
     @Test
-    public void shouldNotReturnUserAccessDetailsIfWrongState() {
+    void shouldNotReturnUserAccessDetailsIfWrongState() {
+        when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
         assertThrows(InvalidAppStateException.class, () -> {
-            when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
             monitor.userAccessDetails(deploymentId);
         });
     }
 
     @Test
-    public void shouldRetrieveConfigRepoAccessDetails() {
+    void shouldRetrieveConfigRepoAccessDetails() {
         when(configure.configRepositoryAccessDetails(deploymentId)).thenReturn(AppConfigRepositoryAccessDetails.of("testCloneURL"));
         AppConfigRepositoryAccessDetails repositoryAccessDetails = monitor.configRepositoryAccessDetails(deploymentId);
         assertEquals("testCloneURL", repositoryAccessDetails.getCloneUrl());
     }
 
     @Test
-    public void shouldNotRetrieveConfigRepoAccessDetailsIfNotExist() {
+    void shouldNotRetrieveConfigRepoAccessDetailsIfNotExist() {
+        when(configure.configRepositoryAccessDetails(deploymentId)).thenThrow(ConfigRepositoryAccessDetailsNotFoundException.class);
         assertThrows(InvalidDeploymentIdException.class, () -> {
-            when(configure.configRepositoryAccessDetails(deploymentId)).thenThrow(ConfigRepositoryAccessDetailsNotFoundException.class);
             monitor.configRepositoryAccessDetails(deploymentId);
         });
     }
 
     @Test
-    public void shouldReturnAppDeploymentHistory() {
+    void shouldReturnAppDeploymentHistory() {
         List<AppDeploymentHistory> stubHistory = Arrays.asList(
                 AppDeploymentHistory.builder()
                         .currentState(APPLICATION_DEPLOYED)

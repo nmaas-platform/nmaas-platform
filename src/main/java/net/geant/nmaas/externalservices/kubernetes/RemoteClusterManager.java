@@ -11,7 +11,7 @@ import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
 import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
-import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
+import net.geant.nmaas.kubernetes.KubernetesApiService;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -54,8 +54,10 @@ public class RemoteClusterManager implements ClusterMonitoringService {
     private final KubernetesClusterIngressManager kClusterIngressManager;
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
-    private final ApplicationEventPublisher eventPublisher;
     private final UserService userService;
+    private final KubernetesApiService kubernetesApiService;
+
+    private final ApplicationEventPublisher eventPublisher;
     private final ModelMapper modelMapper;
 
     public RemoteClusterView getClusterView(Long id) {
@@ -258,7 +260,6 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         if (view.getCodename() == null) {
             throw new IllegalArgumentException("Codename of the cluster is null");
         }
-
     }
 
     private void checkRequestRead(RemoteClusterView view) {
@@ -305,9 +306,8 @@ public class RemoteClusterManager implements ClusterMonitoringService {
         List<KCluster> kClusters = clusterRepository.findAll();
         kClusters.forEach(cluster -> {
             try {
-                // trying to read kubernetes version to make sure connection to the cluster is working
-                String majorVersion = KubernetesApiClientFactory.getClient(cluster).getKubernetesVersion().getMajor();
-                log.debug("Received version information for cluster {} -> {}", cluster.getCodename(), majorVersion);
+                final String version = kubernetesApiService.getKubernetesVersion(cluster);
+                log.debug("Received version information for cluster {} -> {}", cluster.getCodename(), version);
                 updateStateIfNeeded(cluster, KClusterState.UP);
             } catch (KubernetesClientSetupException e) {
                 log.error("Error while setting up client for cluster {} (message: {})", cluster.getCodename(), e.getMessage());
