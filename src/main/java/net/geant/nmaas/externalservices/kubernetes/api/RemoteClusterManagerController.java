@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -28,10 +29,11 @@ public class RemoteClusterManagerController {
 
     private final RemoteClusterManager remoteClusterManager;
 
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @GetMapping("/{id}")
-    public RemoteClusterView getKubernetesCluster(@PathVariable Long id) {
-        return remoteClusterManager.getClusterView(id);
+    public RemoteClusterView getKubernetesCluster(@PathVariable Long id, Principal principal) {
+
+        return remoteClusterManager.getClusterView(id, principal);
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
@@ -40,7 +42,13 @@ public class RemoteClusterManagerController {
         return remoteClusterManager.getAllClusterView();
     }
 
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasPermission(#domainId, 'domain', 'OWNER')")
+    @GetMapping("/domain/{domainId}")
+    public List<RemoteClusterView> getKubernetesClusterInDomain(@PathVariable Long domainId) {
+        return remoteClusterManager.getClustersInDomain(domainId);
+    }
+
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping
     public RemoteClusterView createKubernetesCluster(@RequestPart("file") MultipartFile file, @RequestPart("data") String viewString) {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -53,19 +61,19 @@ public class RemoteClusterManagerController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PutMapping("/{id}")
     public RemoteClusterView updateKubernetesCluster(@PathVariable Long id, @RequestBody RemoteClusterView view) {
         return remoteClusterManager.updateCluster(view, id);
     }
 
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteCluster(@PathVariable Long id) {
-         remoteClusterManager.removeCluster(id);
+        remoteClusterManager.removeCluster(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping("/read")
     public RemoteClusterView readKubernetesCluster(@RequestPart("file") MultipartFile file, @RequestPart("data") String viewString) {
         ObjectMapper objectMapper = new ObjectMapper();
