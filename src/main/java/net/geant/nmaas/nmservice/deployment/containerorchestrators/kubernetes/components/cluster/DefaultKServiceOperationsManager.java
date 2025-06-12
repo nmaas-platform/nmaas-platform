@@ -35,6 +35,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void scaleDeployment(Identifier deploymentId, int replicas) {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
