@@ -21,10 +21,11 @@ class ClusterServiceTest {
     private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
     private final KubernetesClusterIngressManager kClusterIngressManager = mock(KubernetesClusterIngressManager.class);
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager = mock(KubernetesClusterDeploymentManager.class);
+
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
-            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, null, null, null, modelMapper);
+            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, null, null, modelMapper);
 
     @Test
     void getClusterView_validId_returnsRemoteClusterView() {

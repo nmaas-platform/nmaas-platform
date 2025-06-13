@@ -22,8 +22,8 @@ import static org.mockito.Mockito.when;
 
 public class TemplateServiceTest {
 
-    private MailTemplateRepository repository = mock(MailTemplateRepository.class);
-    private LocalFileStorageService fileStorageService = mock(LocalFileStorageService.class);
+    private final MailTemplateRepository repository = mock(MailTemplateRepository.class);
+    private final LocalFileStorageService fileStorageService = mock(LocalFileStorageService.class);
 
     private TemplateService templateService;
 

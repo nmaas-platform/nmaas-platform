@@ -31,7 +31,7 @@ public class AsyncConnectorFactory {
     public AsyncConnector preparePodShellConnection(String namespace, String podName) {
         log.info("Attempting to connect to Kubernetes pod (namespace: {}, pod: {})", namespace, podName);
         KubernetesClient client = configFactory.getClient();
-        log.info("K8s client connected to API version {}", StringUtils.join(client.getVersion().getMajor(), ".", client.getVersion().getMinor()));
+        log.info("K8s client connected to API version {}", StringUtils.join(client.getKubernetesVersion().getMajor(), ".", client.getVersion().getMinor()));
         return new PodShellConnector(client, namespace, podName);
     }
 
