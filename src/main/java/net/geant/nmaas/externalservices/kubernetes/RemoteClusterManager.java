@@ -13,6 +13,7 @@ import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterReposito
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +42,7 @@ public class RemoteClusterManager {
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
     private final RemoteClusterMailer mailer;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     public RemoteClusterView getClusterView(Long id, Principal principal)  {
