@@ -3,7 +3,6 @@ package net.geant.nmaas.externalservices.kubernetes;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
 import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
-import net.geant.nmaas.kubernetes.KubernetesApiService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
@@ -22,11 +21,11 @@ class ClusterServiceTest {
     private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
     private final KubernetesClusterIngressManager kClusterIngressManager = mock(KubernetesClusterIngressManager.class);
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager = mock(KubernetesClusterDeploymentManager.class);
-    private final KubernetesApiService kubernetesApiService = mock(KubernetesApiService.class);
+
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
-            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, null, null, kubernetesApiService, null, modelMapper);
+            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, null, null, modelMapper);
 
     @Test
     void getClusterView_validId_returnsRemoteClusterView() {
