@@ -22,13 +22,13 @@ public class KubernetesConnectorHelper {
 
     private static final String SHELL_ACCESS_ENABLED_POD_LABEL = "shell-access-enabled";
 
+    private final ApplicationInstanceService applicationInstanceService;
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private final KubernetesApiClientFactory configFactory;
-    private final ApplicationInstanceService applicationInstanceService;
 
     public boolean checkAppInstanceSupportsSshAccess(Long appInstanceId) {
         log.debug("Checking if application instance with id {} supports SSH access", appInstanceId);
-        boolean sshAccessAllowed = this.applicationInstanceService.find(appInstanceId)
+        boolean sshAccessAllowed = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(() -> new RuntimeException("App Instance not found"))
                 .getApplication()
                 .getAppDeploymentSpec()
@@ -42,15 +42,16 @@ public class KubernetesConnectorHelper {
         if (!checkAppInstanceSupportsSshAccess(appInstanceId)) {
             throw new ProcessingException(String.format("Can't retrieve pod names for application instance %s", appInstanceId));
         }
-        return this.getPodNamesForAppInstance(
-                this.applicationInstanceService.find(appInstanceId).orElseThrow(
+        return getPodNamesForAppInstance(
+                applicationInstanceService.find(appInstanceId).orElseThrow(
                         () -> new RuntimeException("App Instance not found"))
         );
     }
 
     private Map<String, String> getPodNamesForAppInstance(AppInstance appInstance) {
         final String namespace = appInstance.getDomain().getCodename();
-        final String prefix = this.appDeploymentRepositoryManager.load(appInstance.getInternalId())
+        // TODO add support for remote clusters
+        final String prefix = appDeploymentRepositoryManager.load(appInstance.getInternalId())
                 .getDescriptiveDeploymentId().getValue();
 
         KubernetesClient client = configFactory.getClient();

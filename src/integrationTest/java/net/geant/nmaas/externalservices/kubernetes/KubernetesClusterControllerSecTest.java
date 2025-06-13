@@ -17,12 +17,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         createMVC();
     }
 
     @Test
-    public void shouldAuthorizeAdminProperUser() {
+    void shouldAuthorizeAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/management/kubernetes")
@@ -32,7 +32,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
     }
 
     @Test
-    public void shouldRejectNonAdminProperUser() {
+    void shouldRejectNonAdminProperUser() {
         String token = getValidUserTokenFor(Role.ROLE_USER);
         assertDoesNotThrow(() -> {
             mvc.perform(get("/api/management/kubernetes")

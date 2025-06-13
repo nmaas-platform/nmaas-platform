@@ -23,7 +23,7 @@ public class HelmStatusCommand extends HelmCommand {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(STATUS).append(SPACE).append(releaseName);
-        if (HELM_VERSION_3.equals(helmVersion)) {
+        if (helmVersion.startsWith(HELM_VERSION_3)) {
             sb.append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
         }
         addTlsOptionIfRequired(helmVersion, enableTls, sb);

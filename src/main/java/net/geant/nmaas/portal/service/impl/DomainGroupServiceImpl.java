@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -134,7 +135,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroup.setName(view.getName());
         domainGroup.setManagers(view.getManagers().stream()
                 .map(user -> modelMapper.map(user, User.class))
-                .toList()
+                .collect(Collectors.toCollection(ArrayList::new))
         );
         for (ApplicationStatePerDomain appState : domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {

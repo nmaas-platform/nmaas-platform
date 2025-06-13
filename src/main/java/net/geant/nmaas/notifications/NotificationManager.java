@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -133,7 +134,7 @@ public class NotificationManager {
         }
         if (List.of(MailType.APP_DEPLOYED, MailType.APP_UPGRADED, MailType.APP_UPGRADE_POSSIBLE)
                 .contains(mailAttributes.getMailType())) {
-            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName")));
+            mailAttributes.setAddressees(new ArrayList<>(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName"))));
             if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
                 userService.findByUsername((String) mailAttributes.getOtherAttributes().get("owner"))
                         .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));

@@ -1,10 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
+import net.geant.nmaas.kubernetes.KubernetesApiService;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
@@ -16,6 +15,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
 
     private final KubernetesClusterNamespaceService namespaceService;
     private final KubernetesRepositoryManager repositoryManager;
+    private final KubernetesApiService kubernetesApiService;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -32,20 +34,16 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void scaleDeployment(Identifier deploymentId, int replicas) {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
-            KubernetesClient client;
-            if (Objects.nonNull(serviceInfo.getRemoteCluster())) {
-                client = KubernetesApiClientFactory.getClient(serviceInfo.getRemoteCluster());
-            } else {
-                client = new KubernetesApiClientFactory().getClient();
-            }
-            client.apps()
-                    .deployments()
-                    .inNamespace(namespaceService.namespace(serviceInfo.getDomain()))
-                    .withName(serviceInfo.getDeploymentId().getValue())
-                    .scale(replicas);
+            final String namespace = namespaceService.namespace(serviceInfo.getDomain());
+            final String kubernetesDeploymentName =
+                    Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.joining("-"));
+            kubernetesApiService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
         } catch (KubernetesClientSetupException e) {
             log.error(e.getMessage());
         }

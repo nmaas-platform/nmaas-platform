@@ -56,22 +56,22 @@ public class NotificationManagerTest {
 
     @BeforeEach
     void setup() throws IOException {
-        this.notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, configurationManager, modelMapper, formTypeService);
+        notificationManager = new NotificationManager(templateService, notificationService, userService, domainService, configurationManager, modelMapper, formTypeService);
 
         when(userService.findAllUsersWithAdminRole()).thenReturn(
-                this.getAdminUserList().stream()
+                getAdminUserList().stream()
                         .map(user -> modelMapper.map(user, UserView.class))
                         .collect(Collectors.toList())
         );
         when(userService.findUsersWithRoleSystemAdminAndOperator()).thenReturn(
-                this.getAdminUserList().stream()
+                getAdminUserList().stream()
                         .map(user -> modelMapper.map(user, UserView.class))
                         .collect(Collectors.toList())
         );
         when(userService.findAll()).thenReturn(getDefaultUserList());
         when(domainService.findUsersWithDomainAdminRole("domainName")).thenReturn(
-                this.getAdminUserList().stream()
-                        .map(u -> this.modelMapper.map(u, UserView.class))
+                getAdminUserList().stream()
+                        .map(u -> modelMapper.map(u, UserView.class))
                         .collect(Collectors.toList())
         );
         when(userService.findByUsername("ordinary")).thenReturn(Optional.of(getDefaultUserList().get(1)));
@@ -86,9 +86,9 @@ public class NotificationManagerTest {
     @Test
     void notificationServiceShouldSentEmail() {
         JavaMailSender jms = mock(JavaMailSender.class);
-        this.notificationService = new NotificationService(jms);
+        notificationService = new NotificationService(jms);
 
-        this.notificationService.sendMail("mail", "subject", "content");
+        notificationService.sendMail("mail", "subject", "content");
 
         verify(jms).send(any(MimeMessagePreparator.class));
     }
@@ -235,8 +235,8 @@ public class NotificationManagerTest {
             put("username", "MyUser");
         }});
 
-        List<User> adminUsers = this.getAdminUserList();
-        adminUsers.get(0).setSelectedLanguage("fr");
+        List<User> adminUsers = getAdminUserList();
+        adminUsers.getFirst().setSelectedLanguage("fr");
         when(userService.findAllUsersWithAdminRole()).thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).collect(Collectors.toList()));
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> notificationManager.prepareAndSendMail(ma));
@@ -252,7 +252,7 @@ public class NotificationManagerTest {
             put("subType", "CONTACT");
         }});
 
-        List<User> adminUsers = this.getAdminUserList();
+        List<User> adminUsers = getAdminUserList();
         when(userService.findAllUsersWithAdminRole()).thenReturn(adminUsers.stream().map(u -> this.modelMapper.map(u, UserView.class)).collect(Collectors.toList()));
 
         List<String> emails = new ArrayList<>();
@@ -281,11 +281,11 @@ public class NotificationManagerTest {
 
         List<User> adminUsers = getAdminUserList();
         List<String> emails = Lists.newArrayList(
-                adminUsers.get(0).getEmail(),
+                adminUsers.getFirst().getEmail(),
                 external
         );
 
-        when(userService.findByEmail(adminUsers.get(0).getEmail())).thenReturn(adminUsers.get(0));
+        when(userService.findByEmail(adminUsers.getFirst().getEmail())).thenReturn(adminUsers.getFirst());
         when(userService.findByEmail(external)).thenThrow(new IllegalArgumentException("test message"));
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, true, true, "en", true, true, emails, true, true, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?"));
 
