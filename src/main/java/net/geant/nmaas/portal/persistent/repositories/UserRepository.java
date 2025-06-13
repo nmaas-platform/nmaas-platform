@@ -41,10 +41,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT count(distinct u.id) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id != 1")
     int countWithDomain();
 
-    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u.id, u.username, u.firstname, u.lastname, u.email, u.enabled) FROM User u")
-    List<UserListEntry> findAllListEntry();
-
-    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u.id, u.username, u.firstname, u.lastname, u.email, u.enabled) FROM User u")
-    Page<UserListEntry> findAllListEntry(Pageable pageable);
+//    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u.id, u.username, u.firstname, u.lastname, u.email, u.enabled) FROM User u")
+//    List<UserListEntry> findAllListEntry();
+//
+//    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u.id, u.username, u.firstname, u.lastname, u.email, u.enabled) FROM User u")
+//    Page<UserListEntry> findAllListEntry(Pageable pageable);
 
 }
