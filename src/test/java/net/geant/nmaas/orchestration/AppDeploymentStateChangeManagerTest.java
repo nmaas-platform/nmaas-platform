@@ -113,12 +113,16 @@ public class AppDeploymentStateChangeManagerTest {
 
     @Test
     void shouldTriggerNewEventInDeployedVerifiedState() throws SchedulerException {
-        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
         // Setup webhook event
-        WebhookEvent webhookEvent = new WebhookEvent(1L, "webhook", "https://example.com/webhook", WebhookEventType.APPLICATION_DEPLOYMENT, null, null);
+        WebhookEvent webhookEvent = new WebhookEvent(1L,
+                "webhook", "https://example.com/webhook",
+                WebhookEventType.APPLICATION_DEPLOYMENT,
+                null,
+                null);
         when(webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT))
                 .thenReturn(Stream.of(1L));
         when(webhookEventRepository.findById(1L))
@@ -135,6 +139,7 @@ public class AppDeploymentStateChangeManagerTest {
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
 
         ApplicationEvent newEvent = manager.notifyStateChange(event);
+
         assertThat(newEvent, is(nullValue()));
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
         // Verify webhook job was scheduled with correct parameters
