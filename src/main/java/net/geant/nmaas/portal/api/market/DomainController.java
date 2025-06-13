@@ -97,7 +97,7 @@ public class DomainController extends AppBaseController {
 
     @GetMapping("/base")
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_GROUP_MANAGER') || hasRole('ROLE_OPERATOR')")
     public ResponseEntity<?> getDomainsBase(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                             @RequestParam(required = false) String searchValue,
                                             @RequestParam(required = false, defaultValue = "false") boolean paginate
@@ -120,7 +120,7 @@ public class DomainController extends AppBaseController {
         // check groups status of app
         domain = domainService.getAppStatesFromGroups(domain);
 
-        if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN)
+        if (user.getRoles().stream().anyMatch(role -> role.getRole() == Role.ROLE_SYSTEM_ADMIN || role.getRole() == Role.ROLE_OPERATOR)
                 || user.getRoles().stream().anyMatch(role -> role.getDomain().getId().equals(domainId)
                 && (role.getRole() == Role.ROLE_DOMAIN_ADMIN) || (role.getRole() == Role.ROLE_GROUP_DOMAIN_ADMIN))) {
 

@@ -13,6 +13,7 @@ import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterReposito
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,12 +42,17 @@ public class RemoteClusterManager {
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
     private final RemoteClusterMailer mailer;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public RemoteClusterView getClusterView(Long id) {
+    public RemoteClusterView getClusterView(Long id, Principal principal)  {
         Optional<KCluster> cluster = clusterRepository.findById(id);
         if (cluster.isPresent()) {
-            return toView(cluster.get());
+            if(userService.isAdmin(principal.getName()) || userService.isUserAdminInAnyDomain(cluster.get().getDomains(), principal.getName()) ) {
+                return toView(cluster.get());
+            } else {
+                throw new IllegalArgumentException("No access to cluster " + id);
+            }
         } else {
             throw new IllegalArgumentException("Cluster not found");
         }
@@ -63,6 +70,23 @@ public class RemoteClusterManager {
         } else {
             throw new IllegalArgumentException("Cluster not found");
         }
+    }
+
+    //if domain GLOBAL return all
+    public List<RemoteClusterView> getClustersInDomain(Long domainId) {
+        log.warn("Looking cluster in domain {}", domainId);
+        List<KCluster> clusters = new ArrayList<>();
+        Optional<Domain> domainOtp = domainService.getGlobalDomain();
+        if(domainOtp.isPresent()) {
+            if(domainId.equals(domainOtp.get().getId())) {
+                clusters = clusterRepository.findAll();
+            } else {
+                clusters = clusterRepository.findByDomains_Id(domainId);
+            }
+        } else {
+            clusters = clusterRepository.findByDomains_Id(domainId);
+        }
+        return clusters.stream().map(this::toView).collect(Collectors.toList());
     }
 
     public File getFileFromCluster(Long id) {

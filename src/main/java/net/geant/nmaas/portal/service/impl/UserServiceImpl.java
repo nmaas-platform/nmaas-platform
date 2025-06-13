@@ -88,6 +88,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isAdmin(String username) {
+        User user = findByUsername(username).orElseThrow(() -> new MissingElementException("User with username " + username + " not found"));
+        return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
+    }
+
+    @Override
     public List<User> findAll() {
         return userRepository.findAll();
     }
@@ -297,6 +303,28 @@ public class UserServiceImpl implements UserService {
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())))
                 .map(user -> modelMapper.map(user, UserView.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isUserAdminInAnyDomainById(List<Long> domainIds, String username) {
+        Boolean result = false;
+        for (Long domainId : domainIds) {
+            if (userRoleRepository.findRolesByDomainAndUser(domainId, username).contains(ROLE_DOMAIN_ADMIN)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean isUserAdminInAnyDomain(List<Domain> domains, String username) {
+        Boolean result = false;
+        for (Domain domain : domains) {
+            if (userRoleRepository.findRolesByDomainAndUser(domain.getId(), username).contains(ROLE_DOMAIN_ADMIN)) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     private void sendMail(User user, MailType mailType) {

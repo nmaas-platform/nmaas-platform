@@ -11,12 +11,17 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	boolean existsByUsername(String username);
-	boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     boolean existsBySamlToken(String samlToken);
-	Optional<User> findByUsername(String username);
-	Optional<User> findBySamlToken(String token);
-	Optional<User> findByEmail(String email);
+
+    Optional<User> findByUsername(String username);
+
+    Optional<User> findBySamlToken(String token);
+
+    Optional<User> findByEmail(String email);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update User u set u.enabled = ?2 where u.id = ?1")
@@ -36,5 +41,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT count(distinct u.id) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id != 1")
     int countWithDomain();
+
+//    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u.id, u.username, u.firstname, u.lastname, u.email, u.enabled) FROM User u")
+//    List<UserListEntry> findAllListEntry();
+//
+//    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u.id, u.username, u.firstname, u.lastname, u.email, u.enabled) FROM User u")
+//    Page<UserListEntry> findAllListEntry(Pageable pageable);
 
 }
