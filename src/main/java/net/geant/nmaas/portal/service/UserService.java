@@ -64,4 +64,11 @@ public interface UserService {
     List<UserView> findAllUsersWithAdminRole();
 
     List<UserView> findUsersWithRoleSystemAdminAndOperator();
+
+    boolean isUserAdminInAnyDomainById(List<Long> domainIds, String username);
+
+    boolean isUserAdminInAnyDomain(List<Domain> domain, String username);
+
+    boolean isAdmin(String username);
+
 }
