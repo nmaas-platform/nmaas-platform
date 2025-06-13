@@ -203,7 +203,9 @@
       "STEP_3" : "Advance cluster settings",
       "STEP_1_INFO" : "Kubernetes config file is required to proceed. Please fill text area with content of config.",
       "STEP_2_INFO" : "Provide basic information about the cluster. You can also assign cluster to the domain.",
-      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster."
+      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster.",
+      "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
+      "TOOLTIP_2" : "All fields must be fill"
     }
   },
   "GITLAB": {
