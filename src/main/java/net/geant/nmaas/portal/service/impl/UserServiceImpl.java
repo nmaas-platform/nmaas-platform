@@ -10,6 +10,7 @@ import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.domain.UserListEntry;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -21,8 +22,11 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistent.results.UserLoginDate;
+import net.geant.nmaas.portal.persistent.spec.UserSpecification;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -30,12 +34,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.AbstractMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,6 +64,9 @@ public class UserServiceImpl implements UserService {
     private final ApplicationEventPublisher eventPublisher;
     private final JWTTokenService jwtTokenService;
     private final DomainGroupService domainGroupService;
+
+    private final UserLoginRegisterService userLoginService;
+
 
     @Value("${portal.address}")
     @Setter
@@ -327,6 +337,31 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
+    public Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue) {
+        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (searchValue != null && !searchValue.isEmpty()) {
+            Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue);
+            Page<User> all = userRepository.findAll(searchSpec, pageable);
+            return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
+        } else {
+            return userRepository.findAllListEntry(pageable);
+        }
+    }
+
+    @Override
+    public Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue, Long domainId) {
+        return null;
+    }
+
+    @Override
+    public List<UserListEntry> findAllListEntry() {
+        return userRepository.findAllListEntry();
+    }
+
     private void sendMail(User user, MailType mailType) {
         ImmutableMap<String, Object> map;
         if (mailType == MailType.NEW_BULK_LOGIN) {
@@ -358,5 +393,17 @@ public class UserServiceImpl implements UserService {
             url += "/";
         }
         return url + "reset/" + token;
+    }
+
+    private UserListEntry mapUser(UserListEntry entry,final Map<Long, UserLoginDate> userLoginDateMap ) {
+        if (userLoginDateMap.containsKey(entry.getId())) {
+            entry.setLastSuccessfulLoginDate(userLoginDateMap.get(entry.getId()).getMaxLoginDate());
+            entry.setFirstLoginDate(userLoginDateMap.get(entry.getId()).getMinLoginDate());
+        }
+        return entry;
+    }
+
+    private UserListEntry toListView(User user) {
+        return new UserListEntry(user);
     }
 }

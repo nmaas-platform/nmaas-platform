@@ -14,7 +14,7 @@ public class DomainSpecification {
 
     public static Specification<Domain> containsTextInAttributes(String searchText, String... attributes) {
         if (searchText == null || searchText.trim().isEmpty()) {
-            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction(); // Zwraca zawsze prawdziwy predykat (AND)
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
 
         final String lowerCaseSearchText = "%" + searchText.toLowerCase() + "%";
