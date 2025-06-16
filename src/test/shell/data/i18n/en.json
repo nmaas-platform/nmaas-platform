@@ -194,17 +194,17 @@
     "UNKNOWN" : "Unknown",
     "CONTACT_MAIL" : "Contact mail",
     "DETAILS" : "Details",
-    "STATE_SINCE" : "State last change",
+    "STATE_SINCE" : "Last state change",
     "REMOVE" : "Remove cluster",
     "FILE": "Kubernetes config",
     "WIZARD" : {
       "ADD" : "Adding new remote cluster",
       "STEP_1" : "General information",
       "STEP_2" : "Basic cluster settings",
-      "STEP_3" : "Advance cluster settings",
-      "STEP_1_INFO" : "Kubernetes config file is required to proceed. Please fill text area with content of config.",
-      "STEP_2_INFO" : "Provide basic information about the cluster. You can also assign cluster to the domain.",
-      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster.",
+      "STEP_3" : "Advanced cluster settings",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area.",
+      "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
       "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
       "TOOLTIP_2" : "All fields must be fill"
     }
