@@ -3,8 +3,7 @@ package net.geant.nmaas.externalservices.kubernetes.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManagementService;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,22 +23,20 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/management/cluster")
 @RequiredArgsConstructor
-@Slf4j
 public class RemoteClusterManagerController {
 
-    private final RemoteClusterManager remoteClusterManager;
+    private final RemoteClusterManagementService remoteClusterManager;
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @GetMapping("/{id}")
     public RemoteClusterView getKubernetesCluster(@PathVariable Long id, Principal principal) {
-
-        return remoteClusterManager.getClusterView(id, principal);
+        return remoteClusterManager.getCluster(id, principal);
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping("/all")
     public List<RemoteClusterView> getAllKubernetesCluster() {
-        return remoteClusterManager.getAllClusterView();
+        return remoteClusterManager.getAllClusters();
     }
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasPermission(#domainId, 'domain', 'OWNER')")
@@ -54,7 +51,6 @@ public class RemoteClusterManagerController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
-            log.info("New remote Kubernetes cluster created");
             return remoteClusterManager.saveClusterFile(cluster, file);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -79,7 +75,6 @@ public class RemoteClusterManagerController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
-            log.info("New remote Kubernetes cluster to be readed");
             return remoteClusterManager.mapFile(cluster, file);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
