@@ -25,11 +25,22 @@ import static net.geant.nmaas.externalservices.kubernetes.RemoteClusterHelper.sa
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RemoteClusterMonitor implements ClusterMonitoringService {
+public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
 
     private final KClusterRepository clusterRepository;
     private final KubernetesApiService kubernetesApiService;
     private final RemoteClusterMailer mailer;
+
+    @Override
+    public boolean clusterAvailable(Long id) {
+        final KCluster cluster = clusterRepository.getReferenceById(id);
+        try {
+            kubernetesApiService.getKubernetesVersion(cluster);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     @Override
     public void updateAllClusterState() {
