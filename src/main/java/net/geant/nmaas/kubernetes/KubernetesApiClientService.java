@@ -1,5 +1,6 @@
 package net.geant.nmaas.kubernetes;
 
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class KubernetesApiService {
+public class KubernetesApiClientService {
 
     private final KubernetesApiClientFactory kubernetesApiClientFactory;
 
@@ -20,6 +21,16 @@ public class KubernetesApiService {
         final String version = String.join("-", client.getKubernetesVersion().getMajor(), client.getKubernetesVersion().getMinor());
         client.close();
         return version;
+    }
+
+    public Deployment getDeployment(KCluster kCluster, String namespace, String deploymentName) {
+        try (KubernetesClient client = initClient(kCluster)) {
+            return client.apps()
+                    .deployments()
+                    .inNamespace(namespace)
+                    .withName(deploymentName)
+                    .get();
+        }
     }
 
     public void scaleDeployment(KCluster kCluster, String namespace, String deploymentName, int replicas) {

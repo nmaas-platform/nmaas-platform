@@ -2,10 +2,11 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.collect.Sets;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManagementService;
 import net.geant.nmaas.externalservices.kubernetes.RemoteClusterMonitoringService;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.gitlab.GitLabManager;
+import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
@@ -13,8 +14,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -22,6 +21,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -71,8 +72,9 @@ public class KubernetesManagerTest {
     private final KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
     private final JanitorService janitorService = mock(JanitorService.class);
-    private final RemoteClusterManager remoteClusterManager = mock(RemoteClusterManager.class);
-    private final RemoteClusterMonitoringService remoteClusterMonitoringService = mock(RemoteClusterMonitoringService.class);
+    private final KubernetesApiJanitorService kubernetesApiJanitorService = mock(KubernetesApiJanitorService.class);
+    private final RemoteClusterManagementService remoteClusterManager = mock(RemoteClusterManagementService.class);
+    private final RemoteClusterMonitoringService remoteClusterMonitor = mock(RemoteClusterMonitoringService.class);
     private final KubernetesDeploymentRemoteClusterParametersProvider remoteClusterParametersProvider  = mock(KubernetesDeploymentRemoteClusterParametersProvider.class);
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
@@ -89,8 +91,9 @@ public class KubernetesManagerTest {
             ingressManager,
             gitLabManager,
             janitorService,
+            kubernetesApiJanitorService,
             remoteClusterManager,
-            remoteClusterMonitoringService
+            remoteClusterMonitor
     );
 
     @BeforeEach
@@ -404,7 +407,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyThatServiceIsDeployedAndUpdateServiceIp() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
-        when(janitorService.checkIfReady(any(), any())).thenReturn(true);
+        when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
         when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId"), "domain"))
                 .thenReturn("192.168.100.1");
         when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId-component1"), "domain"))
@@ -447,7 +450,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyThatServiceIsDeployedWithoutServiceIp() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
-        when(janitorService.checkIfReady(any(), any())).thenReturn(true);
+        when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
         when(janitorService.retrieveServiceIp(any(), any())).thenThrow(new JanitorResponseException(""));
         doThrow(new JanitorResponseException("")).when(janitorService).checkServiceExists(any(), any());
         assertDoesNotThrow(() -> {
@@ -459,7 +462,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldReturnFalseSinceServiceNotDeployed() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
-        when(janitorService.checkIfReady(any(), any())).thenReturn(false);
+        when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(false);
         assertFalse(manager.checkService(Identifier.newInstance("deploymentId")));
     }
 

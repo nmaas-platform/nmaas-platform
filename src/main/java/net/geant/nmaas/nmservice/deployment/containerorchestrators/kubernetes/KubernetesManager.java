@@ -4,12 +4,13 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManagementService;
 import net.geant.nmaas.externalservices.kubernetes.RemoteClusterMonitoringService;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
@@ -86,8 +87,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     private final KubernetesClusterIngressManager ingressManager;
     private final GitLabManager gitLabManager;
     private final JanitorService janitorService;
-    private final RemoteClusterManager remoteClusterManager;
-    private final RemoteClusterMonitoringService remoteClusterMonitoringService;
+    private final KubernetesApiJanitorService kubernetesApiJanitorService;
+    private final RemoteClusterManagementService remoteClusterManager;
+    private final RemoteClusterMonitoringService remoteClusterMonitor;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -108,7 +110,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             if (!remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
                 throw new NmServiceRequestVerificationException(String.format("Remote cluster with id %s doesn't exist", appDeployment.getRemoteClusterId()));
             } else {
-                if (!remoteClusterMonitoringService.clusterAvailable(appDeployment.getRemoteClusterId())) {
+                if (!remoteClusterMonitor.clusterAvailable(appDeployment.getRemoteClusterId())) {
                     throw new NmServiceRequestVerificationException(String.format("Remote cluster with id %s is currently unavailable", appDeployment.getRemoteClusterId()));
                 }
             }
@@ -121,7 +123,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                 appDeployment.getDescriptiveDeploymentId()
         );
         if (Objects.nonNull(appDeployment.getRemoteClusterId())) {
-            serviceInfo.setRemoteCluster(remoteClusterManager.getCluster(appDeployment.getRemoteClusterId()));
+            serviceInfo.setRemoteCluster(remoteClusterManager.getClusterEntity(appDeployment.getRemoteClusterId()));
         }
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
@@ -343,7 +345,8 @@ public class KubernetesManager implements ContainerOrchestrator {
 
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
 
-            if (!janitorService.checkIfReady(
+            if (!kubernetesApiJanitorService.checkIfReady(
+                    service.getRemoteCluster(),
                     getDeploymentIdForJanitorStatusCheck(
                             service.getDescriptiveDeploymentId().value(),
                             service.getKubernetesTemplate().getMainDeploymentName()),

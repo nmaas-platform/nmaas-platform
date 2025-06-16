@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
 import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
-import net.geant.nmaas.kubernetes.KubernetesApiService;
+import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.notifications.templates.MailType;
 import org.springframework.stereotype.Service;
@@ -28,14 +28,14 @@ import static net.geant.nmaas.externalservices.kubernetes.RemoteClusterHelper.sa
 public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
 
     private final KClusterRepository clusterRepository;
-    private final KubernetesApiService kubernetesApiService;
+    private final KubernetesApiClientService kubernetesApiClientService;
     private final RemoteClusterMailer mailer;
 
     @Override
     public boolean clusterAvailable(Long id) {
         final KCluster cluster = clusterRepository.getReferenceById(id);
         try {
-            kubernetesApiService.getKubernetesVersion(cluster);
+            kubernetesApiClientService.getKubernetesVersion(cluster);
             return true;
         } catch (Exception e) {
             return false;
@@ -48,7 +48,7 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
         List<KCluster> kClusters = clusterRepository.findAll();
         kClusters.forEach(cluster -> {
             try {
-                final String version = kubernetesApiService.getKubernetesVersion(cluster);
+                final String version = kubernetesApiClientService.getKubernetesVersion(cluster);
                 log.debug("Received version information for cluster {} -> {}", cluster.getCodename(), version);
                 updateStateIfNeeded(cluster, KClusterState.UP);
             } catch (KubernetesClientSetupException e) {
@@ -81,7 +81,7 @@ public class RemoteClusterMonitor implements RemoteClusterMonitoringService {
         List<KCluster> clusters = clusterRepository.findAll();
         clusters.forEach(cluster -> {
             if (!isFileAvailable(cluster.getPathConfigFile())) {
-                MultipartFile file = new StringMultipartFile("file",
+                MultipartFile file = new RemoteClusterHelper.StringMultipartFile("file",
                         "config.yaml",
                         "application/x-yaml",
                         cluster.getClusterConfigFile());

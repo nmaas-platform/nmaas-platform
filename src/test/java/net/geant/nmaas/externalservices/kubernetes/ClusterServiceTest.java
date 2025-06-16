@@ -40,14 +40,12 @@ class ClusterServiceTest {
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
             kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, domainService, null, userService, modelMapper);
 
-
     private Domain globalDomain;
     private Domain specificDomain;
     private KCluster cluster1;
     private KCluster cluster2;
     private KCluster cluster3;
     private Principal mockPrincipal;
-
 
     @BeforeEach
     void setUp() {
@@ -78,14 +76,13 @@ class ClusterServiceTest {
         when(kClusterRepository.findById(id)).thenReturn(Optional.of(remoteCluster));
         when(userService.isAdmin(anyString())).thenReturn(true);
 
-        RemoteClusterView result = remoteClusterManager.getClusterView(id, mockPrincipal);
+        RemoteClusterView result = remoteClusterManager.getCluster(id, mockPrincipal);
 
         assertEquals(remoteCluster.getName(), result.getName());
         verify(kClusterRepository, times(1)).findById(id);
         verify(userService, times(1)).isAdmin(mockPrincipal.getName());
         verify(userService, never()).isUserAdminInAnyDomain(anyList(), anyString());
     }
-
 
     @Test
     void getClusterView_validId_domainAdminUser_returnsRemoteClusterView() throws AccessDeniedException {
@@ -97,7 +94,7 @@ class ClusterServiceTest {
         when(userService.isAdmin(anyString())).thenReturn(false);
         when(userService.isUserAdminInAnyDomain(anyList(), anyString())).thenReturn(true);
 
-        RemoteClusterView result = remoteClusterManager.getClusterView(id, mockPrincipal);
+        RemoteClusterView result = remoteClusterManager.getCluster(id, mockPrincipal);
 
         assertEquals(remoteCluster.getName(), result.getName());
         verify(kClusterRepository, times(1)).findById(id);
@@ -115,20 +112,19 @@ class ClusterServiceTest {
         when(userService.isAdmin(anyString())).thenReturn(false);
         when(userService.isUserAdminInAnyDomain(anyList(), anyString())).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> remoteClusterManager.getClusterView(id, mockPrincipal));
+        assertThrows(IllegalArgumentException.class, () -> remoteClusterManager.getCluster(id, mockPrincipal));
 
         verify(kClusterRepository, times(1)).findById(id);
         verify(userService, times(1)).isAdmin(mockPrincipal.getName());
         verify(userService, times(1)).isUserAdminInAnyDomain(remoteCluster.getDomains(), mockPrincipal.getName());
     }
 
-
     @Test
     void getClusterView_invalidId_throwsException() {
         Long id = 100L;
         when(kClusterRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> remoteClusterManager.getClusterView(id, mockPrincipal));
+        assertThrows(IllegalArgumentException.class, () -> remoteClusterManager.getCluster(id, mockPrincipal));
         verify(kClusterRepository, times(1)).findById(id);
     }
 
@@ -139,44 +135,11 @@ class ClusterServiceTest {
 
         when(kClusterRepository.findAll()).thenReturn(List.of(cluster1, cluster2));
 
-        List<RemoteClusterView> result = remoteClusterManager.getAllClusterView();
+        List<RemoteClusterView> result = remoteClusterManager.getAllClusters();
 
         assertEquals(2, result.size());
         verify(kClusterRepository, times(1)).findAll();
     }
-
-//    @Test
-//    void saveCluster_validInput_savesCluster() throws IOException, NoSuchAlgorithmException {
-//        MultipartFile multipartFile = mock(MultipartFile.class);
-//        ClusterManager clusterManager = ClusterManager.builder().name("Cluster").description("Description").build();
-//
-//        when(clusterManagerRepository.save(any(ClusterManager.class))).thenReturn(clusterManager);
-//
-//        // Load config.yaml from test/resources directory
-//        ClassLoader classLoader = getClass().getClassLoader();
-//        try (var inputStream = classLoader.getResourceAsStream("test/resources/config.yaml")) {
-//            when(multipartFile.getInputStream()).thenReturn(inputStream);
-//
-//            ClusterManagerView result = clusterService.saveCluster(clusterManager, multipartFile);
-//            assertEquals(clusterManager.getName(), result.getName());
-//            verify(clusterManagerRepository, times(1)).save(clusterManager);
-//        }
-//    }
-//
-//    @Test
-//    void updateCluster_validInput_updatesCluster() {
-//        Long id = 1L;
-//        ClusterManager existingCluster = ClusterManager.builder().id(id).name("OldName").build();
-//        ClusterManagerView updatedView = ClusterManagerView.builder().id(id).name("NewName").build();
-//
-//        when(clusterManagerRepository.findById(id)).thenReturn(Optional.of(existingCluster));
-//        when(clusterManagerRepository.save(any(ClusterManager.class))).thenReturn(existingCluster);
-//
-//        ClusterManagerView result = clusterService.updateCluster(updatedView, id);
-//
-//        assertEquals("NewName", result.getName());
-//        verify(clusterManagerRepository, times(1)).save(any(ClusterManager.class));
-//    }
 
     @Test
     void shouldReturnAllClustersWhenDomainIdIsGlobalDomainId() {
@@ -195,7 +158,6 @@ class ClusterServiceTest {
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster1.getId())));
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster2.getId())));
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster3.getId())));
-
     }
 
     @Test
@@ -214,7 +176,6 @@ class ClusterServiceTest {
         assertEquals(2, result.size());
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster1.getId())));
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster2.getId())));
-
     }
 
     @Test
