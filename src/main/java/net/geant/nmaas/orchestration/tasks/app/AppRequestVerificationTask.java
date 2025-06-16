@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManagementService;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -31,7 +31,7 @@ public class AppRequestVerificationTask {
     private AppDeploymentRepository repository;
     private ApplicationRepository appRepository;
 
-    private RemoteClusterManager remoteClusterManager;
+    private RemoteClusterManagementService remoteClusterManager;
 
     @EventListener
     @Loggable(LogLevel.INFO)

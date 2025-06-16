@@ -1,6 +1,8 @@
 package net.geant.nmaas.externalservices.kubernetes;
 
-public interface ClusterMonitoringService {
+public interface RemoteClusterMonitoringService {
+
+    boolean clusterAvailable(Long id);
 
     void updateAllClusterState();
 

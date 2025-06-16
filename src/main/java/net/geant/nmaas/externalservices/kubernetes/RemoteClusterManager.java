@@ -18,7 +18,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -35,7 +34,7 @@ import static net.geant.nmaas.externalservices.kubernetes.RemoteClusterHelper.sa
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RemoteClusterManager {
+public class RemoteClusterManager implements RemoteClusterManagementService {
 
     private final KClusterRepository clusterRepository;
     private final KubernetesClusterIngressManager kClusterIngressManager;
@@ -45,10 +44,11 @@ public class RemoteClusterManager {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public RemoteClusterView getClusterView(Long id, Principal principal)  {
+    @Override
+    public RemoteClusterView getCluster(Long id, Principal principal) {
         Optional<KCluster> cluster = clusterRepository.findById(id);
         if (cluster.isPresent()) {
-            if(userService.isAdmin(principal.getName()) || userService.isUserAdminInAnyDomain(cluster.get().getDomains(), principal.getName()) ) {
+            if (userService.isAdmin(principal.getName()) || userService.isUserAdminInAnyDomain(cluster.get().getDomains(), principal.getName())) {
                 return toView(cluster.get());
             } else {
                 throw new IllegalArgumentException("No access to cluster " + id);
@@ -58,12 +58,14 @@ public class RemoteClusterManager {
         }
     }
 
-    public List<RemoteClusterView> getAllClusterView() {
+    @Override
+    public List<RemoteClusterView> getAllClusters() {
         List<KCluster> clusters = clusterRepository.findAll();
         return clusters.stream().map(this::toView).collect(Collectors.toList());
     }
 
-    public KCluster getCluster(Long id) {
+    @Override
+    public KCluster getClusterEntity(Long id) {
         Optional<KCluster> cluster = clusterRepository.findById(id);
         if (cluster.isPresent()) {
             return cluster.get();
@@ -72,13 +74,12 @@ public class RemoteClusterManager {
         }
     }
 
-    //if domain GLOBAL return all
+    // if domain GLOBAL return all
     public List<RemoteClusterView> getClustersInDomain(Long domainId) {
-        log.warn("Looking cluster in domain {}", domainId);
-        List<KCluster> clusters = new ArrayList<>();
-        Optional<Domain> domainOtp = domainService.getGlobalDomain();
-        if(domainOtp.isPresent()) {
-            if(domainId.equals(domainOtp.get().getId())) {
+        Optional<Domain> domainFromDb = domainService.getGlobalDomain();
+        List<KCluster> clusters;
+        if (domainFromDb.isPresent()) {
+            if (domainId.equals(domainFromDb.get().getId())) {
                 clusters = clusterRepository.findAll();
             } else {
                 clusters = clusterRepository.findByDomains_Id(domainId);
@@ -89,11 +90,7 @@ public class RemoteClusterManager {
         return clusters.stream().map(this::toView).collect(Collectors.toList());
     }
 
-    public File getFileFromCluster(Long id) {
-        KCluster cluster = getCluster(id);
-        return new File(cluster.getPathConfigFile());
-    }
-
+    @Override
     public RemoteClusterView saveCluster(KCluster entity, MultipartFile file) throws IOException, NoSuchAlgorithmException {
         checkRequest(entity);
 
@@ -119,6 +116,7 @@ public class RemoteClusterManager {
         }
     }
 
+    @Override
     public RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file) {
         checkRequestRead(view);
 
@@ -161,6 +159,7 @@ public class RemoteClusterManager {
         return null;
     }
 
+    @Override
     public RemoteClusterView saveClusterFile(RemoteClusterView view, MultipartFile file) {
         checkRequest(view);
         try {
@@ -212,6 +211,7 @@ public class RemoteClusterManager {
         ).toList();
     }
 
+    @Override
     public RemoteClusterView updateCluster(RemoteClusterView cluster, Long id) {
         Optional<KCluster> entity = clusterRepository.findById(id);
 
@@ -280,10 +280,11 @@ public class RemoteClusterManager {
         return view;
     }
 
+    @Override
     public void removeCluster(Long id) {
         try {
             if (clusterRepository.existsById(id)) {
-                this.clusterRepository.deleteById(id);
+                clusterRepository.deleteById(id);
             }
         } catch (RuntimeException ex) {
             log.warn("Can not delete cluster {}", id);
@@ -291,6 +292,7 @@ public class RemoteClusterManager {
         }
     }
 
+    @Override
     public boolean clusterExists(Long id) {
         if (id == null) {
             return false;

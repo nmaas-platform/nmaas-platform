@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.kubernetes.KubernetesApiService;
+import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
@@ -25,7 +25,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
 
     private final KubernetesClusterNamespaceService namespaceService;
     private final KubernetesRepositoryManager repositoryManager;
-    private final KubernetesApiService kubernetesApiService;
+    private final KubernetesApiClientService kubernetesApiClientService;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -43,7 +43,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
                     Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
                             .filter(Objects::nonNull)
                             .collect(Collectors.joining("-"));
-            kubernetesApiService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
+            kubernetesApiClientService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
         } catch (KubernetesClientSetupException e) {
             log.error(e.getMessage());
         }

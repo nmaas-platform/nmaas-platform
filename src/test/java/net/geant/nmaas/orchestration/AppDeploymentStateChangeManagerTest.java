@@ -74,18 +74,16 @@ public class AppDeploymentStateChangeManagerTest {
     private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
-    private final  WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
+    private final WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
     private final Scheduler scheduler = mock(Scheduler.class);
     private final ListenerManager listenerManager = mock(ListenerManager.class);
-    private ScheduleManager scheduleManager;
 
     private AppDeploymentStateChangeManager manager;
 
     @BeforeEach
     void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
-        scheduleManager = new ScheduleManager( scheduler);
-        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher, webhookEventRepository, scheduleManager);
+        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher, webhookEventRepository, new ScheduleManager(scheduler));
     }
 
     @Test
@@ -160,7 +158,9 @@ public class AppDeploymentStateChangeManagerTest {
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(
                 new AppUiAccessDetails(
-                        new HashSet<ServiceAccessMethodView>() {{  add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url")); }}
+                        new HashSet<ServiceAccessMethodView>() {{
+                            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+                        }}
                 )
         );
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
@@ -262,11 +262,12 @@ public class AppDeploymentStateChangeManagerTest {
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));}}));
-        AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED,APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
-        AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS,APPLICATION_DEPLOYMENT_VERIFIED);
+            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+        }}));
+        AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED, APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
+        AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED);
         // added second time as "current" re-deployment, because current state is not added by `update state` function
-        AppDeploymentHistory history3 = new AppDeploymentHistory(3L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS,APPLICATION_DEPLOYMENT_VERIFIED);
+        AppDeploymentHistory history3 = new AppDeploymentHistory(3L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED);
 
         when(deployments.loadStateHistory(deploymentId)).thenReturn(java.util.List.of(history, history2, history3));
         when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
@@ -274,6 +275,5 @@ public class AppDeploymentStateChangeManagerTest {
         manager.notifyStateChange(event);
         verify(publisher, never()).publishEvent(any(NotificationEvent.class));
     }
-
 
 }
