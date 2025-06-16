@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
+import net.geant.nmaas.externalservices.kubernetes.RemoteClusterMonitoringService;
 import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
 import net.geant.nmaas.gitlab.GitLabManager;
@@ -13,8 +14,6 @@ import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmChartIngressVariable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
@@ -22,6 +21,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -85,6 +87,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private final GitLabManager gitLabManager;
     private final JanitorService janitorService;
     private final RemoteClusterManager remoteClusterManager;
+    private final RemoteClusterMonitoringService remoteClusterMonitoringService;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -100,7 +103,16 @@ public class KubernetesManager implements ContainerOrchestrator {
         } catch (IllegalArgumentException iae) {
             throw new NmServiceRequestVerificationException(iae.getMessage());
         }
-        //todo
+
+        if (Objects.nonNull(appDeployment.getRemoteClusterId())) {
+            if (!remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
+                throw new NmServiceRequestVerificationException(String.format("Remote cluster with id %s doesn't exist", appDeployment.getRemoteClusterId()));
+            } else {
+                if (!remoteClusterMonitoringService.clusterAvailable(appDeployment.getRemoteClusterId())) {
+                    throw new NmServiceRequestVerificationException(String.format("Remote cluster with id %s is currently unavailable", appDeployment.getRemoteClusterId()));
+                }
+            }
+        }
 
         KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo(
                 deploymentId,
@@ -108,11 +120,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                 appDeployment.getDomain(),
                 appDeployment.getDescriptiveDeploymentId()
         );
-        //verify cluster
-        if (remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
+        if (Objects.nonNull(appDeployment.getRemoteClusterId())) {
             serviceInfo.setRemoteCluster(remoteClusterManager.getCluster(appDeployment.getRemoteClusterId()));
         }
-
         serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()));
         serviceInfo.setStorageVolumes(generateTemplateStorageVolumes(appDeploymentSpec.getStorageVolumes()));
         serviceInfo.setAccessMethods(generateTemplateAccessMethods(appDeploymentSpec.getAccessMethods()));
