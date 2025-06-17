@@ -6,7 +6,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

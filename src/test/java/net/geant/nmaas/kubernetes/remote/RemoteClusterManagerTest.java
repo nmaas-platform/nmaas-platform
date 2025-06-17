@@ -1,8 +1,10 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.kubernetes.remote;
 
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -16,9 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,14 +30,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ClusterServiceTest {
+class RemoteClusterManagerTest {
 
     private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
     private final KubernetesClusterIngressManager kClusterIngressManager = mock(KubernetesClusterIngressManager.class);
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager = mock(KubernetesClusterDeploymentManager.class);
-    private final ModelMapper modelMapper = new ModelMapper();
     private final DomainService domainService = mock(DomainService.class);
     private final UserService userService = mock(UserService.class);
+    private final ModelMapper modelMapper = new ModelMapper();
 
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
             kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, domainService, null, userService, modelMapper);
@@ -57,7 +59,6 @@ class ClusterServiceTest {
         cluster1 = KCluster.builder().id(100L).name("ClusterA").build();
         cluster2 = KCluster.builder().id(101L).name("ClusterB").build();
         cluster3 = KCluster.builder().id(102L).name("ClusterC").build();
-
 
         cluster1.setDomains(Arrays.asList(specificDomain));
         cluster2.setDomains(Arrays.asList(specificDomain, globalDomain));
@@ -194,4 +195,5 @@ class ClusterServiceTest {
         assertEquals(1, result.size());
         assertTrue(result.stream().anyMatch(v -> v.getId().equals(cluster1.getId())));
     }
+
 }

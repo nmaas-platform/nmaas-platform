@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.springframework.stereotype.Component;

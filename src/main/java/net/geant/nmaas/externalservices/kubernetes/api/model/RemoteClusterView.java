@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
 
 import java.time.OffsetDateTime;
 import java.util.List;
