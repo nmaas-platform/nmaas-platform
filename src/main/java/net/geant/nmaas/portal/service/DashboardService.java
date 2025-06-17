@@ -11,4 +11,6 @@ public interface DashboardService {
 
     DomainDashboardView getDomainDashboard(Long domainId);
 
+    DashboardView getOperatorDashboard();
+
 }

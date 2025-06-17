@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.domain.UserListEntry;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -70,5 +71,15 @@ public interface UserService {
     boolean isUserAdminInAnyDomain(List<Domain> domain, String username);
 
     boolean isAdmin(String username);
+
+    Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue);
+
+    Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue, Long domainId);
+
+    List<UserListEntry> findAllListEntry();
+
+    Optional<Role> getUserRoleInDomain(Long userId, Long domainId);
+
+
 
 }

@@ -33,6 +33,8 @@ public interface DomainRepository extends JpaRepository<Domain, Long>, JpaSpecif
 
 	List<Domain> findAll(Specification<Domain> spec);
 
+	long countByActiveTrueAndDeletedFalse();
+
 
 
 }

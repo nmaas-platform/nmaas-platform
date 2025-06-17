@@ -123,6 +123,13 @@ public class DashboardServiceImpl implements DashboardService {
         }
     }
 
+    @Override
+    public DashboardView getOperatorDashboard() {
+        Long domainCount = domainRepository.countByActiveTrueAndDeletedFalse();
+        return DashboardView.builder()
+                .domainsCount(domainCount).build();
+    }
+
     private String getUserPreferredUsername(User user) {
         String preferredUsername;
         if (StringUtils.isEmpty(user.getUsername())) {

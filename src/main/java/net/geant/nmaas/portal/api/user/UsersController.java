@@ -11,6 +11,7 @@ import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.PasswordReset;
 import net.geant.nmaas.portal.api.domain.UserBase;
+import net.geant.nmaas.portal.api.domain.UserListEntry;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.domain.UserView;
@@ -37,7 +38,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -64,18 +68,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
 
 @RestController
 @RequestMapping("/api")
@@ -164,6 +169,48 @@ public class UsersController {
     public List<Role> getRoles() {
         return Arrays.stream(Role.values())
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/users/list")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @Transactional
+    public Page<UserListEntry> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+                                            @RequestParam(required = false) String searchValue,
+                                            Principal principal) {
+
+        return userService.findAllListEntry(pageable, searchValue);
+    }
+
+    @GetMapping("/domains/{domainId}/users/list")
+    @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+    public Page<UserListEntry> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
+                                                  @RequestParam(required = false) String searchValue,
+                                                  @PathVariable Long domainId) {
+        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        List<UserListEntry> allUserInDomain = domainService.getMembers(domainId).stream().map(UserListEntry::new).map(u -> mapUser(u, userLoginDateMap)).toList();
+
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        int endItem = Math.min(startItem + pageSize, allUserInDomain.size());
+
+        List<UserListEntry> pageContent;
+
+
+        if (allUserInDomain.size() < startItem) {
+            pageContent = new ArrayList<>();
+        } else {
+            pageContent = allUserInDomain.subList(startItem, endItem);
+            pageContent.forEach( userListEntry ->  {
+                Optional<Role> domainRole = userService.getUserRoleInDomain(userListEntry.getId(), domainId);
+                userListEntry.setDomainRole(domainRole.orElse(null));
+            });
+        }
+
+        return new PageImpl<>(pageContent, pageable, allUserInDomain.size());
     }
 
     @GetMapping(value = "/users/{userId}")
@@ -519,8 +566,8 @@ public class UsersController {
 
         try {
             domainService.addMemberRole(domain.getId(), user.getId(), role);
-            if (!domain.equals(globalDomain)){
-                webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT).forEach(id -> scheduleManager.createOneTimeJob(UserDomainAssignmentJob.class, "UserDomainAssignmentJobCreate_" + id + "_user" + user.getId()+ "_domain" + domain.getId()+"_" + LocalDateTime.now(), Map.of("webhookId", id, "domainId", domain.getId(), "userId", user.getId(), "role", role.name(), "action", "create")));
+            if (!domain.equals(globalDomain)) {
+                webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT).forEach(id -> scheduleManager.createOneTimeJob(UserDomainAssignmentJob.class, "UserDomainAssignmentJobCreate_" + id + "_user" + user.getId() + "_domain" + domain.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "domainId", domain.getId(), "userId", user.getId(), "role", role.name(), "action", "create")));
             }
 
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
@@ -556,8 +603,8 @@ public class UsersController {
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
             final Domain globalDomain = domainService.getGlobalDomain().orElse(null);
-            if (!domain.equals(globalDomain)){
-                webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT).forEach(id -> scheduleManager.createOneTimeJob(UserDomainAssignmentJob.class, "UserDomainAssignmentJobDelete_" + id + "_user" + user.getId()+ "_domain" + domain.getId()+"_" + LocalDateTime.now(), Map.of("webhookId", id, "domainId", domain.getId(), "userId", user.getId(), "role", role.name(), "action", "delete")));
+            if (!domain.equals(globalDomain)) {
+                webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT).forEach(id -> scheduleManager.createOneTimeJob(UserDomainAssignmentJob.class, "UserDomainAssignmentJobDelete_" + id + "_user" + user.getId() + "_domain" + domain.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "domainId", domain.getId(), "userId", user.getId(), "role", role.name(), "action", "delete")));
             }
 
             log.info(String.format("User [%s] with role [%s] removed role [%s] of user name [%s] in domain [%d].",
@@ -645,9 +692,9 @@ public class UsersController {
                 .collect(Collectors.toList());
 
         return allUsers.stream()
-                    .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
-                    .map(this::mapMinimalUser).collect(Collectors.toList());
-        }
+                .filter(user -> user.getEmail().toLowerCase().contentEquals(search))
+                .map(this::mapMinimalUser).collect(Collectors.toList());
+    }
 
     private Role convertRole(String userRole) {
         Role role;
@@ -742,6 +789,14 @@ public class UsersController {
         UserViewMinimal userViewMinimal = modelMapper.map(user, UserViewMinimal.class);
         userViewMinimal.setHasSshKeys(!user.getSshKeys().isEmpty());
         return userViewMinimal;
+    }
+
+    private UserListEntry mapUser(UserListEntry entry, final Map<Long, UserLoginDate> userLoginDateMap) {
+        if (userLoginDateMap.containsKey(entry.getId())) {
+            entry.setLastSuccessfulLoginDate(userLoginDateMap.get(entry.getId()).getMaxLoginDate());
+            entry.setFirstLoginDate(userLoginDateMap.get(entry.getId()).getMinLoginDate());
+        }
+        return entry;
     }
 
 }
