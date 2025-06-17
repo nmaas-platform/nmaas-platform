@@ -176,18 +176,10 @@ public class UsersController {
     public Page<UserListEntry> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                             @RequestParam(required = false) String searchValue,
                                             Principal principal) {
-        User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
-                () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
 
-        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
-                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        if (owner.getRoles().stream().anyMatch(role -> role.getRole() == ROLE_SYSTEM_ADMIN)) {
-            return userService.findAllListEntry(pageable, searchValue).map(u -> mapUser(u, userLoginDateMap));
-        } else {
-            throw new RuntimeException("User with username: " + principal.getName() + " doesnt have access to this list");
-        }
+        return userService.findAllListEntry(pageable, searchValue);
+
 
     }
 
