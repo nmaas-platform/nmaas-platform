@@ -348,7 +348,7 @@ public class UserServiceImpl implements UserService {
             Page<User> all = userRepository.findAll(searchSpec, pageable);
             return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
         } else {
-            return userRepository.findAllListEntry(pageable);
+            return userRepository.findAllListEntry(pageable).map(u -> mapUser(u, userLoginDateMap));
         }
     }
 
@@ -360,6 +360,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserListEntry> findAllListEntry() {
         return userRepository.findAllListEntry();
+    }
+
+    @Override
+    public Optional<Role> getUserRoleInDomain(Long userId, Long domainId) {
+        return this.userRoleRepository.findRolesByDomainAndUser(domainId, userId).stream().findFirst();
     }
 
     private void sendMail(User user, MailType mailType) {

@@ -68,6 +68,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -177,10 +178,7 @@ public class UsersController {
                                             @RequestParam(required = false) String searchValue,
                                             Principal principal) {
 
-
         return userService.findAllListEntry(pageable, searchValue);
-
-
     }
 
     @GetMapping("/domains/{domainId}/users/list")
@@ -206,6 +204,10 @@ public class UsersController {
             pageContent = new ArrayList<>();
         } else {
             pageContent = allUserInDomain.subList(startItem, endItem);
+            pageContent.forEach( userListEntry ->  {
+                Optional<Role> domainRole = userService.getUserRoleInDomain(userListEntry.getId(), domainId);
+                userListEntry.setDomainRole(domainRole.orElse(null));
+            });
         }
 
         return new PageImpl<>(pageContent, pageable, allUserInDomain.size());

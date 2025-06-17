@@ -30,9 +30,9 @@ public class UserListEntry extends UserBase implements Serializable {
     protected OffsetDateTime lastSuccessfulLoginDate;
     protected OffsetDateTime firstLoginDate;
 
-    protected Set<UserRoleView> roles = new HashSet<>();
     protected String globalRole;
     protected Set<String> domainsName;
+    protected Role domainRole;
 
     public UserListEntry(User user) {
         this.id = user.getId();
@@ -56,7 +56,6 @@ public class UserListEntry extends UserBase implements Serializable {
         this.globalRole = globalRole.map(Enum::name).orElse("");
 
         this.enabled = user.isEnabled();
-        this.roles = user.getRoles().stream().map(r -> new UserRoleView(r.getRole(), r.getDomain().getId(), r.getDomain().getName())).collect(Collectors.toSet());
     }
 
 }

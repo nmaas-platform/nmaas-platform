@@ -78,6 +78,8 @@ public interface UserService {
 
     List<UserListEntry> findAllListEntry();
 
+    Optional<Role> getUserRoleInDomain(Long userId, Long domainId);
+
 
 
 }
