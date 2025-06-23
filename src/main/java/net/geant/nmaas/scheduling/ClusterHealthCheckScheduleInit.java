@@ -2,7 +2,7 @@ package net.geant.nmaas.scheduling;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterMonitoringJob;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringJob;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

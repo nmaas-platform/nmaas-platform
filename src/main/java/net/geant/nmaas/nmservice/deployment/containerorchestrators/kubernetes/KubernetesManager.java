@@ -4,10 +4,10 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManagementService;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterMonitoringService;
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringService;
+import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
@@ -344,7 +344,6 @@ public class KubernetesManager implements ContainerOrchestrator {
             }
 
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-
             if (!kubernetesApiJanitorService.checkIfReady(
                     service.getRemoteCluster(),
                     getDeploymentIdForJanitorStatusCheck(

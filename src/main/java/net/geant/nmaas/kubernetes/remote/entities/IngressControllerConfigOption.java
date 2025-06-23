@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes.entities;
+package net.geant.nmaas.kubernetes.remote.entities;
 
 import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
 

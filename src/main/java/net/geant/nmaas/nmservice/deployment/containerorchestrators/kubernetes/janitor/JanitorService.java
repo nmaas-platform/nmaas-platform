@@ -206,7 +206,7 @@ public class JanitorService {
     }
 
     public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
-        log.info("Request domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
+        log.info("Requested domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createNamespace(
                 buildNamespaceRequest(domainNameSpace, annotations));

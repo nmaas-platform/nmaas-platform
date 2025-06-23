@@ -1,11 +1,11 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.kubernetes.remote;
 
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
-import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -20,7 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import static net.geant.nmaas.externalservices.kubernetes.RemoteClusterHelper.saveFileToTmp;
+import static net.geant.nmaas.kubernetes.remote.RemoteClusterHelper.saveFileToTmp;
 
 @Service
 @RequiredArgsConstructor

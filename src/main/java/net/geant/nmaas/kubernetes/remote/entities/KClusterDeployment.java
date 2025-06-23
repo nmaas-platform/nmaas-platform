@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes.entities;
+package net.geant.nmaas.kubernetes.remote.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,8 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.orchestration.entities.DomainTechDetails;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 

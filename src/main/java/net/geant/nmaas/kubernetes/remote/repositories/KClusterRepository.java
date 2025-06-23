@@ -1,7 +1,6 @@
-package net.geant.nmaas.externalservices.kubernetes.repositories;
+package net.geant.nmaas.kubernetes.remote.repositories;
 
-import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
