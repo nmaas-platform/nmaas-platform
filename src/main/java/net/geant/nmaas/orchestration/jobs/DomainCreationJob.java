@@ -8,7 +8,7 @@ import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.WebhookEventService;
+import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

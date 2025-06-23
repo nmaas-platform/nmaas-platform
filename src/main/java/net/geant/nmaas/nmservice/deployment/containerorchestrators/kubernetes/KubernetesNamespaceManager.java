@@ -26,7 +26,7 @@ public class KubernetesNamespaceManager {
         log.info("Handling DomainCreatedEvent ...");
         if (triggerNamespaceCreation) {
             log.info("Triggering namespace creation using Janitor.");
-            janitorService.createNameSpace(event.getDomain().getDomainCodename(), event.getDomain().getAnnotations());
+            janitorService.createNameSpace(event.getDomain().domainCodename(), event.getDomain().annotations());
         } else {
             log.info("Automatic namespace creation is disabled. Nothing to do.");
         }

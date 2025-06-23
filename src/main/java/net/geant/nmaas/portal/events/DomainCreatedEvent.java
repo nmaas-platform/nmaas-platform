@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.events;
 
 import lombok.Getter;
 import lombok.ToString;
-import lombok.Value;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.List;
@@ -13,18 +13,15 @@ import java.util.List;
 public class DomainCreatedEvent extends ApplicationEvent {
 
     private final DomainSpec domain;
+    private final Domain domainEntity;
 
-    public DomainCreatedEvent(Object source, DomainSpec domain) {
+    public DomainCreatedEvent(Object source, DomainSpec domain, Domain domainEntity) {
         super(source);
         this.domain = domain;
+        this.domainEntity = domainEntity;
     }
 
-    @Value
-    public static class DomainSpec {
-        Long domainId;
-        String domainName;
-        String domainCodename;
-        List<KeyValueView> annotations;
+    public record DomainSpec(Long domainId, String domainName, String domainCodename, List<KeyValueView> annotations) {
     }
 
 }

@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.service;
+package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
