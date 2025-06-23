@@ -1,15 +1,18 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.kubernetes.remote;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.externalservices.kubernetes.ClusterConfigView;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
-import net.geant.nmaas.externalservices.kubernetes.repositories.KClusterRepository;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterDeployment;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterIngress;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
@@ -29,7 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static net.geant.nmaas.externalservices.kubernetes.RemoteClusterHelper.saveFileToTmp;
+import static net.geant.nmaas.kubernetes.remote.RemoteClusterHelper.saveFileToTmp;
 
 @Service
 @RequiredArgsConstructor

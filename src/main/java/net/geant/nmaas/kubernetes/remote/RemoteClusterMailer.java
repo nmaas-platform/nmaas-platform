@@ -1,8 +1,8 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.kubernetes.remote;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.kubernetes.remote;
 
 public interface RemoteClusterMonitoringService {
 

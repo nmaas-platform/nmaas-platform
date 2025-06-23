@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterMonitoringService;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
