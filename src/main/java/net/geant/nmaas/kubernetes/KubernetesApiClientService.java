@@ -66,13 +66,13 @@ public class KubernetesApiClientService {
     }
 
     public void scaleDeployment(KCluster kCluster, String namespace, String deploymentName, int replicas) {
-        KubernetesClient client = initClient(kCluster);
-        client.apps()
-                .deployments()
-                .inNamespace(namespace)
-                .withName(deploymentName)
-                .scale(replicas);
-        client.close();
+        try (KubernetesClient client = initClient(kCluster)) {
+            client.apps()
+                    .deployments()
+                    .inNamespace(namespace)
+                    .withName(deploymentName)
+                    .scale(replicas);
+        }
     }
 
     private KubernetesClient initClient(KCluster kCluster) {
