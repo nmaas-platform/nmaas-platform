@@ -22,10 +22,16 @@
     "EXPIRED_TIME" : "Session expires in",
     "ADVANCED" : "Advanced",
     "BULK_DEPLOYMENT" : "Bulk application deployment",
-    "BULK_DEPLOYMENT_DOMAIN" : "Bulk domain deployment",
+    "BULK_DEPLOYMENT_DOMAIN" : " Bulk deployments",
     "DOMAIN_GROUPS" : "Domain groups",
     "PAST_BULK_DOMAIN" : "Past domains bulk",
-    "PAST_BULK_APP" : "Past application bulk"
+    "PAST_BULK_APP" : "Past application bulk",
+    "DASHBOARD": "Dashboard",
+    "LIST": "Liste",
+    "GROUP": "Groupe",
+    "CATALOG": "Catalogue",
+    "ADMIN_PANEL": "Panneau d'administration",
+    "USER_PANEL": "Panneau utilisateur"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -110,6 +116,7 @@
     "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
+    "ASSIGN": "Attribuer au domaine?",
     "TITLE": "Configuration du cluster Kubernetes",
     "HELM": "Helm",
     "HOST_ADDRESS": "Adresse de l'hôte REST",
@@ -461,7 +468,8 @@
     "EDIT_BUTTON": "Modifier",
     "REMOVE_BUTTON": "Supprimer",
     "DEFAULT_DOMAIN": "Default domain",
-    "PREFERENCES": "Preferences"
+    "PREFERENCES": "Preferences",
+    "PASSWORD": "Mot de passe"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Privileges",
@@ -995,7 +1003,12 @@
     "CONTACT_TITLE": "Contactez-nous",
     "CHANGELOG_TITLE": "Version actuelle du logiciel et journal des modifications",
     "CONTACT_DESC": "Le formulaire de contact offre un moyen facile d'entrer en contact avec l'équipe nmaas. Choisissez le type de formulaire le plus adapté à votre demande.",
-    "CHANGELOG_DESC": "Vous trouverez ci-dessous des informations détaillées sur la version actuelle de nmaas et un résumé des changements introduits dans les versions précédentes du logiciel."
+    "CHANGELOG_DESC": "Vous trouverez ci-dessous des informations détaillées sur la version actuelle de nmaas et un résumé des changements introduits dans les versions précédentes du logiciel.",
+    "ANNOUNCE": "nmaas-announce",
+    "ANNOUNCE_DESC": " - pour les annonces liées au nmaas envoyées par les membres de l'équipe nmaas,",
+    "USERS": "nmaas-users",
+    "USERS_DESC": " - pour les discussions et les échanges de messages entre les utilisateurs de nmaas et l'équipe nmaas.",
+    "CONTACT_P": "Rejoignez la liste de diffusion qui vous intéresse: "
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Dernière version",
@@ -1091,7 +1104,8 @@
     "ANTI_SLAVERY": "GÉANT Anti-Slavery Policy",
     "PRIVACY": "Privacy Policy",
     "AUP": "Acceptable Use Policy",
-    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3)."
+    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3).",
+    "DOCUMENTATION": "Documentation"
   },
   "FILTER": {
     "TAGS": "Mots clés",
@@ -1281,7 +1295,9 @@
       "USER_ID" : "User id",
       "EMAIL" : "Email",
       "USER_NAME" : "User name",
-      "COMPLETION_DATE" : "Completion date"
+      "COMPLETION_DATE" : "Completion date",
+      "NEW_DEPLOYMENT": "Nouveau déploiement",
+      "SHOW_ALL": "Afficher tout"
     },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
@@ -1350,6 +1366,26 @@
     "NEW" : "Add webhook",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
-    "REMOVE" : "Remove"
+    "REMOVE" : "Remove",
+    "AUTH_REQUIRED": "Authentification requise"
+  },
+  "DASHBOARD": {
+    "NUMBERS_OF_USERS": "Nombre actuel d'utilisateurs",
+    "NUMBERS_OF_DOMAINS": "Nombre actuel de domaines",
+    "NUMBERS_OF_DEPLOYED_APP": "Nombre actuel d'applications déployées",
+    "APP_DEPLOYMENTS": "Déploiements d'applications",
+    "MOST_POPULAR": "Applications les plus populaires",
+    "LAST_LOGIN": "Dernière connexion au domaine",
+    "USER": "Utilisateur",
+    "LOGIN": "Dernière connexion",
+    "NAME": "Nom",
+    "VERSION": "Version",
+    "DOMAIN": "Domaine",
+    "DEPLOYED_APP": "Nombre d'applications déployées par utilisateur",
+    "DEPLOYMENT": "Déploiement",
+    "APP_STATUS": "Statut de la demande",
+    "ID": "Id",
+    "INSTANCE_NAME": "Nom de l'instance",
+    "NEED_UPGRADE": "Besoin d'une mise à niveau"
   }
 }
