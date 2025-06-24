@@ -14,10 +14,12 @@ import net.geant.nmaas.kubernetes.remote.entities.KClusterIngress;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.notifications.templates.MailType;
+import net.geant.nmaas.portal.events.RemoteClusterNamespaceEvent;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,19 +41,21 @@ import static net.geant.nmaas.kubernetes.remote.RemoteClusterHelper.saveFileToTm
 @Slf4j
 public class RemoteClusterManager implements RemoteClusterManagementService {
 
-    private final KClusterRepository clusterRepository;
+    private final KClusterRepository kClusterRepository;
     private final KubernetesClusterIngressManager kClusterIngressManager;
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
     private final DomainService domainService;
     private final RemoteClusterMailer mailer;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
     private final ModelMapper modelMapper;
 
     @Override
     public RemoteClusterView getCluster(Long id, Principal principal) {
-        Optional<KCluster> cluster = clusterRepository.findById(id);
+        Optional<KCluster> cluster = kClusterRepository.findById(id);
         if (cluster.isPresent()) {
-            if (userService.isAdmin(principal.getName()) || userService.isUserAdminInAnyDomain(cluster.get().getDomains(), principal.getName())) {
+            if (userService.isAdmin(principal.getName())
+                    || userService.isUserAdminInAnyDomain(cluster.get().getDomains(), principal.getName())) {
                 return toView(cluster.get());
             } else {
                 throw new IllegalArgumentException("No access to cluster " + id);
@@ -63,13 +67,13 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     @Override
     public List<RemoteClusterView> getAllClusters() {
-        List<KCluster> clusters = clusterRepository.findAll();
+        List<KCluster> clusters = kClusterRepository.findAll();
         return clusters.stream().map(this::toView).collect(Collectors.toList());
     }
 
     @Override
     public KCluster getClusterEntity(Long id) {
-        Optional<KCluster> cluster = clusterRepository.findById(id);
+        Optional<KCluster> cluster = kClusterRepository.findById(id);
         if (cluster.isPresent()) {
             return cluster.get();
         } else {
@@ -78,45 +82,20 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     // if domain GLOBAL return all
+    @Override
     public List<RemoteClusterView> getClustersInDomain(Long domainId) {
         Optional<Domain> domainFromDb = domainService.getGlobalDomain();
         List<KCluster> clusters;
         if (domainFromDb.isPresent()) {
             if (domainId.equals(domainFromDb.get().getId())) {
-                clusters = clusterRepository.findAll();
+                clusters = kClusterRepository.findAll();
             } else {
-                clusters = clusterRepository.findByDomains_Id(domainId);
+                clusters = kClusterRepository.findByDomains_Id(domainId);
             }
         } else {
-            clusters = clusterRepository.findByDomains_Id(domainId);
+            clusters = kClusterRepository.findByDomains_Id(domainId);
         }
         return clusters.stream().map(this::toView).collect(Collectors.toList());
-    }
-
-    @Override
-    public RemoteClusterView saveCluster(KCluster entity, MultipartFile file) throws IOException, NoSuchAlgorithmException {
-        checkRequest(entity);
-
-        String savedPath = saveFileToTmp(file);
-        log.debug("Filed saved in: {}", savedPath);
-        entity.setPathConfigFile(savedPath);
-
-        KCluster cluster = clusterRepository.save(entity);
-        log.debug("Cluster saved: {}", cluster);
-        mailer.sendMail(cluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
-        return toView(cluster);
-    }
-
-    private void checkRequest(KCluster entity) {
-        if (entity.getName() == null) {
-            throw new IllegalArgumentException("Name of the cluster is null");
-        }
-        if (entity.getCodename() == null) {
-            throw new IllegalArgumentException("Codename of the cluster is null");
-        }
-        if (entity.getDescription() == null) {
-            throw new IllegalArgumentException("Description of the cluster is null");
-        }
     }
 
     @Override
@@ -148,7 +127,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                         .state(KClusterState.UNKNOWN)
                         .contactEmail(view.getContactEmail())
                         .currentStateSince(OffsetDateTime.now())
-                        .domains(prepareList(view))
+                        .domains(toListOfDomains(view))
                         .build());
 
             } else {
@@ -163,60 +142,70 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView saveClusterFile(RemoteClusterView view, MultipartFile file) {
-        checkRequest(view);
+    public RemoteClusterView saveCluster(RemoteClusterView remoteClusterSpec, MultipartFile file) {
+        checkRequest(remoteClusterSpec);
         try {
-            log.info("One cluster provided, create view and return ");
             KClusterDeployment deployment;
             KClusterIngress ingress;
 
-            if (view.getDeployment() != null) {
-                deployment = modelMapper.map(view.getDeployment(), KClusterDeployment.class);
+            if (remoteClusterSpec.getDeployment() != null) {
+                deployment = modelMapper.map(remoteClusterSpec.getDeployment(), KClusterDeployment.class);
             } else {
                 deployment = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterDeployment.class);
             }
 
-            if (view.getIngress() != null) {
-                ingress = modelMapper.map(view.getIngress(), KClusterIngress.class);
+            if (remoteClusterSpec.getIngress() != null) {
+                ingress = modelMapper.map(remoteClusterSpec.getIngress(), KClusterIngress.class);
             } else {
                 ingress = modelMapper.map(kClusterDeploymentManager.getKClusterDeploymentView(), KClusterIngress.class);
             }
 
-            return saveCluster(KCluster.builder()
-                            .name(view.getName())
-                            .description(view.getDescription())
-                            .creationDate(OffsetDateTime.now())
-                            .modificationDate(OffsetDateTime.now())
-                            .codename(view.getCodename())
-                            .clusterConfigFile(new String(file.getBytes()))
-                            .deployment(deployment)
-                            .ingress(ingress)
-                            .state(KClusterState.UNKNOWN)
-                            .contactEmail(view.getContactEmail())
-                            .currentStateSince(OffsetDateTime.now())
-                            .domains(prepareList(view))
-                            .build(),
-                    file);
+            KCluster cluster = KCluster.builder()
+                    .name(remoteClusterSpec.getName())
+                    .description(remoteClusterSpec.getDescription())
+                    .creationDate(OffsetDateTime.now())
+                    .modificationDate(OffsetDateTime.now())
+                    .codename(remoteClusterSpec.getCodename())
+                    .clusterConfigFile(new String(file.getBytes()))
+                    .deployment(deployment)
+                    .ingress(ingress)
+                    .state(KClusterState.UNKNOWN)
+                    .contactEmail(remoteClusterSpec.getContactEmail())
+                    .currentStateSince(OffsetDateTime.now())
+                    .domains(toListOfDomains(remoteClusterSpec))
+                    .build();
+
+            String savedPath = saveFileToTmp(file);
+            cluster.setPathConfigFile(savedPath);
+            log.debug("Configuration file saved in {}", savedPath);
+
+            KCluster savedCluster = kClusterRepository.save(cluster);
+
+            log.debug("Sending email notification (cluster support)");
+            mailer.sendMail(savedCluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
+
+            eventPublisher.publishEvent(new RemoteClusterNamespaceEvent(this, savedCluster.getId()));
+            return toView(savedCluster);
 
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private List<Domain> prepareList(RemoteClusterView view) {
+    private List<Domain> toListOfDomains(RemoteClusterView view) {
         if (view == null || view.getDomainNames() == null) {
             return Collections.emptyList();
         }
-        return view.getDomainNames().stream().map(d -> {
+        return view.getDomainNames().stream()
+                .map(d -> {
                     Optional<Domain> dom = domainService.findDomain(d);
-                    return dom.orElse(null);
-                }
-        ).toList();
+                    return dom.orElse(null);}
+                ).toList();
     }
 
     @Override
     public RemoteClusterView updateCluster(RemoteClusterView cluster, Long id) {
-        Optional<KCluster> entity = clusterRepository.findById(id);
+        Optional<KCluster> entity = kClusterRepository.findById(id);
 
         if (entity.isPresent()) {
             checkRequest(entity.get(), cluster, id);
@@ -239,7 +228,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
                 updated.setDeployment(modelMapper.map(cluster.getDeployment(), KClusterDeployment.class));
 
-                updated = clusterRepository.save(updated);
+                updated = kClusterRepository.save(updated);
                 //TODO : implement file update logic
                 return toView(updated);
             }
@@ -286,8 +275,8 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     @Override
     public void removeCluster(Long id) {
         try {
-            if (clusterRepository.existsById(id)) {
-                clusterRepository.deleteById(id);
+            if (kClusterRepository.existsById(id)) {
+                kClusterRepository.deleteById(id);
             }
         } catch (RuntimeException ex) {
             log.warn("Can not delete cluster {}", id);
@@ -300,7 +289,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
         if (id == null) {
             return false;
         }
-        return clusterRepository.existsById(id);
+        return kClusterRepository.existsById(id);
     }
 
 }

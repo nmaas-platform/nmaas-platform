@@ -3,8 +3,8 @@ package net.geant.nmaas.kubernetes.remote.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +51,7 @@ public class RemoteClusterManagerController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
-            return remoteClusterManager.saveClusterFile(cluster, file);
+            return remoteClusterManager.saveCluster(cluster, file);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

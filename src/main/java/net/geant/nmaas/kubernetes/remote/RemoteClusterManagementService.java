@@ -19,15 +19,13 @@ public interface RemoteClusterManagementService {
 
     List<RemoteClusterView> getClustersInDomain(Long domainId);
 
-    RemoteClusterView saveCluster(KCluster entity, MultipartFile file) throws IOException, NoSuchAlgorithmException;
+    RemoteClusterView saveCluster(RemoteClusterView view, MultipartFile file);
 
     RemoteClusterView updateCluster(RemoteClusterView cluster, Long id);
 
     void removeCluster(Long id);
 
     boolean clusterExists(Long id);
-
-    RemoteClusterView saveClusterFile(RemoteClusterView view, MultipartFile file);
 
     RemoteClusterView mapFile(RemoteClusterView view, MultipartFile file);
 }

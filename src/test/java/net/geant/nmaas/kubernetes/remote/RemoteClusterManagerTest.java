@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.nio.file.AccessDeniedException;
 import java.security.Principal;
@@ -37,10 +38,12 @@ class RemoteClusterManagerTest {
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager = mock(KubernetesClusterDeploymentManager.class);
     private final DomainService domainService = mock(DomainService.class);
     private final UserService userService = mock(UserService.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final RemoteClusterManager remoteClusterManager = new RemoteClusterManager(
-            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, domainService, null, userService, modelMapper);
+            kClusterRepository, kClusterIngressManager, kClusterDeploymentManager, domainService,
+            null, userService, eventPublisher, modelMapper);
 
     private Domain globalDomain;
     private Domain specificDomain;
@@ -69,7 +72,7 @@ class RemoteClusterManagerTest {
     }
 
     @Test
-    void getClusterView_validId_returnsRemoteClusterView() throws AccessDeniedException {
+    void getClusterView_validId_returnsRemoteClusterView() {
         Long id = 1L;
         KCluster remoteCluster = KCluster.builder().id(id).name("Cluster").description("Description").build();
         remoteCluster.setDomains(List.of(specificDomain));

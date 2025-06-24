@@ -15,6 +15,7 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -29,15 +30,16 @@ public class WebhooksEventListener {
 
     @EventListener
     @Loggable(LogLevel.INFO)
+    @Transactional
     public void trigger(DomainCreatedEvent event) {
         final Domain domain = event.getDomainEntity();
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION)
                 .forEach(id -> scheduleManager.createOneTimeJob(DomainCreationJob.class, "DomainCreation_" + id + "_" + domain.getId(), Map.of("webhookId", id, "domainId", domain.getId())));
-
     }
 
     @EventListener
     @Loggable(LogLevel.INFO)
+    @Transactional
     public void trigger(DomainGroupChangedEvent event) {
         final DomainGroupView domainGroup = event.getDomainGroup();
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE)

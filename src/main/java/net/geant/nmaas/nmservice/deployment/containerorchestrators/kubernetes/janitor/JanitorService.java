@@ -205,6 +205,7 @@ public class JanitorService {
         }
     }
 
+    @Deprecated
     public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
         log.info("Requested domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
