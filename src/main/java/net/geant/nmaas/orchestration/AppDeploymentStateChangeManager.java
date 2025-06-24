@@ -22,11 +22,7 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEven
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
-import net.geant.nmaas.orchestration.jobs.AppDeploymentJob;
-import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
-import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
-import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
-import net.geant.nmaas.scheduling.ScheduleManager;
+import net.geant.nmaas.portal.events.AppDeploymentEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.ApplicationEvent;
@@ -34,7 +30,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -47,8 +42,6 @@ public class AppDeploymentStateChangeManager {
     private final DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
     private final AppDeploymentMonitor deploymentMonitor;
     private final ApplicationEventPublisher eventPublisher;
-    private final WebhookEventRepository webhookEventRepository;
-    private final ScheduleManager scheduleManager;
 
 
     @EventListener
@@ -89,8 +82,7 @@ public class AppDeploymentStateChangeManager {
                     && deploymentRepositoryManager.isFirstTimeDeployment(event.getDeploymentId())) {
                 eventPublisher.publishEvent(
                         new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
-                //call existing webhooks
-                webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT).forEach(id -> scheduleManager.createOneTimeJob(AppDeploymentJob.class, "AppDeploymentJob_" + id + "_" + event.getDeploymentId().toString()+"_time"+ LocalDateTime.now(), Map.of("webhookId", id, "deploymentId", event.getDeploymentId().toString())));
+                eventPublisher.publishEvent(new AppDeploymentEvent(this, event.getDeploymentId().toString()));
             }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {

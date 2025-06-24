@@ -72,7 +72,7 @@ public class WebhookEventService {
                 }).toList();
     }
 
-    public Stream<Long> findIdByEventType(WebhookEventType webhookEventType) {
+    public List<Long> findIdByEventType(WebhookEventType webhookEventType) {
         return webhookRepository.findIdByEventType(webhookEventType);
     }
 

@@ -16,29 +16,16 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
-import net.geant.nmaas.orchestration.jobs.AppDeploymentJob;
-import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
-import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
-import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
-import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
-import net.geant.nmaas.scheduling.ScheduleManager;
+import net.geant.nmaas.portal.events.AppDeploymentEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.verification.VerificationModeFactory;
-import org.quartz.JobListener;
-import org.quartz.ListenerManager;
-import org.quartz.Matcher;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_UPDATED;
@@ -58,8 +45,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -74,16 +59,12 @@ public class AppDeploymentStateChangeManagerTest {
     private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
-    private final WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
-    private final Scheduler scheduler = mock(Scheduler.class);
-    private final ListenerManager listenerManager = mock(ListenerManager.class);
-
     private AppDeploymentStateChangeManager manager;
 
     @BeforeEach
     void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
-        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher, webhookEventRepository, new ScheduleManager(scheduler));
+        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
     }
 
     @Test
@@ -115,18 +96,7 @@ public class AppDeploymentStateChangeManagerTest {
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
-        // Setup webhook event
-        WebhookEvent webhookEvent = new WebhookEvent(1L,
-                "webhook", "https://example.com/webhook",
-                WebhookEventType.APPLICATION_DEPLOYMENT,
-                null,
-                null);
-        when(webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT))
-                .thenReturn(Stream.of(1L));
-        when(webhookEventRepository.findById(1L))
-                .thenReturn(Optional.of(webhookEvent));
-        when(scheduler.getListenerManager()).thenReturn(listenerManager);
-        doNothing().when(listenerManager).addJobListener(any(JobListener.class), any(Matcher.class));
+
         when(monitor.userAccessDetails(deploymentId)).thenReturn(
                 new AppUiAccessDetails(
                         new HashSet<ServiceAccessMethodView>() {{
@@ -140,15 +110,8 @@ public class AppDeploymentStateChangeManagerTest {
 
         assertThat(newEvent, is(nullValue()));
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
-        // Verify webhook job was scheduled with correct parameters
-        verify(scheduler, VerificationModeFactory.times(1)).scheduleJob(
-                argThat(jobDetail ->
-                        jobDetail.getKey().getName().startsWith("AppDeploymentJob_1_" + deploymentId) &&
-                                jobDetail.getJobClass().equals(AppDeploymentJob.class)
-                ),
-                argThat(trigger -> trigger.getKey().getName().startsWith("AppDeploymentJob_1_" + deploymentId)
-                )
-        );
+        verify(publisher, times(1)).publishEvent(any(AppDeploymentEvent.class));
+
     }
 
     @Test
