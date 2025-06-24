@@ -4,7 +4,6 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
-import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,18 +31,13 @@ public class KubernetesApiClientFactory {
     private static final String OAUTH_TOKEN = "TODO REPLACE";
 
     private Config config;
-    private KubernetesClient client;
 
     /**
-     * Client is created only when necessary
      *
      * @return KubernetesClient instance
      */
     public synchronized KubernetesClient getClient() {
-        if (this.client == null) {
-            this.client = new KubernetesClientBuilder().withConfig(getConfig()).build();
-        }
-        return this.client;
+        return new KubernetesClientBuilder().withConfig(getConfig()).build();
     }
 
     /**
@@ -83,11 +77,6 @@ public class KubernetesApiClientFactory {
                     .withOauthToken(OAUTH_TOKEN)
                     .build();
         }
-    }
-
-    @PreDestroy
-    protected void preDestroy() {
-        client.close();
     }
 
 }
