@@ -25,7 +25,13 @@
     "BULK_DEPLOYMENT_DOMAIN" : "Grupowe utworzenie domen",
     "DOMAIN_GROUPS" : "Grupy domen",
     "PAST_BULK_DOMAIN" : "Historia grupowego utworzenia domen",
-    "PAST_BULK_APP" : "Historia grupowego uruchomienia aplikacji"
+    "PAST_BULK_APP" : "Historia grupowego uruchomienia aplikacji",
+    "DASHBOARD": "Dashboard",
+    "LIST": "Lista",
+    "GROUP": "Grupa",
+    "CATALOG": "Katalog",
+    "ADMIN_PANEL": "Panel administratora",
+    "USER_PANEL": "Panel użytkownika"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -109,6 +115,7 @@
     "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
+    "ASSIGN": "Przypisać do domeny?",
     "TITLE": "Informacje o klastrze",
     "HELM": "Helm",
     "HOST_ADDRESS": "Adres hosta",
@@ -462,7 +469,8 @@
     "EDIT_BUTTON": "Edytuj",
     "REMOVE_BUTTON": "Usuń",
     "DEFAULT_DOMAIN": "Domyślna domena",
-    "PREFERENCES": "Preferencje"
+    "PREFERENCES": "Preferencje",
+    "PASSWORD": "Hasło"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Uprawnienia użytkownika",
@@ -996,7 +1004,12 @@
     "CONTACT_TITLE": "Skontaktuj się z nami",
     "CHANGELOG_TITLE": "Aktualna wersja oprogramowanie oraz wykaz zmian",
     "CONTACT_DESC": "Formularz kontaktowy umożliwia łatwy kontakt z zespołem nmaas. Wybierz typ formularza, który jest najbardziej odpowiedni dla Twojego zgłoszenia.",
-    "CHANGELOG_DESC": "Poniżej znajdziesz szczegółowe informacje o aktualnej wersji nmaas oraz podsumowanie zmian wprowadzonych w poprzednich wersjach oprogramowania."
+    "CHANGELOG_DESC": "Poniżej znajdziesz szczegółowe informacje o aktualnej wersji nmaas oraz podsumowanie zmian wprowadzonych w poprzednich wersjach oprogramowania.",
+    "ANNOUNCE": "nmaas-announce",
+    "ANNOUNCE_DESC": " - w sprawie ogłoszeń związanych z nmaas rozsyłanych przez członków zespołu nmaas,",
+    "USERS": "nmaas-users",
+    "USERS_DESC": " - do dyskusji i wymiany wiadomości pomiędzy użytkownikami nmaas i zespołem nmaas.",
+    "CONTACT_P": "Zapisz się na listę mailingową: "
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Ostatnia wersja",
@@ -1092,7 +1105,8 @@
     "ANTI_SLAVERY": "GÉANT Anti-Slavery Policy",
     "PRIVACY": "Privacy Policy",
     "AUP": "Acceptable Use Policy",
-    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3)."
+    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3).",
+    "DOCUMENTATION": "Dokumentacja"
   },
   "FILTER": {
     "TAGS": "Tagi",
@@ -1283,7 +1297,9 @@
       "USER_ID" : "Id użytkownika",
       "EMAIL" : "Email",
       "USER_NAME" : "Nazwa użytkownika",
-      "COMPLETION_DATE" : "Data zakończenia"
+      "COMPLETION_DATE" : "Data zakończenia",
+      "NEW_DEPLOYMENT": "Nowe wdrożenie",
+      "SHOW_ALL": "Pokaż wszystko"
     },
     "DOMAIN": {
       "INFO": "Additional information will be added later",
@@ -1351,6 +1367,26 @@
     "NEW" : "Add webhook",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
-    "REMOVE" : "Remove"
+    "REMOVE" : "Remove",
+    "AUTH_REQUIRED": "Wymagane uwierzytelnienie"
+  },
+  "DASHBOARD": {
+    "NUMBERS_OF_USERS": "Aktualna liczba użytkowników",
+    "NUMBERS_OF_DOMAINS": "Aktualna liczba domen",
+    "NUMBERS_OF_DEPLOYED_APP": "Aktualnaliczba wdrożonych aplikacji",
+    "APP_DEPLOYMENTS": "wdrożenia aplikacji",
+    "MOST_POPULAR": "Najpopularniejsze aplikacje",
+    "LAST_LOGIN": "Ostatnie logowanie do domeny",
+    "USER": "Użytkownik",
+    "LOGIN": "Ostatnie logowanie",
+    "NAME": "Imię",
+    "VERSION": "Wersja",
+    "DOMAIN": "Domena",
+    "DEPLOYED_APP": "Liczba wdrożonych aplikacji przez użytkownika",
+    "DEPLOYMENT": "Deployment",
+    "APP_STATUS": "Stan aplikacji",
+    "ID": "Id",
+    "INSTANCE_NAME": "Nazwa instancji",
+    "NEED_UPGRADE": "Wymagana aktualizacja"
   }
 }
