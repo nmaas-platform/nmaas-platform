@@ -29,8 +29,15 @@ public class KubernetesApiJanitorService {
         return kubernetesApiClientService.checkIfNamespaceExists(kCluster, namespace);
     }
 
+    public void createNamespace(String namespace, List<KeyValueView> annotations) {
+        createNamespace(null, namespace, annotations);
+    }
+
     public void createNamespace(KCluster kCluster, String namespace, List<KeyValueView> annotations) {
-        log.info("Creating namespace {} with {} annotations on cluster {}", namespace, annotations.size(), kCluster.getId());
+        log.info("Creating namespace {} with {} annotations on cluster {}",
+                namespace,
+                annotations.size(),
+                Objects.nonNull(kCluster) ? kCluster.getId() : "LOCAL");
         Map<String, String> annotationsMap = new HashMap<>();
         annotations.forEach(a -> annotationsMap.put(a.getKey(), a.getValue()));
         kubernetesApiClientService.createNamespace(kCluster, namespace, annotationsMap);

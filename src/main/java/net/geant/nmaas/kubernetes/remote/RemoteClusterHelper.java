@@ -18,6 +18,9 @@ import java.security.NoSuchAlgorithmException;
 
 public class RemoteClusterHelper {
 
+    private RemoteClusterHelper() {
+    }
+
     public static String saveFileToTmp(MultipartFile file) throws IOException, NoSuchAlgorithmException {
         String hash = computeSHA256(file);
 

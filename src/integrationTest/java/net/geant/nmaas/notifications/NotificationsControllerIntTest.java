@@ -20,55 +20,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class NotificationsControllerIntTest extends BaseControllerTestSetup {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mvc = createMVC();
     }
 
     @Test
-    public void sendValidContactMail() {
+    void sendValidContactMail() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"mailType\": \"CONTACT_FORM\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                    .accept(MediaType.APPLICATION_JSON))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"mailType\": \"CONTACT_FORM\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         });
     }
 
     @Test
-    public void sendInvalidContactMail() {
+    void sendInvalidContactMail() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/mail?token=mockedCaptcha-notRelevant")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                    .accept(MediaType.APPLICATION_JSON))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized());
         });
     }
 
     @Test
-    public void sendValidAdminNotification() {
+    void sendValidAdminNotification() {
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
-        log.error("Token from getValidUserToken = {}", token);
-
-
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/mail/admin")
-                    .header("Authorization", "Bearer " + token)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                    .accept(MediaType.APPLICATION_JSON))
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isAccepted());
         });
     }
 
     @Test
-    public void unauthorizedAdminNotificationShouldFail() {
+    void unauthorizedAdminNotificationShouldFail() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/mail/admin")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
-                    .accept(MediaType.APPLICATION_JSON))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"mailType\": \"BROADCAST\",\"otherAttributes\": {\"text\": \"test\",\"TITLE\":\"Message title\"}}")
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnauthorized());
         });
     }

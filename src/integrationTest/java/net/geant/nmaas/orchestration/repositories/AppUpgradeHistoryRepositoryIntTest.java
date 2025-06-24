@@ -26,12 +26,12 @@ public class AppUpgradeHistoryRepositoryIntTest {
     private AppUpgradeHistoryRepository repository;
 
     @AfterEach
-    public void cleanUpRepo() {
+    void cleanUpRepo() {
         repository.deleteAll();
     }
 
     @Test
-    public void shouldFindHistoryEntryByDeploymentId() {
+    void shouldFindHistoryEntryByDeploymentId() {
         repository.save(AppUpgradeHistory.builder()
                 .deploymentId(DEPLOYMENT_ID1)
                 .timestamp(Date.from(Instant.now()))
@@ -44,7 +44,7 @@ public class AppUpgradeHistoryRepositoryIntTest {
     }
 
     @Test
-    public void shouldFindHistoryEntriesFromPeriod() {
+    void shouldFindHistoryEntriesFromPeriod() {
         Instant now = Instant.now();
         Date base = Date.from(now);
         repository.save(AppUpgradeHistory.builder()
