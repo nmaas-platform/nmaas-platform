@@ -61,7 +61,7 @@ class DomainGroupServiceTest {
         domainGroupView.setId(10L);
         result = this.domainGroupService.updateDomainGroup(10L, domainGroupView);
 
-        verify(eventPublisher, times(1)).publishEvent(any());
+        verify(eventPublisher, times(2)).publishEvent(any());
 
         // Verify domain group was updated correctly
         assertThat("Updated codenames are not the same", result.getCodename().equals(codename + "2"));
