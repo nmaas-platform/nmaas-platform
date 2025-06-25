@@ -2,31 +2,27 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
-import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
-import net.geant.nmaas.scheduling.ScheduleManager;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,9 +33,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     private final DomainGroupRepository domainGroupRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
-    private final WebhookEventRepository webhookEventRepository;
-    private final ScheduleManager scheduleManager;
-
+    private final ApplicationEventPublisher eventPublisher;
 
     private final ModelMapper modelMapper;
 
@@ -64,10 +58,9 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
 
-        //call existing webhooks
-        //DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
-        //webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "create", "domainGroup", domainGroupView)));
-        return modelMapper.map(domainGroupEntity, DomainGroupView.class);
+        DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "create", domainGroupView));
+        return domainGroupView;
     }
 
     @Override
@@ -103,8 +96,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             iterator.remove();
         }
         domainGroupRepository.deleteById(domainGroupId);
-        //call existing webhooks
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroup.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "delete", "domainGroup", domainGroupView)));
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "delete", domainGroupView));
     }
 
     @Override
@@ -135,7 +127,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         domainGroup.setName(view.getName());
         domainGroup.setManagers(view.getManagers().stream()
                 .map(user -> modelMapper.map(user, User.class))
-                .collect(Collectors.toList())
+                .collect(Collectors.toCollection(ArrayList::new))
         );
         for (ApplicationStatePerDomain appState : domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
@@ -147,9 +139,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
         domainGroupRepository.save(domainGroup);
 
-        //call existing webhooks
         DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE).forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroupView.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", "update", "domainGroup", domainGroupView)));
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "update", domainGroupView));
         return domainGroupView;
     }
 

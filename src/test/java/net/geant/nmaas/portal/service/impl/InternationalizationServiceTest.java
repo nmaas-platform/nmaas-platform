@@ -25,7 +25,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 class InternationalizationServiceTest {
+
     private final InternationalizationSimpleRepository repository = mock(InternationalizationSimpleRepository.class);
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
     private final ModelMapper modelMapper = new ModelMapper();
@@ -47,18 +49,10 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldNotSaveNullRequest() {
-        assertThrows(IllegalArgumentException.class, ()-> internationalizationService.addNewLanguage(null, false));
+        assertThrows(IllegalArgumentException.class, () ->
+                internationalizationService.addNewLanguage(null, false)
+        );
     }
-
-//    @Test
-//    void shouldNotSaveWithEmptyLanguageId() {
-//        assertThrows(IllegalArgumentException.class, ()-> {
-//            language.setLanguage("");
-//            assertThrows(IllegalArgumentException.class, () ->
-//                    internationalizationService.addNewLanguage(language, false)
-//        );
-//    });
-//    }
 
     @Test
     void shouldNotSaveWithEmptyContent() {
@@ -78,12 +72,12 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldGetAllSupportedLanguages() {
-        when(repository.findAll()).thenReturn(Collections.singletonList(new InternationalizationView( "pl", true, "{\"test\":\"content\"}").getAsInternationalizationSimple()));
+        when(repository.findAll()).thenReturn(Collections.singletonList(new InternationalizationView("pl", true, "{\"test\":\"content\"}").getAsInternationalizationSimple()));
         List<InternationalizationBriefView> languageList = internationalizationService.getAllSupportedLanguages();
 
         assertEquals(1, languageList.size());
-        assertEquals("pl", languageList.get(0).getLanguage());
-        assertTrue(languageList.get(0).isEnabled());
+        assertEquals("pl", languageList.getFirst().getLanguage());
+        assertTrue(languageList.getFirst().isEnabled());
     }
 
     @Test
@@ -108,20 +102,20 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldThrowAnExceptionWhenLanguageIsNotFound() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.empty());
-            internationalizationService.changeLanguageState(language);
-        });
+        when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () ->
+            internationalizationService.changeLanguageState(language)
+        );
     }
 
     @Test
     void shouldThrowAnExceptionWhenDisablingDefaultLanguage() {
-        assertThrows(IllegalStateException.class, () -> {
-            InternationalizationView internationalization = new InternationalizationView("pl", false, "{\"test\":\"content\"}");
-            when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
-            when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?"));
-            internationalizationService.changeLanguageState(language);
-        });
+        InternationalizationView internationalization = new InternationalizationView("pl", false, "{\"test\":\"content\"}");
+        when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization.getAsInternationalizationSimple()));
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "pl", false, false, new ArrayList<>(), false, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?"));
+        assertThrows(IllegalStateException.class, () ->
+            internationalizationService.changeLanguageState(language)
+        );
     }
 
     @Test
@@ -133,10 +127,10 @@ class InternationalizationServiceTest {
 
     @Test
     void shouldThrowAnExceptionWhenLanguageIsNotAvailable() {
-        assertThrows(IllegalStateException.class, () -> {
-            when(repository.findByLanguageOrderByIdDesc(any())).thenReturn(Optional.empty());
-            internationalizationService.getLanguageContent("pl");
-        });
+        when(repository.findByLanguageOrderByIdDesc(any())).thenReturn(Optional.empty());
+        assertThrows(IllegalStateException.class, () ->
+            internationalizationService.getLanguageContent("pl")
+        );
     }
 
     @Test
@@ -146,7 +140,7 @@ class InternationalizationServiceTest {
         List<String> result = internationalizationService.getEnabledLanguages();
 
         assertEquals(1, result.size());
-        assertEquals("pl", result.get(0));
+        assertEquals("pl", result.getFirst());
     }
 
     @Test
@@ -161,7 +155,8 @@ class InternationalizationServiceTest {
     @Test
     void shouldUpdateLanguage() {
         when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new InternationalizationView("pl", true, "{\"test\":\"content\"}").getAsInternationalizationSimple()));
-        this.internationalizationService.updateLanguage("pl", "{\"test\":\"new-content\"}");
+
+        internationalizationService.updateLanguage("pl", "{\"test\":\"new-content\"}");
 
         verify(repository, times(1)).save(any());
     }
@@ -169,19 +164,25 @@ class InternationalizationServiceTest {
     @Test
     void shouldNotUpdateLanguageWhenLangIsEmpty() {
         when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new InternationalizationView("pl", true, "{\"test\":\"content\"}").getAsInternationalizationSimple()));
-        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.updateLanguage("", "{\"test\":\"new-content\"}"));
+        assertThrows(IllegalArgumentException.class, () ->
+                internationalizationService.updateLanguage("", "{\"test\":\"new-content\"}")
+        );
     }
 
     @Test
     void shouldNotUpdateLanguageWhenContentIsEmpty() {
         when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new InternationalizationView("pl", true, "{\"test\":\"content\"}").getAsInternationalizationSimple()));
-        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.updateLanguage("pl", ""));
+        assertThrows(IllegalArgumentException.class, () ->
+                internationalizationService.updateLanguage("pl", "")
+        );
     }
 
     @Test
     void shouldNotUpdateLanguageWhenContentIsNotValidJson() {
         when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new InternationalizationView("pl", true, "{\"test\":\"content\"}").getAsInternationalizationSimple()));
-        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.updateLanguage("pl", "{\"test\":\"new-content\""));
+        assertThrows(IllegalArgumentException.class, () ->
+                internationalizationService.updateLanguage("pl", "{\"test\":\"new-content\"")
+        );
     }
 
     @Test

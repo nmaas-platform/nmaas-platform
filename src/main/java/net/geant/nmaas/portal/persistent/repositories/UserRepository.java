@@ -1,22 +1,34 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
+import net.geant.nmaas.portal.api.domain.UserListEntry;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
-	boolean existsByUsername(String username);
-	boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     boolean existsBySamlToken(String samlToken);
-	Optional<User> findByUsername(String username);
-	Optional<User> findBySamlToken(String token);
-	Optional<User> findByEmail(String email);
+
+    Optional<User> findByUsername(String username);
+
+    Optional<User> findBySamlToken(String token);
+
+    Optional<User> findByEmail(String email);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update User u set u.enabled = ?2 where u.id = ?1")
@@ -36,5 +48,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT count(distinct u.id) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id != 1")
     int countWithDomain();
+
+    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
+    List<UserListEntry> findAllListEntry();
+
+    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
+    Page<UserListEntry> findAllListEntry(Pageable pageable);
+
+    Page<User> findAll(Specification<User> spec, Pageable pageable);
 
 }

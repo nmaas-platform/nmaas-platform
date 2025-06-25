@@ -16,15 +16,15 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
+import net.geant.nmaas.portal.events.AppDeploymentEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_IN_PROGRESS;
@@ -59,7 +59,6 @@ public class AppDeploymentStateChangeManagerTest {
     private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
-
     private AppDeploymentStateChangeManager manager;
 
     @BeforeEach
@@ -92,13 +91,39 @@ public class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
+    void shouldTriggerNewEventInDeployedVerifiedState() throws SchedulerException {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
+        when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
+        when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
+
+        when(monitor.userAccessDetails(deploymentId)).thenReturn(
+                new AppUiAccessDetails(
+                        new HashSet<ServiceAccessMethodView>() {{
+                            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+                        }}
+                )
+        );
+        when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
+
+        ApplicationEvent newEvent = manager.notifyStateChange(event);
+
+        assertThat(newEvent, is(nullValue()));
+        verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
+        verify(publisher, times(1)).publishEvent(any(AppDeploymentEvent.class));
+
+    }
+
+    @Test
     void shouldTriggerNotificationEvent() {
         when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(
                 new AppUiAccessDetails(
-                        new HashSet<ServiceAccessMethodView>() {{  add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url")); }}
+                        new HashSet<ServiceAccessMethodView>() {{
+                            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+                        }}
                 )
         );
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
@@ -200,11 +225,12 @@ public class AppDeploymentStateChangeManagerTest {
         when(deployments.loadDomainName(deploymentId)).thenReturn("domainName");
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails(new HashSet<ServiceAccessMethodView>() {{
-            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));}}));
-        AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED,APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
-        AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS,APPLICATION_DEPLOYMENT_VERIFIED);
+            add(new ServiceAccessMethodView(ServiceAccessMethodType.DEFAULT, "Default", "Web", "url"));
+        }}));
+        AppDeploymentHistory history = new AppDeploymentHistory(1L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYED, APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
+        AppDeploymentHistory history2 = new AppDeploymentHistory(2L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED);
         // added second time as "current" re-deployment, because current state is not added by `update state` function
-        AppDeploymentHistory history3 = new AppDeploymentHistory(3L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS,APPLICATION_DEPLOYMENT_VERIFIED);
+        AppDeploymentHistory history3 = new AppDeploymentHistory(3L, stubAppDeployment(), new Date(), APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, APPLICATION_DEPLOYMENT_VERIFIED);
 
         when(deployments.loadStateHistory(deploymentId)).thenReturn(java.util.List.of(history, history2, history3));
         when(event.getDetail(EventDetailType.NEW_APPLICATION_ID)).thenReturn("10");
@@ -212,6 +238,5 @@ public class AppDeploymentStateChangeManagerTest {
         manager.notifyStateChange(event);
         verify(publisher, never()).publishEvent(any(NotificationEvent.class));
     }
-
 
 }

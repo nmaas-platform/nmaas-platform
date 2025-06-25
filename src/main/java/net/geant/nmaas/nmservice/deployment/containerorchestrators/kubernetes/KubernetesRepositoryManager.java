@@ -52,7 +52,7 @@ public class KubernetesRepositoryManager extends NmServiceRepositoryManager<Kube
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateKServiceAccessMethods(Set<ServiceAccessMethod> serviceAccessMethods) {
-        serviceAccessMethods.forEach(m -> accessMethodRepository.save(m));
+        serviceAccessMethods.forEach(accessMethodRepository::save);
     }
 
 }

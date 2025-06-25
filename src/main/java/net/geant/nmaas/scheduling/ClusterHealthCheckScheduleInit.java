@@ -2,7 +2,7 @@ package net.geant.nmaas.scheduling;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.ClusterMonitoringJob;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringJob;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,17 @@ public class ClusterHealthCheckScheduleInit implements InitializingBean {
 
     public static final String CLUSTER_HEALTH_CHECK = "ClusterHealthCheck";
 
-    private final ClusterMonitoringJob clusterMonitoringJob;
+    private final RemoteClusterMonitoringJob remoteClusterMonitoringJob;
     private final ScheduleManager scheduleManager;
     private final ConfigurationManager configurationManager;
     private final String healthCheckJobCron;
 
     @Autowired
-    public ClusterHealthCheckScheduleInit(ClusterMonitoringJob clusterMonitoringJob,
+    public ClusterHealthCheckScheduleInit(RemoteClusterMonitoringJob remoteClusterMonitoringJob,
                                           ScheduleManager scheduleManager,
                                           ConfigurationManager configurationManager,
                                           @Value("${nmaas.service.health-check.cron}") String healthCheckJobCron) {
-        this.clusterMonitoringJob = clusterMonitoringJob;
+        this.remoteClusterMonitoringJob = remoteClusterMonitoringJob;
         this.scheduleManager = scheduleManager;
         this.configurationManager = configurationManager;
         this.healthCheckJobCron = healthCheckJobCron;
@@ -40,13 +40,13 @@ public class ClusterHealthCheckScheduleInit implements InitializingBean {
         final String healthCheckJobCronFromDb = configurationManager.getConfiguration().getHealthCheckJobCron();
         if (!Strings.isNullOrEmpty(healthCheckJobCronFromDb)) {
             log.debug("Scheduling cluster health check job based on cron loaded from the database");
-            this.scheduleManager.createJob(clusterMonitoringJob, CLUSTER_HEALTH_CHECK, healthCheckJobCronFromDb);
+            this.scheduleManager.createJob(remoteClusterMonitoringJob, CLUSTER_HEALTH_CHECK, healthCheckJobCronFromDb);
             log.error("Adding new job for health check cluster ...");
         } else if (Strings.isNullOrEmpty(healthCheckJobCron)) {
             log.warn("Cluster health check cron expression not provided");
         } else {
             log.debug("Scheduling cluster health check job based on cron loaded from properties");
-            this.scheduleManager.createJob(clusterMonitoringJob, CLUSTER_HEALTH_CHECK, healthCheckJobCron);
+            this.scheduleManager.createJob(remoteClusterMonitoringJob, CLUSTER_HEALTH_CHECK, healthCheckJobCron);
         }
 
     }

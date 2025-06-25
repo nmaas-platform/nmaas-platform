@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 
 import java.io.Serializable;

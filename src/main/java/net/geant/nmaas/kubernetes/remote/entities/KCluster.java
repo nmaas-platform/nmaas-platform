@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes.entities;
+package net.geant.nmaas.kubernetes.remote.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

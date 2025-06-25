@@ -71,7 +71,7 @@ public class OrchestratorManagerControllerIntTest {
             "}";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         applicationId = Identifier.newInstance(15L);
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
@@ -86,11 +86,10 @@ public class OrchestratorManagerControllerIntTest {
 
         this.principal = mock(Principal.class);
         when(this.principal.getName()).thenReturn("user");
-
     }
 
     @Test
-    public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() {
+    void shouldRequestNewDeploymentAndReceiveNewDeploymentId() {
         when(lifecycleManager.deployApplication(any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -99,20 +98,20 @@ public class OrchestratorManagerControllerIntTest {
         params.set("deploymentname", DEPLOYMENT_NAME);
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/orchestration/deployments")
-                    .params(params)
-                    .accept(MediaType.APPLICATION_JSON))
+                            .params(params)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
                     .andExpect(content().json(mapper.writeValueAsString(deploymentId)));
         });
     }
 
     @Test
-    public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
+    void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
-                .principal(this.principal)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(CONFIGURATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .principal(this.principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CONFIGURATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
@@ -124,17 +123,17 @@ public class OrchestratorManagerControllerIntTest {
     }
 
     @Test
-    public void shouldUpdateConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
+    void shouldUpdateConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
-                .principal(this.principal)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(CONFIGURATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .principal(this.principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CONFIGURATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}/update", deploymentId.toString())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"jsonInput\":{\"id\":\"newtestvalue" + "\"}," + "\"storageSpace\":null" + "}")
-                .accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"jsonInput\":{\"id\":\"newtestvalue" + "\"}," + "\"storageSpace\":null" + "}")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
         ArgumentCaptor<AppConfigurationView> appDeploymentCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
@@ -144,14 +143,14 @@ public class OrchestratorManagerControllerIntTest {
     }
 
     @Test
-    public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
+    void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
         doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(), any(), anyString());
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
-                    .principal(this.principal)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(CONFIGURATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
+                            .principal(this.principal)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(CONFIGURATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         });
     }

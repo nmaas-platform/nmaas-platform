@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.service;
+package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
@@ -72,7 +72,7 @@ public class WebhookEventService {
                 }).toList();
     }
 
-    public Stream<Long> findIdByEventType(WebhookEventType webhookEventType) {
+    public List<Long> findIdByEventType(WebhookEventType webhookEventType) {
         return webhookRepository.findIdByEventType(webhookEventType);
     }
 

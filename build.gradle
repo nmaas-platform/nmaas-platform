@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '3.5.0'
+    id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.gorylenko.gradle-git-properties' version '2.5.0'
     id 'org.sonarqube' version '6.2.0.5505'
@@ -102,8 +102,8 @@ dependencies {
 
     implementation('org.springdoc:springdoc-openapi-ui:1.8.0')
 
-    implementation('org.modelmapper:modelmapper:3.2.3')
-    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.3')
+    implementation('org.modelmapper:modelmapper:3.2.4')
+    implementation('org.modelmapper.extensions:modelmapper-spring:3.2.4')
     implementation('org.apache.commons:commons-lang3:3.17.0')
 
     // Database
@@ -111,11 +111,11 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:6.6.17.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:6.6.18.Final'
 
     // Database migrations
-    implementation('org.flywaydb:flyway-core:11.9.1')
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.9.1'
+    implementation('org.flywaydb:flyway-core:11.9.2')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.9.2'
 
     implementation('org.freemarker:freemarker:2.3.34')
 
@@ -137,7 +137,7 @@ dependencies {
     implementation('io.grpc:grpc-stub:1.73.0')
 
     // CSV processing
-    implementation('com.opencsv:opencsv:5.11.1')
+    implementation('com.opencsv:opencsv:5.11.2')
 
     // Tests
     testImplementation('org.mockito:mockito-core:5.18.0')
@@ -248,7 +248,8 @@ jacocoTestCoverageVerification {
             excludes = [
                     '**.model*',
                     '**.exceptions**',
-                    'net.geant.nmaas.portal.api.webhooks'
+                    'net.geant.nmaas.portal.api.webhooks',
+                    'net.geant.nmaas.portal.persistent.spec'
             ]
             limit {
                 counter = 'INSTRUCTION'

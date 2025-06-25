@@ -28,6 +28,12 @@ public class DashboardController {
         return dashboardService.getSystemDashboard(startDate, endDate);
     }
 
+    @GetMapping("/operator")
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    public DashboardView getDashboardOperator() {
+        return dashboardService.getOperatorDashboard();
+    }
+
     @GetMapping("/domain/{id}")
     public DomainDashboardView getDashboardDomain(@PathVariable Long id) {
         return dashboardService.getDomainDashboard(id);

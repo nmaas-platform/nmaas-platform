@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration.jobs;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
-import net.geant.nmaas.portal.service.WebhookEventService;
+import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;

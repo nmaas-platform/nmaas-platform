@@ -195,4 +195,21 @@ public class DashboardServiceImplTest {
         assert toTime > 0;
         assert sinceTime < toTime;
     }
+
+    @Test
+    void getOperatorDashboardShouldReturnCorrectDomainCount() {
+        // Mock the domain repository to return a specific count
+        long expectedDomainCount = 10L;
+        when(domainRepository.countByActiveTrueAndDeletedFalse()).thenReturn(expectedDomainCount);
+
+        // Call the method
+        DashboardView result = dashboardService.getOperatorDashboard();
+
+        // Verify the result
+        assert result != null;
+        assert result.getDomainsCount() == expectedDomainCount;
+
+        // Verify that the repository method was called
+        verify(domainRepository).countByActiveTrueAndDeletedFalse();
+    }
 }

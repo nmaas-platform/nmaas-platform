@@ -128,6 +128,7 @@ public class JanitorService {
         return Arrays.asList(ConnectivityState.CONNECTING, ConnectivityState.IDLE, ConnectivityState.READY).contains(this.channel.getState(false));
     }
 
+    @Deprecated
     public boolean checkIfReady(Identifier deploymentId, String domain) {
         log.trace("Checking if deployment {} in domain {} is ready", deploymentId.value(), domain);
         ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
@@ -139,6 +140,7 @@ public class JanitorService {
         };
     }
 
+    @Deprecated
     public String retrieveServiceIp(Identifier serviceId, String domain) {
         log.info("Retrieving service IP for {} in domain {}", serviceId.value(), domain);
         InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
@@ -203,8 +205,9 @@ public class JanitorService {
         }
     }
 
+    @Deprecated
     public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
-        log.info("Request domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
+        log.info("Requested domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createNamespace(
                 buildNamespaceRequest(domainNameSpace, annotations));

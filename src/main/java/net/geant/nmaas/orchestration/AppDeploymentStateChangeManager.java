@@ -22,6 +22,7 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEven
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.portal.events.AppDeploymentEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.ApplicationEvent;
@@ -41,6 +42,7 @@ public class AppDeploymentStateChangeManager {
     private final DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
     private final AppDeploymentMonitor deploymentMonitor;
     private final ApplicationEventPublisher eventPublisher;
+
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -80,6 +82,7 @@ public class AppDeploymentStateChangeManager {
                     && deploymentRepositoryManager.isFirstTimeDeployment(event.getDeploymentId())) {
                 eventPublisher.publishEvent(
                         new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
+                eventPublisher.publishEvent(new AppDeploymentEvent(this, event.getDeploymentId().toString()));
             }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
