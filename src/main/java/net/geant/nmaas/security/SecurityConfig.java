@@ -4,7 +4,6 @@ import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.api.security.StatelessGitlabAuthenticationFilter;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
-import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +26,6 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2Authorization
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -51,6 +48,9 @@ public class SecurityConfig {
 
     private final GitLabProjectRepository gitLabProjectRepository;
 
+    public static final SkipPathRequestMatcher skipPathRequestMatcher =
+            new SkipPathRequestMatcher(SecurityConstants.SKIPPED_PATHS);
+
     @Bean
     @ConditionalOnProperty(name = "portal.config.ssoLoginAllowed", havingValue = "true")
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
@@ -62,9 +62,8 @@ public class SecurityConfig {
 //                .exceptionHandling(Customizer.withDefaults())
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(httpRequest -> httpRequest
+                .authorizeHttpRequests(authz -> authz
                         .requestMatchers(SecurityConstants.AUTH_WHITELIST).permitAll()
-                        .requestMatchers(SecurityConstants.AUTH_OIDC_LINK).permitAll()
                         .requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated()
                 )
                 .oauth2Login(oAuth2 -> oAuth2
@@ -77,9 +76,9 @@ public class SecurityConfig {
                                 .baseUri("/api/login/oauth2/code/*")
                         )
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(statelessAuthFilter(SecurityConstants.skipPathRequestMatcher,
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .addFilterBefore(statelessAuthFilter(skipPathRequestMatcher,
                                 null,
                                 tokenAuthenticationService),
                         UsernamePasswordAuthenticationFilter.class)
@@ -104,7 +103,7 @@ public class SecurityConfig {
                         .requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .addFilterBefore(statelessAuthFilter(SecurityConstants.skipPathRequestMatcher,
+                .addFilterBefore(statelessAuthFilter(skipPathRequestMatcher,
                                 null,
                                 tokenAuthenticationService),
                         UsernamePasswordAuthenticationFilter.class)
@@ -148,5 +147,4 @@ public class SecurityConfig {
 
         return new CorsFilter(source);
     }
-
 }

@@ -1,10 +1,5 @@
 package net.geant.nmaas.security;
 
-import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
 public class SecurityConstants {
 
     private SecurityConstants() {
@@ -25,71 +20,68 @@ public class SecurityConstants {
     static final String AUTH_OIDC = "/api/oidc/**";
     static final String AUTH_CODE = "/api/login/oauth2/code";
 
-    static final RequestMatcher[] AUTH_WHITELIST = {
-            new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
-            new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
-            new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
-            new AntPathRequestMatcher(AUTH_SSO_LOGIN),
-            new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
-            new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
-            new AntPathRequestMatcher(AUTH_OIDC),
-            new AntPathRequestMatcher(AUTH_LOGOUT),
-            new AntPathRequestMatcher(AUTH_CODE),
-            new AntPathRequestMatcher("/favicon.ico"),
-            new AntPathRequestMatcher("/api/info/**"),
-            new AntPathRequestMatcher("/actuator/**"),
-            new AntPathRequestMatcher("/api/content/**"),
-            new AntPathRequestMatcher("/api/users/reset/**"),
-            new AntPathRequestMatcher("/api/mail"),
-            new AntPathRequestMatcher("/api-docs/**"),
-            new AntPathRequestMatcher("/api/**", HttpMethod.OPTIONS.name()),
-            new AntPathRequestMatcher("/api/orchestration/deployments/**", HttpMethod.OPTIONS.name()),
-            new AntPathRequestMatcher("/api/orchestration/deployments/**/state", HttpMethod.OPTIONS.name()),
-            new AntPathRequestMatcher("/api/orchestration/deployments/**/access", HttpMethod.OPTIONS.name()),
-            new AntPathRequestMatcher("/api/management", HttpMethod.OPTIONS.name()),
-            new AntPathRequestMatcher("/api/management", HttpMethod.OPTIONS.name()),
-            new AntPathRequestMatcher("/api/i18n/content/**", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/api/i18n/all/enabled", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/api/configuration/**", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/api/auth/sso", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/api/mail/type", HttpMethod.GET.name()),
-            new AntPathRequestMatcher("/api/monitor/all", HttpMethod.GET.name())
+
+    protected static final String[] AUTH_WHITELIST = {
+            AUTH_BASIC_LOGIN,
+            AUTH_BASIC_SIGNUP,
+            AUTH_BASIC_TOKEN,
+            AUTH_SSO_LOGIN,
+            AUTH_OIDC_LOGIN,
+            AUTH_OIDC_LOGIN_PAGE,
+            AUTH_OIDC,
+            AUTH_LOGOUT,
+            AUTH_CODE,
+            AUTH_OIDC_LINK,
+            "/favicon.ico",
+            "/api/info/**",
+            "/actuator/**",
+            "/api/content/**",
+            "/api/users/reset/**",
+            "/api/mail",
+            "/api-docs/**",
+            "/api/**",
+            "/api/orchestration/deployments/**",
+            "/api/orchestration/deployments/**/state",
+            "/api/orchestration/deployments/**/access",
+            "/api/management",
+            "/api/i18n/content/**",
+            "/api/i18n/all/enabled",
+            "/api/configuration/**",
+            "/api/auth/sso",
+            "/api/mail/type",
+            "/api/monitor/all"
     };
 
-    static final RequestMatcher[] AUTH_AUTHENTICATED_LIST = {
-            new AntPathRequestMatcher("/api/orchestration/deployments/**/state"),
-            new AntPathRequestMatcher("/api/orchestration/deployments/**/access"),
-            new AntPathRequestMatcher("/api/orchestration/deployments/**"),
-            new AntPathRequestMatcher("/api/management/**"),
-            new AntPathRequestMatcher("/api/**")
+    protected static final String[] AUTH_AUTHENTICATED_LIST = {
+            "/api/orchestration/deployments/**/state",
+            "/api/orchestration/deployments/**/access",
+            "/api/orchestration/deployments/**",
+            "/api/management/**",
+            "/api/**"
     };
-
-    static final SkipPathRequestMatcher skipPathRequestMatcher =
-            new SkipPathRequestMatcher(
-                    new AntPathRequestMatcher[]{
-                            new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
-                            new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
-                            new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
-                            new AntPathRequestMatcher(AUTH_SSO_LOGIN),
-                            new AntPathRequestMatcher(AUTH_OIDC_LOGIN),
-                            new AntPathRequestMatcher(AUTH_OIDC_LOGIN_PAGE),
-                            new AntPathRequestMatcher(AUTH_OIDC),
-                            new AntPathRequestMatcher(AUTH_CODE),
-                            new AntPathRequestMatcher("/api-docs/**"),
-                            new AntPathRequestMatcher("/actuator/**"),
-                            new AntPathRequestMatcher("/favicon.ico"),
-                            new AntPathRequestMatcher("/api/configuration/**", "GET"),
-                            new AntPathRequestMatcher("/api/auth/sso", "GET"),
-                            new AntPathRequestMatcher("/api/info/**"),
-                            new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
-                            new AntPathRequestMatcher("/api/content/**"),
-                            new AntPathRequestMatcher("/api/users/reset/**"),
-                            new AntPathRequestMatcher("/api/mail"),
-                            new AntPathRequestMatcher("/api/monitor/all", "GET"),
-                            new AntPathRequestMatcher("/api/mail/type", "GET"),
-                            new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
-                            new AntPathRequestMatcher("/api/i18n/all/enabled", "GET"),
-                            new AntPathRequestMatcher("/api/gitlab/webhooks/**")
-                    }
-            );
+    protected static final String[] SKIPPED_PATHS = {
+            AUTH_BASIC_LOGIN,
+            AUTH_BASIC_SIGNUP,
+            AUTH_BASIC_TOKEN,
+            AUTH_SSO_LOGIN,
+            AUTH_OIDC_LOGIN,
+            AUTH_OIDC_LOGIN_PAGE,
+            AUTH_OIDC,
+            AUTH_CODE,
+            "/api-docs/**",
+            "/actuator/**",
+            "/favicon.ico",
+            "/api/configuration/**",
+            "/api/auth/sso",
+            "/api/info/**",
+            "/api/dcns/notifications/**/status",
+            "/api/content/**",
+            "/api/users/reset/**",
+            "/api/mail",
+            "/api/monitor/all",
+            "/api/mail/type",
+            "/api/i18n/content/**",
+            "/api/i18n/all/enabled",
+            "/api/gitlab/webhooks/**"
+    };
 }
