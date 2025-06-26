@@ -45,12 +45,12 @@ public class KubernetesApiJanitorService {
 
     public boolean checkIfReady(KCluster kCluster, Identifier deploymentId, String domain) {
         final String namespace = namespaceService.namespace(domain);
-        final Deployment deployment = kubernetesApiClientService.getDeployment(kCluster, deploymentId.value(), namespace);
+        final Deployment deployment = kubernetesApiClientService.getDeployment(kCluster, namespace, deploymentId.value());
         if (Objects.nonNull(deployment)) {
             return Objects.equals(deployment.getSpec().getReplicas(), deployment.getStatus().getReadyReplicas());
         } else {
             log.info("Deployment {} not found in namespace {}. Looking for a StatefulSet", deploymentId.value(), namespace);
-            final StatefulSet statefulSet = kubernetesApiClientService.getStatefulSet(kCluster, deploymentId.value(), namespace);
+            final StatefulSet statefulSet = kubernetesApiClientService.getStatefulSet(kCluster, namespace, deploymentId.value());
             if (Objects.nonNull(statefulSet)) {
                 return Objects.equals(statefulSet.getSpec().getReplicas(), statefulSet.getStatus().getReadyReplicas());
             }
