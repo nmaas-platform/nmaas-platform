@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
+import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -231,6 +232,7 @@ class DomainServiceTest {
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         assertTrue(domainService.removeDomain(1L));
         verify(domainRepository, times(1)).delete(domain);
+        verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
     }
 
     @Test
@@ -413,8 +415,9 @@ class DomainServiceTest {
         domainService.softRemoveDomain(1L);
 
         verify(domainRepository, times(1)).save(domain);
-        Optional<Domain> deletedDomain = domainService.findDomain(1L);
+        verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
 
+        Optional<Domain> deletedDomain = domainService.findDomain(1L);
         assertTrue(deletedDomain.isPresent());
         assertTrue(deletedDomain.get().isDeleted());
         assertTrue(deletedDomain.get().getName().contains("DELETED"));
@@ -456,6 +459,7 @@ class DomainServiceTest {
         when(domainGroupRepository.save(group2)).thenReturn(group2);
 
         domainService.softRemoveDomain(1L);
+        verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
 
         var resultDomainGroup = domainGroupRepository.findById(1L);
         var resultDomainGroup2 = domainGroupRepository.findById(2L);

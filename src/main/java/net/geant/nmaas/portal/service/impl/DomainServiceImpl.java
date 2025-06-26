@@ -11,12 +11,14 @@ import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
+import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
@@ -324,7 +326,9 @@ public class DomainServiceImpl implements DomainService {
         return findDomain(id).map(toRemove -> {
             dcnRepositoryManager.removeDcnInfo(toRemove.getCodename());
             checkGlobal(toRemove);
+            DomainView domainView = modelMapper.map(toRemove, DomainView.class);
             domainRepository.delete(toRemove);
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainView, true));
             return true;
         }).orElse(false);
     }
@@ -348,6 +352,8 @@ public class DomainServiceImpl implements DomainService {
             removeAllUsersFromDomain(domain);
             removeDomainFromAllGroups(domain);
             domainRepository.save(domain);
+            DomainView domainView = modelMapper.map(domain, DomainView.class);
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainView, true));
             return true;
         }).orElse(false);
     }
