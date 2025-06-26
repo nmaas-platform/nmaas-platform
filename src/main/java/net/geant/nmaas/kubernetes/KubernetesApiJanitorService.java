@@ -54,7 +54,10 @@ public class KubernetesApiJanitorService {
             if (Objects.nonNull(statefulSet)) {
                 return Objects.equals(statefulSet.getSpec().getReplicas(), statefulSet.getStatus().getReadyReplicas());
             }
-            throw new JanitorResponseException("");
+            log.info("StatefulSet not found as well");
+            throw new JanitorResponseException(
+                    String.format("Not able to check application state. No deployment/statefulset with name %s found in namespace %s", deploymentId.value(), namespace)
+            );
         }
     }
 
