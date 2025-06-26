@@ -14,6 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -63,7 +64,9 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(SecurityConstants.AUTH_WHITELIST).permitAll()
+                        .requestMatchers(SecurityConstants.AUTH_WHITELIST_ANY_METHOD).permitAll()
+                        .requestMatchers(HttpMethod.GET ,SecurityConstants.AUTH_WHITELIST_GET_METHOD).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS ,SecurityConstants.AUTH_WHITELIST_OPTIONS_METHOD).permitAll()
                         .requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated()
                 )
                 .oauth2Login(oAuth2 -> oAuth2
@@ -99,7 +102,9 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(httpRequest -> httpRequest
-                        .requestMatchers(SecurityConstants.AUTH_WHITELIST).permitAll()
+                        .requestMatchers(SecurityConstants.AUTH_WHITELIST_ANY_METHOD).permitAll()
+                        .requestMatchers(HttpMethod.GET ,SecurityConstants.AUTH_WHITELIST_GET_METHOD).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS ,SecurityConstants.AUTH_WHITELIST_OPTIONS_METHOD).permitAll()
                         .requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))

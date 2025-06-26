@@ -1,5 +1,8 @@
 package net.geant.nmaas.security;
 
+import java.util.List;
+import java.util.Map;
+
 public class SecurityConstants {
 
     private SecurityConstants() {
@@ -21,7 +24,22 @@ public class SecurityConstants {
     static final String AUTH_CODE = "/api/login/oauth2/code";
 
 
-    protected static final String[] AUTH_WHITELIST = {
+    static final String[] AUTH_WHITELIST_GET_METHOD = {
+            "/api/i18n/content/**",
+            "/api/i18n/all/enabled",
+            "/api/configuration/**",
+            "/api/auth/sso",
+            "/api/mail/type",
+            "/api/monitor/all"
+    };
+    static final String[] AUTH_WHITELIST_OPTIONS_METHOD = {
+            "/api/**",
+            "/api/orchestration/deployments/**",
+            "/api/orchestration/deployments/**/state",
+            "/api/orchestration/deployments/**/access",
+            "/api/management"
+    };
+    protected static final String[] AUTH_WHITELIST_ANY_METHOD = {
             AUTH_BASIC_LOGIN,
             AUTH_BASIC_SIGNUP,
             AUTH_BASIC_TOKEN,
@@ -38,19 +56,9 @@ public class SecurityConstants {
             "/api/content/**",
             "/api/users/reset/**",
             "/api/mail",
-            "/api-docs/**",
-            "/api/**",
-            "/api/orchestration/deployments/**",
-            "/api/orchestration/deployments/**/state",
-            "/api/orchestration/deployments/**/access",
-            "/api/management",
-            "/api/i18n/content/**",
-            "/api/i18n/all/enabled",
-            "/api/configuration/**",
-            "/api/auth/sso",
-            "/api/mail/type",
-            "/api/monitor/all"
+            "/api-docs/**"
     };
+
 
     protected static final String[] AUTH_AUTHENTICATED_LIST = {
             "/api/orchestration/deployments/**/state",
@@ -59,29 +67,33 @@ public class SecurityConstants {
             "/api/management/**",
             "/api/**"
     };
-    protected static final String[] SKIPPED_PATHS = {
-            AUTH_BASIC_LOGIN,
-            AUTH_BASIC_SIGNUP,
-            AUTH_BASIC_TOKEN,
-            AUTH_SSO_LOGIN,
-            AUTH_OIDC_LOGIN,
-            AUTH_OIDC_LOGIN_PAGE,
-            AUTH_OIDC,
-            AUTH_CODE,
-            "/api-docs/**",
-            "/actuator/**",
-            "/favicon.ico",
-            "/api/configuration/**",
-            "/api/auth/sso",
-            "/api/info/**",
-            "/api/dcns/notifications/**/status",
-            "/api/content/**",
-            "/api/users/reset/**",
-            "/api/mail",
-            "/api/monitor/all",
-            "/api/mail/type",
-            "/api/i18n/content/**",
-            "/api/i18n/all/enabled",
-            "/api/gitlab/webhooks/**"
-    };
+    static final Map<String, List<String>> SKIPPED_PATHS = Map.of(
+            "GET", List.of(
+                    "/api/configuration/**",
+                    "/api/auth/sso",
+                    "/api/monitor/all",
+                    "/api/mail/type",
+                    "/api/i18n/content/**",
+                    "/api/i18n/all/enabled"
+            ),
+            "ANY", List.of(
+                    AUTH_BASIC_LOGIN,
+                    AUTH_BASIC_SIGNUP,
+                    AUTH_BASIC_TOKEN,
+                    AUTH_SSO_LOGIN,
+                    AUTH_OIDC_LOGIN,
+                    AUTH_OIDC_LOGIN_PAGE,
+                    AUTH_OIDC,
+                    AUTH_CODE,
+                    "/api-docs/**",
+                    "/actuator/**",
+                    "/favicon.ico",
+                    "/api/info/**",
+                    "/api/dcns/notifications/**/status",
+                    "/api/content/**",
+                    "/api/users/reset/**",
+                    "/api/mail",
+                    "/api/gitlab/webhooks/**"
+            )
+    );
 }
