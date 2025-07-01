@@ -187,7 +187,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         final Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
         final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
-            if (checkIfServiceExists(namespace, descriptiveDeploymentId)) {
+            if (checkIfServiceExists(namespace, deploymentId, descriptiveDeploymentId)) {
                 helmCommandExecutor.executeHelmDeleteCommand(
                         namespace,
                         descriptiveDeploymentId.getValue(),
@@ -199,12 +199,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         }
     }
 
-    private boolean checkIfServiceExists(String namespace, Identifier deploymentId) {
+    private boolean checkIfServiceExists(String namespace, Identifier deploymentId, Identifier descriptiveDeploymentId) {
         final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         return helmCommandExecutor.executeHelmListCommand(
                 namespace,
                 serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
-        ).contains(deploymentId.value());
+        ).contains(descriptiveDeploymentId.value());
     }
 
     @Override
