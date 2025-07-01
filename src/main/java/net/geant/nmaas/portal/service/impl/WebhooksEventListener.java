@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.jobs.AppDeploymentJob;
 import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
+import net.geant.nmaas.orchestration.jobs.DomainRemovalJob;
 import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
+import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.events.AppDeploymentEvent;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
+import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
 import net.geant.nmaas.portal.events.UserDomainAssignmentEvent;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -40,6 +43,16 @@ public class WebhooksEventListener {
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION)
                 .forEach(id -> scheduleManager.createOneTimeJob(DomainCreationJob.class, "DomainCreation_" + id + "_" + domain.getId(), Map.of("webhookId", id, "domainId", domain.getId())));
     }
+
+    @EventListener
+    @Loggable(LogLevel.INFO)
+    @Transactional
+    public void trigger(DomainRemovalEvent event) {
+        final DomainView domainView = event.getDomainView();
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_REMOVAL)
+                .forEach(id -> scheduleManager.createOneTimeJob(DomainRemovalJob.class, "DomainRemoval_" + id + "_" + domainView.getId(), Map.of("webhookId", id, "domain", domainView, "hardRemoval", event.isHardRemoval())));
+    }
+
 
     @EventListener
     @Loggable(LogLevel.INFO)
