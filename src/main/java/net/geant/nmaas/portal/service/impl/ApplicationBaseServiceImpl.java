@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseViewS;
+import net.geant.nmaas.portal.api.domain.TagView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
@@ -31,6 +32,7 @@ import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -145,6 +147,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                         id(app.getId())
                         .name(app.getName())
                         .descriptions(mapList(modelMapper, app.getDescriptions(), AppDescriptionView.class))
+                        .tags(mapSet(modelMapper, app.getTags(), TagView.class))
                         .build())
                 .collect(Collectors.toList());
         LocalDateTime finish = LocalDateTime.now();
@@ -200,5 +203,11 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return source.stream()
                 .map(element -> mapper.map(element, targetClass))
                 .collect(Collectors.toList());
+    }
+
+    public static <S, T> Set<T> mapSet(ModelMapper mapper, Set<S> source, Class<T> targetClass) {
+        return source.stream()
+                .map(element -> mapper.map(element, targetClass))
+                .collect(Collectors.toSet());
     }
 }
