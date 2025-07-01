@@ -73,13 +73,13 @@ public class HelmCommandExecutor {
         return chartName.contains("/") ? chartName : helmRepositoryName + "/" + chartName;
     }
 
-    void executeHelmDeleteCommand(String namespace, String releaseName) {
+    void executeHelmDeleteCommand(String namespace, String releaseName, String kubeConfigPath) {
         try {
             HelmCommand command;
             if (helmVersion.startsWith(HELM_VERSION_2)) {
-                command = HelmDeleteCommand.command(releaseName, enableTls);
+                command = HelmDeleteCommand.command(releaseName, enableTls, kubeConfigPath);
             } else if (helmVersion.startsWith(HELM_VERSION_3)) {
-                command = HelmUninstallCommand.command(namespace, releaseName);
+                command = HelmUninstallCommand.command(namespace, releaseName, kubeConfigPath);
             } else {
                 throw new CommandExecutionException("Unknown Helm version in use: " + helmVersion);
             }
@@ -89,17 +89,18 @@ public class HelmCommandExecutor {
         }
     }
 
-    HelmPackageStatus executeHelmStatusCommand(String namespace, String releaseName) {
-        return executeStatus(namespace, releaseName);
+    HelmPackageStatus executeHelmStatusCommand(String namespace, String releaseName, String kubeConfigPath) {
+        return executeStatus(namespace, releaseName, kubeConfigPath);
     }
 
-    private HelmPackageStatus executeStatus(String namespace, String releaseName) {
+    private HelmPackageStatus executeStatus(String namespace, String releaseName, String kubeConfigPath) {
         try {
             HelmStatusCommand command = HelmStatusCommand.command(
                     helmVersion,
                     namespace,
                     releaseName,
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             String output = commandExecutor.executeWithOutput(command);
             return parseStatus(output);
@@ -118,12 +119,13 @@ public class HelmCommandExecutor {
         }
     }
 
-    public List<String> executeHelmListCommand(String namespace) {
+    public List<String> executeHelmListCommand(String namespace, String kubeConfigPath) {
         try {
             HelmListCommand command = HelmListCommand.command(
                     helmVersion,
                     namespace,
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             String output = commandExecutor.executeWithOutput(command);
             return Arrays.asList(output.split("\n"));
@@ -132,7 +134,7 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template) {
+    void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template, String kubeConfigPath) {
         try {
             HelmUpgradeCommand command = HelmUpgradeCommand.commandWithRepo(
                     helmVersion,
@@ -140,7 +142,8 @@ public class HelmCommandExecutor {
                     releaseName,
                     constructChartNameWithRepo(template.getChart().getName()),
                     template.getChart().getVersion(),
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             commandExecutor.execute(command);
         } catch (CommandExecutionException e) {

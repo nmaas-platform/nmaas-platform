@@ -11,13 +11,14 @@ public class HelmStatusCommand extends HelmCommand {
     /**
      * Creates {@link HelmStatusCommand} with provided custom input
      *
-     * @param helmVersion version of Helm in use
-     * @param namespace namespace with given release
-     * @param releaseName release name
-     * @param enableTls flag indicating if tls option should be added
+     * @param helmVersion    version of Helm in use
+     * @param namespace      namespace with given release
+     * @param releaseName    release name
+     * @param enableTls      flag indicating if tls option should be added
+     * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
-    public static HelmStatusCommand command(String helmVersion, String namespace, String releaseName, boolean enableTls) {
+    public static HelmStatusCommand command(String helmVersion, String namespace, String releaseName, boolean enableTls, String kubeConfigPath) {
         if (releaseName == null || releaseName.isEmpty()) {
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         }
@@ -25,6 +26,9 @@ public class HelmStatusCommand extends HelmCommand {
         sb.append(HELM).append(SPACE).append(STATUS).append(SPACE).append(releaseName);
         if (helmVersion.startsWith(HELM_VERSION_3)) {
             sb.append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
+        }
+        if (kubeConfigPath != null && !kubeConfigPath.isEmpty()) {
+            sb.append(SPACE).append(OPTION_KUBECONFIG).append(SPACE).append(kubeConfigPath);
         }
         addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmStatusCommand(sb.toString());

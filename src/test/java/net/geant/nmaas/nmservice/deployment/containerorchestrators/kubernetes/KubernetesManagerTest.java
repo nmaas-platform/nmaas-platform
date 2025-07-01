@@ -98,17 +98,7 @@ public class KubernetesManagerTest {
 
     @BeforeEach
     void setup() {
-        Map<String, String> parametersMap = new HashMap<>();
-        parametersMap.put(ParameterType.SMTP_HOSTNAME.name(), "hostname");
-        parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
-        parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
-        parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
-        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
-        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
-        parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
-        parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
-        parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
-        parametersMap.put(ParameterType.APP_INSTANCE_NAME.name(), "appInstanceName");
+        Map<String, String> parametersMap = getParametersMap();
         when(deploymentParametersProvider.deploymentParameters(any())).thenReturn(parametersMap);
 
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
@@ -169,6 +159,21 @@ public class KubernetesManagerTest {
         additionalParameters.put("ws2.enabled", "FALSE");
         service.setAdditionalParameters(additionalParameters);
         when(repositoryManager.loadService(any())).thenReturn(service);
+    }
+
+    private static Map<String, String> getParametersMap() {
+        Map<String, String> parametersMap = new HashMap<>();
+        parametersMap.put(ParameterType.SMTP_HOSTNAME.name(), "hostname");
+        parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
+        parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
+        parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
+        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
+        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
+        parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
+        parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
+        parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
+        parametersMap.put(ParameterType.APP_INSTANCE_NAME.name(), "appInstanceName");
+        return parametersMap;
     }
 
     @Test

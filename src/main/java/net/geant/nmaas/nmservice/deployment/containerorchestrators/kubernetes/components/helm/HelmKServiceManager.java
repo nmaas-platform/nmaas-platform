@@ -167,10 +167,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.TRACE)
     public boolean checkServiceDeployed(Identifier deploymentId) {
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(
                     namespaceService.namespace(repositoryManager.loadDomain(deploymentId)),
-                    repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue()
+                    repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue(),
+                    serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
             return status.equals(HelmPackageStatus.DEPLOYED);
         } catch (CommandExecutionException cee) {
@@ -181,13 +183,15 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.TRACE)
     public void deleteServiceIfExists(Identifier deploymentId) {
-        String namespace = namespaceService.namespace(repositoryManager.loadDomain(deploymentId));
-        Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
+        final String namespace = namespaceService.namespace(repositoryManager.loadDomain(deploymentId));
+        final Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
             if (checkIfServiceExists(namespace, descriptiveDeploymentId)) {
                 helmCommandExecutor.executeHelmDeleteCommand(
                         namespace,
-                        descriptiveDeploymentId.getValue()
+                        descriptiveDeploymentId.getValue(),
+                        serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
                 );
             }
         } catch (CommandExecutionException cee) {
@@ -196,13 +200,17 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     private boolean checkIfServiceExists(String namespace, Identifier deploymentId) {
-        return helmCommandExecutor.executeHelmListCommand(namespace).contains(deploymentId.value());
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        return helmCommandExecutor.executeHelmListCommand(
+                namespace,
+                serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
+        ).contains(deploymentId.value());
     }
 
     @Override
     @Loggable(LogLevel.TRACE)
     public void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion) {
-        KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
             if (!helmRepoUpdateAsyncEnabled) {
                 updateHelmRepo();
@@ -210,7 +218,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             helmCommandExecutor.executeHelmUpgradeCommand(
                     namespaceService.namespace(serviceInfo.getDomain()),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
-                    targetVersion
+                    targetVersion,
+                    serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
