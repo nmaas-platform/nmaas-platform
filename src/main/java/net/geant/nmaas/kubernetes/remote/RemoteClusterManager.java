@@ -142,7 +142,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
     }
 
     @Override
-    public RemoteClusterView saveCluster(RemoteClusterView remoteClusterSpec, MultipartFile file) {
+    public RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace) {
         checkRequest(remoteClusterSpec);
         try {
             KClusterDeployment deployment;
@@ -166,7 +166,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                     .creationDate(OffsetDateTime.now())
                     .modificationDate(OffsetDateTime.now())
                     .codename(remoteClusterSpec.getCodename())
-                    .clusterConfigFile(new String(file.getBytes()))
+                    .clusterConfigFile(new String(kubeConfigFile.getBytes()))
                     .deployment(deployment)
                     .ingress(ingress)
                     .state(KClusterState.UNKNOWN)
@@ -175,16 +175,23 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
                     .domains(toListOfDomains(remoteClusterSpec))
                     .build();
 
-            String savedPath = saveFileToTmp(file);
+            String savedPath = saveFileToTmp(kubeConfigFile);
             cluster.setPathConfigFile(savedPath);
-            log.debug("Configuration file saved in {}", savedPath);
+            log.debug("Configuration kubeConfigFile saved in {}", savedPath);
 
             KCluster savedCluster = kClusterRepository.save(cluster);
 
             log.debug("Sending email notification (cluster support)");
             mailer.sendMail(savedCluster, MailType.REMOTE_CLUSTER_WELCOME_SUPPORT);
 
-            eventPublisher.publishEvent(new RemoteClusterNamespaceEvent(this, savedCluster.getId()));
+            if (createNamespace) {
+                savedCluster.getDomains().forEach(d ->
+                        eventPublisher.publishEvent(
+                                new RemoteClusterNamespaceEvent(this, savedCluster.getId(), d.getCodename(), Collections.emptyList()))
+                );
+            } else {
+                log.debug("Namespace creation flag is disabled");
+            }
             return toView(savedCluster);
 
         } catch (IOException | NoSuchAlgorithmException e) {

@@ -54,9 +54,6 @@ public class KubernetesApiClientService {
             NonNamespaceOperation<Deployment, DeploymentList, RollableScalableResource<Deployment>> deploymentsInNamespace = client.apps()
                     .deployments()
                     .inNamespace(namespace);
-            log.debug("Found the following deployments in namespace {} -> {}",
-                    namespace,
-                    deploymentsInNamespace.list().getItems().stream().map(d -> d.getMetadata().getName()).toList());
             return deploymentsInNamespace
                     .withName(deploymentName)
                     .get();
@@ -68,9 +65,6 @@ public class KubernetesApiClientService {
             NonNamespaceOperation<StatefulSet, StatefulSetList, RollableScalableResource<StatefulSet>> statefulSetsInNamespace = client.apps()
                     .statefulSets()
                     .inNamespace(namespace);
-            log.debug("Found the following statefulsets in namespace {} -> {}",
-                    namespace,
-                    statefulSetsInNamespace.list().getItems().stream().map(d -> d.getMetadata().getName()).toList());
             return statefulSetsInNamespace
                     .withName(statefulSetName)
                     .get();
