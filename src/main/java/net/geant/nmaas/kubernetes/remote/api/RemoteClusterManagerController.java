@@ -50,11 +50,12 @@ public class RemoteClusterManagerController {
     @PostMapping
     public RemoteClusterView createKubernetesCluster(@RequestPart("file") MultipartFile file,
                                                      @RequestPart("data") String viewString,
-                                                     @RequestPart("createNamespace") Boolean createNamespace) {
+                                                     @RequestPart("createNamespace") String createNamespace) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
-            return remoteClusterManager.processNewCluster(cluster, file, Objects.isNull(createNamespace) ? Boolean.FALSE : createNamespace);
+            final boolean createNamespaceFlag = Objects.isNull(createNamespace) ? Boolean.FALSE : Boolean.valueOf(createNamespace);
+            return remoteClusterManager.processNewCluster(cluster, file, createNamespaceFlag);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
