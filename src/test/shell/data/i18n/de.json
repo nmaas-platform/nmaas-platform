@@ -1349,8 +1349,8 @@
     "TOGGLE" : "Toggle all"
   },
   "WEBHOOKS" : {
-    "TITLE" : "Webhooks settings",
-    "TITLE_SHORT" : "Webhooks",
+    "TITLE" : "Webhooks",
+    "TITLE_SHORT" : "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
     "TARGET_URL" : "Target Url",
@@ -1385,5 +1385,20 @@
     "ID": "Id",
     "INSTANCE_NAME": "Instanzname",
     "NEED_UPGRADE": "Muss aktualisiert werden"
+  },
+  "TOAST": {
+    "SUCCESS_HEADER": "Erfolg",
+    "ERROR_HEADER": "Fehler",
+    "SUCCESS": {
+      "NEW_DOMAIN": "Neue Domain erfolgreich hinzugefügt",
+      "SETTINGS": "Die Einstellungen wurden erfolgreich aktualisiert",
+      "CLUSTER": "Remote-Clusterdaten erfolgreich aktualisiert",
+      "NOTIFICATION": "Benachrichtigung erfolgreich gesendet"
+    },
+    "ERROR": {
+      "NEW_DOMAIN": "Aktualisierung der Einstellungen fehlgeschlagen",
+      "SETTINGS": "Das Hinzufügen einer neuen Domäne ist fehlgeschlagen",
+      "NOTIFICATION": "Die Nachricht konnte nicht gesendet werden."
+    }
   }
 }

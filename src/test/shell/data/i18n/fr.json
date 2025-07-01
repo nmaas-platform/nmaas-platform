@@ -1353,8 +1353,8 @@
     "TOGGLE" : "Toggle all"
   },
   "WEBHOOKS" : {
-    "TITLE" : "Webhooks settings",
-    "TITLE_SHORT" : "Webhooks",
+    "TITLE" : "Webhooks",
+    "TITLE_SHORT" : "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
     "TARGET_URL" : "Target Url",
@@ -1389,5 +1389,20 @@
     "ID": "Id",
     "INSTANCE_NAME": "Nom de l'instance",
     "NEED_UPGRADE": "Besoin d'une mise à niveau"
+  },
+  "TOAST": {
+    "SUCCESS_HEADER": "Succès",
+    "ERROR_HEADER": "Erreur",
+    "SUCCESS": {
+      "NEW_DOMAIN": "Nouveau domaine ajouté avec succès",
+      "SETTINGS": "Les paramètres ont été mis à jour avec succès",
+      "CLUSTER": "Les données du cluster distant ont été mises à jour avec succès",
+      "NOTIFICATION": "Notification envoyée avec succès"
+    },
+    "ERROR": {
+      "NEW_DOMAIN": "La mise à jour des paramètres a échoué",
+      "SETTINGS": "Échec de l'ajout d'un nouveau domaine",
+      "NOTIFICATION": "Le message n'a pas pu être envoyé."
+    }
   }
 }
