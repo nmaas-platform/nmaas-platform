@@ -1395,10 +1395,10 @@
     "SUCCESS_HEADER": "Success",
     "ERROR_HEADER": "Error",
     "SUCCESS": {
-      "NEW_DOMAIN": "New domain successfully added",
-      "SETTINGS": "Settings successfully update",
-      "CLUSTER": "Remote cluster data successfully updated",
-      "NOTIFICATION": "Notification sent successfully"
+      "NEW_DOMAIN": "New domain added",
+      "SETTINGS": "Settings updated",
+      "CLUSTER": "Remote cluster data updated",
+      "NOTIFICATION": "Notification sent"
     },
     "ERROR": {
       "NEW_DOMAIN": "Settings update failed",
