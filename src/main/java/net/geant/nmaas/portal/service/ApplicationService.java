@@ -36,4 +36,8 @@ public interface ApplicationService {
 
 	boolean exists(String name, String version);
 
+	Application checkAndUpdateFormioTemplate(Application application);
+
+	void checkAllFormioTemplate();
+
 }
