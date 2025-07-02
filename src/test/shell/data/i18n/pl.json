@@ -316,6 +316,7 @@
     "DEPLOYED": "Uruchomione instancje",
     "UNDEPLOYED": "Zatrzymane instancje",
     "SHOW_UNDEPLOYED": "Pokaż zatrzymane instancje",
+    "SHOW_MY": "Pokaż tylko moje",
     "HIDE_UNDEPLOYED": "Ukryj zatrzymane instancje",
     "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
@@ -1351,7 +1352,8 @@
   },
   "WEBHOOKS" : {
     "TITLE" : "Webhooks",
-    "TITLE_SHORT" : "New webhook",
+    "TITLE_SHORT" : "Webhook",
+    "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
     "TARGET_URL" : "Target Url",
@@ -1394,12 +1396,15 @@
       "NEW_DOMAIN": "Nowa domena została pomyślnie dodana",
       "SETTINGS": "Ustawienia zostały pomyślnie zaktualizowane",
       "CLUSTER": "Dane klastra zdalnego zostały pomyślnie zaktualizowane",
-      "NOTIFICATION": "Powiadomienie wysłane pomyślnie"
+      "NOTIFICATION": "Powiadomienie wysłane pomyślnie",
+      "NEW_WEBHOOK": "Dodano nowy webhook",
+      "WEBHOOK": "Webhook został pomyślnie zaktualizowany"
     },
     "ERROR": {
-      "NEW_DOMAIN": "Aktualizacja ustawień nie powiodła się",
-      "SETTINGS": "Nie udało się dodać nowej domeny",
-      "NOTIFICATION": "Nie udało się wysłać wiadomości."
+      "NEW_DOMAIN": "Nie udało się dodać nowej domeny",
+      "SETTINGS": "Aktualizacja ustawień nie powiodła się",
+      "NOTIFICATION": "Nie udało się wysłać wiadomości.",
+      "WEBHOOK": "Aktualizacja webhooka nie powiodła się"
     }
   }
 }

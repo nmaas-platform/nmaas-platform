@@ -315,6 +315,7 @@
     "DEPLOYED": "Bereitgestellte Instanzen",
     "UNDEPLOYED": "Entfernte Instanzen",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "SHOW_MY": "Nur meine anzeigen",
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
     "UNDEPLOYED_VISIBLE": "Show undeployed instances",
     "SORT": "Sort",
@@ -1348,7 +1349,8 @@
   },
   "WEBHOOKS" : {
     "TITLE" : "Webhooks",
-    "TITLE_SHORT" : "New webhook",
+    "TITLE_SHORT" : "Webhook",
+    "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
     "TARGET_URL" : "Target Url",
@@ -1391,12 +1393,15 @@
       "NEW_DOMAIN": "Neue Domain erfolgreich hinzugefügt",
       "SETTINGS": "Die Einstellungen wurden erfolgreich aktualisiert",
       "CLUSTER": "Remote-Clusterdaten erfolgreich aktualisiert",
-      "NOTIFICATION": "Benachrichtigung erfolgreich gesendet"
+      "NOTIFICATION": "Benachrichtigung erfolgreich gesendet",
+      "NEW_WEBHOOK": "Neuer Webhook hinzugefügt",
+      "WEBHOOK": "Webhook aktualisiert"
     },
     "ERROR": {
-      "NEW_DOMAIN": "Aktualisierung der Einstellungen fehlgeschlagen",
-      "SETTINGS": "Das Hinzufügen einer neuen Domäne ist fehlgeschlagen",
-      "NOTIFICATION": "Die Nachricht konnte nicht gesendet werden."
+      "NEW_DOMAIN": "Das Hinzufügen einer neuen Domäne ist fehlgeschlagen",
+      "SETTINGS": "Aktualisierung der Einstellungen fehlgeschlagen ",
+      "NOTIFICATION": "Die Nachricht konnte nicht gesendet werden.",
+      "WEBHOOK": "Das Webhook-Update ist fehlgeschlagen"
     }
   }
 }

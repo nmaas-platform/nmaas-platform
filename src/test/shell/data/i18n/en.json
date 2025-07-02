@@ -316,8 +316,9 @@
     "DEPLOYED": "Deployed instances",
     "UNDEPLOYED": "Undeployed instances",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "SHOW_MY": "Show only my",
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
-    "UNDEPLOYED_VISIBLE": "Show undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed",
     "SORT": "Sort",
     "SHOW_CONFIG_BUTTON" : "Show configuration",
     "MANUAL_UPDATE" : {
@@ -1353,7 +1354,8 @@
   },
   "WEBHOOKS" : {
     "TITLE" : "Webhooks",
-    "TITLE_SHORT" : "New webhook",
+    "TITLE_SHORT" : "Webhook",
+    "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
     "TARGET_URL" : "Target url",
@@ -1396,12 +1398,15 @@
       "NEW_DOMAIN": "New domain added",
       "SETTINGS": "Settings updated",
       "CLUSTER": "Remote cluster data updated",
-      "NOTIFICATION": "Notification sent"
+      "NOTIFICATION": "Notification sent",
+      "NEW_WEBHOOK": "New webhook added",
+      "WEBHOOK": "Webhook updated"
     },
     "ERROR": {
-      "NEW_DOMAIN": "Settings update failed",
-      "SETTINGS": "Failed to add new domain",
-      "NOTIFICATION": "The message could not be sent."
+      "NEW_DOMAIN": "Failed to add new domain",
+      "SETTINGS": "Settings update failed",
+      "NOTIFICATION": "The message could not be sent.",
+      "WEBHOOK": "Webhook update failed"
     }
   }
 }
