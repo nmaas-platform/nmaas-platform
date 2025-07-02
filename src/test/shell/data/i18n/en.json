@@ -1373,7 +1373,7 @@
     "AUTH_REQUIRED": "Auth required"
   },
   "DASHBOARD": {
-    "NUMBERS_OF_USERS": "Current number of user",
+    "NUMBERS_OF_USERS": "Current number of users",
     "NUMBERS_OF_DOMAINS": "Current number of domains",
     "NUMBERS_OF_DEPLOYED_APP": "Current number of deployed applications",
     "APP_DEPLOYMENTS": "Application deployments",
