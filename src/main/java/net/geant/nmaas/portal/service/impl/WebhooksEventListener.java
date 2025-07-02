@@ -11,8 +11,8 @@ import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.events.AppDeploymentEvent;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
-import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
+import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.events.UserDomainAssignmentEvent;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Map;
 
 @Component
@@ -53,14 +54,14 @@ public class WebhooksEventListener {
                 .forEach(id -> scheduleManager.createOneTimeJob(DomainRemovalJob.class, "DomainRemoval_" + id + "_" + domainView.getId(), Map.of("webhookId", id, "domain", domainView, "hardRemoval", event.isHardRemoval())));
     }
 
-
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional
     public void trigger(DomainGroupChangedEvent event) {
         final DomainGroupView domainGroup = event.getDomainGroup();
+        domainGroup.setManagers(Collections.emptyList());
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_CHANGE)
-                .forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class,"DomainGroup_" + id + "_" + domainGroup.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", event.getAction(), "domainGroup", domainGroup)));
+                .forEach(id -> scheduleManager.createOneTimeJob(DomainGroupJob.class, "DomainGroup_" + id + "_" + domainGroup.getId() + "_" + LocalDateTime.now(), Map.of("webhookId", id, "action", event.getAction(), "domainGroup", domainGroup)));
     }
 
     @EventListener
@@ -72,7 +73,7 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(AppDeploymentEvent event) {
-        webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT).forEach(id -> scheduleManager.createOneTimeJob(AppDeploymentJob.class, "AppDeploymentJob_" + id + "_" + event.getDeploymentIdStr() +"_time"+ LocalDateTime.now(), Map.of("webhookId", id, "deploymentId", event.getDeploymentIdStr())));
+        webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT).forEach(id -> scheduleManager.createOneTimeJob(AppDeploymentJob.class, "AppDeploymentJob_" + id + "_" + event.getDeploymentIdStr() + "_time" + LocalDateTime.now(), Map.of("webhookId", id, "deploymentId", event.getDeploymentIdStr())));
     }
 
 }
