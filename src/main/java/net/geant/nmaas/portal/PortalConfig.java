@@ -11,8 +11,10 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.impl.FormioSanitizerService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -157,6 +159,9 @@ public class PortalConfig {
 			@Autowired
 			private ConfigurationManager configurationManager;
 
+			@Autowired
+			private ApplicationService applicationService;
+
 			@Override
 			public void afterPropertiesSet() {
 				ConfigurationView configurationView = ConfigurationView.builder()
@@ -179,6 +184,8 @@ public class PortalConfig {
 				} catch (OnlyOneConfigurationSupportedException e) {
 					log.debug("Portal configuration already exists. Skipping initialization.");
 				}
+
+				applicationService.checkAllFormioTemplate();
 			}
 		};
 	}
