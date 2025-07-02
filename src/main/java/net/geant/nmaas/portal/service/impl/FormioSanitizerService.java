@@ -34,7 +34,7 @@ public class FormioSanitizerService {
             if (objNode.has("key")) {
                 String key = objNode.get("key").asText();
                 if (key.contains("#")) {
-                    objNode.put("key", key.replace("_", "_dot_"));
+                    objNode.put("key", key.replace("#", "_dot_"));
                 }
             }
 
