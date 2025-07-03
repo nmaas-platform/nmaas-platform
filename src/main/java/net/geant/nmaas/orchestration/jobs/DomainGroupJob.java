@@ -36,7 +36,7 @@ public class DomainGroupJob extends WebhookJob {
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
-            if (!WebhookEventType.DOMAIN_GROUP_CHANGE.equals(webhook.getEventType())) {
+            if (!WebhookEventType.DOMAIN_GROUP_ACTION.equals(webhook.getEventType())) {
                 log.warn("Webhook's event type with id {} has been updated. DomainGroupJob is abandoned", webhookId);
                 return;
             }

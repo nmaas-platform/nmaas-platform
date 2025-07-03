@@ -29,7 +29,7 @@ public class DomainActionJob extends WebhookJob {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        log.debug("Started DomainRemovalJob ...");
+        log.debug("Started DomainActionJob ...");
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Long webhookId = dataMap.getLong("webhookId");
         String action = dataMap.getString("action");
