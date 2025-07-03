@@ -1,14 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -121,5 +114,15 @@ public interface NmServiceDeploymentProvider {
      * @return {@link AppComponentLogs} object containing application logs
      */
     AppComponentLogs serviceComponentLogs(Identifier deploymentId, String serviceComponentName, String serviceSubComponentName);
+    /**
+     * @param deploymentId unique identifier of service deployment
+     * @throws CouldNotScaleDownNmServiceException if NM service couldn't be scaled for some reason
+     */
+    void scaleDown(Identifier deploymentId);
 
+    /**
+     * @param deploymentId unique identifier of service deployment
+     * @throws CouldNotScaleUpNmServiceException if NM service couldn't be scaled for some reason
+     */
+    void scaleUp(Identifier deploymentId);
 }

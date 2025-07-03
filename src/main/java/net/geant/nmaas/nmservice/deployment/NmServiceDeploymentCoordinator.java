@@ -1,21 +1,12 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
-import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentLogsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -32,26 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFICATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFIED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTARTED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFIED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.*;
 
 /**
  * Default implementation of the {@link NmServiceDeploymentProvider}. Coordinates NM service deployment workflow and
@@ -63,6 +35,8 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private final ContainerOrchestrator orchestrator;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final KServiceOperationsManager kserviceOperationsManager;
+
 
     @Value("${nmaas.service.deployment.check.interval}")
     int serviceDeploymentCheckInternal;
@@ -195,6 +169,31 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
             throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void scaleDown(Identifier deploymentId){
+
+        try{
+            notifyStateChangeListeners(deploymentId, SCALE_DOWN_INITIATED);
+            kserviceOperationsManager.scaleDeployment(deploymentId, 0);
+            notifyStateChangeListeners(deploymentId, SCALED_DOWN);
+        } catch (KubernetesClientSetupException e) {
+            notifyStateChangeListeners(deploymentId, SCALE_DOWN_FAILED, e.getMessage());
+            throw new CouldNotScaleDownNmServiceException("NM Service scale down failed -> " + e.getMessage());
+        }
+
+    }
+    @Override
+    public void scaleUp(Identifier deploymentId){
+        try{
+            notifyStateChangeListeners(deploymentId, SCALE_UP_INITIATED);
+            kserviceOperationsManager.scaleDeployment(deploymentId, 1);
+            notifyStateChangeListeners(deploymentId, SCALED_UP);
+        } catch (KubernetesClientSetupException e) {
+            notifyStateChangeListeners(deploymentId, SCALE_UP_FAILED, e.getMessage());
+            throw new CouldNotScaleUpNmServiceException("NM Service scale up failed -> " + e.getMessage());
         }
     }
 
