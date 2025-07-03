@@ -55,14 +55,15 @@ public class WebhooksEventListener {
     @Loggable(LogLevel.INFO)
     @Transactional
     public void trigger(DomainRemovalEvent event) {
-        final DomainView domainView = event.getDomainView();
+        final DomainView domain = event.getDomainView();
+        domain.setClusters(Collections.emptyList());
         String action = event.isHardRemoval() ? "delete" : "softDelete";
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 DomainActionJob.class,
-                                "Domain" + action + "_" + id + "_" + domainView.getId(),
-                                Map.of("webhookId", id, "domain", domainView, "action", action))
+                                "Domain" + action + "_" + id + "_" + domain.getId(),
+                                Map.of("webhookId", id, "domain", domain, "action", action))
                 );
     }
 
