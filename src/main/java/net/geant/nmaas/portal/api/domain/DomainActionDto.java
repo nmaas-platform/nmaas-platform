@@ -7,8 +7,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class DomainRemovalDto {
+public class DomainActionDto {
 
     private DomainView domainView;
-    private boolean hardRemoval;
+    private String action;
 }

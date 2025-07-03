@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 @NoArgsConstructor
 @Getter
 @Setter
-public class DomainDcnDetailsView {
+public class DomainDcnDetailsView implements Serializable {
 
     private Long id;
 
