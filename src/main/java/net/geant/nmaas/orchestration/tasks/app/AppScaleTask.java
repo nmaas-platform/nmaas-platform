@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
+import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -14,23 +14,25 @@ import org.springframework.stereotype.Component;
 public class AppScaleTask {
 
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
-    private final KServiceOperationsManager kserviceOperationsManager;
+    private final NmServiceDeploymentProvider serviceDeployment;
+
 
     @EventListener
     public void handleScaleEvent(AppScaleActionEvent event) {
-
         AppDeployment appDeployment = appDeploymentRepositoryManager.load(event.getDeploymentId());
 
         switch (event.getDirection()) {
             case DOWN:
                 appDeployment.setState(AppDeploymentState.SCALED_DOWN);
                 appDeploymentRepositoryManager.update(appDeployment);
-                kserviceOperationsManager.scaleDeployment(event.getDeploymentId(), 0);
+                serviceDeployment.scaleDown(event.getDeploymentId());
+
                 break;
             case UP:
                 appDeployment.setState(AppDeploymentState.APPLICATION_CONFIGURED);
                 appDeploymentRepositoryManager.update(appDeployment);
-                kserviceOperationsManager.scaleDeployment(event.getDeploymentId(), 1);
+                serviceDeployment.scaleUp(event.getDeploymentId());
+
                 break;
         }
     }
