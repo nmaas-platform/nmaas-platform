@@ -3,9 +3,8 @@ package net.geant.nmaas.portal.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.jobs.AppDeploymentJob;
-import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
-import net.geant.nmaas.orchestration.jobs.DomainRemovalJob;
+import net.geant.nmaas.orchestration.jobs.DomainActionJob;
 import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainView;
@@ -20,6 +19,7 @@ import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +35,15 @@ public class WebhooksEventListener {
 
     private final WebhookEventRepository webhookEventRepository;
     private final ScheduleManager scheduleManager;
+    private final ModelMapper modelMapper;
 
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional
     public void trigger(DomainCreatedEvent event) {
         final Domain domain = event.getDomainEntity();
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION)
-                .forEach(id -> scheduleManager.createOneTimeJob(DomainCreationJob.class, "DomainCreation_" + id + "_" + domain.getId(), Map.of("webhookId", id, "domainId", domain.getId())));
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
+                .forEach(id -> scheduleManager.createOneTimeJob(DomainActionJob.class, "DomainCreate_"+ event.getDomain()+"_" + id + "_" + domain.getId(), Map.of("webhookId", id, "domain", modelMapper.map(domain, DomainView.class), "action", "create")));
     }
 
     @EventListener
@@ -50,8 +51,9 @@ public class WebhooksEventListener {
     @Transactional
     public void trigger(DomainRemovalEvent event) {
         final DomainView domainView = event.getDomainView();
-        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_REMOVAL)
-                .forEach(id -> scheduleManager.createOneTimeJob(DomainRemovalJob.class, "DomainRemoval_" + id + "_" + domainView.getId(), Map.of("webhookId", id, "domain", domainView, "hardRemoval", event.isHardRemoval())));
+        String action = event.isHardRemoval() ? "delete" : "softDelete";
+        webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
+                .forEach(id -> scheduleManager.createOneTimeJob(DomainActionJob.class, "Domain" +action+"_"+ event.getDomainView()+"_" + id + "_" + domainView.getId(), Map.of("webhookId", id, "domain", domainView, "action", action)));
     }
 
     @EventListener
