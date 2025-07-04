@@ -336,10 +336,10 @@
       "POPULAR": "Popularność",
       "DATE" : "Data dodania"
     },
-    "SCALED_UP": "Wznów",
-    "SCALED_DOWN": "Pauza",
-    "CONFIRM_SCALEDOWN": {
-      "MESSAGE" : "Czy na pewno chcesz zatrzymać instancję?",
+    "RESUME": "Wznów",
+    "PAUSE": "Pauza",
+    "CONFIRM_PAUSE": {
+      "MESSAGE" : "Czy na pewno chcesz zatrzymać tą instancję?",
       "HEADER" : "Potwierdzenie",
       "ACCEPT" : "Tak",
       "REJECT" : "Nie"
@@ -670,6 +670,9 @@
       "APP_RESTART_PROGRESS": "Trwa restart aplikacji",
       "APP_RESTART_SUCCESS": "Aplikacja zrestartowana poprawnie",
       "APP_RESTART_FAILED": "Restart aplikacji nie powiódł się",
+      "APP_PAUSE_PROGRESS": "Trwa pauzowanie aplikacji",
+      "APP_PAUSE_SUCCESS": "Aplikacja spauzowana poprawnie",
+      "APP_PAUSE_FAILED": "Pauzowanie aplikacji nie powiodło się",
       "APP_UPDATE_PROGRESS": "Trwa aktualizowanie konfiguracji aplikacji",
       "APP_UPDATE_SUCCESS": "Aplikacja zaktualizowana poprawnie",
       "APP_UPDATE_FAILED": "Aktualizacja konfiguracji aplikacji nie powiodła się",

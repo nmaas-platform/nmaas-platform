@@ -9,8 +9,8 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.AppScaleDirection;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.events.app.AppScaleActionEvent;
@@ -589,6 +589,7 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_CONFIGURATION_UPDATED:
             case APPLICATION_RESTART_IN_PROGRESS:
             case APPLICATION_RESTARTED:
+            case APPLICATION_PAUSE_IN_PROGRESS:
             case APPLICATION_UPGRADE_IN_PROGRESS:
             case APPLICATION_UPGRADED:
             case APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS:
@@ -596,6 +597,9 @@ public class AppInstanceController extends AppBaseController {
                 break;
             case APPLICATION_DEPLOYMENT_VERIFIED:
                 appInstanceState = AppInstanceState.RUNNING;
+                break;
+            case APPLICATION_PAUSED:
+                appInstanceState = AppInstanceState.PAUSED;
                 break;
             case APPLICATION_REMOVAL_IN_PROGRESS:
                 appInstanceState = AppInstanceState.UNDEPLOYING;
@@ -613,6 +617,7 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
             case APPLICATION_REMOVAL_FAILED:
             case APPLICATION_RESTART_FAILED:
+            case APPLICATION_PAUSE_FAILED:
             case APPLICATION_CONFIGURATION_UPDATE_FAILED:
             case APPLICATION_DEPLOYMENT_FAILED:
             case APPLICATION_CONFIGURATION_REMOVAL_FAILED:

@@ -37,7 +37,13 @@ public enum NmServiceDeploymentState {
     UPGRADED(true, true),
     UPGRADE_FAILED(false, false),
     ERROR(false, false),
-    FAILED_APPLICATION_REMOVED(false, false);
+    FAILED_APPLICATION_REMOVED(false, false),
+    PAUSE_INITIATED(true, false),
+    PAUSED(true, false),
+    PAUSE_FAILED(false,false),
+    RESUME_INITIATED(false, false),
+    RESUMED(false, true),
+    RESUME_FAILED(false,false);
 
     private boolean isRunning;
 

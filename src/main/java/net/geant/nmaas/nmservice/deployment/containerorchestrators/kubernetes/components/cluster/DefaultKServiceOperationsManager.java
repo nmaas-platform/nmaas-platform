@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
-import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -35,18 +34,14 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void scaleDeployment(Identifier deploymentId, int replicas) {
-        KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-        try {
-            final String namespace = namespaceService.namespace(serviceInfo.getDomain());
-            final String kubernetesDeploymentName =
-                    Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.joining("-"));
-            kubernetesApiClientService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
-        } catch (KubernetesClientSetupException e) {
-            log.error(e.getMessage());
-        }
+    public void scaleService(Identifier deploymentId, int replicas) {
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        final String namespace = namespaceService.namespace(serviceInfo.getDomain());
+        final String kubernetesDeploymentName =
+                Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.joining("-"));
+        kubernetesApiClientService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
     }
 
 }

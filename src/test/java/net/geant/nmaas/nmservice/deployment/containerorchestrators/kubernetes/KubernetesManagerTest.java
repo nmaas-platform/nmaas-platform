@@ -24,7 +24,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
@@ -178,7 +178,7 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyDeploymentWithEmptyAppDeployment() {
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, null, null);
         });
         assertTrue(thrown.getMessage().contains("App deployment cannot be null"));
@@ -186,7 +186,7 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyDeploymentWithEmptyAppDeploymentSpec() {
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), null);
         });
         assertTrue(thrown.getMessage().contains("App deployment spec cannot be null"));
@@ -195,7 +195,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyDeploymentWithNotSupportedEnv() {
         AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.emptyList()).build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Service deployment not possible with currently used container orchestrator"));
@@ -204,7 +204,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyDeploymentWithNoKubernetesTemplate() {
         AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES)).build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Kubernetes template cannot be null"));
@@ -217,7 +217,7 @@ public class KubernetesManagerTest {
                 .kubernetesTemplate(new KubernetesTemplate())
                 .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Service access methods cannot be null"));

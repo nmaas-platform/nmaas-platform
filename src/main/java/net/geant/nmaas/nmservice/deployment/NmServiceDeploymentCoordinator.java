@@ -1,21 +1,24 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentLogsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceComponentsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotResumeServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceComponentLogsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceComponentsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -38,6 +41,9 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSE_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVED;
@@ -46,6 +52,9 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTARTED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUMED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUME_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUME_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_INITIATED;
@@ -79,7 +88,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, e.getMessage());
-            throw new NmServiceRequestVerificationException(e.getMessage());
+            throw new ServiceRequestVerificationException(e.getMessage());
         }
     }
 
@@ -104,10 +113,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_INITIATED);
             orchestrator.deployNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, DEPLOYED);
-        } catch (CouldNotDeployNmServiceException
+        } catch (CouldNotDeployServiceException
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED, e.getMessage());
-            throw new CouldNotDeployNmServiceException("NM Service deployment failed -> " + e.getMessage());
+            throw new CouldNotDeployServiceException("NM Service deployment failed -> " + e.getMessage());
         }
     }
 
@@ -130,7 +139,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (ContainerCheckFailedException
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED, e.getMessage());
-            throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
+            throw new CouldNotVerifyServiceException("NM Service deployment verification failed -> " + e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -142,7 +151,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             return orchestrator.serviceAccessDetails(deploymentId);
         } catch (ContainerOrchestratorInternalErrorException e) {
-            throw new CouldNotRetrieveNmServiceAccessDetailsException("Exception thrown during access details retrieval -> " + e.getMessage());
+            throw new CouldNotRetrieveServiceAccessDetailsException("Exception thrown during access details retrieval -> " + e.getMessage());
         }
     }
 
@@ -157,7 +166,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             return orchestrator.serviceComponents(deploymentId);
         } catch (ContainerOrchestratorInternalErrorException e) {
-            throw new CouldNotRetrieveNmServiceComponentsException("Exception thrown during components retrieval -> " + e.getMessage());
+            throw new CouldNotRetrieveServiceComponentsException("Exception thrown during components retrieval -> " + e.getMessage());
         }
     }
 
@@ -166,7 +175,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             return orchestrator.serviceComponentLogs(deploymentId, serviceComponentName, serviceSubComponentName);
         } catch (ContainerOrchestratorInternalErrorException e) {
-            throw new CouldNotRetrieveNmServiceComponentLogsException("Exception thrown during component logs retrieval -> " + e.getMessage());
+            throw new CouldNotRetrieveServiceComponentLogsException("Exception thrown during component logs retrieval -> " + e.getMessage());
         }
     }
 
@@ -177,10 +186,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, REMOVAL_INITIATED);
             orchestrator.removeNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, REMOVED);
-        } catch (CouldNotRemoveNmServiceException
+        } catch (CouldNotRemoveServiceException
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, REMOVAL_FAILED, e.getMessage());
-            throw new CouldNotRemoveNmServiceException("NM Service removal failed -> " + e.getMessage());
+            throw new CouldNotRemoveServiceException("NM Service removal failed -> " + e.getMessage());
         }
     }
 
@@ -191,14 +200,41 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, RESTART_INITIATED);
             orchestrator.restartNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, RESTARTED);
-        } catch (CouldNotRestartNmServiceException
+        } catch (CouldNotRestartServiceException
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
-            throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
+            throw new CouldNotRestartServiceException("NM Service restart failed -> " + e.getMessage());
         }
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
+    public void pauseService(Identifier deploymentId) {
+        try {
+            notifyStateChangeListeners(deploymentId, PAUSE_INITIATED);
+            orchestrator.pauseNmService(deploymentId);
+            notifyStateChangeListeners(deploymentId, PAUSED);
+        } catch (KubernetesClientSetupException e) {
+            notifyStateChangeListeners(deploymentId, PAUSE_FAILED, e.getMessage());
+            throw new CouldNotPauseServiceException("Service scale down failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.TRACE)
+    public void resumeService(Identifier deploymentId) {
+        try {
+            notifyStateChangeListeners(deploymentId, RESUME_INITIATED);
+            orchestrator.resumeNmService(deploymentId);
+            notifyStateChangeListeners(deploymentId, RESUMED);
+        } catch (KubernetesClientSetupException e) {
+            notifyStateChangeListeners(deploymentId, RESUME_FAILED, e.getMessage());
+            throw new CouldNotResumeServiceException("Service scale up failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.DEBUG)
     public void upgradeKubernetesService(Identifier deploymentId, AppUpgradeMode mode, Identifier targetApplicationId, KubernetesTemplate kubernetesTemplate) {
         try {
             notifyStateChangeListeners(deploymentId, UPGRADE_INITIATED);

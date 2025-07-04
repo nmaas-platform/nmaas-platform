@@ -336,10 +336,10 @@
       "POPULAR": "Popularity",
       "DATE" : "Date added"
     },
-    "SCALED_UP": "Resume",
-    "SCALED_DOWN": "Pause",
-    "CONFIRM_SCALEDOWN": {
-      "MESSAGE": "Are you sure you want to stop the instance?",
+    "RESUME": "Resume",
+    "PAUSE": "Pause",
+    "CONFIRM_PAUSE": {
+      "MESSAGE": "Are you sure you want to pause this instance?",
       "HEADER": "Confirmation",
       "ACCEPT": "Yes",
       "REJECT": "No"
@@ -671,7 +671,10 @@
       "APP_RESTART_PROGRESS": "Application restart in progress",
       "APP_RESTART_SUCCESS": "Application restarted successfully",
       "APP_RESTART_FAILED": "Application restart failed",
-        "APP_UPDATE_PROGRESS": "Application configuration update in progress",
+      "APP_PAUSE_PROGRESS": "Application pause in progress",
+      "APP_PAUSE_SUCCESS": "Application paused successfully",
+      "APP_PAUSE_FAILED": "Application pause failed",
+      "APP_UPDATE_PROGRESS": "Application configuration update in progress",
       "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
       "APP_UPDATE_FAILED": "Application configuration update failed",
       "UNKNOWN": "Unknown state",

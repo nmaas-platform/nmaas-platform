@@ -26,6 +26,9 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_PAUSED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_PAUSE_FAILED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_PAUSE_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVAL_FAILED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVAL_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED;
@@ -60,6 +63,7 @@ public class AppDeploymentStateTest {
                     "APPLICATION_DEPLOYMENT_VERIFICATION_FAILED",
                     "APPLICATION_REMOVAL_FAILED",
                     "APPLICATION_RESTART_FAILED",
+                    "APPLICATION_PAUSE_FAILED",
                     "APPLICATION_UPGRADE_FAILED",
                     "DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED",
                     "REQUEST_VALIDATION_FAILED",
@@ -101,6 +105,7 @@ public class AppDeploymentStateTest {
         assertThat(state.nextState(NmServiceDeploymentState.REMOVAL_INITIATED), is(APPLICATION_REMOVAL_IN_PROGRESS));
         assertThat(state.nextState(NmServiceDeploymentState.RESTART_INITIATED), is(APPLICATION_RESTART_IN_PROGRESS));
         assertThat(state.nextState(NmServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED), is(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS));
+        assertThat(state.nextState(NmServiceDeploymentState.PAUSE_INITIATED), is(APPLICATION_PAUSE_IN_PROGRESS));
     }
 
     @ParameterizedTest
@@ -145,6 +150,8 @@ public class AppDeploymentStateTest {
                 Arguments.of(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS, NmServiceDeploymentState.VERIFICATION_FAILED, APPLICATION_DEPLOYMENT_VERIFICATION_FAILED),
                 Arguments.of(APPLICATION_RESTART_IN_PROGRESS, NmServiceDeploymentState.RESTARTED, APPLICATION_RESTARTED),
                 Arguments.of(APPLICATION_RESTART_IN_PROGRESS, NmServiceDeploymentState.RESTART_FAILED, APPLICATION_RESTART_FAILED),
+                Arguments.of(APPLICATION_PAUSE_IN_PROGRESS, NmServiceDeploymentState.PAUSED, APPLICATION_PAUSED),
+                Arguments.of(APPLICATION_PAUSE_IN_PROGRESS, NmServiceDeploymentState.PAUSE_FAILED, APPLICATION_PAUSE_FAILED),
                 Arguments.of(APPLICATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.REMOVED, APPLICATION_REMOVED),
                 Arguments.of(APPLICATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.REMOVAL_FAILED, APPLICATION_REMOVAL_FAILED),
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_UPDATED, APPLICATION_CONFIGURATION_UPDATED),
@@ -187,6 +194,9 @@ public class AppDeploymentStateTest {
                 Arguments.of(APPLICATION_RESTART_IN_PROGRESS, AppLifecycleState.APPLICATION_RESTART_IN_PROGRESS),
                 Arguments.of(APPLICATION_RESTARTED, AppLifecycleState.APPLICATION_RESTARTED),
                 Arguments.of(APPLICATION_RESTART_FAILED, AppLifecycleState.APPLICATION_RESTART_FAILED),
+                Arguments.of(APPLICATION_PAUSE_IN_PROGRESS, AppLifecycleState.APPLICATION_PAUSE_IN_PROGRESS),
+                Arguments.of(APPLICATION_PAUSED, AppLifecycleState.APPLICATION_PAUSED),
+                Arguments.of(APPLICATION_PAUSE_FAILED, AppLifecycleState.APPLICATION_PAUSE_FAILED),
                 Arguments.of(APPLICATION_REMOVAL_IN_PROGRESS, AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS),
                 Arguments.of(APPLICATION_REMOVED, AppLifecycleState.APPLICATION_REMOVED),
                 Arguments.of(APPLICATION_REMOVAL_FAILED, AppLifecycleState.APPLICATION_REMOVAL_FAILED),

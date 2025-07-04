@@ -28,12 +28,13 @@ To run the nmaas Platform on a dedicated machine, perform the following steps:
     + *--Dlogback.configurationFile* specifying the name of logger configuration file (located in the same directory as the jar file) to be loaded instead of the built-in one. Please be advised that you have to add that parameter before the *-jar* parameter.
     + *--spring.config.name* specifying the name of the properties file (located in the same directory as the jar file) to be loaded instead of the built-in one.
 
-### Swagger documentation of the nmaas Platform REST API
+### OpenAPI documentation of the nmaas Platform REST API
 
 nmaas Platform by default exposes two endpoints documenting the REST API:
 + */api-docs/spec* - Open API specification of the API
 + */api-docs/ui.html* - Swagger UI
-  The Swagger endpoint can be disabled in properties file.
+
+These endpoints can be disabled in properties file.
 
 
 ### Populating nmaas Platform database with initial data
