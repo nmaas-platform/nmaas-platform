@@ -9,7 +9,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -121,7 +121,7 @@ class ServiceDeploymentWithKubernetesTest {
 		AppDeployment appDeployment = appDeployment(null);
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Collections.emptyList());
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
-		assertThrows(NmServiceRequestVerificationException.class, () -> {
+		assertThrows(ServiceRequestVerificationException.class, () -> {
 			orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, appDeployment, appDeploymentSpec);
 		});
 	}

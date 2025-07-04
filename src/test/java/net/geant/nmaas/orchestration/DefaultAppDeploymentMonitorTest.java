@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
@@ -105,7 +105,7 @@ public class DefaultAppDeploymentMonitorTest {
     void shouldNotReturnUserAccessDetailsIfNotExist() {
         assertThrows(InvalidDeploymentIdException.class, () -> {
             when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
-            when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveNmServiceAccessDetailsException(""));
+            when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveServiceAccessDetailsException(""));
             AppUiAccessDetails accessDetails = monitor.userAccessDetails(deploymentId);
             assertThat(accessDetails, is(notNullValue()));
         });

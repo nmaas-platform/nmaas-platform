@@ -3,12 +3,12 @@ package net.geant.nmaas.nmservice.deployment;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -35,10 +35,10 @@ public interface ContainerOrchestrator {
      * Verifies if currently used container orchestrator is on the list of supported deployment environments specified
      * for NM service being requested and if so creates proper NM service info object.
      *
-     * @param deploymentId unique identifier of service deployment
-     * @param appDeployment deployment details provided by user
+     * @param deploymentId      unique identifier of service deployment
+     * @param appDeployment     deployment details provided by user
      * @param appDeploymentSpec additional information specific to given application deployment
-     * @throws NmServiceRequestVerificationException if current deployment environment is not supported by the application
+     * @throws ServiceRequestVerificationException if current deployment environment is not supported by the application
      */
     void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec);
 
@@ -47,7 +47,7 @@ public interface ContainerOrchestrator {
      * running services and other constraints.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws NmServiceRequestVerificationException if service deployment is currently not possible
+     * @throws ServiceRequestVerificationException       if service deployment is currently not possible
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId);
@@ -55,9 +55,9 @@ public interface ContainerOrchestrator {
     /**
      * Executes all initial configuration steps in order to enable further deployment of the NM service.
      *
-     * @param deploymentId unique identifier of service deployment
+     * @param deploymentId                 unique identifier of service deployment
      * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
-     * @throws CouldNotPrepareEnvironmentException if any of the environment preparation steps failed
+     * @throws CouldNotPrepareEnvironmentException         if any of the environment preparation steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired);
@@ -66,7 +66,7 @@ public interface ContainerOrchestrator {
      * Performs the actual NM service containers deployment.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotDeployNmServiceException if any of the service deployment steps failed
+     * @throws CouldNotDeployServiceException            if any of the service deployment steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void deployNmService(Identifier deploymentId);
@@ -75,9 +75,9 @@ public interface ContainerOrchestrator {
      * Checks if NM service was successfully deployed and is running.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws ContainerCheckFailedException if some unexpected issue occurred during service deployment status check
-     * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      * @return <code>true</code> if service was deployed successfully
+     * @throws ContainerCheckFailedException               if some unexpected issue occurred during service deployment status check
+     * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     boolean checkService(Identifier deploymentId);
 
@@ -110,8 +110,8 @@ public interface ContainerOrchestrator {
     /**
      * Retrieves logs from deployed service component.
      *
-     * @param deploymentId unique identifier of service deployment
-     * @param serviceComponentName name of service component from which logs should be retrieved
+     * @param deploymentId            unique identifier of service deployment
+     * @param serviceComponentName    name of service component from which logs should be retrieved
      * @param serviceSubComponentName name of service subcomponent (added if required)
      * @return service component logs
      * @throws ContainerOrchestratorInternalErrorException if access details are not available for any reason
@@ -122,7 +122,7 @@ public interface ContainerOrchestrator {
      * Triggers all the required actions to remove given NM service from the system.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotRemoveNmServiceException if any of the service removal steps failed
+     * @throws CouldNotRemoveServiceException            if any of the service removal steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void removeNmService(Identifier deploymentId);
@@ -131,7 +131,7 @@ public interface ContainerOrchestrator {
      * Triggers all the required actions to restart given NM service.
      *
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotRestartNmServiceException if any of the service restart steps failed
+     * @throws CouldNotRestartServiceException           if any of the service restart steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void restartNmService(Identifier deploymentId);
@@ -139,11 +139,25 @@ public interface ContainerOrchestrator {
     /**
      * Triggers all the required actions to upgrade given NM service.
      *
-     * @param deploymentId unique identifier of service deployment
+     * @param deploymentId       unique identifier of service deployment
      * @param kubernetesTemplate Helm chart information of the desired application version
-     * @throws CouldNotUpgradeKubernetesServiceException if any of the service restart steps failed
+     * @throws CouldNotUpgradeKubernetesServiceException   if any of the service restart steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void upgradeKubernetesService(Identifier deploymentId, KubernetesTemplate kubernetesTemplate);
+
+    /**
+     * Pauses given service in order to save resources (such service can be resumed)
+     *
+     * @param deploymentId unique identifier of service deployment
+     */
+    void pauseNmService(Identifier deploymentId);
+
+    /**
+     * Resumes given service
+     *
+     * @param deploymentId unique identifier of service deployment
+     */
+    void resumeNmService(Identifier deploymentId);
 
 }

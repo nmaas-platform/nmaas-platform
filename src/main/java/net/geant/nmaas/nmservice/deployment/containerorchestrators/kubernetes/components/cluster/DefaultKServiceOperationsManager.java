@@ -37,13 +37,12 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     @Loggable(LogLevel.INFO)
     public void scaleDeployment(Identifier deploymentId, int replicas) throws KubernetesClientSetupException {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
-            final String namespace = namespaceService.namespace(serviceInfo.getDomain());
-            final String kubernetesDeploymentName =
-                    Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.joining("-"));
-            kubernetesApiClientService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
-
+        final String namespace = namespaceService.namespace(serviceInfo.getDomain());
+        final String kubernetesDeploymentName =
+                Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.joining("-"));
+        kubernetesApiClientService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
     }
 
 }
