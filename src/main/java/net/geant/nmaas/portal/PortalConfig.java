@@ -14,7 +14,6 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.impl.FormioSanitizerService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,158 +34,159 @@ import java.util.UUID;
 @Slf4j
 public class PortalConfig {
 
-	private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-	@Bean
-	public InitializingBean insertDefaultUsers() {
-		return new InitializingBean() {
-			
-			@Autowired
-			private UserRepository userRepository;
-			
-			@Autowired
-			private DomainService domains;
+    @Bean
+    public InitializingBean insertDefaultUsers() {
+        return new InitializingBean() {
 
-			@Value("${admin.password}")
-			String adminPassword;
+            @Autowired
+            private UserRepository userRepository;
 
-			@Value("${admin.email}")
-			String adminEmail;
+            @Autowired
+            private DomainService domains;
 
-			@Value("${portal.config.defaultLanguage}")
-			private String defaultLanguage = "en";
+            @Value("${admin.password}")
+            String adminPassword;
 
-			@Override
-			@Transactional
-			public void afterPropertiesSet() {
-				domains.createGlobalDomain();				
-				
-				Optional<User> admin = userRepository.findByUsername("admin");
-				if (admin.isEmpty()) {
-					addUser("admin", adminPassword, adminEmail, Role.ROLE_SYSTEM_ADMIN);
-				}
-			}
+            @Value("${admin.email}")
+            String adminEmail;
 
-			private void addUser(String username, String password, String email, Role role) {
-				Optional<Domain> globalDomain = domains.getGlobalDomain();
-				if (globalDomain.isPresent()) {
-					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
-					user.setEmail(email);
-					user.setSelectedLanguage(this.defaultLanguage);
-					userRepository.save(user);
-				}
-			}
-						
-		};
-	}
+            @Value("${portal.config.defaultLanguage}")
+            private String defaultLanguage = "en";
 
-	@Bean
-	public InitializingBean insertDefaultTos() {
-		return new InitializingBean() {
+            @Override
+            @Transactional
+            public void afterPropertiesSet() {
+                domains.createGlobalDomain();
 
-			@Autowired
-			private ContentRepository contentRepository;
+                Optional<User> admin = userRepository.findByUsername("admin");
+                if (admin.isEmpty()) {
+                    addUser("admin", adminPassword, adminEmail, Role.ROLE_SYSTEM_ADMIN);
+                }
+            }
 
-			@Autowired
-			private ResourceLoader resourceLoader;
+            private void addUser(String username, String password, String email, Role role) {
+                Optional<Domain> globalDomain = domains.getGlobalDomain();
+                if (globalDomain.isPresent()) {
+                    User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
+                    user.setEmail(email);
+                    user.setSelectedLanguage(this.defaultLanguage);
+                    userRepository.save(user);
+                }
+            }
 
-			@Override
-			@Transactional
-			public void afterPropertiesSet() {
-				Optional<Content> defaultAcceptableUsePolicy = contentRepository.findByName("aup");
-				if (defaultAcceptableUsePolicy.isEmpty()) {
-					try {
-						addContentToDatabase("aup", "Acceptable Use Policy", readContent("classpath:aup.txt"));
-					} catch (IOException err) {
-						throw new ProcessingException(err.getMessage());
-					}
-				}
-				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("privacy");
-				if (defaultPrivacyPolicy.isEmpty()) {
-					try {
-						addContentToDatabase("privacy", "Privacy Policy", readContent("classpath:privacy.txt"));
-					} catch (IOException err) {
-						throw new ProcessingException(err.getMessage());
-					}
-				}
-			}
+        };
+    }
 
-			private String readContent(String file) throws IOException {
-				return new String(resourceLoader.getResource(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-			}
+    @Bean
+    public InitializingBean insertDefaultTos() {
+        return new InitializingBean() {
 
-			private void addContentToDatabase(String name, String title, String content){
-				Content newContent = new Content(name, title, content);
-				contentRepository.save(newContent);
-			}
-		};
-	}
+            @Autowired
+            private ContentRepository contentRepository;
 
-	@Bean("portalConfiguration")
-	public InitializingBean saveDefaultPortalConfiguration() {
-		return new InitializingBean() {
+            @Autowired
+            private ResourceLoader resourceLoader;
 
-			@Value("${portal.config.maintenance:false}")
-			private boolean maintenance;
+            @Override
+            @Transactional
+            public void afterPropertiesSet() {
+                Optional<Content> defaultAcceptableUsePolicy = contentRepository.findByName("aup");
+                if (defaultAcceptableUsePolicy.isEmpty()) {
+                    try {
+                        addContentToDatabase("aup", "Acceptable Use Policy", readContent("classpath:aup.txt"));
+                    } catch (IOException err) {
+                        throw new ProcessingException(err.getMessage());
+                    }
+                }
+                Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("privacy");
+                if (defaultPrivacyPolicy.isEmpty()) {
+                    try {
+                        addContentToDatabase("privacy", "Privacy Policy", readContent("classpath:privacy.txt"));
+                    } catch (IOException err) {
+                        throw new ProcessingException(err.getMessage());
+                    }
+                }
+            }
 
-			@Value("${portal.config.ssoLoginAllowed:false}")
-			private boolean ssoLoginAllowed;
+            private String readContent(String file) throws IOException {
+                return new String(resourceLoader.getResource(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            }
 
-			@Value("${portal.config.defaultLanguage}")
-			private String defaultLanguage = "en";
+            private void addContentToDatabase(String name, String title, String content) {
+                Content newContent = new Content(name, title, content);
+                contentRepository.save(newContent);
+            }
+        };
+    }
 
-			@Value("${portal.config.testInstance:false}")
-			private boolean testInstance;
+    @Bean("portalConfiguration")
+    public InitializingBean saveDefaultPortalConfiguration() {
+        return new InitializingBean() {
 
-			@Value("${portal.config.sendAppInstanceFailureEmails:false}")
-			private boolean sendAppInstanceFailureEmails;
+            @Value("${portal.config.maintenance:false}")
+            private boolean maintenance;
 
-			@Value("${portal.config.appInstanceFailureEmailList}")
-			private String appInstanceFailureEmailList;
+            @Value("${portal.config.ssoLoginAllowed:false}")
+            private boolean ssoLoginAllowed;
 
-			@Value("${portal.config.showDomainRegistrationSelector:true}")
-			private boolean showDomainRegistrationSelector;
+            @Value("${portal.config.defaultLanguage}")
+            private String defaultLanguage = "en";
 
-			@Value("${nmaas.service.deployment.parallel.limit}")
-			Integer bulkDeploymentPerPeriod;
+            @Value("${portal.config.testInstance:false}")
+            private boolean testInstance;
 
-			@Value("${nmaas.service.bulk-deployment.cron}")
-			String bulkDeploymentCron;
+            @Value("${portal.config.sendAppInstanceFailureEmails:false}")
+            private boolean sendAppInstanceFailureEmails;
 
-			@Value("${nmaas.service.health-check.cron}")
-			String healthCheckJobCron;
+            @Value("${portal.config.appInstanceFailureEmailList}")
+            private String appInstanceFailureEmailList;
 
-			@Autowired
-			private ConfigurationManager configurationManager;
+            @Value("${portal.config.showDomainRegistrationSelector:true}")
+            private boolean showDomainRegistrationSelector;
 
-			@Autowired
-			private ApplicationService applicationService;
+            @Value("${nmaas.service.deployment.parallel.limit}")
+            Integer bulkDeploymentPerPeriod;
 
-			@Override
-			public void afterPropertiesSet() {
-				ConfigurationView configurationView = ConfigurationView.builder()
-						.maintenance(this.maintenance)
-						.ssoLoginAllowed(this.ssoLoginAllowed)
-						.defaultLanguage(this.defaultLanguage)
-						.testInstance(this.testInstance)
-						.sendAppInstanceFailureEmails(this.sendAppInstanceFailureEmails)
-						.appInstanceFailureEmailList(Arrays.asList(this.appInstanceFailureEmailList.split(";")))
-						.registrationDomainSelectionEnabled(this.showDomainRegistrationSelector)
-						.bulkDeploymentJobCron(bulkDeploymentCron)
-						.parallelDeploymentsLimit(bulkDeploymentPerPeriod)
-						.bulkDeploymentTimeThreshold(600)
-						.bulkDeploymentQueueRefresh(60)
-						.deploymentPrefix(UUID.randomUUID().toString().substring(0,3))
-						.healthCheckJobCron(healthCheckJobCron)
-						.build();
-				try {
-					this.configurationManager.setConfiguration(configurationView);
-				} catch (OnlyOneConfigurationSupportedException e) {
-					log.debug("Portal configuration already exists. Skipping initialization.");
-				}
+            @Value("${nmaas.service.bulk-deployment.cron}")
+            String bulkDeploymentCron;
 
-				applicationService.checkAllFormioTemplate();
-			}
-		};
-	}
+            @Value("${nmaas.service.health-check.cron}")
+            String healthCheckJobCron;
+
+            @Autowired
+            private ConfigurationManager configurationManager;
+
+            @Autowired
+            private ApplicationService applicationService;
+
+            @Override
+            public void afterPropertiesSet() {
+                ConfigurationView configurationView = ConfigurationView.builder()
+                        .maintenance(this.maintenance)
+                        .ssoLoginAllowed(this.ssoLoginAllowed)
+                        .defaultLanguage(this.defaultLanguage)
+                        .testInstance(this.testInstance)
+                        .sendAppInstanceFailureEmails(this.sendAppInstanceFailureEmails)
+                        .appInstanceFailureEmailList(Arrays.asList(this.appInstanceFailureEmailList.split(";")))
+                        .registrationDomainSelectionEnabled(this.showDomainRegistrationSelector)
+                        .bulkDeploymentJobCron(bulkDeploymentCron)
+                        .parallelDeploymentsLimit(bulkDeploymentPerPeriod)
+                        .bulkDeploymentTimeThreshold(600)
+                        .bulkDeploymentQueueRefresh(60)
+                        .deploymentPrefix(UUID.randomUUID().toString().substring(0, 3))
+                        .healthCheckJobCron(healthCheckJobCron)
+                        .build();
+                try {
+                    configurationManager.setConfiguration(configurationView);
+                } catch (OnlyOneConfigurationSupportedException e) {
+                    log.debug("Portal configuration already exists. Skipping initialization.");
+                }
+
+                log.debug("Running application configuration templates update");
+                applicationService.checkAndUpdateAllConfigurationTemplates();
+            }
+        };
+    }
 }

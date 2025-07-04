@@ -60,7 +60,7 @@ public class KubernetesApiClientService {
         }
     }
 
-    public StatefulSet getStatefulSet(KCluster kCluster, String statefulSetName, String namespace) {
+    public StatefulSet getStatefulSet(KCluster kCluster, String namespace, String statefulSetName) {
         try (KubernetesClient client = initClient(kCluster)) {
             NonNamespaceOperation<StatefulSet, StatefulSetList, RollableScalableResource<StatefulSet>> statefulSetsInNamespace = client.apps()
                     .statefulSets()

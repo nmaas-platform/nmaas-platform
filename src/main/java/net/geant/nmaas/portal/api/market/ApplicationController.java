@@ -326,7 +326,7 @@ public class ApplicationController extends AppBaseController {
         application.setCreationDate(LocalDateTime.now());
         this.applicationService.setMissingProperties(application, appId);
         ApplicationServiceImpl.clearIds(application);
-        this.applicationService.checkAndUpdateFormioTemplate(application);
+        this.applicationService.checkAndUpdateConfigurationTemplate(application);
         this.applicationService.update(application);
 
         // create, add and persist new application version

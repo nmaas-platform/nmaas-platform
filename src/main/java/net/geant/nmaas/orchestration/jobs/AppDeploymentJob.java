@@ -55,7 +55,7 @@ public class AppDeploymentJob extends WebhookJob {
             log.warn("Webhook does not exist. AppDeploymentJob is abandoned");
         } catch (InvalidDeploymentIdException e) {
             log.warn("Application Deployment does not exist. AppDeploymentJob is abandoned");
-        }catch (WebServiceCommunicationException e) {
+        } catch (WebServiceCommunicationException e) {
             log.error("Failed to communicate with external system for the webhook of application deployment with id {}", deploymentIdStr);
             throw new JobExecutionException("Failed communication with external system");
         }

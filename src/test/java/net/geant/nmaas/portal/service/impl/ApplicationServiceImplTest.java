@@ -41,13 +41,13 @@ public class ApplicationServiceImplTest {
 
     ApplicationRepository applicationRepository = mock(ApplicationRepository.class);
     ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
-    FormioSanitizerService formioSanitizerService = mock(FormioSanitizerService.class);
+    ConfigurationTemplateSanitizerService configurationTemplateSanitizerService = mock(ConfigurationTemplateSanitizerService.class);
 
     ApplicationServiceImpl applicationService;
 
     @BeforeEach
     void setup(){
-        applicationService = new ApplicationServiceImpl(applicationRepository, eventPublisher, formioSanitizerService);
+        applicationService = new ApplicationServiceImpl(applicationRepository, eventPublisher, configurationTemplateSanitizerService);
     }
 
     @Test

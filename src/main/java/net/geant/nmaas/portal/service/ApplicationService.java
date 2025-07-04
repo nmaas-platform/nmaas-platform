@@ -36,8 +36,18 @@ public interface ApplicationService {
 
 	boolean exists(String name, String version);
 
-	Application checkAndUpdateFormioTemplate(Application application);
+	/**
+	 * Checks for an old tag used to represent a dot in configuration key string and replaces it with the new one if
+	 * required.
+	 *
+	 * @param application Target application
+	 */
+	void checkAndUpdateConfigurationTemplate(Application application);
 
-	void checkAllFormioTemplate();
+	/**
+	 * Checks for an old tag used to represent a dot in configuration key string and replaces it with the new one if
+	 * required. Applies to all applications stored in the database.
+	 */
+	void checkAndUpdateAllConfigurationTemplates();
 
 }
