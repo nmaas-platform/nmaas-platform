@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration.api;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ public class GitLabWebhookControllerIntTest {
     void shouldNotTriggerReloadInIncorrectState() throws Exception {
         KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo();
         serviceInfo.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
-        serviceInfo.setState(NmServiceDeploymentState.VERIFICATION_INITIATED);
+        serviceInfo.setState(ServiceDeploymentState.VERIFICATION_INITIATED);
         when(repositoryManager.loadServiceByGitLabProjectWebhookId("webhookId")).thenReturn(serviceInfo);
         mvc.perform(post("/api/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))
@@ -53,7 +53,7 @@ public class GitLabWebhookControllerIntTest {
     void shouldTriggerReloadInRunningState() throws Exception {
         KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo();
         serviceInfo.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
-        serviceInfo.setState(NmServiceDeploymentState.VERIFIED);
+        serviceInfo.setState(ServiceDeploymentState.VERIFIED);
         when(repositoryManager.loadServiceByGitLabProjectWebhookId("webhookId")).thenReturn(serviceInfo);
         mvc.perform(post("/api/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))
@@ -65,7 +65,7 @@ public class GitLabWebhookControllerIntTest {
     void shouldTriggerReloadInVerificationFailedState() throws Exception {
         KubernetesNmServiceInfo serviceInfo = new KubernetesNmServiceInfo();
         serviceInfo.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
-        serviceInfo.setState(NmServiceDeploymentState.VERIFICATION_FAILED);
+        serviceInfo.setState(ServiceDeploymentState.VERIFICATION_FAILED);
         when(repositoryManager.loadServiceByGitLabProjectWebhookId("webhookId")).thenReturn(serviceInfo);
         mvc.perform(post("/api/gitlab/webhooks/webhookId")
                         .accept(MediaType.APPLICATION_JSON))

@@ -45,7 +45,7 @@ public abstract class NmServiceInfo {
 
     /** State in which service should be at this point */
     @Column(nullable = false)
-    private NmServiceDeploymentState state = NmServiceDeploymentState.INIT;
+    private ServiceDeploymentState state = ServiceDeploymentState.INIT;
 
     /** Identifier of the application deployment assigned by application lifecycle manager */
     @Column(nullable = false, unique = true)

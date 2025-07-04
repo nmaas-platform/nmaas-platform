@@ -81,6 +81,16 @@ public class KubernetesApiClientService {
         }
     }
 
+    public void scaleStatefulSet(KCluster kCluster, String namespace, String deploymentName, int replicas) {
+        try (KubernetesClient client = initClient(kCluster)) {
+            client.apps()
+                    .statefulSets()
+                    .inNamespace(namespace)
+                    .withName(deploymentName)
+                    .scale(replicas);
+        }
+    }
+
     private KubernetesClient initClient(KCluster kCluster) {
         KubernetesClient client;
         if (Objects.nonNull(kCluster)) {
