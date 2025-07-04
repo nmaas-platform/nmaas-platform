@@ -193,7 +193,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isEmpty()) {
                 newMap.put(
-                        entry.getKey().replace("#", "."),
+                        entry.getKey().replace("_dot_", "."),
                         escapeCommasIfRequired(
                                 addQuotationMarkIfRequired(
                                         replaceHashWithQuote(entry.getValue())))

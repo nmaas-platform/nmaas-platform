@@ -4,24 +4,25 @@ package net.geant.nmaas.portal.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FormioSanitizerService {
+@RequiredArgsConstructor
+public class ConfigurationTemplateSanitizerService {
+
+    private static final String OLD_KEY = "#";
+    private static final String NEW_KEY = "_dot_";
 
     private final ObjectMapper objectMapper;
 
-    public FormioSanitizerService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
-    public String sanitizeFormioJson(String json) {
+    public String sanitizeConfigurationJson(String json) {
         try {
             JsonNode root = objectMapper.readTree(json);
             sanitizeKeysRecursively(root);
             return objectMapper.writeValueAsString(root);
         } catch (Exception e) {
-            throw new RuntimeException("Error parsing formio", e);
+            throw new RuntimeException("Error parsing configuration template", e);
         }
     }
 
@@ -33,8 +34,8 @@ public class FormioSanitizerService {
             ObjectNode objNode = (ObjectNode) node;
             if (objNode.has("key")) {
                 String key = objNode.get("key").asText();
-                if (key.contains("#")) {
-                    objNode.put("key", key.replace("#", "_dot_"));
+                if (key.contains(OLD_KEY)) {
+                    objNode.put("key", key.replace(OLD_KEY, NEW_KEY));
                 }
             }
 

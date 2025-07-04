@@ -41,7 +41,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private final ApplicationRepository applicationRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final FormioSanitizerService formioSanitizerService;
+    private final ConfigurationTemplateSanitizerService configurationTemplateSanitizerService;
 
 
     @Override
@@ -49,7 +49,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @CachePut("applicationBaseS")
     public Application update(Application application) {
         checkApp(application);
-        checkAndUpdateFormioTemplate(application);
+        checkAndUpdateConfigurationTemplate(application);
         Application saved = applicationRepository.save(application);
         generateApplicationListUpdatedEvent(saved, UPDATED);
         return saved;
@@ -225,22 +225,22 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public  Application checkAndUpdateFormioTemplate(Application application) {
-        application.getConfigWizardTemplate().setTemplate(formioSanitizerService.sanitizeFormioJson(application.getConfigWizardTemplate().getTemplate()));
-        return application;
+    public void checkAndUpdateConfigurationTemplate(Application application) {
+        application.getConfigWizardTemplate().setTemplate(
+                configurationTemplateSanitizerService.sanitizeConfigurationJson(application.getConfigWizardTemplate().getTemplate())
+        );
     }
 
     @Override
-    public void checkAllFormioTemplate() {
-        log.warn("Checking formio template for # in keys ");
-        this.findAll().forEach(app -> {
-            log.warn("Sanitize formio wizards keys for app {}", app.getId());
-            if(app.getConfigWizardTemplate() != null) {
-                app.getConfigWizardTemplate().setTemplate(formioSanitizerService.sanitizeFormioJson(app.getConfigWizardTemplate().getTemplate()));
-                log.warn("sanitezed done", app.getConfigWizardTemplate().getTemplate());
+    public void checkAndUpdateAllConfigurationTemplates() {
+        findAll().forEach(app -> {
+            log.debug("Sanitize configuration template keys for app: {}", app.getId());
+            if (app.getConfigWizardTemplate() != null) {
+                app.getConfigWizardTemplate().setTemplate(configurationTemplateSanitizerService.sanitizeConfigurationJson(app.getConfigWizardTemplate().getTemplate()));
+                log.debug("Updated configuration template: {}", app.getConfigWizardTemplate().getTemplate());
             }
-            if(app.getConfigUpdateWizardTemplate() != null) {
-                app.getConfigUpdateWizardTemplate().setTemplate(formioSanitizerService.sanitizeFormioJson(app.getConfigUpdateWizardTemplate().getTemplate()));
+            if (app.getConfigUpdateWizardTemplate() != null) {
+                app.getConfigUpdateWizardTemplate().setTemplate(configurationTemplateSanitizerService.sanitizeConfigurationJson(app.getConfigUpdateWizardTemplate().getTemplate()));
             }
             applicationRepository.save(app);
         });
