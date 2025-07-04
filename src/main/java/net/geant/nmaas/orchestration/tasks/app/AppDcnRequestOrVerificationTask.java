@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
@@ -60,7 +60,7 @@ public class AppDcnRequestOrVerificationTask {
     }
 
     private NmServiceDeploymentStateChangeEvent dcnReadyNotificationEvent(Identifier deploymentId) {
-        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "");
+        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, ServiceDeploymentState.READY_FOR_DEPLOYMENT, "");
     }
 
     private ApplicationEvent noEvent() {

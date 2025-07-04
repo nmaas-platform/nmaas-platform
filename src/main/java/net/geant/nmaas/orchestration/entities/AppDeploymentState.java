@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.entities;
 
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 
@@ -16,7 +16,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case REQUEST_VERIFIED -> REQUEST_VALIDATED;
                 case REQUEST_VERIFICATION_FAILED -> REQUEST_VALIDATION_FAILED;
@@ -31,7 +31,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case ENVIRONMENT_PREPARED -> DEPLOYMENT_ENVIRONMENT_PREPARED;
                 case ENVIRONMENT_PREPARATION_INITIATED -> DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS;
@@ -47,7 +47,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -63,7 +63,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case ENVIRONMENT_PREPARED -> DEPLOYMENT_ENVIRONMENT_PREPARED;
                 case ENVIRONMENT_PREPARATION_FAILED -> DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
@@ -78,7 +78,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case CONFIGURED -> APPLICATION_CONFIGURED;
                 case READY_FOR_DEPLOYMENT -> MANAGEMENT_VPN_CONFIGURED;
@@ -93,7 +93,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -109,7 +109,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case CONFIGURATION_INITIATED -> APPLICATION_CONFIGURATION_IN_PROGRESS;
                 case CONFIGURED -> APPLICATION_CONFIGURED;
@@ -125,7 +125,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case CONFIGURED -> APPLICATION_CONFIGURED;
                 case CONFIGURATION_FAILED -> APPLICATION_CONFIGURATION_FAILED;
@@ -140,7 +140,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case DEPLOYMENT_INITIATED -> APPLICATION_DEPLOYMENT_IN_PROGRESS;
                 case DEPLOYMENT_FAILED -> APPLICATION_DEPLOYMENT_FAILED;
@@ -155,7 +155,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -171,7 +171,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case DEPLOYED -> APPLICATION_DEPLOYED;
                 case DEPLOYMENT_FAILED -> APPLICATION_DEPLOYMENT_FAILED;
@@ -186,7 +186,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case VERIFICATION_INITIATED -> APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
                 case VERIFICATION_FAILED -> APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
@@ -201,7 +201,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case VERIFIED -> APPLICATION_DEPLOYMENT_VERIFIED;
                 case VERIFICATION_FAILED -> APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
@@ -216,7 +216,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -232,8 +232,8 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
-            if (NmServiceDeploymentState.UPGRADE_INITIATED.equals(state)) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
+            if (ServiceDeploymentState.UPGRADE_INITIATED.equals(state)) {
                 return APPLICATION_UPGRADE_IN_PROGRESS;
             }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
@@ -251,7 +251,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -267,7 +267,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case RESTARTED -> APPLICATION_RESTARTED;
                 case RESTART_FAILED -> APPLICATION_RESTART_FAILED;
@@ -282,7 +282,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -298,7 +298,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -314,7 +314,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case PAUSED -> APPLICATION_PAUSED;
                 case PAUSE_FAILED -> APPLICATION_PAUSE_FAILED;
@@ -329,7 +329,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -345,7 +345,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -361,7 +361,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case UPGRADED -> APPLICATION_UPGRADED;
                 case UPGRADE_FAILED -> APPLICATION_UPGRADE_FAILED;
@@ -376,7 +376,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case VERIFICATION_INITIATED -> APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
                 case VERIFICATION_FAILED -> APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
@@ -396,7 +396,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -412,7 +412,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case REMOVED -> APPLICATION_REMOVED;
                 case REMOVAL_FAILED -> APPLICATION_REMOVAL_FAILED;
@@ -427,7 +427,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case DEPLOYMENT_FAILED -> APPLICATION_DEPLOYMENT_FAILED;
                 case CONFIGURATION_REMOVAL_INITIATED -> APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS;
@@ -448,7 +448,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -464,7 +464,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case CONFIGURATION_REMOVED -> APPLICATION_CONFIGURATION_REMOVED;
                 case CONFIGURATION_REMOVAL_FAILED -> APPLICATION_CONFIGURATION_REMOVAL_FAILED;
@@ -479,8 +479,8 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
-            if (NmServiceDeploymentState.FAILED_APPLICATION_REMOVED.equals(state)) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
+            if (ServiceDeploymentState.FAILED_APPLICATION_REMOVED.equals(state)) {
                 return FAILED_APPLICATION_REMOVED;
             }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
@@ -493,7 +493,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
     },
@@ -515,7 +515,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case CONFIGURATION_UPDATED -> APPLICATION_CONFIGURATION_UPDATED;
                 case CONFIGURATION_UPDATE_FAILED -> APPLICATION_CONFIGURATION_UPDATE_FAILED;
@@ -530,7 +530,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return switch (state) {
                 case VERIFICATION_INITIATED -> APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
                 case VERIFICATION_FAILED -> APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
@@ -545,7 +545,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -561,7 +561,7 @@ public enum AppDeploymentState {
         }
 
         @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -587,8 +587,8 @@ public enum AppDeploymentState {
 
     protected AppDeploymentState nextStateForNotMatchingNmServiceDeploymentState(
             AppDeploymentState currentAppDeploymentState,
-            NmServiceDeploymentState newNmServiceState) {
-        if (!currentAppDeploymentState.isInEndState() && newNmServiceState.equals(NmServiceDeploymentState.REMOVAL_INITIATED)) {
+            ServiceDeploymentState newNmServiceState) {
+        if (!currentAppDeploymentState.isInEndState() && newNmServiceState.equals(ServiceDeploymentState.REMOVAL_INITIATED)) {
             return APPLICATION_REMOVAL_IN_PROGRESS;
         }
         if (currentAppDeploymentState.isInFailedState()) {
@@ -618,11 +618,11 @@ public enum AppDeploymentState {
         throw new InvalidAppStateException(message(this, newNmServiceState));
     }
 
-    public AppDeploymentState nextState(NmServiceDeploymentState state) {
+    public AppDeploymentState nextState(ServiceDeploymentState state) {
         throw new InvalidAppStateException(message(this, state));
     }
 
-    private static String message(AppDeploymentState currentState, NmServiceDeploymentState receivedState) {
+    private static String message(AppDeploymentState currentState, ServiceDeploymentState receivedState) {
         return "Illegal attempt to transit from " + currentState + " on " + receivedState;
     }
 

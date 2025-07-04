@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -15,15 +15,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATE_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_REMOVED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURED;
 
 /**
  * Default implementation of the {@link NmServiceConfigurationProvider} interface.
@@ -108,17 +108,17 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         return configHandler.configRepositoryAccessDetails(deploymentId);
     }
 
-    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
     }
 
     @SneakyThrows
-    private void notifyStateChangeListenersWithDelay(Identifier deploymentId, NmServiceDeploymentState state, int delayInMilis) {
+    private void notifyStateChangeListenersWithDelay(Identifier deploymentId, ServiceDeploymentState state, int delayInMilis) {
         Thread.sleep(delayInMilis);
         notifyStateChangeListeners(deploymentId, state);
     }
 
-    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
 

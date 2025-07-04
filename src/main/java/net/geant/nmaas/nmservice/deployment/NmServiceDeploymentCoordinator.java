@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.kubernetes.KubernetesClientSetupException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceException;
@@ -35,32 +35,32 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSE_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSE_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFICATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFIED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTARTED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUMED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUME_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUME_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFIED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYMENT_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYMENT_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.ENVIRONMENT_PREPARATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.ENVIRONMENT_PREPARED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.PAUSED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.PAUSE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.PAUSE_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.REMOVAL_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.REMOVAL_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.REMOVED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.REQUEST_VERIFICATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.REQUEST_VERIFIED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.RESTARTED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.RESTART_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.RESTART_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.RESUMED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.RESUME_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.RESUME_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.UPGRADED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.UPGRADE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.UPGRADE_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.VERIFICATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.VERIFICATION_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.VERIFIED;
 
 /**
  * Default implementation of the {@link NmServiceDeploymentProvider}. Coordinates NM service deployment workflow and
@@ -250,11 +250,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         }
     }
 
-    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
     }
 
-    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
 

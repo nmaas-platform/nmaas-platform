@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -34,7 +34,7 @@ public class AppRemoveFailedActionTask {
             log.error("Error reported at {}", LocalDateTime.now(), ex);
         }
         Thread.sleep(1000);
-        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, event.getRelatedTo(), NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, ""));
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, event.getRelatedTo(), ServiceDeploymentState.FAILED_APPLICATION_REMOVED, ""));
     }
 
 }
