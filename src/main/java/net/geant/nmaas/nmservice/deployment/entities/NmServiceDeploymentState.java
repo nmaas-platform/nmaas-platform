@@ -38,12 +38,12 @@ public enum NmServiceDeploymentState {
     UPGRADE_FAILED(false, false),
     ERROR(false, false),
     FAILED_APPLICATION_REMOVED(false, false),
-    SCALE_DOWN_INITIATED(true, false),
-    SCALED_DOWN(true, false),
-    SCALE_DOWN_FAILED(false,false),
-    SCALE_UP_INITIATED(false, false),
-    SCALED_UP(false, true),
-    SCALE_UP_FAILED(false,false);
+    PAUSE_INITIATED(true, false),
+    PAUSED(true, false),
+    PAUSE_FAILED(false,false),
+    RESUME_INITIATED(false, false),
+    RESUMED(false, true),
+    RESUME_FAILED(false,false);
 
     private boolean isRunning;
 

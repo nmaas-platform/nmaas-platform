@@ -30,6 +30,8 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceExce
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotResumeServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppComponentDetails;
@@ -541,18 +543,22 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public void pauseNmService(Identifier deploymentId) {
         try {
-            serviceOperationsManager.scaleDeployment(deploymentId, 0);
+            serviceOperationsManager.scaleService(deploymentId, 0);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (Exception e) {
+            throw new CouldNotPauseServiceException(e.getMessage());
         }
     }
 
     @Override
     public void resumeNmService(Identifier deploymentId) {
         try {
-            serviceOperationsManager.scaleDeployment(deploymentId, 1);
+            serviceOperationsManager.scaleService(deploymentId, 1);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (Exception e) {
+            throw new CouldNotResumeServiceException(e.getMessage());
         }
     }
 

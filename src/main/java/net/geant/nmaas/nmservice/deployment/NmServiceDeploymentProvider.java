@@ -6,8 +6,8 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotScaleDownServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotScaleUpServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotResumeServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
@@ -126,13 +126,13 @@ public interface NmServiceDeploymentProvider {
 
     /**
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotScaleDownServiceException if service couldn't be paused for some reason
+     * @throws CouldNotPauseServiceException if service couldn't be paused for some reason
      */
     void pauseService(Identifier deploymentId);
 
     /**
      * @param deploymentId unique identifier of service deployment
-     * @throws CouldNotScaleUpServiceException if service couldn't be resumed for some reason
+     * @throws CouldNotResumeServiceException if service couldn't be resumed for some reason
      */
     void resumeService(Identifier deploymentId);
 

@@ -8,14 +8,14 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotResumeServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceComponentLogsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceComponentsException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotScaleDownServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotScaleUpServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
@@ -41,6 +41,9 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.PAUSE_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVED;
@@ -49,12 +52,9 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTARTED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.SCALED_DOWN;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.SCALED_UP;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.SCALE_DOWN_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.SCALE_DOWN_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.SCALE_UP_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.SCALE_UP_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUMED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUME_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESUME_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.UPGRADE_INITIATED;
@@ -211,12 +211,12 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.DEBUG)
     public void pauseService(Identifier deploymentId) {
         try {
-            notifyStateChangeListeners(deploymentId, SCALE_DOWN_INITIATED);
+            notifyStateChangeListeners(deploymentId, PAUSE_INITIATED);
             orchestrator.pauseNmService(deploymentId);
-            notifyStateChangeListeners(deploymentId, SCALED_DOWN);
+            notifyStateChangeListeners(deploymentId, PAUSED);
         } catch (KubernetesClientSetupException e) {
-            notifyStateChangeListeners(deploymentId, SCALE_DOWN_FAILED, e.getMessage());
-            throw new CouldNotScaleDownServiceException("Service scale down failed -> " + e.getMessage());
+            notifyStateChangeListeners(deploymentId, PAUSE_FAILED, e.getMessage());
+            throw new CouldNotPauseServiceException("Service scale down failed -> " + e.getMessage());
         }
     }
 
@@ -224,12 +224,12 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.TRACE)
     public void resumeService(Identifier deploymentId) {
         try {
-            notifyStateChangeListeners(deploymentId, SCALE_UP_INITIATED);
+            notifyStateChangeListeners(deploymentId, RESUME_INITIATED);
             orchestrator.resumeNmService(deploymentId);
-            notifyStateChangeListeners(deploymentId, SCALED_UP);
+            notifyStateChangeListeners(deploymentId, RESUMED);
         } catch (KubernetesClientSetupException e) {
-            notifyStateChangeListeners(deploymentId, SCALE_UP_FAILED, e.getMessage());
-            throw new CouldNotScaleUpServiceException("Service scale up failed -> " + e.getMessage());
+            notifyStateChangeListeners(deploymentId, RESUME_FAILED, e.getMessage());
+            throw new CouldNotResumeServiceException("Service scale up failed -> " + e.getMessage());
         }
     }
 
