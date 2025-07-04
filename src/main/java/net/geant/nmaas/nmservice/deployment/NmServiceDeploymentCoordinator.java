@@ -203,7 +203,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (CouldNotRestartServiceException
                  | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
-            throw new CouldNotRestartServiceException("NM Service restart failed -> " + e.getMessage());
+            throw new CouldNotRestartServiceException("Service restart failed -> " + e.getMessage());
         }
     }
 
@@ -214,7 +214,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, PAUSE_INITIATED);
             orchestrator.pauseNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, PAUSED);
-        } catch (KubernetesClientSetupException e) {
+        } catch (CouldNotPauseServiceException e) {
             notifyStateChangeListeners(deploymentId, PAUSE_FAILED, e.getMessage());
             throw new CouldNotPauseServiceException("Service scale down failed -> " + e.getMessage());
         }
