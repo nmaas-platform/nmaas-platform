@@ -697,6 +697,7 @@
       "RUNNING": "Votre application est maintenant active. Vous pouvez y accéder en utilisant l'option <i>Accès</i> du menu <i>Actions</i>. <br>Utilisez les options <i>Configurer</i> et <i>Membres</i> pour mettre à jour respectivement la configuration et la liste des utilisateurs de l'application.",
       "UNDEPLOYING": "L'application n'est pas déployée. Ce processus peut prendre plusieurs minutes",
       "DONE": "Application non déployée avec succès",
+      "PAUSED": "Your application is now paused. Use the <i>Resume</i> option to bring it back up again",
       "FAILURE": "",
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe nmaas à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
@@ -1129,6 +1130,7 @@
     "RUNNING": "Activé",
     "UNDEPLOYING": "Désinstaller",
     "DONE": "Terminé",
+    "PAUSED": "Paused",
     "FAILURE": "Échec",
     "UNKNOWN": "Inconnu",
     "REMOVED": "Enlevé",

@@ -697,6 +697,7 @@
       "RUNNING": "Your application is now active. You can access it using the <i>Access</i> option from the <i>Actions</i> menu. <br>Use the <i>Configure</i> and <i>Members</i> options to update the configuration and the list of application users respectively.",
       "UNDEPLOYING": "Your application is being deactivated. This process may take up to several minutes",
       "DONE": "Application deactivated",
+      "PAUSED": "Your application is now paused. Use the <i>Resume</i> option to bring it back up again",
       "FAILURE": "",
       "UNKNOWN": "Unknown state of application. <br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>.",
       "REMOVED": "Application removed"
@@ -1129,6 +1130,7 @@
     "RUNNING": "Active",
     "UNDEPLOYING": "Deactivation in progress",
     "DONE": "Deactivated",
+    "PAUSED": "Paused",
     "FAILURE": "Failure",
     "UNKNOWN": "Unknown",
     "REMOVED": "Removed",

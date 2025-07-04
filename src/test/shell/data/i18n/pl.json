@@ -696,6 +696,7 @@
       "RUNNING": "Twoja aplikacja jest aktywna. <br>Możesz teraz uzyskać dostęp do swojej aplikacji korzystając z opcji <i>Dostęp</i> z menu <i>Akcje</i>.",
       "UNDEPLOYING": "Aplikacja jest deaktywowana. Ten proces może potrwać do kilku minut",
       "DONE":  "Aplikacja została pomyślnie deaktywowana",
+      "PAUSED": "Twoja aplikacja jest spauzowana. Skorzystaj z opcji <i>Resume</i> aby ją wznowić i ponownie wykorzystywać",
       "FAILURE": "",
       "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem nmaas za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
       "REMOVED": "Aplikacja została pomyślnie usunięta"
@@ -1128,6 +1129,7 @@
     "RUNNING": "Aktywna",
     "UNDEPLOYING": "Deaktywacja",
     "DONE": "Deaktywowana",
+    "PAUSED": "Spauzowana",
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany",
     "REMOVED": "Usunięta",

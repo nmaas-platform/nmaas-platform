@@ -695,6 +695,7 @@
       "RUNNING": "Ihre Anwendung ist jetzt aktiv. Sie können mit der Option <i>Zugriff</i> im Menü <i>Aktionen</i> darauf zugreifen. <br>Verwenden Sie die Optionen <i>Konfigurieren</i> und <i>Mitglieder</i>, um die Konfiguration bzw. die Liste der Anwendungsbenutzer zu aktualisieren.",
       "UNDEPLOYING": "Die Anwendung wird entfernt. Dieser Vorgang kann bis zu mehreren Minuten dauern",
       "DONE": "Anwendung erfolgreich entfernt",
+      "PAUSED": "Your application is now paused. Use the <i>Resume</i> option to bring it back up again",
       "FAILURE": "",
       "UNKNOWN": "Unbekannter Anwendungszustand - Kontakt mit dem nmaas-Team über das Kontaktformular auf der Unterseite \" Über \"",
       "REMOVED": "Anwendung nach Fehler erfolgreich aufgehoben"
@@ -1126,6 +1127,7 @@
     "RUNNING": "Aktiviert",
     "UNDEPLOYING": "Deaktivieren",
     "DONE": "Entfernt",
+    "PAUSED": "Paused",
     "FAILURE": "Fehler",
     "UNKNOWN": "Unbekannt",
     "REMOVED": "Entfernt",
