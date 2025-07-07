@@ -13,7 +13,13 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.*;
+import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -220,7 +226,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         String basicAuthUsername = accessCredentialsMap.get("accessUsername");
         String basicAuthPassword = accessCredentialsMap.get("accessPassword");
         if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
-            janitorService.createOrReplaceBasicAuth(deploymentId, domain, basicAuthUsername, basicAuthPassword);
+            janitorService.createOrReplaceBasicAuth(null, deploymentId, domain, basicAuthUsername, basicAuthPassword);
         }
     }
 

@@ -23,19 +23,21 @@ message Credentials {
 
 message PodInfo {
     string name = 1;
-    string displayName = 2;
+    string display_name = 2;
     repeated string containers = 3;
 }
 
 message InstanceRequest {
     string api = 1;
-    Instance deployment = 2;
+    string kube_config = 2;
+    Instance deployment = 3;
 }
 
 message PodRequest {
     string api = 1;
-    Instance deployment = 2;
-    PodInfo pod = 3;
+    string kube_config = 2;
+    Instance deployment = 3;
+    PodInfo pod = 4;
 }
 
 message ServiceResponse {
@@ -53,8 +55,9 @@ message InfoServiceResponse {
 
 message InstanceCredentialsRequest {
     string api = 1;
-    Instance instance = 2;
-    Credentials credentials = 3;
+    string kube_config = 2;
+    Instance instance = 3;
+    Credentials credentials = 4;
 }
 
 message PodListResponse {
@@ -78,8 +81,9 @@ message KeyValue {
 
 message NamespaceRequest {
     string api = 1;
-    string namespace = 2;
-    repeated KeyValue annotations = 3;
+    string kube_config = 2;
+    string namespace = 3;
+    repeated KeyValue annotations = 4;
 }
 
 service ConfigService {

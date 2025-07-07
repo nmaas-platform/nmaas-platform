@@ -3,7 +3,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.j
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.janitor.BasicAuthServiceGrpc;
 import net.geant.nmaas.janitor.CertManagerServiceGrpc;
@@ -23,10 +22,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class JanitorService {
 
@@ -38,13 +37,136 @@ public class JanitorService {
         this.namespaceService = namespaceService;
         this.channel = ManagedChannelBuilder.forAddress(
                         env.getProperty("janitor.address"),
-                        env.getProperty("janitor.port", Integer.class))
+                        Integer.parseInt(Objects.requireNonNull(env.getProperty("janitor.port"))))
                 .maxInboundMessageSize(Integer.MAX_VALUE)
                 .usePlaintext()
                 .build();
     }
 
-    private JanitorManager.InstanceRequest buildInstanceRequest(Identifier deploymentId, String domain) {
+    public JanitorService(KubernetesClusterNamespaceService namespaceService, ManagedChannel channel) {
+        this.namespaceService = namespaceService;
+        this.channel = channel;
+    }
+
+    public void createOrReplaceConfigMap(String kubeConfig, Identifier deploymentId, String domain) {
+        log.info("Creating or replacing configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
+        ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
+        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(kubeConfig, deploymentId, domain));
+        throwExceptionIfExecutionFailed(response);
+    }
+
+    public void deleteConfigMapIfExists(String kubeConfig, Identifier deploymentId, String domain) {
+        log.info("Deleting configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
+        ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
+        throwExceptionIfExecutionFailed(response);
+    }
+
+    public void createOrReplaceBasicAuth(String kubeConfig, Identifier deploymentId, String domain, String user, String password) {
+        log.info("Configuring basic auth for deployment {} in domain {}", deploymentId.value(), domain);
+        BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
+        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(kubeConfig, deploymentId, domain, user, password));
+        throwExceptionIfExecutionFailed(response);
+    }
+
+    public void deleteBasicAuthIfExists(String kubeConfig, Identifier deploymentId, String domain) {
+        log.info("Deleting basic auth for deployment {} in domain {}", deploymentId.value(), domain);
+        BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
+        throwExceptionIfExecutionFailed(response);
+    }
+
+    public void deleteTlsIfExists(String kubeConfig, Identifier deploymentId, String domain) {
+        log.info("Deleting TLS for deployment {} in domain {}", deploymentId.value(), domain);
+        CertManagerServiceGrpc.CertManagerServiceBlockingStub stub = CertManagerServiceGrpc.newBlockingStub(channel);
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
+        throwExceptionIfExecutionFailed(response);
+    }
+
+    private void throwExceptionIfExecutionFailed(JanitorManager.ServiceResponse response) {
+        if (response.getStatus() != JanitorManager.Status.OK) {
+            throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
+    }
+
+    boolean isJanitorAvailable() {
+        return Arrays.asList(ConnectivityState.CONNECTING, ConnectivityState.IDLE, ConnectivityState.READY).contains(this.channel.getState(false));
+    }
+
+    @Deprecated
+    public boolean checkIfReady(String kubeConfig, Identifier deploymentId, String domain) {
+        log.trace("Checking if deployment {} in domain {} is ready", deploymentId.value(), domain);
+        ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
+        JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(kubeConfig, deploymentId, domain));
+        return switch (response.getStatus()) {
+            case OK -> true;
+            case PENDING -> false;
+            default -> throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        };
+    }
+
+    @Deprecated
+    public String retrieveServiceIp(String kubeConfig, Identifier serviceId, String domain) {
+        log.info("Retrieving service IP for {} in domain {}", serviceId.value(), domain);
+        InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
+        JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(kubeConfig, serviceId, domain));
+        switch (response.getStatus()) {
+            case OK:
+                return response.getInfo();
+            case FAILED:
+            default:
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
+    }
+
+    public void checkServiceExists(String kubeConfig, Identifier serviceId, String domain) {
+        log.info("Verifying if provided service {} exists in domain {}", serviceId.value(), domain);
+        InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
+        JanitorManager.InfoServiceResponse response = stub.checkServiceExists(buildInstanceRequest(kubeConfig, serviceId, domain));
+        switch (response.getStatus()) {
+            case OK:
+                return;
+            case FAILED:
+            default:
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
+    }
+
+    public List<JanitorManager.PodInfo> getPodNames(String kubeConfig, Identifier deploymentId, String domain) {
+        log.debug("Retrieving list of pods for {} in domain {}", deploymentId.value(), domain);
+        PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
+        JanitorManager.PodListResponse response = stub.retrievePodList(buildInstanceRequest(kubeConfig, deploymentId, domain));
+        switch (response.getStatus()) {
+            case OK:
+                return response.getPodsList();
+            case FAILED:
+            default:
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
+    }
+
+    public List<String> getPodLogs(String kubeConfig, Identifier deploymentId, String podName, String containerName, String domain) {
+        PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
+        JanitorManager.PodLogsResponse response = stub.retrievePodLogs(buildPodRequest(kubeConfig, deploymentId, domain, podName, containerName));
+        switch (response.getStatus()) {
+            case OK:
+                return response.getLinesList();
+            case FAILED:
+            default:
+                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
+        }
+    }
+
+    @Deprecated
+    public void createNameSpace(String kubeConfig, String domainNameSpace, List<KeyValueView> annotations) {
+        log.info("Requested domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
+        NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
+        JanitorManager.ServiceResponse response = stub.createNamespace(buildNamespaceRequest(kubeConfig, domainNameSpace, annotations));
+        throwExceptionIfExecutionFailed(response);
+    }
+
+
+    private JanitorManager.InstanceRequest buildInstanceRequest(String kubeConfig, Identifier deploymentId, String domain) {
         JanitorManager.Instance instance = JanitorManager.Instance.newBuilder().
                 setNamespace(namespaceService.namespace(domain)).
                 setUid(deploymentId.value()).
@@ -56,7 +178,7 @@ public class JanitorService {
                 build();
     }
 
-    private JanitorManager.InstanceCredentialsRequest buildInstanceCredentialsRequest(Identifier deploymentId, String domain, String user, String password) {
+    private JanitorManager.InstanceCredentialsRequest buildInstanceCredentialsRequest(String kubeConfig, Identifier deploymentId, String domain, String user, String password) {
         JanitorManager.Instance instance = JanitorManager.Instance.newBuilder().
                 setNamespace(namespaceService.namespace(domain)).
                 setUid(deploymentId.value()).
@@ -73,7 +195,23 @@ public class JanitorService {
                 build();
     }
 
-    private JanitorManager.NamespaceRequest buildNamespaceRequest(String domain, List<KeyValueView> annotations) {
+    private JanitorManager.PodRequest buildPodRequest(String kubeConfig, Identifier deploymentId, String domain, String podName, String containerName) {
+        JanitorManager.PodInfo podInfo = (StringUtils.isNotEmpty(containerName)) ?
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).addContainers(containerName).build() :
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).build();
+        return JanitorManager.PodRequest.newBuilder()
+                .setApi("v1")
+                .setDeployment(
+                        JanitorManager.Instance.newBuilder().
+                                setNamespace(namespaceService.namespace(domain)).
+                                setUid(deploymentId.value()).
+                                setDomain(domain).build()
+                )
+                .setPod(podInfo)
+                .build();
+    }
+
+    private JanitorManager.NamespaceRequest buildNamespaceRequest(String kubeConfig, String domain, List<KeyValueView> annotations) {
         return JanitorManager.NamespaceRequest.newBuilder()
                 .setApi("v1")
                 .setNamespace(domain)
@@ -81,137 +219,6 @@ public class JanitorService {
                         .map(kv -> JanitorManager.KeyValue.newBuilder().setKey(kv.getKey()).setValue(kv.getValue()).build())
                         .collect(Collectors.toList()))
                 .build();
-    }
-
-    public void createOrReplaceConfigMap(Identifier deploymentId, String domain) {
-        log.info("Creating or replacing configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
-        ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(deploymentId, domain));
-        throwExceptionIfExecutionFailed(response);
-    }
-
-    public void deleteConfigMapIfExists(Identifier deploymentId, String domain) {
-        log.info("Deleting configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
-        ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
-        throwExceptionIfExecutionFailed(response);
-    }
-
-    public void createOrReplaceBasicAuth(Identifier deploymentId, String domain, String user, String password) {
-        log.info("Configuring basic auth for deployment {} in domain {}", deploymentId.value(), domain);
-        BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
-        throwExceptionIfExecutionFailed(response);
-    }
-
-    public void deleteBasicAuthIfExists(Identifier deploymentId, String domain) {
-        log.info("Deleting basic auth for deployment {} in domain {}", deploymentId.value(), domain);
-        BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
-        throwExceptionIfExecutionFailed(response);
-    }
-
-    public void deleteTlsIfExists(Identifier deploymentId, String domain) {
-        log.info("Deleting TLS for deployment {} in domain {}", deploymentId.value(), domain);
-        CertManagerServiceGrpc.CertManagerServiceBlockingStub stub = CertManagerServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
-        throwExceptionIfExecutionFailed(response);
-    }
-
-    private void throwExceptionIfExecutionFailed(JanitorManager.ServiceResponse response) {
-        if (response.getStatus() != JanitorManager.Status.OK) {
-            throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
-        }
-    }
-
-    boolean isJanitorAvailable() {
-        return Arrays.asList(ConnectivityState.CONNECTING, ConnectivityState.IDLE, ConnectivityState.READY).contains(this.channel.getState(false));
-    }
-
-    @Deprecated
-    public boolean checkIfReady(Identifier deploymentId, String domain) {
-        log.trace("Checking if deployment {} in domain {} is ready", deploymentId.value(), domain);
-        ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(deploymentId, domain));
-        return switch (response.getStatus()) {
-            case OK -> true;
-            case PENDING -> false;
-            default -> throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
-        };
-    }
-
-    @Deprecated
-    public String retrieveServiceIp(Identifier serviceId, String domain) {
-        log.info("Retrieving service IP for {} in domain {}", serviceId.value(), domain);
-        InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
-        JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(serviceId, domain));
-        switch (response.getStatus()) {
-            case OK:
-                return response.getInfo();
-            case FAILED:
-            default:
-                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
-        }
-    }
-
-    public void checkServiceExists(Identifier serviceId, String domain) {
-        log.info("Verifying if provided service {} exists in domain {}", serviceId.value(), domain);
-        InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
-        JanitorManager.InfoServiceResponse response = stub.checkServiceExists(buildInstanceRequest(serviceId, domain));
-        switch (response.getStatus()) {
-            case OK:
-                return;
-            case FAILED:
-            default:
-                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
-        }
-    }
-
-    public List<JanitorManager.PodInfo> getPodNames(Identifier deploymentId, String domain) {
-        log.debug("Retrieving list of pods for {} in domain {}", deploymentId.value(), domain);
-        PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
-        JanitorManager.PodListResponse response = stub.retrievePodList(buildInstanceRequest(deploymentId, domain));
-        switch (response.getStatus()) {
-            case OK:
-                return response.getPodsList();
-            case FAILED:
-            default:
-                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
-        }
-    }
-
-    public List<String> getPodLogs(Identifier deploymentId, String podName, String containerName, String domain) {
-        PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
-        JanitorManager.PodInfo podInfo = (StringUtils.isNotEmpty(containerName)) ?
-                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).addContainers(containerName).build() :
-                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).build();
-        JanitorManager.PodLogsResponse response = stub.retrievePodLogs(
-                JanitorManager.PodRequest.newBuilder()
-                        .setApi("v1")
-                        .setDeployment(
-                                JanitorManager.Instance.newBuilder().
-                                        setNamespace(namespaceService.namespace(domain)).
-                                        setUid(deploymentId.value()).
-                                        setDomain(domain).build()
-                        )
-                        .setPod(podInfo)
-                        .build());
-        switch (response.getStatus()) {
-            case OK:
-                return response.getLinesList();
-            case FAILED:
-            default:
-                throw new JanitorResponseException(janitorExceptionMessage(response.getMessage()));
-        }
-    }
-
-    @Deprecated
-    public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
-        log.info("Requested domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
-        NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createNamespace(
-                buildNamespaceRequest(domainNameSpace, annotations));
-        throwExceptionIfExecutionFailed(response);
     }
 
     private static String janitorExceptionMessage(String message) {

@@ -3,10 +3,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringService;
 import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
@@ -27,10 +27,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ja
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPauseServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotResumeServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotUpgradeKubernetesServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
@@ -373,6 +373,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                 log.info("access methods copy created");
                 if (m.isOfType(INTERNAL) && StringUtils.isEmpty(m.getUrl())) {
                     final String lbServiceIp = janitorService.retrieveServiceIp(
+                            null,
                             buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
                             service.getDomain());
                     final String ipWithPortString = getIpAddressWithPort(lbServiceIp, m.getDeployParameters());
@@ -426,7 +427,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                 final ServiceAccessMethod copy = ServiceAccessMethod.copy(m);
                 if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
                     final Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
-                    janitorService.checkServiceExists(serviceName, service.getDomain());
+                    janitorService.checkServiceExists(null, serviceName, service.getDomain());
                     String username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
                     copy.setUrl(username != null && !username.isEmpty() ?
                             username + "@" + serviceName.value() : serviceName.value());
@@ -448,9 +449,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            janitorService.deleteConfigMapIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
-            janitorService.deleteBasicAuthIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
-            janitorService.deleteTlsIfExists(service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteConfigMapIfExists(null, service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteBasicAuthIfExists(null, service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteTlsIfExists(null, service.getDescriptiveDeploymentId(), service.getDomain());
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         } catch (KServiceManipulationException e) {
@@ -503,7 +504,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     public List<AppComponentDetails> serviceComponents(Identifier deploymentId) {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            return janitorService.getPodNames(service.getDescriptiveDeploymentId(), service.getDomain()).stream()
+            return janitorService.getPodNames(null, service.getDescriptiveDeploymentId(), service.getDomain()).stream()
                     .map(p -> new AppComponentDetails(p.getName(), p.getDisplayName(), p.getContainersList()))
                     .collect(Collectors.toList());
         } catch (InvalidDeploymentIdException idie) {
@@ -519,7 +520,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             return new AppComponentLogs(
                     serviceComponentName,
-                    janitorService.getPodLogs(service.getDescriptiveDeploymentId(), serviceComponentName, serviceSubComponentName, service.getDomain())
+                    janitorService.getPodLogs(null, service.getDescriptiveDeploymentId(), serviceComponentName, serviceSubComponentName, service.getDomain())
             );
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
