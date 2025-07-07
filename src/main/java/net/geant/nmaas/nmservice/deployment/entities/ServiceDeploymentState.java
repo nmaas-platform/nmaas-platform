@@ -1,9 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
+import lombok.Getter;
+
 /**
- * NM service deployment states.
+ * Service deployment states.
  */
-public enum NmServiceDeploymentState {
+@Getter
+public enum ServiceDeploymentState {
 
     INIT(true, false),
     REQUEST_VERIFIED(true, false),
@@ -16,7 +19,7 @@ public enum NmServiceDeploymentState {
     CONFIGURED(true, false),
     CONFIGURATION_FAILED(false, false),
     DEPLOYMENT_INITIATED(true, false),
-    DEPLOYED(true,false),
+    DEPLOYED(true, false),
     DEPLOYMENT_FAILED(false, false),
     VERIFICATION_INITIATED(true, false),
     VERIFIED(true, true),
@@ -40,26 +43,18 @@ public enum NmServiceDeploymentState {
     FAILED_APPLICATION_REMOVED(false, false),
     PAUSE_INITIATED(true, false),
     PAUSED(true, false),
-    PAUSE_FAILED(false,false),
+    PAUSE_FAILED(false, false),
     RESUME_INITIATED(false, false),
     RESUMED(false, true),
-    RESUME_FAILED(false,false);
+    RESUME_FAILED(false, false);
 
-    private boolean isRunning;
+    private final boolean isRunning;
 
-    private boolean isOnline;
+    private final boolean isOnline;
 
-    NmServiceDeploymentState(boolean isRunning, boolean isOnline) {
+    ServiceDeploymentState(boolean isRunning, boolean isOnline) {
         this.isRunning = isRunning;
         this.isOnline = isOnline;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    public boolean isOnline() {
-        return  isOnline;
     }
 
 }

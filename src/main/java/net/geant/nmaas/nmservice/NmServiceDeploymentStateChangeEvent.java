@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice;
 
 import lombok.Getter;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.context.ApplicationEvent;
 
@@ -13,14 +13,14 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
     private final Identifier deploymentId;
 
     @Getter
-    private final NmServiceDeploymentState state;
+    private final ServiceDeploymentState state;
 
     private final EnumMap<EventDetailType, String> details = new EnumMap<>(EventDetailType.class);
 
     @Getter
     private final String errorMessage;
 
-    public NmServiceDeploymentStateChangeEvent(Object source, Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
+    public NmServiceDeploymentStateChangeEvent(Object source, Identifier deploymentId, ServiceDeploymentState state, String errorMessage) {
         super(source);
         this.deploymentId = deploymentId;
         this.state = state;

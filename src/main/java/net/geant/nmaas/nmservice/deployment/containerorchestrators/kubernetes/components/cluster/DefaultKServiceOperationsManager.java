@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.NotImplementedException;
@@ -41,7 +43,15 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
                 Stream.of(serviceInfo.getDescriptiveDeploymentId().getValue(), serviceInfo.getKubernetesTemplate().getMainDeploymentName())
                         .filter(Objects::nonNull)
                         .collect(Collectors.joining("-"));
-        kubernetesApiClientService.scaleDeployment(serviceInfo.getRemoteCluster(), namespace, kubernetesDeploymentName, replicas);
+        final KCluster remoteCluster = serviceInfo.getRemoteCluster();
+        if (Objects.nonNull(kubernetesApiClientService.getDeployment(remoteCluster, namespace, kubernetesDeploymentName))) {
+            kubernetesApiClientService.scaleDeployment(remoteCluster, namespace, kubernetesDeploymentName, replicas);
+            return;
+        } else if (Objects.nonNull(kubernetesApiClientService.getStatefulSet(remoteCluster, namespace, kubernetesDeploymentName))) {
+            kubernetesApiClientService.scaleStatefulSet(remoteCluster, namespace, kubernetesDeploymentName, replicas);
+            return;
+        }
+        throw new InvalidDeploymentIdException("Could not find either deployment or statefulset with given name " + deploymentId);
     }
 
 }
