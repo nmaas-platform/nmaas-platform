@@ -330,7 +330,10 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(ServiceDeploymentState state) {
-            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            return switch (state) {
+                case RESUME_INITIATED -> APPLICATION_RESUME_IN_PROGRESS;
+                default -> nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            };
         }
 
         @Override
@@ -342,6 +345,52 @@ public enum AppDeploymentState {
         @Override
         public AppLifecycleState lifecycleState() {
             return AppLifecycleState.APPLICATION_PAUSE_FAILED;
+        }
+
+        @Override
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
+
+        @Override
+        public boolean isInFailedState() {
+            return true;
+        }
+    },
+    APPLICATION_RESUME_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_RESUME_IN_PROGRESS;
+        }
+
+        @Override
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
+            return switch (state) {
+                case RESUMED -> APPLICATION_RESUMED;
+                case RESUME_FAILED -> APPLICATION_RESUME_FAILED;
+                default -> nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            };
+        }
+    },
+    APPLICATION_RESUMED {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_RESUMED;
+        }
+
+        @Override
+        public AppDeploymentState nextState(ServiceDeploymentState state) {
+            return switch (state) {
+                case VERIFICATION_INITIATED -> APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
+                case VERIFICATION_FAILED -> APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
+                default -> nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            };
+        }
+    },
+    APPLICATION_RESUME_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_RESUME_FAILED;
         }
 
         @Override

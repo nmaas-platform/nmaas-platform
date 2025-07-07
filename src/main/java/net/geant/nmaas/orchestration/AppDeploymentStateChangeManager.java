@@ -110,6 +110,7 @@ public class AppDeploymentStateChangeManager {
             case APPLICATION_RESTARTED:
             case APPLICATION_UPGRADED:
             case APPLICATION_CONFIGURATION_UPDATED:
+            case APPLICATION_RESUMED:
                 return Optional.of(new AppVerifyServiceActionEvent(this, deploymentId));
             case APPLICATION_REMOVED:
                 return Optional.of(new AppRemoveDcnIfRequiredEvent(this, deploymentId));

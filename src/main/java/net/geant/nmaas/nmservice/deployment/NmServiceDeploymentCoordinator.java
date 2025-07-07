@@ -221,7 +221,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    @Loggable(LogLevel.TRACE)
+    @Loggable(LogLevel.DEBUG)
     public void resumeService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, RESUME_INITIATED);

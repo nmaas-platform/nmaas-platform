@@ -795,12 +795,16 @@ public class AppInstanceController extends AppBaseController {
     @PutMapping("/{deploymentId}/scale-up")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void scaleUpAppInstance(@PathVariable String deploymentId) {
-        eventPublisher.publishEvent(
-                new AppScaleActionEvent(
-                        this,
-                        new Identifier(deploymentId),
-                        AppScaleDirection.UP)
-        );
+        if (appDeploymentMonitor.state(Identifier.newInstance(deploymentId)).equals(AppLifecycleState.APPLICATION_PAUSED)) {
+            eventPublisher.publishEvent(
+                    new AppScaleActionEvent(
+                            this,
+                            new Identifier(deploymentId),
+                            AppScaleDirection.UP)
+            );
+        } else {
+            log.warn("Won't resume since application instance is not paused");
+        }
     }
 
 }
