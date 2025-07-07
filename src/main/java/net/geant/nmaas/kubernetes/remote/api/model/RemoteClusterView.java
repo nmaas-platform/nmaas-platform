@@ -1,10 +1,11 @@
-package net.geant.nmaas.externalservices.kubernetes.api.model;
+package net.geant.nmaas.kubernetes.remote.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.kubernetes.api.model.KClusterView;
 import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
 
 import java.io.Serializable;

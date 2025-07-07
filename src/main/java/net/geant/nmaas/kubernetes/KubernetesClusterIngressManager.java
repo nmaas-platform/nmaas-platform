@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.kubernetes;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Setter;
 import net.geant.nmaas.kubernetes.remote.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
+import net.geant.nmaas.kubernetes.api.model.KClusterView;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

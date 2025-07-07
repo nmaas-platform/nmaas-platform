@@ -1,6 +1,6 @@
 package net.geant.nmaas.kubernetes.remote;
 
-import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import org.springframework.web.multipart.MultipartFile;
 
