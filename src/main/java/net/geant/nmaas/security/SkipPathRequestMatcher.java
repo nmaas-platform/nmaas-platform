@@ -27,7 +27,7 @@ public class SkipPathRequestMatcher implements RequestMatcher {
         List<String> methodPaths = pathMap.getOrDefault(method, Collections.emptyList());
         List<String> anyPaths = pathMap.getOrDefault("ANY", Collections.emptyList());
         //TODO look at this on comback to brach
-        return !matchesAny(methodPaths, path) || matchesAny(anyPaths, path);
+        return !(matchesAny(methodPaths, path) || matchesAny(anyPaths, path));
     }
 
     private boolean matchesAny(List<String> patterns, String path) {
