@@ -12,7 +12,7 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
-
+@Deprecated
 public class SkipPathRequestMatcher implements RequestMatcher {
 
 	private OrRequestMatcher matchers;
