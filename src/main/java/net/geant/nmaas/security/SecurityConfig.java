@@ -58,12 +58,12 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authz -> {
-                    authz.requestMatchers(SecurityConstants.AUTH_WHITELIST_ANY_METHOD).permitAll();
-                    authz.requestMatchers(HttpMethod.GET, SecurityConstants.AUTH_WHITELIST_GET_METHOD).permitAll();
-                    authz.requestMatchers(HttpMethod.OPTIONS, SecurityConstants.AUTH_WHITELIST_OPTIONS_METHOD).permitAll();
-                    authz.requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated();
-                    authz.anyRequest().authenticated();
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(SecurityConstants.AUTH_WHITELIST_ANY_METHOD).permitAll();
+                    auth.requestMatchers(HttpMethod.GET, SecurityConstants.AUTH_WHITELIST_GET_METHOD).permitAll();
+                    auth.requestMatchers(HttpMethod.OPTIONS, SecurityConstants.AUTH_WHITELIST_OPTIONS_METHOD).permitAll();
+                    auth.requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated();
+                    auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .addFilterBefore(statelessAuthFilter(), UsernamePasswordAuthenticationFilter.class)
