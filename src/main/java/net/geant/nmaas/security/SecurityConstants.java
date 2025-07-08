@@ -59,10 +59,10 @@ public class SecurityConstants {
             "/api-docs/**"
     };
 
-
+    //TODO check that this function will work without commented strings
     protected static final String[] AUTH_AUTHENTICATED_LIST = {
-            "/api/orchestration/deployments/**/state",
-            "/api/orchestration/deployments/**/access",
+//            "/api/orchestration/deployments/**/state",
+//            "/api/orchestration/deployments/**/access",
             "/api/orchestration/deployments/**",
             "/api/management/**",
             "/api/**"
