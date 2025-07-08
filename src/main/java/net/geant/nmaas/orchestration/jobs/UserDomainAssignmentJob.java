@@ -56,7 +56,7 @@ public class UserDomainAssignmentJob extends WebhookJob {
             Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(String.format("Domain with id: %d cannot be found", domainId)));
             User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(String.format("User with id: %d cannot be found", userId)));
 
-            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(modelMapper.map(user, UserView.class), modelMapper.map(domain, DomainView.class), role, action);
+            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(modelMapper.map(user, UserView.class), modelMapper.map(domain, DomainView.class), role, action, WebhookEventType.USER_ASSIGNMENT);
             callWebhook(webhook, dto);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
