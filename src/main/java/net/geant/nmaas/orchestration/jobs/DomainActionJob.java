@@ -2,12 +2,11 @@ package net.geant.nmaas.orchestration.jobs;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
+import net.geant.nmaas.portal.api.domain.DomainActionDto;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
-import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
@@ -21,39 +20,38 @@ import java.security.GeneralSecurityException;
 
 @Slf4j
 @Component
-public class DomainCreationJob extends WebhookJob {
-
-    private final DomainService domainService;
+public class DomainActionJob extends WebhookJob {
 
     @Autowired
-    public DomainCreationJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper, DomainService domainService) {
+    public DomainActionJob(RestClient restClient, WebhookEventService webhookEventService, ModelMapper modelMapper) {
         super(restClient, webhookEventService, modelMapper);
-        this.domainService = domainService;
     }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        log.debug("Started DomainActionJob ...");
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Long webhookId = dataMap.getLong("webhookId");
-        Long domainId = dataMap.getLong("domainId");
+        String action = dataMap.getString("action");
+        DomainView domain = (DomainView) dataMap.get("domain");
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
-            if (!WebhookEventType.DOMAIN_CREATION.equals(webhook.getEventType())) {
-                log.warn("Webhook's event type with id {} has been updated. DomainCreationJob is abandoned", webhookId);
+            if (!WebhookEventType.DOMAIN_ACTION.equals(webhook.getEventType())) {
+                log.warn("Webhook's event type with id {} has been updated. DomainActionJob is abandoned", webhookId);
                 return;
             }
 
-            Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(String.format("Domain with id: %d cannot be found", domainId)));
-            callWebhook(webhook, modelMapper.map(domain, DomainView.class));
+            callWebhook(webhook, new DomainActionDto(domain, action));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
         } catch (MissingElementException e) {
-            log.warn("Webhook or domain does not exist. DomainCreationJob is abandoned");
+            log.warn("Webhook does not exist. DomainActionJob is abandoned");
         } catch (WebServiceCommunicationException e) {
-            log.error("Failed to communicate with external system for the webhook of domain creation with id {}", domainId);
+            log.error("Failed to communicate with external system for the webhook of domain action with id {}", domain.getId());
             throw new JobExecutionException("Failed communication with external system");
         }
     }
 }
+

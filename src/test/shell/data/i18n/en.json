@@ -318,8 +318,9 @@
     "DEPLOYED": "Deployed instances",
     "UNDEPLOYED": "Undeployed instances",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "SHOW_MY": "Show only my",
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
-    "UNDEPLOYED_VISIBLE": "Show undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed",
     "SORT": "Sort",
     "SHOW_CONFIG_BUTTON" : "Show configuration",
     "MANUAL_UPDATE" : {
@@ -335,10 +336,10 @@
       "POPULAR": "Popularity",
       "DATE" : "Date added"
     },
-    "SCALED_UP": "Resume",
-    "SCALED_DOWN": "Pause",
-    "CONFIRM_SCALEDOWN": {
-      "MESSAGE": "Are you sure you want to stop the instance?",
+    "RESUME": "Resume",
+    "PAUSE": "Pause",
+    "CONFIRM_PAUSE": {
+      "MESSAGE": "Are you sure you want to pause this instance?",
       "HEADER": "Confirmation",
       "ACCEPT": "Yes",
       "REJECT": "No"
@@ -670,7 +671,13 @@
       "APP_RESTART_PROGRESS": "Application restart in progress",
       "APP_RESTART_SUCCESS": "Application restarted successfully",
       "APP_RESTART_FAILED": "Application restart failed",
-        "APP_UPDATE_PROGRESS": "Application configuration update in progress",
+      "APP_PAUSE_PROGRESS": "Application pause in progress",
+      "APP_PAUSE_SUCCESS": "Application paused successfully",
+      "APP_PAUSE_FAILED": "Application pause failed",
+      "APP_RESUME_PROGRESS": "Application resume in progress",
+      "APP_RESUME_SUCCESS": "Application resumed successfully",
+      "APP_RESUME_FAILED": "Application resume failed",
+      "APP_UPDATE_PROGRESS": "Application configuration update in progress",
       "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
       "APP_UPDATE_FAILED": "Application configuration update failed",
       "UNKNOWN": "Unknown state",
@@ -693,6 +700,7 @@
       "RUNNING": "Your application is now active. You can access it using the <i>Access</i> option from the <i>Actions</i> menu. <br>Use the <i>Configure</i> and <i>Members</i> options to update the configuration and the list of application users respectively.",
       "UNDEPLOYING": "Your application is being deactivated. This process may take up to several minutes",
       "DONE": "Application deactivated",
+      "PAUSED": "Your application is now paused. Use the <i>Resume</i> option to bring it back up again",
       "FAILURE": "",
       "UNKNOWN": "Unknown state of application. <br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>.",
       "REMOVED": "Application removed"
@@ -1125,6 +1133,7 @@
     "RUNNING": "Active",
     "UNDEPLOYING": "Deactivation in progress",
     "DONE": "Deactivated",
+    "PAUSED": "Paused",
     "FAILURE": "Failure",
     "UNKNOWN": "Unknown",
     "REMOVED": "Removed",
@@ -1354,18 +1363,19 @@
     "TOGGLE" : "Toggle all"
   },
   "WEBHOOKS" : {
-    "TITLE" : "Webhooks settings",
-    "TITLE_SHORT" : "Webhooks",
+    "TITLE" : "Webhooks",
+    "TITLE_SHORT" : "Webhook",
+    "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
     "TARGET_URL" : "Target url",
     "TYPE" : "Webhook type",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
-    "DOMAIN_CREATION" : "Domain creation",
+    "DOMAIN_ACTION" : "Domain action",
+    "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "DOMAIN_GROUP_CHANGE" : "Domain group change",
     "NEW" : "Add webhook",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
@@ -1373,7 +1383,7 @@
     "AUTH_REQUIRED": "Auth required"
   },
   "DASHBOARD": {
-    "NUMBERS_OF_USERS": "Current number of user",
+    "NUMBERS_OF_USERS": "Current number of users",
     "NUMBERS_OF_DOMAINS": "Current number of domains",
     "NUMBERS_OF_DEPLOYED_APP": "Current number of deployed applications",
     "APP_DEPLOYMENTS": "Application deployments",
@@ -1390,5 +1400,23 @@
     "ID": "Id",
     "INSTANCE_NAME": "Instance name",
     "NEED_UPGRADE": "Need upgrade"
+  },
+  "TOAST": {
+    "SUCCESS_HEADER": "Success",
+    "ERROR_HEADER": "Error",
+    "SUCCESS": {
+      "NEW_DOMAIN": "New domain added",
+      "SETTINGS": "Settings updated",
+      "CLUSTER": "Remote cluster data updated",
+      "NOTIFICATION": "Notification sent",
+      "NEW_WEBHOOK": "New webhook added",
+      "WEBHOOK": "Webhook updated"
+    },
+    "ERROR": {
+      "NEW_DOMAIN": "Failed to add new domain",
+      "SETTINGS": "Settings update failed",
+      "NOTIFICATION": "The message could not be sent.",
+      "WEBHOOK": "Webhook update failed"
+    }
   }
 }

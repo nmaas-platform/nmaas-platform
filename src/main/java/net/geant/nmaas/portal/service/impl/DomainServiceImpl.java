@@ -11,12 +11,14 @@ import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
+import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
@@ -324,7 +326,9 @@ public class DomainServiceImpl implements DomainService {
         return findDomain(id).map(toRemove -> {
             dcnRepositoryManager.removeDcnInfo(toRemove.getCodename());
             checkGlobal(toRemove);
+            DomainView domainView = modelMapper.map(toRemove, DomainView.class);
             domainRepository.delete(toRemove);
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainView, true));
             return true;
         }).orElse(false);
     }
@@ -335,19 +339,26 @@ public class DomainServiceImpl implements DomainService {
         String removedSuffix = "_DELETED_" + OffsetDateTime.now();
         return findDomain(domainId).map(domain -> {
             checkGlobal(domain);
+            final DomainView domainViewForEvent = modelMapper.map(domain, DomainView.class);
+
             dcnRepositoryManager.removeDcnInfo(domain.getCodename());
             domain.setDeleted(true);
             domain.setName(domain.getName() + removedSuffix);
             domain.setCodename(domain.getCodename() + removedSuffix);
-            Long domainDcnDetailsId = domain.getDomainDcnDetails().getId();
+
+            final Long domainDcnDetailsId = domain.getDomainDcnDetails().getId();
             domain.setDomainDcnDetails(null);
             domainDcnDetailsRepository.deleteById(domainDcnDetailsId);
-            Long domainTechDetailsId = domain.getDomainTechDetails().getId();
+
+            final Long domainTechDetailsId = domain.getDomainTechDetails().getId();
             domain.setDomainTechDetails(null);
             domainTechDetailsRepository.deleteById(domainTechDetailsId);
+
             removeAllUsersFromDomain(domain);
             removeDomainFromAllGroups(domain);
             domainRepository.save(domain);
+
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainViewForEvent, true));
             return true;
         }).orElse(false);
     }

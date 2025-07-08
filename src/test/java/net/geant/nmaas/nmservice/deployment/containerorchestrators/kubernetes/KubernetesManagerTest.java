@@ -24,7 +24,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
@@ -98,17 +98,7 @@ public class KubernetesManagerTest {
 
     @BeforeEach
     void setup() {
-        Map<String, String> parametersMap = new HashMap<>();
-        parametersMap.put(ParameterType.SMTP_HOSTNAME.name(), "hostname");
-        parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
-        parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
-        parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
-        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
-        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
-        parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
-        parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
-        parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
-        parametersMap.put(ParameterType.APP_INSTANCE_NAME.name(), "appInstanceName");
+        Map<String, String> parametersMap = getParametersMap();
         when(deploymentParametersProvider.deploymentParameters(any())).thenReturn(parametersMap);
 
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
@@ -171,9 +161,24 @@ public class KubernetesManagerTest {
         when(repositoryManager.loadService(any())).thenReturn(service);
     }
 
+    private static Map<String, String> getParametersMap() {
+        Map<String, String> parametersMap = new HashMap<>();
+        parametersMap.put(ParameterType.SMTP_HOSTNAME.name(), "hostname");
+        parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
+        parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
+        parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
+        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
+        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
+        parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
+        parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
+        parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
+        parametersMap.put(ParameterType.APP_INSTANCE_NAME.name(), "appInstanceName");
+        return parametersMap;
+    }
+
     @Test
     void shouldVerifyDeploymentWithEmptyAppDeployment() {
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, null, null);
         });
         assertTrue(thrown.getMessage().contains("App deployment cannot be null"));
@@ -181,7 +186,7 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyDeploymentWithEmptyAppDeploymentSpec() {
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), null);
         });
         assertTrue(thrown.getMessage().contains("App deployment spec cannot be null"));
@@ -190,7 +195,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyDeploymentWithNotSupportedEnv() {
         AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.emptyList()).build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Service deployment not possible with currently used container orchestrator"));
@@ -199,7 +204,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyDeploymentWithNoKubernetesTemplate() {
         AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES)).build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Kubernetes template cannot be null"));
@@ -212,7 +217,7 @@ public class KubernetesManagerTest {
                 .kubernetesTemplate(new KubernetesTemplate())
                 .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Service access methods cannot be null"));

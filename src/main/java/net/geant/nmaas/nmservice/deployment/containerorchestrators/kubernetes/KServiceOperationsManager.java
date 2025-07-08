@@ -5,6 +5,7 @@ import net.geant.nmaas.orchestration.Identifier;
 public interface KServiceOperationsManager {
 
     void restartService(Identifier deploymentId);
-    void scaleDeployment(Identifier deploymentId, int replicas);
+
+    void scaleService(Identifier deploymentId, int replicas);
 
 }

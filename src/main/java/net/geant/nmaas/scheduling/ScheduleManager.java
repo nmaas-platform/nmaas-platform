@@ -117,6 +117,7 @@ public class ScheduleManager {
             scheduler.getListenerManager().addJobListener(listener, KeyMatcher.keyEquals(jobKey));
 
         } catch (SchedulerException e) {
+            log.warn("Exception while one time job scheduling: {}", e.getMessage(), e);
             throw new IllegalStateException(e.getMessage());
         }
     }

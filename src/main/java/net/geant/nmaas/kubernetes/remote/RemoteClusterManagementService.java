@@ -4,8 +4,6 @@ import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.List;
 
@@ -19,7 +17,7 @@ public interface RemoteClusterManagementService {
 
     List<RemoteClusterView> getClustersInDomain(Long domainId);
 
-    RemoteClusterView saveCluster(RemoteClusterView view, MultipartFile file);
+    RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace);
 
     RemoteClusterView updateCluster(RemoteClusterView cluster, Long id);
 

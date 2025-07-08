@@ -2,10 +2,9 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -49,11 +48,9 @@ public class DefaultAppLifecycleManagerTest {
     private final NmServiceRepositoryManager<KubernetesNmServiceInfo> serviceRepositoryManager = mock(KubernetesRepositoryManager.class);
     private final JanitorService janitorService = mock(JanitorService.class);
     private final AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
-    private final KServiceLifecycleManager kServiceLifecycleManager = mock(KServiceLifecycleManager.class);
+    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
     private DefaultAppLifecycleManager appLifecycleManager;
-
-    private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
     @BeforeEach
     void setup() {
@@ -190,22 +187,22 @@ public class DefaultAppLifecycleManagerTest {
     }
 
     @Test
-    void shouldReplaceHashToDotsInMapKeys() {
+    void shouldReplaceDotsToDotsInMapKeys() {
         Map<String, String> input = new HashMap<>();
-        input.put("keywith#", "value");
-        input.put("keywith#inthemiddle", "value");
-        input.put("keywith#andnullvalue", null);
-        input.put("keywith#andemptyvalue", "");
+        input.put("keywith_dot_", "value");
+        input.put("keywith_dot_inthemiddle", "value");
+        input.put("keywith_dot_andnullvalue", null);
+        input.put("keywith_dot_andemptyvalue", "");
         Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
-        assertThat(output.keySet().size(), is(2));
+        assertThat(output.size(), is(2));
         assertThat(output.keySet().containsAll(Arrays.asList("keywith.", "keywith.inthemiddle")), is(true));
     }
 
     @Test
     void shouldAddQuotesInMapValuesWhereRequired() {
         Map<String, String> input = new HashMap<>();
-        input.put("keywith#", "value");
-        input.put("keywith#inthemiddle", "value, this value and another value");
+        input.put("keywith_dot_", "value");
+        input.put("keywith_dot_inthemiddle", "value, this value and another value");
         Map<String, String> output = DefaultAppLifecycleManager.replaceHashWithDotInMapKeysAndProcessValues(input);
         assertThat(output.values().containsAll(Arrays.asList("value", "\"value\\, this value and another value\"")), is(true));
     }

@@ -18,9 +18,10 @@ public class HelmUpgradeCommand extends HelmCommand {
      * @param chartName name of the target Helm chart
      * @param chartVersion version of the target Helm chart
      * @param enableTls flag indicating if tls option should be added
+     * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
-    public static HelmUpgradeCommand commandWithRepo(String helmVersion, String namespace, String releaseName, String chartName, String chartVersion, boolean enableTls) {
+    public static HelmUpgradeCommand commandWithRepo(String helmVersion, String namespace, String releaseName, String chartName, String chartVersion, boolean enableTls, String kubeConfigPath) {
         if (!helmVersion.startsWith(HELM_VERSION_3)) {
             throw new IllegalArgumentException("Upgrades are not supported for Helm v2");
         }
@@ -37,7 +38,9 @@ public class HelmUpgradeCommand extends HelmCommand {
                 .append(SPACE).append(releaseName)
                 .append(SPACE).append(chartName)
                 .append(SPACE).append(OPTION_VERSION).append(SPACE).append(chartVersion);
-
+        if (kubeConfigPath != null && !kubeConfigPath.isEmpty()) {
+            sb.append(SPACE).append(OPTION_KUBECONFIG).append(SPACE).append(kubeConfigPath);
+        }
         addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmUpgradeCommand(sb.toString());
     }

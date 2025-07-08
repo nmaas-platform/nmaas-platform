@@ -318,6 +318,7 @@
     "DEPLOYED": "Uruchomione instancje",
     "UNDEPLOYED": "Zatrzymane instancje",
     "SHOW_UNDEPLOYED": "Pokaż zatrzymane instancje",
+    "SHOW_MY": "Pokaż tylko moje",
     "HIDE_UNDEPLOYED": "Ukryj zatrzymane instancje",
     "UNDEPLOYED_VISIBLE": "Pokaż zatrzymane instancje",
     "SORT": "Sortuj",
@@ -335,10 +336,10 @@
       "POPULAR": "Popularność",
       "DATE" : "Data dodania"
     },
-    "SCALED_UP": "Wznów",
-    "SCALED_DOWN": "Pauza",
-    "CONFIRM_SCALEDOWN": {
-      "MESSAGE" : "Czy na pewno chcesz zatrzymać instancję?",
+    "RESUME": "Wznów",
+    "PAUSE": "Pauza",
+    "CONFIRM_PAUSE": {
+      "MESSAGE" : "Czy na pewno chcesz zatrzymać tą instancję?",
       "HEADER" : "Potwierdzenie",
       "ACCEPT" : "Tak",
       "REJECT" : "Nie"
@@ -669,6 +670,12 @@
       "APP_RESTART_PROGRESS": "Trwa restart aplikacji",
       "APP_RESTART_SUCCESS": "Aplikacja zrestartowana poprawnie",
       "APP_RESTART_FAILED": "Restart aplikacji nie powiódł się",
+      "APP_PAUSE_PROGRESS": "Trwa pauzowanie aplikacji",
+      "APP_PAUSE_SUCCESS": "Aplikacja spauzowana poprawnie",
+      "APP_PAUSE_FAILED": "Pauzowanie aplikacji nie powiodło się",
+      "APP_RESUME_PROGRESS": "Trwa wznawianie aplikacji",
+      "APP_RESUME_SUCCESS": "Aplikacja wznowiona poprawnie",
+      "APP_RESUME_FAILED": "Wznowienie aplikacji nie powiodło się",
       "APP_UPDATE_PROGRESS": "Trwa aktualizowanie konfiguracji aplikacji",
       "APP_UPDATE_SUCCESS": "Aplikacja zaktualizowana poprawnie",
       "APP_UPDATE_FAILED": "Aktualizacja konfiguracji aplikacji nie powiodła się",
@@ -692,6 +699,7 @@
       "RUNNING": "Twoja aplikacja jest aktywna. <br>Możesz teraz uzyskać dostęp do swojej aplikacji korzystając z opcji <i>Dostęp</i> z menu <i>Akcje</i>.",
       "UNDEPLOYING": "Aplikacja jest deaktywowana. Ten proces może potrwać do kilku minut",
       "DONE":  "Aplikacja została pomyślnie deaktywowana",
+      "PAUSED": "Twoja aplikacja jest spauzowana. Skorzystaj z opcji <i>Resume</i> aby ją wznowić i ponownie wykorzystywać",
       "FAILURE": "",
       "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem nmaas za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
       "REMOVED": "Aplikacja została pomyślnie usunięta"
@@ -1124,6 +1132,7 @@
     "RUNNING": "Aktywna",
     "UNDEPLOYING": "Deaktywacja",
     "DONE": "Deaktywowana",
+    "PAUSED": "Spauzowana",
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany",
     "REMOVED": "Usunięta",
@@ -1352,18 +1361,19 @@
     "TOGGLE" : "Toggle all"
   },
   "WEBHOOKS" : {
-    "TITLE" : "Webhooks settings",
-    "TITLE_SHORT" : "Webhooks",
+    "TITLE" : "Webhooks",
+    "TITLE_SHORT" : "Webhook",
+    "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
     "TARGET_URL" : "Target Url",
     "TYPE" : "Webhook type",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
-    "DOMAIN_CREATION" : "Domain creation",
+    "DOMAIN_ACTION" : "Domain action",
+    "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "DOMAIN_GROUP_CHANGE" : "Domain group change",
     "NEW" : "Add webhook",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
@@ -1388,5 +1398,23 @@
     "ID": "Id",
     "INSTANCE_NAME": "Nazwa instancji",
     "NEED_UPGRADE": "Wymagana aktualizacja"
+  },
+  "TOAST": {
+    "SUCCESS_HEADER": "Sukces",
+    "ERROR_HEADER": "Błąd",
+    "SUCCESS": {
+      "NEW_DOMAIN": "Nowa domena została pomyślnie dodana",
+      "SETTINGS": "Ustawienia zostały pomyślnie zaktualizowane",
+      "CLUSTER": "Dane klastra zdalnego zostały pomyślnie zaktualizowane",
+      "NOTIFICATION": "Powiadomienie wysłane pomyślnie",
+      "NEW_WEBHOOK": "Dodano nowy webhook",
+      "WEBHOOK": "Webhook został pomyślnie zaktualizowany"
+    },
+    "ERROR": {
+      "NEW_DOMAIN": "Nie udało się dodać nowej domeny",
+      "SETTINGS": "Aktualizacja ustawień nie powiodła się",
+      "NOTIFICATION": "Nie udało się wysłać wiadomości.",
+      "WEBHOOK": "Aktualizacja webhooka nie powiodła się"
+    }
   }
 }

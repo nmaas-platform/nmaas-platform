@@ -3,8 +3,12 @@ package net.geant.nmaas.kubernetes;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
+import io.fabric8.kubernetes.api.model.apps.StatefulSetList;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
+import io.fabric8.kubernetes.client.dsl.RollableScalableResource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
@@ -47,19 +51,21 @@ public class KubernetesApiClientService {
 
     public Deployment getDeployment(KCluster kCluster, String namespace, String deploymentName) {
         try (KubernetesClient client = initClient(kCluster)) {
-            return client.apps()
+            NonNamespaceOperation<Deployment, DeploymentList, RollableScalableResource<Deployment>> deploymentsInNamespace = client.apps()
                     .deployments()
-                    .inNamespace(namespace)
+                    .inNamespace(namespace);
+            return deploymentsInNamespace
                     .withName(deploymentName)
                     .get();
         }
     }
 
-    public StatefulSet getStatefulSet(KCluster kCluster, String statefulSetName, String namespace) {
+    public StatefulSet getStatefulSet(KCluster kCluster, String namespace, String statefulSetName) {
         try (KubernetesClient client = initClient(kCluster)) {
-            return client.apps()
+            NonNamespaceOperation<StatefulSet, StatefulSetList, RollableScalableResource<StatefulSet>> statefulSetsInNamespace = client.apps()
                     .statefulSets()
-                    .inNamespace(namespace)
+                    .inNamespace(namespace);
+            return statefulSetsInNamespace
                     .withName(statefulSetName)
                     .get();
         }
@@ -69,6 +75,16 @@ public class KubernetesApiClientService {
         try (KubernetesClient client = initClient(kCluster)) {
             client.apps()
                     .deployments()
+                    .inNamespace(namespace)
+                    .withName(deploymentName)
+                    .scale(replicas);
+        }
+    }
+
+    public void scaleStatefulSet(KCluster kCluster, String namespace, String deploymentName, int replicas) {
+        try (KubernetesClient client = initClient(kCluster)) {
+            client.apps()
+                    .statefulSets()
                     .inNamespace(namespace)
                     .withName(deploymentName)
                     .scale(replicas);

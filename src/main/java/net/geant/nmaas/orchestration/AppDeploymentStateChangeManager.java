@@ -6,7 +6,7 @@ import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent.EventDetailType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -110,6 +110,7 @@ public class AppDeploymentStateChangeManager {
             case APPLICATION_RESTARTED:
             case APPLICATION_UPGRADED:
             case APPLICATION_CONFIGURATION_UPDATED:
+            case APPLICATION_RESUMED:
                 return Optional.of(new AppVerifyServiceActionEvent(this, deploymentId));
             case APPLICATION_REMOVED:
                 return Optional.of(new AppRemoveDcnIfRequiredEvent(this, deploymentId));
@@ -124,7 +125,7 @@ public class AppDeploymentStateChangeManager {
         try {
             deploymentRepositoryManager.loadAllWaitingForDcn(event.getRelatedTo())
                     .forEach(d -> eventPublisher.publishEvent(
-                            new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "")));
+                            new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), ServiceDeploymentState.READY_FOR_DEPLOYMENT, "")));
         } catch (Exception ex) {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at {}", timestamp, ex);

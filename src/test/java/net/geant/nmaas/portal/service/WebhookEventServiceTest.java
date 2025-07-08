@@ -45,8 +45,8 @@ class WebhookEventServiceTest {
 
     @Test
     void crudWebhookEvent() throws GeneralSecurityException {
-        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_CREATION, "xxxxyyyy", "Authorization");
-        webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_CREATION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization");
+        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "xxxxyyyy", "Authorization");
+        webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization");
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
         when(encryptionService.encrypt(anyString())).thenAnswer(i -> "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT");
         when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");

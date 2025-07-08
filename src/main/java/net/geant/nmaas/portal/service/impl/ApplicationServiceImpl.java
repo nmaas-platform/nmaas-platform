@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
@@ -21,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
@@ -39,186 +39,210 @@ import static net.geant.nmaas.portal.events.ApplicationListUpdatedEvent.Applicat
 @Slf4j
 public class ApplicationServiceImpl implements ApplicationService {
 
-	private final ApplicationRepository applicationRepository;
-	private final ApplicationEventPublisher eventPublisher;
+    private final ApplicationRepository applicationRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final ConfigurationTemplateSanitizerService configurationTemplateSanitizerService;
 
-	@Override
-	@Transactional
-	@CachePut("applicationBaseS")
-	public Application update(Application application) {
-		checkApp(application);
-		Application saved = applicationRepository.save(application);
-		generateApplicationListUpdatedEvent(saved, UPDATED);
-		return saved;
-	}
 
-	private void generateApplicationListUpdatedEvent(Application app, ApplicationAction action) {
-		ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(
-				ApplicationServiceImpl.class,
-				app.getName(),
-				app.getVersion(),
-				action,
-				app.getAppDeploymentSpec()
-		);
-		this.eventPublisher.publishEvent(event);
-	}
+    @Override
+    @Transactional
+    @CachePut("applicationBaseS")
+    public Application update(Application application) {
+        checkApp(application);
+        checkAndUpdateConfigurationTemplate(application);
+        Application saved = applicationRepository.save(application);
+        generateApplicationListUpdatedEvent(saved, UPDATED);
+        return saved;
+    }
 
-	@Override
-	public boolean exists(String name, String version) {
-		return applicationRepository.existsByNameAndVersion(name, version);
-	}
+    private void generateApplicationListUpdatedEvent(Application app, ApplicationAction action) {
+        ApplicationListUpdatedEvent event = new ApplicationListUpdatedEvent(
+                ApplicationServiceImpl.class,
+                app.getName(),
+                app.getVersion(),
+                action,
+                app.getAppDeploymentSpec()
+        );
+        this.eventPublisher.publishEvent(event);
+    }
 
-	@Override
-	@CachePut("applicationBaseS")
-	public Application create(Application application) {
-		if (application.getId() != null) {
-			throw new ProcessingException("While creating id must be null");
-		}
-		clearIds(application);
-		Application saved = applicationRepository.save(application);
-		generateApplicationListUpdatedEvent(saved, ADDED);
-		return saved;
-	}
+    @Override
+    public boolean exists(String name, String version) {
+        return applicationRepository.existsByNameAndVersion(name, version);
+    }
 
-	@Override
-	@CacheEvict(value = "applicationBaseS")
-	public void delete(Long id) {
-		checkParam(id);
-		applicationRepository.findById(id).ifPresent(app -> {
-			if(app.getState().isChangeAllowed(ApplicationState.DELETED)) {
-				app.setState(ApplicationState.DELETED);
-				applicationRepository.save(app);
-				generateApplicationListUpdatedEvent(app, DELETED);
-			}
-		});
-	}
+    @Override
+    @CachePut("applicationBaseS")
+    public Application create(Application application) {
+        if (application.getId() != null) {
+            throw new ProcessingException("While creating id must be null");
+        }
+        clearIds(application);
+        Application saved = applicationRepository.save(application);
+        generateApplicationListUpdatedEvent(saved, ADDED);
+        return saved;
+    }
 
-	@Override
-	public Optional<Application> findApplication(Long id) {
-		if (id != null) {
-			return applicationRepository.findById(id);
-		} else {
-			throw new IllegalArgumentException("applicationId is null");
-		}
-	}
+    @Override
+    @CacheEvict(value = "applicationBaseS")
+    public void delete(Long id) {
+        checkParam(id);
+        applicationRepository.findById(id).ifPresent(app -> {
+            if (app.getState().isChangeAllowed(ApplicationState.DELETED)) {
+                app.setState(ApplicationState.DELETED);
+                applicationRepository.save(app);
+                generateApplicationListUpdatedEvent(app, DELETED);
+            }
+        });
+    }
 
-	@Override
-	public Optional<Application> findApplication(String name, String version) {
-		return this.applicationRepository.findByNameAndVersion(name, version);
-	}
+    @Override
+    public Optional<Application> findApplication(Long id) {
+        if (id != null) {
+            return applicationRepository.findById(id);
+        } else {
+            throw new IllegalArgumentException("applicationId is null");
+        }
+    }
 
-	@Override
-	public Application findApplicationLatestVersion(String name) {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("Application name cannot be null or empty");
-		}
-		return applicationRepository.findByName(name).stream()
-				.max(Comparator.comparing(Application::getCreationDate))
-				.orElseThrow(() -> new MissingElementException("Application " + name + " cannot be found"));
-	}
+    @Override
+    public Optional<Application> findApplication(String name, String version) {
+        return this.applicationRepository.findByNameAndVersion(name, version);
+    }
 
-	@Override
-	public Page<Application> findAll(Pageable pageable) {
-		return applicationRepository.findAll(pageable);
-	}
+    @Override
+    public Application findApplicationLatestVersion(String name) {
+        if (!StringUtils.hasText(name)) {
+            throw new IllegalArgumentException("Application name cannot be null or empty");
+        }
+        return applicationRepository.findByName(name).stream()
+                .max(Comparator.comparing(Application::getCreationDate))
+                .orElseThrow(() -> new MissingElementException("Application " + name + " cannot be found"));
+    }
 
-	@Override
-	public List<Application> findAll() {
-		return applicationRepository.findAll();
-	}
+    @Override
+    public Page<Application> findAll(Pageable pageable) {
+        return applicationRepository.findAll(pageable);
+    }
 
-	@Override
-	@CacheEvict(value = "applicationBaseS", allEntries = true)
-	public void changeApplicationState(Application app, ApplicationState state) {
-		if (!app.getState().isChangeAllowed(state)) {
-			throw new IllegalStateException("Application state transition from " + app.getState() + " to " + state + " is not allowed.");
-		}
-		if (state.equals(ApplicationState.ACTIVE)) {
-			checkApp(app);
-			checkTemplates(app);
-		}
-		app.setState(state);
-		if (state.equals(ApplicationState.DELETED)) {
-			String suffix = "_DELETED_" + OffsetDateTime.now();
-			app.setName(app.getName() + suffix);
-		}
-		applicationRepository.save(app);
-	}
+    @Override
+    public List<Application> findAll() {
+        return applicationRepository.findAll();
+    }
 
-	private void checkApp(Application app) {
-		if(app == null) {
-			throw new IllegalArgumentException("App cannot be null");
-		}
-		app.validate();
-		app.getAppDeploymentSpec().validate();
-		app.getAppDeploymentSpec().getKubernetesTemplate().validate();
-		checkTemplates(app);
-	}
+    @Override
+    @CacheEvict(value = "applicationBaseS", allEntries = true)
+    public void changeApplicationState(Application app, ApplicationState state) {
+        if (!app.getState().isChangeAllowed(state)) {
+            throw new IllegalStateException("Application state transition from " + app.getState() + " to " + state + " is not allowed.");
+        }
+        if (state.equals(ApplicationState.ACTIVE)) {
+            checkApp(app);
+            checkTemplates(app);
+        }
+        app.setState(state);
+        if (state.equals(ApplicationState.DELETED)) {
+            String suffix = "_DELETED_" + OffsetDateTime.now();
+            app.setName(app.getName() + suffix);
+        }
+        applicationRepository.save(app);
+    }
 
-	private void checkTemplates(Application app) {
-		if (app.getAppConfigurationSpec().isConfigFileRepositoryRequired()) {
-			app.getAppConfigurationSpec().getTemplates().forEach(this::validateConfigFileTemplates);
-		}
-	}
+    private void checkApp(Application app) {
+        if (app == null) {
+            throw new IllegalArgumentException("App cannot be null");
+        }
+        app.validate();
+        app.getAppDeploymentSpec().validate();
+        app.getAppDeploymentSpec().getKubernetesTemplate().validate();
+        checkTemplates(app);
+    }
 
-	private void validateConfigFileTemplates(ConfigFileTemplate configFileTemplate) {
-		try {
-			new Template("test", configFileTemplate.getConfigFileTemplateContent(), new Configuration(Configuration.VERSION_2_3_28));
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Template " + configFileTemplate.getConfigFileName() + " is invalid");
-		}
-	}
+    private void checkTemplates(Application app) {
+        if (app.getAppConfigurationSpec().isConfigFileRepositoryRequired()) {
+            app.getAppConfigurationSpec().getTemplates().forEach(this::validateConfigFileTemplates);
+        }
+    }
 
-	@Override
-	public void setMissingProperties(Application app, Long appId) {
-		this.setMissingTemplatesId(app, appId);
-	}
+    private void validateConfigFileTemplates(ConfigFileTemplate configFileTemplate) {
+        try {
+            new Template("test", configFileTemplate.getConfigFileTemplateContent(), new Configuration(Configuration.VERSION_2_3_28));
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Template " + configFileTemplate.getConfigFileName() + " is invalid");
+        }
+    }
 
-	private void checkParam(Long id) {
-		if(id == null) {
-			throw new IllegalArgumentException("id is null");
-		}
-	}
+    @Override
+    public void setMissingProperties(Application app, Long appId) {
+        this.setMissingTemplatesId(app, appId);
+    }
 
-	private void setMissingTemplatesId(Application app, Long appId) {
-		app.getAppConfigurationSpec().getTemplates()
-				.forEach(template -> template.setApplicationId(appId));
-	}
+    private void checkParam(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id is null");
+        }
+    }
 
-	public static void clearIds(Application app) {
-		if (app.getConfigWizardTemplate() != null) {
-			app.getConfigWizardTemplate().setId(null);
-		}
-		if (app.getConfigUpdateWizardTemplate() != null) {
-			app.getConfigUpdateWizardTemplate().setId(null);
-		}
-		if (app.getAppConfigurationSpec() != null) {
-			app.getAppConfigurationSpec().setId(null);
-			app.getAppConfigurationSpec().getTemplates().forEach(a -> a.setId(null));
-		}
-		if (app.getAppDeploymentSpec() != null) {
-			app.getAppDeploymentSpec().setId(null);
-			app.getAppDeploymentSpec().getAccessMethods().forEach(a -> a.setId(null));
-			app.getAppDeploymentSpec().getStorageVolumes().forEach(a -> a.setId(null));
-			app.getAppDeploymentSpec().getKubernetesTemplate().setId(null);
-			app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setId(null);
-		}
-	}
+    private void setMissingTemplatesId(Application app, Long appId) {
+        app.getAppConfigurationSpec().getTemplates()
+                .forEach(template -> template.setApplicationId(appId));
+    }
 
-	@Override
-	public Map<String, Long> findAllActiveVersionNumbers(String name) {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("Application name cannot be null or empty");
-		}
-		Map<String, Long> versions = new HashMap<>();
-		applicationRepository.findByName(name).stream()
-				.filter(app -> ApplicationState.ACTIVE.equals(app.getState()))
-				.forEach(app ->
-					versions.put(
-						app.getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
-						app.getId())
-		);
-		return versions;
-	}
+    public static void clearIds(Application app) {
+        if (app.getConfigWizardTemplate() != null) {
+            app.getConfigWizardTemplate().setId(null);
+        }
+        if (app.getConfigUpdateWizardTemplate() != null) {
+            app.getConfigUpdateWizardTemplate().setId(null);
+        }
+        if (app.getAppConfigurationSpec() != null) {
+            app.getAppConfigurationSpec().setId(null);
+            app.getAppConfigurationSpec().getTemplates().forEach(a -> a.setId(null));
+        }
+        if (app.getAppDeploymentSpec() != null) {
+            app.getAppDeploymentSpec().setId(null);
+            app.getAppDeploymentSpec().getAccessMethods().forEach(a -> a.setId(null));
+            app.getAppDeploymentSpec().getStorageVolumes().forEach(a -> a.setId(null));
+            app.getAppDeploymentSpec().getKubernetesTemplate().setId(null);
+            app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setId(null);
+        }
+    }
 
+    @Override
+    public Map<String, Long> findAllActiveVersionNumbers(String name) {
+        if (!StringUtils.hasText(name)) {
+            throw new IllegalArgumentException("Application name cannot be null or empty");
+        }
+        Map<String, Long> versions = new HashMap<>();
+        applicationRepository.findByName(name).stream()
+                .filter(app -> ApplicationState.ACTIVE.equals(app.getState()))
+                .forEach(app ->
+                        versions.put(
+                                app.getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+                                app.getId())
+                );
+        return versions;
+    }
+
+    @Override
+    public void checkAndUpdateConfigurationTemplate(Application application) {
+        application.getConfigWizardTemplate().setTemplate(
+                configurationTemplateSanitizerService.sanitizeConfigurationJson(application.getConfigWizardTemplate().getTemplate())
+        );
+    }
+
+    @Override
+    public void checkAndUpdateAllConfigurationTemplates() {
+        findAll().forEach(app -> {
+            log.debug("Sanitize configuration template keys for app: {}", app.getId());
+            if (app.getConfigWizardTemplate() != null) {
+                app.getConfigWizardTemplate().setTemplate(configurationTemplateSanitizerService.sanitizeConfigurationJson(app.getConfigWizardTemplate().getTemplate()));
+                log.debug("Updated configuration template: {}", app.getConfigWizardTemplate().getTemplate());
+            }
+            if (app.getConfigUpdateWizardTemplate() != null) {
+                app.getConfigUpdateWizardTemplate().setTemplate(configurationTemplateSanitizerService.sanitizeConfigurationJson(app.getConfigUpdateWizardTemplate().getTemplate()));
+            }
+            applicationRepository.save(app);
+        });
+    }
 }

@@ -7,11 +7,13 @@ import lombok.Setter;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class DomainGroupViewS {
+public class DomainGroupViewS implements Serializable {
 
     @NotNull
     private Long id;

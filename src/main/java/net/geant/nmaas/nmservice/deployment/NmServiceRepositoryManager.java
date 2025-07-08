@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.Identifier;
@@ -76,7 +76,7 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void updateServiceState(Identifier deploymentId, NmServiceDeploymentState state) {
+    public void updateServiceState(Identifier deploymentId, ServiceDeploymentState state) {
         T nmServiceInfo = repository.findByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setState(state);
@@ -99,7 +99,7 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         repository.save(nmServiceInfo);
     }
 
-    public NmServiceDeploymentState loadCurrentState(Identifier deploymentId) {
+    public ServiceDeploymentState loadCurrentState(Identifier deploymentId) {
         return repository.getStateByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }

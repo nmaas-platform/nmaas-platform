@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.repository;
 
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +25,7 @@ public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRep
     Optional<T> findByDescriptiveDeploymentId(Identifier descriptiveDeploymentId);
 
     @Query("SELECT n.state FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
-    Optional<NmServiceDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+    Optional<ServiceDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
     @Query("SELECT n.domain FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<String> getDomainByDeploymentId(@Param("deploymentId") Identifier deploymentId);

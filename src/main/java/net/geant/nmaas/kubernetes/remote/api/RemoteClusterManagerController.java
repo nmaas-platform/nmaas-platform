@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/api/management/cluster")
@@ -47,11 +48,14 @@ public class RemoteClusterManagerController {
 
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR') || hasRole('ROLE_DOMAIN_ADMIN')")
     @PostMapping
-    public RemoteClusterView createKubernetesCluster(@RequestPart("file") MultipartFile file, @RequestPart("data") String viewString) {
+    public RemoteClusterView createKubernetesCluster(@RequestPart("file") MultipartFile file,
+                                                     @RequestPart("data") String viewString,
+                                                     @RequestPart("createNamespace") String createNamespace) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             RemoteClusterView cluster = objectMapper.readValue(viewString, RemoteClusterView.class);
-            return remoteClusterManager.saveCluster(cluster, file);
+            final boolean createNamespaceFlag = Objects.isNull(createNamespace) ? Boolean.FALSE : Boolean.valueOf(createNamespace);
+            return remoteClusterManager.processNewCluster(cluster, file, createNamespaceFlag);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
