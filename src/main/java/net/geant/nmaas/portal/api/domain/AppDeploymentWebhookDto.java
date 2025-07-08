@@ -3,17 +3,14 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserDomainAssignmentWebhookDto {
+public class AppDeploymentWebhookDto {
 
-    private UserView user;
-    private DomainView domain;
-    private Role role;
-    private String action;
+    private AppDeploymentView appDeployment;
     private WebhookEventType webhookEventType;
 }

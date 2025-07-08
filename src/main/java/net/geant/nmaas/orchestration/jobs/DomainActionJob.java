@@ -42,7 +42,7 @@ public class DomainActionJob extends WebhookJob {
                 return;
             }
 
-            callWebhook(webhook, new DomainActionDto(domain, action));
+            callWebhook(webhook, new DomainActionDto(domain, action, WebhookEventType.DOMAIN_ACTION));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
