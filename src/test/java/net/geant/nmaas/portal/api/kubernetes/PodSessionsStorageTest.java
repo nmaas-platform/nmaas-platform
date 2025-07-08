@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
 import net.geant.nmaas.kubernetes.shell.PodSessionsStorage;
-import net.geant.nmaas.kubernetes.AsyncConnector;
-import net.geant.nmaas.kubernetes.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.shell.AsyncConnector;
+import net.geant.nmaas.kubernetes.shell.AsyncConnectorFactory;
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;

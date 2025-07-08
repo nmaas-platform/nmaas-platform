@@ -28,7 +28,7 @@ public class GitLabEventsListenerIntTest {
     private ApplicationEventPublisher publisher;
 
     @Test
-    public void addMemberToProjectGitlabEventShouldDelegateToGitConfigHandlerMethods() {
+    void addMemberToProjectGitlabEventShouldDelegateToGitConfigHandlerMethods() {
         AddUserToRepositoryGitlabEvent event = new AddUserToRepositoryGitlabEvent(
                 "source",
                 "username",
@@ -44,7 +44,7 @@ public class GitLabEventsListenerIntTest {
     }
 
     @Test
-    public void removeMemberFromProjectGitlabEventShouldDelegateToGitConfigHandlerMethod() {
+    void removeMemberFromProjectGitlabEventShouldDelegateToGitConfigHandlerMethod() {
         RemoveUserFromRepositoryGitlabEvent event = new RemoveUserFromRepositoryGitlabEvent(
                 "source",
                 "username",

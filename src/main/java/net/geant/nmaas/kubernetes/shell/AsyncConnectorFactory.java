@@ -1,0 +1,38 @@
+package net.geant.nmaas.kubernetes.shell;
+
+import io.fabric8.kubernetes.client.KubernetesClient;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+/**
+ * This object is responsible for creating connectors to instances
+ * currently utilizes Kubernetes Connector
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class AsyncConnectorFactory {
+
+    private final KubernetesApiClientFactory configFactory;
+
+    public AsyncConnector preparePodShellConnection(AppInstance appInstance, String podName) {
+        final String namespace = appInstance.getDomain().getCodename();
+        return preparePodShellConnection(namespace, podName);
+    }
+
+    public AsyncConnector preparePodShellConnection(AppInstance appInstance) {
+        return preparePodShellConnection(appInstance, "default");
+    }
+
+    public AsyncConnector preparePodShellConnection(String namespace, String podName) {
+        log.info("Attempting to connect to Kubernetes pod (namespace: {}, pod: {})", namespace, podName);
+        KubernetesClient client = configFactory.getClient();
+        log.info("K8s client connected to API version {}", StringUtils.join(client.getKubernetesVersion().getMajor(), ".", client.getKubernetesVersion().getMinor()));
+        return new PodShellConnector(client, namespace, podName);
+    }
+
+}

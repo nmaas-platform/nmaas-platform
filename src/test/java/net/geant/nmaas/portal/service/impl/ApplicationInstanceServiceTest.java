@@ -46,16 +46,15 @@ import static org.mockito.Mockito.when;
 
 public class ApplicationInstanceServiceTest {
 
-    AppInstanceRepository appInstanceRepo = mock(AppInstanceRepository.class);
-    ApplicationService applications = mock(ApplicationService.class);
-    DomainService domains = mock(DomainService.class);
-    UserService users = mock(UserService.class);
-    ApplicationSubscriptionService applicationSubscriptions = mock(ApplicationSubscriptionService.class);
-    DomainServiceImpl.CodenameValidator validator = mock(DomainServiceImpl.CodenameValidator.class);
-    ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
-    ApplicationInstanceUpgradeService applicationInstanceUpgradeService = mock(ApplicationInstanceUpgradeService.class);
-    AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
-
+    private final AppInstanceRepository appInstanceRepo = mock(AppInstanceRepository.class);
+    private final ApplicationService applications = mock(ApplicationService.class);
+    private final DomainService domains = mock(DomainService.class);
+    private final UserService users = mock(UserService.class);
+    private final ApplicationSubscriptionService applicationSubscriptions = mock(ApplicationSubscriptionService.class);
+    private final DomainServiceImpl.CodenameValidator validator = mock(DomainServiceImpl.CodenameValidator.class);
+    private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+    private final ApplicationInstanceUpgradeService applicationInstanceUpgradeService = mock(ApplicationInstanceUpgradeService.class);
+    private final AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
 
     ApplicationInstanceServiceImpl applicationInstanceService = new ApplicationInstanceServiceImpl(
             appInstanceRepo,
@@ -69,21 +68,20 @@ public class ApplicationInstanceServiceTest {
             appLifecycleManager
     );
 
-
     @Test
     void createByIdsMethodShouldThrowObjectNotFoundExceptionDueToApplicationObjectDoNotExists() {
+        when(applications.findApplication(anyLong())).thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> {
-            when(applications.findApplication(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.create((long) 0, (long) 0, "test", true);
         });
     }
 
     @Test
     void createByIdsMethodShouldThrowObjectNotFoundExceptionDueToDomainObjectDoNotExists() {
+        Application app = new Application("test", "testVersion");
+        when(applications.findApplication(anyLong())).thenReturn(Optional.of(app));
+        when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> {
-            Application app = new Application("test", "testVersion");
-            when(applications.findApplication(anyLong())).thenReturn(Optional.of(app));
-            when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.create((long) 0, (long) 0, "test", true);
         });
     }
@@ -98,64 +96,64 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void createMethodShouldThrowIllegalArgumentExceptionDueToDomainIdIsNull() {
+        Application app = new Application((long) 1, "test", "testVersion");
+        Domain domain = new Domain("test", "test");
         assertThrows(IllegalArgumentException.class, () -> {
-            Application app = new Application((long) 1, "test", "testVersion");
-            Domain domain = new Domain("test", "test");
             applicationInstanceService.create(domain, app, "test", true);
         });
     }
 
     @Test
     void createMethodShouldThrowIllegalArgumentExceptionDueToApplicationIsNull() {
+        Domain domain = new Domain((long) 1, "test", "test");
         assertThrows(IllegalArgumentException.class, () -> {
-            Domain domain = new Domain((long) 1, "test", "test");
             applicationInstanceService.create(domain, null, "test", true);
         });
     }
 
     @Test
     void createMethodShouldThrowIllegalArgumentExceptionDueToApplicationIdIsNull() {
+        Domain domain = new Domain((long) 1, "test", "test");
+        Application application = new Application("test", "testVersion");
         assertThrows(IllegalArgumentException.class, () -> {
-            Domain domain = new Domain((long) 1, "test", "test");
-            Application application = new Application("test", "testVersion");
             applicationInstanceService.create(domain, application, "test", true);
         });
     }
 
     @Test
     void createMethodShouldThrowIllegalArgumentExceptionDueToNameIsInvalid() {
+        Domain domain = new Domain((long) 1, "test", "test");
+        Application application = new Application((long) 1, "test", "testVersion");
+        when(validator.valid(anyString())).thenReturn(false);
         assertThrows(IllegalArgumentException.class, () -> {
-            Domain domain = new Domain((long) 1, "test", "test");
-            Application application = new Application((long) 1, "test", "testVersion");
-            when(validator.valid(anyString())).thenReturn(false);
             applicationInstanceService.create(domain, application, "test", true);
         });
     }
 
     @Test
     void createMethodShouldThrowApplicationSubscriptionNotActiveExceptionDueToMissingSubscriptionOrSubscriptionNotActive() {
+        Domain domain = new Domain((long) 1, "test", "test");
+        domain.setApplicationStatePerDomain(new ArrayList<>());
+        Application application = new Application((long) 1, "test", "testVersion");
+        when(validator.valid(anyString())).thenReturn(true);
+        when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(false);
+        when(applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)).thenReturn(true);
         assertThrows(ApplicationSubscriptionNotActiveException.class, () -> {
-            Domain domain = new Domain((long) 1, "test", "test");
-            domain.setApplicationStatePerDomain(new ArrayList<>());
-            Application application = new Application((long) 1, "test", "testVersion");
-            when(validator.valid(anyString())).thenReturn(true);
-            when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(false);
-            when(applicationStatePerDomainService.isApplicationEnabledInDomain(domain, application)).thenReturn(true);
             applicationInstanceService.create(domain, application, "test", true);
         });
     }
 
     @Test
     void createMethodShouldThrowIllegalArgumentExceptionDueToApplicationDisabledInDomain() {
+        ApplicationBase applicationBase = new ApplicationBase(1L, "test");
+        ApplicationStatePerDomain appState = new ApplicationStatePerDomain(applicationBase, false);
+        Domain domain = new Domain(1L, "test-domain", "test-domain");
+        List<ApplicationStatePerDomain> appStateList = new ArrayList<>();
+        appStateList.add(appState);
+        domain.setApplicationStatePerDomain(appStateList);
+        Application application = new Application((long) 1, "test", "testVersion");
+        when(validator.valid(anyString())).thenReturn(true);
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationBase applicationBase = new ApplicationBase(1L, "test");
-            ApplicationStatePerDomain appState = new ApplicationStatePerDomain(applicationBase, false);
-            Domain domain = new Domain(1L, "test-domain", "test-domain");
-            List<ApplicationStatePerDomain> appStateList = new ArrayList<>();
-            appStateList.add(appState);
-            domain.setApplicationStatePerDomain(appStateList);
-            Application application = new Application((long) 1, "test", "testVersion");
-            when(validator.valid(anyString())).thenReturn(true);
             applicationInstanceService.create(domain, application, "test", true);
         });
     }
@@ -314,8 +312,8 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void findAllByOwnerByUserIdMethodShouldThrowObjectNotFoundExceptionWhenThereIsNoUser() {
+        when(users.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> {
-            when(users.findById(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.findAllByOwner((long) 0);
         });
     }
@@ -338,8 +336,8 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void findAllByOwnerByUserObjectShouldThrowIllegalArgumentExceptionDueToInvalidId() {
+        User user = new User("test", true);
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("test", true);
             applicationInstanceService.findAllByOwner(user);
         });
     }
@@ -361,8 +359,8 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void findAllByDomainByIdShouldThrowObjectNotFoundExceptionExceptionDueToDomainNotExist() {
+        when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> {
-            when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.findAllByDomain((long) 0);
         });
     }
@@ -382,8 +380,8 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void findAllByDomainByDomainObjectShouldThrowIllegalArgumentExceptionDueToMissingIdOfDomain() {
+        Domain domain = new Domain("test", "test");
         assertThrows(IllegalArgumentException.class, () -> {
-            Domain domain = new Domain("test", "test");
             applicationInstanceService.findAllByDomain(domain);
         });
     }
@@ -402,8 +400,8 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void getDomainShouldThrowObjectNotFoundExceptionExceptionDueToDomainNotExist() {
+        when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> {
-            when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.getDomain((long) 0);
         });
     }
@@ -457,17 +455,17 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void findAllByOwnerAtDomainShouldThrowObjectNotFoundExceptionExceptionDueToMissingDomain() {
+        when(users.findById(anyLong())).thenReturn(Optional.of(mock(User.class)));
+        when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> {
-            when(users.findById(anyLong())).thenReturn(Optional.of(mock(User.class)));
-            when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.findAllByOwner((long) 0, (long) 0);
         });
     }
 
     @Test
     void findAllByOwnerAtDomainShouldThrowObjectNotFoundExceptionExceptionDueToMissingUser() {
+        when(users.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(ObjectNotFoundException.class, () -> {
-            when(users.findById(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.findAllByOwner((long) 0, (long) 0);
         });
     }
@@ -507,8 +505,8 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void findAllByOwnerAtDomainCalledWithObjectShouldShouldThrowIllegalArgumentExceptionDueToMissingUserId() {
+        User user = new User("test", true);
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("test", true);
             applicationInstanceService.findAllByOwnerAndDomain(user, mock(Domain.class));
         });
     }
@@ -524,9 +522,9 @@ public class ApplicationInstanceServiceTest {
 
     @Test
     void findAllByOwnerAtDomainCalledWithObjectShouldShouldThrowIllegalArgumentExceptionDueToMissingDomainId() {
+        User user = new User("test", true);
+        Domain domain = new Domain("test", "test");
         assertThrows(IllegalArgumentException.class, () -> {
-            User user = new User("test", true);
-            Domain domain = new Domain("test", "test");
             applicationInstanceService.findAllByOwnerAndDomain(user, domain);
         });
     }

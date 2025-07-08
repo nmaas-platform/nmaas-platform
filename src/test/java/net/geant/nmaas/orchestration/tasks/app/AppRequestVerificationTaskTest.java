@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManager;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -7,7 +8,6 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -22,32 +22,33 @@ import static org.mockito.Mockito.when;
 
 public class AppRequestVerificationTaskTest {
 
-    private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
-    private AppDeploymentRepository deployments = mock(AppDeploymentRepository.class);
-    private ApplicationRepository applications = mock(ApplicationRepository.class);
+    private final NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
+    private final AppDeploymentRepository deployments = mock(AppDeploymentRepository.class);
+    private final ApplicationRepository applications = mock(ApplicationRepository.class);
+    private final RemoteClusterManager remoteClusterManager = mock(RemoteClusterManager.class);
 
-    private AppRequestVerificationTask task;
+    private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
+    private static final Identifier DEPLOYMENT_ID_2 = Identifier.newInstance("deploymentId2");
 
-    private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
-
-    @BeforeEach
-    public void setup() {
-        task = new AppRequestVerificationTask(deploy, deployments, applications);
-    }
+    private final AppRequestVerificationTask task = new AppRequestVerificationTask(deployments, applications, remoteClusterManager, deploy);
 
     @Test
-    public void shouldTriggerRequestVerify() throws InterruptedException {
-        when(deployments.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().applicationId(Identifier.newInstance(10L)).build()));
+    void shouldTriggerRequestVerify() throws InterruptedException {
+        when(deployments.findByDeploymentId(DEPLOYMENT_ID)).thenReturn(Optional.of(AppDeployment.builder().applicationId(Identifier.newInstance(10L)).build()));
         when(applications.findById(any(Long.class))).thenReturn(Optional.of(new Application()));
-        task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
+        when(remoteClusterManager.clusterExists(any())).thenReturn(true);
+
+        task.trigger(new AppVerifyRequestActionEvent(this, DEPLOYMENT_ID));
+
         verify(deploy, times(1)).verifyRequest(any(Identifier.class), any(AppDeployment.class), isNull());
     }
 
     @Test
-    public void shouldNotTriggerRequestVerifyIfExceptionRaised() throws InterruptedException {
-        when(deployments.findByDeploymentId(deploymentId2)).thenReturn(Optional.empty());
-        task.trigger(new AppVerifyRequestActionEvent(this, deploymentId2));
+    void shouldNotTriggerRequestVerifyIfExceptionRaised() throws InterruptedException {
+        when(deployments.findByDeploymentId(DEPLOYMENT_ID_2)).thenReturn(Optional.empty());
+
+        task.trigger(new AppVerifyRequestActionEvent(this, DEPLOYMENT_ID_2));
+
         verifyNoMoreInteractions(deploy);
     }
 

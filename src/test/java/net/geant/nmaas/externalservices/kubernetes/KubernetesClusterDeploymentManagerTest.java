@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.kubernetes;
 
-import net.geant.nmaas.externalservices.kubernetes.entities.NamespaceConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;

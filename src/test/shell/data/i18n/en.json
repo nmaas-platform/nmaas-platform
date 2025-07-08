@@ -22,10 +22,16 @@
     "EXPIRED_TIME" : "Session expires in",
     "ADVANCED" : "Advanced",
     "BULK_DEPLOYMENT" : "Deploy bulk application",
-    "BULK_DEPLOYMENT_DOMAIN" : "Deploy bulk domains",
+    "BULK_DEPLOYMENT_DOMAIN" : " Bulk deployments",
     "DOMAIN_GROUPS" : "Domain groups",
     "PAST_BULK_DOMAIN" : "Past domains bulk",
-    "PAST_BULK_APP" : "Past application bulk"
+    "PAST_BULK_APP" : "Past application bulk",
+    "DASHBOARD": "Dashboard",
+    "LIST": "List",
+    "GROUP": "Group",
+    "CATALOG": "Catalog",
+    "ADMIN_PANEL": "Admin panel",
+    "USER_PANEL": "User panel"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -109,6 +115,7 @@
     "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
+    "ASSIGN": "Assign to domain?",
     "TITLE": "Kubernetes cluster configuration",
     "HELM": "Helm",
     "HOST_ADDRESS": "REST Host address",
@@ -192,8 +199,22 @@
     "UP" : "Up",
     "DOWN" : "Down",
     "UNKNOWN" : "Unknown",
+    "CONTACT_MAIL" : "Contact mail",
     "DETAILS" : "Details",
-    "STATE_SINCE" : "State last change"
+    "STATE_SINCE" : "Last state change",
+    "REMOVE" : "Remove cluster",
+    "FILE": "Kubernetes config",
+    "WIZARD" : {
+      "ADD" : "Adding new remote cluster",
+      "STEP_1" : "General information",
+      "STEP_2" : "Basic cluster settings",
+      "STEP_3" : "Advanced cluster settings",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area.",
+      "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
+      "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
+      "TOOLTIP_2" : "All fields must be fill"
+    }
   },
   "GITLAB": {
     "TITLE": "GitLab configuration",
@@ -297,8 +318,9 @@
     "DEPLOYED": "Deployed instances",
     "UNDEPLOYED": "Undeployed instances",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "SHOW_MY": "Show only my",
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
-    "UNDEPLOYED_VISIBLE": "Show undeployed instances",
+    "UNDEPLOYED_VISIBLE": "Show undeployed",
     "SORT": "Sort",
     "SHOW_CONFIG_BUTTON" : "Show configuration",
     "MANUAL_UPDATE" : {
@@ -313,6 +335,14 @@
       "RATING": "Rating",
       "POPULAR": "Popularity",
       "DATE" : "Date added"
+    },
+    "RESUME": "Resume",
+    "PAUSE": "Pause",
+    "CONFIRM_PAUSE": {
+      "MESSAGE": "Are you sure you want to pause this instance?",
+      "HEADER": "Confirmation",
+      "ACCEPT": "Yes",
+      "REJECT": "No"
     }
   },
   "MONITOR": {
@@ -441,7 +471,8 @@
     "EDIT_BUTTON": "Edit",
     "REMOVE_BUTTON": "Remove",
     "DEFAULT_DOMAIN": "Default domain",
-    "PREFERENCES": "Preferences"
+    "PREFERENCES": "Preferences",
+    "PASSWORD": "Password"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Privileges",
@@ -516,7 +547,9 @@
     "DEPLOY_BUTTON": "Deploy",
     "USE_DEFAULT_VERSION": "Use default version",
     "SELECT_VERSION": "Select version",
-    "AUTO_UPGRADES_ENABLED": "Enable automatic upgrades"
+    "AUTO_UPGRADES_ENABLED": "Enable automatic upgrades",
+    "REMOTE_CLUSTER" : "Use remote cluster",
+    "SELECT_CLUSTER": "Remote location"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Add members",
@@ -638,6 +671,12 @@
       "APP_RESTART_PROGRESS": "Application restart in progress",
       "APP_RESTART_SUCCESS": "Application restarted successfully",
       "APP_RESTART_FAILED": "Application restart failed",
+      "APP_PAUSE_PROGRESS": "Application pause in progress",
+      "APP_PAUSE_SUCCESS": "Application paused successfully",
+      "APP_PAUSE_FAILED": "Application pause failed",
+      "APP_RESUME_PROGRESS": "Application resume in progress",
+      "APP_RESUME_SUCCESS": "Application resumed successfully",
+      "APP_RESUME_FAILED": "Application resume failed",
       "APP_UPDATE_PROGRESS": "Application configuration update in progress",
       "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
       "APP_UPDATE_FAILED": "Application configuration update failed",
@@ -661,6 +700,7 @@
       "RUNNING": "Your application is now active. You can access it using the <i>Access</i> option from the <i>Actions</i> menu. <br>Use the <i>Configure</i> and <i>Members</i> options to update the configuration and the list of application users respectively.",
       "UNDEPLOYING": "Your application is being deactivated. This process may take up to several minutes",
       "DONE": "Application deactivated",
+      "PAUSED": "Your application is now paused. Use the <i>Resume</i> option to bring it back up again",
       "FAILURE": "",
       "UNKNOWN": "Unknown state of application. <br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>.",
       "REMOVED": "Application removed"
@@ -973,7 +1013,12 @@
     "CONTACT_TITLE": "Contact us",
     "CHANGELOG_TITLE": "Current software version and changelog",
     "CONTACT_DESC": "Contact form offers an easy way to get in touch with the nmaas team. Choose the type of form that is most suitable for your request.",
-    "CHANGELOG_DESC": "Below you will find detailed information about the current nmaas version and summary of changes introduced in previous software releases."
+    "CHANGELOG_DESC": "Below you will find detailed information about the current nmaas version and summary of changes introduced in previous software releases.",
+    "ANNOUNCE": "nmaas-announce",
+    "ANNOUNCE_DESC": " - for nmaas-related announcements sent out by the nmaas Team members,",
+    "USERS": "nmaas-users",
+    "USERS_DESC": " - for discussions and message exchange between nmaas users and the nmaas Team.",
+    "CONTACT_P": "Join the mailing list of your interest: "
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Latest release",
@@ -1069,7 +1114,8 @@
     "ANTI_SLAVERY": "GÉANT Anti-Slavery Policy",
     "PRIVACY": "Privacy Policy",
     "AUP": "Acceptable Use Policy",
-    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3)."
+    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3).",
+    "DOCUMENTATION": "Documentation"
   },
   "FILTER": {
     "TAGS": "Tags",
@@ -1087,6 +1133,7 @@
     "RUNNING": "Active",
     "UNDEPLOYING": "Deactivation in progress",
     "DONE": "Deactivated",
+    "PAUSED": "Paused",
     "FAILURE": "Failure",
     "UNKNOWN": "Unknown",
     "REMOVED": "Removed",
@@ -1259,7 +1306,9 @@
       "USER_ID" : "User id",
       "EMAIL" : "Email",
       "USER_NAME" : "User name",
-      "COMPLETION_DATE" : "Completion date"
+      "COMPLETION_DATE" : "Completion date",
+      "NEW_DEPLOYMENT": "New deployment",
+      "SHOW_ALL": "Show all"
     },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
@@ -1312,5 +1361,62 @@
   },
   "SHARED" : {
     "TOGGLE" : "Toggle all"
+  },
+  "WEBHOOKS" : {
+    "TITLE" : "Webhooks",
+    "TITLE_SHORT" : "Webhook",
+    "TITLE_NEW": "New webhook",
+    "ID" : "Id",
+    "NAME" : "Name",
+    "TARGET_URL" : "Target url",
+    "TYPE" : "Webhook type",
+    "TOKEN" : "Token value",
+    "AUTH" : "Authorization header",
+    "DOMAIN_ACTION" : "Domain action",
+    "DOMAIN_GROUP_ACTION" : "Domain group action",
+    "APPLICATION_DEPLOYMENT" : "Application deployment",
+    "USER_ASSIGNMENT" : "User assignment",
+    "NEW" : "Add webhook",
+    "DETAILS" : "Webhooks details",
+    "SAVE" : "Save",
+    "REMOVE" : "Remove",
+    "AUTH_REQUIRED": "Auth required"
+  },
+  "DASHBOARD": {
+    "NUMBERS_OF_USERS": "Current number of users",
+    "NUMBERS_OF_DOMAINS": "Current number of domains",
+    "NUMBERS_OF_DEPLOYED_APP": "Current number of deployed applications",
+    "APP_DEPLOYMENTS": "Application deployments",
+    "MOST_POPULAR": "Most popular applications",
+    "LAST_LOGIN": "Last login to the domain",
+    "USER": "User",
+    "LOGIN": "Last login",
+    "NAME": "Name",
+    "VERSION": "Version",
+    "DOMAIN": "Domain",
+    "DEPLOYED_APP": "Number of deployed applications per user",
+    "DEPLOYMENT": "Deployment",
+    "APP_STATUS": "Application status",
+    "ID": "Id",
+    "INSTANCE_NAME": "Instance name",
+    "NEED_UPGRADE": "Need upgrade"
+  },
+  "TOAST": {
+    "SUCCESS_HEADER": "Success",
+    "ERROR_HEADER": "Error",
+    "SUCCESS": {
+      "NEW_DOMAIN": "New domain added",
+      "SETTINGS": "Settings updated",
+      "CLUSTER": "Remote cluster data updated",
+      "NOTIFICATION": "Notification sent",
+      "NEW_WEBHOOK": "New webhook added",
+      "WEBHOOK": "Webhook updated"
+    },
+    "ERROR": {
+      "NEW_DOMAIN": "Failed to add new domain",
+      "SETTINGS": "Settings update failed",
+      "NOTIFICATION": "The message could not be sent.",
+      "WEBHOOK": "Webhook update failed"
+    }
   }
 }

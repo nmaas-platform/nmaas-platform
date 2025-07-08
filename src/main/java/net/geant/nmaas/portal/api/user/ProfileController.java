@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;

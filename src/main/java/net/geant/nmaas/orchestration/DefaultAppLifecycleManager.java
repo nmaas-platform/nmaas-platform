@@ -7,21 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
+import net.geant.nmaas.orchestration.events.app.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -111,7 +105,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void redeployApplication(Identifier deploymentId) {
-        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT, ""));
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, ServiceDeploymentState.INIT, ""));
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
@@ -199,7 +193,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isEmpty()) {
                 newMap.put(
-                        entry.getKey().replace("#", "."),
+                        entry.getKey().replace("_dot_", "."),
                         escapeCommasIfRequired(
                                 addQuotationMarkIfRequired(
                                         replaceHashWithQuote(entry.getValue())))

@@ -14,9 +14,11 @@ ARG USERNAME=nmaas
 ARG USER_UID=1000
 ARG USER_GID=1000
 # Note: Latest version of kubectl may be found at https://github.com/kubernetes/kubernetes/releases
-ARG KUBE_LATEST_VERSION="v1.16.3"
+# renovate: datasource=github-releases depName=kubernetes/kubernetes
+ENV KUBE_LATEST_VERSION=v1.16.3
 # Note: Latest version of helm may be found at https://github.com/kubernetes/helm/releases
-ARG HELM_VERSION="v3.9.3"
+# renovate: datasource=github-releases depName=helm/helm
+ENV HELM_VERSION=v3.18.2
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
 COPY docker/docker_entrypoint.sh /nmaas/scripts/docker_entrypoint.sh
@@ -28,7 +30,7 @@ RUN addgroup -g $USER_GID $USERNAME \
 
 RUN apk --no-cache add gettext postgresql-client \
     && chmod +x /nmaas/scripts/docker_entrypoint.sh \
-    && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
+    && wget -q https://dl.k8s.io/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm

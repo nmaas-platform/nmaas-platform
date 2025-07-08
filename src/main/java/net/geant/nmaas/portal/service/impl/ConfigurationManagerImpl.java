@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
@@ -10,7 +10,7 @@ import net.geant.nmaas.portal.persistent.entity.InternationalizationSimple;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
-import net.geant.nmaas.scheduling.BulkDeploymentScheduleConfig;
+import net.geant.nmaas.scheduling.BulkDeploymentScheduleInit;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -57,8 +57,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
         if (!updatedConfiguration.getBulkDeploymentJobCron().equalsIgnoreCase(configuration.get().getBulkDeploymentJobCron())) {
             // job needs to be recreated
-            scheduleManager.deleteJob(BulkDeploymentScheduleConfig.BULK_DEPLOYMENT_JOB);
-            scheduleManager.createJob(bulkDeploymentJob, BulkDeploymentScheduleConfig.BULK_DEPLOYMENT_JOB, updatedConfiguration.getBulkDeploymentJobCron());
+            scheduleManager.deleteJob(BulkDeploymentScheduleInit.BULK_DEPLOYMENT_JOB);
+            scheduleManager.createJob(bulkDeploymentJob, BulkDeploymentScheduleInit.BULK_DEPLOYMENT_JOB, updatedConfiguration.getBulkDeploymentJobCron());
         }
         repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
     }

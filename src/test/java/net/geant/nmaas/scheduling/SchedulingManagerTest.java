@@ -1,11 +1,11 @@
 package net.geant.nmaas.scheduling;
 
 import net.geant.nmaas.gitlab.GitLabManager;
-import net.geant.nmaas.monitor.targets.GitLabMonitorService;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.TimeFormat;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.targets.GitLabMonitorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.quartz.JobKey;
@@ -33,22 +33,20 @@ public class SchedulingManagerTest {
     private ScheduleManager scheduleManager;
 
     @BeforeEach
-    public void setup() throws Exception{
-        gitLabMonitorService = new GitLabMonitorService();
-        gitLabMonitorService.setGitLabManager(gitLabManager);
-        gitLabMonitorService.setMonitorManager(monitorManager);
-        scheduleManager = new ScheduleManager( scheduler);
+    void setup() throws Exception {
+        gitLabMonitorService = new GitLabMonitorService(monitorManager, gitLabManager);
+        scheduleManager = new ScheduleManager(scheduler);
         when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(false);
     }
 
     @Test
-    public void shouldCreateJob() throws Exception {
+    void shouldCreateJob() throws Exception {
         this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryView);
         verify(scheduler, times(1)).scheduleJob(any(), anySet(), anyBoolean());
     }
 
     @Test
-    public void shouldNotCreateJobWhenJobExists() {
+    void shouldNotCreateJobWhenJobExists() {
         assertThrows(IllegalStateException.class, () -> {
             when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(true);
             this.scheduleManager.createJob(this.gitLabMonitorService, monitorEntryView);
@@ -56,7 +54,7 @@ public class SchedulingManagerTest {
     }
 
     @Test
-    public void shouldUpdateJob() throws Exception {
+    void shouldUpdateJob() throws Exception {
         JobDescriptor jobDescriptor = new JobDescriptor(ServiceType.GITLAB, 3L, TimeFormat.MIN);
         when(scheduler.getTrigger(TriggerKey.triggerKey(ServiceType.GITLAB.getName()))).thenReturn(jobDescriptor.buildTrigger());
         this.scheduleManager.updateJob(monitorEntryView);
@@ -64,7 +62,7 @@ public class SchedulingManagerTest {
     }
 
     @Test
-    public void shouldNotUpdate() throws Exception {
+    void shouldNotUpdate() throws Exception {
         when(scheduler.getTrigger(TriggerKey.triggerKey(ServiceType.GITLAB.getName()))).thenReturn(null);
         this.scheduleManager.updateJob(monitorEntryView);
         verify(scheduler, times(0)).rescheduleJob(any(), any());

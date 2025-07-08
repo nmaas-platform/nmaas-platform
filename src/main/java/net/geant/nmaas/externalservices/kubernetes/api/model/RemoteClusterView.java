@@ -1,14 +1,13 @@
 package net.geant.nmaas.externalservices.kubernetes.api.model;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RemoteClusterView {
+public class RemoteClusterView implements Serializable {
 
     private Long id;
 
@@ -41,7 +40,7 @@ public class RemoteClusterView {
 
     private KClusterState state;
 
-    private OffsetDateTime  currentStateSince;
+    private OffsetDateTime currentStateSince;
 
     private String contactEmail;
 

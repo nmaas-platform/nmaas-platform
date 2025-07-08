@@ -15,6 +15,7 @@ import org.quartz.TriggerBuilder;
 @RequiredArgsConstructor
 @Slf4j
 public class OneTimeJobListener implements JobListener {
+
     private final Scheduler scheduler;
     private final JobKey jobKey;
 
@@ -24,10 +25,12 @@ public class OneTimeJobListener implements JobListener {
     }
 
     @Override
-    public void jobToBeExecuted(JobExecutionContext context) {}
+    public void jobToBeExecuted(JobExecutionContext context) {
+    }
 
     @Override
-    public void jobExecutionVetoed(JobExecutionContext context) {}
+    public void jobExecutionVetoed(JobExecutionContext context) {
+    }
 
     @Override
     public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {

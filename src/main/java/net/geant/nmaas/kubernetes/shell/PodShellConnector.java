@@ -3,7 +3,6 @@ package net.geant.nmaas.kubernetes.shell;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ExecWatch;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.kubernetes.KubernetesConnector;
 
 import java.io.IOException;
 import java.io.InputStream;

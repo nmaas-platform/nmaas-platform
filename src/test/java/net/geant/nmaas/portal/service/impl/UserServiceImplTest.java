@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,11 +61,14 @@ public class UserServiceImplTest {
     @Mock
     DomainGroupService domainGroupService;
 
+    @Mock
+    UserLoginRegisterService userLoginService;
+
     UserServiceImpl userService;
 
     @BeforeEach
     void setup() {
-        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper(), eventPublisher, jwtTokenService,domainGroupService);
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper(), eventPublisher, jwtTokenService, domainGroupService, userLoginService);
         userService.setPortalAddress("portalAddress");
     }
 
@@ -183,7 +187,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void findByIdShouldReturnEmptyOptionalWhenNull(){
+    void findByIdShouldReturnEmptyOptionalWhenNull() {
         assertEquals(Optional.empty(), userService.findById(null));
     }
 
@@ -263,7 +267,7 @@ public class UserServiceImplTest {
     @Test
     void shouldRegisterUserWithGlobalGuestRole() {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
-        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
+        Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, true, false, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?"));
         User user = userService.register(registration, domain, null);
@@ -277,7 +281,7 @@ public class UserServiceImplTest {
     void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain() {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en", false, false, new ArrayList<>(), true, false, true, "0 */1 * * * ?", 2, 60, 10, "", "0 */1 * * * ?"));
-        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
+        Registration registration = new Registration("test", "testpass", "test@test.com", "name", "surname", 1L, true, true);
         Domain globalDomain = new Domain("GLOBAL", "GLOBAL");
         Domain domain = new Domain("Non Global", "NONGLO");
         User user = userService.register(registration, globalDomain, domain);
@@ -333,7 +337,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateShouldPassCorrectly(){
+    void updateShouldPassCorrectly() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         User user = new User("test", true);
         user.setId((long) 0);

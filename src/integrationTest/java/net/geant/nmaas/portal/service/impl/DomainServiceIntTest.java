@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
@@ -16,7 +16,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -52,7 +51,7 @@ public class DomainServiceIntTest {
 
         domainService.createDomain(domainRequest1);
 
-        assertThat(domainService.getDomains().stream().map(Domain::getName).collect(Collectors.toList())).contains("GLOBAL", "domainName");
+        assertThat(domainService.getDomains().stream().map(Domain::getName).toList()).contains("GLOBAL", "domainName");
 
         Long domainId = domainService.findDomain("domainName").orElseThrow().getId();
         domainService.softRemoveDomain(domainId);

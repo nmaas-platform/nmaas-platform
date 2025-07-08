@@ -16,11 +16,11 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.GroupAppListElement;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -133,7 +134,7 @@ public class NotificationManager {
         }
         if (List.of(MailType.APP_DEPLOYED, MailType.APP_UPGRADED, MailType.APP_UPGRADE_POSSIBLE)
                 .contains(mailAttributes.getMailType())) {
-            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName")));
+            mailAttributes.setAddressees(new ArrayList<>(domainService.findUsersWithDomainAdminRole((String) mailAttributes.getOtherAttributes().get("domainName"))));
             if (mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))) {
                 userService.findByUsername((String) mailAttributes.getOtherAttributes().get("owner"))
                         .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));

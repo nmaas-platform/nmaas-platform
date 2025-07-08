@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;

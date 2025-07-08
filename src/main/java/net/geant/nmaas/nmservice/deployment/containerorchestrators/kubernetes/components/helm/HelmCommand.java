@@ -16,6 +16,8 @@ public abstract class HelmCommand implements Command {
     protected static final String HELM_VERSION_2 = "v2";
     protected static final String HELM_VERSION_3 = "v3";
 
+    protected static final String OPTION_KUBECONFIG = "--kubeconfig";
+
     protected String command;
 
     @Override
@@ -24,7 +26,7 @@ public abstract class HelmCommand implements Command {
     }
 
     protected static void addTlsOptionIfRequired(String helmVersion, boolean enableTls, StringBuilder sb) {
-        if (HELM_VERSION_2.equals(helmVersion) && enableTls) {
+        if (helmVersion.startsWith(HELM_VERSION_2) && enableTls) {
             sb.append(SPACE).append(TLS);
         }
     }

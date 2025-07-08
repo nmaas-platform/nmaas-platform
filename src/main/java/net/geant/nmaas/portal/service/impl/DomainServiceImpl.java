@@ -6,17 +6,19 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
-import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
+import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
@@ -26,16 +28,14 @@ import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
+import net.geant.nmaas.portal.persistent.spec.DomainSpecification;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import net.geant.nmaas.scheduling.ScheduleManager;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,8 +84,6 @@ public class DomainServiceImpl implements DomainService {
     private final DomainGroupService domainGroupService;
     private final ApplicationEventPublisher eventPublisher;
     private final DomainAnnotationsRepository domainAnnotationsRepository;
-    private final WebhookEventRepository webhookEventRepository;
-    private final ScheduleManager scheduleManager;
 
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
@@ -103,9 +101,7 @@ public class DomainServiceImpl implements DomainService {
                              ApplicationStatePerDomainService applicationStatePerDomainService,
                              DomainGroupService domainGroupService,
                              ApplicationEventPublisher eventPublisher,
-                             DomainAnnotationsRepository domainAnnotationsRepository,
-                             WebhookEventRepository webhookEventRepository,
-                             ScheduleManager scheduleManager
+                             DomainAnnotationsRepository domainAnnotationsRepository
     ) {
         this.validator = validator;
         this.namespaceValidator = namespaceValidator;
@@ -120,8 +116,6 @@ public class DomainServiceImpl implements DomainService {
         this.domainGroupService = domainGroupService;
         this.eventPublisher = eventPublisher;
         this.domainAnnotationsRepository = domainAnnotationsRepository;
-        this.webhookEventRepository = webhookEventRepository;
-        this.scheduleManager = scheduleManager;
     }
 
     @Override
@@ -129,12 +123,57 @@ public class DomainServiceImpl implements DomainService {
         return domainRepository.findAll()
                 .stream()
                 .filter(domain -> !domain.isDeleted())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
-    public Page<Domain> getDomains(Pageable pageable) {
-        return domainRepository.findAll(pageable);
+    public List<Domain> getDomains(String searchValue) {
+        if (searchValue == null || searchValue.isEmpty()) {
+            return domainRepository.findAll()
+                    .stream()
+                    .filter(domain -> !domain.isDeleted())
+                    .toList();
+        } else {
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            return domainRepository.findAll(searchSpec).stream()
+                    .filter(domain -> !domain.isDeleted())
+                    .toList();
+        }
+    }
+
+    @Override
+    public Page<Domain> getDomains(String searchValue, Pageable pageable) {
+        if (searchValue == null || searchValue.isEmpty()) {
+            return domainRepository.findAll(pageable);
+        } else {
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            return domainRepository.findAll(searchSpec, pageable);
+        }
+    }
+
+    @Override
+    public List<DomainBase> getDomainsBase(String searchValue) {
+        if (searchValue == null || searchValue.isEmpty()) {
+            return this.domainRepository.findAllBaseDomains();
+        } else {
+            log.debug("Searched value = {}", searchValue);
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            List<Domain> domainPage = domainRepository.findAll(searchSpec);
+            return domainPage.stream().map(d -> modelMapper.map(d, DomainBase.class)).toList();
+        }
+
+    }
+
+    @Override
+    public Page<DomainBase> getDomainsBase(Pageable pageable, String searchValue) {
+        if (searchValue == null || searchValue.isEmpty()) {
+            return this.domainRepository.findAllBaseDomainsPageable(pageable);
+        } else {
+            log.debug("Searched value = {}", searchValue);
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
+            return domainPage.map(DomainBase::fromEntity);
+        }
     }
 
     @Override
@@ -197,13 +236,11 @@ public class DomainServiceImpl implements DomainService {
             newDomain.setApplicationStatePerDomain(applicationStatePerDomainList);
             Domain saved = domainRepository.save(newDomain);
             if (!saved.getName().equals(globalDomain)) {
-                eventPublisher.publishEvent(new DomainCreatedEvent(this, new DomainCreatedEvent.DomainSpec(saved.getId(), saved.getName(), saved.getCodename(), request.getAnnotations())));
+                eventPublisher.publishEvent(new DomainCreatedEvent(this, new DomainCreatedEvent.DomainSpec(saved.getId(), saved.getName(), saved.getCodename(), request.getAnnotations()), saved));
             }
-            //call existing webhooks
-            webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION).forEach(id -> scheduleManager.createOneTimeJob(DomainCreationJob.class, "DomainCreation_" + id + "_" + saved.getId(), Map.of("webhookId", id, "domainId", saved.getId())));
             return saved;
         } catch (Exception ex) {
-            throw new ProcessingException("Unable to create new domain with given name or codename.");
+            throw new ProcessingException(String.format("Unable to create new domain with given name or codename %s/%s", request.getName(), request.getCodename()));
         }
     }
 
@@ -289,7 +326,9 @@ public class DomainServiceImpl implements DomainService {
         return findDomain(id).map(toRemove -> {
             dcnRepositoryManager.removeDcnInfo(toRemove.getCodename());
             checkGlobal(toRemove);
+            DomainView domainView = modelMapper.map(toRemove, DomainView.class);
             domainRepository.delete(toRemove);
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainView, true));
             return true;
         }).orElse(false);
     }
@@ -300,26 +339,35 @@ public class DomainServiceImpl implements DomainService {
         String removedSuffix = "_DELETED_" + OffsetDateTime.now();
         return findDomain(domainId).map(domain -> {
             checkGlobal(domain);
+            final DomainView domainViewForEvent = modelMapper.map(domain, DomainView.class);
+
             dcnRepositoryManager.removeDcnInfo(domain.getCodename());
             domain.setDeleted(true);
             domain.setName(domain.getName() + removedSuffix);
             domain.setCodename(domain.getCodename() + removedSuffix);
-            Long domainDcnDetailsId = domain.getDomainDcnDetails().getId();
+
+            final Long domainDcnDetailsId = domain.getDomainDcnDetails().getId();
             domain.setDomainDcnDetails(null);
             domainDcnDetailsRepository.deleteById(domainDcnDetailsId);
-            Long domainTechDetailsId = domain.getDomainTechDetails().getId();
+
+            final Long domainTechDetailsId = domain.getDomainTechDetails().getId();
             domain.setDomainTechDetails(null);
             domainTechDetailsRepository.deleteById(domainTechDetailsId);
+
             removeAllUsersFromDomain(domain);
             removeDomainFromAllGroups(domain);
             domainRepository.save(domain);
+
+            eventPublisher.publishEvent(new DomainRemovalEvent(this, domainViewForEvent, true));
             return true;
         }).orElse(false);
     }
 
     @Override
     public void removeDomainFromAllGroups(Domain domain) {
-        List<Long> idsToDelete = domain.getGroups().stream().map(DomainGroup::getId).collect(Collectors.toList());
+        List<Long> idsToDelete = domain.getGroups().stream()
+                .map(DomainGroup::getId)
+                .collect(Collectors.toList());
         idsToDelete.forEach(id -> {
             domainGroupService.deleteDomainFromGroup(domain, id);
         });
@@ -385,17 +433,17 @@ public class DomainServiceImpl implements DomainService {
         checkParams(domainId, userId);
         checkParams(role);
         //if deleting group_manager role delete also group_domain_admin
-        if(role.equals(ROLE_GROUP_MANAGER)) {
-           Optional<User> user = userService.findById(userId);
-           if(user.isPresent()) {
-               List<UserRole> roles = user.get().getRoles().stream().filter(r -> r.getRole().equals(ROLE_GROUP_DOMAIN_ADMIN)).toList();
+        if (role.equals(ROLE_GROUP_MANAGER)) {
+            Optional<User> user = userService.findById(userId);
+            if (user.isPresent()) {
+                List<UserRole> roles = user.get().getRoles().stream().filter(r -> r.getRole().equals(ROLE_GROUP_DOMAIN_ADMIN)).toList();
                 roles.forEach(r -> {
                     userRoleRepository.deleteBy(userId, r.getDomain().getId(), r.getRole());
                     log.info("Deleting role {} from domain {} for user {} as part of ROLE_GROUP_MANAGER removal", r.getRole(), r.getDomain().getCodename(), userId);
                 });
                 domainGroupService.deleteUserFromAllDomainsGroups(user.get());
                 log.info("Delete user {} from all domain groups", user.get().getId());
-           }
+            }
         }
         userRoleRepository.deleteBy(userId, domainId, role);
     }
@@ -420,11 +468,21 @@ public class DomainServiceImpl implements DomainService {
     }
 
     @Override
-    public Set<Domain> getUserDomains(Long userId) {
+    public Set<Domain> getUserDomains(Long userId, String searchValue) {
         checkParams(userId);
-        return getUser(userId).getRoles().stream()
-                .map(UserRole::getDomain)
-                .collect(Collectors.toSet());
+        if (searchValue == null || searchValue.isEmpty()) {
+            return getUser(userId).getRoles().stream()
+                    .map(UserRole::getDomain)
+                    .collect(Collectors.toSet());
+        } else {
+            Set<Domain> domainFromRoles = getUser(userId).getRoles().stream()
+                    .map(UserRole::getDomain)
+                    .collect(Collectors.toSet());
+            Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
+            List<Domain> domainsFiltered = domainRepository.findAll(searchSpec);
+            return domainsFiltered.stream().filter(domainFromRoles::contains).collect(Collectors.toSet());
+        }
+
     }
 
     @Override
@@ -432,7 +490,7 @@ public class DomainServiceImpl implements DomainService {
         return this.userRoleRepository.findDomainMembers(domain).stream()
                 .filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
                 .map(user -> modelMapper.map(user, UserView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -453,7 +511,7 @@ public class DomainServiceImpl implements DomainService {
                         app.setPvStorageSizeLimit(app.getPvStorageSizeLimit());
                     }
                     return app;
-                }).collect(Collectors.toList())
+                }).toList()
         );
 
         return domain;
@@ -590,5 +648,4 @@ public class DomainServiceImpl implements DomainService {
     private void removeFromDomain(ApplicationBase base, Domain domain) {
         domain.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base));
     }
-
 }

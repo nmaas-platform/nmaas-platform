@@ -67,7 +67,7 @@ public class BulkDeploymentQueueService {
                     if (entryOptional.isPresent()) {
                         String startTime = entryOptional.get().getDetails().get(PROCESSING_TIME);
                         long secondsBetween = Duration.between(OffsetDateTime.parse(startTime), OffsetDateTime.now()).getSeconds();
-                        if (secondsBetween > configurationManager.getConfiguration().getBulkDeploymentTimeThreshold() ) {
+                        if (secondsBetween > configurationManager.getConfiguration().getBulkDeploymentTimeThreshold()) {
                             log.warn("Deployment {} exceeded the time limit for deployment. Entire bulk is going to be canceled.", e.getDeploymentId());
                             cancelOngoingBulkDeployment(e.getBulkEntryId());
                         }
@@ -102,7 +102,8 @@ public class BulkDeploymentQueueService {
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
+                        logSleepError();
+                        Thread.currentThread().interrupt();
                     }
                 });
     }
@@ -127,10 +128,15 @@ public class BulkDeploymentQueueService {
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException ex) {
-                            throw new RuntimeException(ex);
+                            logSleepError();
+                            Thread.currentThread().interrupt();
                         }
                     });
         }
+    }
+
+    private static void logSleepError() {
+        log.error("Exception throw while sleeping ...");
     }
 
     private long getFreeCapacity(long currentBulkId, List<BulkDeploymentQueueEntry> queue) {

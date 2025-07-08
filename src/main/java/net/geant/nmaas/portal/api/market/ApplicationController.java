@@ -18,9 +18,9 @@ import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.exception.MarketException;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MarketException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
@@ -326,6 +326,7 @@ public class ApplicationController extends AppBaseController {
         application.setCreationDate(LocalDateTime.now());
         this.applicationService.setMissingProperties(application, appId);
         ApplicationServiceImpl.clearIds(application);
+        this.applicationService.checkAndUpdateConfigurationTemplate(application);
         this.applicationService.update(application);
 
         // create, add and persist new application version

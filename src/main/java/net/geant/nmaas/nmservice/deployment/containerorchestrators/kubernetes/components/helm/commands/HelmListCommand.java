@@ -15,13 +15,17 @@ public class HelmListCommand extends HelmCommand {
      * @param helmVersion version of Helm in use
      * @param namespace namespace to install the release into
      * @param enableTls flag indicating if tls option should be added
+     * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
-    public static HelmListCommand command(String helmVersion, String namespace, boolean enableTls) {
+    public static HelmListCommand command(String helmVersion, String namespace, boolean enableTls, String kubeConfigPath) {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(LIST).append(SPACE).append(LIST_OPTION);
-        if (HELM_VERSION_3.equals(helmVersion)) {
+        if (helmVersion.startsWith(HELM_VERSION_3)) {
             sb.append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
+        }
+        if (kubeConfigPath != null && !kubeConfigPath.isEmpty()) {
+            sb.append(SPACE).append(OPTION_KUBECONFIG).append(SPACE).append(kubeConfigPath);
         }
         addTlsOptionIfRequired(helmVersion, enableTls, sb);
         return new HelmListCommand(sb.toString());

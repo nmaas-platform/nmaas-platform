@@ -2,7 +2,7 @@ package net.geant.nmaas.kubernetes.shell.observable;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.kubernetes.AsyncConnector;
+import net.geant.nmaas.kubernetes.shell.AsyncConnector;
 import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
 
 import java.io.BufferedReader;

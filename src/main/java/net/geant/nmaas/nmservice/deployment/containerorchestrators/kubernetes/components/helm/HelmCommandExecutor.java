@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmDeleteCommand;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.commands.HelmInstallCommand;
@@ -22,29 +23,35 @@ import java.util.List;
 import java.util.Map;
 
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand.HELM_VERSION_2;
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommand.HELM_VERSION_3;
 
+@NoArgsConstructor
 @Component
 public class HelmCommandExecutor {
 
-    @Autowired
     private CommandExecutor commandExecutor;
-
     @Setter
-    @Value("${helm.version:v3}")
     private String helmVersion;
-
     @Setter
-    @Value("${helm.repositoryName}")
     private String helmRepositoryName;
-
-    @Value("${helm.enableTls:false}")
     private Boolean enableTls;
 
-    void executeHelmInstallCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
-        executeInstall(namespace, releaseName, template, arguments);
+    @Autowired
+    public HelmCommandExecutor(CommandExecutor commandExecutor,
+                               @Value("${helm.version:v3}") String helmVersion,
+                               @Value("${helm.repositoryName}") String helmRepositoryName,
+                               @Value("${helm.enableTls:false}") Boolean enableTls) {
+        this.commandExecutor = commandExecutor;
+        this.helmVersion = helmVersion;
+        this.helmRepositoryName = helmRepositoryName;
+        this.enableTls = enableTls;
     }
 
-    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
+    void executeHelmInstallCommand(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
+        executeInstall(namespace, releaseName, template, arguments, kubeConfigPath);
+    }
+
+    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments, String kubeConfigPath) {
         try {
             HelmInstallCommand command = HelmInstallCommand.commandWithRepo(
                     helmVersion,
@@ -53,7 +60,8 @@ public class HelmCommandExecutor {
                     arguments,
                     constructChartNameWithRepo(template.getChart().getName()),
                     template.getChart().getVersion(),
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             commandExecutor.execute(command);
         } catch (CommandExecutionException e) {
@@ -65,13 +73,13 @@ public class HelmCommandExecutor {
         return chartName.contains("/") ? chartName : helmRepositoryName + "/" + chartName;
     }
 
-    void executeHelmDeleteCommand(String namespace, String releaseName) {
+    void executeHelmDeleteCommand(String namespace, String releaseName, String kubeConfigPath) {
         try {
             HelmCommand command;
-            if (HELM_VERSION_2.equals(helmVersion)) {
-                command = HelmDeleteCommand.command(releaseName, enableTls);
-            } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion)) {
-                command = HelmUninstallCommand.command(namespace, releaseName);
+            if (helmVersion.startsWith(HELM_VERSION_2)) {
+                command = HelmDeleteCommand.command(releaseName, enableTls, kubeConfigPath);
+            } else if (helmVersion.startsWith(HELM_VERSION_3)) {
+                command = HelmUninstallCommand.command(namespace, releaseName, kubeConfigPath);
             } else {
                 throw new CommandExecutionException("Unknown Helm version in use: " + helmVersion);
             }
@@ -81,17 +89,18 @@ public class HelmCommandExecutor {
         }
     }
 
-    HelmPackageStatus executeHelmStatusCommand(String namespace, String releaseName) {
-        return executeStatus(namespace, releaseName);
+    HelmPackageStatus executeHelmStatusCommand(String namespace, String releaseName, String kubeConfigPath) {
+        return executeStatus(namespace, releaseName, kubeConfigPath);
     }
 
-    private HelmPackageStatus executeStatus(String namespace, String releaseName) {
+    private HelmPackageStatus executeStatus(String namespace, String releaseName, String kubeConfigPath) {
         try {
             HelmStatusCommand command = HelmStatusCommand.command(
                     helmVersion,
                     namespace,
                     releaseName,
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             String output = commandExecutor.executeWithOutput(command);
             return parseStatus(output);
@@ -101,21 +110,22 @@ public class HelmCommandExecutor {
     }
 
     HelmPackageStatus parseStatus(String output) {
-        if (HELM_VERSION_2.equals(helmVersion) && output.contains("STATUS: DEPLOYED")) {
+        if (helmVersion.startsWith(HELM_VERSION_2) && output.contains("STATUS: DEPLOYED")) {
             return HelmPackageStatus.DEPLOYED;
-        } else if (HelmCommand.HELM_VERSION_3.equals(helmVersion) && output.contains("STATUS: deployed")) {
+        } else if (helmVersion.startsWith(HELM_VERSION_3) && output.contains("STATUS: deployed")) {
             return HelmPackageStatus.DEPLOYED;
         } else {
             return HelmPackageStatus.UNKNOWN;
         }
     }
 
-    public List<String> executeHelmListCommand(String namespace) {
+    public List<String> executeHelmListCommand(String namespace, String kubeConfigPath) {
         try {
             HelmListCommand command = HelmListCommand.command(
                     helmVersion,
                     namespace,
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             String output = commandExecutor.executeWithOutput(command);
             return Arrays.asList(output.split("\n"));
@@ -124,7 +134,7 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template) {
+    void executeHelmUpgradeCommand(String namespace, String releaseName, KubernetesTemplate template, String kubeConfigPath) {
         try {
             HelmUpgradeCommand command = HelmUpgradeCommand.commandWithRepo(
                     helmVersion,
@@ -132,7 +142,8 @@ public class HelmCommandExecutor {
                     releaseName,
                     constructChartNameWithRepo(template.getChart().getName()),
                     template.getChart().getVersion(),
-                    enableTls
+                    enableTls,
+                    kubeConfigPath
             );
             commandExecutor.execute(command);
         } catch (CommandExecutionException e) {

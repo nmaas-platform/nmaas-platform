@@ -18,13 +18,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import static net.geant.nmaas.orchestration.entities.AppAccessMethod.ConditionType.DEPLOYMENT_PARAMETER;
 
 /**
- * This class represents single access method to NMAAS service
+ * This class represents single access method to a nmaas service
  */
 @Getter
 @Setter

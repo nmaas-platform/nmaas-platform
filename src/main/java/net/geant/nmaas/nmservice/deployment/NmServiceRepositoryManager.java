@@ -4,16 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,11 +21,13 @@ import java.util.Optional;
 @Slf4j
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
-    @Autowired
     protected GitLabProjectRepository gitLabProjectRepository;
-
-    @Autowired
     protected NmServiceInfoRepository<T> repository;
+
+    public NmServiceRepositoryManager(GitLabProjectRepository gitLabProjectRepository, NmServiceInfoRepository<T> repository) {
+        this.gitLabProjectRepository = gitLabProjectRepository;
+        this.repository = repository;
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void storeService(T serviceInfo) {
@@ -69,13 +71,12 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         try {
             updateServiceState(event.getDeploymentId(), event.getState());
         } catch (Exception ex) {
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at {}", timestamp, ex);
+            log.error("Error reported at {}", LocalDateTime.now(), ex);
         }
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void updateServiceState(Identifier deploymentId, NmServiceDeploymentState state) {
+    public void updateServiceState(Identifier deploymentId, ServiceDeploymentState state) {
         T nmServiceInfo = repository.findByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setState(state);
@@ -98,7 +99,7 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         repository.save(nmServiceInfo);
     }
 
-    public NmServiceDeploymentState loadCurrentState(Identifier deploymentId) {
+    public ServiceDeploymentState loadCurrentState(Identifier deploymentId) {
         return repository.getStateByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }

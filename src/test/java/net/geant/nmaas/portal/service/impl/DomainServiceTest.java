@@ -6,7 +6,6 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
-import net.geant.nmaas.orchestration.jobs.DomainCreationJob;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
@@ -15,9 +14,9 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.security.EncryptionService;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
+import net.geant.nmaas.portal.events.DomainRemovalEvent;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -25,27 +24,18 @@ import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
-import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistent.repositories.DomainAnnotationsRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import net.geant.nmaas.portal.service.WebhookEventService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
-import net.geant.nmaas.scheduling.ScheduleManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.quartz.JobListener;
-import org.quartz.ListenerManager;
-import org.quartz.Matcher;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -54,7 +44,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,54 +53,41 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-import static org.mockito.Mockito.doNothing;
 
 class DomainServiceTest {
 
-    DomainServiceImpl.CodenameValidator validator;
-    DomainServiceImpl.CodenameValidator namespaceValidator;
-    DomainRepository domainRepository = mock(DomainRepository.class);
+    private final DomainServiceImpl.CodenameValidator validator = new DefaultCodenameValidator("[a-z-]{2,12}");
+    private final DomainServiceImpl.CodenameValidator namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
+    private final DomainRepository domainRepository = mock(DomainRepository.class);
 
-    DomainDcnDetailsRepository domainDcnDetailsRepository = mock(DomainDcnDetailsRepository.class);
-    DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
-    UserService userService = mock(UserService.class);
-    UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
-    DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
-    ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
-    ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
-    ModelMapper modelMapper = new ModelMapper();
+    private final DomainDcnDetailsRepository domainDcnDetailsRepository = mock(DomainDcnDetailsRepository.class);
+    private final DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
+    private final UserService userService = mock(UserService.class);
+    private final UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
+    private final DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
+    private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+    private final ModelMapper modelMapper = new ModelMapper();
 
-    DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
-    DomainGroupService domainGroupService;
-    DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
-    WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
-    Scheduler scheduler = mock(Scheduler.class);
-    ListenerManager listenerManager = mock(ListenerManager.class);
-    ScheduleManager scheduleManager;
-    EncryptionService encryptionService = mock(EncryptionService.class);
-    WebhookEventService webhookEventService;
+    private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
+    private final DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
 
-    DomainService domainService;
+    private DomainGroupService domainGroupService;
+    private DomainService domainService;
 
     @BeforeEach
     void setup() {
-        validator = new DefaultCodenameValidator("[a-z-]{2,12}");
-        namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, modelMapper);
-        scheduleManager = new ScheduleManager( scheduler);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher, modelMapper);
         domainService = new DomainServiceImpl(validator,
-                namespaceValidator, domainRepository,
-                domainDcnDetailsRepository, domainTechDetailsRepository, userService,
-                userRoleRepo, dcnRepositoryManager,
-                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository, webhookEventRepository, scheduleManager);
+                namespaceValidator, domainRepository, domainDcnDetailsRepository, domainTechDetailsRepository,
+                userService, userRoleRepo, dcnRepositoryManager,
+                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
-        webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper);
     }
 
     @Test
@@ -120,7 +96,7 @@ class DomainServiceTest {
         Domain domain = new Domain("GLOBAL", "global");
         when(domainRepository.save(domain)).thenReturn(domain);
 
-        Domain result = this.domainService.createGlobalDomain();
+        Domain result = domainService.createGlobalDomain();
 
         verifyNoInteractions(eventPublisher);
         assertThat("Codename mismatch", result.getCodename().equals("global"));
@@ -130,59 +106,38 @@ class DomainServiceTest {
     void shouldGetGlobalDomain() {
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         when(domainRepository.findByName(anyString())).thenReturn(Optional.of(domain));
-        Domain result = this.domainService.createGlobalDomain();
+        Domain result = domainService.createGlobalDomain();
         assertThat("Codename mismatch", result.getCodename().equals("GLOBAL"));
     }
 
     @Test
     void shouldCreateDomain() throws SchedulerException {
-        // Setup webhook event
-        WebhookEvent webhookEvent = new WebhookEvent(1L, "webhook", "https://example.com/webhook", WebhookEventType.DOMAIN_CREATION, null, null);
-        when(webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_CREATION))
-                .thenReturn(Stream.of(1L));
-        when(webhookEventRepository.findById(1L))
-                .thenReturn(Optional.of(webhookEvent));
-
         // Setup domain
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(name, codename);
         domain.setId(10L);
         when(domainRepository.save(any(Domain.class))).thenReturn(domain);
-        when(scheduler.getListenerManager()).thenReturn(listenerManager);
-        doNothing().when(listenerManager).addJobListener(any(JobListener.class), any(Matcher.class));
 
         // Create domain
-        Domain result = this.domainService.createDomain(new DomainRequest(name, codename, true));
+        Domain result = domainService.createDomain(new DomainRequest(name, codename, true));
 
         // Verify event was published
         verify(eventPublisher).publishEvent(any(DomainCreatedEvent.class));
-
-        // Verify webhook job was scheduled with correct parameters
-        verify(scheduler, times(1)).scheduleJob(
-            argThat(jobDetail -> 
-                jobDetail.getKey().getName().equals("DomainCreation_1_10") &&
-                jobDetail.getJobClass().equals(DomainCreationJob.class)
-            ),
-            argThat(trigger -> 
-                trigger.getKey().getName().equals("DomainCreation_1_10")
-            )
-        );
 
         // Verify domain was created correctly
         assertThat("Codenames are not the same", result.getCodename().equals(codename));
         assertThat("Active is false", result.isActive());
     }
 
-
     @Test
     void shouldNotCreateDomainWithInvalidCodename() {
+        String name = "testdomain";
+        String codename = "test-domain-too-long";
+        Domain domain = new Domain(name, codename);
+        when(domainRepository.save(domain)).thenReturn(domain);
         assertThrows(ProcessingException.class, () -> {
-            String name = "testdomain";
-            String codename = "test-domain-too-long";
-            Domain domain = new Domain(name, codename);
-            when(domainRepository.save(domain)).thenReturn(domain);
-            this.domainService.createDomain(new DomainRequest(name, codename, true));
+            domainService.createDomain(new DomainRequest(name, codename, true));
             verifyNoInteractions(eventPublisher);
         });
     }
@@ -191,7 +146,7 @@ class DomainServiceTest {
     void shouldNotCreateDomainWithNullName() {
         assertThrows(IllegalArgumentException.class, () -> {
             String codename = "test-domain";
-            this.domainService.createDomain(new DomainRequest(null, codename,true));
+            domainService.createDomain(new DomainRequest(null, codename, true));
             verifyNoInteractions(eventPublisher);
         });
     }
@@ -205,7 +160,7 @@ class DomainServiceTest {
 
         Domain result = this.domainService.createDomain(new DomainRequest(name, codename, false));
 
-        assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
+        assertThat("Codenames are not the same", result.getCodename().equals(codename));
         assertThat("Active is false", !result.isActive());
     }
 
@@ -275,15 +230,16 @@ class DomainServiceTest {
     void shouldRemoveDomain() {
         Domain domain = new Domain(1L, "testdom", "testdom");
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
-        assertTrue(this.domainService.removeDomain(1L));
+        assertTrue(domainService.removeDomain(1L));
         verify(domainRepository, times(1)).delete(domain);
+        verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
     }
 
     @Test
     void shouldNotRemoveGlobalDomain() {
+        Domain domain = new Domain(1L, "GLOBAL", "GLOBAL");
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         assertThrows(IllegalArgumentException.class, () -> {
-            Domain domain = new Domain(1L, "GLOBAL", "GLOBAL");
-            when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
             assertFalse(this.domainService.removeDomain(1L));
         });
     }
@@ -424,7 +380,7 @@ class DomainServiceTest {
         Domain domain = new Domain(1L, "testdom", "testdom");
         user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN)));
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        Set<Domain> result = this.domainService.getUserDomains(userId);
+        Set<Domain> result = domainService.getUserDomains(userId, null);
         assertThat("Result mismatch", result.contains(domain));
     }
 
@@ -459,15 +415,16 @@ class DomainServiceTest {
         domainService.softRemoveDomain(1L);
 
         verify(domainRepository, times(1)).save(domain);
-        Optional<Domain> deletedDomain = domainService.findDomain(1L);
+        verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
 
+        Optional<Domain> deletedDomain = domainService.findDomain(1L);
         assertTrue(deletedDomain.isPresent());
         assertTrue(deletedDomain.get().isDeleted());
         assertTrue(deletedDomain.get().getName().contains("DELETED"));
         assertTrue(deletedDomain.get().getCodename().contains("DELETED"));
         assertNull(deletedDomain.get().getDomainTechDetails());
     }
-    
+
     @Test
     void shouldRemoveDomainFromAllGroupsOnSoftRemoval() {
         DomainTechDetails domainTechDetails = new DomainTechDetails();
@@ -502,6 +459,7 @@ class DomainServiceTest {
         when(domainGroupRepository.save(group2)).thenReturn(group2);
 
         domainService.softRemoveDomain(1L);
+        verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
 
         var resultDomainGroup = domainGroupRepository.findById(1L);
         var resultDomainGroup2 = domainGroupRepository.findById(2L);
@@ -515,8 +473,8 @@ class DomainServiceTest {
     void shouldRemoveAppBaseFromAllDomains() {
         ApplicationBase applicationBase = new ApplicationBase(1L, "appBase");
         ApplicationStatePerDomain statePerDomain = new ApplicationStatePerDomain(applicationBase);
-        Domain domain1 = new Domain(1L,"dom1", "dom1");
-        Domain domain2 = new Domain(2L,"dom2", "dom2");
+        Domain domain1 = new Domain(1L, "dom1", "dom1");
+        Domain domain2 = new Domain(2L, "dom2", "dom2");
         domain1.setApplicationStatePerDomain(new ArrayList<>(List.of(statePerDomain)));
         domain2.setApplicationStatePerDomain(new ArrayList<>(List.of(statePerDomain)));
         when(domainRepository.findAll()).thenReturn(List.of(domain1, domain2));
@@ -549,7 +507,7 @@ class DomainServiceTest {
         domain1.setId(1L);
         domain1.setName("dom1");
         domain1.setCodename("dom1");
-        Domain domain = new Domain(1L,"dom1", "dom1");
+        Domain domain = new Domain(1L, "dom1", "dom1");
 
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
@@ -560,7 +518,7 @@ class DomainServiceTest {
 
         UserViewMinimal userView2 = new UserViewMinimal();
         userView2.setId(2L);
-        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1", List.of(domain1), null, List.of(userView) );
+        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1", List.of(domain1), null, List.of(userView));
 
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
@@ -568,10 +526,10 @@ class DomainServiceTest {
 
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupView result = domainService.updateMembers(List.of(userView2), domainGroupView );
+        DomainGroupView result = domainService.updateMembers(List.of(userView2), domainGroupView);
 
         assertEquals(1, result.getManagers().size());
-        assertEquals(2L , result.getManagers().get(0).getId());
+        assertEquals(2L, result.getManagers().get(0).getId());
     }
 
     @Test
@@ -580,7 +538,7 @@ class DomainServiceTest {
         domain1.setId(1L);
         domain1.setName("dom1");
         domain1.setCodename("dom1");
-        Domain domain = new Domain(1L,"dom1", "dom1");
+        Domain domain = new Domain(1L, "dom1", "dom1");
 
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
@@ -592,13 +550,13 @@ class DomainServiceTest {
         UserViewMinimal userView2 = new UserViewMinimal();
         userView2.setId(2L);
 
-        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1",List.of(domain1), null, List.of(userView) );
+        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1", List.of(domain1), null, List.of(userView));
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
         domainGroup.setManagers(List.of(user));
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupView result = domainService.updateMembers(List.of(userView2, userView), domainGroupView );
+        DomainGroupView result = domainService.updateMembers(List.of(userView2, userView), domainGroupView);
 
         assertEquals(2, result.getManagers().size());
     }
@@ -609,7 +567,7 @@ class DomainServiceTest {
         domain1.setId(1L);
         domain1.setName("dom1");
         domain1.setCodename("dom1");
-        Domain domain = new Domain(1L,"dom1", "dom1");
+        Domain domain = new Domain(1L, "dom1", "dom1");
 
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         when(userService.findById(1L)).thenReturn(Optional.of(new User("test")));
@@ -621,13 +579,13 @@ class DomainServiceTest {
         UserViewMinimal userView2 = new UserViewMinimal();
         userView2.setId(2L);
 
-        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1",List.of(domain1), null, List.of(userView) );
+        DomainGroupView domainGroupView = new DomainGroupView(1L, "test", "test1", List.of(domain1), null, List.of(userView));
         User user = new User("user");
         DomainGroup domainGroup = new DomainGroup(1L, "test", "test1");
         domainGroup.setManagers(List.of(user));
         when(domainGroupRepository.findById(1L)).thenReturn(Optional.of(domainGroup));
 
-        DomainGroupView result = domainService.updateMembers(List.of(), domainGroupView );
+        DomainGroupView result = domainService.updateMembers(List.of(), domainGroupView);
 
         assertEquals(0, result.getManagers().size());
     }

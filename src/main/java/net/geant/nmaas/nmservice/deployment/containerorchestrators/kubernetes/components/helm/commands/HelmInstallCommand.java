@@ -23,10 +23,15 @@ public class HelmInstallCommand extends HelmCommand {
      * @param chartName    chart name for download from repository
      * @param chartVersion chart version from download from repository
      * @param enableTls    flag indicating if tls option should be added
+     * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
-    public static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls) {
+    public static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls, String kubeConfigPath) {
         StringBuilder sb = buildBaseInstallCommand(helmVersion, namespace, releaseName, values);
+
+        if (kubeConfigPath != null && !kubeConfigPath.isEmpty()) {
+            sb.append(SPACE).append(OPTION_KUBECONFIG).append(SPACE).append(kubeConfigPath);
+        }
         if (chartName == null || chartName.isEmpty()) {
             throw new IllegalArgumentException("Chart name can't be null or empty");
         }
@@ -35,6 +40,7 @@ public class HelmInstallCommand extends HelmCommand {
             sb.append(SPACE).append(OPTION_VERSION).append(SPACE).append(chartVersion);
         }
         addTlsOptionIfRequired(helmVersion, enableTls, sb);
+
         return new HelmInstallCommand(sb.toString());
     }
 
@@ -44,7 +50,7 @@ public class HelmInstallCommand extends HelmCommand {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(INSTALL).append(SPACE);
-        if (HELM_VERSION_2.equals(helmVersion)) {
+        if (helmVersion.startsWith(HELM_VERSION_2)) {
             sb.append(OPTION_NAME).append(SPACE);
         }
         sb.append(releaseName).append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);

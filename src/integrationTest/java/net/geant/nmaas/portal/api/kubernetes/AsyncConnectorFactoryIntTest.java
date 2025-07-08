@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.kubernetes.AsyncConnectorFactory;
-import net.geant.nmaas.kubernetes.KubernetesConnector;
+import net.geant.nmaas.kubernetes.shell.AsyncConnectorFactory;
+import net.geant.nmaas.kubernetes.shell.KubernetesConnector;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

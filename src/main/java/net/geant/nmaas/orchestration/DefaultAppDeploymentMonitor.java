@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
@@ -71,7 +71,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     private AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) {
         try {
             return serviceDeployment.serviceAccessDetails(deploymentId);
-        } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {
+        } catch (CouldNotRetrieveServiceAccessDetailsException e) {
             throw new InvalidDeploymentIdException(e.getMessage());
         }
     }

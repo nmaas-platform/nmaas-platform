@@ -25,7 +25,7 @@ public class WebhookEventDto {
     @Pattern(regexp = "^(Authorization|X-.*)?$", message = "Authorization header must be either 'Authorization' or start with 'X-'")
     private String authorizationHeader;
 
-    public WebhookEventDto (Long id, String name, String targetUrl, WebhookEventType eventType){
+    public WebhookEventDto(Long id, String name, String targetUrl, WebhookEventType eventType) {
         this.id = id;
         this.name = name;
         this.targetUrl = targetUrl;

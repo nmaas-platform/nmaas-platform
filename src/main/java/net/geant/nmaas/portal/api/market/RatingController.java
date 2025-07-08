@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.market;
 import jakarta.validation.constraints.NotNull;
 import net.geant.nmaas.portal.api.domain.ApiResponse;
 import net.geant.nmaas.portal.api.domain.AppRateView;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.AppRate;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.User;

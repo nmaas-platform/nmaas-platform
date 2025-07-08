@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
+import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -16,6 +17,7 @@ import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
 
     private final DomainGroupRepository domainGroupRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
-
+    private final ApplicationEventPublisher eventPublisher;
 
     private final ModelMapper modelMapper;
 
@@ -55,13 +57,16 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         DomainGroup domainGroupEntity = modelMapper.map(domainGroup, DomainGroup.class);
         domainGroupEntity.setApplicationStatePerDomain(applicationStatePerDomainList);
         domainGroupEntity = domainGroupRepository.save(domainGroupEntity);
-        return modelMapper.map(domainGroupEntity, DomainGroupView.class);
+
+        DomainGroupView domainGroupView = modelMapper.map(domainGroupEntity, DomainGroupView.class);
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "create", domainGroupView));
+        return domainGroupView;
     }
 
     @Override
     public DomainGroupView addDomainsToGroup(List<Domain> domains, String groupCodeName) {
         DomainGroup domainGroup = domainGroupRepository.findByCodename(groupCodeName).orElseThrow();
-        domains.forEach( domain -> {
+        domains.forEach(domain -> {
             log.debug("Adding domain {}/{} to group {}", domain.getName(), domain.getCodename(), groupCodeName);
             if (!domainGroup.getDomains().contains(domain)) {
                 domainGroup.addDomain(domain);
@@ -81,6 +86,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     @Override
     public void deleteDomainGroup(Long domainGroupId) {
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
+        DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
         List<Domain> toRemove = new ArrayList<>(domainGroup.getDomains());
         Iterator<Domain> iterator = toRemove.iterator();
         while (iterator.hasNext()) {
@@ -90,6 +96,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             iterator.remove();
         }
         domainGroupRepository.deleteById(domainGroupId);
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "delete", domainGroupView));
     }
 
     @Override
@@ -106,7 +113,7 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     public List<DomainGroupView> getAllDomainGroups() {
         return domainGroupRepository.findAll().stream()
                 .map(g -> modelMapper.map(g, DomainGroupView.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -115,11 +122,14 @@ public class DomainGroupServiceImpl implements DomainGroupService {
             throw new ProcessingException(String.format("Wrong domain group identifier (%s)", domainGroupId));
         }
         DomainGroup domainGroup = this.domainGroupRepository.findById(domainGroupId).orElseThrow();
-//        updateRolesInDomainsByUsers(view);
+        // updateRolesInDomainsByUsers(view);
         domainGroup.setCodename(view.getCodename());
         domainGroup.setName(view.getName());
-        domainGroup.setManagers(view.getManagers().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList()));
-        for (ApplicationStatePerDomain appState: domainGroup.getApplicationStatePerDomain()) {
+        domainGroup.setManagers(view.getManagers().stream()
+                .map(user -> modelMapper.map(user, User.class))
+                .collect(Collectors.toCollection(ArrayList::new))
+        );
+        for (ApplicationStatePerDomain appState : domainGroup.getApplicationStatePerDomain()) {
             for (ApplicationStatePerDomainView appStateView : view.getApplicationStatePerDomain()) {
                 if (appState.getApplicationBase().getId().equals(appStateView.getApplicationBaseId())) {
                     appState.applyChangedState(appStateView);
@@ -128,7 +138,10 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         }
 
         domainGroupRepository.save(domainGroup);
-        return modelMapper.map(domainGroup, DomainGroupView.class);
+
+        DomainGroupView domainGroupView = modelMapper.map(domainGroup, DomainGroupView.class);
+        eventPublisher.publishEvent(new DomainGroupChangedEvent(this, "update", domainGroupView));
+        return domainGroupView;
     }
 
     protected void checkParam(DomainGroupView domainGroup) {
@@ -138,15 +151,16 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     }
 
     public void deleteAppBaseFromAllAppState(ApplicationBase base) {
-        domainGroupRepository.findAll().forEach(d -> {
-          d.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base));
-        });
+        domainGroupRepository.findAll().forEach(d ->
+                d.getApplicationStatePerDomain().removeIf(state -> state.getApplicationBase().equals(base))
+        );
     }
 
     @Override
     public void deleteUserFromAllDomainsGroups(User user) {
-        domainGroupRepository.findAll().forEach(d -> {
-            d.getManagers().remove(user);
-        });
+        domainGroupRepository.findAll().forEach(d ->
+                d.getManagers().remove(user)
+        );
     }
+
 }

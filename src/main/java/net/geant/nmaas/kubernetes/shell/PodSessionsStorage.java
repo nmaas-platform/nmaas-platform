@@ -3,8 +3,6 @@ package net.geant.nmaas.kubernetes.shell;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.kubernetes.AsyncConnector;
-import net.geant.nmaas.kubernetes.AsyncConnectorFactory;
 import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observable.SshConnectionShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;

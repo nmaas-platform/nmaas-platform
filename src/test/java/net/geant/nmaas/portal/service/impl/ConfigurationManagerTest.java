@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SSHKeyEntityTest {
+
     // ubuntu 18.04 LTS
     //    https://stackoverflow.com/questions/9607295/calculate-rsa-key-fingerprint
     //    ssh-keygen -t rsa -b 4096

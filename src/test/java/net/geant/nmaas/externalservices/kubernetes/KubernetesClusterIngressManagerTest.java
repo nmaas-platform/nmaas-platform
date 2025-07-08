@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.kubernetes;
 
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -47,10 +47,10 @@ public class KubernetesClusterIngressManagerTest {
 
     @Test
     void shouldThrowExceptionOnMissingDomain() {
+        manager.setIngressPerDomain(true);
+        manager.setExternalServiceDomain("testClusterServiceDomain");
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> {
-            manager.setIngressPerDomain(true);
-            manager.setExternalServiceDomain("testClusterServiceDomain");
-            when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
             manager.getExternalServiceDomain(DOMAIN);
         });
     }

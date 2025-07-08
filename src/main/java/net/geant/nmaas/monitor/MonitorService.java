@@ -1,17 +1,16 @@
 package net.geant.nmaas.monitor;
 
-import java.util.Date;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 public abstract class MonitorService implements Job {
 
-    private MonitorManager monitorManager;
+    private final MonitorManager monitorManager;
 
-    @Autowired
-    public void setMonitorManager(MonitorManager monitorManager){
+    public MonitorService(MonitorManager monitorManager) {
         this.monitorManager = monitorManager;
     }
 
@@ -23,7 +22,7 @@ public abstract class MonitorService implements Job {
         this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), status);
     }
 
-    protected boolean schedulable() {
+    public boolean schedulable() {
         return true;
     }
 

@@ -9,9 +9,11 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.AppScaleDirection;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.events.app.AppScaleActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
@@ -25,8 +27,8 @@ import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.UserBase;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -48,6 +50,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +58,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
@@ -252,7 +258,9 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public Id createAppInstance(@RequestBody AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal,
-                                @PathVariable Long domainId) {
+                                @PathVariable Long domainId,
+                                @RequestParam(name = "clusterId", required = false) Long clusterId) {
+        log.error("Cluster = {}", clusterId);
         Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
@@ -294,6 +302,7 @@ public class AppInstanceController extends AppBaseController {
                 .owner(principal.getName())
                 .appName(app.getName())
                 .descriptiveDeploymentId(createDescriptiveDeploymentId(domain.getCodename(), app.getName(), appInstance.getId()))
+                .remoteClusterId(clusterId)
                 .build();
 
         Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
@@ -580,6 +589,7 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_CONFIGURATION_UPDATED:
             case APPLICATION_RESTART_IN_PROGRESS:
             case APPLICATION_RESTARTED:
+            case APPLICATION_PAUSE_IN_PROGRESS:
             case APPLICATION_UPGRADE_IN_PROGRESS:
             case APPLICATION_UPGRADED:
             case APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS:
@@ -587,6 +597,9 @@ public class AppInstanceController extends AppBaseController {
                 break;
             case APPLICATION_DEPLOYMENT_VERIFIED:
                 appInstanceState = AppInstanceState.RUNNING;
+                break;
+            case APPLICATION_PAUSED:
+                appInstanceState = AppInstanceState.PAUSED;
                 break;
             case APPLICATION_REMOVAL_IN_PROGRESS:
                 appInstanceState = AppInstanceState.UNDEPLOYING;
@@ -604,6 +617,7 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
             case APPLICATION_REMOVAL_FAILED:
             case APPLICATION_RESTART_FAILED:
+            case APPLICATION_PAUSE_FAILED:
             case APPLICATION_CONFIGURATION_UPDATE_FAILED:
             case APPLICATION_DEPLOYMENT_FAILED:
             case APPLICATION_CONFIGURATION_REMOVAL_FAILED:
@@ -759,6 +773,38 @@ public class AppInstanceController extends AppBaseController {
             return null;
         }
         return pageable;
+    }
+
+    /**
+     * @param deploymentId unique identifier of the deployed user application
+     */
+    @PutMapping("/{deploymentId}/scale-down")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void scaleDownAppInstance(@PathVariable String deploymentId) {
+        eventPublisher.publishEvent(
+                new AppScaleActionEvent(
+                        this,
+                        new Identifier(deploymentId),
+                        AppScaleDirection.DOWN)
+        );
+    }
+
+    /**
+     * @param deploymentId unique identifier of the deployed user application
+     */
+    @PutMapping("/{deploymentId}/scale-up")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void scaleUpAppInstance(@PathVariable String deploymentId) {
+        if (appDeploymentMonitor.state(Identifier.newInstance(deploymentId)).equals(AppLifecycleState.APPLICATION_PAUSED)) {
+            eventPublisher.publishEvent(
+                    new AppScaleActionEvent(
+                            this,
+                            new Identifier(deploymentId),
+                            AppScaleDirection.UP)
+            );
+        } else {
+            log.warn("Won't resume since application instance is not paused");
+        }
     }
 
 }

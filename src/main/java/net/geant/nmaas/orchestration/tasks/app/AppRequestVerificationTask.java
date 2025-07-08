@@ -1,7 +1,8 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -18,16 +19,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.directory.InvalidAttributesException;
 import java.time.LocalDateTime;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class AppRequestVerificationTask {
 
-    private NmServiceDeploymentProvider serviceDeployment;
-    private AppDeploymentRepository repository;
-    private ApplicationRepository appRepository;
+    private final AppDeploymentRepository repository;
+    private final ApplicationRepository applicationRepository;
+    private final RemoteClusterManagementService remoteClusterManager;
+    private final NmServiceDeploymentProvider serviceDeployment;
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -36,9 +39,13 @@ public class AppRequestVerificationTask {
         Thread.sleep(1000);
         try {
             final Identifier deploymentId = event.getRelatedTo();
-            final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-            final Application application = appRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue())).orElseThrow(() ->
-                    new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
+            final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId)
+                    .orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+            final Application application = applicationRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue()))
+                    .orElseThrow(() -> new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
+            if (appDeployment.getRemoteClusterId() != null && !remoteClusterManager.clusterExists(appDeployment.getRemoteClusterId())) {
+                throw new InvalidAttributesException("Wrong remote cluster Id");
+            }
             serviceDeployment.verifyRequest(
                     deploymentId,
                     appDeployment,

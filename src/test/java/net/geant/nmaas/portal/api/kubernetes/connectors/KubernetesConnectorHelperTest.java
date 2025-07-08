@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.api.kubernetes.connectors;
 
-//import io.fabric8.kubernetes.api.model.DoneablePod;
-
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -9,8 +7,8 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.PodResource;
-import net.geant.nmaas.kubernetes.KubernetesClientConfigFactory;
-import net.geant.nmaas.kubernetes.KubernetesConnectorHelper;
+import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
+import net.geant.nmaas.kubernetes.shell.KubernetesConnectorHelper;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -22,7 +20,11 @@ import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -31,15 +33,15 @@ import static org.mockito.Mockito.when;
 
 public class KubernetesConnectorHelperTest {
 
-    private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
-    private final KubernetesClientConfigFactory configFactory = mock(KubernetesClientConfigFactory.class);
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
+    private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
+    private final KubernetesApiClientFactory configFactory = mock(KubernetesApiClientFactory.class);
 
     private KubernetesConnectorHelper helper;
 
     @BeforeEach
-    public void setup() {
-        helper = new KubernetesConnectorHelper(appDeploymentRepositoryManager, configFactory, applicationInstanceService);
+    void setup() {
+        helper = new KubernetesConnectorHelper(applicationInstanceService, appDeploymentRepositoryManager, configFactory);
 
         AppInstance appInstance = mock(AppInstance.class);
         when(applicationInstanceService.find(anyLong())).thenReturn(Optional.of(appInstance));
@@ -62,8 +64,8 @@ public class KubernetesConnectorHelperTest {
         KubernetesClient client = mock(KubernetesClient.class);
         PodList podList = mock(PodList.class);
         when(configFactory.getClient()).thenReturn(client);
-        MixedOperation<Pod, PodList, PodResource> pods = (MixedOperation<Pod, PodList, PodResource>)mock(MixedOperation.class);
-        NonNamespaceOperation<Pod, PodList, PodResource> nsPods = (NonNamespaceOperation<Pod, PodList, PodResource>)mock(NonNamespaceOperation.class);
+        MixedOperation<Pod, PodList, PodResource> pods = (MixedOperation<Pod, PodList, PodResource>) mock(MixedOperation.class);
+        NonNamespaceOperation<Pod, PodList, PodResource> nsPods = (NonNamespaceOperation<Pod, PodList, PodResource>) mock(NonNamespaceOperation.class);
         when(client.pods()).thenReturn(pods);
         when(pods.inNamespace("namespace")).thenReturn(nsPods);
         when(nsPods.list()).thenReturn(podList);
@@ -115,7 +117,7 @@ public class KubernetesConnectorHelperTest {
     //TODO: Missing DoneablePod on new version. Rewrite the setup stage
 
     @Test
-    public void shouldReturnPodNamesWithPrefix() {
+    void shouldReturnPodNamesWithPrefix() {
         Map<String, String> result = helper.getPodNamesForAppInstance(1L);
         assertEquals(2, result.size());
         assertEquals("good-prefix-name", result.get("good-prefix-name-with-hash"));

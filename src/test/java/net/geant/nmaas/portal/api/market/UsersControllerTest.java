@@ -6,8 +6,8 @@ import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.user.UsersController;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -21,6 +21,7 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -39,6 +40,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 public class UsersControllerTest {
@@ -329,12 +331,14 @@ public class UsersControllerTest {
 	}
 
 	@Test
-	public void shouldAddUserRoleToCustomDomain(){
+	public void shouldAddUserRoleToCustomDomain() throws SchedulerException {
 		UserRoleView userRole = new UserRoleView();
 		userRole.setDomainId(DOMAIN.getId());
 		userRole.setRole(Role.ROLE_USER);
+
 		usersController.addUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).addMemberRole(DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
+		verify(eventPublisher, times(1)).publishEvent(any());
 	}
 
 	@Test
@@ -345,6 +349,8 @@ public class UsersControllerTest {
 		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
+
+		verifyNoInteractions(eventPublisher);
 	}
 
 	@Test
@@ -396,10 +402,13 @@ public class UsersControllerTest {
 	}
 
 	@Test
-	public void shouldRemoveUserRole(){
+	public void shouldRemoveUserRole() {
 		String userRole = "ROLE_SYSTEM_ADMIN";
+
 		usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_SYSTEM_ADMIN);
+
+		verify(eventPublisher, times(1)).publishEvent(any());
 	}
 
 	@Test

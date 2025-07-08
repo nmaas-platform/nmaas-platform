@@ -1,14 +1,5 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
-import net.geant.nmaas.orchestration.entities.DomainTechDetails;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -24,14 +15,22 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(uniqueConstraints = {
-		@UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})
+        @UniqueConstraint(columnNames = {"name"}), @UniqueConstraint(columnNames = {"codename"})
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -39,86 +38,85 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Domain implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
-	@EqualsAndHashCode.Include
-	@NotNull
+    @EqualsAndHashCode.Include
+    @NotNull
     @Column(nullable = false, unique = true)
     private String codename;
 
-	@EqualsAndHashCode.Include
-	@NotNull
-	@Column(nullable = false, unique=true)
-	String name;
+    @EqualsAndHashCode.Include
+    @NotNull
+    @Column(nullable = false, unique = true)
+    String name;
 
-	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
-	private DomainDcnDetails domainDcnDetails;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private DomainDcnDetails domainDcnDetails;
 
-	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
-	private DomainTechDetails domainTechDetails;
-	
-	boolean active;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private DomainTechDetails domainTechDetails;
 
-	boolean deleted;
+    boolean active;
 
-	/** List of applications with state per domain **/
-	@ElementCollection(fetch = FetchType.LAZY)
-	private List<ApplicationStatePerDomain> applicationStatePerDomain = new ArrayList<>();
+    boolean deleted;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
-	@JoinTable(
-			name = "domains_groups",
-			joinColumns = { @JoinColumn(name = "domain_id") },
-			inverseJoinColumns = { @JoinColumn(name = "group_id") }
-	)
-	private List<DomainGroup> groups = new ArrayList<>();
+    /**
+     * List of applications with state per domain
+     **/
+    @ElementCollection(fetch = FetchType.LAZY)
+    private List<ApplicationStatePerDomain> applicationStatePerDomain = new ArrayList<>();
 
-	@ManyToMany(mappedBy = "domains")
-	private List<KCluster> clusters = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "domains_groups",
+            joinColumns = {@JoinColumn(name = "domain_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")}
+    )
+    private List<DomainGroup> groups = new ArrayList<>();
 
-	public Domain(String name, String codename) {
-		super();
-		this.name = name;
-		this.codename = codename;
-		this.active = true;
-	}
+    @ManyToMany(mappedBy = "domains")
+    private List<KCluster> clusters = new ArrayList<>();
 
-	public Domain(String name, String codename, boolean active) {
-		this(name, codename);
-		this.active = active;
-	}
-	
-	public Domain(Long id, String name, String codename) {
-		this(name, codename);
-		this.id = id;
-	}
-
-	public Domain(Long id, String name, String codename, boolean active) {
-		this(id, name, codename);
-		this.active = active;
-	}
-
-	public void addApplicationState(ApplicationBase applicationBase){
-	    this.addApplicationState(applicationBase, true);
+    public Domain(String name, String codename) {
+        super();
+        this.name = name;
+        this.codename = codename;
+        this.active = true;
     }
 
-	public void addApplicationState(ApplicationBase applicationBase, boolean enabled){
-		this.addApplicationState(new ApplicationStatePerDomain(applicationBase, enabled));
+    public Domain(String name, String codename, boolean active) {
+        this(name, codename);
+        this.active = active;
+    }
+
+    public Domain(Long id, String name, String codename) {
+        this(name, codename);
+        this.id = id;
+    }
+
+    public Domain(Long id, String name, String codename, boolean active) {
+        this(id, name, codename);
+        this.active = active;
+    }
+
+    public void addApplicationState(ApplicationBase applicationBase) {
+        this.addApplicationState(applicationBase, true);
+    }
+
+    public void addApplicationState(ApplicationBase applicationBase, boolean enabled) {
+        this.addApplicationState(new ApplicationStatePerDomain(applicationBase, enabled));
     }
 
     public void addApplicationState(ApplicationStatePerDomain appState) {
-		if (!this.applicationStatePerDomain.stream().map(ApplicationStatePerDomain::getApplicationBase)
-				.map(ApplicationBase::getId).collect(Collectors.toList()).contains(appState.getApplicationBase().getId())) {
-			this.applicationStatePerDomain.add(appState);
-		}
-	}
-
-	public void addGroup(DomainGroup group) {
-		this.groups.add(group);
-		group.getDomains().add(this);
-	}
+        if (!this.applicationStatePerDomain.stream()
+                .map(ApplicationStatePerDomain::getApplicationBase)
+                .map(ApplicationBase::getId)
+                .toList()
+                .contains(appState.getApplicationBase().getId())) {
+            this.applicationStatePerDomain.add(appState);
+        }
+    }
 
 }
-

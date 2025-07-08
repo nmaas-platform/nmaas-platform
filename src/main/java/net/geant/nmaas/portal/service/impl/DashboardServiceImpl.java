@@ -17,120 +17,127 @@ import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DashboardService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
-import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DashboardServiceImpl implements DashboardService {
 
-    private final UserService userService;
     private final UserRepository userRepository;
     private final DomainService domainService;
     private final DomainRepository domainRepository;
     private final ApplicationInstanceService applicationInstanceService;
-    private final AppInstanceRepository appInstanceRepo;
+    private final AppInstanceRepository appInstanceRepository;
     private final ApplicationBaseRepository applicationBaseRepository;
     private final UserLoginRegisterService userLoginRegisterService;
 
-
     @Override
-    public DashboardView getSystemDashboard() {
+    public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
+        log.info("Processing dashboard data request for period {} - {}", startDate, endDate);
 
-        long weekTimestamp = System.currentTimeMillis() - Duration.ofDays(7).toMillis();
+        long startTimeStamp = startDate.toEpochSecond() * 1000;
+        long endTimeStamp = endDate.toEpochSecond() * 1000;
+        log.info("Period in timestamps: {} - {}", startTimeStamp, endTimeStamp);
 
         List<String> baseNames = applicationBaseRepository.findAllNames();
         Map<String, Integer> applicationDeploymentCountPerName = new HashMap<>();
 
-        List<DashboardDeploymentsView> deploymentsViews = appInstanceRepo.findAllInTimePeriod(weekTimestamp)
-                .stream().map(entry -> DashboardDeploymentsView.builder().user(entry.getOwner().getUsername())
+        List<DashboardDeploymentsView> deploymentsViews = appInstanceRepository.findAllInTimePeriod(startTimeStamp, endTimeStamp).stream()
+                .map(entry -> DashboardDeploymentsView.builder().user(entry.getOwner().getUsername())
                         .domainName(entry.getDomain().getName())
                         .applicationName(entry.getApplication().getName())
-                        .applicationVersion(entry.getApplication().getVersion()).build()).toList();
+                        .instanceId(entry.getId())
+                        .applicationVersion(entry.getApplication().getVersion())
+                        .build())
+                .toList();
 
         baseNames.forEach(name -> {
-            applicationDeploymentCountPerName.put(name, appInstanceRepo.countByName(name));
+            applicationDeploymentCountPerName.put(name, appInstanceRepository.countByName(name));
         });
 
-        //filter not deployed application
+        // filter not deployed application
         applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
 
-
-        return DashboardView.builder()
+        DashboardView systemView = DashboardView.builder()
                 .domainsCount(domainRepository.count())
                 .userCount(userRepository.count())
-                .instanceCount(appInstanceRepo.count())
-                .instanceCountInPeriod(appInstanceRepo.countAllDeployedSinceTime(weekTimestamp))
+                .instanceCount(appInstanceRepository.count())
+                .instanceCountInPeriod(appInstanceRepository.countAllDeployedInTimePeriod(startTimeStamp, endTimeStamp))
                 .instanceCountInPeriodDetails(deploymentsViews)
                 .popularApps(applicationDeploymentCountPerName).build();
+        log.debug("Response: {}", systemView.toString());
+        return systemView;
     }
 
     //TODO: Change username to pre
     @Override
-    public DomainDashboardView getSystemDomainDashboard(Long domainId) {
+    public DomainDashboardView getDomainDashboard(Long domainId) {
+        log.info("Processing dashboard data request for domain {}", domainId);
         Optional<Domain> domain = domainService.findDomain(domainId);
         Map<String, OffsetDateTime> userLogins = new HashMap<>();
         Map<String, Integer> appsDeployed = new HashMap<>();
         List<DomainDashboardView.DomainAppInstanceView> upgradePossible = new ArrayList<>();
 
-        if(domain.isPresent()) {
+        if (domain.isPresent()) {
             Domain dom = domain.get();
 
             List<User> domainUsers = domainService.getMembers(domainId);
-            List<AppInstance> apps = appInstanceRepo.findAllByDomain(dom);
+            List<AppInstance> apps = appInstanceRepository.findAllByDomain(dom);
 
             domainUsers.forEach(user -> {
                 Optional<UserLoginRegister> register = userLoginRegisterService.getLastLogin(user);
-                if(register.isPresent()) {
+                if (register.isPresent()) {
                     userLogins.put(this.getUserPreferredUsername(user), register.get().getDate());
-                    appsDeployed.put(this.getUserPreferredUsername(user), appInstanceRepo.countAllByOwner(user));
+                    appsDeployed.put(this.getUserPreferredUsername(user), appInstanceRepository.countAllByOwner(user));
                 }
             });
 
             apps.forEach(app -> {
-                upgradePossible.add( DomainDashboardView.DomainAppInstanceView.builder()
-                                .appId(app.getId())
-                                .appName(app.getApplication().getName())
-                                .instanceName(app.getName())
-                                .appVersion(app.getApplication().getVersion())
-                                .upgradePossible(applicationInstanceService.checkUpgradePossible(app.getId())).build());
+                upgradePossible.add(DomainDashboardView.DomainAppInstanceView.builder()
+                        .appId(app.getId())
+                        .appName(app.getApplication().getName())
+                        .instanceName(app.getName())
+                        .appVersion(app.getApplication().getVersion())
+                        .upgradePossible(applicationInstanceService.checkUpgradePossible(app.getId())).build());
             });
 
-
-
-            return DomainDashboardView.builder()
+            DomainDashboardView view = DomainDashboardView.builder()
                     .userLogins(userLogins)
                     .applicationDeployed(appsDeployed)
                     .applicationUpgradeStatus(upgradePossible)
                     .build();
+            log.debug("Response: {}", view.toString());
+            return view;
         } else {
-            log.error("Domain {} not present. Returning empty...", domainId );
+            log.error("Domain {} not present. Returning empty...", domainId);
             return DomainDashboardView.builder().build();
         }
     }
 
+    @Override
+    public DashboardView getOperatorDashboard() {
+        Long domainCount = domainRepository.countByActiveTrueAndDeletedFalse();
+        return DashboardView.builder()
+                .domainsCount(domainCount).build();
+    }
 
     private String getUserPreferredUsername(User user) {
         String preferredUsername;
-
-        if (user == null || StringUtils.isEmpty(user.getUsername())) {
+        if (StringUtils.isEmpty(user.getUsername())) {
             throw new IllegalArgumentException("User or username is not set");
         }
-        if(user.getFirstname() != null && !user.getFirstname().isEmpty()) {
+        if (user.getFirstname() != null && !user.getFirstname().isEmpty()) {
             preferredUsername = user.getFirstname() + " " + user.getLastname();
-        }else{
+        } else {
             preferredUsername = user.getUsername();
         }
         return preferredUsername;

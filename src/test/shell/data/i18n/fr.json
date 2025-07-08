@@ -22,10 +22,16 @@
     "EXPIRED_TIME" : "Session expires in",
     "ADVANCED" : "Advanced",
     "BULK_DEPLOYMENT" : "Bulk application deployment",
-    "BULK_DEPLOYMENT_DOMAIN" : "Bulk domain deployment",
+    "BULK_DEPLOYMENT_DOMAIN" : " Bulk deployments",
     "DOMAIN_GROUPS" : "Domain groups",
     "PAST_BULK_DOMAIN" : "Past domains bulk",
-    "PAST_BULK_APP" : "Past application bulk"
+    "PAST_BULK_APP" : "Past application bulk",
+    "DASHBOARD": "Dashboard",
+    "LIST": "Liste",
+    "GROUP": "Groupe",
+    "CATALOG": "Catalogue",
+    "ADMIN_PANEL": "Panneau d'administration",
+    "USER_PANEL": "Panneau utilisateur"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -110,6 +116,7 @@
     "OK_BUTTON": "OK"
   },
   "CLUSTERS": {
+    "ASSIGN": "Attribuer au domaine?",
     "TITLE": "Configuration du cluster Kubernetes",
     "HELM": "Helm",
     "HOST_ADDRESS": "Adresse de l'hôte REST",
@@ -193,8 +200,22 @@
     "UP" : "Up",
     "DOWN" : "Down",
     "UNKNOWN" : "Unknown",
+    "CONTACT_MAIL" : "Contact mail",
     "DETAILS" : "Details",
-    "STATE_SINCE" : "State last change"
+    "STATE_SINCE" : "Last state change",
+    "REMOVE" : "Remove cluster",
+    "FILE": "Kubernetes config",
+    "WIZARD" : {
+      "ADD" : "Adding new remote cluster",
+      "STEP_1" : "General information",
+      "STEP_2" : "Basic cluster settings",
+      "STEP_3" : "Advanced cluster settings",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area.",
+      "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
+      "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
+      "TOOLTIP_2" : "All fields must be fill"
+    }
   },
   "GITLAB": {
     "TITLE": "Configuration de GitLab",
@@ -298,6 +319,7 @@
     "DEPLOYED": "Instances déployées",
     "UNDEPLOYED": "Instances non déployées",
     "SHOW_UNDEPLOYED": "Show undeployed instances",
+    "SHOW_MY": "Afficher uniquement mon",
     "HIDE_UNDEPLOYED": "Hide undeployed instances",
     "UNDEPLOYED_VISIBLE": "Show undeployed instances",
     "SORT": "Sort",
@@ -314,6 +336,14 @@
       "RATING": "Rating",
       "POPULAR": "Popularity",
       "DATE" : "Date added"
+    },
+    "RESUME": "Reprende",
+    "PAUSE": "Pause",
+    "CONFIRM_PAUSE": {
+      "MESSAGE": "Voulez-vous vraiment arrêter l'instance?",
+      "HEADER": "Confirmation",
+      "ACCEPT": "Oui",
+      "REJECT": "Non"
     }
   },
   "MONITOR": {
@@ -441,7 +471,8 @@
     "EDIT_BUTTON": "Modifier",
     "REMOVE_BUTTON": "Supprimer",
     "DEFAULT_DOMAIN": "Default domain",
-    "PREFERENCES": "Preferences"
+    "PREFERENCES": "Preferences",
+    "PASSWORD": "Mot de passe"
   },
   "USER_PRIVILEGES": {
     "HEADER": "Privileges",
@@ -516,7 +547,9 @@
     "DEPLOY_BUTTON": "Déployer",
     "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
     "SELECT_VERSION": "Sélectionnez la version",
-    "AUTO_UPGRADES_ENABLED": "Activer les mises à jour automatiques"
+    "AUTO_UPGRADES_ENABLED": "Activer les mises à jour automatiques",
+    "REMOTE_CLUSTER" : "Use remote cluster",
+    "SELECT_CLUSTER": "Remote location"
   },
   "ADD_MEMBERS_MODAL": {
     "HEADER": "Add members",
@@ -638,6 +671,12 @@
       "APP_RESTART_PROGRESS": "Redémarrage de l'application en cours",
       "APP_RESTART_SUCCESS": "L'application a été redémarrée avec succès",
       "APP_RESTART_FAILED": "Le redémarrage de l'application a échoué",
+      "APP_PAUSE_PROGRESS": "Application pause in progress",
+      "APP_PAUSE_SUCCESS": "Application paused successfully",
+      "APP_PAUSE_FAILED": "Application pause failed",
+      "APP_RESUME_PROGRESS": "Application resume in progress",
+      "APP_RESUME_SUCCESS": "Application resumed successfully",
+      "APP_RESUME_FAILED": "Application resume failed",
       "APP_UPDATE_PROGRESS": "Mise à jour de la configuration de l'application en cours",
       "APP_UPDATE_SUCCESS": "La configuration de l'application a été mise à jour avec succès",
       "APP_UPDATE_FAILED": "La mise à jour de la configuration de l'application a échoué",
@@ -661,6 +700,7 @@
       "RUNNING": "Votre application est maintenant active. Vous pouvez y accéder en utilisant l'option <i>Accès</i> du menu <i>Actions</i>. <br>Utilisez les options <i>Configurer</i> et <i>Membres</i> pour mettre à jour respectivement la configuration et la liste des utilisateurs de l'application.",
       "UNDEPLOYING": "L'application n'est pas déployée. Ce processus peut prendre plusieurs minutes",
       "DONE": "Application non déployée avec succès",
+      "PAUSED": "Your application is now paused. Use the <i>Resume</i> option to bring it back up again",
       "FAILURE": "",
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe nmaas à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
@@ -973,7 +1013,12 @@
     "CONTACT_TITLE": "Contactez-nous",
     "CHANGELOG_TITLE": "Version actuelle du logiciel et journal des modifications",
     "CONTACT_DESC": "Le formulaire de contact offre un moyen facile d'entrer en contact avec l'équipe nmaas. Choisissez le type de formulaire le plus adapté à votre demande.",
-    "CHANGELOG_DESC": "Vous trouverez ci-dessous des informations détaillées sur la version actuelle de nmaas et un résumé des changements introduits dans les versions précédentes du logiciel."
+    "CHANGELOG_DESC": "Vous trouverez ci-dessous des informations détaillées sur la version actuelle de nmaas et un résumé des changements introduits dans les versions précédentes du logiciel.",
+    "ANNOUNCE": "nmaas-announce",
+    "ANNOUNCE_DESC": " - pour les annonces liées au nmaas envoyées par les membres de l'équipe nmaas,",
+    "USERS": "nmaas-users",
+    "USERS_DESC": " - pour les discussions et les échanges de messages entre les utilisateurs de nmaas et l'équipe nmaas.",
+    "CONTACT_P": "Rejoignez la liste de diffusion qui vous intéresse: "
   },
   "CHANGELOG": {
     "CHANGELOG_LAST": "Dernière version",
@@ -1069,7 +1114,8 @@
     "ANTI_SLAVERY": "GÉANT Anti-Slavery Policy",
     "PRIVACY": "Privacy Policy",
     "AUP": "Acceptable Use Policy",
-    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3)."
+    "TEXT": "As part of the GÉANT 2020 Framework Partnership Agreement (FPA), the project receives funding from the European Union’s Horizon 2020 research and innovation programme under Grant Agreement No. 856726 (GN4-3).",
+    "DOCUMENTATION": "Documentation"
   },
   "FILTER": {
     "TAGS": "Mots clés",
@@ -1087,6 +1133,7 @@
     "RUNNING": "Activé",
     "UNDEPLOYING": "Désinstaller",
     "DONE": "Terminé",
+    "PAUSED": "Paused",
     "FAILURE": "Échec",
     "UNKNOWN": "Inconnu",
     "REMOVED": "Enlevé",
@@ -1259,7 +1306,9 @@
       "USER_ID" : "User id",
       "EMAIL" : "Email",
       "USER_NAME" : "User name",
-      "COMPLETION_DATE" : "Completion date"
+      "COMPLETION_DATE" : "Completion date",
+      "NEW_DEPLOYMENT": "Nouveau déploiement",
+      "SHOW_ALL": "Afficher tout"
     },
     "DOMAIN" : {
       "INFO" : "Additional information will be added later",
@@ -1311,5 +1360,62 @@
   },
   "SHARED" : {
     "TOGGLE" : "Toggle all"
+  },
+  "WEBHOOKS" : {
+    "TITLE" : "Webhooks",
+    "TITLE_SHORT" : "Webhook",
+    "TITLE_NEW": "New webhook",
+    "ID" : "Id",
+    "NAME" : "Name",
+    "TARGET_URL" : "Target Url",
+    "TYPE" : "Webhook type",
+    "TOKEN" : "Token value",
+    "AUTH" : "Authorization header",
+    "DOMAIN_ACTION" : "Domain action",
+    "DOMAIN_GROUP_ACTION" : "Domain group action",
+    "APPLICATION_DEPLOYMENT" : "Application deployment",
+    "USER_ASSIGNMENT" : "User assignment",
+    "NEW" : "Add webhook",
+    "DETAILS" : "Webhooks details",
+    "SAVE" : "Save",
+    "REMOVE" : "Remove",
+    "AUTH_REQUIRED": "Authentification requise"
+  },
+  "DASHBOARD": {
+    "NUMBERS_OF_USERS": "Nombre actuel d'utilisateurs",
+    "NUMBERS_OF_DOMAINS": "Nombre actuel de domaines",
+    "NUMBERS_OF_DEPLOYED_APP": "Nombre actuel d'applications déployées",
+    "APP_DEPLOYMENTS": "Déploiements d'applications",
+    "MOST_POPULAR": "Applications les plus populaires",
+    "LAST_LOGIN": "Dernière connexion au domaine",
+    "USER": "Utilisateur",
+    "LOGIN": "Dernière connexion",
+    "NAME": "Nom",
+    "VERSION": "Version",
+    "DOMAIN": "Domaine",
+    "DEPLOYED_APP": "Nombre d'applications déployées par utilisateur",
+    "DEPLOYMENT": "Déploiement",
+    "APP_STATUS": "Statut de la demande",
+    "ID": "Id",
+    "INSTANCE_NAME": "Nom de l'instance",
+    "NEED_UPGRADE": "Besoin d'une mise à niveau"
+  },
+  "TOAST": {
+    "SUCCESS_HEADER": "Succès",
+    "ERROR_HEADER": "Erreur",
+    "SUCCESS": {
+      "NEW_DOMAIN": "Nouveau domaine ajouté avec succès",
+      "SETTINGS": "Les paramètres ont été mis à jour avec succès",
+      "CLUSTER": "Les données du cluster distant ont été mises à jour avec succès",
+      "NOTIFICATION": "Notification envoyée avec succès",
+      "NEW_WEBHOOK": "Nouveau webhook ajouté",
+      "WEBHOOK": "Webhook mis à jour"
+    },
+    "ERROR": {
+      "NEW_DOMAIN": "Échec de l'ajout d'un nouveau domaine",
+      "SETTINGS": "La mise à jour des paramètres a échoué",
+      "NOTIFICATION": "Le message n'a pas pu être envoyé.",
+      "WEBHOOK": "Échec de la mise à jour du Webhook"
+    }
   }
 }
