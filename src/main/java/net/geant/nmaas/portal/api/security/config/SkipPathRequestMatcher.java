@@ -1,4 +1,4 @@
-package net.geant.nmaas.security;
+package net.geant.nmaas.portal.api.security.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

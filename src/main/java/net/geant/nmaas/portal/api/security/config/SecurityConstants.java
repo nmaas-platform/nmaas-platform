@@ -1,4 +1,4 @@
-package net.geant.nmaas.security;
+package net.geant.nmaas.portal.api.security.config;
 
 import java.util.List;
 import java.util.Map;

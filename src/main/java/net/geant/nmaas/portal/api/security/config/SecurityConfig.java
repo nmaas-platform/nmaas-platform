@@ -1,4 +1,4 @@
-package net.geant.nmaas.security;
+package net.geant.nmaas.portal.api.security.config;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
