@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.spec;
 
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import net.geant.nmaas.portal.persistent.entity.User;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,10 +21,11 @@ public class UserSpecification {
             if (searchValue != null && !searchValue.trim().isEmpty()) {
                 String lowerCaseSearchValue = searchValue.toLowerCase().trim();
 
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("username")),
-                        "%" + lowerCaseSearchValue + "%"));
+                if (lowerCaseSearchValue.matches("\\d+")) {
+                    predicates.add(criteriaBuilder.equal(root.get("id"), Long.valueOf(lowerCaseSearchValue)));
+                }
 
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("id").as(String.class)),
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("username")),
                         "%" + lowerCaseSearchValue + "%"));
 
 
