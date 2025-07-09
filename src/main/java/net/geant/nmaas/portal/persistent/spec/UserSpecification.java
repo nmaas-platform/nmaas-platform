@@ -40,12 +40,6 @@ public class UserSpecification {
                         "%" + lowerCaseSearchValue + "%"));
 
 
-                if ("true".equals(lowerCaseSearchValue) || "false".equals(lowerCaseSearchValue)) {
-                    predicates.add(criteriaBuilder.equal(root.get("enabled"), Boolean.valueOf(lowerCaseSearchValue)));
-                } else {
-                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("enabled").as(String.class)),
-                            "%" + lowerCaseSearchValue + "%"));
-                }
                 return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
             }
 
