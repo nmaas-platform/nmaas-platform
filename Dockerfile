@@ -18,7 +18,7 @@ ARG USER_GID=1000
 ENV KUBE_LATEST_VERSION=v1.16.3
 # Note: Latest version of helm may be found at https://github.com/kubernetes/helm/releases
 # renovate: datasource=github-releases depName=helm/helm
-ENV HELM_VERSION=v3.18.2
+ENV HELM_VERSION=v3.18.4
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
 COPY docker/docker_entrypoint.sh /nmaas/scripts/docker_entrypoint.sh
