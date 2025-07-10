@@ -182,6 +182,17 @@ public class UsersController {
 
         List<UserListEntry> allUserInDomain = domainService.getMembers(domainId).stream().map(UserListEntry::new).map(u -> mapUser(u, userLoginDateMap)).toList();
 
+        if (searchValue != null && !searchValue.isBlank()) {
+            String lowerCaseSearch = searchValue.toLowerCase();
+            allUserInDomain = allUserInDomain.stream()
+                    .filter(user ->
+                            (user.getName() != null && user.getName().toLowerCase().contains(lowerCaseSearch)) ||
+                                    (user.getEmail() != null && user.getEmail().toLowerCase().contains(lowerCaseSearch)) ||
+                                    (user.getUsername() != null && user.getUsername().toLowerCase().contains(lowerCaseSearch))
+                    )
+                    .toList();
+        }
+
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
         int startItem = currentPage * pageSize;
