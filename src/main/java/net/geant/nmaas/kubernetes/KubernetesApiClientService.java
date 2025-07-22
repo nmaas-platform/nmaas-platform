@@ -2,6 +2,7 @@ package net.geant.nmaas.kubernetes;
 
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
+import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
@@ -98,6 +99,24 @@ public class KubernetesApiClientService {
                     .inNamespace(namespace)
                     .withName(serviceName)
                     .get();
+        }
+    }
+
+    public PodList getPods(KCluster kCluster, String namespace) {
+        try (KubernetesClient client = initClient(kCluster)) {
+            return client.pods()
+                    .inNamespace(namespace)
+                    .list();
+        }
+    }
+
+    public String getLogs(KCluster kCluster, String namespace, String podName, String containerName) {
+        try (KubernetesClient client = initClient(kCluster)) {
+            return client.pods()
+                    .inNamespace(namespace)
+                    .withName(podName)
+                    .inContainer(containerName)
+                    .getLog(true);
         }
     }
 

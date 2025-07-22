@@ -133,6 +133,7 @@ public class JanitorService {
         }
     }
 
+    @Deprecated
     public List<JanitorManager.PodInfo> getPodNames(String kubeConfig, Identifier deploymentId, String domain) {
         log.debug("Retrieving list of pods for {} in domain {}", deploymentId.value(), domain);
         PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
@@ -146,6 +147,7 @@ public class JanitorService {
         }
     }
 
+    @Deprecated
     public List<String> getPodLogs(String kubeConfig, Identifier deploymentId, String podName, String containerName, String domain) {
         PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
         JanitorManager.PodLogsResponse response = stub.retrievePodLogs(buildPodRequest(kubeConfig, deploymentId, domain, podName, containerName));

@@ -494,7 +494,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             // TODO filter only relevant parameters
             return repositoryManager.loadService(deploymentId).getAdditionalParameters();
         } catch (Exception e) {
-            throw new ProcessingException("Cant find additional parameters for " + deploymentId.value());
+            throw new ProcessingException("Can't find additional parameters for " + deploymentId.value());
         }
     }
 
@@ -502,9 +502,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     public List<AppComponentDetails> serviceComponents(Identifier deploymentId) {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            return janitorService.getPodNames(null, service.getDescriptiveDeploymentId(), service.getDomain()).stream()
-                    .map(p -> new AppComponentDetails(p.getName(), p.getDisplayName(), p.getContainersList()))
-                    .collect(Collectors.toList());
+            return kubernetesApiJanitorService.getPodNames(service.getRemoteCluster(), service.getDescriptiveDeploymentId(), service.getDomain());
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         } catch (JanitorResponseException je) {
@@ -518,7 +516,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             return new AppComponentLogs(
                     serviceComponentName,
-                    janitorService.getPodLogs(null, service.getDescriptiveDeploymentId(), serviceComponentName, serviceSubComponentName, service.getDomain())
+                    kubernetesApiJanitorService.getPodLogs(service.getRemoteCluster(), serviceComponentName, serviceSubComponentName, service.getDomain())
             );
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
