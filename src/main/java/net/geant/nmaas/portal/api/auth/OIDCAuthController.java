@@ -19,6 +19,7 @@ import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +35,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import static java.lang.String.format;
 
 
+@ConditionalOnProperty(name = {"spring.security.oauth2.client.provider.my-oidc.issuer-uri","portal.address"})
 @RestController
 @RequiredArgsConstructor
 @Log4j2

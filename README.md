@@ -58,3 +58,8 @@ Interested users can use the following mailing lists to subscribe to news about 
 - [nmaas-announce@lists.geant.org](mailto:nmaas-announce@lists.geant.org) - public mailing list for announcements shared by the nmaas team with the community ([subscribe here](https://lists.geant.org/sympa/info/nmaas-announce))
 - [nmaas@lists.geant.org](mailto:nmaas@lists.geant.org) - private mailing list for contacting the nmaas core team members
 - [nmaas-users@lists.geant.org](mailto:nmaas-users@lists.geant.org) - public mailing lists for discussions related to nmaas usage and development ([subscribe here](https://lists.geant.org/sympa/info/nmaas-users))
+
+### Generate OpenAPI spec yaml file based on the current implementation of REST API endpoints
+
++ Execute: *./gradlew generateOpenApiYaml* in project folder.
++ Get yaml file  *build/openapi/openapi.yaml*
