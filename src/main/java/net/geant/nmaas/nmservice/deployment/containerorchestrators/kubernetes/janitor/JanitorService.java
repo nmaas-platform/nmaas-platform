@@ -3,17 +3,16 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.j
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.InformationServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager;
-import net.geant.nmaas.externalservices.inventory.janitor.NamespaceServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.PodServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.janitor.BasicAuthServiceGrpc;
+import net.geant.nmaas.janitor.CertManagerServiceGrpc;
+import net.geant.nmaas.janitor.ConfigServiceGrpc;
+import net.geant.nmaas.janitor.InformationServiceGrpc;
+import net.geant.nmaas.janitor.JanitorManager;
+import net.geant.nmaas.janitor.NamespaceServiceGrpc;
+import net.geant.nmaas.janitor.PodServiceGrpc;
+import net.geant.nmaas.janitor.ReadinessServiceGrpc;
+import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +22,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class JanitorService {
 
@@ -38,83 +37,49 @@ public class JanitorService {
         this.namespaceService = namespaceService;
         this.channel = ManagedChannelBuilder.forAddress(
                         env.getProperty("janitor.address"),
-                        env.getProperty("janitor.port", Integer.class))
+                        Integer.parseInt(Objects.requireNonNull(env.getProperty("janitor.port"))))
                 .maxInboundMessageSize(Integer.MAX_VALUE)
                 .usePlaintext()
                 .build();
     }
 
-    private JanitorManager.InstanceRequest buildInstanceRequest(Identifier deploymentId, String domain) {
-        JanitorManager.Instance instance = JanitorManager.Instance.newBuilder().
-                setNamespace(namespaceService.namespace(domain)).
-                setUid(deploymentId.value()).
-                setDomain(domain).
-                build();
-        return JanitorManager.InstanceRequest.newBuilder().
-                setApi("v1").
-                setDeployment(instance).
-                build();
+    public JanitorService(KubernetesClusterNamespaceService namespaceService, ManagedChannel channel) {
+        this.namespaceService = namespaceService;
+        this.channel = channel;
     }
 
-    private JanitorManager.InstanceCredentialsRequest buildInstanceCredentialsRequest(Identifier deploymentId, String domain, String user, String password) {
-        JanitorManager.Instance instance = JanitorManager.Instance.newBuilder().
-                setNamespace(namespaceService.namespace(domain)).
-                setUid(deploymentId.value()).
-                setDomain(domain).
-                build();
-        JanitorManager.Credentials credentials = JanitorManager.Credentials.newBuilder().
-                setUser(user).
-                setPassword(password).
-                build();
-        return JanitorManager.InstanceCredentialsRequest.newBuilder().
-                setApi("v1").
-                setInstance(instance).
-                setCredentials(credentials).
-                build();
-    }
-
-    private JanitorManager.NamespaceRequest buildNamespaceRequest(String domain, List<KeyValueView> annotations) {
-        return JanitorManager.NamespaceRequest.newBuilder()
-                .setApi("v1")
-                .setNamespace(domain)
-                .addAllAnnotations(annotations.stream()
-                        .map(kv -> JanitorManager.KeyValue.newBuilder().setKey(kv.getKey()).setValue(kv.getValue()).build())
-                        .collect(Collectors.toList()))
-                .build();
-    }
-
-    public void createOrReplaceConfigMap(Identifier deploymentId, String domain) {
+    public void createOrReplaceConfigMap(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Creating or replacing configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
     }
 
-    public void deleteConfigMapIfExists(Identifier deploymentId, String domain) {
+    public void deleteConfigMapIfExists(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Deleting configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
     }
 
-    public void createOrReplaceBasicAuth(Identifier deploymentId, String domain, String user, String password) {
+    public void createOrReplaceBasicAuth(String kubeConfig, Identifier deploymentId, String domain, String user, String password) {
         log.info("Configuring basic auth for deployment {} in domain {}", deploymentId.value(), domain);
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
+        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(kubeConfig, deploymentId, domain, user, password));
         throwExceptionIfExecutionFailed(response);
     }
 
-    public void deleteBasicAuthIfExists(Identifier deploymentId, String domain) {
+    public void deleteBasicAuthIfExists(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Deleting basic auth for deployment {} in domain {}", deploymentId.value(), domain);
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
     }
 
-    public void deleteTlsIfExists(Identifier deploymentId, String domain) {
+    public void deleteTlsIfExists(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Deleting TLS for deployment {} in domain {}", deploymentId.value(), domain);
         CertManagerServiceGrpc.CertManagerServiceBlockingStub stub = CertManagerServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
     }
 
@@ -129,10 +94,10 @@ public class JanitorService {
     }
 
     @Deprecated
-    public boolean checkIfReady(Identifier deploymentId, String domain) {
+    public boolean checkIfReady(String kubeConfig, Identifier deploymentId, String domain) {
         log.trace("Checking if deployment {} in domain {} is ready", deploymentId.value(), domain);
         ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(kubeConfig, deploymentId, domain));
         return switch (response.getStatus()) {
             case OK -> true;
             case PENDING -> false;
@@ -141,10 +106,10 @@ public class JanitorService {
     }
 
     @Deprecated
-    public String retrieveServiceIp(Identifier serviceId, String domain) {
+    public String retrieveServiceIp(String kubeConfig, Identifier serviceId, String domain) {
         log.info("Retrieving service IP for {} in domain {}", serviceId.value(), domain);
         InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
-        JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(serviceId, domain));
+        JanitorManager.InfoServiceResponse response = stub.retrieveServiceIp(buildInstanceRequest(kubeConfig, serviceId, domain));
         switch (response.getStatus()) {
             case OK:
                 return response.getInfo();
@@ -154,10 +119,11 @@ public class JanitorService {
         }
     }
 
-    public void checkServiceExists(Identifier serviceId, String domain) {
+    @Deprecated
+    public void checkServiceExists(String kubeConfig, Identifier serviceId, String domain) {
         log.info("Verifying if provided service {} exists in domain {}", serviceId.value(), domain);
         InformationServiceGrpc.InformationServiceBlockingStub stub = InformationServiceGrpc.newBlockingStub(channel);
-        JanitorManager.InfoServiceResponse response = stub.checkServiceExists(buildInstanceRequest(serviceId, domain));
+        JanitorManager.InfoServiceResponse response = stub.checkServiceExists(buildInstanceRequest(kubeConfig, serviceId, domain));
         switch (response.getStatus()) {
             case OK:
                 return;
@@ -167,10 +133,10 @@ public class JanitorService {
         }
     }
 
-    public List<JanitorManager.PodInfo> getPodNames(Identifier deploymentId, String domain) {
+    public List<JanitorManager.PodInfo> getPodNames(String kubeConfig, Identifier deploymentId, String domain) {
         log.debug("Retrieving list of pods for {} in domain {}", deploymentId.value(), domain);
         PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
-        JanitorManager.PodListResponse response = stub.retrievePodList(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.PodListResponse response = stub.retrievePodList(buildInstanceRequest(kubeConfig, deploymentId, domain));
         switch (response.getStatus()) {
             case OK:
                 return response.getPodsList();
@@ -180,22 +146,9 @@ public class JanitorService {
         }
     }
 
-    public List<String> getPodLogs(Identifier deploymentId, String podName, String containerName, String domain) {
+    public List<String> getPodLogs(String kubeConfig, Identifier deploymentId, String podName, String containerName, String domain) {
         PodServiceGrpc.PodServiceBlockingStub stub = PodServiceGrpc.newBlockingStub(channel);
-        JanitorManager.PodInfo podInfo = (StringUtils.isNotEmpty(containerName)) ?
-                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).addContainers(containerName).build() :
-                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).build();
-        JanitorManager.PodLogsResponse response = stub.retrievePodLogs(
-                JanitorManager.PodRequest.newBuilder()
-                        .setApi("v1")
-                        .setDeployment(
-                                JanitorManager.Instance.newBuilder().
-                                        setNamespace(namespaceService.namespace(domain)).
-                                        setUid(deploymentId.value()).
-                                        setDomain(domain).build()
-                        )
-                        .setPod(podInfo)
-                        .build());
+        JanitorManager.PodLogsResponse response = stub.retrievePodLogs(buildPodRequest(kubeConfig, deploymentId, domain, podName, containerName));
         switch (response.getStatus()) {
             case OK:
                 return response.getLinesList();
@@ -206,12 +159,70 @@ public class JanitorService {
     }
 
     @Deprecated
-    public void createNameSpace(String domainNameSpace, List<KeyValueView> annotations) {
+    public void createNameSpace(String kubeConfig, String domainNameSpace, List<KeyValueView> annotations) {
         log.info("Requested domain namespace creation for domain {} with {} annotations", domainNameSpace, annotations.size());
         NamespaceServiceGrpc.NamespaceServiceBlockingStub stub = NamespaceServiceGrpc.newBlockingStub(channel);
-        JanitorManager.ServiceResponse response = stub.createNamespace(
-                buildNamespaceRequest(domainNameSpace, annotations));
+        JanitorManager.ServiceResponse response = stub.createNamespace(buildNamespaceRequest(kubeConfig, domainNameSpace, annotations));
         throwExceptionIfExecutionFailed(response);
+    }
+
+    private JanitorManager.InstanceRequest buildInstanceRequest(String kubeConfig, Identifier deploymentId, String domain) {
+        JanitorManager.Instance instance = JanitorManager.Instance.newBuilder().
+                setNamespace(namespaceService.namespace(domain))
+                .setUid(deploymentId.value())
+                .setDomain(domain)
+                .build();
+        return JanitorManager.InstanceRequest.newBuilder()
+                .setApi("v1")
+                .setKubeConfig(kubeConfig)
+                .setDeployment(instance)
+                .build();
+    }
+
+    private JanitorManager.InstanceCredentialsRequest buildInstanceCredentialsRequest(String kubeConfig, Identifier deploymentId, String domain, String user, String password) {
+        JanitorManager.Instance instance = JanitorManager.Instance.newBuilder()
+                .setNamespace(namespaceService.namespace(domain))
+                .setUid(deploymentId.value())
+                .setDomain(domain)
+                .build();
+        JanitorManager.Credentials credentials = JanitorManager.Credentials.newBuilder()
+                .setUser(user)
+                .setPassword(password)
+                .build();
+        return JanitorManager.InstanceCredentialsRequest.newBuilder()
+                .setApi("v1")
+                .setKubeConfig(kubeConfig)
+                .setInstance(instance)
+                .setCredentials(credentials)
+                .build();
+    }
+
+    private JanitorManager.PodRequest buildPodRequest(String kubeConfig, Identifier deploymentId, String domain, String podName, String containerName) {
+        JanitorManager.PodInfo podInfo = (StringUtils.isNotEmpty(containerName)) ?
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).addContainers(containerName).build() :
+                JanitorManager.PodInfo.newBuilder().setName(podName).setDisplayName(podName).build();
+        return JanitorManager.PodRequest.newBuilder()
+                .setApi("v1")
+                .setKubeConfig(kubeConfig)
+                .setDeployment(
+                        JanitorManager.Instance.newBuilder()
+                                .setNamespace(namespaceService.namespace(domain))
+                                .setUid(deploymentId.value())
+                                .setDomain(domain).build()
+                )
+                .setPod(podInfo)
+                .build();
+    }
+
+    private JanitorManager.NamespaceRequest buildNamespaceRequest(String kubeConfig, String domain, List<KeyValueView> annotations) {
+        return JanitorManager.NamespaceRequest.newBuilder()
+                .setApi("v1")
+                .setKubeConfig(kubeConfig)
+                .setNamespace(domain)
+                .addAllAnnotations(annotations.stream()
+                        .map(kv -> JanitorManager.KeyValue.newBuilder().setKey(kv.getKey()).setValue(kv.getValue()).build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     private static String janitorExceptionMessage(String message) {

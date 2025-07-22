@@ -162,7 +162,7 @@ test {
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/test.exec").get().asFile
         excludes = [
-                '**/inventory/janitor/**',
+                '**/janitor/**',
                 '**/exception/**',
                 '**/exceptions/**'
         ]
@@ -180,7 +180,7 @@ tasks.register('integrationTestOnly', Test) {
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
         excludes = [
-                '**/inventory/janitor/**',
+                '**/janitor/**',
                 '**/exception/**',
                 '**/exceptions/**'
         ]
@@ -198,7 +198,7 @@ tasks.register('integrationTest', Test) {
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
         excludes = [
-                '**/inventory/janitor/**',
+                '**/janitor/**',
                 '**/exception/**',
                 '**/exceptions/**'
         ]
@@ -220,7 +220,7 @@ jacocoTestReport {
     executionData(test, integrationTest)
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/inventory/janitor/**',])
+            fileTree(dir: it, exclude: ['**/janitor/**',])
         }))
     }
 }
@@ -229,7 +229,7 @@ jacocoTestCoverageVerification {
     executionData(test, integrationTest)
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/inventory/janitor/**',])
+            fileTree(dir: it, exclude: ['**/janitor/**',])
         }))
     }
     violationRules {
@@ -280,6 +280,6 @@ jacocoTestCoverageVerification.finalizedBy(jacocoTestReport)
 
 sonarqube {
     properties {
-        property "sonar.coverage.exclusions", ["**/inventory/janitor/**", "**/exception/**", "**/exceptions/**"]
+        property "sonar.coverage.exclusions", ["**/janitor/**", "**/exception/**", "**/exceptions/**"]
     }
 }

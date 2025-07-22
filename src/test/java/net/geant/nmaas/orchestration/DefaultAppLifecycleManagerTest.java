@@ -142,7 +142,7 @@ public class DefaultAppLifecycleManagerTest {
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getAccessCredentials()).thenReturn("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}");
         appLifecycleManager.updateConfiguration(deploymentId, configurationView);
-        verify(janitorService, times(1)).createOrReplaceBasicAuth(descriptiveDeploymentId, null, "username", "password");
+        verify(janitorService, times(1)).createOrReplaceBasicAuth(null, descriptiveDeploymentId, null, "username", "password");
     }
 
     @Test

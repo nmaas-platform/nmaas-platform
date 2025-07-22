@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.kubernetes;
+package net.geant.nmaas.kubernetes;
 
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;

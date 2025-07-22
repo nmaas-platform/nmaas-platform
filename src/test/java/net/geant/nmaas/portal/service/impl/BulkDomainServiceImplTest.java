@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;

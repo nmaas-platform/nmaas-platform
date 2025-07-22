@@ -3,7 +3,7 @@ package net.geant.nmaas.kubernetes.remote.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;

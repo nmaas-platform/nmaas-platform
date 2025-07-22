@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.kubernetes.remote.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;

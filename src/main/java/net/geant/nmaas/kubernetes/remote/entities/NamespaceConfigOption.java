@@ -1,6 +1,6 @@
 package net.geant.nmaas.kubernetes.remote.entities;
 
-import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
+import net.geant.nmaas.kubernetes.api.model.KClusterView;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

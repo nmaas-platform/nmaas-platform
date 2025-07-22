@@ -2,29 +2,29 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.j
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
-import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc.BasicAuthServiceBlockingStub;
-import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc.CertManagerServiceBlockingStub;
-import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc.ConfigServiceBlockingStub;
-import net.geant.nmaas.externalservices.inventory.janitor.InformationServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.InformationServiceGrpc.InformationServiceBlockingStub;
-import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.InfoServiceResponse;
-import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.ServiceResponse;
-import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.ReadinessServiceGrpc.ReadinessServiceBlockingStub;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.janitor.BasicAuthServiceGrpc;
+import net.geant.nmaas.janitor.BasicAuthServiceGrpc.BasicAuthServiceBlockingStub;
+import net.geant.nmaas.janitor.CertManagerServiceGrpc;
+import net.geant.nmaas.janitor.CertManagerServiceGrpc.CertManagerServiceBlockingStub;
+import net.geant.nmaas.janitor.ConfigServiceGrpc;
+import net.geant.nmaas.janitor.ConfigServiceGrpc.ConfigServiceBlockingStub;
+import net.geant.nmaas.janitor.InformationServiceGrpc;
+import net.geant.nmaas.janitor.InformationServiceGrpc.InformationServiceBlockingStub;
+import net.geant.nmaas.janitor.JanitorManager.InfoServiceResponse;
+import net.geant.nmaas.janitor.JanitorManager.ServiceResponse;
+import net.geant.nmaas.janitor.ReadinessServiceGrpc;
+import net.geant.nmaas.janitor.ReadinessServiceGrpc.ReadinessServiceBlockingStub;
+import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import static net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.ServiceResponse.newBuilder;
-import static net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.Status.FAILED;
-import static net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.Status.OK;
-import static net.geant.nmaas.externalservices.inventory.janitor.JanitorManager.Status.PENDING;
+import static net.geant.nmaas.janitor.JanitorManager.ServiceResponse.newBuilder;
+import static net.geant.nmaas.janitor.JanitorManager.Status.FAILED;
+import static net.geant.nmaas.janitor.JanitorManager.Status.OK;
+import static net.geant.nmaas.janitor.JanitorManager.Status.PENDING;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -65,7 +65,7 @@ public class JanitorServiceTest {
             when(configServiceBlockingStub.createOrReplace(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
                 configServiceGrpcMock.when(() -> ConfigServiceGrpc.newBlockingStub(any())).thenReturn(configServiceBlockingStub);
-                janitorService.createOrReplaceConfigMap(IDENTIFIER, DOMAIN);
+                janitorService.createOrReplaceConfigMap("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -76,7 +76,7 @@ public class JanitorServiceTest {
             when(configServiceBlockingStub.createOrReplace(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
                 configServiceGrpcMock.when(() -> ConfigServiceGrpc.newBlockingStub(any())).thenReturn(configServiceBlockingStub);
-                janitorService.createOrReplaceConfigMap(IDENTIFIER, DOMAIN);
+                janitorService.createOrReplaceConfigMap("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -87,7 +87,7 @@ public class JanitorServiceTest {
             when(configServiceBlockingStub.deleteIfExists(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
                 configServiceGrpcMock.when(() -> ConfigServiceGrpc.newBlockingStub(any())).thenReturn(configServiceBlockingStub);
-                janitorService.deleteConfigMapIfExists(IDENTIFIER, DOMAIN);
+                janitorService.deleteConfigMapIfExists("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -98,7 +98,7 @@ public class JanitorServiceTest {
             when(configServiceBlockingStub.deleteIfExists(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
                 configServiceGrpcMock.when(() -> ConfigServiceGrpc.newBlockingStub(any())).thenReturn(configServiceBlockingStub);
-                janitorService.deleteConfigMapIfExists(IDENTIFIER, DOMAIN);
+                janitorService.deleteConfigMapIfExists("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -109,7 +109,7 @@ public class JanitorServiceTest {
             when(basicAuthServiceBlockingStub.createOrReplace(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
                 basicAuthServiceGrpc.when(() -> BasicAuthServiceGrpc.newBlockingStub(any())).thenReturn(basicAuthServiceBlockingStub);
-                janitorService.createOrReplaceBasicAuth(IDENTIFIER, DOMAIN, USER, PASSWORD);
+                janitorService.createOrReplaceBasicAuth("", IDENTIFIER, DOMAIN, USER, PASSWORD);
             }
         });
     }
@@ -120,7 +120,7 @@ public class JanitorServiceTest {
             when(basicAuthServiceBlockingStub.createOrReplace(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
                 basicAuthServiceGrpc.when(() -> BasicAuthServiceGrpc.newBlockingStub(any())).thenReturn(basicAuthServiceBlockingStub);
-                janitorService.createOrReplaceBasicAuth(IDENTIFIER, DOMAIN, USER, PASSWORD);
+                janitorService.createOrReplaceBasicAuth("", IDENTIFIER, DOMAIN, USER, PASSWORD);
             }
         });
     }
@@ -131,7 +131,7 @@ public class JanitorServiceTest {
             when(basicAuthServiceBlockingStub.deleteIfExists(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
                 basicAuthServiceGrpc.when(() -> BasicAuthServiceGrpc.newBlockingStub(any())).thenReturn(basicAuthServiceBlockingStub);
-                janitorService.deleteBasicAuthIfExists(IDENTIFIER, DOMAIN);
+                janitorService.deleteBasicAuthIfExists("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -142,7 +142,7 @@ public class JanitorServiceTest {
             when(basicAuthServiceBlockingStub.deleteIfExists(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<BasicAuthServiceGrpc> basicAuthServiceGrpc = Mockito.mockStatic(BasicAuthServiceGrpc.class)) {
                 basicAuthServiceGrpc.when(() -> BasicAuthServiceGrpc.newBlockingStub(any())).thenReturn(basicAuthServiceBlockingStub);
-                janitorService.deleteBasicAuthIfExists(IDENTIFIER, DOMAIN);
+                janitorService.deleteBasicAuthIfExists("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -153,7 +153,7 @@ public class JanitorServiceTest {
             when(certManagerServiceBlockingStub.deleteIfExists(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<CertManagerServiceGrpc> certManagerServiceGrpc = Mockito.mockStatic(CertManagerServiceGrpc.class)) {
                 certManagerServiceGrpc.when(() -> CertManagerServiceGrpc.newBlockingStub(any())).thenReturn(certManagerServiceBlockingStub);
-                janitorService.deleteTlsIfExists(IDENTIFIER, DOMAIN);
+                janitorService.deleteTlsIfExists("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -164,7 +164,7 @@ public class JanitorServiceTest {
             when(certManagerServiceBlockingStub.deleteIfExists(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<CertManagerServiceGrpc> certManagerServiceGrpc = Mockito.mockStatic(CertManagerServiceGrpc.class)) {
                 certManagerServiceGrpc.when(() -> CertManagerServiceGrpc.newBlockingStub(any())).thenReturn(certManagerServiceBlockingStub);
-                janitorService.deleteTlsIfExists(IDENTIFIER, DOMAIN);
+                janitorService.deleteTlsIfExists("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -187,7 +187,7 @@ public class JanitorServiceTest {
             when(readinessServiceBlockingStub.checkIfReady(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<ReadinessServiceGrpc> readinessServiceGrpc = Mockito.mockStatic(ReadinessServiceGrpc.class)) {
                 readinessServiceGrpc.when(() -> ReadinessServiceGrpc.newBlockingStub(any())).thenReturn(readinessServiceBlockingStub);
-                assertTrue(janitorService.checkIfReady(IDENTIFIER, DOMAIN));
+                assertTrue(janitorService.checkIfReady("", IDENTIFIER, DOMAIN));
             }
         });
     }
@@ -198,7 +198,7 @@ public class JanitorServiceTest {
             when(readinessServiceBlockingStub.checkIfReady(any())).thenReturn(PENDING_SERVICE_RESPONSE);
             try (MockedStatic<ReadinessServiceGrpc> readinessServiceGrpc = Mockito.mockStatic(ReadinessServiceGrpc.class)) {
                 readinessServiceGrpc.when(() -> ReadinessServiceGrpc.newBlockingStub(any())).thenReturn(readinessServiceBlockingStub);
-                assertFalse(janitorService.checkIfReady(IDENTIFIER, DOMAIN));
+                assertFalse(janitorService.checkIfReady("", IDENTIFIER, DOMAIN));
             }
         });
     }
@@ -209,7 +209,7 @@ public class JanitorServiceTest {
             when(readinessServiceBlockingStub.checkIfReady(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<ReadinessServiceGrpc> readinessServiceGrpc = Mockito.mockStatic(ReadinessServiceGrpc.class)) {
                 readinessServiceGrpc.when(() -> ReadinessServiceGrpc.newBlockingStub(any())).thenReturn(readinessServiceBlockingStub);
-                janitorService.checkIfReady(IDENTIFIER, DOMAIN);
+                janitorService.checkIfReady("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -221,7 +221,7 @@ public class JanitorServiceTest {
             when(informationServiceBlockingStub.retrieveServiceIp(any())).thenReturn(response);
             try (MockedStatic<InformationServiceGrpc> informationServiceGrpc = Mockito.mockStatic(InformationServiceGrpc.class)) {
                 informationServiceGrpc.when(() -> InformationServiceGrpc.newBlockingStub(any())).thenReturn(informationServiceBlockingStub);
-                assertEquals("10.10.1.1", janitorService.retrieveServiceIp(IDENTIFIER, DOMAIN));
+                assertEquals("10.10.1.1", janitorService.retrieveServiceIp("", IDENTIFIER, DOMAIN));
             }
         });
     }
@@ -233,7 +233,7 @@ public class JanitorServiceTest {
             when(informationServiceBlockingStub.retrieveServiceIp(any())).thenReturn(response);
             try (MockedStatic<InformationServiceGrpc> informationServiceGrpc = Mockito.mockStatic(InformationServiceGrpc.class)) {
                 informationServiceGrpc.when(() -> InformationServiceGrpc.newBlockingStub(any())).thenReturn(informationServiceBlockingStub);
-                janitorService.retrieveServiceIp(IDENTIFIER, DOMAIN);
+                janitorService.retrieveServiceIp("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -245,7 +245,7 @@ public class JanitorServiceTest {
             when(informationServiceBlockingStub.checkServiceExists(any())).thenReturn(response);
             try (MockedStatic<InformationServiceGrpc> informationServiceGrpc = Mockito.mockStatic(InformationServiceGrpc.class)) {
                 informationServiceGrpc.when(() -> InformationServiceGrpc.newBlockingStub(any())).thenReturn(informationServiceBlockingStub);
-                janitorService.checkServiceExists(IDENTIFIER, DOMAIN);
+                janitorService.checkServiceExists("", IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -257,7 +257,7 @@ public class JanitorServiceTest {
             when(informationServiceBlockingStub.checkServiceExists(any())).thenReturn(response);
             try (MockedStatic<InformationServiceGrpc> informationServiceGrpc = Mockito.mockStatic(InformationServiceGrpc.class)) {
                 informationServiceGrpc.when(() -> InformationServiceGrpc.newBlockingStub(any())).thenReturn(informationServiceBlockingStub);
-                janitorService.checkServiceExists(IDENTIFIER, DOMAIN);
+                janitorService.checkServiceExists("", IDENTIFIER, DOMAIN);
             }
         });
     }

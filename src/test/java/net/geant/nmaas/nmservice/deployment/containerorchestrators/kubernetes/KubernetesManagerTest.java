@@ -1,12 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import com.google.common.collect.Sets;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.gitlab.GitLabManager;
+import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringService;
 import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
-import net.geant.nmaas.gitlab.GitLabManager;
-import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
@@ -75,7 +75,7 @@ public class KubernetesManagerTest {
     private final KubernetesApiJanitorService kubernetesApiJanitorService = mock(KubernetesApiJanitorService.class);
     private final RemoteClusterManagementService remoteClusterManager = mock(RemoteClusterManagementService.class);
     private final RemoteClusterMonitoringService remoteClusterMonitor = mock(RemoteClusterMonitoringService.class);
-    private final KubernetesDeploymentRemoteClusterParametersProvider remoteClusterParametersProvider  = mock(KubernetesDeploymentRemoteClusterParametersProvider.class);
+    private final KubernetesDeploymentRemoteClusterParametersProvider remoteClusterParametersProvider = mock(KubernetesDeploymentRemoteClusterParametersProvider.class);
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
@@ -413,11 +413,11 @@ public class KubernetesManagerTest {
     void shouldVerifyThatServiceIsDeployedAndUpdateServiceIp() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
         when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
-        when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId"), "domain"))
+        when(kubernetesApiJanitorService.retrieveServiceIp(null, Identifier.newInstance("deploymentId"), "domain"))
                 .thenReturn("192.168.100.1");
-        when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId-component1"), "domain"))
+        when(kubernetesApiJanitorService.retrieveServiceIp(null, Identifier.newInstance("deploymentId-component1"), "domain"))
                 .thenReturn("192.168.100.2");
-        doThrow(new JanitorResponseException("")).when(janitorService).checkServiceExists(any(), any());
+        when(kubernetesApiJanitorService.checkServiceExists(any(), any(), any())).thenReturn(false);
         assertDoesNotThrow(() -> {
             manager.checkService(Identifier.newInstance("deploymentId"));
 
@@ -456,8 +456,8 @@ public class KubernetesManagerTest {
     void shouldVerifyThatServiceIsDeployedWithoutServiceIp() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
         when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
-        when(janitorService.retrieveServiceIp(any(), any())).thenThrow(new JanitorResponseException(""));
-        doThrow(new JanitorResponseException("")).when(janitorService).checkServiceExists(any(), any());
+        when(kubernetesApiJanitorService.retrieveServiceIp(any(), any(), any())).thenThrow(new JanitorResponseException(""));
+        when(kubernetesApiJanitorService.checkServiceExists(any(), any(), any())).thenReturn(false);
         assertDoesNotThrow(() -> {
             manager.checkService(Identifier.newInstance("deploymentId"));
             verify(repositoryManager, times(1)).updateKServiceAccessMethods(any());
@@ -475,9 +475,9 @@ public class KubernetesManagerTest {
     void shouldRemoveService() {
         manager.removeNmService(DEPLOYMENT_ID);
         verify(serviceLifecycleManager, times(1)).deleteServiceIfExists(DEPLOYMENT_ID);
-        verify(janitorService, times(1)).deleteConfigMapIfExists(Identifier.newInstance("deploymentId"), "domain");
-        verify(janitorService, times(1)).deleteBasicAuthIfExists(Identifier.newInstance("deploymentId"), "domain");
-        verify(janitorService, times(1)).deleteTlsIfExists(Identifier.newInstance("deploymentId"), "domain");
+        verify(janitorService, times(1)).deleteConfigMapIfExists(null, Identifier.newInstance("deploymentId"), "domain");
+        verify(janitorService, times(1)).deleteBasicAuthIfExists(null, Identifier.newInstance("deploymentId"), "domain");
+        verify(janitorService, times(1)).deleteTlsIfExists(null, Identifier.newInstance("deploymentId"), "domain");
         verifyNoMoreInteractions(ingressResourceManager);
     }
 

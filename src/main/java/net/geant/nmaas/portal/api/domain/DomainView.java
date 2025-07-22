@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
 
 import java.util.List;
 

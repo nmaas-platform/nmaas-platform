@@ -50,7 +50,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
                     configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
                 }
-                janitorService.createOrReplaceConfigMap(nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
+                janitorService.createOrReplaceConfigMap(null, nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
             }
             notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nmServiceDeployment.getApplicationId(), nmServiceDeployment.getAppConfiguration());
             if (nmServiceDeployment.isConfigFileRepositoryRequired()) {
                 configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-                janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
+                janitorService.createOrReplaceConfigMap(null, nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
             }
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     public void reloadNmService(NmServiceDeployment nmServiceDeployment) {
         try {
             notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_INITIATED);
-            janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
+            janitorService.createOrReplaceConfigMap(null, nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
             notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATED);
         } catch (Exception e) {
             notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_FAILED, e.getMessage());
@@ -97,7 +97,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_INITIATED);
             configHandler.removeConfigFiles(deploymentId);
             notifyStateChangeListenersWithDelay(deploymentId, CONFIGURATION_REMOVED, 1000);
-        } catch (Exception e){
+        } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_FAILED);
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
