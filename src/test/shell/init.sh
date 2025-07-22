@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function getToken() {
-    python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)['token']))" | sed -e 's/^"//' -e 's/"$//'
+    python3 -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)['token']))" | sed -e 's/^"//' -e 's/"$//'
 }
 
 echo "Waiting for nmaas Platform initialization"
