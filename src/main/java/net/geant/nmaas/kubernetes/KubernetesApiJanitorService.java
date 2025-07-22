@@ -1,5 +1,7 @@
 package net.geant.nmaas.kubernetes;
 
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
@@ -7,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
+import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +87,25 @@ public class KubernetesApiJanitorService {
         final String namespace = namespaceService.namespace(domain);
         final Service service = kubernetesApiClientService.getService(kCluster, namespace, serviceName.value());
         return Objects.nonNull(service);
+    }
+
+    public List<AppComponentDetails> getPodNames(KCluster kCluster, Identifier deploymentId, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        final PodList pods = kubernetesApiClientService.getPods(kCluster, namespace);
+        return pods.getItems().stream()
+                .filter(p -> p.getMetadata().getName().startsWith(deploymentId.value()))
+                .map(p ->
+                        new AppComponentDetails(
+                                p.getMetadata().getName(),
+                                p.getMetadata().getName(),
+                                p.getSpec().getContainers().stream().map(Container::getName).toList())
+                )
+                .toList();
+    }
+
+    public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        return Collections.singletonList(kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName));
     }
 
 }
