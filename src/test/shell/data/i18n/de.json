@@ -1390,6 +1390,7 @@
     "SUCCESS_HEADER": "Erfolg",
     "ERROR_HEADER": "Fehler",
     "SUCCESS": {
+      "UPDATE_DOMAIN": "DDomaindaten aktualisiert",
       "NEW_DOMAIN": "Neue Domain erfolgreich hinzugefügt",
       "SETTINGS": "Die Einstellungen wurden erfolgreich aktualisiert",
       "CLUSTER": "Remote-Clusterdaten erfolgreich aktualisiert",
