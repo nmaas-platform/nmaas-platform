@@ -1403,6 +1403,7 @@
     "SUCCESS_HEADER": "Sukces",
     "ERROR_HEADER": "Błąd",
     "SUCCESS": {
+      "UPDATE_DOMAIN": "Domena została pomyślnie zaktualizowana",
       "NEW_DOMAIN": "Nowa domena została pomyślnie dodana",
       "SETTINGS": "Ustawienia zostały pomyślnie zaktualizowane",
       "CLUSTER": "Dane klastra zdalnego zostały pomyślnie zaktualizowane",

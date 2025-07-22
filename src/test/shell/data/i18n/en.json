@@ -1405,6 +1405,7 @@
     "SUCCESS_HEADER": "Success",
     "ERROR_HEADER": "Error",
     "SUCCESS": {
+      "UPDATE_DOMAIN": "Domain data updated",
       "NEW_DOMAIN": "New domain added",
       "SETTINGS": "Settings updated",
       "CLUSTER": "Remote cluster data updated",

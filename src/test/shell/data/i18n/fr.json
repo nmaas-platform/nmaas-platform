@@ -1404,6 +1404,7 @@
     "SUCCESS_HEADER": "Succès",
     "ERROR_HEADER": "Erreur",
     "SUCCESS": {
+      "UPDATE_DOMAIN": "Données de domaine mises à jour",
       "NEW_DOMAIN": "Nouveau domaine ajouté avec succès",
       "SETTINGS": "Les paramètres ont été mis à jour avec succès",
       "CLUSTER": "Les données du cluster distant ont été mises à jour avec succès",
