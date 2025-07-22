@@ -10,19 +10,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@ComponentScan(basePackages= {"net.geant.nmaas.portal.service.impl.security"})
+@ComponentScan(basePackages = {"net.geant.nmaas.portal.service.impl.security"})
 public class ApiSecurityConfig {
 
-	@Bean
-	public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler(ApiPermissionEvaluator apiPermissionEvaluator) {
-		DefaultMethodSecurityExpressionHandler dmseh = new DefaultMethodSecurityExpressionHandler();
-		dmseh.setPermissionEvaluator(apiPermissionEvaluator);
-		return dmseh;
-	}
+    @Bean
+    public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler(ApiPermissionEvaluator apiPermissionEvaluator) {
+        DefaultMethodSecurityExpressionHandler dmseh = new DefaultMethodSecurityExpressionHandler();
+        dmseh.setPermissionEvaluator(apiPermissionEvaluator);
+        return dmseh;
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
-	
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }
