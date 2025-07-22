@@ -370,14 +370,13 @@ public class KubernetesManager implements ContainerOrchestrator {
             Set<ServiceAccessMethod> accessMethods = new HashSet<>();
             service.getAccessMethods().forEach(m -> {
                 final ServiceAccessMethod copy = ServiceAccessMethod.copy(m);
-                log.info("access methods copy created");
                 if (m.isOfType(INTERNAL) && StringUtils.isEmpty(m.getUrl())) {
-                    final String lbServiceIp = janitorService.retrieveServiceIp(
-                            null,
+                    final String lbServiceIp = kubernetesApiJanitorService.retrieveServiceIp(
+                            service.getRemoteCluster(),
                             buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters()),
                             service.getDomain());
                     final String ipWithPortString = getIpAddressWithPort(lbServiceIp, m.getDeployParameters());
-                    log.info("setting url to: {}", getUserAtIpAddressUrl(ipWithPortString, m.getProtocol(), m.getDeployParameters()));
+                    log.debug("Setting internal access URL to: {}", getUserAtIpAddressUrl(ipWithPortString, m.getProtocol(), m.getDeployParameters()));
                     copy.setUrl(getUserAtIpAddressUrl(ipWithPortString, m.getProtocol(), m.getDeployParameters()));
                 }
                 accessMethods.add(copy);
@@ -421,26 +420,25 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     private void retrieveOrUpdateLocalServiceName(KubernetesNmServiceInfo service) {
-        try {
-            Set<ServiceAccessMethod> accessMethods = new HashSet<>();
-            service.getAccessMethods().forEach(m -> {
-                final ServiceAccessMethod copy = ServiceAccessMethod.copy(m);
-                if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
-                    final Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
-                    janitorService.checkServiceExists(null, serviceName, service.getDomain());
-                    String username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
-                    copy.setUrl(username != null && !username.isEmpty() ?
-                            username + "@" + serviceName.value() : serviceName.value());
-                    if (m.getDeployParameters().containsKey(HelmChartIngressVariable.K8S_SERVICE_PORT)) {
-                        copy.setUrl(copy.getUrl() + " (port: " + m.getDeployParameters().get(HelmChartIngressVariable.K8S_SERVICE_PORT) + ")");
-                    }
+        Set<ServiceAccessMethod> accessMethods = new HashSet<>();
+        service.getAccessMethods().forEach(m -> {
+            final ServiceAccessMethod copy = ServiceAccessMethod.copy(m);
+            if (m.isOfType(LOCAL) && StringUtils.isEmpty(m.getUrl())) {
+                final Identifier serviceName = buildServiceId(service.getDescriptiveDeploymentId(), m.getDeployParameters());
+                if (!kubernetesApiJanitorService.checkServiceExists(service.getRemoteCluster(), serviceName, service.getDomain())) {
+                    log.error("Could not retrieve service name for {}", service.getDescriptiveDeploymentId());
+                    return;
                 }
-                accessMethods.add(copy);
-            });
-            repositoryManager.updateKServiceAccessMethods(accessMethods);
-        } catch (JanitorResponseException je) {
-            log.error("Could not retrieve service name for {}", service.getDescriptiveDeploymentId());
-        }
+                String username = m.getDeployParameters().get(HelmChartIngressVariable.ACCESS_USER);
+                copy.setUrl(username != null && !username.isEmpty() ?
+                        username + "@" + serviceName.value() : serviceName.value());
+                if (m.getDeployParameters().containsKey(HelmChartIngressVariable.K8S_SERVICE_PORT)) {
+                    copy.setUrl(copy.getUrl() + " (port: " + m.getDeployParameters().get(HelmChartIngressVariable.K8S_SERVICE_PORT) + ")");
+                }
+            }
+            accessMethods.add(copy);
+        });
+        repositoryManager.updateKServiceAccessMethods(accessMethods);
     }
 
     @Override

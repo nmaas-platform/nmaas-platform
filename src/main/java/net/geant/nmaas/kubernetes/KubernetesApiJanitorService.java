@@ -1,5 +1,6 @@
 package net.geant.nmaas.kubernetes;
 
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,30 @@ public class KubernetesApiJanitorService {
                     String.format("Not able to check application state. No deployment/statefulset with name %s found in namespace %s", deploymentId.value(), namespace)
             );
         }
+    }
+
+    public String retrieveServiceIp(KCluster kCluster, Identifier serviceName, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        final Service service = kubernetesApiClientService.getService(kCluster, namespace, serviceName.value());
+        if (Objects.nonNull(service)) {
+            try {
+                return service.getStatus().getLoadBalancer().getIngress().getFirst().getIp();
+            } catch (Exception e) {
+                log.warn("Service {} found but encountered problem with retrieving IP address: {}", serviceName.value(), e.getMessage());
+                throw new JanitorResponseException("Not able to retrieve IP information: " + e.getMessage());
+            }
+        } else {
+            log.info("Service {} not found in namespace {}.", serviceName.value(), namespace);
+            throw new JanitorResponseException(
+                    String.format("Not able to retrieve IP information. No service with name %s found in namespace %s", serviceName.value(), namespace)
+            );
+        }
+    }
+
+    public boolean checkServiceExists(KCluster kCluster, Identifier serviceName, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        final Service service = kubernetesApiClientService.getService(kCluster, namespace, serviceName.value());
+        return Objects.nonNull(service);
     }
 
 }
