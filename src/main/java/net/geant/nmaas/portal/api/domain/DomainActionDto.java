@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 
 @AllArgsConstructor
 @Getter
@@ -11,4 +12,5 @@ public class DomainActionDto {
 
     private DomainView domainView;
     private String action;
+    private WebhookEventType webhookEventType;
 }

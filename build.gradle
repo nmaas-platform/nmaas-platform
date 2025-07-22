@@ -4,7 +4,7 @@ plugins {
     id 'jacoco'
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.gorylenko.gradle-git-properties' version '2.5.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.5.2'
     id 'org.sonarqube' version '6.2.0.5505'
     id 'com.google.protobuf' version '0.9.5'
 }
@@ -104,25 +104,25 @@ dependencies {
 
     implementation('org.modelmapper:modelmapper:3.2.4')
     implementation('org.modelmapper.extensions:modelmapper-spring:3.2.4')
-    implementation('org.apache.commons:commons-lang3:3.17.0')
+    implementation('org.apache.commons:commons-lang3:3.18.0')
 
     // Database
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:6.6.19.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:6.6.22.Final'
 
     // Database migrations
-    implementation('org.flywaydb:flyway-core:11.10.0')
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.10.0'
+    implementation('org.flywaydb:flyway-core:11.10.3')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.10.3'
 
     implementation('org.freemarker:freemarker:2.3.34')
 
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.15.1')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.15.2')
 
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:7.3.1')

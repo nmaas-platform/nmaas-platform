@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.persistent.spec;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -24,8 +25,10 @@ public class DomainSpecification {
 
             for (String attribute : attributes) {
                 if (attribute.equalsIgnoreCase("id")) {
+                    if (searchText.matches("\\d+")) {
+                        predicates.add(cb.equal(root.get("id"), Long.valueOf(searchText)));
+                    }
 
-                    predicates.add(cb.like(root.get(attribute).as(String.class), lowerCaseSearchText));
                 } else {
                     predicates.add(cb.like(cb.lower(root.get(attribute)), lowerCaseSearchText));
                 }
