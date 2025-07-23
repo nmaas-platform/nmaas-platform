@@ -29,13 +29,13 @@ message PodInfo {
 
 message InstanceRequest {
     string api = 1;
-    string kube_config = 2;
+    optional string kube_config = 2;
     Instance deployment = 3;
 }
 
 message PodRequest {
     string api = 1;
-    string kube_config = 2;
+    optional string kube_config = 2;
     Instance deployment = 3;
     PodInfo pod = 4;
 }
@@ -55,7 +55,7 @@ message InfoServiceResponse {
 
 message InstanceCredentialsRequest {
     string api = 1;
-    string kube_config = 2;
+    optional string kube_config = 2;
     Instance instance = 3;
     Credentials credentials = 4;
 }
@@ -81,7 +81,7 @@ message KeyValue {
 
 message NamespaceRequest {
     string api = 1;
-    string kube_config = 2;
+    optional string kube_config = 2;
     string namespace = 3;
     repeated KeyValue annotations = 4;
 }
