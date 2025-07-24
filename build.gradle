@@ -142,6 +142,7 @@ dependencies {
     // Tests
     testImplementation('org.mockito:mockito-core:5.18.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.yaml:snakeyaml:2.2')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
     integrationTestImplementation('org.springframework.security:spring-security-test')
@@ -204,6 +205,25 @@ tasks.register('integrationTest', Test) {
         ]
     }
     dependsOn(test)
+}
+
+tasks.register('generateOpenApiYaml', Test) {
+    group = 'documentation'
+    description = 'Runs test that exports OpenAPI YAML from Spring context'
+
+    useJUnitPlatform()
+
+    // Run only the specific test class and method
+    include '**/OpenApiExportTest.class'
+
+    filter {
+        includeTestsMatching("net.geant.nmaas.openapi.OpenApiExportTest.exportOpenApiAsYaml")
+    }
+
+    systemProperty 'spring.profiles.active', 'openapi'
+    // Make sure test classes and runtime classpath are ready
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
 }
 
 jacoco {

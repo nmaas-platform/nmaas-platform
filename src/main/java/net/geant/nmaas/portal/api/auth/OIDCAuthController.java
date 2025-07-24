@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.auth;
 import com.google.common.collect.ImmutableSet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserCanNotBeLinked;
 import net.geant.nmaas.portal.api.exceptions.ExternalUserMatchException;
@@ -33,10 +33,9 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import static java.lang.String.format;
 
-
 @RestController
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 @RequestMapping()
 public class OIDCAuthController {
 
