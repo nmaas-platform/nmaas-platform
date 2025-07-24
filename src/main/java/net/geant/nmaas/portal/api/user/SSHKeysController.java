@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.user;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.api.domain.SSHKeyView;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
