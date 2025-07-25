@@ -114,8 +114,8 @@ dependencies {
     implementation 'org.hibernate.orm:hibernate-envers:6.6.22.Final'
 
     // Database migrations
-    implementation('org.flywaydb:flyway-core:11.10.3')
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.10.3'
+    implementation('org.flywaydb:flyway-core:11.10.4')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.10.4'
 
     implementation('org.freemarker:freemarker:2.3.34')
 
