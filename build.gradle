@@ -142,7 +142,7 @@ dependencies {
     // Tests
     testImplementation('org.mockito:mockito-core:5.18.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation('org.yaml:snakeyaml:2.2')
+    testImplementation('org.yaml:snakeyaml:2.4')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
     integrationTestImplementation('org.springframework.security:spring-security-test')
