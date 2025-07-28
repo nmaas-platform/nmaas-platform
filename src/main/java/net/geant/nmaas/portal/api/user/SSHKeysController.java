@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.user;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "User SSH Keys", description = "User SSH keys management API")
 public class SSHKeysController {
 
     private final SSHKeyService keysService;

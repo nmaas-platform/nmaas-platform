@@ -173,7 +173,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     void testGetUser() throws MissingElementException {
         long id = userRepo.findByUsername("admin").get().getId();
-        UserView user = (UserView) userController.retrieveUser(id, principal);
+        UserView user = (UserView) userController.getUser(id, principal);
         assertEquals(Long.valueOf(id), user.getId());
         assertEquals("admin", user.getUsername());
     }

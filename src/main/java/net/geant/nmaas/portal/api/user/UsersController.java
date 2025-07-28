@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.user;
 import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -81,6 +82,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 @RestController
 @RequestMapping("/api")
 @Slf4j
+@Tag(name = "Users", description = "User and role management API")
 public class UsersController {
 
     private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
@@ -205,7 +207,7 @@ public class UsersController {
             pageContent = new ArrayList<>();
         } else {
             pageContent = allUserInDomain.subList(startItem, endItem);
-            pageContent.forEach( userListEntry ->  {
+            pageContent.forEach(userListEntry -> {
                 Optional<Role> domainRole = userService.getUserRoleInDomain(userListEntry.getId(), domainId);
                 userListEntry.setDomainRole(domainRole.orElse(null));
             });
@@ -216,7 +218,7 @@ public class UsersController {
 
     @GetMapping(value = "/users/{userId}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-    public UserBase retrieveUser(@PathVariable("userId") Long userId, Principal principal) {
+    public UserBase getUser(@PathVariable("userId") Long userId, Principal principal) {
         User user = getUser(userId);
         User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
                 () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
@@ -348,7 +350,7 @@ public class UsersController {
     public void setAcceptance(@PathVariable String username) {
         try {
             setAcceptanceFlags(username);
-            log.info(String.format("User [%s] accepted Terms of Use and Privacy Policy", username));
+            log.info("User [{}] accepted Terms of Use and Privacy Policy", username);
         } catch (ProcessingException err) {
             throw new MissingElementException(err.getMessage());
         }
@@ -574,13 +576,12 @@ public class UsersController {
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
-            log.info(String.format("User [%s] with role [%s] added role [%s] to user [%s] in domain [%d].",
+            log.info("User [{}] with role [{}] added role [{}] to user [{}] in domain [{}].",
                     principal.getName(),
                     adminRoles,
                     userRole.getRole().authority(),
                     user.getUsername(),
-                    domain.getId()
-            ));
+                    domain.getId());
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
         }

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableMap;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/basic/registration")
 @Slf4j
+@Tag(name = "User Registration", description = "New account registration API")
 public class RegistrationController {
 
     private final UserService usersService;
