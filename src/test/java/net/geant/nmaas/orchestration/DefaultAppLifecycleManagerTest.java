@@ -4,7 +4,6 @@ import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
-import net.geant.nmaas.janitor.JanitorService;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -12,6 +11,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateBasicAuthActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -46,7 +46,6 @@ public class DefaultAppLifecycleManagerTest {
     private final AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final NmServiceRepositoryManager<KubernetesNmServiceInfo> serviceRepositoryManager = mock(KubernetesRepositoryManager.class);
-    private final JanitorService janitorService = mock(JanitorService.class);
     private final AppTermsAcceptanceService appTermsAcceptanceService = mock(AppTermsAcceptanceService.class);
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
 
@@ -54,7 +53,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @BeforeEach
     void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, janitorService, appTermsAcceptanceService, configurationManager);
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, serviceRepositoryManager, appTermsAcceptanceService, configurationManager);
     }
 
     @Test
@@ -125,7 +124,6 @@ public class DefaultAppLifecycleManagerTest {
         when(configurationView.getJsonInput()).thenReturn("{config}");
         appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
         verifyNoMoreInteractions(eventPublisher);
-        verifyNoMoreInteractions(janitorService);
     }
 
     @Test
@@ -142,7 +140,10 @@ public class DefaultAppLifecycleManagerTest {
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getAccessCredentials()).thenReturn("{\"accessUsername\":\"username\", \"accessPassword\":\"password\"}");
         appLifecycleManager.updateConfiguration(deploymentId, configurationView);
-        verify(janitorService, times(1)).createOrReplaceBasicAuth(null, descriptiveDeploymentId, null, "username", "password");
+        verify(eventPublisher, times(1))
+                .publishEvent(
+                        argThat((AppUpdateBasicAuthActionEvent arg) ->
+                                arg.getRelatedTo().equals(deploymentId) && arg.getBasicAuthUsername().equals("username") && arg.getBasicAuthPassword().equals("password")));
     }
 
     @Test

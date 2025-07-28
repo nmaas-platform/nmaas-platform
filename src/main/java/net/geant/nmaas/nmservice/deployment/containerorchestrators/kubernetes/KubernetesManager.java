@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.janitor.JanitorResponseException;
+import net.geant.nmaas.janitor.JanitorService;
 import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
@@ -22,8 +24,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolume;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
-import net.geant.nmaas.janitor.JanitorResponseException;
-import net.geant.nmaas.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployServiceException;
@@ -56,6 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -447,9 +448,10 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            janitorService.deleteConfigMapIfExists(null, service.getDescriptiveDeploymentId(), service.getDomain());
-            janitorService.deleteBasicAuthIfExists(null, service.getDescriptiveDeploymentId(), service.getDomain());
-            janitorService.deleteTlsIfExists(null, service.getDescriptiveDeploymentId(), service.getDomain());
+            final String remoteClusterKubeConfig = Optional.ofNullable(service.getRemoteCluster()).map(KCluster::getClusterConfigFile).orElse(null);
+            janitorService.deleteConfigMapIfExists(remoteClusterKubeConfig, service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteBasicAuthIfExists(remoteClusterKubeConfig, service.getDescriptiveDeploymentId(), service.getDomain());
+            janitorService.deleteTlsIfExists(remoteClusterKubeConfig, service.getDescriptiveDeploymentId(), service.getDomain());
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         } catch (KServiceManipulationException e) {
