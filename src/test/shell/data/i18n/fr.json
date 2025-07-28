@@ -1367,19 +1367,19 @@
     "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
-    "TARGET_URL" : "Target Url",
-    "TYPE" : "Webhook type",
+    "TARGET_URL" : "Target URL",
+    "TYPE" : "Webhook event",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
     "DOMAIN_ACTION" : "Domain action",
     "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "NEW" : "Add webhook",
+    "NEW" : "Add",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
     "REMOVE" : "Remove",
-    "AUTH_REQUIRED": "Authentification requise"
+    "AUTH_REQUIRED": "Authentification required"
   },
   "DASHBOARD": {
     "NUMBERS_OF_USERS": "Nombre actuel d'utilisateurs",

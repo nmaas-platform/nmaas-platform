@@ -1366,15 +1366,15 @@
     "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
-    "TARGET_URL" : "Target Url",
-    "TYPE" : "Webhook type",
+    "TARGET_URL" : "Target URL",
+    "TYPE" : "Webhook event",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
     "DOMAIN_ACTION" : "Domain action",
     "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "NEW" : "Add webhook",
+    "NEW" : "Add",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
     "REMOVE" : "Remove",
@@ -1403,19 +1403,19 @@
     "SUCCESS_HEADER": "Sukces",
     "ERROR_HEADER": "Błąd",
     "SUCCESS": {
-      "UPDATE_DOMAIN": "Domena została pomyślnie zaktualizowana",
-      "NEW_DOMAIN": "Nowa domena została pomyślnie dodana",
-      "SETTINGS": "Ustawienia zostały pomyślnie zaktualizowane",
-      "CLUSTER": "Dane klastra zdalnego zostały pomyślnie zaktualizowane",
-      "NOTIFICATION": "Powiadomienie wysłane pomyślnie",
+      "UPDATE_DOMAIN": "Dane domeny zostały zaktualizowane",
+      "NEW_DOMAIN": "Nowa domena została dodana",
+      "SETTINGS": "Ustawienia zostały zaktualizowane",
+      "CLUSTER": "Dane zdalnego klastra zostały zaktualizowane",
+      "NOTIFICATION": "Powiadomienie zostało wysłane",
       "NEW_WEBHOOK": "Dodano nowy webhook",
-      "WEBHOOK": "Webhook został pomyślnie zaktualizowany"
+      "WEBHOOK": "Dane webhooka zostały zaktualizowane"
     },
     "ERROR": {
       "NEW_DOMAIN": "Nie udało się dodać nowej domeny",
       "SETTINGS": "Aktualizacja ustawień nie powiodła się",
-      "NOTIFICATION": "Nie udało się wysłać wiadomości.",
-      "WEBHOOK": "Aktualizacja webhooka nie powiodła się"
+      "NOTIFICATION": "Nie udało się wysłać wiadomości",
+      "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się"
     }
   }
 }

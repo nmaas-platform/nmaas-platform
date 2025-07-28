@@ -1368,15 +1368,15 @@
     "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
-    "TARGET_URL" : "Target url",
-    "TYPE" : "Webhook type",
+    "TARGET_URL" : "Target URL",
+    "TYPE" : "Webhook event",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
     "DOMAIN_ACTION" : "Domain action",
     "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "NEW" : "Add webhook",
+    "NEW" : "Add",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
     "REMOVE" : "Remove",
@@ -1411,13 +1411,13 @@
       "CLUSTER": "Remote cluster data updated",
       "NOTIFICATION": "Notification sent",
       "NEW_WEBHOOK": "New webhook added",
-      "WEBHOOK": "Webhook updated"
+      "WEBHOOK": "Webhook data updated"
     },
     "ERROR": {
       "NEW_DOMAIN": "Failed to add new domain",
       "SETTINGS": "Settings update failed",
-      "NOTIFICATION": "The message could not be sent.",
-      "WEBHOOK": "Webhook update failed"
+      "NOTIFICATION": "Message could not be sent",
+      "WEBHOOK": "Webhook data update failed"
     }
   }
 }
