@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor;
+package net.geant.nmaas.janitor;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
@@ -12,6 +12,8 @@ import net.geant.nmaas.janitor.InformationServiceGrpc;
 import net.geant.nmaas.janitor.InformationServiceGrpc.InformationServiceBlockingStub;
 import net.geant.nmaas.janitor.JanitorManager.InfoServiceResponse;
 import net.geant.nmaas.janitor.JanitorManager.ServiceResponse;
+import net.geant.nmaas.janitor.JanitorResponseException;
+import net.geant.nmaas.janitor.JanitorService;
 import net.geant.nmaas.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.janitor.ReadinessServiceGrpc.ReadinessServiceBlockingStub;
 import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;

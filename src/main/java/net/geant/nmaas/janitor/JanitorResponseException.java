@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor;
+package net.geant.nmaas.janitor;
 
 public class JanitorResponseException extends RuntimeException {
     public JanitorResponseException(String message) {

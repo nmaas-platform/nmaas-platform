@@ -8,7 +8,7 @@ import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
+import net.geant.nmaas.janitor.JanitorResponseException;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
