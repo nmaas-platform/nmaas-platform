@@ -2,9 +2,10 @@ package net.geant.nmaas.nmservice.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.geant.nmaas.janitor.JanitorService;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
@@ -14,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_INITIATED;
@@ -24,6 +26,7 @@ import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentSta
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURED;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Default implementation of the {@link NmServiceConfigurationProvider} interface.
@@ -44,13 +47,19 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED);
             if (nsd.isConfigFileRepositoryRequired()) {
-                List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
+                List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(
+                        deploymentId,
+                        nsd.getApplicationId(),
+                        nsd.getAppConfiguration());
                 configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
                     configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
                 }
-                janitorService.createOrReplaceConfigMap(null, nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
+                janitorService.createOrReplaceConfigMap(
+                        Optional.ofNullable(nsd.getRemoteCluster()).map(KCluster::getClusterConfigFile).orElse(null),
+                        nsd.getDescriptiveDeploymentId(),
+                        nsd.getDomainName());
             }
             notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);
         } catch (Exception e) {
@@ -60,15 +69,30 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     }
 
     @Override
+    public void configureBasicAuth(NmServiceDeployment nsd, String basicAuthUsername, String basicAuthPassword) {
+        if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
+            janitorService.createOrReplaceBasicAuth(
+                    Optional.ofNullable(nsd.getRemoteCluster()).map(KCluster::getClusterConfigFile).orElse(null),
+                    nsd.getDescriptiveDeploymentId(),
+                    nsd.getDomainName(),
+                    basicAuthUsername,
+                    basicAuthPassword);
+        }
+    }
+
+    @Override
     @Loggable(LogLevel.INFO)
-    public void updateNmService(NmServiceDeployment nmServiceDeployment) {
-        Identifier deploymentId = nmServiceDeployment.getDeploymentId();
+    public void updateNmService(NmServiceDeployment nsd) {
+        Identifier deploymentId = nsd.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
-            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nmServiceDeployment.getApplicationId(), nmServiceDeployment.getAppConfiguration());
-            if (nmServiceDeployment.isConfigFileRepositoryRequired()) {
+            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
+            if (nsd.isConfigFileRepositoryRequired()) {
                 configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-                janitorService.createOrReplaceConfigMap(null, nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
+                janitorService.createOrReplaceConfigMap(
+                        Optional.ofNullable(nsd.getRemoteCluster()).map(KCluster::getClusterConfigFile).orElse(null),
+                        nsd.getDescriptiveDeploymentId(),
+                        nsd.getDomainName());
             }
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
         } catch (Exception e) {
@@ -79,13 +103,16 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void reloadNmService(NmServiceDeployment nmServiceDeployment) {
+    public void reloadNmService(NmServiceDeployment nsd) {
         try {
-            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_INITIATED);
-            janitorService.createOrReplaceConfigMap(null, nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
-            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATED);
+            notifyStateChangeListeners(nsd.getDeploymentId(), CONFIGURATION_UPDATE_INITIATED);
+            janitorService.createOrReplaceConfigMap(
+                    Optional.ofNullable(nsd.getRemoteCluster()).map(KCluster::getClusterConfigFile).orElse(null),
+                    nsd.getDescriptiveDeploymentId(),
+                    nsd.getDomainName());
+            notifyStateChangeListeners(nsd.getDeploymentId(), CONFIGURATION_UPDATED);
         } catch (Exception e) {
-            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_FAILED, e.getMessage());
+            notifyStateChangeListeners(nsd.getDeploymentId(), CONFIGURATION_UPDATE_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }

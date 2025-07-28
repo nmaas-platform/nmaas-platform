@@ -1,17 +1,9 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor;
+package net.geant.nmaas.janitor;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.janitor.BasicAuthServiceGrpc;
-import net.geant.nmaas.janitor.CertManagerServiceGrpc;
-import net.geant.nmaas.janitor.ConfigServiceGrpc;
-import net.geant.nmaas.janitor.InformationServiceGrpc;
-import net.geant.nmaas.janitor.JanitorManager;
-import net.geant.nmaas.janitor.NamespaceServiceGrpc;
-import net.geant.nmaas.janitor.PodServiceGrpc;
-import net.geant.nmaas.janitor.ReadinessServiceGrpc;
 import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;

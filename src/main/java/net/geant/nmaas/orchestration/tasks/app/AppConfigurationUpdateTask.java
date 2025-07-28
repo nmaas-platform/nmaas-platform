@@ -1,7 +1,9 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.NmServiceDeployment;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
@@ -14,9 +16,8 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import jakarta.transaction.Transactional;
-
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class AppConfigurationUpdateTask {
 
     private final NmServiceConfigurationProvider configurationProvider;
     private final DefaultAppDeploymentRepositoryManager repositoryManager;
+    private final RemoteClusterManagementService remoteClusterManager;
 
     @EventListener
     @Transactional
@@ -34,7 +36,11 @@ public class AppConfigurationUpdateTask {
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = repositoryManager.load(deploymentId);
             final AppDeploymentOwner appDeploymentOwner = repositoryManager.loadOwner(deploymentId);
-            configurationProvider.updateNmService(NmServiceDeployment.fromAppDeployment(appDeployment, appDeploymentOwner));
+            final NmServiceDeployment nmServiceDeployment = NmServiceDeployment.fromAppDeployment(appDeployment, appDeploymentOwner);
+            if (Objects.nonNull(appDeployment.getRemoteClusterId())) {
+                nmServiceDeployment.setRemoteCluster(remoteClusterManager.getClusterEntity(appDeployment.getRemoteClusterId()));
+            }
+            configurationProvider.updateNmService(nmServiceDeployment);
         } catch (Exception e) {
             log.error("Error reported at {}", LocalDateTime.now(), e);
         }

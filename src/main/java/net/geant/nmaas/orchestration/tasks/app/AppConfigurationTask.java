@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.NmServiceDeployment;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
@@ -9,6 +10,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentOwner;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateBasicAuthActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
@@ -24,6 +26,7 @@ public class AppConfigurationTask {
 
     private final NmServiceConfigurationProvider configurationProvider;
     private final DefaultAppDeploymentRepositoryManager repositoryManager;
+    private final RemoteClusterManagementService remoteClusterManager;
 
     @EventListener
     @Transactional
@@ -31,16 +34,36 @@ public class AppConfigurationTask {
     public void trigger(AppApplyConfigurationActionEvent event) throws InterruptedException {
         Thread.sleep(1000);
         try {
-            final Identifier deploymentId = event.getRelatedTo();
-            final AppDeployment appDeployment = repositoryManager.load(deploymentId);
-            if (Objects.isNull(appDeployment.getConfiguration())) {
-                log.warn("Application configuration of deployment {} is null", appDeployment.getDescriptiveDeploymentId());
+            final NmServiceDeployment nmServiceDeployment = prepareServiceDeployment(event.getRelatedTo());
+            if (Objects.isNull(nmServiceDeployment.getAppConfiguration())) {
+                log.warn("Application configuration of deployment {} is null", nmServiceDeployment.getDescriptiveDeploymentId());
             }
-            final AppDeploymentOwner appDeploymentOwner = repositoryManager.loadOwner(deploymentId);
-            configurationProvider.configureNmService(NmServiceDeployment.fromAppDeployment(appDeployment, appDeploymentOwner));
+            configurationProvider.configureNmService(nmServiceDeployment);
         } catch (Exception ex) {
             log.error("Exception during task execution", ex);
         }
+    }
+
+    @EventListener
+    @Transactional
+    @Loggable(LogLevel.INFO)
+    public void trigger(AppUpdateBasicAuthActionEvent event) {
+        try {
+            final NmServiceDeployment nmServiceDeployment = prepareServiceDeployment(event.getRelatedTo());
+            configurationProvider.configureBasicAuth(nmServiceDeployment, event.getBasicAuthUsername(), event.getBasicAuthPassword());
+        } catch (Exception ex) {
+            log.error("Exception during task execution", ex);
+        }
+    }
+
+    private NmServiceDeployment prepareServiceDeployment(Identifier deploymentId) {
+        final AppDeployment appDeployment = repositoryManager.load(deploymentId);
+        final AppDeploymentOwner appDeploymentOwner = repositoryManager.loadOwner(deploymentId);
+        final NmServiceDeployment nmServiceDeployment = NmServiceDeployment.fromAppDeployment(appDeployment, appDeploymentOwner);
+        if (Objects.nonNull(appDeployment.getRemoteClusterId())) {
+            nmServiceDeployment.setRemoteCluster(remoteClusterManager.getClusterEntity(appDeployment.getRemoteClusterId()));
+        }
+        return nmServiceDeployment;
     }
 
 }
