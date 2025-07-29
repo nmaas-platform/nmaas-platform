@@ -67,7 +67,7 @@ public class JanitorServiceTest {
             when(configServiceBlockingStub.createOrReplace(any())).thenReturn(OK_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
                 configServiceGrpcMock.when(() -> ConfigServiceGrpc.newBlockingStub(any())).thenReturn(configServiceBlockingStub);
-                janitorService.createOrReplaceConfigMap("", IDENTIFIER, DOMAIN);
+                janitorService.createOrReplaceConfigMap(null, IDENTIFIER, DOMAIN);
             }
         });
     }
@@ -78,7 +78,7 @@ public class JanitorServiceTest {
             when(configServiceBlockingStub.createOrReplace(any())).thenReturn(FAILED_SERVICE_RESPONSE);
             try (MockedStatic<ConfigServiceGrpc> configServiceGrpcMock = Mockito.mockStatic(ConfigServiceGrpc.class)) {
                 configServiceGrpcMock.when(() -> ConfigServiceGrpc.newBlockingStub(any())).thenReturn(configServiceBlockingStub);
-                janitorService.createOrReplaceConfigMap("", IDENTIFIER, DOMAIN);
+                janitorService.createOrReplaceConfigMap(null, IDENTIFIER, DOMAIN);
             }
         });
     }
