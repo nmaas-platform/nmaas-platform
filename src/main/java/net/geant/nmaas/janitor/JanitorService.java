@@ -42,6 +42,7 @@ public class JanitorService {
 
     public void createOrReplaceConfigMap(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Creating or replacing configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
+        logCustomKubeConfig(kubeConfig);
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
@@ -49,6 +50,7 @@ public class JanitorService {
 
     public void deleteConfigMapIfExists(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Deleting configMap(s) for deployment {} in domain {}", deploymentId.value(), domain);
+        logCustomKubeConfig(kubeConfig);
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
@@ -56,6 +58,7 @@ public class JanitorService {
 
     public void createOrReplaceBasicAuth(String kubeConfig, Identifier deploymentId, String domain, String user, String password) {
         log.info("Configuring basic auth for deployment {} in domain {}", deploymentId.value(), domain);
+        logCustomKubeConfig(kubeConfig);
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(kubeConfig, deploymentId, domain, user, password));
         throwExceptionIfExecutionFailed(response);
@@ -63,6 +66,7 @@ public class JanitorService {
 
     public void deleteBasicAuthIfExists(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Deleting basic auth for deployment {} in domain {}", deploymentId.value(), domain);
+        logCustomKubeConfig(kubeConfig);
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
@@ -70,9 +74,16 @@ public class JanitorService {
 
     public void deleteTlsIfExists(String kubeConfig, Identifier deploymentId, String domain) {
         log.info("Deleting TLS for deployment {} in domain {}", deploymentId.value(), domain);
+        logCustomKubeConfig(kubeConfig);
         CertManagerServiceGrpc.CertManagerServiceBlockingStub stub = CertManagerServiceGrpc.newBlockingStub(channel);
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(kubeConfig, deploymentId, domain));
         throwExceptionIfExecutionFailed(response);
+    }
+
+    private static void logCustomKubeConfig(String kubeConfig) {
+        if (Objects.nonNull(kubeConfig)) {
+            log.info("Provided custom kubeConfig: {}", kubeConfig);
+        }
     }
 
     private void throwExceptionIfExecutionFailed(JanitorManager.ServiceResponse response) {

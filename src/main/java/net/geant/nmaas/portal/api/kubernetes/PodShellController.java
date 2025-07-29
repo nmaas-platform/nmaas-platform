@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.kubernetes;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.K8sPodInfo;
@@ -31,6 +32,7 @@ import java.util.List;
 @RequestMapping("/api/pods/shell")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Application Shell", description = "Access to running application shell")
 public class PodShellController {
 
     private final K8sShellService k8sShellService;

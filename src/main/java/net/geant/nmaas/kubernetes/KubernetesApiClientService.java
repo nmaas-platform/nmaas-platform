@@ -34,7 +34,7 @@ public class KubernetesApiClientService {
 
     public boolean checkIfNamespaceExists(KCluster kCluster, String namespace) {
         try (KubernetesClient client = initClient(kCluster)) {
-            return client.namespaces().withName(namespace).isReady();
+            return client.namespaces().withName(namespace).get() != null;
         }
     }
 
