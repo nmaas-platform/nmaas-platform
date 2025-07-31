@@ -82,5 +82,50 @@ public class TokenAuthenticationService {
         // JWT has three parts separated by dots
         return token.split("\\.").length == 3;
     }
+    public Authentication getAuthenticationForJWT(HttpServletRequest request) {
+        String authHeader = request.getHeader(AUTH_HEADER);
+        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " ")) {
+            throw new AuthenticationMethodNotSupportedException(AUTH_HEADER + " contains unsupported method.");
+        }
+        String token = authHeader.substring(AUTH_METHOD.length() + 1);
+        if (!isJWTToken(token)) {
+            throw new AuthenticationMethodNotSupportedException("Expected JWT token");
+        }
+
+        log.trace("Jwt token auth service: {} {} ", jwtTokenService.getClaims(token).getSubject(), jwtTokenService.getClaims(token).get("roles"));
+
+        String username = jwtTokenService.getClaims(token).getSubject();
+        Object roles = jwtTokenService.getClaims(token).get("roles");
+        Object globalRole = jwtTokenService.getClaims(token).get("global_role");
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        if (globalRole instanceof List<?>) {
+            for (Object role : (List<?>) globalRole) {
+                authorities.add(new SimpleGrantedAuthority(role.toString()));
+            }
+        }
+        if (roles instanceof List<?>) {
+            for (Object role : (List<?>) roles) {
+                authorities.add(new SimpleGrantedAuthority(role.toString()));
+            }
+        }
+        return new UsernamePasswordAuthenticationToken(username, null, authorities);
+    }
+
+    public Authentication getAuthenticationForUUID(HttpServletRequest request) {
+        String authHeader = request.getHeader(AUTH_HEADER);
+        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " ")) {
+            throw new AuthenticationMethodNotSupportedException(AUTH_HEADER + " contains unsupported method.");
+        }
+        String token = authHeader.substring(AUTH_METHOD.length() + 1);
+        if (!isUUIDToken(token)) {
+            throw new AuthenticationMethodNotSupportedException("Expected UUID token");
+        }
+        User user = secretPasswordService.findUserBasedOnToken(token, userApiTokenRepository.findAllByValid(true));
+        Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+                .filter(role -> role.getDomain().isActive())
+                .map(role -> new SimpleGrantedAuthority(role.getRole().authority()))
+                .collect(Collectors.toSet());
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), null, authorities);
+    }
 
 }
