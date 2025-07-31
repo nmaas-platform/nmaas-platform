@@ -3,9 +3,11 @@ package net.geant.nmaas.portal.api.security.config;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.api.security.StatelessGitlabAuthenticationFilter;
 import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectRepository;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
+import net.geant.nmaas.portal.api.security.StatelessUUIDAuthenticationFilter;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,6 +37,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Order(Ordered.LOWEST_PRECEDENCE - 100)
 @ComponentScan(basePackages = {"net.geant.nmaas.portal.api.security"})
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final TokenAuthenticationService tokenAuthenticationService;
@@ -53,7 +56,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    ClientRegistrationRepository clientRegistrationRepository) throws Exception {
 
-        boolean ssoEnabled = Boolean.parseBoolean(System.getProperty("portal.config.ssoLoginAllowed", "false"));
+        boolean ssoEnabled = Boolean.parseBoolean(env.getProperty("portal.config.ssoLoginAllowed", "false"));
 
         http
                 .cors(Customizer.withDefaults())
@@ -65,12 +68,15 @@ public class SecurityConfig {
                     auth.requestMatchers(SecurityConstants.AUTH_AUTHENTICATED_LIST).authenticated();
                     auth.anyRequest().authenticated();
                 })
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .addFilterBefore(statelessAuthFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(gitlabTokenFilter(), StatelessAuthenticationFilter.class);
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .addFilterBefore(gitlabTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter(), StatelessGitlabAuthenticationFilter.class)
+                .addFilterBefore(uuidAuthFilter(), StatelessAuthenticationFilter.class)
+        ;
 
         if (ssoEnabled) {
-            var resolver = new DefaultOAuth2AuthorizationRequestResolver(
+            DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
                     clientRegistrationRepository, "/api/oauth2/authorization");
 
             http.oauth2Login(oauth2 -> oauth2
@@ -78,21 +84,28 @@ public class SecurityConfig {
                     .authorizationEndpoint(authorization -> authorization
                             .authorizationRequestResolver(resolver))
                     .defaultSuccessUrl(SecurityConstants.AUTH_OIDC_SUCCESS, true)
-                    .redirectionEndpoint(redir -> redir.baseUri("/api/login/oauth2/code/*"))
+                    .redirectionEndpoint(redirection ->
+                            redirection.baseUri("/api/login/oauth2/code/*"))
             );
         }
 
         return http.build();
     }
 
-    private Filter statelessAuthFilter() {
-        var filter = new StatelessAuthenticationFilter(skipPathRequestMatcher, tokenAuthenticationService);
+    private Filter gitlabTokenFilter() {
+        var filter = new StatelessGitlabAuthenticationFilter("/api/gitlab/webhooks/**", gitLabProjectRepository);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
     }
 
-    private Filter gitlabTokenFilter() {
-        var filter = new StatelessGitlabAuthenticationFilter("/api/gitlab/webhooks/**", gitLabProjectRepository);
+    private Filter uuidAuthFilter() {
+        var filter = new StatelessUUIDAuthenticationFilter("/api/external/**", tokenAuthenticationService);
+        filter.setAuthenticationFailureHandler(failureHandler());
+        return filter;
+    }
+
+    private Filter jwtAuthFilter() {
+        var filter = new StatelessAuthenticationFilter(skipPathRequestMatcher, tokenAuthenticationService);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
     }
