@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.api.security.config.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
 import org.springframework.security.core.Authentication;
@@ -21,8 +22,8 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 
 	TokenAuthenticationService tokenService;
 
-	public StatelessAuthenticationFilter(RequestMatcher skipPaths, TokenAuthenticationService tokenService) {
-		super(skipPaths);
+	public StatelessAuthenticationFilter(SkipPathRequestMatcher skipPathRequestMatcher, TokenAuthenticationService tokenService) {
+		super(skipPathRequestMatcher);
 		this.tokenService = tokenService;
 	}
 
@@ -31,9 +32,9 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 		String reqText = request.getRequestURI() != null ? request.getRequestURI() : "empty";
         log.trace("Request: {}", reqText);
 		try {
-			return tokenService.getAuthentication(request);
+			return tokenService.getAuthenticationForJWT(request);
 		} catch(Exception ex) {
-			throw new TokenAuthenticationException("Token is not valid"  + (request.getRequestURL() != null ? request.getRequestURL() : " empty request."));
+			throw new TokenAuthenticationException("Token is not valid: "  + (request.getRequestURL() != null ? request.getRequestURL() : " empty request."));
 		}
 	}
 
