@@ -24,6 +24,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -33,14 +34,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.OverridesAttribute;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 @Slf4j
@@ -331,11 +329,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     private void checkParam(Long id) {
-        checkArgument(id != null, "Id is null");
+        Validate.isTrue(id != null, "Id is null");
     }
 
     private void checkParam(Identifier id) {
-        checkArgument(id != null, "Id is null");
+        Validate.isTrue(id != null, "Id is null");
     }
 
     private void checkParam(Application application) {
@@ -360,7 +358,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
     }
 
     private void checkNameCharacters(String name) {
-        checkArgument(validator.valid(name), "Instance name is not valid");
+        Validate.isTrue(validator.valid(name), "Instance name is not valid");
     }
 
     protected Domain getDomain(Long domainId) {

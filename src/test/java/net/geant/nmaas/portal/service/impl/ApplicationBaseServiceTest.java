@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.Sets;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.events.ApplicationActivatedEvent;
 import net.geant.nmaas.portal.persistent.entity.AppDescription;
@@ -19,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,7 +41,7 @@ class ApplicationBaseServiceTest {
     private final ApplicationBaseRepository appBaseRepo = mock(ApplicationBaseRepository.class);
     private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
     private final TagRepository tagRepo = mock(TagRepository.class);
-    private final ApplicationEventPublisher eventPublisher= mock(ApplicationEventPublisher.class);
+    private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final DomainService domainService = mock(DomainService.class);
 
     private final ModelMapper modelMapper = new ModelMapper();
@@ -50,7 +50,7 @@ class ApplicationBaseServiceTest {
 
     @BeforeEach
     void setup() {
-        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, tagRepo, applicationStatePerDomainService,eventPublisher, domainService, modelMapper);
+        this.appBaseService = new ApplicationBaseServiceImpl(appBaseRepo, tagRepo, applicationStatePerDomainService, eventPublisher, domainService, modelMapper);
         applicationBase1.setDescriptions(Collections.singletonList(
                 new AppDescription(11L, "en", "description", "full description")
         ));
@@ -73,7 +73,7 @@ class ApplicationBaseServiceTest {
 
     @Test
     void shouldAddNewVersionDuringUpdate() {
-        applicationBase2.setVersions(Sets.newHashSet(new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)));
+        applicationBase2.setVersions(Set.of(new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)));
         when(appBaseRepo.existsByName(applicationBase2.getName())).thenReturn(true);
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(applicationBase2));
         when(appBaseRepo.save(any())).thenAnswer(i -> i.getArgument(0));
@@ -87,7 +87,7 @@ class ApplicationBaseServiceTest {
 
     @Test
     void shouldNotAddSameVersion() {
-        applicationBase2.setVersions(Sets.newHashSet(
+        applicationBase2.setVersions(Set.of(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)
         ));
         when(appBaseRepo.existsByName(applicationBase2.getName())).thenReturn(true);
@@ -107,7 +107,7 @@ class ApplicationBaseServiceTest {
     @Test
     void shouldNotUpdateWhenNameIsEmpty() {
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationBase temp = new ApplicationBase(12L,"");
+            ApplicationBase temp = new ApplicationBase(12L, "");
             this.appBaseService.update(temp);
         });
     }
@@ -115,7 +115,7 @@ class ApplicationBaseServiceTest {
     @Test
     void shouldNotUpdateWhenNameContainsIllegalCharacters() {
         assertThrows(IllegalArgumentException.class, () -> {
-            ApplicationBase temp = new ApplicationBase(12L,"%^&!@#");
+            ApplicationBase temp = new ApplicationBase(12L, "%^&!@#");
             this.appBaseService.update(temp);
         });
     }
@@ -130,22 +130,22 @@ class ApplicationBaseServiceTest {
 
     @Test
     void shouldUpdateApplicationVersionState() {
-        this.applicationBase1.setVersions(Sets.newHashSet(
+        this.applicationBase1.setVersions(Set.of(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L)
         ));
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(applicationBase1));
-        this.appBaseService.updateApplicationVersionState(applicationBase1.getName(),"1.2", ApplicationState.DELETED);
+        this.appBaseService.updateApplicationVersionState(applicationBase1.getName(), "1.2", ApplicationState.DELETED);
         verify(appBaseRepo, times(1)).save(any());
         verifyNoInteractions(eventPublisher);
     }
 
     @Test
     void shouldUpdateApplicationVersionStateToActive() {
-        this.applicationBase1.setVersions(Sets.newHashSet(
+        this.applicationBase1.setVersions(Set.of(
                 new ApplicationVersion("1.2", ApplicationState.NEW, 1L)
         ));
         when(appBaseRepo.findByName(anyString())).thenReturn(Optional.of(applicationBase1));
-        this.appBaseService.updateApplicationVersionState(applicationBase1.getName(),"1.2", ApplicationState.ACTIVE);
+        this.appBaseService.updateApplicationVersionState(applicationBase1.getName(), "1.2", ApplicationState.ACTIVE);
         verify(appBaseRepo, times(1)).save(any());
         verify(eventPublisher).publishEvent(any(ApplicationActivatedEvent.class));
     }
@@ -173,7 +173,7 @@ class ApplicationBaseServiceTest {
 
     @Test
     void shouldReturnAppActive() {
-        applicationBase1.setVersions(Sets.newHashSet(
+        applicationBase1.setVersions(Set.of(
                 new ApplicationVersion("1.2", ApplicationState.ACTIVE, 1L),
                 new ApplicationVersion("1.1", ApplicationState.DISABLED, 2L)
         ));

@@ -2,8 +2,6 @@ package net.geant.nmaas.notifications;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -17,8 +15,8 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.GroupAppListElement;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -26,6 +24,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,7 @@ import java.io.StringReader;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -86,7 +86,7 @@ public class NotificationManager {
                 LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
                 customizeMessage(mailContent, mailAttributes);
                 String filledTemplate = getFilledTemplate(template, mailContent, user, mailAttributes, mailTemplate);
-                if (Strings.isNullOrEmpty(fromAddress)) {
+                if (StringUtils.isEmpty(fromAddress)) {
                     notificationService.sendMail(user.getEmail(), mailContent.getSubject(), filledTemplate);
                 } else {
                     notificationService.sendMail(user.getEmail(), mailContent.getSubject(), filledTemplate, fromAddress);
@@ -143,7 +143,7 @@ public class NotificationManager {
         if (mailAttributes.getMailType().equals(MailType.BROADCAST)) {
             mailAttributes.setAddressees(userService.findAll().stream()
                     .filter(User::isEnabled)
-                    .filter(u -> !Strings.isNullOrEmpty(u.getEmail()))
+                    .filter(u -> !StringUtils.isEmpty(u.getEmail()))
                     .filter(u -> u.getRoles().stream().noneMatch(r -> r.getRole().equals(Role.ROLE_INCOMPLETE)))
                     .map(u -> modelMapper.map(u, UserView.class))
                     .collect(Collectors.toList()));
@@ -217,17 +217,16 @@ public class NotificationManager {
 
     private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserView user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
         boolean showAdditional = mailAttributes.getMailType() == MailType.NEW_ACTIVE_APP && mailAttributes.getOtherAttributes().get("message") != null;
-        return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
-                .putAll(mailTemplate.getGlobalInformation())
-                .put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress)
-                .put(MailTemplateElements.HEADER, getHeader(langContent.getTemplate().get(MailTemplateElements.HEADER), user))
-                .put(MailTemplateElements.CONTENT, getContent(langContent.getTemplate().get(MailTemplateElements.CONTENT), mailAttributes.getOtherAttributes()))
-                .put(MailTemplateElements.ADDITIONAL, showAdditional ? getContent(langContent.getTemplate().get(MailTemplateElements.ADDITIONAL), mailAttributes.getOtherAttributes()) : "")
-                .put(MailTemplateElements.SENDER, langContent.getTemplate().get(MailTemplateElements.SENDER))
-                .put(MailTemplateElements.NOREPLY, langContent.getTemplate().get(MailTemplateElements.NOREPLY))
-                .put(MailTemplateElements.SENDER_POLICY, langContent.getTemplate().get(MailTemplateElements.SENDER_POLICY))
-                .put(MailTemplateElements.TITLE, langContent.getSubject())
-                .build());
+        Map<String, Object> map = new HashMap<>(mailTemplate.getGlobalInformation());
+        map.put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress);
+        map.put(MailTemplateElements.HEADER, getHeader(langContent.getTemplate().get(MailTemplateElements.HEADER), user));
+        map.put(MailTemplateElements.CONTENT, getContent(langContent.getTemplate().get(MailTemplateElements.CONTENT), mailAttributes.getOtherAttributes()));
+        map.put(MailTemplateElements.ADDITIONAL, showAdditional ? getContent(langContent.getTemplate().get(MailTemplateElements.ADDITIONAL), mailAttributes.getOtherAttributes()) : "");
+        map.put(MailTemplateElements.SENDER, langContent.getTemplate().get(MailTemplateElements.SENDER));
+        map.put(MailTemplateElements.NOREPLY, langContent.getTemplate().get(MailTemplateElements.NOREPLY));
+        map.put(MailTemplateElements.SENDER_POLICY, langContent.getTemplate().get(MailTemplateElements.SENDER_POLICY));
+        map.put(MailTemplateElements.TITLE, langContent.getSubject());
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, map);
     }
 
     private String getHeader(String header, UserView user) throws IOException, TemplateException {

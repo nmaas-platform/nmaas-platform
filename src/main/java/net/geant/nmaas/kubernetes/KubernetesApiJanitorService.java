@@ -8,7 +8,7 @@ import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
-import net.geant.nmaas.janitor.JanitorResponseException;
+import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
@@ -59,7 +59,7 @@ public class KubernetesApiJanitorService {
                 return Objects.equals(statefulSet.getSpec().getReplicas(), statefulSet.getStatus().getReadyReplicas());
             }
             log.info("StatefulSet not found as well");
-            throw new JanitorResponseException(
+            throw new JanitorException(
                     String.format("Not able to check application state. No deployment/statefulset with name %s found in namespace %s", deploymentId.value(), namespace)
             );
         }
@@ -73,11 +73,11 @@ public class KubernetesApiJanitorService {
                 return service.getStatus().getLoadBalancer().getIngress().getFirst().getIp();
             } catch (Exception e) {
                 log.warn("Service {} found but encountered problem with retrieving IP address: {}", serviceName.value(), e.getMessage());
-                throw new JanitorResponseException("Not able to retrieve IP information: " + e.getMessage());
+                throw new JanitorException("Not able to retrieve IP information: " + e.getMessage());
             }
         } else {
             log.info("Service {} not found in namespace {}.", serviceName.value(), namespace);
-            throw new JanitorResponseException(
+            throw new JanitorException(
                     String.format("Not able to retrieve IP information. No service with name %s found in namespace %s", serviceName.value(), namespace)
             );
         }
@@ -106,6 +106,25 @@ public class KubernetesApiJanitorService {
     public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain) {
         final String namespace = namespaceService.namespace(domain);
         return Collections.singletonList(kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName));
+    }
+
+    public void createOrReplaceConfigMap(KCluster kCluster, Identifier deploymentId, String domain, List<ConfigFile> configFiles) {
+    }
+
+    public void createOrReplaceBasicAuth(KCluster kCluster, Identifier deploymentId, String domain, String basicAuthUsername, String basicAuthPassword) {
+
+    }
+
+    public void deleteConfigMapIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+
+    }
+
+    public void deleteBasicAuthIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+
+    }
+
+    public void deleteTlsIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+
     }
 
 }

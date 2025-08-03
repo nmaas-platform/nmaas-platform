@@ -1,6 +1,5 @@
 package net.geant.nmaas.scheduling;
 
-import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.monitor.MonitorService;
@@ -50,7 +49,7 @@ public class ScheduleManager {
                 JobDetail jobDetail = newJob(service.getClass()).withIdentity(jobDescriptor.serviceName().getName()).build();
                 Trigger trigger = jobDescriptor.buildTrigger();
                 log.info("Scheduling job: {}", jobDescriptor.serviceName().toString());
-                scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), false);
+                scheduler.scheduleJob(jobDetail, Set.of(trigger), false);
             }
         } catch (SchedulerException e) {
             throw new IllegalStateException(e.getMessage());
@@ -68,7 +67,7 @@ public class ScheduleManager {
                     .usingJobData("cron", jobCron)
                     .build();
             log.info("Scheduling job: {} (cron: {})", jobName, jobCron);
-            scheduler.scheduleJob(jobDetail, ImmutableSet.of(trigger), true);
+            scheduler.scheduleJob(jobDetail, Set.of(trigger), true);
         } catch (SchedulerException e) {
             throw new IllegalStateException(e.getMessage());
         }

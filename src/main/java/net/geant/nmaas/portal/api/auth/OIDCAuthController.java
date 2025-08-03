@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.auth;
 
-import com.google.common.collect.ImmutableSet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.Set;
 
 import static java.lang.String.format;
 
@@ -150,7 +151,7 @@ public class OIDCAuthController {
     void checkUserApprovals(User user) {
         if (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted()) {
             log.info("Check during login: Terms of Use or Privacy Policy were not accepted by user [{}]", user.getUsername());
-            user.setNewRoles(ImmutableSet.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
+            user.setNewRoles(Set.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
         }
     }
 

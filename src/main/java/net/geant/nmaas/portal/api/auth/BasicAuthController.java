@@ -1,9 +1,8 @@
 package net.geant.nmaas.portal.api.auth;
 
-import com.google.common.collect.ImmutableSet;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.Pong;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
@@ -28,30 +27,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/auth/basic")
 public class BasicAuthController {
 
-	private UserService users;
-	
-    private DomainService domains;
-	
-    private PasswordEncoder passwordEncoder;
-	
-    private JWTTokenService jwtTokenService;
+    private final UserService users;
+    private final DomainService domains;
+    private final PasswordEncoder passwordEncoder;
+    private final JWTTokenService jwtTokenService;
+    private final ConfigurationManager configurationManager;
+    private final UserLoginRegisterService loginRegisterService;
 
-    private ConfigurationManager configurationManager;
-
-    private UserLoginRegisterService loginRegisterService;
-
-	@PostMapping(value="/login")
-	public UserToken login(@RequestBody final UserLogin userLogin, HttpServletRequest request) {
+    @PostMapping(value = "/login")
+    public UserToken login(@RequestBody final UserLogin userLogin, HttpServletRequest request) {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found"));
         try {
             validate(userLogin.getUsername(), userLogin.getPassword(), user.getPassword(), user.isEnabled());
@@ -61,7 +56,7 @@ public class BasicAuthController {
         }
         checkUserApprovals(user);
 
-        if(configurationManager.getConfiguration().isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
+        if (configurationManager.getConfiguration().isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
 
@@ -75,27 +70,27 @@ public class BasicAuthController {
         this.loginRegisterService.registerNewSuccessfulLogin(user, request.getHeader(HttpHeaders.HOST), request.getHeader(HttpHeaders.USER_AGENT), BasicAuthController.getClientIpAddr(request));
 
         return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
-	}
-	
-	@PostMapping(value="/token")
-	public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) {
-        if(userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken())) {
+    }
+
+    @PostMapping(value = "/token")
+    public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) {
+        if (userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken())) {
             throw new AuthenticationException("Token is missing");
         }
 
-        if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
+        if (jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
             final Claims claims = jwtTokenService.getClaims(userRefreshToken.getRefreshToken());
             final User user = users.findByUsername(claims.getSubject()).orElseThrow(() -> new AuthenticationException("User in token not found."));
             return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
         } else {
             throw new AuthenticationException("Unable to generate new tokens");
         }
-	}
-	
-	@GetMapping(value="/ping")
-	public Pong ping(Principal principal) {
-		return new Pong(new Date(System.currentTimeMillis()), (principal != null ? principal.getName() : null));
-	}
+    }
+
+    @GetMapping(value = "/ping")
+    public Pong ping(Principal principal) {
+        return new Pong(new Date(System.currentTimeMillis()), (principal != null ? principal.getName() : null));
+    }
 
     void validate(String userName, String providedPassword, String actualPassword, boolean isEnabled) {
         validateConditionAndLogMessage(userName == null || providedPassword == null,
@@ -105,14 +100,14 @@ public class BasicAuthController {
     }
 
     void checkUserApprovals(User user) {
-        if (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted()){
-            log.info(format("Check during login: Terms of Use or Privacy Policy were not accepted by user [%s]", user.getUsername()));
-            user.setNewRoles(ImmutableSet.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
+        if (!user.isTermsOfUseAccepted() || !user.isPrivacyPolicyAccepted()) {
+            log.info("Check during login: Terms of Use or Privacy Policy were not accepted by user [{}]", user.getUsername());
+            user.setNewRoles(Set.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
         }
     }
 
-    private void validateConditionAndLogMessage(boolean loginCondition, String errorMessage){
-	    if (loginCondition) {
+    private void validateConditionAndLogMessage(boolean loginCondition, String errorMessage) {
+        if (loginCondition) {
             log.info(errorMessage);
             throw new AuthenticationException("Invalid Credentials");
         }
@@ -120,6 +115,7 @@ public class BasicAuthController {
 
     /**
      * Reference 'https://stackoverflow.com/questions/4678797/how-do-i-get-the-remote-address-of-a-client-in-servlet'
+     *
      * @param request incoming http request
      * @return ip address if available
      */

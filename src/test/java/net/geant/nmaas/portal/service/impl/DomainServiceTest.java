@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -317,9 +316,9 @@ class DomainServiceTest {
         user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findRolesByDomainAndUser(domain.getId(), user.getId())).thenReturn(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN));
+        when(userRoleRepo.findRolesByDomainAndUser(domain.getId(), user.getId())).thenReturn(Set.of(Role.ROLE_SYSTEM_ADMIN));
         Set<Role> roleSet = this.domainService.getMemberRoles(domainId, userId);
-        assertThat("Result set mismatch", roleSet.equals(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN)));
+        assertThat("Result set mismatch", roleSet.equals(Set.of(Role.ROLE_SYSTEM_ADMIN)));
     }
 
     @Test
@@ -378,7 +377,7 @@ class DomainServiceTest {
         Long userId = 1L;
         User user = new User("user");
         Domain domain = new Domain(1L, "testdom", "testdom");
-        user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN)));
+        user.setNewRoles(Set.of(new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN)));
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         Set<Domain> result = domainService.getUserDomains(userId, null);
         assertThat("Result mismatch", result.contains(domain));
@@ -529,7 +528,7 @@ class DomainServiceTest {
         DomainGroupView result = domainService.updateMembers(List.of(userView2), domainGroupView);
 
         assertEquals(1, result.getManagers().size());
-        assertEquals(2L, result.getManagers().get(0).getId());
+        assertEquals(2L, result.getManagers().getFirst().getId());
     }
 
     @Test

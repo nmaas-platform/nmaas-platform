@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.domain;
 
-import com.google.common.collect.Sets;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -27,6 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,7 +48,7 @@ public class ConvertersIntTest {
     ApplicationBaseRepository appBaseRepo;
 
     @Test
-    void testConvertAppToAppView(){
+    void testConvertAppToAppView() {
         ApplicationBase defaultAppBase = getDefaultAppBase();
         appBaseRepo.save(defaultAppBase);
         ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
@@ -58,7 +58,7 @@ public class ConvertersIntTest {
     }
 
     @Test
-    void testConvertAppViewToAppBase(){
+    void testConvertAppViewToAppBase() {
         ApplicationBaseView appView = getDefaultAppBaseView();
         ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
         assertEquals(appView.getId(), appBase.getId());
@@ -67,7 +67,7 @@ public class ConvertersIntTest {
     }
 
     @Test
-    void testConvertAppBaseToAppBaseView(){
+    void testConvertAppBaseToAppBaseView() {
         ApplicationBase appBase = getDefaultAppBase();
         ApplicationBaseView applicationBaseView = modelMapper.map(appBase, ApplicationBaseView.class);
         assertEquals(appBase.getName(), applicationBaseView.getName());
@@ -78,7 +78,7 @@ public class ConvertersIntTest {
     }
 
     @Test
-    void testConvertAppViewToApp(){
+    void testConvertAppViewToApp() {
         ApplicationView appView = getDefaultAppView();
         Application app = modelMapper.map(appView, Application.class);
         assertEquals(appView.getState(), app.getState());
@@ -88,8 +88,8 @@ public class ConvertersIntTest {
         assertEquals(appView.getAppDeploymentSpec().isExposesWebUI(), app.getAppDeploymentSpec().isExposesWebUI());
     }
 
-	@Test
-	void testConvertAppBaseViewToAppBase() {
+    @Test
+    void testConvertAppBaseViewToAppBase() {
         tagRepo.save(new Tag("network"));
 
         ApplicationBaseView appDto = new ApplicationBaseView();
@@ -113,10 +113,10 @@ public class ConvertersIntTest {
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
         assertTrue(appDto.getTags().contains(new TagView("network")));
         assertTrue(appDto.getTags().contains(new TagView("monitoring")));
-	}
+    }
 
-	@Test
-    void shouldConvertAppSubscriptionToAppSubscriptionBase(){
+    @Test
+    void shouldConvertAppSubscriptionToAppSubscriptionBase() {
         Domain domain = new Domain("name", "name");
         ApplicationBase appBase = getDefaultAppBase();
         domain.setId(1L);
@@ -128,13 +128,13 @@ public class ConvertersIntTest {
     }
 
     @Test
-    void shouldConvertStringToInetAddress(){
+    void shouldConvertStringToInetAddress() {
         InetAddress addr = modelMapper.map("127.0.0.1", InetAddress.class);
         assertNotNull(addr);
     }
 
     @Test
-    void shouldReturnNullWhenStringIsNotCorrectInetAddress(){
+    void shouldReturnNullWhenStringIsNotCorrectInetAddress() {
         InetAddress addr = modelMapper.map("ip.not.found", InetAddress.class);
         assertNull(addr);
     }
@@ -146,13 +146,13 @@ public class ConvertersIntTest {
     }
 
     @Test
-    void shouldConvertUserRoleToRole(){
+    void shouldConvertUserRoleToRole() {
         UserRole userRole = new UserRole(new User("admin", true), new Domain("name", "name"), Role.ROLE_SYSTEM_ADMIN);
         Role role = modelMapper.map(userRole, Role.class);
         assertEquals(Role.ROLE_SYSTEM_ADMIN, role);
     }
 
-	private ApplicationBaseView getDefaultAppBaseView(){
+    private ApplicationBaseView getDefaultAppBaseView() {
         ApplicationBaseView appView = new ApplicationBaseView();
         appView.setName("testApp");
         appView.setLicense("MIT");
@@ -169,7 +169,7 @@ public class ConvertersIntTest {
         app.setId(1L);
         app.setName("testApp");
         app.setVersion("0.0.1");
-        app.setConfigWizardTemplate(new ConfigWizardTemplateView(2L,"template"));
+        app.setConfigWizardTemplate(new ConfigWizardTemplateView(2L, "template"));
         app.setAppConfigurationSpec(new AppConfigurationSpecView());
         app.setAppDeploymentSpec(new AppDeploymentSpecView());
         app.getAppDeploymentSpec().setExposesWebUI(true);
@@ -177,7 +177,7 @@ public class ConvertersIntTest {
         return app;
     }
 
-	private ApplicationBase getDefaultAppBase(){
+    private ApplicationBase getDefaultAppBase() {
         ApplicationBase appBase = new ApplicationBase();
         appBase.setName("testApp");
         appBase.setLicense("MIT");
@@ -187,12 +187,12 @@ public class ConvertersIntTest {
         appBase.setIssuesUrl("default-website.com");
         appBase.setDescriptions(new ArrayList<>());
         appBase.setLogo(new FileInfo("logo", "png"));
-        appBase.setVersions(Sets.newHashSet(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
+        appBase.setVersions(Set.of(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
         appBase.setOwner("admin");
         return appBase;
     }
 
-	private Application getDefaultApp(){
+    private Application getDefaultApp() {
         Application app = new Application();
         app.setId(1L);
         app.setName("testApp");

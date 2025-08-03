@@ -1,14 +1,13 @@
 package net.geant.nmaas.kubernetes.remote.entities;
 
 import net.geant.nmaas.kubernetes.api.model.KClusterView;
-
-import static com.google.common.base.Preconditions.checkArgument;
+import org.apache.commons.lang3.Validate;
 
 public enum NamespaceConfigOption {
     USE_DEFAULT_NAMESPACE {
         @Override
         public void validate(KClusterView.KClusterDeploymentView deployment) {
-            checkArgument(deployment.getDefaultNamespace() != null && !deployment.getDefaultNamespace().isEmpty(),
+            Validate.isTrue(deployment.getDefaultNamespace() != null && !deployment.getDefaultNamespace().isEmpty(),
                     "When using default namespace the default namespace field can't be empty.");
         }
     },

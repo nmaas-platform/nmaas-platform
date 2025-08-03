@@ -53,7 +53,7 @@ public class AppInstancePermissionCheckTest {
 
 	@Test
 	public void testSystemAdminEvaluatePermissions() {
-		Set<Permissions> perms = aipch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		Set<Permissions> perms = aipch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(5, perms.size());
 		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
 	}
@@ -62,11 +62,11 @@ public class AppInstancePermissionCheckTest {
 	public void testDomainAdminEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
-		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(5, perms.size());
 		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
 		
-		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN2_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN2_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(0, perms.size());
 	}
 	
@@ -74,7 +74,7 @@ public class AppInstancePermissionCheckTest {
 	public void testToolManagerEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
-		perms = aipch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(1, perms.size());
 		assertThat(perms, hasItems(Permissions.READ));
 	}
@@ -83,15 +83,15 @@ public class AppInstancePermissionCheckTest {
 	public void testDomainUserEvaluatePermissions() {
 		Set<Permissions> perms = null;
 
-		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(1, perms.size());
 		assertThat(perms, hasItems(Permissions.READ));
 
-		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER2, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER2, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(1, perms.size());
 		assertThat(perms, hasItems(Permissions.READ));
 		
-		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN2_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN2_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(0, perms.size());
 	}
 	
@@ -99,13 +99,13 @@ public class AppInstancePermissionCheckTest {
 	public void testDomainGuestEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
-		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(0, perms.size());
 
-		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN2_APP2.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN2_APP2.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(0, perms.size());
 
-		perms = aipch.evaluatePermissions(UsersHelper.GLOBAL_GUEST, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
+		perms = aipch.evaluatePermissions(UsersHelper.GLOBAL_GUEST, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(0, perms.size());
 	}
 

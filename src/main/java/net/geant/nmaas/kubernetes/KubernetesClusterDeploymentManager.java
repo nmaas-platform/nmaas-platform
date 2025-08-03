@@ -1,5 +1,6 @@
 package net.geant.nmaas.kubernetes;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,15 +9,12 @@ import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-
 import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Component
 @NoArgsConstructor
@@ -125,7 +123,7 @@ public class KubernetesClusterDeploymentManager implements KubernetesClusterName
 
     @PostConstruct
     public void validateConfig() {
-        checkArgument(this.getNamespaceConfigOption() != null, "NamespaceConfigOption property can't be null");
+        Validate.isTrue(this.getNamespaceConfigOption() != null, "NamespaceConfigOption property can't be null");
         this.getNamespaceConfigOption().validate(this.getKClusterDeploymentView());
     }
 

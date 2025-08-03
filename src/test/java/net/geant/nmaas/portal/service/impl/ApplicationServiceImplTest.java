@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
@@ -24,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,17 +46,17 @@ public class ApplicationServiceImplTest {
     ApplicationServiceImpl applicationService;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         applicationService = new ApplicationServiceImpl(applicationRepository, eventPublisher, configurationTemplateSanitizerService);
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToNullPassedAsParameter(){
+    void updateMethodShouldThrowExceptionDueToNullPassedAsParameter() {
         assertThrows(IllegalArgumentException.class, () -> applicationService.update(null));
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToEmptyName(){
+    void updateMethodShouldThrowExceptionDueToEmptyName() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setName("");
@@ -65,7 +65,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToEmptyVersion(){
+    void updateMethodShouldThrowExceptionDueToEmptyVersion() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setVersion("");
@@ -74,7 +74,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToNullAppDeploymentSpec(){
+    void updateMethodShouldThrowExceptionDueToNullAppDeploymentSpec() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setAppDeploymentSpec(null);
@@ -83,7 +83,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToNullConfigTemplate(){
+    void updateMethodShouldThrowExceptionDueToNullConfigTemplate() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setConfigWizardTemplate(null);
@@ -92,7 +92,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToEmptyConfigTemplate(){
+    void updateMethodShouldThrowExceptionDueToEmptyConfigTemplate() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.setConfigWizardTemplate(new ConfigWizardTemplate(""));
@@ -101,7 +101,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToNullKubernetesTemplate(){
+    void updateMethodShouldThrowExceptionDueToNullKubernetesTemplate() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.getAppDeploymentSpec().setKubernetesTemplate(null);
@@ -110,7 +110,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void updateMethodShouldThrowExceptionDueToNullKubernetesChart(){
+    void updateMethodShouldThrowExceptionDueToNullKubernetesChart() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.getAppDeploymentSpec().getKubernetesTemplate().setChart(null);
@@ -119,7 +119,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    public void updateMethodShouldThrowExceptionDueToEmptyKubernetesChartName(){
+    public void updateMethodShouldThrowExceptionDueToEmptyKubernetesChartName() {
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = getDefaultApplication();
             app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setName("");
@@ -128,7 +128,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void updateMethodShouldReturnApplicationObject(){
+    void updateMethodShouldReturnApplicationObject() {
         Application application = new Application("test", "testversion");
         application.setId(1L);
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
@@ -150,12 +150,12 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void deleteMethodShouldTrowExceptionDueToNullPassedAsId(){
+    void deleteMethodShouldTrowExceptionDueToNullPassedAsId() {
         assertThrows(IllegalArgumentException.class, () -> applicationService.delete(null));
     }
 
     @Test
-    void deleteMethodShouldSetApplicationAsDeleted(){
+    void deleteMethodShouldSetApplicationAsDeleted() {
         Application application = new Application("test", "testversion");
         application.setId((long) 0);
         application.setState(ApplicationState.ACTIVE);
@@ -170,12 +170,12 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void findApplicationShouldThrowExceptionDueToNullId(){
+    void findApplicationShouldThrowExceptionDueToNullId() {
         assertThrows(IllegalArgumentException.class, () -> applicationService.findApplication(null));
     }
 
     @Test
-    void findApplicationShouldReturnApplicationObject(){
+    void findApplicationShouldReturnApplicationObject() {
         Application application = new Application("test", "testversion");
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         Optional<Application> result = applicationService.findApplication((long) 0);
@@ -202,7 +202,7 @@ public class ApplicationServiceImplTest {
     }
 
     @Test
-    void shouldNotChangeApplicationStateDueToForbiddenStateChange(){
+    void shouldNotChangeApplicationStateDueToForbiddenStateChange() {
         assertThrows(IllegalStateException.class, () -> {
             Application app = getDefaultApplication();
             app.setState(ApplicationState.DELETED);
@@ -210,7 +210,7 @@ public class ApplicationServiceImplTest {
         });
     }
 
-    private Application getDefaultApplication(){
+    private Application getDefaultApplication() {
         Application application = new Application();
         application.setName("test");
         application.setVersion("testversion");
@@ -222,8 +222,8 @@ public class ApplicationServiceImplTest {
                 null,
                 new HelmChartRepositoryEmbeddable("test", "http://test"))
         );
-        appDeploymentSpec.setStorageVolumes(ImmutableSet.of(new AppStorageVolume(12L, ServiceStorageVolumeType.MAIN, 2, null)));
-        appDeploymentSpec.setAccessMethods(ImmutableSet.of(new AppAccessMethod(13L, ServiceAccessMethodType.DEFAULT, "name", "tag", AppAccessMethod.ConditionType.NONE, null, null)));
+        appDeploymentSpec.setStorageVolumes(Set.of(new AppStorageVolume(12L, ServiceStorageVolumeType.MAIN, 2, null)));
+        appDeploymentSpec.setAccessMethods(Set.of(new AppAccessMethod(13L, ServiceAccessMethodType.DEFAULT, "name", "tag", AppAccessMethod.ConditionType.NONE, null, null)));
         application.setAppDeploymentSpec(appDeploymentSpec);
         application.setConfigWizardTemplate(new ConfigWizardTemplate(1L, "template"));
         AppConfigurationSpec appConfigurationSpec = new AppConfigurationSpec();
