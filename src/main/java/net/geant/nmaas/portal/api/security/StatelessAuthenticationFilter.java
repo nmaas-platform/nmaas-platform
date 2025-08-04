@@ -20,41 +20,48 @@ import java.io.IOException;
 @Slf4j
 public class StatelessAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-	TokenAuthenticationService tokenService;
+	private final TokenAuthenticationService tokenService;
 
-	public StatelessAuthenticationFilter(SkipPathRequestMatcher skipPathRequestMatcher, TokenAuthenticationService tokenService) {
+	public StatelessAuthenticationFilter(SkipPathRequestMatcher skipPathRequestMatcher,
+										 TokenAuthenticationService tokenService) {
 		super(skipPathRequestMatcher);
 		this.tokenService = tokenService;
 	}
 
 	@Override
+	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        return tokenService.isJWTAuthorization(request);
+	}
+
+	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		String reqText = request.getRequestURI() != null ? request.getRequestURI() : "empty";
-        log.trace("Request: {}", reqText);
 		try {
-			return tokenService.getAuthenticationForJWT(request);
-		} catch(Exception ex) {
-			throw new TokenAuthenticationException("Token is not valid: "  + (request.getRequestURL() != null ? request.getRequestURL() : " empty request."));
+			Authentication auth = tokenService.getAuthenticationForJWT(request);
+			if (auth == null) {
+				throw new TokenAuthenticationException("JWT Token missing or invalid");
+			}
+			return auth;
+		} catch (Exception ex) {
+			throw new TokenAuthenticationException("JWT Token invalid: " + ex.getMessage(), ex);
 		}
 	}
 
 	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-			Authentication authResult) throws IOException, ServletException {
-        log.trace("Authentication: {}", authResult);
+	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+											FilterChain chain, Authentication authResult)
+			throws IOException, ServletException {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		context.setAuthentication(authResult);
 		SecurityContextHolder.setContext(context);
 		chain.doFilter(request, response);
-		SecurityContextHolder.clearContext();
 	}
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException failed) throws IOException, ServletException {
-		log.trace("Authentication unsuccessful");
+											  AuthenticationException failed)
+			throws IOException, ServletException {
+		log.warn("JWT FILTER – authentication failed for URI: {}", request.getRequestURI());
 		SecurityContextHolder.clearContext();
 		getFailureHandler().onAuthenticationFailure(request, response, failed);
 	}
-	
 }
