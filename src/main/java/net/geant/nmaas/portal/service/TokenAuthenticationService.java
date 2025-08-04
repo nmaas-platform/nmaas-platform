@@ -73,6 +73,16 @@ public class TokenAuthenticationService {
             throw new AuthenticationMethodNotSupportedException("Not supported token type");
         }
     }
+    public boolean isUUIDAuthorization(HttpServletRequest httpRequest){
+        String authHeader = httpRequest.getHeader(AUTH_HEADER);
+        String token = authHeader.substring(AUTH_METHOD.length() + 1);
+        return isUUIDToken(token);
+    }
+    public boolean isJWTAuthorization(HttpServletRequest httpRequest){
+        String authHeader = httpRequest.getHeader(AUTH_HEADER);
+        String token = authHeader.substring(AUTH_METHOD.length() + 1);
+        return isJWTToken(token);
+    }
 
     private boolean isUUIDToken(String token) {
         return UUID_PATTERN.matcher(token).matches();
