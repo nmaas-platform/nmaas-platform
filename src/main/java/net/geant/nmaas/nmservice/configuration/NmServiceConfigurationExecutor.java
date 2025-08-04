@@ -53,7 +53,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
                     configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-                    kubernetesApiJanitorService.createOrReplaceConfigMap(
+                    kubernetesApiJanitorService.createOrReplaceConfigMaps(
                             nsd.getRemoteCluster(),
                             nsd.getDescriptiveDeploymentId(),
                             nsd.getDomainName(),
@@ -88,7 +88,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
             if (nsd.isConfigFileRepositoryRequired()) {
                 configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-                kubernetesApiJanitorService.createOrReplaceConfigMap(
+                kubernetesApiJanitorService.createOrReplaceConfigMaps(
                         nsd.getRemoteCluster(),
                         nsd.getDescriptiveDeploymentId(),
                         nsd.getDomainName(),
@@ -107,7 +107,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         Identifier deploymentId = nsd.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
-            kubernetesApiJanitorService.createOrReplaceConfigMap(
+            kubernetesApiJanitorService.createOrReplaceConfigMaps(
                     nsd.getRemoteCluster(),
                     nsd.getDescriptiveDeploymentId(),
                     nsd.getDomainName(),

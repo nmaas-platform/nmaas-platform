@@ -14,6 +14,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -108,23 +109,60 @@ public class KubernetesApiJanitorService {
         return Collections.singletonList(kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName));
     }
 
-    public void createOrReplaceConfigMap(KCluster kCluster, Identifier deploymentId, String domain, List<ConfigFile> configFiles) {
+    public void createOrReplaceConfigMaps(KCluster kCluster, Identifier deploymentId, String domain, List<ConfigFile> configFiles) {
+        final String namespace = namespaceService.namespace(domain);
+        Map<String, List<ConfigFile>> configFilesInConfigMaps = new HashMap<>();
+        configFiles.forEach(configFile -> {
+            final String configMapName = generateConfigMapName(deploymentId, configFile.getFilePath(), configFile.getFileName());
+            if (configFilesInConfigMaps.containsKey(configMapName)) {
+                List<ConfigFile> currentList = configFilesInConfigMaps.get(configMapName);
+                currentList.add(configFile);
+                configFilesInConfigMaps.replace(configMapName, currentList);
+            } else {
+                configFilesInConfigMaps.put(configMapName, List.of(configFile));
+            }
+        });
+        configFilesInConfigMaps.keySet().forEach(configMapName ->
+                kubernetesApiClientService.createOrReplaceConfigMap(kCluster, namespace, configMapName, configFilesInConfigMaps.get(configMapName))
+        );
     }
 
-    public void createOrReplaceBasicAuth(KCluster kCluster, Identifier deploymentId, String domain, String basicAuthUsername, String basicAuthPassword) {
-
+    private static String generateConfigMapName(Identifier deploymentId, String filePath, String fileName) {
+        final String fileDirectory = filePath.replaceAll(fileName, "").replaceAll("/", "");
+        return fileDirectory.isBlank() ? deploymentId.value() : deploymentId.value() + "-" + fileDirectory;
     }
 
     public void deleteConfigMapIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.deleteConfigMapIfExists(kCluster, namespace, deploymentId.value());
+    }
 
+    public void createOrReplaceBasicAuth(KCluster kCluster, Identifier deploymentId, String domain, String basicAuthUsername, String basicAuthPassword) {
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.createOrReplaceBasicAuth(kCluster, namespace, generateSecretName(deploymentId), generateBasicAuthCredentials(basicAuthUsername, basicAuthPassword));
+    }
+
+    private static String generateSecretName(Identifier deploymentId) {
+        return deploymentId.value() + "-auth";
+    }
+
+    private static String generateBasicAuthCredentials(String basicAuthUsername, String basicAuthPassword) {
+        final String valueToEncode = basicAuthUsername + ":" + basicAuthPassword;
+        return Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
     public void deleteBasicAuthIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
-
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.deleteSecretIfExists(kCluster, namespace, generateSecretName(deploymentId));
     }
 
     public void deleteTlsIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.deleteSecretIfExists(kCluster, namespace, generateTlsSecretName(deploymentId));
+    }
 
+    private static String generateTlsSecretName(Identifier deploymentId) {
+        return deploymentId.value() + "-tls";
     }
 
 }
