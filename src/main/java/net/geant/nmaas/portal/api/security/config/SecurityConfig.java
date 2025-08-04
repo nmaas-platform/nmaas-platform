@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.security.config;
 
 import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.server.PathContainer;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +31,12 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2Authorization
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.web.util.pattern.PathPatternParser;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 
 @Configuration
 @EnableWebSecurity
@@ -99,10 +107,18 @@ public class SecurityConfig {
     }
 
     private Filter uuidAuthFilter() {
-        var filter = new StatelessUUIDAuthenticationFilter("/api/external/**", tokenAuthenticationService);
+        var parser = new PathPatternParser();
+        List<Predicate<HttpServletRequest>> matchers = Arrays.stream(SecurityConstants.AUTH_UUID_AUTHENTICATED_LIST)
+                .map(parser::parse)
+                .map(pattern -> (Predicate<HttpServletRequest>) request ->
+                        pattern.matches(PathContainer.parsePath(request.getRequestURI())))
+                .toList();
+
+        var filter = new StatelessUUIDAuthenticationFilter(matchers, tokenAuthenticationService);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
     }
+
 
     private Filter jwtAuthFilter() {
         var filter = new StatelessAuthenticationFilter(skipPathRequestMatcher, tokenAuthenticationService);
@@ -116,6 +132,13 @@ public class SecurityConfig {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"" + exception.getMessage() + "\"}");
+            response.flushBuffer();
+
         };
+    }
+
+    @Bean
+    public HandlerMappingIntrospector handlerMappingIntrospector() {
+        return new HandlerMappingIntrospector();
     }
 }
