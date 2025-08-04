@@ -67,6 +67,9 @@ public class SecurityConfig {
      * Configures the main {@link SecurityFilterChain}, including authentication rules,
      * custom filters, and optional OAuth2 login handling.
      *
+     * CSRF protection is disabled because the application uses stateless authentication (JWT/UUID),
+     * and does not rely on cookies or HTTP sessions for maintaining user state.
+     *
      * @param http                         the HTTP security builder
      * @param clientRegistrationRepository OAuth2 client registration repository
      * @return configured security filter chain
