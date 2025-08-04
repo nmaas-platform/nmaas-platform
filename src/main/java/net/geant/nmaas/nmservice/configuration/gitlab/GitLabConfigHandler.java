@@ -331,7 +331,10 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             List<ConfigFile> configFiles = new ArrayList<>();
             for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId())) {
-                RepositoryFile repositoryFile = gitLabManager.repositoryFiles().getFile(gitLabProject.getProjectId(), item.getPath() + "/" + item.getName(), commitBranch());
+                String filePath = generateFilePath(item);
+                log.debug("Loading file {}", filePath);
+                RepositoryFile repositoryFile = gitLabManager.repositoryFiles()
+                        .getFile(gitLabProject.getProjectId(), filePath, commitBranch());
                 configFiles.add(ConfigFile.builder()
                         .fileName(repositoryFile.getFileName())
                         .filePath(repositoryFile.getFilePath())
@@ -342,6 +345,10 @@ public class GitLabConfigHandler implements GitConfigHandler {
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
+    }
+
+    private static String generateFilePath(TreeItem item) {
+        return StringUtils.isBlank(item.getPath()) ? item.getName() : item.getPath() + "/" + item.getName();
     }
 
     @Override
