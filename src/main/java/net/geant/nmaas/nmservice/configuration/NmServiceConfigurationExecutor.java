@@ -53,11 +53,12 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
                     configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
+                    final List<ConfigFile> configFilesFromRepository = configHandler.getConfigFiles(deploymentId);
                     kubernetesApiJanitorService.createOrReplaceConfigMaps(
                             nsd.getRemoteCluster(),
                             nsd.getDescriptiveDeploymentId(),
                             nsd.getDomainName(),
-                            configHandler.getConfigFiles(deploymentId));
+                            configFilesFromRepository);
                 }
             }
             notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);

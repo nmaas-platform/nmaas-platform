@@ -11,20 +11,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class ConfigFilePreparerHelperTest {
 
     @Test
-    public void shouldGenerateNewConfigFileId() {
+    void shouldGenerateNewConfigFileId() {
         assertNotEquals(
-                ConfigFilePreparerHelper.generateNewConfigId(Collections.singletonList(new NmServiceConfiguration("old-configuration-id", "", "", ""))),
-                "old-configuration-id");
+                "old-configuration-id",
+                ConfigFilePreparerHelper.generateNewConfigId(Collections.singletonList(new NmServiceConfiguration("old-configuration-id", "", "", ""))));
     }
 
     @Test
-    public void shouldGenerateRandomString() {
+    void shouldGenerateRandomString() {
         assertEquals(32, new ConfigFilePreparerHelper().randomString(32).length());
     }
 
     @Test
-    public void shouldEncodePassword() {
-        assertEquals(60, new ConfigFilePreparerHelper().encode("password").length());
+    void shouldEncodePassword() {
+        assertEquals(60, ConfigFilePreparerHelper.encode("password").length());
     }
 
 }
