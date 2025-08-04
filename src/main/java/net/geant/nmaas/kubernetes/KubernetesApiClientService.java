@@ -130,8 +130,8 @@ public class KubernetesApiClientService {
     }
 
     public void createOrReplaceConfigMap(KCluster kCluster, String namespace, String configMapName, List<ConfigFile> configFiles) {
-        Validate.isTrue(!StringUtils.isBlank(configMapName));
-        Validate.isTrue(configFiles.isEmpty());
+        Validate.isTrue(!StringUtils.isBlank(configMapName), "Desired config map name is missing");
+        Validate.isTrue(!configFiles.isEmpty(), "Provided list of configuration files is empty");
         try (KubernetesClient client = initClient(kCluster)) {
             Map<String, String> configFilesWithNames = new HashMap<>();
             configFiles.forEach(configFile -> configFilesWithNames.put(configFile.getFileName(), configFile.getFileContent()));
