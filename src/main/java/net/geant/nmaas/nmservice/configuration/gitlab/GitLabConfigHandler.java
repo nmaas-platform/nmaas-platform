@@ -336,7 +336,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
                 configFiles.add(ConfigFile.builder()
                         .fileName(repositoryFile.getFileName())
                         .filePath(repositoryFile.getFilePath())
-                        .fileContent(repositoryFile.getContent())
+                        .fileContent(repositoryFile.getDecodedContentAsString())
                         .build());
             }
             return configFiles;
