@@ -331,6 +331,9 @@ public class GitLabConfigHandler implements GitConfigHandler {
         try {
             List<ConfigFile> configFiles = new ArrayList<>();
             for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId())) {
+                if (item.getType() != TreeItem.Type.BLOB) {
+                    continue;
+                }
                 log.debug("Retrieving file {}", item.getPath());
                 RepositoryFile repositoryFile = gitLabManager.repositoryFiles()
                         .getFile(gitLabProject.getProjectId(), item.getPath(), commitBranch());
