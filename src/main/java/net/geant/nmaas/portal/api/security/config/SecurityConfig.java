@@ -38,6 +38,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * Main Spring Security configuration class.
+ * Sets up CORS, CSRF, session management, authentication filters, and optional OAuth2 login.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -59,7 +63,15 @@ public class SecurityConfig {
     public static final SkipPathRequestMatcher skipPathRequestMatcher =
             new SkipPathRequestMatcher(SecurityConstants.SKIPPED_PATHS);
 
-
+    /**
+     * Configures the main {@link SecurityFilterChain}, including authentication rules,
+     * custom filters, and optional OAuth2 login handling.
+     *
+     * @param http                         the HTTP security builder
+     * @param clientRegistrationRepository OAuth2 client registration repository
+     * @return configured security filter chain
+     * @throws Exception in case of configuration errors
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    ClientRegistrationRepository clientRegistrationRepository) throws Exception {
@@ -100,12 +112,22 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Creates a filter responsible for handling GitLab webhook token authentication.
+     *
+     * @return the configured GitLab authentication filter
+     */
     private Filter gitlabTokenFilter() {
         var filter = new StatelessGitlabAuthenticationFilter("/api/gitlab/webhooks/**", gitLabProjectRepository);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
     }
 
+    /**
+     * Creates a filter for UUID-based authentication using configured path matchers.
+     *
+     * @return the configured UUID authentication filter
+     */
     private Filter uuidAuthFilter() {
         var parser = new PathPatternParser();
         List<Predicate<HttpServletRequest>> matchers = Arrays.stream(SecurityConstants.AUTH_UUID_AUTHENTICATED_LIST)
@@ -119,13 +141,23 @@ public class SecurityConfig {
         return filter;
     }
 
-
+    /**
+     * Creates a filter for JWT-based authentication, skipping selected paths.
+     *
+     * @return the configured JWT authentication filter
+     */
     private Filter jwtAuthFilter() {
         var filter = new StatelessAuthenticationFilter(skipPathRequestMatcher, tokenAuthenticationService);
         filter.setAuthenticationFailureHandler(failureHandler());
         return filter;
     }
 
+    /**
+     * Provides a simple authentication failure handler that returns a JSON error message
+     * and HTTP 401 Unauthorized status.
+     *
+     * @return authentication failure handler bean
+     */
     @Bean
     public AuthenticationFailureHandler failureHandler() {
         return (request, response, exception) -> {
@@ -137,6 +169,11 @@ public class SecurityConfig {
         };
     }
 
+    /**
+     * Required for method-level security to resolve handler mappings for endpoint permissions.
+     *
+     * @return handler mapping introspector bean
+     */
     @Bean
     public HandlerMappingIntrospector handlerMappingIntrospector() {
         return new HandlerMappingIntrospector();

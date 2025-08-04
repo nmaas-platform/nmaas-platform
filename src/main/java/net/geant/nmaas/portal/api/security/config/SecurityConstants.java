@@ -3,6 +3,12 @@ package net.geant.nmaas.portal.api.security.config;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Contains constant values related to security configuration, such as
+ * authentication endpoints, CORS-exempted paths, and whitelist patterns.
+ * <p>
+ * This class is not meant to be instantiated.
+ */
 public class SecurityConstants {
 
     private SecurityConstants() {
@@ -23,7 +29,9 @@ public class SecurityConstants {
     static final String AUTH_OIDC = "/api/oidc/**";
     static final String AUTH_CODE = "/api/login/oauth2/code";
 
-
+    /**
+     * Paths allowed for unauthenticated GET requests (e.g., for public config or localization).
+     */
     static final String[] AUTH_WHITELIST_GET_METHOD = {
             "/api/i18n/content/**",
             "/api/i18n/all/enabled",
@@ -32,6 +40,10 @@ public class SecurityConstants {
             "/api/mail/type",
             "/api/monitor/all"
     };
+
+    /**
+     * Paths whitelisted for unauthenticated OPTIONS requests (CORS preflight, etc.).
+     */
     static final String[] AUTH_WHITELIST_OPTIONS_METHOD = {
             "/api/**",
             "/api/orchestration/deployments/**",
@@ -39,6 +51,10 @@ public class SecurityConstants {
             "/api/orchestration/deployments/**/access",
             "/api/management"
     };
+
+    /**
+     * Paths whitelisted for any HTTP method without authentication.
+     */
     protected static final String[] AUTH_WHITELIST_ANY_METHOD = {
             AUTH_BASIC_LOGIN,
             AUTH_BASIC_SIGNUP,
@@ -58,7 +74,9 @@ public class SecurityConstants {
             "/api/mail",
             "/api-docs/**"
     };
-
+    /**
+     * Paths whitelisted for authentication for specific protected resources.
+     */
     //TODO check that this function will work without commented strings
     protected static final String[] AUTH_AUTHENTICATED_LIST = {
 //            "/api/orchestration/deployments/**/state",
@@ -67,6 +85,9 @@ public class SecurityConstants {
             "/api/management/**",
             "/api/**"
     };
+    /**
+     * Map of HTTP methods to paths that should skip JWT authentication filters.
+     */
     static final Map<String, List<String>> SKIPPED_PATHS = Map.of(
             "GET", List.of(
                     "/api/configuration/**",
@@ -96,6 +117,10 @@ public class SecurityConstants {
                     "/api/gitlab/webhooks/**"
             )
     );
+
+    /**
+     * Paths that are protected and require UUID-based token authentication.
+     */
     static final String[] AUTH_UUID_AUTHENTICATED_LIST = {
             "/api/example/resource/**",
             "/api/domains/*"
