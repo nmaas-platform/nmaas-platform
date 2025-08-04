@@ -75,7 +75,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
                     nsd.getDescriptiveDeploymentId(),
                     nsd.getDomainName(),
                     basicAuthUsername,
-                    basicAuthPassword);
+                    ConfigFilePreparerHelper.encode(basicAuthPassword));
         }
     }
 
