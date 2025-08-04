@@ -36,8 +36,8 @@ public class TokenAuthenticationService {
     @Autowired
     public TokenAuthenticationService(JWTTokenService jwtTokenService, UserApiTokenRepository userApiTokenRepository, SecretPasswordService secretPasswordService) {
         this.jwtTokenService = jwtTokenService;
-	    this.userApiTokenRepository = userApiTokenRepository;
-	    this.secretPasswordService = secretPasswordService;
+        this.userApiTokenRepository = userApiTokenRepository;
+        this.secretPasswordService = secretPasswordService;
     }
 
     public Authentication getAuthentication(HttpServletRequest httpRequest) {
@@ -73,12 +73,20 @@ public class TokenAuthenticationService {
             throw new AuthenticationMethodNotSupportedException("Not supported token type");
         }
     }
-    public boolean isUUIDAuthorization(HttpServletRequest httpRequest){
+
+    public boolean isUUIDAuthorization(HttpServletRequest httpRequest) {
+        if (httpRequest.getHeader(AUTH_HEADER) == null) {
+            return false;
+        }
         String authHeader = httpRequest.getHeader(AUTH_HEADER);
         String token = authHeader.substring(AUTH_METHOD.length() + 1);
         return isUUIDToken(token);
     }
-    public boolean isJWTAuthorization(HttpServletRequest httpRequest){
+
+    public boolean isJWTAuthorization(HttpServletRequest httpRequest) {
+        if (httpRequest.getHeader(AUTH_HEADER) == null) {
+            return false;
+        }
         String authHeader = httpRequest.getHeader(AUTH_HEADER);
         String token = authHeader.substring(AUTH_METHOD.length() + 1);
         return isJWTToken(token);
@@ -92,6 +100,7 @@ public class TokenAuthenticationService {
         // JWT has three parts separated by dots
         return token.split("\\.").length == 3;
     }
+
     public Authentication getAuthenticationForJWT(HttpServletRequest request) {
         String authHeader = request.getHeader(AUTH_HEADER);
         if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " ")) {
