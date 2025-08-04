@@ -14,6 +14,7 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,7 +116,7 @@ public class KubernetesApiJanitorService {
         configFiles.forEach(configFile -> {
             final String configMapName = generateConfigMapName(deploymentId, configFile.getFilePath(), configFile.getFileName());
             if (configFilesInConfigMaps.containsKey(configMapName)) {
-                List<ConfigFile> currentList = configFilesInConfigMaps.get(configMapName);
+                List<ConfigFile> currentList = new ArrayList<>(configFilesInConfigMaps.get(configMapName));
                 currentList.add(configFile);
                 configFilesInConfigMaps.replace(configMapName, currentList);
             } else {
