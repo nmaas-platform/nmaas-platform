@@ -37,14 +37,14 @@ public class RegistrationControllerIntTest extends BaseControllerTestSetup {
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mvc = createMVC();
         objectMapper = new ObjectMapper();
         when(captchaValidator.verifyToken(anyString())).thenReturn(true);
     }
 
     @AfterEach
-    public void teardown(){
+    void teardown() {
         userRepository.findAll().stream()
                 .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                 .forEach(user -> userRepository.delete(user));
@@ -52,23 +52,24 @@ public class RegistrationControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     @Transactional
-    public void testSuccessfulRegistration() throws Exception {
-    	mvc.perform(post("/api/auth/basic/registration?token=test-token")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(getDefaultRegistration()))
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isCreated());
-    	assertTrue(userRepository.existsByUsername("testUser"));
+    void testSuccessfulRegistration() throws Exception {
+        mvc.perform(post("/api/auth/basic/registration?token=test-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(getDefaultRegistration()))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        assertTrue(userRepository.existsByUsername("testUser"));
     }
 
-    private Registration getDefaultRegistration(){
+    private Registration getDefaultRegistration() {
         Registration user = new Registration("testUser");
         user.setEmail("test@test.com");
-        user.setPassword(RandomStringUtils.random(10, true, false));
+        user.setPassword(RandomStringUtils.secure().next(10, true, false));
         user.setPrivacyPolicyAccepted(true);
         user.setTermsOfUseAccepted(true);
-        user.setFirstname(RandomStringUtils.random(5, true, false));
-        user.setLastname(RandomStringUtils.random(5, true, false));
+        user.setFirstname(RandomStringUtils.secure().next(5, true, false));
+        user.setLastname(RandomStringUtils.secure().next(5, true, false));
         return user;
     }
+
 }

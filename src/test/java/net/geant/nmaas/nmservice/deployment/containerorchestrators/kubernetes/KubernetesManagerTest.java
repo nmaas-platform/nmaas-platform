@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import com.google.common.collect.Sets;
 import net.geant.nmaas.gitlab.GitLabManager;
+import net.geant.nmaas.kubernetes.JanitorException;
 import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
@@ -21,8 +21,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
-import net.geant.nmaas.janitor.JanitorResponseException;
-import net.geant.nmaas.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
@@ -71,7 +69,6 @@ public class KubernetesManagerTest {
     private final IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
     private final KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
-    private final JanitorService janitorService = mock(JanitorService.class);
     private final KubernetesApiJanitorService kubernetesApiJanitorService = mock(KubernetesApiJanitorService.class);
     private final RemoteClusterManagementService remoteClusterManager = mock(RemoteClusterManagementService.class);
     private final RemoteClusterMonitoringService remoteClusterMonitor = mock(RemoteClusterMonitoringService.class);
@@ -90,7 +87,6 @@ public class KubernetesManagerTest {
             ingressResourceManager,
             ingressManager,
             gitLabManager,
-            janitorService,
             kubernetesApiJanitorService,
             remoteClusterManager,
             remoteClusterMonitor
@@ -215,7 +211,7 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate())
-                .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .build();
         ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
@@ -229,8 +225,8 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
-                .accessMethods(Sets.newHashSet(
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .accessMethods(Set.of(
                         AppAccessMethod.builder()
                                 .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.NONE).condition("redundant")
                                 .build()))
@@ -264,11 +260,11 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .accessMethods(Sets.newHashSet(
+                .accessMethods(Set.of(
                         AppAccessMethod.builder()
                                 .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.DEPLOYMENT_PARAMETER).condition("valid")
                                 .build()))
-                .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .globalDeployParameters(getStringStringMap())
                 .deployParameters(getParameterTypeStringMap())
                 .build();
@@ -456,7 +452,7 @@ public class KubernetesManagerTest {
     void shouldVerifyThatServiceIsDeployedWithoutServiceIp() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
         when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
-        when(kubernetesApiJanitorService.retrieveServiceIp(any(), any(), any())).thenThrow(new JanitorResponseException(""));
+        when(kubernetesApiJanitorService.retrieveServiceIp(any(), any(), any())).thenThrow(new JanitorException(""));
         when(kubernetesApiJanitorService.checkServiceExists(any(), any(), any())).thenReturn(false);
         assertDoesNotThrow(() -> {
             manager.checkService(Identifier.newInstance("deploymentId"));
@@ -475,9 +471,9 @@ public class KubernetesManagerTest {
     void shouldRemoveService() {
         manager.removeNmService(DEPLOYMENT_ID);
         verify(serviceLifecycleManager, times(1)).deleteServiceIfExists(DEPLOYMENT_ID);
-        verify(janitorService, times(1)).deleteConfigMapIfExists(null, Identifier.newInstance("deploymentId"), "domain");
-        verify(janitorService, times(1)).deleteBasicAuthIfExists(null, Identifier.newInstance("deploymentId"), "domain");
-        verify(janitorService, times(1)).deleteTlsIfExists(null, Identifier.newInstance("deploymentId"), "domain");
+        verify(kubernetesApiJanitorService, times(1)).deleteConfigMapIfExists(null, Identifier.newInstance("deploymentId"), "domain");
+        verify(kubernetesApiJanitorService, times(1)).deleteBasicAuthIfExists(null, Identifier.newInstance("deploymentId"), "domain");
+        verify(kubernetesApiJanitorService, times(1)).deleteTlsIfExists(null, Identifier.newInstance("deploymentId"), "domain");
         verifyNoMoreInteractions(ingressResourceManager);
     }
 

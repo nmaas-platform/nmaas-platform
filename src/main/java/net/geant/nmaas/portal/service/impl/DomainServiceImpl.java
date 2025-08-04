@@ -37,6 +37,7 @@ import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,7 +57,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
@@ -213,7 +213,7 @@ public class DomainServiceImpl implements DomainService {
         if (Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isEmpty()) {
             throw new ProcessingException(String.format("Domain codename is not valid (%s / %s)", request.getName(), request.getCodename()));
         }
-        checkArgument(!existsDomainByCodename(request.getCodename()),
+        Validate.isTrue(!existsDomainByCodename(request.getCodename()),
                 String.format("Domain codename is not unique (provided value: %s)", request.getCodename()));
         if (StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())) {
             request.getDomainTechDetails().setKubernetesNamespace(request.getCodename());
@@ -225,7 +225,7 @@ public class DomainServiceImpl implements DomainService {
             request.getDomainTechDetails().setKubernetesIngressClass(request.getCodename());
         }
         if (StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())) {
-            checkArgument(!domainTechDetailsRepository.existsByExternalServiceDomain(
+            Validate.isTrue(!domainTechDetailsRepository.existsByExternalServiceDomain(
                             request.getDomainTechDetails().getExternalServiceDomain()),
                     String.format("External service domain is not unique (provided value: %s)", request.getDomainTechDetails().getExternalServiceDomain()));
         }

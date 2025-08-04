@@ -1,9 +1,9 @@
 package net.geant.nmaas.scheduling;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.AppUpgradeSummaryJob;
 import net.geant.nmaas.orchestration.AppUpgradeTriggerJob;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,13 +39,13 @@ public class AppUpgradeScheduleInit implements InitializingBean {
     @Override
     @Transactional
     public void afterPropertiesSet() {
-        if (Strings.isNullOrEmpty(appUpgradeCron)) {
+        if (StringUtils.isEmpty(appUpgradeCron)) {
             log.warn("Application upgrade cron expression not provided");
             log.warn("Automatic application upgrades are disabled!");
         } else {
             this.scheduleManager.createJob(appUpgradeTriggerJob, APP_UPGRADE_JOB_NAME, appUpgradeCron);
         }
-        if (Strings.isNullOrEmpty(appUpgradeSummaryCron)) {
+        if (StringUtils.isEmpty(appUpgradeSummaryCron)) {
             log.warn("Application upgrade summary cron expression not provided");
             log.warn("Won't send out email notifications about automatic upgrades in given period");
         } else {

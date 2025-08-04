@@ -1,20 +1,18 @@
 package net.geant.nmaas.kubernetes;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.kubernetes.api.model.KClusterView;
 import net.geant.nmaas.kubernetes.remote.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
-import net.geant.nmaas.kubernetes.api.model.KClusterView;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Component
 @NoArgsConstructor
@@ -92,10 +90,10 @@ public class KubernetesClusterIngressManager {
 
     @PostConstruct
     public void validateConfig() {
-        checkArgument(this.getControllerConfigOption() != null, "ControllerConfigOption property can't be null");
-        checkArgument(this.getResourceConfigOption() != null, "ResourceConfigOption property can't be null");
+        Validate.isTrue(this.getControllerConfigOption() != null, "ControllerConfigOption property can't be null");
+        Validate.isTrue(this.getResourceConfigOption() != null, "ResourceConfigOption property can't be null");
         if (this.getTlsSupported()) {
-            checkArgument(this.getCertificateConfigOption() != null, "CertificateConfigOption property can't be null if TLS is supported");
+            Validate.isTrue(this.getCertificateConfigOption() != null, "CertificateConfigOption property can't be null if TLS is supported");
         }
         KClusterView.KClusterIngressView view = this.getKClusterIngressView();
         this.getControllerConfigOption().validate(view);

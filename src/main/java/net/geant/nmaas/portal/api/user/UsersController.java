@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.user;
 
-import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -397,7 +396,7 @@ public class UsersController {
         domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
         domainService.addGlobalGuestUserRoleIfMissing(user.getId());
         userService.update(user);
-        this.sendMail(this.userService.findAllUsersWithAdminRole().get(0), MailType.NEW_SSO_LOGIN, ImmutableMap.of("newUser", user.getUsername()));
+        this.sendMail(this.userService.findAllUsersWithAdminRole().get(0), MailType.NEW_SSO_LOGIN, Map.of("newUser", user.getUsername()));
     }
 
     @PostMapping("/users/reset/notification")
@@ -405,7 +404,7 @@ public class UsersController {
     public void sendResetPasswordNotification(@RequestBody String email) {
         User user = userService.findByEmail(email);
         checkSSOUser(user);
-        this.sendMail(modelMapper.map(user, UserView.class), MailType.PASSWORD_RESET, ImmutableMap.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
+        this.sendMail(modelMapper.map(user, UserView.class), MailType.PASSWORD_RESET, Map.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
     }
 
     private String generateResetPasswordUrl(String token) {
@@ -642,7 +641,7 @@ public class UsersController {
                     isEnabledFlag ? "activated" : "deactivated",
                     getUser(userId).getUsername());
             if (isEnabledFlag) {
-                this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_ACTIVATED, ImmutableMap.of("portalURL", portalAddress != null ? portalAddress : ""));
+                this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_ACTIVATED, Map.of("portalURL", portalAddress != null ? portalAddress : ""));
             } else {
                 this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_BLOCKED, Collections.emptyMap());
             }

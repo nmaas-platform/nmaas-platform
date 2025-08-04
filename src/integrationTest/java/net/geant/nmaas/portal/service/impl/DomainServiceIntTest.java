@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
-import net.geant.nmaas.janitor.JanitorService;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
@@ -24,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @SpringBootTest
 public class DomainServiceIntTest {
 
-    @MockitoBean
-    private JanitorService janitorService;
     @MockitoBean
     private WebhookEventRepository webhookEventRepository;
 

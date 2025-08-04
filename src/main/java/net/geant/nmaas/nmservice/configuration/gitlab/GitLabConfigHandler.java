@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabNotFoundException;
+import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -24,10 +25,12 @@ import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectHook;
 import org.gitlab4j.api.models.RepositoryFile;
+import org.gitlab4j.api.models.TreeItem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -169,11 +172,11 @@ public class GitLabConfigHandler implements GitConfigHandler {
             if (group.isPresent()) {
                 return group.get().getId();
             } else {
-                    gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
-                    Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
-                    gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
-                    return groupId;
-                }
+                gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
+                Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
+                gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
+                return groupId;
+            }
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
         }
@@ -243,7 +246,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             ProjectHook hook = new ProjectHook();
             hook.setPushEvents(true);
             String completeWebhookUrl = getWebhookUrl(webhookId);
-            log.info("completeWebhookUrl: {}", completeWebhookUrl);
+            log.debug("completeWebhookUrl: {}", completeWebhookUrl);
             gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());
@@ -312,6 +315,33 @@ public class GitLabConfigHandler implements GitConfigHandler {
                 throw new FileTransferException(e.getClass().getName() + e.getMessage());
             }
         });
+    }
+
+    /**
+     * Gets all the configuration files from GitLab repository
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return list of configuration files
+     */
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public List<ConfigFile> getConfigFiles(Identifier deploymentId) {
+        final GitLabProject gitLabProject = loadGitlabProject(deploymentId).orElseThrow(() ->
+                new ConfigRepositoryAccessDetailsNotFoundException("Could not find GitLab project for deployment " + deploymentId));
+        try {
+            List<ConfigFile> configFiles = new ArrayList<>();
+            for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId())) {
+                RepositoryFile repositoryFile = gitLabManager.repositoryFiles().getFile(gitLabProject.getProjectId(), item.getPath() + "/" + item.getName(), commitBranch());
+                configFiles.add(ConfigFile.builder()
+                        .fileName(repositoryFile.getFileName())
+                        .filePath(repositoryFile.getFilePath())
+                        .fileContent(repositoryFile.getContent())
+                        .build());
+            }
+            return configFiles;
+        } catch (GitLabApiException e) {
+            throw new FileTransferException(e.getClass().getName() + e.getMessage());
+        }
     }
 
     @Override

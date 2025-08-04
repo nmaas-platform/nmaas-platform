@@ -18,14 +18,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Entity
 @Getter
@@ -91,8 +90,9 @@ public class ApplicationBase implements Serializable {
     }
 
     public void validate() {
-        checkArgument(StringUtils.isNotEmpty(name), "App must have name");
-        checkArgument(name.matches("^[a-zA-Z0-9- ]+$"), "Name contains illegal characters");
-        checkArgument(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
+        Validate.isTrue(StringUtils.isNotEmpty(name), "App must have name");
+        Validate.isTrue(name.matches("^[a-zA-Z0-9- ]+$"), "Name contains illegal characters");
+        Validate.isTrue(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
     }
+
 }

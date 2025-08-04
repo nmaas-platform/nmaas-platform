@@ -8,12 +8,13 @@ import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
-import net.geant.nmaas.janitor.JanitorResponseException;
+import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class KubernetesApiJanitorService {
                 return Objects.equals(statefulSet.getSpec().getReplicas(), statefulSet.getStatus().getReadyReplicas());
             }
             log.info("StatefulSet not found as well");
-            throw new JanitorResponseException(
+            throw new JanitorException(
                     String.format("Not able to check application state. No deployment/statefulset with name %s found in namespace %s", deploymentId.value(), namespace)
             );
         }
@@ -73,11 +74,11 @@ public class KubernetesApiJanitorService {
                 return service.getStatus().getLoadBalancer().getIngress().getFirst().getIp();
             } catch (Exception e) {
                 log.warn("Service {} found but encountered problem with retrieving IP address: {}", serviceName.value(), e.getMessage());
-                throw new JanitorResponseException("Not able to retrieve IP information: " + e.getMessage());
+                throw new JanitorException("Not able to retrieve IP information: " + e.getMessage());
             }
         } else {
             log.info("Service {} not found in namespace {}.", serviceName.value(), namespace);
-            throw new JanitorResponseException(
+            throw new JanitorException(
                     String.format("Not able to retrieve IP information. No service with name %s found in namespace %s", serviceName.value(), namespace)
             );
         }
@@ -106,6 +107,62 @@ public class KubernetesApiJanitorService {
     public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain) {
         final String namespace = namespaceService.namespace(domain);
         return Collections.singletonList(kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName));
+    }
+
+    public void createOrReplaceConfigMaps(KCluster kCluster, Identifier deploymentId, String domain, List<ConfigFile> configFiles) {
+        final String namespace = namespaceService.namespace(domain);
+        Map<String, List<ConfigFile>> configFilesInConfigMaps = new HashMap<>();
+        configFiles.forEach(configFile -> {
+            final String configMapName = generateConfigMapName(deploymentId, configFile.getFilePath(), configFile.getFileName());
+            if (configFilesInConfigMaps.containsKey(configMapName)) {
+                List<ConfigFile> currentList = configFilesInConfigMaps.get(configMapName);
+                currentList.add(configFile);
+                configFilesInConfigMaps.replace(configMapName, currentList);
+            } else {
+                configFilesInConfigMaps.put(configMapName, List.of(configFile));
+            }
+        });
+        configFilesInConfigMaps.keySet().forEach(configMapName ->
+                kubernetesApiClientService.createOrReplaceConfigMap(kCluster, namespace, configMapName, configFilesInConfigMaps.get(configMapName))
+        );
+    }
+
+    private static String generateConfigMapName(Identifier deploymentId, String filePath, String fileName) {
+        final String fileDirectory = filePath.replaceAll(fileName, "").replaceAll("/", "");
+        return fileDirectory.isBlank() ? deploymentId.value() : deploymentId.value() + "-" + fileDirectory;
+    }
+
+    public void deleteConfigMapIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.deleteConfigMapIfExists(kCluster, namespace, deploymentId.value());
+    }
+
+    public void createOrReplaceBasicAuth(KCluster kCluster, Identifier deploymentId, String domain, String basicAuthUsername, String basicAuthPassword) {
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.createOrReplaceBasicAuth(kCluster, namespace, generateSecretName(deploymentId), generateBasicAuthCredentials(basicAuthUsername, basicAuthPassword));
+    }
+
+    private static String generateSecretName(Identifier deploymentId) {
+        return deploymentId.value() + "-auth";
+    }
+
+    private static String generateBasicAuthCredentials(String basicAuthUsername, String basicAuthPassword) {
+        final String valueToEncode = basicAuthUsername + ":" + basicAuthPassword;
+        return Base64.getEncoder().encodeToString(valueToEncode.getBytes());
+    }
+
+    public void deleteBasicAuthIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.deleteSecretIfExists(kCluster, namespace, generateSecretName(deploymentId));
+    }
+
+    public void deleteTlsIfExists(KCluster kCluster, Identifier deploymentId, String domain) {
+        final String namespace = namespaceService.namespace(domain);
+        kubernetesApiClientService.deleteSecretIfExists(kCluster, namespace, generateTlsSecretName(deploymentId));
+    }
+
+    private static String generateTlsSecretName(Identifier deploymentId) {
+        return deploymentId.value() + "-tls";
     }
 
 }

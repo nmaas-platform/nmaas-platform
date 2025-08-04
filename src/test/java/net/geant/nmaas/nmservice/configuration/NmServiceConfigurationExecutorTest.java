@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.janitor.JanitorService;
+import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,7 +18,7 @@ public class NmServiceConfigurationExecutorTest {
 
     private final ConfigFilePreparer filePreparer = mock(ConfigFilePreparer.class);
     private final GitConfigHandler configHandler = mock(GitConfigHandler.class);
-    private final JanitorService janitorService = mock(JanitorService.class);
+    private final KubernetesApiJanitorService janitorService = mock(KubernetesApiJanitorService.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
     private NmServiceConfigurationExecutor executor;

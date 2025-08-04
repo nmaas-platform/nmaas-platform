@@ -1,9 +1,9 @@
 package net.geant.nmaas.scheduling;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.bulks.BulkDeploymentJob;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,10 +38,10 @@ public class BulkDeploymentScheduleInit implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
         String bulkDeploymentCronFromDb = configurationManager.getConfiguration().getBulkDeploymentJobCron();
-        if (!Strings.isNullOrEmpty(bulkDeploymentCronFromDb)) {
+        if (!StringUtils.isEmpty(bulkDeploymentCronFromDb)) {
             log.debug("Scheduling bulk deployment job based on cron loaded from the database");
             this.scheduleManager.createJob(bulkDeploymentJob, BULK_DEPLOYMENT_JOB, bulkDeploymentCronFromDb);
-        } else if (Strings.isNullOrEmpty(bulkDeploymentCron)) {
+        } else if (StringUtils.isEmpty(bulkDeploymentCron)) {
             log.warn("Bulk deployment cron expression not provided");
         } else {
             this.scheduleManager.createJob(bulkDeploymentJob, BULK_DEPLOYMENT_JOB, bulkDeploymentCron);

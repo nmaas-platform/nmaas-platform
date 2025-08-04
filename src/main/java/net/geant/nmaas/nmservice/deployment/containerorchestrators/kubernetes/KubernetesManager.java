@@ -1,12 +1,10 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabInvalidConfigurationException;
-import net.geant.nmaas.janitor.JanitorResponseException;
-import net.geant.nmaas.janitor.JanitorService;
+import net.geant.nmaas.kubernetes.JanitorException;
 import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
@@ -49,6 +47,7 @@ import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -56,11 +55,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod.DEFAULT_INTERNAL_SSH_ACCESS_USERNAME;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethod.copy;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.EXTERNAL;
@@ -89,7 +86,6 @@ public class KubernetesManager implements ContainerOrchestrator {
     private final IngressResourceManager ingressResourceManager;
     private final KubernetesClusterIngressManager ingressManager;
     private final GitLabManager gitLabManager;
-    private final JanitorService janitorService;
     private final KubernetesApiJanitorService kubernetesApiJanitorService;
     private final RemoteClusterManagementService remoteClusterManager;
     private final RemoteClusterMonitoringService remoteClusterMonitor;
@@ -98,12 +94,12 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec) {
         try {
-            checkArgument(appDeployment != null, "App deployment cannot be null");
-            checkArgument(appDeploymentSpec != null, "App deployment spec cannot be null");
-            checkArgument(appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES),
+            Validate.isTrue(appDeployment != null, "App deployment cannot be null");
+            Validate.isTrue(appDeploymentSpec != null, "App deployment spec cannot be null");
+            Validate.isTrue(appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES),
                     "Service deployment not possible with currently used container orchestrator");
-            checkArgument(appDeploymentSpec.getKubernetesTemplate() != null, "Kubernetes template cannot be null");
-            checkArgument(appDeploymentSpec.getAccessMethods() != null && !appDeploymentSpec.getAccessMethods().isEmpty(),
+            Validate.isTrue(appDeploymentSpec.getKubernetesTemplate() != null, "Kubernetes template cannot be null");
+            Validate.isTrue(appDeploymentSpec.getAccessMethods() != null && !appDeploymentSpec.getAccessMethods().isEmpty(),
                     "Service access methods cannot be null");
         } catch (IllegalArgumentException iae) {
             throw new ServiceRequestVerificationException(iae.getMessage());
@@ -297,12 +293,12 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     private boolean shouldBeDisabled(ServiceAccessMethod accessMethod, Map<String, String> deploymentParameters) {
-        if (Strings.isNullOrEmpty(accessMethod.getCondition())) {
+        if (StringUtils.isEmpty(accessMethod.getCondition())) {
             return false;
         }
         log.debug("Access method is enabled conditionally (condition parameter key: {})", accessMethod.getCondition());
         String conditionValue = deploymentParameters.get(accessMethod.getCondition());
-        if (Strings.isNullOrEmpty(conditionValue)) {
+        if (StringUtils.isEmpty(conditionValue)) {
             log.debug("Condition value is null or empty.");
             return false;
         } else {
@@ -361,7 +357,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             retrieveOrUpdateLocalServiceName(service);
 
             return true;
-        } catch (KServiceManipulationException | JanitorResponseException ex) {
+        } catch (KServiceManipulationException | JanitorException ex) {
             throw new ContainerCheckFailedException(ex.getMessage());
         }
     }
@@ -383,7 +379,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                 accessMethods.add(copy);
             });
             repositoryManager.updateKServiceAccessMethods(accessMethods);
-        } catch (JanitorResponseException je) {
+        } catch (JanitorException je) {
             log.error("Could not retrieve IP for {}", service.getDescriptiveDeploymentId());
         }
     }
@@ -448,10 +444,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            final String remoteClusterKubeConfig = Optional.ofNullable(service.getRemoteCluster()).map(KCluster::getClusterConfigFile).orElse(null);
-            janitorService.deleteConfigMapIfExists(remoteClusterKubeConfig, service.getDescriptiveDeploymentId(), service.getDomain());
-            janitorService.deleteBasicAuthIfExists(remoteClusterKubeConfig, service.getDescriptiveDeploymentId(), service.getDomain());
-            janitorService.deleteTlsIfExists(remoteClusterKubeConfig, service.getDescriptiveDeploymentId(), service.getDomain());
+            kubernetesApiJanitorService.deleteConfigMapIfExists(service.getRemoteCluster(), service.getDescriptiveDeploymentId(), service.getDomain());
+            kubernetesApiJanitorService.deleteBasicAuthIfExists(service.getRemoteCluster(), service.getDescriptiveDeploymentId(), service.getDomain());
+            kubernetesApiJanitorService.deleteTlsIfExists(service.getRemoteCluster(), service.getDescriptiveDeploymentId(), service.getDomain());
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
         } catch (KServiceManipulationException e) {
@@ -507,7 +502,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             return kubernetesApiJanitorService.getPodNames(service.getRemoteCluster(), service.getDescriptiveDeploymentId(), service.getDomain());
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
-        } catch (JanitorResponseException je) {
+        } catch (JanitorException je) {
             throw new ContainerOrchestratorInternalErrorException("Problem with retrieving service components", je);
         }
     }
@@ -522,7 +517,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             );
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
-        } catch (JanitorResponseException je) {
+        } catch (JanitorException je) {
             throw new ContainerOrchestratorInternalErrorException("Problem with retrieving service component logs", je);
         }
     }
