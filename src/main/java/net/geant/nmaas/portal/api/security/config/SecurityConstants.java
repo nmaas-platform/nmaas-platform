@@ -96,4 +96,8 @@ public class SecurityConstants {
                     "/api/gitlab/webhooks/**"
             )
     );
+    static final String[] AUTH_UUID_AUTHENTICATED_LIST = {
+            "/api/example/resource/**",
+            "/api/domains/*"
+    };
 }
