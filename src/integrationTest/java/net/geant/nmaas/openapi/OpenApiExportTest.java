@@ -7,9 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("openapi")
 public class OpenApiExportTest {
 
     @Autowired
@@ -33,10 +32,10 @@ public class OpenApiExportTest {
         Files.createDirectories(outputPath.getParent());
 
         // Call the standard SpringDoc OpenAPI endpoint
-        ResponseEntity<String> response = restTemplate.getForEntity("/v3/api-docs", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/api-docs/spec", String.class);
 
         // Verify the response
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected 200 OK from /v3/api-docs endpoint");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Expected 200 OK from /api-docs/spec endpoint");
         assertNotNull(response.getBody(), "Response body should not be null");
 
         // Convert JSON -> Map -> YAML

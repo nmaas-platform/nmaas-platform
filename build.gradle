@@ -191,10 +191,9 @@ tasks.register('generateOpenApiYaml', Test) {
         includeTestsMatching("net.geant.nmaas.openapi.OpenApiExportTest.exportOpenApiAsYaml")
     }
 
-    systemProperty 'spring.profiles.active', 'openapi'
     // Make sure test classes and runtime classpath are ready
-    testClassesDirs = sourceSets.test.output.classesDirs
-    classpath = sourceSets.test.runtimeClasspath
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
 jacoco {
