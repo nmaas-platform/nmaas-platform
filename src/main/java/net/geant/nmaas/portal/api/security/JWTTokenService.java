@@ -28,6 +28,7 @@ public class JWTTokenService {
 
     private static final String SCOPES = "scopes";
     private static final String LANGUAGE = "language";
+    private static final String THEME = "thememode";
 
     private JWTSettings jwtSettings;
 
@@ -85,6 +86,7 @@ public class JWTTokenService {
                         .collect(Collectors.toSet())
                 )
                 .claim(LANGUAGE, user.getSelectedLanguage())
+                .claim(THEME, user.getSelectedThemeMode())
                 .signWith(getSignInKey(jwtSettings.getSigningKey()), SignatureAlgorithm.HS512)
                 .compact();
         log.trace(result);
