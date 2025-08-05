@@ -1,4 +1,4 @@
-package net.geant.nmaas;
+package net.geant.nmaas.portal.api.security.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
