@@ -45,11 +45,7 @@ public class SecurityConstants {
      * Paths whitelisted for unauthenticated OPTIONS requests (CORS preflight, etc.).
      */
     static final String[] AUTH_WHITELIST_OPTIONS_METHOD = {
-            "/api/**",
-            "/api/orchestration/deployments/**",
-            "/api/orchestration/deployments/**/state",
-            "/api/orchestration/deployments/**/access",
-            "/api/management"
+            "/api/**"
     };
 
     /**
