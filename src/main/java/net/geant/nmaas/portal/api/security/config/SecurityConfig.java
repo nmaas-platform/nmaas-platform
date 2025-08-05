@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.configuration.repositories.GitLabProjectReposit
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.api.security.StatelessUUIDAuthenticationFilter;
 import net.geant.nmaas.portal.service.TokenAuthenticationService;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -64,22 +65,28 @@ public class SecurityConfig {
             new SkipPathRequestMatcher(SecurityConstants.SKIPPED_PATHS);
 
     /**
-     * Configures the main {@link SecurityFilterChain}, including authentication rules,
-     * custom filters, and optional OAuth2 login handling.
+     * Configures the main {@link SecurityFilterChain}, including request authorization rules,
+     * stateless token-based authentication filters (UUID and JWT), and optional OAuth2 login
+     * integration via OIDC.
      *
-     * CSRF protection is disabled because the application uses stateless authentication (JWT/UUID),
-     * and does not rely on cookies or HTTP sessions for maintaining user state.
+     * CSRF protection is disabled because the application uses stateless authentication and
+     * does not rely on cookies or HTTP sessions to maintain user state.
      *
-     * @param http                         the HTTP security builder
-     * @param clientRegistrationRepository OAuth2 client registration repository
-     * @return configured security filter chain
+     * OAuth2 login (OIDC) is conditionally enabled if the "portal.config.ssoLoginAllowed" property
+     * is set to true and a {@link ClientRegistrationRepository} bean is available in the context.
+     *
+     * @param http                                the HTTP security builder
+     * @param clientRegistrationRepositoryProvider optional provider for OAuth2 client registration repository
+     * @return the configured security filter chain
      * @throws Exception in case of configuration errors
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   ClientRegistrationRepository clientRegistrationRepository) throws Exception {
+                                                   ObjectProvider<ClientRegistrationRepository> clientRegistrationRepositoryProvider) throws Exception {
+
 
         boolean ssoEnabled = Boolean.parseBoolean(env.getProperty("portal.config.ssoLoginAllowed", "false"));
+        ClientRegistrationRepository clientRegistrationRepository = clientRegistrationRepositoryProvider.getIfAvailable();
 
         http
                 .cors(Customizer.withDefaults())
