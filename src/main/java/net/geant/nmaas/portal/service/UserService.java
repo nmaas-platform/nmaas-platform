@@ -62,6 +62,8 @@ public interface UserService {
 
     void setUserLanguage(Long userId, final String defaultLanguage);
 
+    void setUserTheme(Long userId, final String defaultTheme);
+
     List<UserView> findAllUsersWithAdminRole();
 
     List<UserView> findUsersWithRoleSystemAdminAndOperator();

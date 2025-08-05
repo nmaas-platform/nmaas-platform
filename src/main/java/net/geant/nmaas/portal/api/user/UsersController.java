@@ -657,6 +657,12 @@ public class UsersController {
     public void setDefaultLanguage(@PathVariable Long userId, @RequestParam("defaultLanguage") final String defaultLanguage) {
         this.userService.setUserLanguage(userId, defaultLanguage);
     }
+    @PatchMapping("/users/{userId}/theme")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Transactional
+    public void setDefaultTheme(@PathVariable Long userId, @RequestParam("defaultTheme") final String defaultTheme) {
+        this.userService.setUserTheme(userId, defaultTheme);
+    }
 
     @GetMapping(value = "/users/search", params = {"searchPart"})
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN') or hasRole('ROLE_GROUP_MANAGER')")

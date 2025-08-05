@@ -250,6 +250,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void setUserTheme(Long userId, String defaultTheme) {
+        userRepository.setUserThemeMode(userId, defaultTheme);
+    }
+
+    @Override
+    @Transactional
     public void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag) {
         userRepository.setTermsOfUseAcceptedFlag(userId, termsOfUseAcceptedFlag);
     }
