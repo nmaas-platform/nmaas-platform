@@ -329,24 +329,30 @@ public class GitLabConfigHandler implements GitConfigHandler {
         final GitLabProject gitLabProject = loadGitlabProject(deploymentId).orElseThrow(() ->
                 new ConfigRepositoryAccessDetailsNotFoundException("Could not find GitLab project for deployment " + deploymentId));
         try {
-            List<ConfigFile> configFiles = new ArrayList<>();
-            for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId())) {
-                if (item.getType() != TreeItem.Type.BLOB) {
-                    continue;
-                }
-                log.debug("Retrieving file {}", item.getPath());
-                RepositoryFile repositoryFile = gitLabManager.repositoryFiles()
-                        .getFile(gitLabProject.getProjectId(), item.getPath(), commitBranch());
-                configFiles.add(ConfigFile.builder()
-                        .fileName(repositoryFile.getFileName())
-                        .filePath(repositoryFile.getFilePath())
-                        .fileContent(repositoryFile.getDecodedContentAsString())
-                        .build());
-            }
-            return configFiles;
+            return getConfigFilesFromDirectory(gitLabProject, "");
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
+    }
+
+    private List<ConfigFile> getConfigFilesFromDirectory(GitLabProject gitLabProject, String directory) throws GitLabApiException {
+        List<ConfigFile> configFiles = new ArrayList<>();
+        for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId(), directory, commitBranch())
+                .stream().filter(i -> TreeItem.Type.BLOB == i.getType()).toList()) {
+            log.debug("Retrieving file {}", item.getPath());
+            RepositoryFile repositoryFile = gitLabManager.repositoryFiles()
+                    .getFile(gitLabProject.getProjectId(), item.getPath(), commitBranch());
+            configFiles.add(ConfigFile.builder()
+                    .fileName(repositoryFile.getFileName())
+                    .filePath(repositoryFile.getFilePath())
+                    .fileContent(repositoryFile.getDecodedContentAsString())
+                    .build());
+        }
+        for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId(), directory, commitBranch())
+                .stream().filter(i -> TreeItem.Type.TREE == i.getType()).toList()) {
+            configFiles.addAll(getConfigFilesFromDirectory(gitLabProject, item.getPath()));
+        }
+        return configFiles;
     }
 
     @Override
