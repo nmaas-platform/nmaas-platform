@@ -42,7 +42,7 @@ public class KubernetesTemplate implements Serializable {
     private String archive;
 
     /**
-     * Name of the deployment to be used by the Janitor to check if service was deployed successfully
+     * Name of the deployment to be used by to check if service was deployed successfully
      */
     private String mainDeploymentName;
 

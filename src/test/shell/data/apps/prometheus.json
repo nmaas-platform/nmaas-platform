@@ -399,7 +399,7 @@
                 },
                 {
                     "type": "LOCAL",
-                    "name": "in-cluster",
+                    "name": "hostname",
                     "tag": "prometheus"
                 }
             ]

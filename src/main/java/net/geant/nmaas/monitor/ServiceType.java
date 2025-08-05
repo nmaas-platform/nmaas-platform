@@ -35,17 +35,6 @@ public enum ServiceType {
         public MonitorEntryView getDefaultMonitorEntry() {
             return new MonitorEntryView(this, 5L, TimeFormat.MIN);
         }
-    },
-    JANITOR {
-        @Override
-        public String getName() {
-            return "JANITOR";
-        }
-
-        @Override
-        public MonitorEntryView getDefaultMonitorEntry() {
-            return new MonitorEntryView(this, 1L, TimeFormat.H);
-        }
     };
 
     public abstract String getName();

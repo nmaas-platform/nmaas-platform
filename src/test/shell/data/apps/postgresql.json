@@ -151,7 +151,7 @@
                 },
                 {
                     "type": "LOCAL",
-                    "name": "service",
+                    "name": "hostname",
                     "tag": "postgresql",
                     "conditionType": "NONE",
                     "deployParameters": {

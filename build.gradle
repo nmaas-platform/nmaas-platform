@@ -137,7 +137,6 @@ test {
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/test.exec").get().asFile
         excludes = [
-                '**/janitor/**',
                 '**/exception/**',
                 '**/exceptions/**'
         ]
