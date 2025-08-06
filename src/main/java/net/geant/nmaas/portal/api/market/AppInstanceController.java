@@ -668,6 +668,7 @@ public class AppInstanceController extends AppBaseController {
             return null;
         }
         AppInstanceBase ai = modelMapper.map(appInstance, AppInstanceBase.class);
+        ai.setApplicationBaseId(appBaseService.findByName(appInstance.getApplication().getName()).getId());
         return addAppInstanceBaseProperties(ai, appInstance);
     }
 
