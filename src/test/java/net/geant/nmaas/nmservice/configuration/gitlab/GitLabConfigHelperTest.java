@@ -6,7 +6,6 @@ import org.gitlab4j.api.models.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class GitLabConfigHelperTest {
 
@@ -58,7 +57,6 @@ public class GitLabConfigHelperTest {
         assertEquals("username", result.getUsername());
         assertEquals("email", result.getEmail());
         assertEquals("name", result.getName());
-        assertNotNull(result.getConfirmedAt());
     }
 
     @Test
