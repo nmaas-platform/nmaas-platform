@@ -1314,7 +1314,7 @@
       "PARALLEL" : "Set custom restriction on parallel deployments limit",
       "UPLOAD" : "New bulk deployment of",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
-      "HEADER" : "Bulk application deployments",
+      "HEADER" : "Bulk deployments",
       "VIEW_HEADER" : "Bulk application deployment",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "DEPLOYMENTS" : "Deployment Details",

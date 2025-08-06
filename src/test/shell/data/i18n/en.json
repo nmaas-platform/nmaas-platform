@@ -1319,7 +1319,7 @@
       "UPLOAD" : "New bulk deployment of",
       "UPLOAD_INFO" : "Select csv file with application instances specification for bulk deployment",
       "SUMMARY" : "Table present summary of your bulk domains and domain admin deployments",
-      "HEADER" : "Bulk application deployments",
+      "HEADER" : "Bulk deployments",
       "VIEW_HEADER" : "Bulk application deployment",
       "DEPLOYMENT_IN_PROGRESS": "Bulk deployment in progress...",
       "DEPLOYMENTS" : "Deployment Details",
