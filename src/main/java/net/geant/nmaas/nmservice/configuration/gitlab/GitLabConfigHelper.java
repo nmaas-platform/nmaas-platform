@@ -11,8 +11,6 @@ import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.springframework.http.HttpStatus;
 
-import java.util.Date;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class GitLabConfigHelper {
@@ -56,7 +54,7 @@ public class GitLabConfigHelper {
         user.setName(name);
         user.setCanCreateGroup(false);
         user.setCanCreateProject(false);
-        user.setConfirmedAt(new Date());
+        user.setSkipConfirmation(true);
         log.info("Creating GitLab user (username: [{}], email: [{}], name: [{}])", username, email, name);
         return user;
     }
