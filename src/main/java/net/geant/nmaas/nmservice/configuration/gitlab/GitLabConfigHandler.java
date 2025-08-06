@@ -114,7 +114,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         });
         sshKeys.forEach(k -> {
             try {
-                gitLabManager.users().addSshKey(userId, LocalTime.now().toString(), k);
+                gitLabManager.users().addSshKey(userId, LocalTime.now().toString(), k, null);
             } catch (GitLabApiException e) {
                 throw new GitRepositoryOperationException(e.getClass().getName() + e.getMessage());
             }
@@ -192,8 +192,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private GitLabProject project(Identifier deploymentId, String member, Long gitLabProjectId) {
         try {
-            String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
+            final String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
+            final String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
             return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabSshRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
@@ -201,7 +201,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     String getSshUrlToRepo(Long gitLabProjectId) throws GitLabApiException {
-        return StringUtils.replace(gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo(), ":", "/");
+        return gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo().replace(":", "/");
     }
 
     String getHttpUrlToRepo(Long gitLabProjectId) throws GitLabApiException {
@@ -370,10 +370,6 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId) {
         return repositoryManager.loadGitLabProject(deploymentId);
-    }
-
-    private String getPrefix() {
-        return configurationManager.getConfiguration().getDeploymentPrefix();
     }
 
 }

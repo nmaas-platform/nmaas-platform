@@ -109,6 +109,7 @@ public class GitLabConfigHandlerTest {
         ProjectApi projectApi = mock(ProjectApi.class);
         Project project = new Project().withId(350L);
         project.setHttpUrlToRepo("https://repo.url.pl/DOMAIN/PROJECT");
+        project.setSshUrlToRepo("git@repo.url.pl");
         when(projectApi.createProject(220L, descriptiveDeploymentId.value())).thenReturn(project);
         when(projectApi.getProject(350L)).thenReturn(project);
         when(gitLabManager.projects()).thenReturn(projectApi);
