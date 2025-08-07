@@ -142,10 +142,17 @@ public class KubernetesApiClientService {
                     .endMetadata()
                     .withData(configFilesWithNames)
                     .build();
-            client.configMaps()
-                    .inNamespace(namespace)
-                    .resource(configMap)
-                    .create();
+            if (client.configMaps().inNamespace(namespace).withName(configMapName).get() == null) {
+                client.configMaps()
+                        .inNamespace(namespace)
+                        .resource(configMap)
+                        .create();
+            } else {
+                client.configMaps()
+                        .inNamespace(namespace)
+                        .resource(configMap)
+                        .update();
+            }
         }
     }
 
