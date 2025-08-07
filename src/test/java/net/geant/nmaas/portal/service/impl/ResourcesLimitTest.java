@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
+import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistent.repositories.ResourcesLimitRepository;
@@ -30,10 +31,11 @@ public class ResourcesLimitTest {
     private ResourcesLimitDto resourcesLimitDto;
     private ResourcesLimit resourcesLimit;
     private DomainBase domainView = new DomainBase();
+    private ModelMapper mapper = new ModelMapper();
 
     @BeforeEach
     void setUp() {
-        resourcesLimitService = new ResourcesLimitServiceImpl(resourcesLimitRepository, new ModelMapper());
+        resourcesLimitService = new ResourcesLimitServiceImpl(resourcesLimitRepository, mapper);
         domainView.setId(1L);
         resourcesLimitDto = new ResourcesLimitDto(1L, 500, 100, 10, 50, domainView);
         resourcesLimit = new ResourcesLimit(1L, 500, 100, 10, 50, new Domain(1L));
@@ -52,16 +54,20 @@ public class ResourcesLimitTest {
 
         assertNotNull(created);
         assertEquals(resourcesLimitDto2.getId(), created.getId());
-        assertEquals(resourcesLimitDto2.getCpu(), created.getCpu());
+        assertEquals(100, created.getCpu());
         assertEquals(resourcesLimitDto2.getContainersNo(), created.getContainersNo());
-        assertEquals(resourcesLimitDto2.isGlobal(), created.isGlobal());
+        assertEquals(resourcesLimitDto2.getLimitType(), created.getLimitType());
 
-        resourcesLimitDto2.setDomain(domainView);
+        ResourcesLimitUpdateDto updateDto = mapper.map(created, ResourcesLimitUpdateDto.class);
+        updateDto.setCpu(1000);
         when(resourcesLimitRepository.findById(2L)).thenReturn(Optional.of(resourcesLimit2));
-        when(resourcesLimitRepository.existsByDomain_IdAndIdNot(1L, 2L)).thenReturn(Boolean.TRUE);
-        assertThrows(RuntimeException.class, () -> {
-            resourcesLimitService.update(resourcesLimitDto);
-        });
+        resourcesLimitService.update(updateDto);
+        resourcesLimit2.setCpu(1000);
+        when(resourcesLimitRepository.findById(2L)).thenReturn(Optional.of(resourcesLimit2));
+        created = resourcesLimitService.getResourcesLimit(2L);
+        assertEquals(1000, created.getCpu());
+        assertEquals(resourcesLimitDto2.getContainersNo(), created.getContainersNo());
+        assertEquals(resourcesLimitDto2.getLimitType(), created.getLimitType());
 
         doNothing().when(resourcesLimitRepository).deleteById(2L);
         resourcesLimitService.delete(2L);
@@ -79,7 +85,7 @@ public class ResourcesLimitTest {
         assertEquals(resourcesLimitDto.getId(), created.getId());
         assertEquals(resourcesLimitDto.getCpu(), created.getCpu());
         assertEquals(resourcesLimitDto.getContainersNo(), created.getContainersNo());
-        assertEquals(resourcesLimitDto.isGlobal(), created.isGlobal());
+        assertEquals(resourcesLimitDto.getLimitType(), created.getLimitType());
     }
 
     @Test

@@ -4,19 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.persistent.entity.ResourcesLimitType;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResourcesLimitDto {
+public class ResourcesLimitDto extends ResourcesLimitUpdateDto {
 
-    private Long id;
-    private Integer memory;
-    private Integer cpu;
-    private Integer instancesNo;
-    private Integer containersNo;
-    private boolean isGlobal = false;
+    private ResourcesLimitType limitType;
     private DomainGroupViewS domainGroup;
     private DomainBase domain;
 
@@ -27,5 +23,6 @@ public class ResourcesLimitDto {
         this.instancesNo = instancesNo;
         this.containersNo = containersNo;
         this.domain = domain;
+        this.limitType= ResourcesLimitType.DOMAIN;
     }
 }

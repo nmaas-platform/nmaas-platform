@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.persistent.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +39,9 @@ public class ResourcesLimit {
 
     private Integer containersNo;
 
-    private boolean isGlobal = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ResourcesLimitType limitType;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "domain_group_id")
@@ -54,6 +58,7 @@ public class ResourcesLimit {
         this.instancesNo = instancesNo;
         this.containersNo = containersNo;
         this.domain = domain;
+        this.limitType= ResourcesLimitType.DOMAIN;
     }
 
 

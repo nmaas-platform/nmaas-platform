@@ -4,7 +4,7 @@ CREATE TABLE resources_limit (
     cpu integer,
     instances_no integer,
     containers_no integer,
-    is_global boolean not null,
+    limit_type varchar(50) not null,
     domain_group_id bigint,
     domain_id bigint,
 );

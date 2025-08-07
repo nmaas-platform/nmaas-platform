@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
+import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 @RestController
@@ -40,7 +39,7 @@ public class ResourcesLimitController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<Id> updateResourcesLimit(@PathVariable Long id, @RequestBody @Valid ResourcesLimitDto resourcesLimit) {
+    public ResponseEntity<Id> updateResourcesLimit(@PathVariable Long id, @RequestBody @Valid ResourcesLimitUpdateDto resourcesLimit) {
         if (!id.equals(resourcesLimit.getId())) {
             throw new ProcessingException("Path and body id are not equal");
         }
