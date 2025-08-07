@@ -63,12 +63,12 @@ public class GitLabConfigHandlerTest {
         ProjectApi projectApi = mock(ProjectApi.class);
         Project project = mock(Project.class);
         when(projectApi.getProject(anyLong())).thenReturn(project);
-        when(project.getSshUrlToRepo()).thenReturn("git@gitlab.nmaas.eu:groups-pllab/pllab-oxidized-142.git");
+        when(project.getSshUrlToRepo()).thenReturn("ssh://git@ssh.gitlab.qalab.nmaas.eu:5022/groups-tests/q1-tests-icinga2-56.git");
         when(gitLabManager.projects()).thenReturn(projectApi);
 
         String result = handler.getSshUrlToRepo(1L);
 
-        assertThat(result).isEqualTo("git@gitlab.nmaas.eu/groups-pllab/pllab-oxidized-142.git");
+        assertThat(result).isEqualTo("ssh://git@ssh.gitlab.qalab.nmaas.eu:5022/groups-tests/q1-tests-icinga2-56.git");
     }
 
     @Test
