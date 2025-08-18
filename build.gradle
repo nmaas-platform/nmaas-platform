@@ -90,7 +90,7 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:6.6.24.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:6.6.26.Final'
 
     // Database migrations
     implementation('org.flywaydb:flyway-core:11.10.5')
