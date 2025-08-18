@@ -197,6 +197,7 @@
     "DOMAIN": "Domena",
     "STATE" : "Stan",
     "UP" : "Aktywny",
+    "ADD": "Dodaj",
     "DOWN" : "Nieaktywny",
     "UNKNOWN" : "Nieznany",
     "CONTACT_MAIL" : "Email kontaktowy",
@@ -256,6 +257,7 @@
   },
   "DOMAINS": {
     "TITLE": "Domeny",
+    "DETAILS_TITLE": "Domena",
     "CODE_NAME": "Skrót",
     "NAME": "Nazwa",
     "ACTIVATE": "Aktywna",

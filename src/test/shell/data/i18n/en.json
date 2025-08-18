@@ -197,6 +197,7 @@
     "DOMAIN": "Domain",
     "STATE" : "State",
     "UP" : "Up",
+    "ADD": "Add",
     "DOWN" : "Down",
     "UNKNOWN" : "Unknown",
     "CONTACT_MAIL" : "Contact mail",
@@ -256,6 +257,7 @@
   },
   "DOMAINS": {
     "TITLE": "Domains",
+    "DETAILS_TITLE": "Domain",
     "CODE_NAME": "Codename",
     "NAME": "Name",
     "ACTIVATE": "Active",
