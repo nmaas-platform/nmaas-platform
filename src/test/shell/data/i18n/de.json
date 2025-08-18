@@ -196,6 +196,7 @@
     "DOMAIN": "Domain",
     "STATE" : "State",
     "UP" : "Up",
+    "ADD": "Add",
     "DOWN" : "Down",
     "UNKNOWN" : "Unknown",
     "DETAILS" : "Details",
@@ -253,6 +254,7 @@
   },
   "DOMAINS": {
     "TITLE": "Domains",
+    "DETAILS_TITLE": "Domain",
     "CODE_NAME": "Codename",
     "NAME": "Name",
     "ACTIVATE": "Aktiv",
