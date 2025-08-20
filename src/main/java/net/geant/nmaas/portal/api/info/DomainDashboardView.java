@@ -34,6 +34,7 @@ public class DomainDashboardView {
         private String appName;
         private String instanceName;
         private Long appId;
+        private Long baseAppId;
         private String appVersion;
         private Boolean upgradePossible;
     }

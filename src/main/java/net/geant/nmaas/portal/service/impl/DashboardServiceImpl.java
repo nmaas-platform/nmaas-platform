@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DashboardService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -39,6 +40,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final AppInstanceRepository appInstanceRepository;
     private final ApplicationBaseRepository applicationBaseRepository;
     private final UserLoginRegisterService userLoginRegisterService;
+    private final ApplicationBaseService appBaseService;
 
     @Override
     public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
@@ -100,10 +102,10 @@ public class DashboardServiceImpl implements DashboardService {
                     appsDeployed.put(this.getUserPreferredUsername(user), appInstanceRepository.countAllByOwner(user));
                 }
             });
-
             apps.forEach(app -> {
                 upgradePossible.add(DomainDashboardView.DomainAppInstanceView.builder()
                         .appId(app.getId())
+                        .baseAppId(appBaseService.findByName(app.getApplication().getName()).getId())
                         .appName(app.getApplication().getName())
                         .instanceName(app.getName())
                         .appVersion(app.getApplication().getVersion())
