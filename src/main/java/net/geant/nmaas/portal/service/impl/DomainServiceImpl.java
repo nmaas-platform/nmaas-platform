@@ -156,12 +156,10 @@ public class DomainServiceImpl implements DomainService {
         if (searchValue == null || searchValue.isEmpty()) {
             return this.domainRepository.findAllBaseDomains();
         } else {
-            log.debug("Searched value = {}", searchValue);
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             List<Domain> domainPage = domainRepository.findAll(searchSpec);
             return domainPage.stream().map(d -> modelMapper.map(d, DomainBase.class)).toList();
         }
-
     }
 
     @Override
@@ -169,7 +167,6 @@ public class DomainServiceImpl implements DomainService {
         if (searchValue == null || searchValue.isEmpty()) {
             return this.domainRepository.findAllBaseDomainsPageable(pageable);
         } else {
-            log.debug("Searched value = {}", searchValue);
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
             return domainPage.map(DomainBase::fromEntity);
@@ -482,7 +479,6 @@ public class DomainServiceImpl implements DomainService {
             List<Domain> domainsFiltered = domainRepository.findAll(searchSpec);
             return domainsFiltered.stream().filter(domainFromRoles::contains).collect(Collectors.toSet());
         }
-
     }
 
     @Override

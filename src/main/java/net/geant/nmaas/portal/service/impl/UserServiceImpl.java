@@ -358,13 +358,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue, Long domainId) {
-        return null;
-    }
+    public Page<UserListEntry> findAllInDomainListEntry(Long domainId, Pageable pageable, String searchValue) {
+        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    @Override
-    public List<UserListEntry> findAllListEntry() {
-        return userRepository.findAllListEntry();
+        if (searchValue != null && !searchValue.isEmpty()) {
+            Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue)
+                    .and(UserSpecification.findByDomain(domainId));
+            Page<User> all = userRepository.findAll(searchSpec, pageable);
+            return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
+        } else {
+            return userRepository.findAllInDomainListEntry(domainId, pageable).map(u -> mapUser(u, userLoginDateMap));
+        }
     }
 
     @Override

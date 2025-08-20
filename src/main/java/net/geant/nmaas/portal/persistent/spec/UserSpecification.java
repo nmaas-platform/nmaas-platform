@@ -1,16 +1,15 @@
 package net.geant.nmaas.portal.persistent.spec;
 
-import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class UserSpecification {
-
 
     public static Specification<User> findBySearchValue(String searchValue) {
         return (root, query, criteriaBuilder) -> {
@@ -28,10 +27,8 @@ public class UserSpecification {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("username")),
                         "%" + lowerCaseSearchValue + "%"));
 
-
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("firstname")),
                         "%" + lowerCaseSearchValue + "%"));
-
 
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("lastname")),
                         "%" + lowerCaseSearchValue + "%"));
@@ -39,11 +36,17 @@ public class UserSpecification {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("email")),
                         "%" + lowerCaseSearchValue + "%"));
 
-
                 return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
             }
 
             return criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        };
+    }
+
+    public static Specification<User> findByDomain(Long domainId) {
+        return (root, query, criteriaBuilder) -> {
+            Join<UserRole, User> usersRole = root.join("roles");
+            return criteriaBuilder.equal(usersRole.get("id").get("domain").get("id"), domainId);
         };
     }
 }

@@ -1,11 +1,9 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
 import net.geant.nmaas.portal.api.domain.UserListEntry;
-import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -53,12 +51,13 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("SELECT count(distinct u.id) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id != 1")
     int countWithDomain();
 
-    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
+    @Query("SELECT new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
     List<UserListEntry> findAllListEntry();
 
-    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
+    @Query("SELECT new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
     Page<UserListEntry> findAllListEntry(Pageable pageable);
 
-    Page<User> findAll(Specification<User> spec, Pageable pageable);
+    @Query("SELECT DISTINCT new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id = ?1")
+    Page<UserListEntry> findAllInDomainListEntry(Long domainId, Pageable pageable);
 
 }

@@ -152,10 +152,12 @@ public class DomainController extends AppBaseController {
 
     @GetMapping("/my")
     @Transactional(readOnly = true)
-    public List<DomainBase> getMyDomains(@NotNull Principal principal,  @RequestParam(required = false) String searchValue) {
+    public List<DomainBase> getMyDomains(@NotNull Principal principal, @RequestParam(required = false) String searchValue) {
         try {
             User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
-            return domainService.getUserDomains(user.getId(), searchValue).stream().map(d -> modelMapper.map(d, DomainBase.class)).collect(Collectors.toList());
+            return domainService.getUserDomains(user.getId(), searchValue).stream()
+                    .map(d -> modelMapper.map(d, DomainBase.class))
+                    .collect(Collectors.toList());
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
         }

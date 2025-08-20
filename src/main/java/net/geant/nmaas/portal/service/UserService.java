@@ -10,7 +10,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,12 +75,8 @@ public interface UserService {
 
     Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue);
 
-    Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue, Long domainId);
-
-    List<UserListEntry> findAllListEntry();
+    Page<UserListEntry> findAllInDomainListEntry(Long domainId, Pageable pageable, String searchValue);
 
     Optional<Role> getUserRoleInDomain(Long userId, Long domainId);
-
-
 
 }

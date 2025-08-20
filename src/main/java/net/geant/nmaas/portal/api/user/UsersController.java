@@ -168,7 +168,6 @@ public class UsersController {
     public Page<UserListEntry> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                             @RequestParam(required = false) String searchValue,
                                             Principal principal) {
-
         return userService.findAllListEntry(pageable, searchValue);
     }
 
@@ -181,7 +180,10 @@ public class UsersController {
                 .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        List<UserListEntry> allUserInDomain = domainService.getMembers(domainId).stream().map(UserListEntry::new).map(u -> mapUser(u, userLoginDateMap)).toList();
+        List<UserListEntry> allUserInDomain = domainService.getMembers(domainId).stream()
+                .map(UserListEntry::new)
+                .map(u -> mapUser(u, userLoginDateMap))
+                .toList();
 
         if (searchValue != null && !searchValue.isBlank()) {
             String lowerCaseSearch = searchValue.toLowerCase();
@@ -200,7 +202,6 @@ public class UsersController {
         int endItem = Math.min(startItem + pageSize, allUserInDomain.size());
 
         List<UserListEntry> pageContent;
-
 
         if (allUserInDomain.size() < startItem) {
             pageContent = new ArrayList<>();
