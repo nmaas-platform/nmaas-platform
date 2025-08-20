@@ -9,6 +9,8 @@ import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -21,7 +23,7 @@ public class KClusterView {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class KClusterDeploymentView {
+    public static class KClusterDeploymentView implements Serializable {
 
         private Long id;
 
@@ -48,7 +50,7 @@ public class KClusterView {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class KClusterIngressView {
+    public static class KClusterIngressView implements Serializable {
 
         private Long id;
 

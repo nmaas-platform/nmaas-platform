@@ -77,6 +77,6 @@ public class AppDeploymentSpec implements Serializable {
     public void validate() {
         Validate.isTrue(kubernetesTemplate != null, "Kubernetes template cannot be null");
         Validate.isTrue(accessMethods != null && !accessMethods.isEmpty(), "At least one access method has to be specified");
-        //checkArgument(storageVolumes != null && storageVolumes.size() > 0, "At least one storage volume has to be specified");
     }
+
 }

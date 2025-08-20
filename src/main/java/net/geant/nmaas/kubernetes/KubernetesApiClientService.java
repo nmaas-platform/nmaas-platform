@@ -71,6 +71,17 @@ public class KubernetesApiClientService {
         }
     }
 
+    public List<Deployment> getDeployments(KCluster kCluster, String namespace, String releaseName) {
+        try (KubernetesClient client = initClient(kCluster)) {
+            NonNamespaceOperation<Deployment, DeploymentList, RollableScalableResource<Deployment>> deploymentsInNamespace = client.apps()
+                    .deployments()
+                    .inNamespace(namespace);
+            return deploymentsInNamespace.list().getItems().stream()
+                    .filter(d -> d.getMetadata().getName().equalsIgnoreCase(releaseName) || d.getMetadata().getName().startsWith(releaseName + "-"))
+                    .toList();
+        }
+    }
+
     public StatefulSet getStatefulSet(KCluster kCluster, String namespace, String statefulSetName) {
         try (KubernetesClient client = initClient(kCluster)) {
             NonNamespaceOperation<StatefulSet, StatefulSetList, RollableScalableResource<StatefulSet>> statefulSetsInNamespace = client.apps()
@@ -79,6 +90,17 @@ public class KubernetesApiClientService {
             return statefulSetsInNamespace
                     .withName(statefulSetName)
                     .get();
+        }
+    }
+
+    public List<StatefulSet> getStatefulSets(KCluster kCluster, String namespace, String releaseName) {
+        try (KubernetesClient client = initClient(kCluster)) {
+            NonNamespaceOperation<StatefulSet, StatefulSetList, RollableScalableResource<StatefulSet>> statefulSetsInNamespace = client.apps()
+                    .statefulSets()
+                    .inNamespace(namespace);
+            return statefulSetsInNamespace.list().getItems().stream()
+                    .filter(d -> d.getMetadata().getName().equalsIgnoreCase(releaseName) || d.getMetadata().getName().startsWith(releaseName + "-"))
+                    .toList();
         }
     }
 
