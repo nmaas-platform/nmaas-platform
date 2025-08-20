@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -64,7 +63,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -176,44 +174,7 @@ public class UsersController {
     public Page<UserListEntry> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                                   @RequestParam(required = false) String searchValue,
                                                   @PathVariable Long domainId) {
-        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
-                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        List<UserListEntry> allUserInDomain = domainService.getMembers(domainId).stream()
-                .map(UserListEntry::new)
-                .map(u -> mapUser(u, userLoginDateMap))
-                .toList();
-
-        if (searchValue != null && !searchValue.isBlank()) {
-            String lowerCaseSearch = searchValue.toLowerCase();
-            allUserInDomain = allUserInDomain.stream()
-                    .filter(user ->
-                            (user.getName() != null && user.getName().toLowerCase().contains(lowerCaseSearch)) ||
-                                    (user.getEmail() != null && user.getEmail().toLowerCase().contains(lowerCaseSearch)) ||
-                                    (user.getUsername() != null && user.getUsername().toLowerCase().contains(lowerCaseSearch))
-                    )
-                    .toList();
-        }
-
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
-        int endItem = Math.min(startItem + pageSize, allUserInDomain.size());
-
-        List<UserListEntry> pageContent;
-
-        if (allUserInDomain.size() < startItem) {
-            pageContent = new ArrayList<>();
-        } else {
-            pageContent = allUserInDomain.subList(startItem, endItem);
-            pageContent.forEach(userListEntry -> {
-                Optional<Role> domainRole = userService.getUserRoleInDomain(userListEntry.getId(), domainId);
-                userListEntry.setDomainRole(domainRole.orElse(null));
-            });
-        }
-
-        return new PageImpl<>(pageContent, pageable, allUserInDomain.size());
+        return userService.findAllInDomainListEntry(domainId, pageable, searchValue);
     }
 
     @GetMapping(value = "/users/{userId}")
@@ -267,10 +228,8 @@ public class UsersController {
         userDetails.setDefaultDomain(userRequest.getDefaultDomain());
         userService.update(userDetails);
         if (!StringUtils.isEmpty(message)) {
-            log.info(String.format("Data of user [%s] with role [%s] were updated. The following changes are: [%s] ",
-                    userDetails.getUsername(),
-                    userRoles,
-                    message));
+            log.info("Data of user [{}] with role [{}] were updated. The following changes are: [{}] ",
+                    userDetails.getUsername(), userRoles, message);
         }
     }
 
@@ -287,21 +246,23 @@ public class UsersController {
                 .filter(userRole ->
                         !(userRole.getRole().equals(ROLE_GUEST) && userRole.getDomain().getId().equals(globalDomainId))
                 )
-                .collect(Collectors.toList());
-        if (notGuestInGlobalDomainRole.size() > 0) {
+                .toList();
+        if (!notGuestInGlobalDomainRole.isEmpty()) {
             throw new ProcessingException("User cannot be deleted because he belongs to at least one domain");
         }
-        if (!this.instanceService.findAllByOwner(userId).isEmpty()) {
+        if (!instanceService.findAllByOwner(userId).isEmpty()) {
             throw new ProcessingException("User cannot be deleted because he had deployed at least one instance");
         }
-        this.userService.deleteById(userId);
+        userService.deleteById(userId);
     }
 
     @GetMapping("/users/{userId}/roles")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
     public Set<UserRoleView> getUserRoles(@PathVariable Long userId) {
         User user = getUser(userId);
-        return user.getRoles().stream().map(ur -> modelMapper.map(ur, UserRoleView.class)).collect(Collectors.toSet());
+        return user.getRoles().stream()
+                .map(ur -> modelMapper.map(ur, UserRoleView.class))
+                .collect(Collectors.toSet());
     }
 
     @DeleteMapping("/users/{userId}/roles")
@@ -332,12 +293,8 @@ public class UsersController {
             domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
-            log.info(String.format("User [%s] with role [%s] removed role [%s] from user [%s] in domain [%d]",
-                    principal.getName(),
-                    adminRoles,
-                    userRole.getRole().authority(),
-                    user.getUsername(),
-                    userRole.getDomainId()));
+            log.info("User [{}] with role [{}] removed role [{}] from user [{}] in domain [{}]",
+                    principal.getName(), adminRoles, userRole.getRole().authority(), user.getUsername(), userRole.getDomainId());
             domainService.addGlobalGuestUserRoleIfMissing(userId);
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
@@ -658,6 +615,7 @@ public class UsersController {
     public void setDefaultLanguage(@PathVariable Long userId, @RequestParam("defaultLanguage") final String defaultLanguage) {
         this.userService.setUserLanguage(userId, defaultLanguage);
     }
+
     @PatchMapping("/users/{userId}/theme")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional

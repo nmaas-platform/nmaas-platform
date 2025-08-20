@@ -48,7 +48,6 @@ public class DashboardServiceImpl implements DashboardService {
 
         long startTimeStamp = startDate.toEpochSecond() * 1000;
         long endTimeStamp = endDate.toEpochSecond() * 1000;
-        log.info("Period in timestamps: {} - {}", startTimeStamp, endTimeStamp);
 
         List<String> baseNames = applicationBaseRepository.findAllNames();
         Map<String, Integer> applicationDeploymentCountPerName = new HashMap<>();
@@ -69,21 +68,20 @@ public class DashboardServiceImpl implements DashboardService {
         // filter not deployed application
         applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
 
-        DashboardView systemView = DashboardView.builder()
+        return DashboardView.builder()
                 .domainsCount(domainRepository.count())
                 .userCount(userRepository.count())
                 .instanceCount(appInstanceRepository.count())
                 .instanceCountInPeriod(appInstanceRepository.countAllDeployedInTimePeriod(startTimeStamp, endTimeStamp))
                 .instanceCountInPeriodDetails(deploymentsViews)
                 .popularApps(applicationDeploymentCountPerName).build();
-        log.debug("Response: {}", systemView.toString());
-        return systemView;
     }
 
     //TODO: Change username to pre
     @Override
     public DomainDashboardView getDomainDashboard(Long domainId) {
         log.info("Processing dashboard data request for domain {}", domainId);
+
         Optional<Domain> domain = domainService.findDomain(domainId);
         Map<String, OffsetDateTime> userLogins = new HashMap<>();
         Map<String, Integer> appsDeployed = new HashMap<>();
@@ -112,13 +110,11 @@ public class DashboardServiceImpl implements DashboardService {
                         .upgradePossible(applicationInstanceService.checkUpgradePossible(app.getId())).build());
             });
 
-            DomainDashboardView view = DomainDashboardView.builder()
+            return DomainDashboardView.builder()
                     .userLogins(userLogins)
                     .applicationDeployed(appsDeployed)
                     .applicationUpgradeStatus(upgradePossible)
                     .build();
-            log.debug("Response: {}", view.toString());
-            return view;
         } else {
             log.error("Domain {} not present. Returning empty...", domainId);
             return DomainDashboardView.builder().build();
