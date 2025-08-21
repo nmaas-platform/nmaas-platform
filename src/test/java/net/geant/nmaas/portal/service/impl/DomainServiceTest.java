@@ -4,6 +4,8 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainBase;
@@ -75,6 +77,7 @@ class DomainServiceTest {
 
     private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
     private final DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
+    private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
 
     private DomainGroupService domainGroupService;
     private DomainService domainService;
@@ -85,7 +88,8 @@ class DomainServiceTest {
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository, domainDcnDetailsRepository, domainTechDetailsRepository,
                 userService, userRoleRepo, dcnRepositoryManager,
-                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository);
+                modelMapper, applicationStatePerDomainService, domainGroupService,
+                domainAnnotationsRepository, kClusterRepository, eventPublisher);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -406,13 +410,18 @@ class DomainServiceTest {
         domainTechDetails.setExternalServiceDomain("external@domain");
         DomainDcnDetails domainDcnDetails = new DomainDcnDetails();
         domainDcnDetails.setId(200L);
+        KCluster remoteCluster = new KCluster();
+        remoteCluster.setId(1L);
+        remoteCluster.setCodename("testcluster");
         Domain domain = new Domain(1L, "testdom", "testdom");
         domain.setDomainDcnDetails(domainDcnDetails);
         domain.setDomainTechDetails(domainTechDetails);
+        domain.setClusters(List.of(remoteCluster));
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
 
         domainService.softRemoveDomain(1L);
 
+        verify(kClusterRepository, times(1)).deleteById(1L);
         verify(domainRepository, times(1)).save(domain);
         verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
 

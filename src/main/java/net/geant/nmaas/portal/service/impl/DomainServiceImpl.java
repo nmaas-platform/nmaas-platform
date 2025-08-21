@@ -6,6 +6,8 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainBase;
@@ -82,8 +84,9 @@ public class DomainServiceImpl implements DomainService {
     private final ModelMapper modelMapper;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final DomainGroupService domainGroupService;
-    private final ApplicationEventPublisher eventPublisher;
     private final DomainAnnotationsRepository domainAnnotationsRepository;
+    private final KClusterRepository kClusterRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
@@ -100,8 +103,9 @@ public class DomainServiceImpl implements DomainService {
                              ModelMapper modelMapper,
                              ApplicationStatePerDomainService applicationStatePerDomainService,
                              DomainGroupService domainGroupService,
-                             ApplicationEventPublisher eventPublisher,
-                             DomainAnnotationsRepository domainAnnotationsRepository
+                             DomainAnnotationsRepository domainAnnotationsRepository,
+                             KClusterRepository kClusterRepository,
+                             ApplicationEventPublisher eventPublisher
     ) {
         this.validator = validator;
         this.namespaceValidator = namespaceValidator;
@@ -114,8 +118,9 @@ public class DomainServiceImpl implements DomainService {
         this.modelMapper = modelMapper;
         this.applicationStatePerDomainService = applicationStatePerDomainService;
         this.domainGroupService = domainGroupService;
-        this.eventPublisher = eventPublisher;
         this.domainAnnotationsRepository = domainAnnotationsRepository;
+        this.kClusterRepository = kClusterRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -351,6 +356,10 @@ public class DomainServiceImpl implements DomainService {
             domain.setDomainTechDetails(null);
             domainTechDetailsRepository.deleteById(domainTechDetailsId);
 
+            final List<Long> remoteClusterIds = domain.getClusters().stream().map(KCluster::getId).toList();
+            domain.setClusters(null);
+            remoteClusterIds.forEach(kClusterRepository::deleteById);
+
             removeAllUsersFromDomain(domain);
             removeDomainFromAllGroups(domain);
             domainRepository.save(domain);
@@ -364,7 +373,7 @@ public class DomainServiceImpl implements DomainService {
     public void removeDomainFromAllGroups(Domain domain) {
         List<Long> idsToDelete = domain.getGroups().stream()
                 .map(DomainGroup::getId)
-                .collect(Collectors.toList());
+                .toList();
         idsToDelete.forEach(id -> {
             domainGroupService.deleteDomainFromGroup(domain, id);
         });
