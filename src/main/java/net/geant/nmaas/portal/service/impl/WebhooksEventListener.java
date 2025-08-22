@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.jobs.AppDeploymentJob;
 import net.geant.nmaas.orchestration.jobs.DomainActionJob;
 import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
 import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.events.AppDeploymentEvent;
@@ -42,12 +43,14 @@ public class WebhooksEventListener {
     @Transactional
     public void trigger(DomainCreatedEvent event) {
         final Domain domain = event.getDomainEntity();
+        final DomainBase body = modelMapper.map(domain, DomainBase.class);
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 DomainActionJob.class,
                                 "DomainCreate_" + id + "_" + domain.getId(),
-                                Map.of("webhookId", id, "domain", modelMapper.map(domain, DomainView.class), "action", "create"))
+                                Map.of("webhookId", id, "domain", body, "action", "create")
+                        )
                 );
     }
 
@@ -55,15 +58,15 @@ public class WebhooksEventListener {
     @Loggable(LogLevel.INFO)
     @Transactional
     public void trigger(DomainRemovalEvent event) {
-        final DomainView domain = event.getDomainView();
-        domain.setClusters(Collections.emptyList());
+        final DomainBase domain = DomainBase.fromView(event.getDomainView());
         String action = event.isHardRemoval() ? "delete" : "softDelete";
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_ACTION)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 DomainActionJob.class,
                                 "Domain" + action + "_" + id + "_" + domain.getId(),
-                                Map.of("webhookId", id, "domain", domain, "action", action))
+                                Map.of("webhookId", id, "domain", domain, "action", action)
+                        )
                 );
     }
 
@@ -72,13 +75,15 @@ public class WebhooksEventListener {
     @Transactional
     public void trigger(DomainGroupChangedEvent event) {
         final DomainGroupView domainGroup = event.getDomainGroup();
-        domainGroup.setManagers(Collections.emptyList());
+        domainGroup.setManagers(null);
+        domainGroup.setApplicationStatePerDomain(null);
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_ACTION)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 DomainGroupJob.class,
                                 "DomainGroup_" + id + "_" + domainGroup.getId() + "_" + LocalDateTime.now(),
-                                Map.of("webhookId", id, "action", event.getAction(), "domainGroup", domainGroup))
+                                Map.of("webhookId", id, "action", event.getAction(), "domainGroup", domainGroup)
+                        )
                 );
     }
 
@@ -90,7 +95,8 @@ public class WebhooksEventListener {
                         scheduleManager.createOneTimeJob(
                                 UserDomainAssignmentJob.class,
                                 "UserDomainAssignmentJobCreate_" + id + "_user" + event.getUserId() + "_domain" + event.getDomainId() + "_" + LocalDateTime.now(),
-                                Map.of("webhookId", id, "domainId", event.getDomainId(), "userId", event.getUserId(), "role", event.getRole(), "action", event.getAction()))
+                                Map.of("webhookId", id, "domainId", event.getDomainId(), "userId", event.getUserId(), "role", event.getRole(), "action", event.getAction())
+                        )
                 );
     }
 
@@ -102,7 +108,8 @@ public class WebhooksEventListener {
                         scheduleManager.createOneTimeJob(
                                 AppDeploymentJob.class,
                                 "AppDeploymentJob_" + id + "_" + event.getDeploymentIdStr() + "_time" + LocalDateTime.now(),
-                                Map.of("webhookId", id, "deploymentId", event.getDeploymentIdStr()))
+                                Map.of("webhookId", id, "deploymentId", event.getDeploymentIdStr())
+                        )
                 );
     }
 

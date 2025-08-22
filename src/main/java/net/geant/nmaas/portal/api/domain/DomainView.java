@@ -12,13 +12,14 @@ import java.util.List;
 @NoArgsConstructor
 public class DomainView extends DomainBase {
 
-	List<ApplicationStatePerDomainView> applicationStatePerDomain;
+    List<ApplicationStatePerDomainView> applicationStatePerDomain;
 
-	DomainTechDetailsView domainTechDetails;
-	DomainDcnDetailsView domainDcnDetails;
+    DomainTechDetailsView domainTechDetails;
 
-	List<DomainGroupViewS> groups;
+    DomainDcnDetailsView domainDcnDetails;
 
-	List<RemoteClusterView> clusters;
+    List<DomainGroupViewS> groups;
+
+    List<RemoteClusterView> clusters;
 
 }

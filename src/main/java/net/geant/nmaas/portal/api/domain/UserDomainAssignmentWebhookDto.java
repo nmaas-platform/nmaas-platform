@@ -12,7 +12,7 @@ import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 public class UserDomainAssignmentWebhookDto {
 
     private UserView user;
-    private DomainView domain;
+    private DomainBase domain;
     private Role role;
     private String action;
     private WebhookEventType webhookEventType;

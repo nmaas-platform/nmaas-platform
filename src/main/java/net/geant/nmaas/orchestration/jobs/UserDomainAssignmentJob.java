@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.jobs;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.UserDomainAssignmentWebhookDto;
 import net.geant.nmaas.portal.api.domain.UserView;
@@ -56,7 +57,7 @@ public class UserDomainAssignmentJob extends WebhookJob {
             Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(String.format("Domain with id: %d cannot be found", domainId)));
             User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(String.format("User with id: %d cannot be found", userId)));
 
-            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(modelMapper.map(user, UserView.class), modelMapper.map(domain, DomainView.class), role, action, WebhookEventType.USER_ASSIGNMENT);
+            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(modelMapper.map(user, UserView.class), modelMapper.map(domain, DomainBase.class), role, action, WebhookEventType.USER_ASSIGNMENT);
             callWebhook(webhook, dto);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);

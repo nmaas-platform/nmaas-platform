@@ -188,8 +188,8 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         userController.updateUser(userEntity.getId(), userRequest, principal);
         User modUser1 = userRepo.findById(userEntity.getId()).get();
 
-        assertEquals(modUser1.getFirstname(), newFirstName);
-        assertEquals(modUser1.getLastname(), newLastName);
+        assertEquals(newFirstName, modUser1.getFirstname());
+        assertEquals(newLastName, modUser1.getLastname());
     }
 
     @Test
@@ -200,7 +200,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         userController.updateUser(userEntity.getId(), userRequest, principal);
         User modUser1 = userRepo.findById(userEntity.getId()).get();
 
-        assertEquals(modUser1.getEmail(), newEmail);
+        assertEquals(newEmail, modUser1.getEmail());
     }
 
     @Test
