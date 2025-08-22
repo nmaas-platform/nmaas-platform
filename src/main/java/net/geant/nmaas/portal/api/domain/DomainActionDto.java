@@ -10,7 +10,7 @@ import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 @Setter
 public class DomainActionDto {
 
-    private DomainView domainView;
+    private DomainBase domainView;
     private String action;
     private WebhookEventType webhookEventType;
 }
