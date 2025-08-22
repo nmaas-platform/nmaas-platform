@@ -34,7 +34,7 @@ public class DomainActionJob extends WebhookJob {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Long webhookId = dataMap.getLong("webhookId");
         String action = dataMap.getString("action");
-        DomainBase domain = (DomainView) dataMap.get("domain");
+        DomainBase domain = (DomainBase) dataMap.get("domain");
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
