@@ -3,7 +3,6 @@ package net.geant.nmaas.orchestration.jobs;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.UserDomainAssignmentWebhookDto;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
@@ -56,16 +55,18 @@ public class UserDomainAssignmentJob extends WebhookJob {
             }
             Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(String.format("Domain with id: %d cannot be found", domainId)));
             User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(String.format("User with id: %d cannot be found", userId)));
+            UserView userView = modelMapper.map(user, UserView.class);
+            userView.setSshKeys(null);
 
-            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(modelMapper.map(user, UserView.class), modelMapper.map(domain, DomainBase.class), role, action, WebhookEventType.USER_ASSIGNMENT);
+            UserDomainAssignmentWebhookDto dto = new UserDomainAssignmentWebhookDto(userView, modelMapper.map(domain, DomainBase.class), role, action, WebhookEventType.USER_ASSIGNMENT);
             callWebhook(webhook, dto);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
         } catch (MissingElementException e) {
-            log.warn(e.getMessage() + " UserDomainAssignmentJob is abandoned");
+            log.warn("{} UserDomainAssignmentJob is abandoned", e.getMessage());
         } catch (WebServiceCommunicationException e) {
-            log.error("Failed to communicate with external system for the webhoook of assignment of the user with id {} in the domain with id {}", userId, domainId);
+            log.error("Failed to communicate with external system for the webhook of assignment of the user with id {} in the domain with id {}", userId, domainId);
             throw new JobExecutionException("Failed communication with external system");
         }
     }

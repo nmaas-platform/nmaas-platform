@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.api.domain.DomainActionDto;
 import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
