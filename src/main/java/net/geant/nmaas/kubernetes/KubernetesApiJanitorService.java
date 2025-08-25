@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -54,13 +55,13 @@ public class KubernetesApiJanitorService {
         log.info("Checking status of release {} in namespace {}", deploymentId.value(), namespace);
         final List<Deployment> deployments = kubernetesApiClientService.getDeployments(kCluster, namespace, deploymentId.value());
         for (Deployment d : deployments) {
-            if (d.getSpec().getReplicas() > d.getStatus().getReadyReplicas()) {
+            if (d.getSpec().getReplicas() > Optional.ofNullable(d.getStatus().getReadyReplicas()).orElse(0)) {
                 return false;
             }
         }
         final List<StatefulSet> statefulSets = kubernetesApiClientService.getStatefulSets(kCluster, namespace, deploymentId.value());
         for (StatefulSet s : statefulSets) {
-            if (s.getSpec().getReplicas() > s.getStatus().getReadyReplicas()) {
+            if (s.getSpec().getReplicas() > Optional.ofNullable(s.getStatus().getReadyReplicas()).orElse(0)) {
                 return false;
             }
         }
