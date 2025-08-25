@@ -44,7 +44,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
-        log.info("Processing dashboard data request for period {} - {}", startDate, endDate);
+        log.info("Processing system dashboard data request for period {} - {}", startDate, endDate);
 
         long startTimeStamp = startDate.toEpochSecond() * 1000;
         long endTimeStamp = endDate.toEpochSecond() * 1000;
@@ -77,7 +77,6 @@ public class DashboardServiceImpl implements DashboardService {
                 .popularApps(applicationDeploymentCountPerName).build();
     }
 
-    //TODO: Change username to pre
     @Override
     public DomainDashboardView getDomainDashboard(Long domainId) {
         log.info("Processing dashboard data request for domain {}", domainId);

@@ -348,7 +348,7 @@
     }
   },
   "MONITOR": {
-    "TITLE": "Monitor service",
+    "TITLE": "Internal monitoring",
     "SERVICE_NAME": "Service name",
     "LAST_CHECK": "Last check",
     "LAST_SUCCESS": "Last success",

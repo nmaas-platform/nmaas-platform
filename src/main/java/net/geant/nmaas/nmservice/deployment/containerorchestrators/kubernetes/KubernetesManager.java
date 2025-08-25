@@ -345,9 +345,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             if (!kubernetesApiJanitorService.checkIfReady(
                     service.getRemoteCluster(),
-                    getDeploymentIdForJanitorStatusCheck(
-                            service.getDescriptiveDeploymentId().value(),
-                            service.getKubernetesTemplate().getMainDeploymentName()),
+                    service.getDescriptiveDeploymentId(),
                     service.getDomain())
             ) {
                 return false;
@@ -408,12 +406,6 @@ public class KubernetesManager implements ContainerOrchestrator {
         } else {
             return "SSH".equals(protocol) ? DEFAULT_INTERNAL_SSH_ACCESS_USERNAME + "@" + ipAddress : ipAddress;
         }
-    }
-
-    static Identifier getDeploymentIdForJanitorStatusCheck(String releaseName, String componentName) {
-        return StringUtils.isNotEmpty(componentName) ?
-                Identifier.newInstance(releaseName + "-" + componentName) :
-                Identifier.newInstance(releaseName);
     }
 
     private void retrieveOrUpdateLocalServiceName(KubernetesNmServiceInfo service) {

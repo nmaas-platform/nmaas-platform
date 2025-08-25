@@ -349,7 +349,7 @@
     }
   },
   "MONITOR": {
-    "TITLE": "Monitor service",
+    "TITLE": "Internal monitoring",
     "SERVICE_NAME": "Nom du service",
     "LAST_CHECK": "Dernier contrôle",
     "LAST_SUCCESS": "Dernier succès",

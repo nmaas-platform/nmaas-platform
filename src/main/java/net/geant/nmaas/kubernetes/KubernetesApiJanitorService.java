@@ -51,20 +51,20 @@ public class KubernetesApiJanitorService {
 
     public boolean checkIfReady(KCluster kCluster, Identifier deploymentId, String domain) {
         final String namespace = namespaceService.namespace(domain);
-        final Deployment deployment = kubernetesApiClientService.getDeployment(kCluster, namespace, deploymentId.value());
-        if (Objects.nonNull(deployment)) {
-            return Objects.equals(deployment.getSpec().getReplicas(), deployment.getStatus().getReadyReplicas());
-        } else {
-            log.info("Deployment {} not found in namespace {}. Looking for a StatefulSet", deploymentId.value(), namespace);
-            final StatefulSet statefulSet = kubernetesApiClientService.getStatefulSet(kCluster, namespace, deploymentId.value());
-            if (Objects.nonNull(statefulSet)) {
-                return Objects.equals(statefulSet.getSpec().getReplicas(), statefulSet.getStatus().getReadyReplicas());
+        log.info("Checking status of release {} in namespace {}", deploymentId.value(), namespace);
+        final List<Deployment> deployments = kubernetesApiClientService.getDeployments(kCluster, namespace, deploymentId.value());
+        for (Deployment d : deployments) {
+            if (d.getSpec().getReplicas() > d.getStatus().getReadyReplicas()) {
+                return false;
             }
-            log.info("StatefulSet not found as well");
-            throw new JanitorException(
-                    String.format("Not able to check application state. No deployment/statefulset with name %s found in namespace %s", deploymentId.value(), namespace)
-            );
         }
+        final List<StatefulSet> statefulSets = kubernetesApiClientService.getStatefulSets(kCluster, namespace, deploymentId.value());
+        for (StatefulSet s : statefulSets) {
+            if (s.getSpec().getReplicas() > s.getStatus().getReadyReplicas()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public String retrieveServiceIp(KCluster kCluster, Identifier serviceName, String domain) {

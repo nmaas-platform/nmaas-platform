@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -508,16 +507,6 @@ public class KubernetesManagerTest {
                         && m.getProtocol().equals("SSH")
                         && m.getUrl().equals("192.168.1.1")
         ));
-    }
-
-    @Test
-    void shouldBuildDeploymentNameForCheck() {
-        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", "componentName"))
-                .isEqualTo(Identifier.newInstance("releaseName-componentName"));
-        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", null))
-                .isEqualTo(Identifier.newInstance("releaseName"));
-        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", ""))
-                .isEqualTo(Identifier.newInstance("releaseName"));
     }
 
 }
