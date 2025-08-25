@@ -91,7 +91,7 @@ public class DashboardServiceImpl implements DashboardService {
             Domain dom = domain.get();
 
             List<User> domainUsers = domainService.getMembers(domainId);
-            List<AppInstance> apps = appInstanceRepository.findAllByDomain(dom);
+            List<AppInstance> apps = appInstanceRepository.findAllActiveInDomain(dom.getCodename());
 
             domainUsers.forEach(user -> {
                 Optional<UserLoginRegister> register = userLoginRegisterService.getLastLogin(user);
