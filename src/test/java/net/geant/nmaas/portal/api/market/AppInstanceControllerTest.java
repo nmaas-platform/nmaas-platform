@@ -89,12 +89,15 @@ public class AppInstanceControllerTest {
     private String identifierValue = "id12";
     private User owner;
     private User admin;
+    private ApplicationBase appBase;
 
     private final Pageable pageable = mock(Pageable.class);
     private final Pageable pageableInvalid = mock(Pageable.class);
 
     @BeforeEach
     void setup() {
+        appBase = new ApplicationBase();
+        appBase.setId(1L);
         owner = new User("owner");
         owner.setId(2L);
         admin = new User("admin");
@@ -112,6 +115,8 @@ public class AppInstanceControllerTest {
         when(userService.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
         when(userService.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(userService.findById(owner.getId())).thenReturn(Optional.of(owner));
+
+        when(applicationBaseService.findByName(any())).thenReturn(appBase);
 
         when(domainService.findDomain(global.getId())).thenReturn(Optional.of(global));
         when(domainService.findDomain(domain1.getId())).thenReturn(Optional.of(domain1));

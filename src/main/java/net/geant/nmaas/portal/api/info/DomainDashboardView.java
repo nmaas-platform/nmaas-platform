@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @Builder
+@ToString
 public class DomainDashboardView {
 
     private Map<String, OffsetDateTime> userLogins;
@@ -26,11 +28,13 @@ public class DomainDashboardView {
     @Getter
     @Setter
     @Builder
+    @ToString
     public static class DomainAppInstanceView {
 
         private String appName;
         private String instanceName;
         private Long appId;
+        private Long baseAppId;
         private String appVersion;
         private Boolean upgradePossible;
     }

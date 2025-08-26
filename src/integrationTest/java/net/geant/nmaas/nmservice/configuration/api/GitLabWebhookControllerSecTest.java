@@ -25,7 +25,7 @@ public class GitLabWebhookControllerSecTest extends BaseControllerTestSetup {
     private GitLabProjectRepository gitLabProjectRepository;
 
     @BeforeEach
-    public void setup(){
+    void setup() {
         GitLabProject project = new GitLabProject();
         project.setWebhookId("1");
         project.setWebhookToken("correct-token");
@@ -34,7 +34,7 @@ public class GitLabWebhookControllerSecTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotAuthorizeWithoutToken() {
+    void shouldNotAuthorizeWithoutToken() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/gitlab/webhooks/1"))
                     .andExpect(status().isUnauthorized());
@@ -42,28 +42,28 @@ public class GitLabWebhookControllerSecTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void shouldNotAuthorizeWithIncorrectToken() {
+    void shouldNotAuthorizeWithIncorrectToken() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/gitlab/webhooks/1")
-                    .header("X-Gitlab-Token", "incorrect-token"))
+                            .header("X-Gitlab-Token", "incorrect-token"))
                     .andExpect(status().isUnauthorized());
         });
     }
 
     @Test
-    public void shouldNotAuthorizeOnMissingProject() {
+    void shouldNotAuthorizeOnMissingProject() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/gitlab/webhooks/incorrectProjectId")
-                    .header("X-Gitlab-Token", "correct-token"))
+                            .header("X-Gitlab-Token", "correct-token"))
                     .andExpect(status().isUnauthorized());
         });
     }
 
     @Test
-    public void shouldAuthorizeWithGitlabCorrectHeader() {
+    void shouldAuthorizeWithGitlabCorrectHeader() {
         assertDoesNotThrow(() -> {
             mvc.perform(post("/api/gitlab/webhooks/1")
-                    .header("X-Gitlab-Token", "correct-token"))
+                            .header("X-Gitlab-Token", "correct-token"))
                     .andExpect(status().isNotFound());
         });
     }

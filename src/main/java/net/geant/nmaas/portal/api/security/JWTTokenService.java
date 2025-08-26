@@ -28,6 +28,7 @@ public class JWTTokenService {
 
     private static final String SCOPES = "scopes";
     private static final String LANGUAGE = "language";
+    private static final String THEME = "thememode";
 
     private JWTSettings jwtSettings;
 
@@ -85,6 +86,7 @@ public class JWTTokenService {
                         .collect(Collectors.toSet())
                 )
                 .claim(LANGUAGE, user.getSelectedLanguage())
+                .claim(THEME, user.getSelectedThemeMode())
                 .signWith(getSignInKey(jwtSettings.getSigningKey()), SignatureAlgorithm.HS512)
                 .compact();
         log.trace(result);
@@ -150,7 +152,6 @@ public class JWTTokenService {
     }
 
     public Claims getClaims(String token) {
-//        return Jwts.parserBuilder().setSigningKey(jwtSettings.getSigningKey()).build().parseClaimsJws(token).getBody();
         return Jwts.parser()
                 .setSigningKey(jwtSettings.getSigningKey())
                 .build()
@@ -159,7 +160,6 @@ public class JWTTokenService {
     }
 
     public Claims getResetClaims(String token) {
-//        return Jwts.parserBuilder().setSigningKey(jwtSettings.getResetSigningKey()).build().parseClaimsJws(token).getBody();
         return Jwts.parser()
                 .setSigningKey(jwtSettings.getResetSigningKey())
                 .build()

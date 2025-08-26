@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.google.common.collect.ImmutableMap;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -56,6 +55,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -326,6 +326,7 @@ public class ApplicationController extends AppBaseController {
         application.setCreationDate(LocalDateTime.now());
         this.applicationService.setMissingProperties(application, appId);
         ApplicationServiceImpl.clearIds(application);
+        this.applicationService.checkAndUpdateConfigurationTemplate(application);
         this.applicationService.update(application);
 
         // create, add and persist new application version
@@ -432,7 +433,7 @@ public class ApplicationController extends AppBaseController {
                 ? app.getName().substring(0, app.getName().indexOf("_DELETED_"))
                 : app.getName();
 
-        ImmutableMap<String, Object> attributes = ImmutableMap.of(
+        Map<String, Object> attributes = Map.of(
                 "app_name", appBaseName,
                 "app_version", app.getVersion(),
                 "reason", stateChangeRequest.getReason() == null ? "" : stateChangeRequest.getReason(),

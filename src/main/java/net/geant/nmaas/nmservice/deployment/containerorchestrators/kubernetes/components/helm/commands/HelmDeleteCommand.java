@@ -14,9 +14,10 @@ public class HelmDeleteCommand extends HelmCommand {
      *
      * @param releaseName release name
      * @param enableTls flag indicating if tls option should be added
+     * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
-    public static HelmDeleteCommand command(String releaseName, boolean enableTls) {
+    public static HelmDeleteCommand command(String releaseName, boolean enableTls, String kubeConfigPath) {
         if (releaseName == null || releaseName.isEmpty()) {
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         }
@@ -25,6 +26,9 @@ public class HelmDeleteCommand extends HelmCommand {
                 .append(SPACE).append(DELETE)
                 .append(SPACE).append(OPTION_PURGE)
                 .append(SPACE).append(releaseName);
+        if (kubeConfigPath != null && !kubeConfigPath.isEmpty()) {
+            sb.append(SPACE).append(OPTION_KUBECONFIG).append(SPACE).append(kubeConfigPath);
+        }
         if (enableTls) {
             sb.append(SPACE).append(TLS);
         }

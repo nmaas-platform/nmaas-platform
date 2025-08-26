@@ -1,13 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
@@ -39,16 +38,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import static net.geant.nmaas.portal.api.bulk.BulkType.DOMAIN;
+import static net.geant.nmaas.portal.api.bulk.BulkType.USER;
 import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_CODENAME;
 import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_ID;
 import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_DOMAIN_NAME;
 import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_EMAIL;
 import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_ID;
 import static net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView.BULK_ENTRY_DETAIL_KEY_USER_NAME;
-import static net.geant.nmaas.portal.api.bulk.BulkType.DOMAIN;
-import static net.geant.nmaas.portal.api.bulk.BulkType.USER;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.COMPLETED;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.FAILED;
 import static net.geant.nmaas.portal.persistent.entity.BulkDeploymentState.PENDING;
@@ -224,7 +224,7 @@ public class BulkDomainServiceImpl implements BulkDomainService {
             User user = userService.findByUsername(csvDomain.getAdminUserName()).orElseGet(() -> userService.findByEmail(csvDomain.getEmail()));
             boolean userUpdateRequired = false;
             if (!userService.hasPrivilege(user, domain, ROLE_DOMAIN_ADMIN)) {
-                user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, ROLE_DOMAIN_ADMIN)));
+                user.setNewRoles(Set.of(new UserRole(user, domain, ROLE_DOMAIN_ADMIN)));
                 userUpdateRequired = true;
             }
             if (configurationManager.getConfiguration().isBulkDomainsAllowForSsoAccounts()) {
@@ -244,11 +244,11 @@ public class BulkDomainServiceImpl implements BulkDomainService {
         }
     }
 
-    private  BulkDeployment createBulkDeployment(UserViewMinimal creator) {
+    private BulkDeployment createBulkDeployment(UserViewMinimal creator) {
         BulkDeployment bulkDeployment = new BulkDeployment();
         bulkDeployment.setType(DOMAIN);
         bulkDeployment.setState(PENDING);
-        bulkDeployment.setCreator(userService.findById(creator.getId()).orElseThrow(() ->new MissingElementException("User with this ID not found")));
+        bulkDeployment.setCreator(userService.findById(creator.getId()).orElseThrow(() -> new MissingElementException("User with this ID not found")));
         bulkDeployment.setCreationDate(OffsetDateTime.now());
         bulkDeployment.setDeleted(false);
         return bulkDeployment;

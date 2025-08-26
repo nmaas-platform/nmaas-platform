@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -31,6 +33,8 @@ public class NmServiceDeployment {
     private boolean configFileRepositoryRequired;
     private boolean configUpdateEnabled;
     private AppConfiguration appConfiguration;
+    @Setter
+    private KCluster remoteCluster;
 
     public static NmServiceDeployment fromAppDeployment(AppDeployment appDeployment, AppDeploymentOwner appDeploymentOwner) {
         NmServiceDeployment nmServiceDeployment = new NmServiceDeployment();

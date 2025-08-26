@@ -13,9 +13,10 @@ public class HelmUninstallCommand extends HelmCommand {
      *
      * @param namespace namespace with given release
      * @param releaseName release name
+     * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
-    public static HelmUninstallCommand command(String namespace, String releaseName) {
+    public static HelmUninstallCommand command(String namespace, String releaseName, String kubeConfigPath) {
         if (releaseName == null || releaseName.isEmpty()) {
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         }
@@ -24,6 +25,9 @@ public class HelmUninstallCommand extends HelmCommand {
                 .append(SPACE).append(UNINSTALL)
                 .append(SPACE).append(releaseName)
                 .append(SPACE).append(OPTION_NAMESPACE).append(SPACE).append(namespace);
+        if (kubeConfigPath != null && !kubeConfigPath.isEmpty()) {
+            sb.append(SPACE).append(OPTION_KUBECONFIG).append(SPACE).append(kubeConfigPath);
+        }
         return new HelmUninstallCommand(sb.toString());
     }
 

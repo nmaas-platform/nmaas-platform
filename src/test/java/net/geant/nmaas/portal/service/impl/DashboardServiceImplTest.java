@@ -10,6 +10,7 @@ import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
@@ -36,6 +37,7 @@ public class DashboardServiceImplTest {
     private final AppInstanceRepository appInstanceRepository = mock(AppInstanceRepository.class);
     private final ApplicationBaseRepository applicationBaseRepository = mock(ApplicationBaseRepository.class);
     private final UserLoginRegisterService userLoginRegisterService = mock(UserLoginRegisterService.class);
+    private final ApplicationBaseService appBaseService = mock(ApplicationBaseService.class);
 
     private final DashboardServiceImpl dashboardService = new DashboardServiceImpl(
             userRepository,
@@ -44,7 +46,8 @@ public class DashboardServiceImplTest {
             applicationInstanceService,
             appInstanceRepository,
             applicationBaseRepository,
-            userLoginRegisterService
+            userLoginRegisterService,
+            appBaseService
     );
 
     @Test
@@ -194,5 +197,22 @@ public class DashboardServiceImplTest {
         assert sinceTime > 0;
         assert toTime > 0;
         assert sinceTime < toTime;
+    }
+
+    @Test
+    void getOperatorDashboardShouldReturnCorrectDomainCount() {
+        // Mock the domain repository to return a specific count
+        long expectedDomainCount = 10L;
+        when(domainRepository.countByActiveTrueAndDeletedFalse()).thenReturn(expectedDomainCount);
+
+        // Call the method
+        DashboardView result = dashboardService.getOperatorDashboard();
+
+        // Verify the result
+        assert result != null;
+        assert result.getDomainsCount() == expectedDomainCount;
+
+        // Verify that the repository method was called
+        verify(domainRepository).countByActiveTrueAndDeletedFalse();
     }
 }

@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.KeyValueView;
@@ -26,7 +27,8 @@ public interface DomainService {
 	Optional<Domain> getGlobalDomain();
 	
 	List<Domain> getDomains();
-	Page<Domain> getDomains(Pageable pageable);
+	List<Domain> getDomains(String searchValue);
+	Page<Domain> getDomains(String searchValue, Pageable pageable);
 	
 	boolean existsDomain(String name);
 	boolean existsDomainByCodename(String codename);
@@ -48,7 +50,7 @@ public interface DomainService {
 	boolean removeDomain(Long id);
 	
 	List<User> getMembers(Long id);
-	
+
 	void addMemberRole(Long domainId, Long userId, Role role);
 	void addGlobalGuestUserRoleIfMissing(Long userId);
 	void removeMemberRole(Long domainId, Long userId, Role role);
@@ -57,7 +59,7 @@ public interface DomainService {
 	User getMember(Long domainId, Long userId);
 	Set<Role> getMemberRoles(Long domainId, Long userId);
 	
-	Set<Domain> getUserDomains(Long userId);
+	Set<Domain> getUserDomains(Long userId, String searchValue);
 
 	List<UserView> findUsersWithDomainAdminRole(String domain);
 
@@ -79,5 +81,8 @@ public interface DomainService {
 	List<DomainAnnotation> getAnnotations();
   	void updateAnnotation(Long id,DomainAnnotationView domainAnnotation);
   	void removeAppBaseFromAllDomains(ApplicationBase base);
+
+	List<DomainBase> getDomainsBase(String searchValue);
+	Page<DomainBase> getDomainsBase(Pageable pageable, String searchValue);
   
 }

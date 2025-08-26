@@ -1,14 +1,5 @@
 package net.geant.nmaas.orchestration.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -21,10 +12,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import java.io.Serializable;
-import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import org.apache.commons.lang3.Validate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
@@ -73,9 +74,9 @@ public class AppDeploymentSpec implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<AppAccessMethod> accessMethods;
 
-    public void validate(){
-        checkArgument(kubernetesTemplate != null, "Kubernetes template cannot be null");
-        checkArgument(accessMethods != null && accessMethods.size() > 0, "At least one access method has to be specified");
-        //checkArgument(storageVolumes != null && storageVolumes.size() > 0, "At least one storage volume has to be specified");
+    public void validate() {
+        Validate.isTrue(kubernetesTemplate != null, "Kubernetes template cannot be null");
+        Validate.isTrue(accessMethods != null && !accessMethods.isEmpty(), "At least one access method has to be specified");
     }
+
 }

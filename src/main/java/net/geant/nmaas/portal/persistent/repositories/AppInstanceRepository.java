@@ -23,6 +23,13 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 
     List<AppInstance> findAllByDomain(Domain domain);
 
+    @Query("SELECT ai FROM AppInstance ai JOIN AppDeployment ad ON ad.deploymentId = ai.internalId WHERE ai.domain.codename = :domain AND ad.state NOT IN" +
+            "('APPLICATION_REMOVED'," +
+            "'APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS'," +
+            "'APPLICATION_CONFIGURATION_REMOVED'," +
+            "'FAILED_APPLICATION_REMOVED')")
+    List<AppInstance> findAllActiveInDomain(@Param(value = "domain") String domain);
+
     List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain);
 
     Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);

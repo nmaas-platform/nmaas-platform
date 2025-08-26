@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.api.webhooks;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
-import net.geant.nmaas.portal.service.WebhookEventService;
+import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +25,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/webhooks")
-@Slf4j
 @RequiredArgsConstructor
+@Tag(name = "Webhooks", description = "Webhooks management API")
 public class WebhookEventController {
 
     private static final String UNABLE_TO_CHANGE_WEBHOOK_EVENT = "Unable to change WebhookEvent";
@@ -53,7 +53,6 @@ public class WebhookEventController {
         if (!id.equals(webhook.getId())) {
             throw new ProcessingException(UNABLE_TO_CHANGE_WEBHOOK_EVENT);
         }
-
         try {
             return ResponseEntity.ok(webhookEventService.update(webhook));
         } catch (GeneralSecurityException e) {
@@ -82,4 +81,5 @@ public class WebhookEventController {
     public ResponseEntity<List<WebhookEventDto>> getAllWebhooks() {
         return ResponseEntity.ok(webhookEventService.getAllWebhooks());
     }
+
 }

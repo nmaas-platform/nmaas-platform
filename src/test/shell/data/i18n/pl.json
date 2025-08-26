@@ -348,8 +348,8 @@
     }
   },
   "MONITOR": {
-    "TITLE": "Monitorowanie",
-    "SERVICE_NAME": "Nazwa serwisu",
+    "TITLE": "Monitorowanie komponentów",
+    "SERVICE_NAME": "Nazwa usługi",
     "LAST_CHECK": "Ostatnie sprawdzenie",
     "LAST_SUCCESS": "Ostatni sukces",
     "CHECK_INTERVAL": "Interwał sprawdzania",

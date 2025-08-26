@@ -7,7 +7,7 @@ import net.geant.nmaas.portal.api.domain.DomainGroupWebhookDto;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
-import net.geant.nmaas.portal.service.WebhookEventService;
+import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -36,11 +36,11 @@ public class DomainGroupJob extends WebhookJob {
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
-            if (!WebhookEventType.DOMAIN_GROUP_CHANGE.equals(webhook.getEventType())) {
+            if (!WebhookEventType.DOMAIN_GROUP_ACTION.equals(webhook.getEventType())) {
                 log.warn("Webhook's event type with id {} has been updated. DomainGroupJob is abandoned", webhookId);
                 return;
             }
-            DomainGroupWebhookDto view = new DomainGroupWebhookDto(domainGroup, action);
+            DomainGroupWebhookDto view = new DomainGroupWebhookDto(domainGroup, action, WebhookEventType.DOMAIN_GROUP_ACTION);
             callWebhook(webhook, view);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);

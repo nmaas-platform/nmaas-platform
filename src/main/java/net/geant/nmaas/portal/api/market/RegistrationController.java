@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.google.common.collect.ImmutableMap;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
@@ -31,12 +31,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/basic/registration")
 @Slf4j
+@Tag(name = "User Registration", description = "New account registration API")
 public class RegistrationController {
 
     private final UserService usersService;
@@ -103,9 +105,10 @@ public class RegistrationController {
     private void sendMail(User user) {
         MailAttributes mailAttributes = MailAttributes
                 .builder()
-                .otherAttributes(ImmutableMap.of("newUser", user.getUsername()))
+                .otherAttributes(Map.of("newUser", user.getUsername()))
                 .mailType(MailType.REGISTRATION)
                 .build();
-        this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+        eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }
+
 }

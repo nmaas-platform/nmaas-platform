@@ -2,10 +2,10 @@ package net.geant.nmaas.nmservice.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -15,15 +15,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_REMOVED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATE_FAILED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED;
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.CONFIGURED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_REMOVED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURATION_UPDATE_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.CONFIGURED;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Default implementation of the {@link NmServiceConfigurationProvider} interface.
@@ -34,7 +35,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     private final ConfigFilePreparer filePreparer;
     private final GitConfigHandler configHandler;
-    private final JanitorService janitorService;
+    private final KubernetesApiJanitorService kubernetesApiJanitorService;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -44,31 +45,55 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_INITIATED);
             if (nsd.isConfigFileRepositoryRequired()) {
-                List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
+                List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(
+                        deploymentId,
+                        nsd.getApplicationId(),
+                        nsd.getAppConfiguration());
                 configHandler.createUser(nsd.getOwnerUsername(), nsd.getOwnerEmail(), nsd.getOwnerName(), nsd.getOwnerSshKeys());
                 configHandler.createRepository(deploymentId, nsd.getOwnerUsername());
                 if ((configFileIdentifiers != null && !configFileIdentifiers.isEmpty()) || nsd.isConfigUpdateEnabled()) {
                     configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
+                    final List<ConfigFile> configFilesFromRepository = configHandler.getConfigFiles(deploymentId);
+                    kubernetesApiJanitorService.createOrReplaceConfigMaps(
+                            nsd.getRemoteCluster(),
+                            nsd.getDescriptiveDeploymentId(),
+                            nsd.getDomainName(),
+                            configFilesFromRepository);
                 }
-                janitorService.createOrReplaceConfigMap(nsd.getDescriptiveDeploymentId(), nsd.getDomainName());
             }
             notifyStateChangeListenersWithDelay(deploymentId, CONFIGURED, 1000);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_FAILED, e.getMessage());
-            throw new NmServiceConfigurationFailedException(e.getMessage());
+            throw new NmServiceConfigurationFailedException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void configureBasicAuth(NmServiceDeployment nsd, String basicAuthUsername, String basicAuthPassword) {
+        if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
+            kubernetesApiJanitorService.createOrReplaceBasicAuth(
+                    nsd.getRemoteCluster(),
+                    nsd.getDescriptiveDeploymentId(),
+                    nsd.getDomainName(),
+                    basicAuthUsername,
+                    ConfigFilePreparerHelper.encode(basicAuthPassword));
         }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateNmService(NmServiceDeployment nmServiceDeployment) {
-        Identifier deploymentId = nmServiceDeployment.getDeploymentId();
+    public void updateNmService(NmServiceDeployment nsd) {
+        Identifier deploymentId = nsd.getDeploymentId();
         try {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
-            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nmServiceDeployment.getApplicationId(), nmServiceDeployment.getAppConfiguration());
-            if (nmServiceDeployment.isConfigFileRepositoryRequired()) {
+            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, nsd.getApplicationId(), nsd.getAppConfiguration());
+            if (nsd.isConfigFileRepositoryRequired()) {
                 configHandler.commitConfigFiles(deploymentId, configFileIdentifiers);
-                janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
+                kubernetesApiJanitorService.createOrReplaceConfigMaps(
+                        nsd.getRemoteCluster(),
+                        nsd.getDescriptiveDeploymentId(),
+                        nsd.getDomainName(),
+                        configHandler.getConfigFiles(deploymentId));
             }
             notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
         } catch (Exception e) {
@@ -79,13 +104,18 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void reloadNmService(NmServiceDeployment nmServiceDeployment) {
+    public void reloadNmService(NmServiceDeployment nsd) {
+        Identifier deploymentId = nsd.getDeploymentId();
         try {
-            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_INITIATED);
-            janitorService.createOrReplaceConfigMap(nmServiceDeployment.getDescriptiveDeploymentId(), nmServiceDeployment.getDomainName());
-            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATED);
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_INITIATED);
+            kubernetesApiJanitorService.createOrReplaceConfigMaps(
+                    nsd.getRemoteCluster(),
+                    nsd.getDescriptiveDeploymentId(),
+                    nsd.getDomainName(),
+                    configHandler.getConfigFiles(deploymentId));
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATED);
         } catch (Exception e) {
-            notifyStateChangeListeners(nmServiceDeployment.getDeploymentId(), CONFIGURATION_UPDATE_FAILED, e.getMessage());
+            notifyStateChangeListeners(deploymentId, CONFIGURATION_UPDATE_FAILED, e.getMessage());
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }
@@ -97,7 +127,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_INITIATED);
             configHandler.removeConfigFiles(deploymentId);
             notifyStateChangeListenersWithDelay(deploymentId, CONFIGURATION_REMOVED, 1000);
-        } catch (Exception e){
+        } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, CONFIGURATION_REMOVAL_FAILED);
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
@@ -108,17 +138,17 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         return configHandler.configRepositoryAccessDetails(deploymentId);
     }
 
-    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
     }
 
     @SneakyThrows
-    private void notifyStateChangeListenersWithDelay(Identifier deploymentId, NmServiceDeploymentState state, int delayInMilis) {
+    private void notifyStateChangeListenersWithDelay(Identifier deploymentId, ServiceDeploymentState state, int delayInMilis) {
         Thread.sleep(delayInMilis);
         notifyStateChangeListeners(deploymentId, state);
     }
 
-    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
+    private void notifyStateChangeListeners(Identifier deploymentId, ServiceDeploymentState state, String errorMessage) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
 

@@ -3,7 +3,6 @@ package net.geant.nmaas.notifications.templates;
 import net.geant.nmaas.notifications.MailTemplateElements;
 import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.templates.repository.MailTemplateRepository;
-import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,14 +21,14 @@ import static org.mockito.Mockito.when;
 
 public class TemplateServiceTest {
 
-    private MailTemplateRepository repository = mock(MailTemplateRepository.class);
-    private LocalFileStorageService fileStorageService = mock(LocalFileStorageService.class);
+    private final MailTemplateRepository repository = mock(MailTemplateRepository.class);
+    private final LocalFileStorageService fileStorageService = mock(LocalFileStorageService.class);
 
     private TemplateService templateService;
 
     @BeforeEach
     void setup() {
-        this.templateService = new TemplateService(repository, fileStorageService, new ModelMapper());
+        this.templateService = new TemplateService(new ModelMapper(), repository, fileStorageService);
     }
 
     @Test

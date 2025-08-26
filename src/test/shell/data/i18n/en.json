@@ -22,7 +22,7 @@
     "EXPIRED_TIME" : "Session expires in",
     "ADVANCED" : "Advanced",
     "BULK_DEPLOYMENT" : "Deploy bulk application",
-    "BULK_DEPLOYMENT_DOMAIN" : " Bulk deployments",
+    "BULK_DEPLOYMENT_DOMAIN" : "Bulk deployments",
     "DOMAIN_GROUPS" : "Domain groups",
     "PAST_BULK_DOMAIN" : "Past domains bulk",
     "PAST_BULK_APP" : "Past application bulk",
@@ -202,17 +202,19 @@
     "UNKNOWN" : "Unknown",
     "CONTACT_MAIL" : "Contact mail",
     "DETAILS" : "Details",
-    "STATE_SINCE" : "State last change",
+    "STATE_SINCE" : "Last state change",
     "REMOVE" : "Remove cluster",
     "FILE": "Kubernetes config",
     "WIZARD" : {
       "ADD" : "Adding new remote cluster",
       "STEP_1" : "General information",
       "STEP_2" : "Basic cluster settings",
-      "STEP_3" : "Advance cluster settings",
-      "STEP_1_INFO" : "Kubernetes config file is required to proceed. Please fill text area with content of config.",
-      "STEP_2_INFO" : "Provide basic information about the cluster. You can also assign cluster to the domain.",
-      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster."
+      "STEP_3" : "Advanced cluster settings",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area.",
+      "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
+      "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
+      "TOOLTIP_2" : "All fields must be fill"
     }
   },
   "GITLAB": {
@@ -336,17 +338,17 @@
       "POPULAR": "Popularity",
       "DATE" : "Date added"
     },
-    "SCALED_UP": "Resume",
-    "SCALED_DOWN": "Pause",
-    "CONFIRM_SCALEDOWN": {
-      "MESSAGE": "Are you sure you want to stop the instance?",
+    "RESUME": "Resume",
+    "PAUSE": "Pause",
+    "CONFIRM_PAUSE": {
+      "MESSAGE": "Are you sure you want to pause this instance?",
       "HEADER": "Confirmation",
       "ACCEPT": "Yes",
       "REJECT": "No"
     }
   },
   "MONITOR": {
-    "TITLE": "Monitor service",
+    "TITLE": "Internal monitoring",
     "SERVICE_NAME": "Service name",
     "LAST_CHECK": "Last check",
     "LAST_SUCCESS": "Last success",
@@ -671,7 +673,13 @@
       "APP_RESTART_PROGRESS": "Application restart in progress",
       "APP_RESTART_SUCCESS": "Application restarted successfully",
       "APP_RESTART_FAILED": "Application restart failed",
-        "APP_UPDATE_PROGRESS": "Application configuration update in progress",
+      "APP_PAUSE_PROGRESS": "Application pause in progress",
+      "APP_PAUSE_SUCCESS": "Application paused successfully",
+      "APP_PAUSE_FAILED": "Application pause failed",
+      "APP_RESUME_PROGRESS": "Application resume in progress",
+      "APP_RESUME_SUCCESS": "Application resumed successfully",
+      "APP_RESUME_FAILED": "Application resume failed",
+      "APP_UPDATE_PROGRESS": "Application configuration update in progress",
       "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
       "APP_UPDATE_FAILED": "Application configuration update failed",
       "UNKNOWN": "Unknown state",
@@ -694,6 +702,7 @@
       "RUNNING": "Your application is now active. You can access it using the <i>Access</i> option from the <i>Actions</i> menu. <br>Use the <i>Configure</i> and <i>Members</i> options to update the configuration and the list of application users respectively.",
       "UNDEPLOYING": "Your application is being deactivated. This process may take up to several minutes",
       "DONE": "Application deactivated",
+      "PAUSED": "Your application is now paused. Use the <i>Resume</i> option to bring it back up again",
       "FAILURE": "",
       "UNKNOWN": "Unknown state of application. <br>In order to raise an issue use the <a href=\"about?type=ISSUE_REPORT\">contact form</a>.",
       "REMOVED": "Application removed"
@@ -1126,6 +1135,7 @@
     "RUNNING": "Active",
     "UNDEPLOYING": "Deactivation in progress",
     "DONE": "Deactivated",
+    "PAUSED": "Paused",
     "FAILURE": "Failure",
     "UNKNOWN": "Unknown",
     "REMOVED": "Removed",
@@ -1195,7 +1205,7 @@
     "EXTERNAL_HEADER": "External access options",
     "EXTERNAL_ACCESS": "Access the application",
     "SERVICE_NAME": "Service name",
-    "ACCESS_METHOD": "Access method",
+    "ACCESS_METHOD": "Access",
     "INTERNAL_HEADER": "Internal access options",
     "HIDE_BUTTON": "Cancel",
     "MAIN_ACCESS": "Main Interface",
@@ -1360,22 +1370,22 @@
     "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
-    "TARGET_URL" : "Target url",
-    "TYPE" : "Webhook type",
+    "TARGET_URL" : "Target URL",
+    "TYPE" : "Webhook event",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
-    "DOMAIN_CREATION" : "Domain creation",
+    "DOMAIN_ACTION" : "Domain action",
+    "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "DOMAIN_GROUP_CHANGE" : "Domain group change",
-    "NEW" : "Add webhook",
+    "NEW" : "Add",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
     "REMOVE" : "Remove",
     "AUTH_REQUIRED": "Auth required"
   },
   "DASHBOARD": {
-    "NUMBERS_OF_USERS": "Current number of user",
+    "NUMBERS_OF_USERS": "Current number of users",
     "NUMBERS_OF_DOMAINS": "Current number of domains",
     "NUMBERS_OF_DEPLOYED_APP": "Current number of deployed applications",
     "APP_DEPLOYMENTS": "Application deployments",
@@ -1404,13 +1414,13 @@
       "NEW_CLUSTER": "Remote cluster data created",
       "NOTIFICATION": "Notification sent",
       "NEW_WEBHOOK": "New webhook added",
-      "WEBHOOK": "Webhook updated"
+      "WEBHOOK": "Webhook data updated"
     },
     "ERROR": {
       "NEW_DOMAIN": "Failed to add new domain",
       "SETTINGS": "Settings update failed",
-      "NOTIFICATION": "The message could not be sent.",
-      "WEBHOOK": "Webhook update failed"
+      "NOTIFICATION": "Message could not be sent",
+      "WEBHOOK": "Webhook data update failed"
     }
   }
 }

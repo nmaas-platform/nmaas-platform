@@ -9,9 +9,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.client.RestClient;
 
 @SpringBootApplication
 @EnableScheduling
@@ -41,8 +41,8 @@ public class MainConfig {
     }
 
     @Bean
-    ProtobufHttpMessageConverter protobufHttpMessageConverter() {
-        return new ProtobufHttpMessageConverter();
+    public RestClient restClient() {
+        return RestClient.create();
     }
 
 }

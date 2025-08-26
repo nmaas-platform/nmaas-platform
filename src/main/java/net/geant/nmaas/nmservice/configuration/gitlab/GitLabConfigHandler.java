@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.gitlab.GitLabManager;
 import net.geant.nmaas.gitlab.exceptions.GitLabNotFoundException;
+import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.nmservice.configuration.GitConfigHandler;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -24,10 +25,12 @@ import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Group;
 import org.gitlab4j.api.models.ProjectHook;
 import org.gitlab4j.api.models.RepositoryFile;
+import org.gitlab4j.api.models.TreeItem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,7 +114,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
         });
         sshKeys.forEach(k -> {
             try {
-                gitLabManager.users().addSshKey(userId, LocalTime.now().toString(), k);
+                gitLabManager.users().addSshKey(userId, LocalTime.now().toString(), k, null);
             } catch (GitLabApiException e) {
                 throw new GitRepositoryOperationException(e.getClass().getName() + e.getMessage());
             }
@@ -169,11 +172,11 @@ public class GitLabConfigHandler implements GitConfigHandler {
             if (group.isPresent()) {
                 return group.get().getId();
             } else {
-                    gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
-                    Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
-                    gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
-                    return groupId;
-                }
+                gitLabManager.groups().addGroup(groupName(domain), groupPath(domain));
+                Long groupId = gitLabManager.groups().getGroup(groupPath(domain)).getId();
+                gitLabManager.groups().addMember(groupId, gitLabUserId, fullAccessCode());
+                return groupId;
+            }
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
         }
@@ -189,8 +192,8 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private GitLabProject project(Identifier deploymentId, String member, Long gitLabProjectId) {
         try {
-            String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
+            final String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
+            final String gitLabSshRepoUrl = getSshUrlToRepo(gitLabProjectId);
             return new GitLabProject(deploymentId, member, "", gitLabRepoUrl, gitLabSshRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage());
@@ -198,7 +201,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
     }
 
     String getSshUrlToRepo(Long gitLabProjectId) throws GitLabApiException {
-        return StringUtils.replace(gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo(), ":", "/");
+        return gitLabManager.projects().getProject(gitLabProjectId).getSshUrlToRepo(); //.replace(":", "/");
     }
 
     String getHttpUrlToRepo(Long gitLabProjectId) throws GitLabApiException {
@@ -243,7 +246,7 @@ public class GitLabConfigHandler implements GitConfigHandler {
             ProjectHook hook = new ProjectHook();
             hook.setPushEvents(true);
             String completeWebhookUrl = getWebhookUrl(webhookId);
-            log.info("completeWebhookUrl: {}", completeWebhookUrl);
+            log.debug("completeWebhookUrl: {}", completeWebhookUrl);
             gitLabManager.projects().addHook(gitLabProjectId, completeWebhookUrl, hook, true, webhookToken);
         } catch (GitLabApiException e) {
             throw new FileTransferException(LOG_PREFIX + e.getMessage() + " " + e.getReason());
@@ -314,6 +317,44 @@ public class GitLabConfigHandler implements GitConfigHandler {
         });
     }
 
+    /**
+     * Gets all the configuration files from GitLab repository
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return list of configuration files
+     */
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public List<ConfigFile> getConfigFiles(Identifier deploymentId) {
+        final GitLabProject gitLabProject = loadGitlabProject(deploymentId).orElseThrow(() ->
+                new ConfigRepositoryAccessDetailsNotFoundException("Could not find GitLab project for deployment " + deploymentId));
+        try {
+            return getConfigFilesFromDirectory(gitLabProject, "");
+        } catch (GitLabApiException e) {
+            throw new FileTransferException(e.getClass().getName() + e.getMessage());
+        }
+    }
+
+    private List<ConfigFile> getConfigFilesFromDirectory(GitLabProject gitLabProject, String directory) throws GitLabApiException {
+        List<ConfigFile> configFiles = new ArrayList<>();
+        for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId(), directory, commitBranch())
+                .stream().filter(i -> TreeItem.Type.BLOB == i.getType()).toList()) {
+            log.debug("Retrieving file {}", item.getPath());
+            RepositoryFile repositoryFile = gitLabManager.repositoryFiles()
+                    .getFile(gitLabProject.getProjectId(), item.getPath(), commitBranch());
+            configFiles.add(ConfigFile.builder()
+                    .fileName(repositoryFile.getFileName())
+                    .filePath(repositoryFile.getFilePath())
+                    .fileContent(repositoryFile.getDecodedContentAsString())
+                    .build());
+        }
+        for (TreeItem item : gitLabManager.repository().getTree(gitLabProject.getProjectId(), directory, commitBranch())
+                .stream().filter(i -> TreeItem.Type.TREE == i.getType()).toList()) {
+            configFiles.addAll(getConfigFilesFromDirectory(gitLabProject, item.getPath()));
+        }
+        return configFiles;
+    }
+
     @Override
     @Loggable(LogLevel.DEBUG)
     public AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId) {
@@ -329,10 +370,6 @@ public class GitLabConfigHandler implements GitConfigHandler {
 
     private Optional<GitLabProject> loadGitlabProject(Identifier deploymentId) {
         return repositoryManager.loadGitLabProject(deploymentId);
-    }
-
-    private String getPrefix() {
-        return configurationManager.getConfiguration().getDeploymentPrefix();
     }
 
 }

@@ -7,13 +7,19 @@ import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.*;
+import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateBasicAuthActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpgradeActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -47,7 +53,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private final AppDeploymentRepositoryManager deploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
     private final NmServiceRepositoryManager serviceRepositoryManager;
-    private final JanitorService janitorService;
 
     private final AppTermsAcceptanceService appTermsAcceptanceService;
     private final ConfigurationManager configurationManager;
@@ -105,7 +110,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void redeployApplication(Identifier deploymentId) {
-        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT, ""));
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, ServiceDeploymentState.INIT, ""));
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
@@ -134,10 +139,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                     replaceHashWithDotInMapKeysAndProcessValues(getMapFromJson(configuration.getMandatoryParameters())));
         }
         if (isNotEmpty(configuration.getAccessCredentials())) {
-            changeBasicAuth(
-                    appDeployment.getDescriptiveDeploymentId(),
-                    serviceRepositoryManager.loadDomain(deploymentId),
-                    configuration.getAccessCredentials());
+            triggerBasicAuthUpdate(deploymentId, configuration);
         }
         /*
          * if terms acceptance is required, perform check actions
@@ -179,6 +181,17 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
+    private void triggerBasicAuthUpdate(Identifier deploymentId, AppConfigurationView configuration) {
+        Map<String, String> accessCredentialsMap = this.getMapFromJson(configuration.getAccessCredentials());
+        final String basicAuthUsername = accessCredentialsMap.get("accessUsername");
+        final String basicAuthPassword = accessCredentialsMap.get("accessPassword");
+        if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
+            eventPublisher.publishEvent(new AppUpdateBasicAuthActionEvent(this, deploymentId, basicAuthUsername, basicAuthPassword));
+        } else {
+            log.warn("Missing access credentials for basic auth");
+        }
+    }
+
     Map<String, String> getMapFromJson(String inputJson) {
         try {
             return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {
@@ -193,7 +206,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isEmpty()) {
                 newMap.put(
-                        entry.getKey().replace("#", "."),
+                        entry.getKey().replace("_dot_", "."),
                         escapeCommasIfRequired(
                                 addQuotationMarkIfRequired(
                                         replaceHashWithQuote(entry.getValue())))
@@ -213,15 +226,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private static String escapeCommasIfRequired(String value) {
         return value.replace(",", "\\,");
-    }
-
-    private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials) {
-        Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
-        String basicAuthUsername = accessCredentialsMap.get("accessUsername");
-        String basicAuthPassword = accessCredentialsMap.get("accessPassword");
-        if (isNotEmpty(basicAuthUsername) && isNotEmpty(basicAuthPassword)) {
-            janitorService.createOrReplaceBasicAuth(deploymentId, domain, basicAuthUsername, basicAuthPassword);
-        }
     }
 
     @Override
@@ -254,10 +258,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
-        AppDeployment appDeployment = deploymentRepositoryManager.load(deploymentId);
         // only access credentials update is currently supported
         if (isNotEmpty(configuration.getAccessCredentials())) {
-            changeBasicAuth(appDeployment.getDescriptiveDeploymentId(), appDeployment.getDomain(), configuration.getAccessCredentials());
+            triggerBasicAuthUpdate(deploymentId, configuration);
         }
     }
 

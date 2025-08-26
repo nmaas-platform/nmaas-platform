@@ -17,7 +17,6 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ConfigFilePreparerHelper {
 
@@ -25,7 +24,7 @@ public class ConfigFilePreparerHelper {
         return RandomStringUtils.randomAlphanumeric(length);
     }
 
-    public String encode(String password) {
+    public static String encode(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         return passwordEncoder.encode(password);
     }

@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.user;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
+@Tag(name = "User Profile", description = "User profile management API")
 public class ProfileController {
 
     private final UserService users;

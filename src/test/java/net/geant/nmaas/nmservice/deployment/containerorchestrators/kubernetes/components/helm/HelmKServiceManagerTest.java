@@ -1,15 +1,15 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterDeployment;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterIngress;
-import net.geant.nmaas.externalservices.kubernetes.entities.KClusterState;
-import net.geant.nmaas.externalservices.kubernetes.entities.NamespaceConfigOption;
+import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.kubernetes.remote.entities.IngressCertificateConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterDeployment;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterIngress;
+import net.geant.nmaas.kubernetes.remote.entities.KClusterState;
+import net.geant.nmaas.kubernetes.remote.entities.NamespaceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -22,6 +22,7 @@ import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -101,6 +103,7 @@ public class HelmKServiceManagerTest {
         service.setAccessMethods(accessMethods);
         service.setDescriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"));
         service.setKubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", "archiveName"));
+        service.setRemoteCluster(null);
         when(repositoryManager.loadService(any())).thenReturn(service);
         when(repositoryManager.loadDescriptiveDeploymentId(deploymentId)).thenReturn(Identifier.newInstance("descriptiveDeploymentId"));
         when(repositoryManager.loadDomain(deploymentId)).thenReturn("domain");
@@ -182,46 +185,47 @@ public class HelmKServiceManagerTest {
     @Test
     void shouldCheckServiceDeployedTrue() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
-        when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId"))
+        when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId", null))
                 .thenReturn(HelmPackageStatus.DEPLOYED);
 
         boolean status = manager.checkServiceDeployed(deploymentId);
         verify(helmCommandExecutor, times(1))
-                .executeHelmStatusCommand(eq("namespace"), eq("descriptiveDeploymentId"));
+                .executeHelmStatusCommand(eq("namespace"), eq("descriptiveDeploymentId"), ArgumentMatchers.isNull());
         assertTrue(status);
     }
 
     @Test
     void shouldCheckServiceDeployedFalse() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
-        when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId")).
+        when(helmCommandExecutor.executeHelmStatusCommand("namespace", "descriptiveDeploymentId", null)).
                 thenReturn(HelmPackageStatus.UNKNOWN);
 
         boolean status = manager.checkServiceDeployed(deploymentId);
         verify(helmCommandExecutor, times(1))
-                .executeHelmStatusCommand(eq("namespace"), eq("descriptiveDeploymentId"));
+                .executeHelmStatusCommand(eq("namespace"), eq("descriptiveDeploymentId"), ArgumentMatchers.isNull());
         assertFalse(status);
     }
 
     @Test
     void shouldDeleteServiceSinceExists() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
-        when(helmCommandExecutor.executeHelmListCommand("namespace"))
+        when(helmCommandExecutor.executeHelmListCommand("namespace", null))
                 .thenReturn(Arrays.asList("descriptiveDeploymentId", "otherString"));
 
         manager.deleteServiceIfExists(deploymentId);
         verify(helmCommandExecutor, times(1)).
-                executeHelmDeleteCommand(eq("namespace"), eq("descriptiveDeploymentId"));
+                executeHelmDeleteCommand(eq("namespace"), eq("descriptiveDeploymentId"), isNull());
     }
 
     @Test
     void shouldNotDeleteServiceSinceNotExists() {
         when(namespaceService.namespace("domain")).thenReturn("namespace");
-        when(helmCommandExecutor.executeHelmListCommand("namespace")).thenReturn(Collections.singletonList("otherString"));
+        when(helmCommandExecutor.executeHelmListCommand("namespace", null))
+                .thenReturn(Collections.singletonList("otherString"));
 
         manager.deleteServiceIfExists(deploymentId);
         verify(helmCommandExecutor, times(0))
-                .executeHelmDeleteCommand(eq("namespace"), any());
+                .executeHelmDeleteCommand(eq("namespace"), any(), isNull());
     }
 
     @Test
@@ -232,7 +236,8 @@ public class HelmKServiceManagerTest {
         verify(helmCommandExecutor, times(1)).executeHelmUpgradeCommand(
                 eq("namespace"),
                 eq("descriptiveDeploymentId"),
-                any(KubernetesTemplate.class)
+                any(KubernetesTemplate.class),
+                isNull()
         );
     }
 
@@ -245,7 +250,6 @@ public class HelmKServiceManagerTest {
         when(ingressManager.getTlsSupported()).thenReturn(true);
         when(ingressManager.getIssuerOrWildcardName()).thenReturn("testIssuerName");
         when(ingressManager.getCertificateConfigOption()).thenReturn(IngressCertificateConfigOption.USE_LETSENCRYPT);
-
 
         KClusterDeployment mockDeployment = KClusterDeployment.builder()
                 .namespaceConfigOption(NamespaceConfigOption.CREATE_NAMESPACE)
@@ -260,7 +264,6 @@ public class HelmKServiceManagerTest {
                 .build();
 
         KClusterIngress mockIngress = KClusterIngress.builder().resourceConfigOption(IngressResourceConfigOption.NOT_USED).build();
-
 
         KCluster mockCluster = KCluster.builder()
                 .id(1L)

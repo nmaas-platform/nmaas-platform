@@ -1,10 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import com.google.common.collect.Sets;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.RemoteClusterManager;
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.gitlab.GitLabManager;
+import net.geant.nmaas.kubernetes.JanitorException;
+import net.geant.nmaas.kubernetes.KubernetesApiJanitorService;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterManagementService;
+import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringService;
+import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
@@ -12,8 +14,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorResponseException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -22,7 +22,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceStorageVolumeType;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppAccessMethod;
@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -69,9 +68,10 @@ public class KubernetesManagerTest {
     private final IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
     private final KubernetesClusterIngressManager ingressManager = mock(KubernetesClusterIngressManager.class);
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
-    private final JanitorService janitorService = mock(JanitorService.class);
-    private final RemoteClusterManager remoteClusterManager = mock(RemoteClusterManager.class);
-    private final KubernetesDeploymentRemoteClusterParametersProvider remoteClusterParametersProvider  = mock(KubernetesDeploymentRemoteClusterParametersProvider.class);
+    private final KubernetesApiJanitorService kubernetesApiJanitorService = mock(KubernetesApiJanitorService.class);
+    private final RemoteClusterManagementService remoteClusterManager = mock(RemoteClusterManagementService.class);
+    private final RemoteClusterMonitoringService remoteClusterMonitor = mock(RemoteClusterMonitoringService.class);
+    private final KubernetesDeploymentRemoteClusterParametersProvider remoteClusterParametersProvider = mock(KubernetesDeploymentRemoteClusterParametersProvider.class);
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
 
@@ -86,23 +86,14 @@ public class KubernetesManagerTest {
             ingressResourceManager,
             ingressManager,
             gitLabManager,
-            janitorService,
-            remoteClusterManager
+            kubernetesApiJanitorService,
+            remoteClusterManager,
+            remoteClusterMonitor
     );
 
     @BeforeEach
     void setup() {
-        Map<String, String> parametersMap = new HashMap<>();
-        parametersMap.put(ParameterType.SMTP_HOSTNAME.name(), "hostname");
-        parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
-        parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
-        parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
-        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
-        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
-        parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
-        parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
-        parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
-        parametersMap.put(ParameterType.APP_INSTANCE_NAME.name(), "appInstanceName");
+        Map<String, String> parametersMap = getParametersMap();
         when(deploymentParametersProvider.deploymentParameters(any())).thenReturn(parametersMap);
 
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo();
@@ -165,9 +156,24 @@ public class KubernetesManagerTest {
         when(repositoryManager.loadService(any())).thenReturn(service);
     }
 
+    private static Map<String, String> getParametersMap() {
+        Map<String, String> parametersMap = new HashMap<>();
+        parametersMap.put(ParameterType.SMTP_HOSTNAME.name(), "hostname");
+        parametersMap.put(ParameterType.SMTP_PORT.name(), "5");
+        parametersMap.put(ParameterType.SMTP_USERNAME.name(), "username");
+        parametersMap.put(ParameterType.SMTP_PASSWORD.name(), "password");
+        parametersMap.put(ParameterType.SMTP_HOST_WITH_PORT.name(), "host:port");
+        parametersMap.put(ParameterType.SMTP_FROM_DEFAULT_DOMAIN.name(), "@fromdomain");
+        parametersMap.put(ParameterType.BASE_URL.name(), "extBaseUrl");
+        parametersMap.put(ParameterType.DOMAIN_CODENAME.name(), "domain");
+        parametersMap.put(ParameterType.RELEASE_NAME.name(), "descriptiveDeploymentId");
+        parametersMap.put(ParameterType.APP_INSTANCE_NAME.name(), "appInstanceName");
+        return parametersMap;
+    }
+
     @Test
     void shouldVerifyDeploymentWithEmptyAppDeployment() {
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, null, null);
         });
         assertTrue(thrown.getMessage().contains("App deployment cannot be null"));
@@ -175,7 +181,7 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyDeploymentWithEmptyAppDeploymentSpec() {
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), null);
         });
         assertTrue(thrown.getMessage().contains("App deployment spec cannot be null"));
@@ -184,7 +190,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyDeploymentWithNotSupportedEnv() {
         AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.emptyList()).build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Service deployment not possible with currently used container orchestrator"));
@@ -193,7 +199,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldVerifyDeploymentWithNoKubernetesTemplate() {
         AppDeploymentSpec spec = AppDeploymentSpec.builder().supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES)).build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Kubernetes template cannot be null"));
@@ -204,9 +210,9 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate())
-                .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .build();
-        NmServiceRequestVerificationException thrown = assertThrows(NmServiceRequestVerificationException.class, () -> {
+        ServiceRequestVerificationException thrown = assertThrows(ServiceRequestVerificationException.class, () -> {
             manager.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(DEPLOYMENT_ID, new AppDeployment(), spec);
         });
         assertTrue(thrown.getMessage().contains("Service access methods cannot be null"));
@@ -218,8 +224,8 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
-                .accessMethods(Sets.newHashSet(
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .accessMethods(Set.of(
                         AppAccessMethod.builder()
                                 .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.NONE).condition("redundant")
                                 .build()))
@@ -253,11 +259,11 @@ public class KubernetesManagerTest {
         AppDeploymentSpec spec = AppDeploymentSpec.builder()
                 .supportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES))
                 .kubernetesTemplate(new KubernetesTemplate("chartName", "chartVersion", null))
-                .accessMethods(Sets.newHashSet(
+                .accessMethods(Set.of(
                         AppAccessMethod.builder()
                                 .type(ServiceAccessMethodType.EXTERNAL).name("name").tag("tag").conditionType(ConditionType.DEPLOYMENT_PARAMETER).condition("valid")
                                 .build()))
-                .storageVolumes(Sets.newHashSet(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
+                .storageVolumes(Set.of(new AppStorageVolume(ServiceStorageVolumeType.MAIN, 2, null)))
                 .globalDeployParameters(getStringStringMap())
                 .deployParameters(getParameterTypeStringMap())
                 .build();
@@ -400,41 +406,40 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyThatServiceIsDeployedAndUpdateServiceIp() {
+        when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
+        when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
+        when(kubernetesApiJanitorService.retrieveServiceIp(null, Identifier.newInstance("deploymentId"), "domain"))
+                .thenReturn("192.168.100.1");
+        when(kubernetesApiJanitorService.retrieveServiceIp(null, Identifier.newInstance("deploymentId-component1"), "domain"))
+                .thenReturn("192.168.100.2");
+        when(kubernetesApiJanitorService.checkServiceExists(any(), any(), any())).thenReturn(false);
         assertDoesNotThrow(() -> {
-            when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
-            when(janitorService.checkIfReady(any(), any())).thenReturn(true);
-            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId"), "domain"))
-                    .thenReturn("192.168.100.1");
-            when(janitorService.retrieveServiceIp(Identifier.newInstance("deploymentId-component1"), "domain"))
-                    .thenReturn("192.168.100.2");
-            doThrow(new JanitorResponseException("")).when(janitorService).checkServiceExists(any(), any());
-
             manager.checkService(Identifier.newInstance("deploymentId"));
 
             ArgumentCaptor<Set<ServiceAccessMethod>> accessMethodsArg = ArgumentCaptor.forClass(HashSet.class);
             verify(repositoryManager, times(2)).updateKServiceAccessMethods(accessMethodsArg.capture());
-            assertEquals(10, accessMethodsArg.getValue().size());
-            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+            assertEquals(10, accessMethodsArg.getAllValues().getFirst().size());
+            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service")
                             && m.getProtocol().equals("SSH")
                             && m.getUrl().equals("netops@192.168.100.1")));
-            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service-with-port")
                             && m.getProtocol().equals("SSH")
                             && m.getUrl().equals("netops@192.168.100.1 (port: 22)")));
-            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("ssh-service-with-access-user")
                             && m.getProtocol().equals("SSH")
                             && m.getUrl().equals("testUser@192.168.100.1")));
-            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("data-service-with-access-user")
                             && m.getProtocol().equals("DATA")
                             && m.getUrl().equals("testUser@192.168.100.1")));
-            assertTrue(accessMethodsArg.getValue().stream().anyMatch(m ->
+            assertTrue(accessMethodsArg.getAllValues().getFirst().stream().anyMatch(m ->
                     m.isOfType(ServiceAccessMethodType.INTERNAL)
                             && m.getName().equals("data-service")
                             && m.getProtocol().equals("DATA")
@@ -444,14 +449,12 @@ public class KubernetesManagerTest {
 
     @Test
     void shouldVerifyThatServiceIsDeployedWithoutServiceIp() {
+        when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
+        when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(true);
+        when(kubernetesApiJanitorService.retrieveServiceIp(any(), any(), any())).thenThrow(new JanitorException(""));
+        when(kubernetesApiJanitorService.checkServiceExists(any(), any(), any())).thenReturn(false);
         assertDoesNotThrow(() -> {
-            when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
-            when(janitorService.checkIfReady(any(), any())).thenReturn(true);
-            when(janitorService.retrieveServiceIp(any(), any())).thenThrow(new JanitorResponseException(""));
-            doThrow(new JanitorResponseException("")).when(janitorService).checkServiceExists(any(), any());
-
             manager.checkService(Identifier.newInstance("deploymentId"));
-
             verify(repositoryManager, times(1)).updateKServiceAccessMethods(any());
         });
     }
@@ -459,7 +462,7 @@ public class KubernetesManagerTest {
     @Test
     void shouldReturnFalseSinceServiceNotDeployed() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
-        when(janitorService.checkIfReady(any(), any())).thenReturn(false);
+        when(kubernetesApiJanitorService.checkIfReady(any(), any(), any())).thenReturn(false);
         assertFalse(manager.checkService(Identifier.newInstance("deploymentId")));
     }
 
@@ -467,9 +470,9 @@ public class KubernetesManagerTest {
     void shouldRemoveService() {
         manager.removeNmService(DEPLOYMENT_ID);
         verify(serviceLifecycleManager, times(1)).deleteServiceIfExists(DEPLOYMENT_ID);
-        verify(janitorService, times(1)).deleteConfigMapIfExists(Identifier.newInstance("deploymentId"), "domain");
-        verify(janitorService, times(1)).deleteBasicAuthIfExists(Identifier.newInstance("deploymentId"), "domain");
-        verify(janitorService, times(1)).deleteTlsIfExists(Identifier.newInstance("deploymentId"), "domain");
+        verify(kubernetesApiJanitorService, times(1)).deleteConfigMapIfExists(null, Identifier.newInstance("deploymentId"), "domain");
+        verify(kubernetesApiJanitorService, times(1)).deleteBasicAuthIfExists(null, Identifier.newInstance("deploymentId"), "domain");
+        verify(kubernetesApiJanitorService, times(1)).deleteTlsIfExists(null, Identifier.newInstance("deploymentId"), "domain");
         verifyNoMoreInteractions(ingressResourceManager);
     }
 
@@ -504,16 +507,6 @@ public class KubernetesManagerTest {
                         && m.getProtocol().equals("SSH")
                         && m.getUrl().equals("192.168.1.1")
         ));
-    }
-
-    @Test
-    void shouldBuildDeploymentNameForCheck() {
-        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", "componentName"))
-                .isEqualTo(Identifier.newInstance("releaseName-componentName"));
-        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", null))
-                .isEqualTo(Identifier.newInstance("releaseName"));
-        assertThat(KubernetesManager.getDeploymentIdForJanitorStatusCheck("releaseName", ""))
-                .isEqualTo(Identifier.newInstance("releaseName"));
     }
 
 }

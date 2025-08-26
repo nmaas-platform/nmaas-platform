@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.nmservice.configuration.exceptions.ConfigRepositoryAccessDetailsNotFoundException;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
 
@@ -16,18 +15,16 @@ public interface GitConfigHandler {
 
     void removeConfigFiles(Identifier deploymentId);
 
-    /**
-     *
-     * @param deploymentId
-     * @return
-     * @throws ConfigRepositoryAccessDetailsNotFoundException
-     */
+    List<ConfigFile> getConfigFiles(Identifier deploymentId);
+
     AppConfigRepositoryAccessDetails configRepositoryAccessDetails(Identifier deploymentId);
 
     void addMemberToProject(Long gitLabProjectId, Long gitLabUserId);
+
     void addMemberToProject(Long gitLabProjectId, String username);
 
     void removeMemberFromProject(Long gitLabProjectId, Long gitLabUserId);
+
     void removeMemberFromProject(Long gitLabProjectId, String username);
 
 }

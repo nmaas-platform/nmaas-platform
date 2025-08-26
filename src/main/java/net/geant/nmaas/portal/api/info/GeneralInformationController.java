@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.info;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.FileSystemResource;
@@ -36,7 +35,7 @@ public class GeneralInformationController {
     @GetMapping(value = "/git")
     public Map<String, String> getGitInfo(@Value("${git.commit.time:none}") String buildTime, @Value("${git.commit.id.abbrev}") String commitName,
                                           @Value("${git.build.version}") String buildVersion, @Value("${git.branch}") String branchName) {
-        return ImmutableMap.of(
+        return Map.of(
                 "buildTime", buildTime,
                 "commitName", commitName,
                 "buildVersion", buildVersion,

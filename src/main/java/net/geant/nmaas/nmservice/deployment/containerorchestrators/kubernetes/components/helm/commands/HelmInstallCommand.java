@@ -23,6 +23,7 @@ public class HelmInstallCommand extends HelmCommand {
      * @param chartName    chart name for download from repository
      * @param chartVersion chart version from download from repository
      * @param enableTls    flag indicating if tls option should be added
+     * @param kubeConfigPath path to custom kubeConfig file (optional)
      * @return complete command object
      */
     public static HelmInstallCommand commandWithRepo(String helmVersion, String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion, boolean enableTls, String kubeConfigPath) {

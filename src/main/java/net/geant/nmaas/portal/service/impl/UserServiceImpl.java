@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +8,7 @@ import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
+import net.geant.nmaas.portal.api.domain.UserListEntry;
 import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
@@ -21,8 +20,11 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistent.results.UserLoginDate;
+import net.geant.nmaas.portal.persistent.spec.UserSpecification;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainGroupService;
+import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -30,14 +32,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.AbstractMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
@@ -57,6 +63,9 @@ public class UserServiceImpl implements UserService {
     private final ApplicationEventPublisher eventPublisher;
     private final JWTTokenService jwtTokenService;
     private final DomainGroupService domainGroupService;
+
+    private final UserLoginRegisterService userLoginService;
+
 
     @Value("${portal.address}")
     @Setter
@@ -84,6 +93,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean isAdmin(User user) {
+        return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
+    }
+
+    @Override
+    public boolean isAdmin(String username) {
+        User user = findByUsername(username).orElseThrow(() -> new MissingElementException("User with username " + username + " not found"));
         return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
     }
 
@@ -152,7 +167,7 @@ public class UserServiceImpl implements UserService {
         newUser.setLastname(registration.getLastname());
         newUser.setEnabled(false);
         if (domain != null) {
-            newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
+            newUser.setNewRoles(Set.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
         }
         newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
         newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
@@ -178,7 +193,7 @@ public class UserServiceImpl implements UserService {
         newUser.setFirstname(csvUser.getAdminUserName());
         newUser.setLastname(csvUser.getAdminUserName());
         if (domain != null) {
-            newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
+            newUser.setNewRoles(Set.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
         }
         boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
         // set user saml_token to email address if a sso account requested
@@ -231,6 +246,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void setUserLanguage(Long userId, final String userLanguage) {
         userRepository.setUserLanguage(userId, userLanguage);
+    }
+
+    @Override
+    @Transactional
+    public void setUserTheme(Long userId, String defaultTheme) {
+        userRepository.setUserThemeMode(userId, defaultTheme);
     }
 
     @Override
@@ -299,26 +320,83 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private void sendMail(User user, MailType mailType) {
-        ImmutableMap<String, Object> map;
-        if (mailType == MailType.NEW_BULK_LOGIN) {
-            map = ImmutableMap.<String, Object>builder()
-                    .put("username", user.getUsername())
-                    .put("email", user.getEmail())
-                    .put("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken24Hours(user.getEmail())))
-                    .build();
+    @Override
+    public boolean isUserAdminInAnyDomainById(List<Long> domainIds, String username) {
+        Boolean result = false;
+        for (Long domainId : domainIds) {
+            if (userRoleRepository.findRolesByDomainAndUser(domainId, username).contains(ROLE_DOMAIN_ADMIN)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean isUserAdminInAnyDomain(List<Domain> domains, String username) {
+        Boolean result = false;
+        for (Domain domain : domains) {
+            if (userRoleRepository.findRolesByDomainAndUser(domain.getId(), username).contains(ROLE_DOMAIN_ADMIN)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue) {
+        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (searchValue != null && !searchValue.isEmpty()) {
+            Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue);
+            Page<User> all = userRepository.findAll(searchSpec, pageable);
+            return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
         } else {
-            map = ImmutableMap.<String, Object>builder()
-                    .put("username", user.getUsername())
-                    .put("email", user.getEmail())
-                    .put("portal", this.portalAddress)
-                    .build();
+            return userRepository.findAllListEntry(pageable).map(u -> mapUser(u, userLoginDateMap));
+        }
+    }
+
+    @Override
+    public Page<UserListEntry> findAllInDomainListEntry(Long domainId, Pageable pageable, String searchValue) {
+        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (searchValue != null && !searchValue.isEmpty()) {
+            Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue)
+                    .and(UserSpecification.findByDomain(domainId));
+            Page<User> all = userRepository.findAll(searchSpec, pageable);
+            return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
+        } else {
+            return userRepository.findAllInDomainListEntry(domainId, pageable).map(u -> mapUser(u, userLoginDateMap));
+        }
+    }
+
+    @Override
+    public Optional<Role> getUserRoleInDomain(Long userId, Long domainId) {
+        return this.userRoleRepository.findRolesByDomainAndUser(domainId, userId).stream().findFirst();
+    }
+
+    private void sendMail(User user, MailType mailType) {
+        Map<String, Object> map;
+        if (mailType == MailType.NEW_BULK_LOGIN) {
+            map = Map.of(
+                    "username", user.getUsername(),
+                    "email", user.getEmail(),
+                    "accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken24Hours(user.getEmail()))
+            );
+        } else {
+            map = Map.of(
+                    "username", user.getUsername(),
+                    "email", user.getEmail(),
+                    "portal", this.portalAddress);
         }
         MailAttributes mailAttributes = MailAttributes.builder()
                 .otherAttributes(map)
                 .mailType(mailType)
                 .build();
-        this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+        eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }
 
     private String generateResetPasswordUrl(String token) {
@@ -330,5 +408,17 @@ public class UserServiceImpl implements UserService {
             url += "/";
         }
         return url + "reset/" + token;
+    }
+
+    private UserListEntry mapUser(UserListEntry entry, final Map<Long, UserLoginDate> userLoginDateMap) {
+        if (userLoginDateMap.containsKey(entry.getId())) {
+            entry.setLastSuccessfulLoginDate(userLoginDateMap.get(entry.getId()).getMaxLoginDate());
+            entry.setFirstLoginDate(userLoginDateMap.get(entry.getId()).getMinLoginDate());
+        }
+        return entry;
+    }
+
+    private UserListEntry toListView(User user) {
+        return new UserListEntry(user);
     }
 }

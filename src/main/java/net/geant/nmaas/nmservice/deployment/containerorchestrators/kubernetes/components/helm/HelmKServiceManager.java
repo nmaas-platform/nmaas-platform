@@ -3,12 +3,12 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterNamespaceService;
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption;
-import net.geant.nmaas.externalservices.kubernetes.entities.KCluster;
+import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterNamespaceService;
+import net.geant.nmaas.kubernetes.remote.entities.IngressCertificateConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static net.geant.nmaas.externalservices.kubernetes.entities.IngressResourceConfigOption.DEPLOY_FROM_CHART;
+import static net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption.DEPLOY_FROM_CHART;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.PUBLIC_ACCESS_SELECTOR_ARGUMENT_EXPRESSION_PREFIX;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesManager.RANDOM_ARGUMENT_EXPRESSION_PREFIX;
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodType.DEFAULT;
@@ -167,10 +167,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.TRACE)
     public boolean checkServiceDeployed(Identifier deploymentId) {
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(
                     namespaceService.namespace(repositoryManager.loadDomain(deploymentId)),
-                    repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue()
+                    repositoryManager.loadDescriptiveDeploymentId(deploymentId).getValue(),
+                    serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
             return status.equals(HelmPackageStatus.DEPLOYED);
         } catch (CommandExecutionException cee) {
@@ -181,13 +183,15 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     @Override
     @Loggable(LogLevel.TRACE)
     public void deleteServiceIfExists(Identifier deploymentId) {
-        String namespace = namespaceService.namespace(repositoryManager.loadDomain(deploymentId));
-        Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
+        final String namespace = namespaceService.namespace(repositoryManager.loadDomain(deploymentId));
+        final Identifier descriptiveDeploymentId = repositoryManager.loadDescriptiveDeploymentId(deploymentId);
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
-            if (checkIfServiceExists(namespace, descriptiveDeploymentId)) {
+            if (checkIfServiceExists(namespace, deploymentId, descriptiveDeploymentId)) {
                 helmCommandExecutor.executeHelmDeleteCommand(
                         namespace,
-                        descriptiveDeploymentId.getValue()
+                        descriptiveDeploymentId.getValue(),
+                        serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
                 );
             }
         } catch (CommandExecutionException cee) {
@@ -195,14 +199,18 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         }
     }
 
-    private boolean checkIfServiceExists(String namespace, Identifier deploymentId) {
-        return helmCommandExecutor.executeHelmListCommand(namespace).contains(deploymentId.value());
+    private boolean checkIfServiceExists(String namespace, Identifier deploymentId, Identifier descriptiveDeploymentId) {
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        return helmCommandExecutor.executeHelmListCommand(
+                namespace,
+                serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
+        ).contains(descriptiveDeploymentId.value());
     }
 
     @Override
     @Loggable(LogLevel.TRACE)
     public void upgradeService(Identifier deploymentId, KubernetesTemplate targetVersion) {
-        KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        final KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         try {
             if (!helmRepoUpdateAsyncEnabled) {
                 updateHelmRepo();
@@ -210,7 +218,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             helmCommandExecutor.executeHelmUpgradeCommand(
                     namespaceService.namespace(serviceInfo.getDomain()),
                     serviceInfo.getDescriptiveDeploymentId().getValue(),
-                    targetVersion
+                    targetVersion,
+                    serviceInfo.getRemoteCluster() != null ? serviceInfo.getRemoteCluster().getPathConfigFile() : null
             );
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());

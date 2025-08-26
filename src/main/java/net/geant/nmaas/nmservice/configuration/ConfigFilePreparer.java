@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.convertToFreemarkerTemplate;
 import static net.geant.nmaas.nmservice.configuration.ConfigFilePreparerHelper.createModelEntriesFromUserInput;
@@ -93,7 +94,7 @@ class ConfigFilePreparer {
         }
         List<String> ipAddresses = devices.stream()
                 .map(device -> (String) ((Map) device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
-                .toList();
+                .collect(Collectors.toList());
         nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }
 
