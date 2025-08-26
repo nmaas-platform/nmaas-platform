@@ -10,7 +10,6 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,6 +34,10 @@ public class UserListEntry extends UserBase implements Serializable {
     protected Role domainRole;
 
     public UserListEntry(User user) {
+        this(user, null);
+    }
+
+    public UserListEntry(User user, Long domainId) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.name = user.getFirstname() != null ? user.getFirstname() : "";
@@ -42,6 +45,7 @@ public class UserListEntry extends UserBase implements Serializable {
             this.name += (this.name.isEmpty() ? "" : " ") + user.getLastname();
         }
         this.email = user.getEmail();
+        this.enabled = user.isEnabled();
 
         this.domainsName = user.getRoles().stream()
                 .filter(userRole -> userRole.getDomain() != null && !Objects.equals(userRole.getDomain().getName(), "GLOBAL"))
@@ -55,7 +59,13 @@ public class UserListEntry extends UserBase implements Serializable {
                 .filter(globalRoleList::contains).findFirst();
         this.globalRole = globalRole.map(Enum::name).orElse("");
 
-        this.enabled = user.isEnabled();
+        if (Objects.nonNull(domainId)) {
+            Optional<Role> domainRole = user.getRoles().stream()
+                    .filter(r -> r.getDomain().getId().equals(domainId))
+                    .map(UserRole::getRole)
+                    .findFirst();
+            this.domainRole = domainRole.orElse(null);
+        }
     }
 
 }

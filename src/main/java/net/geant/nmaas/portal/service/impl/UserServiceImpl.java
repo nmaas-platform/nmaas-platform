@@ -322,7 +322,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUserAdminInAnyDomainById(List<Long> domainIds, String username) {
-        Boolean result = false;
+        boolean result = false;
         for (Long domainId : domainIds) {
             if (userRoleRepository.findRolesByDomainAndUser(domainId, username).contains(ROLE_DOMAIN_ADMIN)) {
                 result = true;
@@ -333,7 +333,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUserAdminInAnyDomain(List<Domain> domains, String username) {
-        Boolean result = false;
+        boolean result = false;
         for (Domain domain : domains) {
             if (userRoleRepository.findRolesByDomainAndUser(domain.getId(), username).contains(ROLE_DOMAIN_ADMIN)) {
                 result = true;
@@ -350,10 +350,13 @@ public class UserServiceImpl implements UserService {
 
         if (searchValue != null && !searchValue.isEmpty()) {
             Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue);
-            Page<User> all = userRepository.findAll(searchSpec, pageable);
-            return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
+            return userRepository.findAll(searchSpec, pageable)
+                    .map(this::toListView)
+                    .map(u -> mapUser(u, userLoginDateMap));
         } else {
-            return userRepository.findAllListEntry(pageable).map(u -> mapUser(u, userLoginDateMap));
+            return userRepository.findAll(pageable)
+                    .map(this::toListView)
+                    .map(u -> mapUser(u, userLoginDateMap));
         }
     }
 
@@ -366,10 +369,13 @@ public class UserServiceImpl implements UserService {
         if (searchValue != null && !searchValue.isEmpty()) {
             Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue)
                     .and(UserSpecification.findByDomain(domainId));
-            Page<User> all = userRepository.findAll(searchSpec, pageable);
-            return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
+            return userRepository.findAll(searchSpec, pageable)
+                    .map(u -> toListView(u, domainId))
+                    .map(u -> mapUser(u, userLoginDateMap));
         } else {
-            return userRepository.findAllInDomainListEntry(domainId, pageable).map(u -> mapUser(u, userLoginDateMap));
+            return userRepository.findAllInDomain(domainId, pageable)
+                    .map(u -> toListView(u, domainId))
+                    .map(u -> mapUser(u, userLoginDateMap));
         }
     }
 
@@ -420,5 +426,9 @@ public class UserServiceImpl implements UserService {
 
     private UserListEntry toListView(User user) {
         return new UserListEntry(user);
+    }
+
+    private UserListEntry toListView(User user, Long domainId) {
+        return new UserListEntry(user, domainId);
     }
 }

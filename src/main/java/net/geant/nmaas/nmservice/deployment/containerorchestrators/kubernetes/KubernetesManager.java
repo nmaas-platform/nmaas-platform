@@ -250,11 +250,14 @@ public class KubernetesManager implements ContainerOrchestrator {
                         service.getRemoteCluster().getIngress().getExternalServiceDomain(),
                         service.getRemoteCluster().getIngress().getIngressPerDomain());
             }
+            log.debug("Generated service external URL: {}", serviceExternalUrl);
             String servicePublicUrl = generateServicePublicUrl(service);
 
             Set<ServiceAccessMethod> accessMethods = retrieveAccessMethods(service);
             disableAccessMethodsBasedOnCondition(accessMethods, service.getAdditionalParameters());
             accessMethods = populateAccessMethodsWithUrl(accessMethods, serviceExternalUrl, servicePublicUrl);
+            log.debug("Updated list of access methods:");
+            accessMethods.forEach(am -> log.debug("{}:{}:{}", am.getType(), am.getName(), am.getUrl()));
             repositoryManager.updateKServiceAccessMethods(accessMethods);
             serviceLifecycleManager.deployService(deploymentId);
         } catch (InvalidDeploymentIdException | InvalidConfigurationException ex) {
