@@ -1411,6 +1411,7 @@
       "NEW_DOMAIN": "New domain added",
       "SETTINGS": "Settings updated",
       "CLUSTER": "Remote cluster data updated",
+      "NEW_CLUSTER": "Remote cluster data created",
       "NOTIFICATION": "Notification sent",
       "NEW_WEBHOOK": "New webhook added",
       "WEBHOOK": "Webhook data updated"

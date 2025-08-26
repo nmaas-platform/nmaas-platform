@@ -1409,6 +1409,7 @@
       "NEW_DOMAIN": "Nowa domena została dodana",
       "SETTINGS": "Ustawienia zostały zaktualizowane",
       "CLUSTER": "Dane zdalnego klastra zostały zaktualizowane",
+      "NEW_CLUSTER": "Dodano nowy zdalny klaster",
       "NOTIFICATION": "Powiadomienie zostało wysłane",
       "NEW_WEBHOOK": "Dodano nowy webhook",
       "WEBHOOK": "Dane webhooka zostały zaktualizowane"
