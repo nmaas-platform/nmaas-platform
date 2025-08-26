@@ -209,10 +209,12 @@
       "ADD" : "Adding new remote cluster",
       "STEP_1" : "General information",
       "STEP_2" : "Basic cluster settings",
-      "STEP_3" : "Advance cluster settings",
-      "STEP_1_INFO" : "Kubernetes config file is required to proceed. Please fill text area with content of config.",
-      "STEP_2_INFO" : "Provide basic information about the cluster. You can also assign cluster to the domain.",
-      "STEP_3_INFO" : "Cluster Ingress and Storage were populated by basic configuration. Edit it to fit more your remote cluster."
+      "STEP_3" : "Advanced cluster settings",
+      "STEP_1_INFO" : "Kubernetes configuration is required to proceed. Please paste the content of the .kuberconfig file in the text area.",
+      "STEP_2_INFO" : "Provide basic information about the new cluster and assign it to one of Your domains.",
+      "STEP_3_INFO" : "Cluster Ingress and Storage properties were populated with default values. Update it according to your remote cluster configuration.",
+      "TOOLTIP_1" : "You need to add kubernetes config file to proceed",
+      "TOOLTIP_2" : "All fields must be fill"
     }
   },
   "GITLAB": {
@@ -336,10 +338,10 @@
       "POPULAR": "Popularność",
       "DATE" : "Data dodania"
     },
-    "SCALED_UP": "Wznów",
-    "SCALED_DOWN": "Pauza",
-    "CONFIRM_SCALEDOWN": {
-      "MESSAGE" : "Czy na pewno chcesz zatrzymać instancję?",
+    "RESUME": "Wznów",
+    "PAUSE": "Pauza",
+    "CONFIRM_PAUSE": {
+      "MESSAGE" : "Czy na pewno chcesz zatrzymać tą instancję?",
       "HEADER" : "Potwierdzenie",
       "ACCEPT" : "Tak",
       "REJECT" : "Nie"
@@ -670,6 +672,12 @@
       "APP_RESTART_PROGRESS": "Trwa restart aplikacji",
       "APP_RESTART_SUCCESS": "Aplikacja zrestartowana poprawnie",
       "APP_RESTART_FAILED": "Restart aplikacji nie powiódł się",
+      "APP_PAUSE_PROGRESS": "Trwa pauzowanie aplikacji",
+      "APP_PAUSE_SUCCESS": "Aplikacja spauzowana poprawnie",
+      "APP_PAUSE_FAILED": "Pauzowanie aplikacji nie powiodło się",
+      "APP_RESUME_PROGRESS": "Trwa wznawianie aplikacji",
+      "APP_RESUME_SUCCESS": "Aplikacja wznowiona poprawnie",
+      "APP_RESUME_FAILED": "Wznowienie aplikacji nie powiodło się",
       "APP_UPDATE_PROGRESS": "Trwa aktualizowanie konfiguracji aplikacji",
       "APP_UPDATE_SUCCESS": "Aplikacja zaktualizowana poprawnie",
       "APP_UPDATE_FAILED": "Aktualizacja konfiguracji aplikacji nie powiodła się",
@@ -693,6 +701,7 @@
       "RUNNING": "Twoja aplikacja jest aktywna. <br>Możesz teraz uzyskać dostęp do swojej aplikacji korzystając z opcji <i>Dostęp</i> z menu <i>Akcje</i>.",
       "UNDEPLOYING": "Aplikacja jest deaktywowana. Ten proces może potrwać do kilku minut",
       "DONE":  "Aplikacja została pomyślnie deaktywowana",
+      "PAUSED": "Twoja aplikacja jest spauzowana. Skorzystaj z opcji <i>Resume</i> aby ją wznowić i ponownie wykorzystywać",
       "FAILURE": "",
       "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem nmaas za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
       "REMOVED": "Aplikacja została pomyślnie usunięta"
@@ -1125,6 +1134,7 @@
     "RUNNING": "Aktywna",
     "UNDEPLOYING": "Deaktywacja",
     "DONE": "Deaktywowana",
+    "PAUSED": "Spauzowana",
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany",
     "REMOVED": "Usunięta",
@@ -1193,8 +1203,8 @@
     "HEADER": "Metody dostępu do aplikacji",
     "EXTERNAL_HEADER": "Dostęp z zewnątrz (w ramach VPN)",
     "EXTERNAL_ACCESS": "Otwórz aplikację",
-    "SERVICE_NAME": "Nazwa serwisu",
-    "ACCESS_METHOD": "Metoda dostępu",
+    "SERVICE_NAME": "Nazwa usługi",
+    "ACCESS_METHOD": "Dostęp",
     "INTERNAL_HEADER": "Dostęp wewnętrzny (w ramach VPN)",
     "HIDE_BUTTON": "Anuluj",
     "MAIN_ACCESS": "Główny interfejs użytkownika",
@@ -1358,15 +1368,15 @@
     "TITLE_NEW": "New webhook",
     "ID" : "Id",
     "NAME" : "Name",
-    "TARGET_URL" : "Target Url",
-    "TYPE" : "Webhook type",
+    "TARGET_URL" : "Target URL",
+    "TYPE" : "Webhook event",
     "TOKEN" : "Token value",
     "AUTH" : "Authorization header",
-    "DOMAIN_CREATION" : "Domain creation",
+    "DOMAIN_ACTION" : "Domain action",
+    "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
     "USER_ASSIGNMENT" : "User assignment",
-    "DOMAIN_GROUP_CHANGE" : "Domain group change",
-    "NEW" : "Add webhook",
+    "NEW" : "Add",
     "DETAILS" : "Webhooks details",
     "SAVE" : "Save",
     "REMOVE" : "Remove",
@@ -1395,19 +1405,20 @@
     "SUCCESS_HEADER": "Sukces",
     "ERROR_HEADER": "Błąd",
     "SUCCESS": {
-      "UPDATE_DOMAIN": "Domena została pomyślnie zaktualizowana",
-      "NEW_DOMAIN": "Nowa domena została pomyślnie dodana",
-      "SETTINGS": "Ustawienia zostały pomyślnie zaktualizowane",
-      "CLUSTER": "Dane klastra zdalnego zostały pomyślnie zaktualizowane",
-      "NOTIFICATION": "Powiadomienie wysłane pomyślnie",
+      "UPDATE_DOMAIN": "Dane domeny zostały zaktualizowane",
+      "NEW_DOMAIN": "Nowa domena została dodana",
+      "SETTINGS": "Ustawienia zostały zaktualizowane",
+      "CLUSTER": "Dane zdalnego klastra zostały zaktualizowane",
+      "NEW_CLUSTER": "Dodano nowy zdalny klaster",
+      "NOTIFICATION": "Powiadomienie zostało wysłane",
       "NEW_WEBHOOK": "Dodano nowy webhook",
-      "WEBHOOK": "Webhook został pomyślnie zaktualizowany"
+      "WEBHOOK": "Dane webhooka zostały zaktualizowane"
     },
     "ERROR": {
       "NEW_DOMAIN": "Nie udało się dodać nowej domeny",
       "SETTINGS": "Aktualizacja ustawień nie powiodła się",
-      "NOTIFICATION": "Nie udało się wysłać wiadomości.",
-      "WEBHOOK": "Aktualizacja webhooka nie powiodła się"
+      "NOTIFICATION": "Nie udało się wysłać wiadomości",
+      "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się"
     }
   }
 }

@@ -1396,6 +1396,7 @@
       "NEW_DOMAIN": "Neue Domain erfolgreich hinzugefügt",
       "SETTINGS": "Die Einstellungen wurden erfolgreich aktualisiert",
       "CLUSTER": "Remote-Clusterdaten erfolgreich aktualisiert",
+      "NEW_CLUSTER": "Remote-Clusterdaten erstellt",
       "NOTIFICATION": "Benachrichtigung erfolgreich gesendet",
       "NEW_WEBHOOK": "Neuer Webhook hinzugefügt",
       "WEBHOOK": "Webhook aktualisiert"

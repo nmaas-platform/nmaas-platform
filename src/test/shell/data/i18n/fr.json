@@ -1400,6 +1400,7 @@
       "NEW_DOMAIN": "Nouveau domaine ajouté avec succès",
       "SETTINGS": "Les paramètres ont été mis à jour avec succès",
       "CLUSTER": "Les données du cluster distant ont été mises à jour avec succès",
+      "NEW_CLUSTER": "Données de cluster distant créées",
       "NOTIFICATION": "Notification envoyée avec succès",
       "NEW_WEBHOOK": "Nouveau webhook ajouté",
       "WEBHOOK": "Webhook mis à jour"
