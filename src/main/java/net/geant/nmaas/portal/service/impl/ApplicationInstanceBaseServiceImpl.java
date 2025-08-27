@@ -42,7 +42,12 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .filter(appInstance -> !appInstance.getDomain().isDeleted())
                 .map(this::mapAppInstanceBase)
                 .toList();
-        return new PageImpl<>(filtered, pageable, filtered.size());
+        return new PageImpl<>(filtered, pageable, page.getTotalElements());
+    }
+    @Override
+    public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed) {
+        Page<AppInstance> page = appInstanceRepo.findAll(pageable);
+        return getAppInstanceBases(pageable, deployed, page);
     }
 
     @Override
@@ -54,7 +59,13 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .filter(appInstance -> !appInstance.getDomain().isDeleted())
                 .map(this::mapAppInstanceBase)
                 .toList();
-        return new PageImpl<>(filtered, pageable, filtered.size());
+        return new PageImpl<>(filtered, pageable, page.getTotalElements());
+    }
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, boolean deployed) {
+        checkParam(owner);
+        Page<AppInstance> page = appInstanceRepo.findAllByOwner(owner, pageable);
+        return getAppInstanceBases(pageable, deployed, page);
     }
 
     @Override
@@ -66,7 +77,16 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .filter(appInstance -> !appInstance.getDomain().isDeleted())
                 .map(this::mapAppInstanceBase)
                 .toList();
-        return new PageImpl<>(filtered, pageable, filtered.size());
+        return new PageImpl<>(filtered, pageable, page.getTotalElements());
+    }
+    @Override
+    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed) {
+        checkParam(domain);
+        Page<AppInstance> page = appInstanceRepo.findAllByDomain(domain, pageable);
+
+        return getAppInstanceBases(pageable, deployed, page);
+
+
     }
 
     @Override
@@ -79,7 +99,14 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .filter(appInstance -> !appInstance.getDomain().isDeleted())
                 .map(this::mapAppInstanceBase)
                 .toList();
-        return new PageImpl<>(filtered, pageable, filtered.size());
+        return new PageImpl<>(filtered, pageable, page.getTotalElements());
+    }
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Domain domain, Pageable pageable, boolean deployed) {
+        checkParam(owner);
+        checkParam(domain);
+        Page<AppInstance> page = appInstanceRepo.findAllByOwnerAndDomain(owner, domain, pageable);
+        return getAppInstanceBases(pageable, deployed, page);
     }
 
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
@@ -202,5 +229,31 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
             throw new IllegalArgumentException("domain is null");
         }
         checkParam(domain.getId());
+    }
+
+
+    private Page<AppInstanceBase> getAppInstanceBases(Pageable pageable, boolean deployed, Page<AppInstance> page) {
+        if (deployed) {
+            List<AppInstanceBase> filtered = page.getContent()
+                    .stream()
+                    .filter(appInstance -> !appInstance.getDomain().isDeleted())
+                    .map(this::mapAppInstanceBase)
+                    .peek(dto -> log.info("Instance {}, state={}", dto.getId(), dto.getState()))
+                    .filter(appInstanceBase ->
+                            appInstanceBase.getState() != AppInstanceState.REMOVED &&
+                                    appInstanceBase.getState() != AppInstanceState.DONE)
+                    .toList();
+            return new PageImpl<>(filtered, pageable, page.getTotalElements());
+        } else {
+            List<AppInstanceBase> filtered = page.getContent()
+                    .stream()
+                    .filter(appInstance ->
+                            !appInstance.getDomain().isDeleted())
+                    .map(this::mapAppInstanceBase)
+                    .filter(appInstanceBase ->
+                            appInstanceBase.getState() == AppInstanceState.REMOVED ||
+                                    appInstanceBase.getState() == AppInstanceState.DONE).toList();
+            return new PageImpl<>(filtered, pageable, page.getTotalElements());
+        }
     }
 }
