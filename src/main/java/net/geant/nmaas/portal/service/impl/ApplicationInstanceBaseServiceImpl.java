@@ -44,9 +44,11 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .toList();
         return new PageImpl<>(filtered, pageable, page.getTotalElements());
     }
+
+
     @Override
-    public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed) {
-        Page<AppInstance> page = appInstanceRepo.findAll(pageable);
+    public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed, String search) {
+        Page<AppInstance> page = appInstanceRepo.findFiltered(search, pageable);
         return getAppInstanceBases(pageable, deployed, page);
     }
 
@@ -61,32 +63,12 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .toList();
         return new PageImpl<>(filtered, pageable, page.getTotalElements());
     }
+
     @Override
-    public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, boolean deployed) {
+    public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable, boolean deployed, String search) {
         checkParam(owner);
-        Page<AppInstance> page = appInstanceRepo.findAllByOwner(owner, pageable);
+        Page<AppInstance> page = appInstanceRepo.findAllByOwnerAndSearch(owner, search, pageable);
         return getAppInstanceBases(pageable, deployed, page);
-    }
-
-    @Override
-    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable) {
-        checkParam(domain);
-        Page<AppInstance> page = appInstanceRepo.findAllByDomain(domain, pageable);
-        List<AppInstanceBase> filtered = page.getContent()
-                .stream()
-                .filter(appInstance -> !appInstance.getDomain().isDeleted())
-                .map(this::mapAppInstanceBase)
-                .toList();
-        return new PageImpl<>(filtered, pageable, page.getTotalElements());
-    }
-    @Override
-    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed) {
-        checkParam(domain);
-        Page<AppInstance> page = appInstanceRepo.findAllByDomain(domain, pageable);
-
-        return getAppInstanceBases(pageable, deployed, page);
-
-
     }
 
     @Override
@@ -101,6 +83,7 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                 .toList();
         return new PageImpl<>(filtered, pageable, page.getTotalElements());
     }
+
     @Override
     public Page<AppInstanceBase> findAllByOwner(User owner, Domain domain, Pageable pageable, boolean deployed) {
         checkParam(owner);
@@ -108,6 +91,40 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
         Page<AppInstance> page = appInstanceRepo.findAllByOwnerAndDomain(owner, domain, pageable);
         return getAppInstanceBases(pageable, deployed, page);
     }
+    @Override
+    public Page<AppInstanceBase> findAllByOwner(User owner, Domain domain, Pageable pageable, boolean deployed, String search) {
+        checkParam(owner);
+        checkParam(domain);
+        Page<AppInstance> page = appInstanceRepo.findAllByOwnerAndDomainAndSearch(owner, domain, search, pageable);
+        return getAppInstanceBases(pageable, deployed, page);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, String search) {
+        checkParam(domain);
+        Page<AppInstance> page = appInstanceRepo.findAllByDomainAndSearch(domain, search, pageable);
+        List<AppInstanceBase> filtered = page.getContent()
+                .stream()
+                .filter(appInstance -> !appInstance.getDomain().isDeleted())
+                .map(this::mapAppInstanceBase)
+                .toList();
+        return new PageImpl<>(filtered, pageable, page.getTotalElements());
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed) {
+        checkParam(domain);
+        Page<AppInstance> page = appInstanceRepo.findAllByDomain(domain, pageable);
+        return getAppInstanceBases(pageable, deployed, page);
+    }
+
+    @Override
+    public Page<AppInstanceBase> findAllByDomain(Domain domain, Pageable pageable, boolean deployed, String search) {
+        checkParam(domain);
+        Page<AppInstance> page = appInstanceRepo.findAllByDomainAndSearch(domain, search, pageable);
+        return getAppInstanceBases(pageable, deployed, page);
+    }
+
 
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
         if (appInstance == null) {
@@ -232,13 +249,14 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
     }
 
 
-    private Page<AppInstanceBase> getAppInstanceBases(Pageable pageable, boolean deployed, Page<AppInstance> page) {
+    private Page<AppInstanceBase> getAppInstanceBases(Pageable pageable,
+                                                      boolean deployed,
+                                                      Page<AppInstance> page) {
         if (deployed) {
             List<AppInstanceBase> filtered = page.getContent()
                     .stream()
                     .filter(appInstance -> !appInstance.getDomain().isDeleted())
                     .map(this::mapAppInstanceBase)
-                    .peek(dto -> log.info("Instance {}, state={}", dto.getId(), dto.getState()))
                     .filter(appInstanceBase ->
                             appInstanceBase.getState() != AppInstanceState.REMOVED &&
                                     appInstanceBase.getState() != AppInstanceState.DONE)
@@ -252,7 +270,8 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
                     .map(this::mapAppInstanceBase)
                     .filter(appInstanceBase ->
                             appInstanceBase.getState() == AppInstanceState.REMOVED ||
-                                    appInstanceBase.getState() == AppInstanceState.DONE).toList();
+                                    appInstanceBase.getState() == AppInstanceState.DONE)
+                    .toList();
             return new PageImpl<>(filtered, pageable, page.getTotalElements());
         }
     }
