@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.7_6-jdk-jammy AS builder
+FROM eclipse-temurin:21.0.8_9-jdk-jammy AS builder
 
 COPY . /build/
 WORKDIR /build/
@@ -6,7 +6,7 @@ WORKDIR /build/
 RUN chmod +x ./gradlew \
     && ./gradlew -Dorg.gradle.daemon=false build -x test
 
-FROM eclipse-temurin:21.0.7_6-jre-alpine
+FROM eclipse-temurin:21.0.8_9-jre-alpine
 
 LABEL maintainer=nmaas@lists.geant.org
 
@@ -18,7 +18,7 @@ ARG USER_GID=1000
 ENV KUBE_LATEST_VERSION=v1.16.3
 # Note: Latest version of helm may be found at https://github.com/kubernetes/helm/releases
 # renovate: datasource=github-releases depName=helm/helm
-ENV HELM_VERSION=v3.18.2
+ENV HELM_VERSION=v3.18.4
 
 COPY --from=builder /build/build/libs/*.jar /nmaas/platform/
 COPY docker/docker_entrypoint.sh /nmaas/scripts/docker_entrypoint.sh

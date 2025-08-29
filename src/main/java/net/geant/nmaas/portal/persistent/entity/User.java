@@ -62,6 +62,8 @@ public class User implements Serializable {
 
     private String selectedLanguage;
 
+    private String selectedThemeMode;
+
     private Long defaultDomain;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")

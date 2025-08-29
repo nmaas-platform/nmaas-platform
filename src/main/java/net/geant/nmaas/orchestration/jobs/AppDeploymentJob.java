@@ -7,6 +7,7 @@ import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
+import net.geant.nmaas.portal.api.domain.AppDeploymentWebhookDto;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
@@ -47,7 +48,7 @@ public class AppDeploymentJob extends WebhookJob {
             }
 
             AppDeployment appDeployment = appDeploymentRepositoryManager.load(Identifier.newInstance(deploymentIdStr));
-            callWebhook(webhook, modelMapper.map(appDeployment, AppDeploymentView.class));
+            callWebhook(webhook, new AppDeploymentWebhookDto(modelMapper.map(appDeployment, AppDeploymentView.class), WebhookEventType.APPLICATION_DEPLOYMENT));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");

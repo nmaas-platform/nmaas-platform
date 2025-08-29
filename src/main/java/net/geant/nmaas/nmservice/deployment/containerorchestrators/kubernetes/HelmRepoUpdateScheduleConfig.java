@@ -1,10 +1,10 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.scheduling.ScheduleManager;
 import net.geant.nmaas.utils.bash.CommandExecutionException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ public class HelmRepoUpdateScheduleConfig implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
         if (helmRepoUpdateAsyncEnabled) {
-            if (Strings.isNullOrEmpty(helmRepoUpdateAsyncCron)) {
+            if (StringUtils.isEmpty(helmRepoUpdateAsyncCron)) {
                 log.warn("Asynchronous Helm repo update cron expression not provided.");
             } else {
                 scheduleManager.createJob(helmRepoUpdateJob, HELM_REPO_UPDATE_JOB_NAME, helmRepoUpdateAsyncCron);

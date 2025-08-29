@@ -1,8 +1,8 @@
 package net.geant.nmaas.kubernetes.remote;
 
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
-import net.geant.nmaas.externalservices.kubernetes.api.model.RemoteClusterView;
+import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;

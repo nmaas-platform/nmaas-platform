@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration.jobs;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.api.domain.DomainActionDto;
-import net.geant.nmaas.portal.api.domain.DomainView;
+import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
@@ -33,7 +33,7 @@ public class DomainActionJob extends WebhookJob {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Long webhookId = dataMap.getLong("webhookId");
         String action = dataMap.getString("action");
-        DomainView domain = (DomainView) dataMap.get("domain");
+        DomainBase domain = (DomainBase) dataMap.get("domain");
 
         try {
             WebhookEventDto webhook = webhookEventService.getById(webhookId);
@@ -42,7 +42,7 @@ public class DomainActionJob extends WebhookJob {
                 return;
             }
 
-            callWebhook(webhook, new DomainActionDto(domain, action));
+            callWebhook(webhook, new DomainActionDto(domain, action, WebhookEventType.DOMAIN_ACTION));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");

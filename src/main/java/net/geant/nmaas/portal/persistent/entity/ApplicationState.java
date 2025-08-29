@@ -5,58 +5,58 @@ import net.geant.nmaas.notifications.templates.MailType;
 import java.util.Arrays;
 
 public enum ApplicationState {
-    NEW{
+    NEW {
         @Override
-        public boolean isChangeAllowed(ApplicationState newState){
+        public boolean isChangeAllowed(ApplicationState newState) {
             return Arrays.asList(ACTIVE, REJECTED, DELETED).contains(newState);
         }
 
         @Override
-        public MailType getMailType(){
+        public MailType getMailType() {
             return MailType.APP_NEW;
         }
     },
-    ACTIVE{
+    ACTIVE {
         @Override
-        public boolean isChangeAllowed(ApplicationState newState){
+        public boolean isChangeAllowed(ApplicationState newState) {
             return Arrays.asList(DISABLED, DELETED).contains(newState);
         }
 
         @Override
-        public MailType getMailType(){
+        public MailType getMailType() {
             return MailType.APP_ACTIVE;
         }
     },
-    REJECTED{
+    REJECTED {
         @Override
-        public boolean isChangeAllowed(ApplicationState newState){
+        public boolean isChangeAllowed(ApplicationState newState) {
             return Arrays.asList(NEW, DELETED).contains(newState);
         }
 
         @Override
-        public MailType getMailType(){
+        public MailType getMailType() {
             return MailType.APP_REJECTED;
         }
     },
     DISABLED {
         @Override
-        public boolean isChangeAllowed(ApplicationState newState){
+        public boolean isChangeAllowed(ApplicationState newState) {
             return Arrays.asList(ACTIVE, DELETED).contains(newState);
         }
 
         @Override
-        public MailType getMailType(){
+        public MailType getMailType() {
             return MailType.APP_NOT_ACTIVE;
         }
     },
-    DELETED{
+    DELETED {
         @Override
-        public boolean isChangeAllowed(ApplicationState newState){
+        public boolean isChangeAllowed(ApplicationState newState) {
             return false;
         }
 
         @Override
-        public MailType getMailType(){
+        public MailType getMailType() {
             return MailType.APP_DELETED;
         }
     };

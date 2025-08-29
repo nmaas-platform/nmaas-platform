@@ -40,7 +40,7 @@ public class DomainGroupJob extends WebhookJob {
                 log.warn("Webhook's event type with id {} has been updated. DomainGroupJob is abandoned", webhookId);
                 return;
             }
-            DomainGroupWebhookDto view = new DomainGroupWebhookDto(domainGroup, action);
+            DomainGroupWebhookDto view = new DomainGroupWebhookDto(domainGroup, action, WebhookEventType.DOMAIN_GROUP_ACTION);
             callWebhook(webhook, view);
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);

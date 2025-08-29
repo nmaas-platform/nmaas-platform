@@ -23,6 +23,13 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 
     List<AppInstance> findAllByDomain(Domain domain);
 
+    @Query("SELECT ai FROM AppInstance ai JOIN AppDeployment ad ON ad.deploymentId = ai.internalId WHERE ai.domain.codename = :domain AND ad.state NOT IN" +
+            "('APPLICATION_REMOVED'," +
+            "'APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS'," +
+            "'APPLICATION_CONFIGURATION_REMOVED'," +
+            "'FAILED_APPLICATION_REMOVED')")
+    List<AppInstance> findAllActiveInDomain(@Param(value = "domain") String domain);
+
     List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain);
 
     Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
@@ -61,4 +68,40 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 
     int countAllByOwner(User user);
 
+    @Query("SELECT a FROM AppInstance a " +
+            "WHERE a.domain.deleted = false " +
+            "AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<AppInstance> findFiltered(@Param("search") String search, Pageable pageable);
+
+    @Query("""
+       SELECT a 
+       FROM AppInstance a 
+       WHERE a.domain = :domain
+       AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+       """)
+    Page<AppInstance> findAllByDomainAndSearch(@Param("domain") Domain domain,
+                                               @Param("search") String search,
+                                               Pageable pageable);
+
+    @Query("""
+       SELECT a 
+       FROM AppInstance a 
+       WHERE a.owner = :user
+       AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+       """)
+    Page<AppInstance> findAllByOwnerAndSearch(@Param("user") User user,
+                                              @Param("search") String search,
+                                              Pageable pageable);
+
+    @Query("""
+       SELECT a
+       FROM AppInstance a
+       WHERE a.owner = :user
+       AND a.domain = :domain
+       AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+       """)
+    Page<AppInstance> findAllByOwnerAndDomainAndSearch(@Param("user") User user,
+                                                       @Param("domain") Domain domain,
+                                                       @Param("search") String search,
+                                                       Pageable pageable);
 }

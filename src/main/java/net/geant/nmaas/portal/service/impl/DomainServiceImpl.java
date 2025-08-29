@@ -6,6 +6,8 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.api.domain.DomainBase;
@@ -37,6 +39,7 @@ import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,7 +59,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_DOMAIN_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GROUP_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
@@ -82,8 +84,9 @@ public class DomainServiceImpl implements DomainService {
     private final ModelMapper modelMapper;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final DomainGroupService domainGroupService;
-    private final ApplicationEventPublisher eventPublisher;
     private final DomainAnnotationsRepository domainAnnotationsRepository;
+    private final KClusterRepository kClusterRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${domain.global:GLOBAL}")
     String globalDomain;
@@ -100,8 +103,9 @@ public class DomainServiceImpl implements DomainService {
                              ModelMapper modelMapper,
                              ApplicationStatePerDomainService applicationStatePerDomainService,
                              DomainGroupService domainGroupService,
-                             ApplicationEventPublisher eventPublisher,
-                             DomainAnnotationsRepository domainAnnotationsRepository
+                             DomainAnnotationsRepository domainAnnotationsRepository,
+                             KClusterRepository kClusterRepository,
+                             ApplicationEventPublisher eventPublisher
     ) {
         this.validator = validator;
         this.namespaceValidator = namespaceValidator;
@@ -114,8 +118,9 @@ public class DomainServiceImpl implements DomainService {
         this.modelMapper = modelMapper;
         this.applicationStatePerDomainService = applicationStatePerDomainService;
         this.domainGroupService = domainGroupService;
-        this.eventPublisher = eventPublisher;
         this.domainAnnotationsRepository = domainAnnotationsRepository;
+        this.kClusterRepository = kClusterRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -156,12 +161,10 @@ public class DomainServiceImpl implements DomainService {
         if (searchValue == null || searchValue.isEmpty()) {
             return this.domainRepository.findAllBaseDomains();
         } else {
-            log.debug("Searched value = {}", searchValue);
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             List<Domain> domainPage = domainRepository.findAll(searchSpec);
             return domainPage.stream().map(d -> modelMapper.map(d, DomainBase.class)).toList();
         }
-
     }
 
     @Override
@@ -169,7 +172,6 @@ public class DomainServiceImpl implements DomainService {
         if (searchValue == null || searchValue.isEmpty()) {
             return this.domainRepository.findAllBaseDomainsPageable(pageable);
         } else {
-            log.debug("Searched value = {}", searchValue);
             Specification<Domain> searchSpec = DomainSpecification.containsTextInAttributes(searchValue, "id", "name", "codename");
             Page<Domain> domainPage = domainRepository.findAll(searchSpec, pageable);
             return domainPage.map(DomainBase::fromEntity);
@@ -213,7 +215,7 @@ public class DomainServiceImpl implements DomainService {
         if (Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isEmpty()) {
             throw new ProcessingException(String.format("Domain codename is not valid (%s / %s)", request.getName(), request.getCodename()));
         }
-        checkArgument(!existsDomainByCodename(request.getCodename()),
+        Validate.isTrue(!existsDomainByCodename(request.getCodename()),
                 String.format("Domain codename is not unique (provided value: %s)", request.getCodename()));
         if (StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())) {
             request.getDomainTechDetails().setKubernetesNamespace(request.getCodename());
@@ -225,7 +227,7 @@ public class DomainServiceImpl implements DomainService {
             request.getDomainTechDetails().setKubernetesIngressClass(request.getCodename());
         }
         if (StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())) {
-            checkArgument(!domainTechDetailsRepository.existsByExternalServiceDomain(
+            Validate.isTrue(!domainTechDetailsRepository.existsByExternalServiceDomain(
                             request.getDomainTechDetails().getExternalServiceDomain()),
                     String.format("External service domain is not unique (provided value: %s)", request.getDomainTechDetails().getExternalServiceDomain()));
         }
@@ -354,6 +356,10 @@ public class DomainServiceImpl implements DomainService {
             domain.setDomainTechDetails(null);
             domainTechDetailsRepository.deleteById(domainTechDetailsId);
 
+            final List<Long> remoteClusterIds = domain.getClusters().stream().map(KCluster::getId).toList();
+            domain.setClusters(null);
+            remoteClusterIds.forEach(kClusterRepository::deleteById);
+
             removeAllUsersFromDomain(domain);
             removeDomainFromAllGroups(domain);
             domainRepository.save(domain);
@@ -367,7 +373,7 @@ public class DomainServiceImpl implements DomainService {
     public void removeDomainFromAllGroups(Domain domain) {
         List<Long> idsToDelete = domain.getGroups().stream()
                 .map(DomainGroup::getId)
-                .collect(Collectors.toList());
+                .toList();
         idsToDelete.forEach(id -> {
             domainGroupService.deleteDomainFromGroup(domain, id);
         });
@@ -482,7 +488,6 @@ public class DomainServiceImpl implements DomainService {
             List<Domain> domainsFiltered = domainRepository.findAll(searchSpec);
             return domainsFiltered.stream().filter(domainFromRoles::contains).collect(Collectors.toSet());
         }
-
     }
 
     @Override

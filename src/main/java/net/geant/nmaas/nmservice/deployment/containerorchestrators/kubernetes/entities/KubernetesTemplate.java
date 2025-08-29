@@ -15,10 +15,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 import java.io.Serializable;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,7 +42,7 @@ public class KubernetesTemplate implements Serializable {
     private String archive;
 
     /**
-     * Name of the deployment to be used by the Janitor to check if service was deployed successfully
+     * Name of the deployment to be used by to check if service was deployed successfully
      */
     private String mainDeploymentName;
 
@@ -80,9 +79,9 @@ public class KubernetesTemplate implements Serializable {
     }
 
     public void validate() {
-        checkArgument(chart != null, "Kubernetes chart must be provided");
-        checkArgument(StringUtils.isNotEmpty(chart.getName()), "You must provide chart name");
-        checkArgument(StringUtils.isNotEmpty(chart.getVersion()), "You must provide chart version");
+        Validate.isTrue(chart != null, "Kubernetes chart must be provided");
+        Validate.isTrue(StringUtils.isNotEmpty(chart.getName()), "You must provide chart name");
+        Validate.isTrue(StringUtils.isNotEmpty(chart.getVersion()), "You must provide chart version");
     }
 
     @Override

@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.api.user;
 
-import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -64,7 +63,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,6 +79,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 @RestController
 @RequestMapping("/api")
 @Slf4j
+@Tag(name = "Users", description = "User and role management API")
 public class UsersController {
 
     private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
@@ -167,7 +166,6 @@ public class UsersController {
     public Page<UserListEntry> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                             @RequestParam(required = false) String searchValue,
                                             Principal principal) {
-
         return userService.findAllListEntry(pageable, searchValue);
     }
 
@@ -176,36 +174,12 @@ public class UsersController {
     public Page<UserListEntry> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                                   @RequestParam(required = false) String searchValue,
                                                   @PathVariable Long domainId) {
-        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
-                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        List<UserListEntry> allUserInDomain = domainService.getMembers(domainId).stream().map(UserListEntry::new).map(u -> mapUser(u, userLoginDateMap)).toList();
-
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
-        int endItem = Math.min(startItem + pageSize, allUserInDomain.size());
-
-        List<UserListEntry> pageContent;
-
-
-        if (allUserInDomain.size() < startItem) {
-            pageContent = new ArrayList<>();
-        } else {
-            pageContent = allUserInDomain.subList(startItem, endItem);
-            pageContent.forEach( userListEntry ->  {
-                Optional<Role> domainRole = userService.getUserRoleInDomain(userListEntry.getId(), domainId);
-                userListEntry.setDomainRole(domainRole.orElse(null));
-            });
-        }
-
-        return new PageImpl<>(pageContent, pageable, allUserInDomain.size());
+        return userService.findAllInDomainListEntry(domainId, pageable, searchValue);
     }
 
     @GetMapping(value = "/users/{userId}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-    public UserBase retrieveUser(@PathVariable("userId") Long userId, Principal principal) {
+    public UserBase getUser(@PathVariable("userId") Long userId, Principal principal) {
         User user = getUser(userId);
         User owner = this.userService.findByUsername(principal.getName()).orElseThrow(
                 () -> new RuntimeException("User with username: " + principal.getName() + " does not exist"));
@@ -254,10 +228,8 @@ public class UsersController {
         userDetails.setDefaultDomain(userRequest.getDefaultDomain());
         userService.update(userDetails);
         if (!StringUtils.isEmpty(message)) {
-            log.info(String.format("Data of user [%s] with role [%s] were updated. The following changes are: [%s] ",
-                    userDetails.getUsername(),
-                    userRoles,
-                    message));
+            log.info("Data of user [{}] with role [{}] were updated. The following changes are: [{}] ",
+                    userDetails.getUsername(), userRoles, message);
         }
     }
 
@@ -274,21 +246,23 @@ public class UsersController {
                 .filter(userRole ->
                         !(userRole.getRole().equals(ROLE_GUEST) && userRole.getDomain().getId().equals(globalDomainId))
                 )
-                .collect(Collectors.toList());
-        if (notGuestInGlobalDomainRole.size() > 0) {
+                .toList();
+        if (!notGuestInGlobalDomainRole.isEmpty()) {
             throw new ProcessingException("User cannot be deleted because he belongs to at least one domain");
         }
-        if (!this.instanceService.findAllByOwner(userId).isEmpty()) {
+        if (!instanceService.findAllByOwner(userId).isEmpty()) {
             throw new ProcessingException("User cannot be deleted because he had deployed at least one instance");
         }
-        this.userService.deleteById(userId);
+        userService.deleteById(userId);
     }
 
     @GetMapping("/users/{userId}/roles")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
     public Set<UserRoleView> getUserRoles(@PathVariable Long userId) {
         User user = getUser(userId);
-        return user.getRoles().stream().map(ur -> modelMapper.map(ur, UserRoleView.class)).collect(Collectors.toSet());
+        return user.getRoles().stream()
+                .map(ur -> modelMapper.map(ur, UserRoleView.class))
+                .collect(Collectors.toSet());
     }
 
     @DeleteMapping("/users/{userId}/roles")
@@ -319,12 +293,8 @@ public class UsersController {
             domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
-            log.info(String.format("User [%s] with role [%s] removed role [%s] from user [%s] in domain [%d]",
-                    principal.getName(),
-                    adminRoles,
-                    userRole.getRole().authority(),
-                    user.getUsername(),
-                    userRole.getDomainId()));
+            log.info("User [{}] with role [{}] removed role [{}] from user [{}] in domain [{}]",
+                    principal.getName(), adminRoles, userRole.getRole().authority(), user.getUsername(), userRole.getDomainId());
             domainService.addGlobalGuestUserRoleIfMissing(userId);
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
@@ -337,7 +307,7 @@ public class UsersController {
     public void setAcceptance(@PathVariable String username) {
         try {
             setAcceptanceFlags(username);
-            log.info(String.format("User [%s] accepted Terms of Use and Privacy Policy", username));
+            log.info("User [{}] accepted Terms of Use and Privacy Policy", username);
         } catch (ProcessingException err) {
             throw new MissingElementException(err.getMessage());
         }
@@ -384,7 +354,7 @@ public class UsersController {
         domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
         domainService.addGlobalGuestUserRoleIfMissing(user.getId());
         userService.update(user);
-        this.sendMail(this.userService.findAllUsersWithAdminRole().get(0), MailType.NEW_SSO_LOGIN, ImmutableMap.of("newUser", user.getUsername()));
+        this.sendMail(this.userService.findAllUsersWithAdminRole().get(0), MailType.NEW_SSO_LOGIN, Map.of("newUser", user.getUsername()));
     }
 
     @PostMapping("/users/reset/notification")
@@ -392,7 +362,7 @@ public class UsersController {
     public void sendResetPasswordNotification(@RequestBody String email) {
         User user = userService.findByEmail(email);
         checkSSOUser(user);
-        this.sendMail(modelMapper.map(user, UserView.class), MailType.PASSWORD_RESET, ImmutableMap.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
+        this.sendMail(modelMapper.map(user, UserView.class), MailType.PASSWORD_RESET, Map.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
     }
 
     private String generateResetPasswordUrl(String token) {
@@ -563,13 +533,12 @@ public class UsersController {
             final User adminUser = userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
-            log.info(String.format("User [%s] with role [%s] added role [%s] to user [%s] in domain [%d].",
+            log.info("User [{}] with role [{}] added role [{}] to user [{}] in domain [{}].",
                     principal.getName(),
                     adminRoles,
                     userRole.getRole().authority(),
                     user.getUsername(),
-                    domain.getId()
-            ));
+                    domain.getId());
         } catch (ObjectNotFoundException e) {
             throw new MissingElementException(e.getMessage());
         }
@@ -630,7 +599,7 @@ public class UsersController {
                     isEnabledFlag ? "activated" : "deactivated",
                     getUser(userId).getUsername());
             if (isEnabledFlag) {
-                this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_ACTIVATED, ImmutableMap.of("portalURL", portalAddress != null ? portalAddress : ""));
+                this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_ACTIVATED, Map.of("portalURL", portalAddress != null ? portalAddress : ""));
             } else {
                 this.sendMail(modelMapper.map(user, UserView.class), MailType.ACCOUNT_BLOCKED, Collections.emptyMap());
             }
@@ -645,6 +614,13 @@ public class UsersController {
     @Transactional
     public void setDefaultLanguage(@PathVariable Long userId, @RequestParam("defaultLanguage") final String defaultLanguage) {
         this.userService.setUserLanguage(userId, defaultLanguage);
+    }
+
+    @PatchMapping("/users/{userId}/theme")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Transactional
+    public void setDefaultTheme(@PathVariable Long userId, @RequestParam("defaultTheme") final String defaultTheme) {
+        this.userService.setUserTheme(userId, defaultTheme);
     }
 
     @GetMapping(value = "/users/search", params = {"searchPart"})

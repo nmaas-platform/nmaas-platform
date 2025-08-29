@@ -69,19 +69,9 @@
         <appender-ref ref="nmaas-console" />
     </logger>
 
-    <logger name="io.grpc.netty.shaded.io" level="INFO" additivity="false">
-        <appender-ref ref="nmaas-file" />
-        <appender-ref ref="nmaas-console" />
-    </logger>
-
     <logger name="org.postgresql" level="ERROR" additivity="false">
         <appender-ref ref="nmaas-file" />
         <appender-ref ref="nmaas-console" />
-    </logger>
-
-    <logger name="io.netty" level="INFO" additivity="false">
-        <appender-ref ref="nmaas-file"/>
-        <appender-ref ref="nmaas-console"/>
     </logger>
 
     <logger name="io.fabric8.kubernetes.client" level="INFO" additivity="false">
@@ -90,6 +80,11 @@
     </logger>
 
     <logger name="io.vertx.core" level="INFO" additivity="false">
+        <appender-ref ref="nmaas-file"/>
+        <appender-ref ref="nmaas-console"/>
+    </logger>
+
+    <logger name="io.netty" level="INFO" additivity="false">
         <appender-ref ref="nmaas-file"/>
         <appender-ref ref="nmaas-console"/>
     </logger>

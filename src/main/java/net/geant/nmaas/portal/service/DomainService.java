@@ -16,7 +16,6 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +28,7 @@ public interface DomainService {
 	
 	List<Domain> getDomains();
 	List<Domain> getDomains(String searchValue);
-	Page<Domain> getDomains(String searchValue,Pageable pageable);
+	Page<Domain> getDomains(String searchValue, Pageable pageable);
 	
 	boolean existsDomain(String name);
 	boolean existsDomainByCodename(String codename);
@@ -51,7 +50,7 @@ public interface DomainService {
 	boolean removeDomain(Long id);
 	
 	List<User> getMembers(Long id);
-	
+
 	void addMemberRole(Long domainId, Long userId, Role role);
 	void addGlobalGuestUserRoleIfMissing(Long userId);
 	void removeMemberRole(Long domainId, Long userId, Role role);
@@ -60,7 +59,7 @@ public interface DomainService {
 	User getMember(Long domainId, Long userId);
 	Set<Role> getMemberRoles(Long domainId, Long userId);
 	
-	Set<Domain> getUserDomains(Long userId,  String searchValue);
+	Set<Domain> getUserDomains(Long userId, String searchValue);
 
 	List<UserView> findUsersWithDomainAdminRole(String domain);
 

@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DashboardService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -39,14 +40,14 @@ public class DashboardServiceImpl implements DashboardService {
     private final AppInstanceRepository appInstanceRepository;
     private final ApplicationBaseRepository applicationBaseRepository;
     private final UserLoginRegisterService userLoginRegisterService;
+    private final ApplicationBaseService appBaseService;
 
     @Override
     public DashboardView getSystemDashboard(OffsetDateTime startDate, OffsetDateTime endDate) {
-        log.info("Processing dashboard data request for period {} - {}", startDate, endDate);
+        log.info("Processing system dashboard data request for period {} - {}", startDate, endDate);
 
         long startTimeStamp = startDate.toEpochSecond() * 1000;
         long endTimeStamp = endDate.toEpochSecond() * 1000;
-        log.info("Period in timestamps: {} - {}", startTimeStamp, endTimeStamp);
 
         List<String> baseNames = applicationBaseRepository.findAllNames();
         Map<String, Integer> applicationDeploymentCountPerName = new HashMap<>();
@@ -67,21 +68,19 @@ public class DashboardServiceImpl implements DashboardService {
         // filter not deployed application
         applicationDeploymentCountPerName.entrySet().removeIf(app -> app.getValue() == 0);
 
-        DashboardView systemView = DashboardView.builder()
+        return DashboardView.builder()
                 .domainsCount(domainRepository.count())
                 .userCount(userRepository.count())
                 .instanceCount(appInstanceRepository.count())
                 .instanceCountInPeriod(appInstanceRepository.countAllDeployedInTimePeriod(startTimeStamp, endTimeStamp))
                 .instanceCountInPeriodDetails(deploymentsViews)
                 .popularApps(applicationDeploymentCountPerName).build();
-        log.debug("Response: {}", systemView.toString());
-        return systemView;
     }
 
-    //TODO: Change username to pre
     @Override
     public DomainDashboardView getDomainDashboard(Long domainId) {
         log.info("Processing dashboard data request for domain {}", domainId);
+
         Optional<Domain> domain = domainService.findDomain(domainId);
         Map<String, OffsetDateTime> userLogins = new HashMap<>();
         Map<String, Integer> appsDeployed = new HashMap<>();
@@ -91,7 +90,7 @@ public class DashboardServiceImpl implements DashboardService {
             Domain dom = domain.get();
 
             List<User> domainUsers = domainService.getMembers(domainId);
-            List<AppInstance> apps = appInstanceRepository.findAllByDomain(dom);
+            List<AppInstance> apps = appInstanceRepository.findAllActiveInDomain(dom.getCodename());
 
             domainUsers.forEach(user -> {
                 Optional<UserLoginRegister> register = userLoginRegisterService.getLastLogin(user);
@@ -100,23 +99,21 @@ public class DashboardServiceImpl implements DashboardService {
                     appsDeployed.put(this.getUserPreferredUsername(user), appInstanceRepository.countAllByOwner(user));
                 }
             });
-
             apps.forEach(app -> {
                 upgradePossible.add(DomainDashboardView.DomainAppInstanceView.builder()
                         .appId(app.getId())
+                        .baseAppId(appBaseService.findByName(app.getApplication().getName()).getId())
                         .appName(app.getApplication().getName())
                         .instanceName(app.getName())
                         .appVersion(app.getApplication().getVersion())
                         .upgradePossible(applicationInstanceService.checkUpgradePossible(app.getId())).build());
             });
 
-            DomainDashboardView view = DomainDashboardView.builder()
+            return DomainDashboardView.builder()
                     .userLogins(userLogins)
                     .applicationDeployed(appsDeployed)
                     .applicationUpgradeStatus(upgradePossible)
                     .build();
-            log.debug("Response: {}", view.toString());
-            return view;
         } else {
             log.error("Domain {} not present. Returning empty...", domainId);
             return DomainDashboardView.builder().build();

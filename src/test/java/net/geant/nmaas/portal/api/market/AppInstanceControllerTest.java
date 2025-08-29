@@ -21,6 +21,7 @@ import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -28,6 +29,7 @@ import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationInstanceBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -77,6 +79,7 @@ public class AppInstanceControllerTest {
     private final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
     private final ConfigurationManager configurationManager = mock(ConfigurationManager.class);
+    private final ApplicationInstanceBaseService instanceBaseService = mock(ApplicationInstanceBaseService.class);
 
     private AppInstanceController appInstanceController;
 
@@ -89,12 +92,15 @@ public class AppInstanceControllerTest {
     private String identifierValue = "id12";
     private User owner;
     private User admin;
+    private ApplicationBase appBase;
 
     private final Pageable pageable = mock(Pageable.class);
     private final Pageable pageableInvalid = mock(Pageable.class);
 
     @BeforeEach
     void setup() {
+        appBase = new ApplicationBase();
+        appBase.setId(1L);
         owner = new User("owner");
         owner.setId(2L);
         admin = new User("admin");
@@ -104,6 +110,7 @@ public class AppInstanceControllerTest {
         global = new Domain(1L, "GLOBAL", "GLOBAL");
         application = new Application(name,"1.0");
         application.setId(1L);
+        application.setState(ApplicationState.ACTIVE);
         Set<UserRole> roleSet = new HashSet<>();
         roleSet.add(new UserRole(admin, global, Role.ROLE_SYSTEM_ADMIN));
         admin.setNewRoles(roleSet);
@@ -112,6 +119,8 @@ public class AppInstanceControllerTest {
         when(userService.findByUsername(owner.getUsername())).thenReturn(Optional.of(owner));
         when(userService.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(userService.findById(owner.getId())).thenReturn(Optional.of(owner));
+
+        when(applicationBaseService.findByName(any())).thenReturn(appBase);
 
         when(domainService.findDomain(global.getId())).thenReturn(Optional.of(global));
         when(domainService.findDomain(domain1.getId())).thenReturn(Optional.of(domain1));
@@ -131,7 +140,8 @@ public class AppInstanceControllerTest {
                 domainService,
                 appDeploymentRepositoryManager,
                 applicationEventPublisher,
-                configurationManager
+                configurationManager,
+                instanceBaseService
         );
 
         when(pageable.getOffset()).thenReturn(0L);
@@ -162,17 +172,23 @@ public class AppInstanceControllerTest {
 
     @Test
     void shouldGetAllInstancesWithPageable() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, true);
-        List<AppInstance> appInstanceList = new ArrayList<>();
+        AppInstanceBase appInstance = new AppInstanceBase();
+        appInstance.setApplicationBaseId(application.getId());
+        appInstance.setApplicationName(application.getName());
+        appInstance.setName(name);
+        appInstance.setAutoUpgradesEnabled(true);
+        appInstance.setDomainId(domain1.getId());
+        appInstance.setOwner(new UserBase(owner.getId(),owner.getUsername(),true));
+        List<AppInstanceBase> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
-        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
+        Page<AppInstanceBase> appInstancePage = new PageImpl<>(appInstanceList);
 
-        when(applicationInstanceService.findAll(pageable)).thenReturn(appInstancePage);
+        when(instanceBaseService.findAll(pageable)).thenReturn(appInstancePage);
 
-        List<AppInstanceBase> result = appInstanceController.getAllInstances(pageable);
+        Page<AppInstanceBase> result = appInstanceController.getAllInstances(pageable);
 
-        assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.get(0);
+        assertEquals(1, result.getTotalElements());
+        AppInstanceBase appInstanceView = result.getContent().getFirst();
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
         assertTrue(appInstanceView.isAutoUpgradesEnabled());
@@ -183,14 +199,13 @@ public class AppInstanceControllerTest {
         AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
-        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
-        when(applicationInstanceService.findAll(pageable)).thenReturn(appInstancePage);
+        when(applicationInstanceService.findAll()).thenReturn(appInstanceList);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceBase> result = appInstanceController.getAllInstances(global.getId(), principal, pageable);
+        List<AppInstanceBase> result = appInstanceController.getAllInstances(global.getId(), principal, "deployed");
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.get(0);
@@ -199,46 +214,6 @@ public class AppInstanceControllerTest {
         assertFalse(appInstanceView.isAutoUpgradesEnabled());
     }
 
-    @Test
-    void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobalAndPageableInvalid() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
-        List<AppInstance> appInstanceList = new ArrayList<>();
-        appInstanceList.add(appInstance);
-
-        when(applicationInstanceService.findAll()).thenReturn(appInstanceList);
-
-        Principal principal = mock(Principal.class);
-        when(principal.getName()).thenReturn(admin.getUsername());
-
-        List<AppInstanceBase> result = appInstanceController.getAllInstances(global.getId(), principal, pageableInvalid);
-
-        assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.get(0);
-        assertEquals(name, appInstanceView.getApplicationName());
-        assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
-//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
-    }
-
-    @Test
-    void shouldGetAllInstancesWithParamsWhenIsUserAndPageableInvalid() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
-        List<AppInstance> appInstanceList = new ArrayList<>();
-        appInstanceList.add(appInstance);
-        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
-
-        when(applicationInstanceService.findAllByDomain(domain1,null)).thenReturn(appInstancePage);
-
-        Principal principal = mock(Principal.class);
-        when(principal.getName()).thenReturn(admin.getUsername());
-
-        List<AppInstanceBase> result = appInstanceController.getAllInstances(domain1.getId(), principal, pageableInvalid);
-
-        assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.get(0);
-        assertEquals(name, appInstanceView.getApplicationName());
-        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-//        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
-    }
 
     @Test
     void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
@@ -247,15 +222,15 @@ public class AppInstanceControllerTest {
         appInstanceList.add(appInstance);
         Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
-        when(applicationInstanceService.findAllByOwner(admin, pageable)).thenReturn(appInstancePage);
+        when(applicationInstanceService.findAllByOwner(admin)).thenReturn(appInstanceList);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(admin.getUsername());
 
-        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(global.getId(), principal, pageable);
+        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(principal);
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.getFirst();
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
     }
@@ -265,14 +240,13 @@ public class AppInstanceControllerTest {
         AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
-        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
-        when(applicationInstanceService.findAllByOwner(admin, domain1, pageable)).thenReturn(appInstancePage);
+        when(applicationInstanceService.findAllByOwner(admin.getId(), domain1.getId())).thenReturn(appInstanceList);
 
-        List<AppInstanceBase> result = appInstanceController.getUserAllInstances(domain1.getId(), admin.getUsername(), pageable);
+        List<AppInstanceBase> result = appInstanceController.getUserAllInstances(domain1.getId(), admin.getUsername());
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.getFirst();
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
     }
@@ -282,17 +256,16 @@ public class AppInstanceControllerTest {
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
-        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
-        when(applicationInstanceService.findAllByOwner(owner, pageable)).thenReturn(appInstancePage);
+        when(applicationInstanceService.findAllByOwner(owner)).thenReturn(appInstanceList);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(principal, pageable);
+        List<AppInstanceBase> result = appInstanceController.getMyAllInstances(principal);
 
         assertEquals(1, result.size());
-        AppInstanceBase appInstanceView = result.get(0);
+        AppInstanceBase appInstanceView = result.getFirst();
         assertEquals(name, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
 //        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());

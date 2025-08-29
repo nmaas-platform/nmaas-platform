@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,7 +55,7 @@ public class ApplicationSubscriptionServiceTest {
         appSubSrv = new ApplicationSubscriptionServiceImpl(appSubRepo, domains, applications, appStates);
         String applicationName = "app1";
         app1 = new ApplicationBase(APPLICATION_ID, applicationName);
-        app1.setVersions(ImmutableSet.of(new ApplicationVersion("1.1", ApplicationState.ACTIVE, APPLICATION_ID)));
+        app1.setVersions(Set.of(new ApplicationVersion("1.1", ApplicationState.ACTIVE, APPLICATION_ID)));
         String domainName = "DOMAIN1";
         domain1 = new Domain(DOMAIN_ID, domainName, domainName);
         domain1.setApplicationStatePerDomain(new ArrayList<>());

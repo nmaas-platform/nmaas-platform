@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.HelmChartRepositoryEmbeddable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
@@ -88,17 +87,17 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
         Application app2 = this.applicationService.create(getDefaultApplication(base2.getName()));
 
         base1.getVersions().add(
-                new ApplicationVersion(app1.getVersion(), app1.getState(), app1.getId() )
+                new ApplicationVersion(app1.getVersion(), app1.getState(), app1.getId())
         );
         base1 = applicationBaseService.update(base1);
         base2.getVersions().add(
-                new ApplicationVersion(app2.getVersion(), app2.getState(), app2.getId() )
+                new ApplicationVersion(app2.getVersion(), app2.getState(), app2.getId())
         );
         base2 = applicationBaseService.update(base2);
     }
 
     @AfterEach
-    void teardown(){
+    void teardown() {
         this.appRepository.deleteAll();
         this.appBaseRepo.deleteAll();
         this.tagRepository.deleteAll();
@@ -110,12 +109,13 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    void shouldGetAllTags() throws Exception{
+    void shouldGetAllTags() throws Exception {
         MvcResult result = mvc.perform(get("/api/tags")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<String> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<String>>(){});
+        Set<String> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<String>>() {
+        });
         System.out.println(result.getResponse().getContentAsString());
         assertTrue(resultSet.contains("tag1"));
     }
@@ -123,25 +123,27 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
     @Test
     void shouldGetAppByTagWhenThereAreActiveApplications() throws Exception {
         MvcResult result = mvc.perform(get("/api/tags/tag1")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>(){});
+        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>() {
+        });
         assertEquals(2, resultSet.size());
     }
 
     @Test
     void shouldGetEmptyCollection() throws Exception {
         MvcResult result = mvc.perform(get("/api/tags/deprecated")
-                .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
+                        .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN)))
                 .andExpect(status().isOk())
                 .andReturn();
-        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>(){});
+        Set<ApplicationBaseView> resultSet = new ObjectMapper().readValue(result.getResponse().getContentAsByteArray(), new TypeReference<Set<ApplicationBaseView>>() {
+        });
         assertTrue(resultSet.isEmpty());
     }
 
     private ApplicationBaseView getDefaultApplicationBaseView(String name) {
-        return  ApplicationBaseView.builder()
+        return ApplicationBaseView.builder()
                 .name(name)
                 .owner("admin")
                 .descriptions(
@@ -150,7 +152,7 @@ public class TagControllerIntTest extends BaseControllerTestSetup {
                         )
                 )
                 .tags(
-                        ImmutableSet.of(
+                        Set.of(
                                 new TagView(null, "tag1"),
                                 new TagView(null, "tag2")
                         )

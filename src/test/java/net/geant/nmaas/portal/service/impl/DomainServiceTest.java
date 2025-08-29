@@ -1,10 +1,11 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
 import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
+import net.geant.nmaas.kubernetes.remote.entities.KCluster;
+import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainBase;
@@ -76,6 +77,7 @@ class DomainServiceTest {
 
     private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
     private final DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
+    private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
 
     private DomainGroupService domainGroupService;
     private DomainService domainService;
@@ -86,7 +88,8 @@ class DomainServiceTest {
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository, domainDcnDetailsRepository, domainTechDetailsRepository,
                 userService, userRoleRepo, dcnRepositoryManager,
-                modelMapper, applicationStatePerDomainService, domainGroupService, eventPublisher, domainAnnotationsRepository);
+                modelMapper, applicationStatePerDomainService, domainGroupService,
+                domainAnnotationsRepository, kClusterRepository, eventPublisher);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -317,9 +320,9 @@ class DomainServiceTest {
         user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findRolesByDomainAndUser(domain.getId(), user.getId())).thenReturn(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN));
+        when(userRoleRepo.findRolesByDomainAndUser(domain.getId(), user.getId())).thenReturn(Set.of(Role.ROLE_SYSTEM_ADMIN));
         Set<Role> roleSet = this.domainService.getMemberRoles(domainId, userId);
-        assertThat("Result set mismatch", roleSet.equals(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN)));
+        assertThat("Result set mismatch", roleSet.equals(Set.of(Role.ROLE_SYSTEM_ADMIN)));
     }
 
     @Test
@@ -378,7 +381,7 @@ class DomainServiceTest {
         Long userId = 1L;
         User user = new User("user");
         Domain domain = new Domain(1L, "testdom", "testdom");
-        user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN)));
+        user.setNewRoles(Set.of(new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN)));
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         Set<Domain> result = domainService.getUserDomains(userId, null);
         assertThat("Result mismatch", result.contains(domain));
@@ -407,13 +410,18 @@ class DomainServiceTest {
         domainTechDetails.setExternalServiceDomain("external@domain");
         DomainDcnDetails domainDcnDetails = new DomainDcnDetails();
         domainDcnDetails.setId(200L);
+        KCluster remoteCluster = new KCluster();
+        remoteCluster.setId(1L);
+        remoteCluster.setCodename("testcluster");
         Domain domain = new Domain(1L, "testdom", "testdom");
         domain.setDomainDcnDetails(domainDcnDetails);
         domain.setDomainTechDetails(domainTechDetails);
+        domain.setClusters(List.of(remoteCluster));
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
 
         domainService.softRemoveDomain(1L);
 
+        verify(kClusterRepository, times(1)).deleteById(1L);
         verify(domainRepository, times(1)).save(domain);
         verify(eventPublisher).publishEvent(any(DomainRemovalEvent.class));
 
@@ -529,7 +537,7 @@ class DomainServiceTest {
         DomainGroupView result = domainService.updateMembers(List.of(userView2), domainGroupView);
 
         assertEquals(1, result.getManagers().size());
-        assertEquals(2L, result.getManagers().get(0).getId());
+        assertEquals(2L, result.getManagers().getFirst().getId());
     }
 
     @Test

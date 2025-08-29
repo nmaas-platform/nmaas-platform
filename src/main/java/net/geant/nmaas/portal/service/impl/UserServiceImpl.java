@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
@@ -168,7 +167,7 @@ public class UserServiceImpl implements UserService {
         newUser.setLastname(registration.getLastname());
         newUser.setEnabled(false);
         if (domain != null) {
-            newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
+            newUser.setNewRoles(Set.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
         }
         newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
         newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
@@ -194,7 +193,7 @@ public class UserServiceImpl implements UserService {
         newUser.setFirstname(csvUser.getAdminUserName());
         newUser.setLastname(csvUser.getAdminUserName());
         if (domain != null) {
-            newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
+            newUser.setNewRoles(Set.of(new UserRole(newUser, domain, ROLE_DOMAIN_ADMIN)));
         }
         boolean sendMails = configurationManager.getConfiguration().isBulkDomainsSendEmailForNewAccounts();
         // set user saml_token to email address if a sso account requested
@@ -247,6 +246,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void setUserLanguage(Long userId, final String userLanguage) {
         userRepository.setUserLanguage(userId, userLanguage);
+    }
+
+    @Override
+    @Transactional
+    public void setUserTheme(Long userId, String defaultTheme) {
+        userRepository.setUserThemeMode(userId, defaultTheme);
     }
 
     @Override
@@ -317,7 +322,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUserAdminInAnyDomainById(List<Long> domainIds, String username) {
-        Boolean result = false;
+        boolean result = false;
         for (Long domainId : domainIds) {
             if (userRoleRepository.findRolesByDomainAndUser(domainId, username).contains(ROLE_DOMAIN_ADMIN)) {
                 result = true;
@@ -328,7 +333,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUserAdminInAnyDomain(List<Domain> domains, String username) {
-        Boolean result = false;
+        boolean result = false;
         for (Domain domain : domains) {
             if (userRoleRepository.findRolesByDomainAndUser(domain.getId(), username).contains(ROLE_DOMAIN_ADMIN)) {
                 result = true;
@@ -345,21 +350,33 @@ public class UserServiceImpl implements UserService {
 
         if (searchValue != null && !searchValue.isEmpty()) {
             Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue);
-            Page<User> all = userRepository.findAll(searchSpec, pageable);
-            return all.map(this::toListView).map(u -> mapUser(u, userLoginDateMap));
+            return userRepository.findAll(searchSpec, pageable)
+                    .map(this::toListView)
+                    .map(u -> mapUser(u, userLoginDateMap));
         } else {
-            return userRepository.findAllListEntry(pageable).map(u -> mapUser(u, userLoginDateMap));
+            return userRepository.findAll(pageable)
+                    .map(this::toListView)
+                    .map(u -> mapUser(u, userLoginDateMap));
         }
     }
 
     @Override
-    public Page<UserListEntry> findAllListEntry(Pageable pageable, String searchValue, Long domainId) {
-        return null;
-    }
+    public Page<UserListEntry> findAllInDomainListEntry(Long domainId, Pageable pageable, String searchValue) {
+        Map<Long, UserLoginDate> userLoginDateMap = this.userLoginService.getAllFirstAndLastSuccessfulLoginDate().stream()
+                .map(x -> new AbstractMap.SimpleEntry<>(x.getUserId(), x))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    @Override
-    public List<UserListEntry> findAllListEntry() {
-        return userRepository.findAllListEntry();
+        if (searchValue != null && !searchValue.isEmpty()) {
+            Specification<User> searchSpec = UserSpecification.findBySearchValue(searchValue)
+                    .and(UserSpecification.findByDomain(domainId));
+            return userRepository.findAll(searchSpec, pageable)
+                    .map(u -> toListView(u, domainId))
+                    .map(u -> mapUser(u, userLoginDateMap));
+        } else {
+            return userRepository.findAllInDomain(domainId, pageable)
+                    .map(u -> toListView(u, domainId))
+                    .map(u -> mapUser(u, userLoginDateMap));
+        }
     }
 
     @Override
@@ -368,25 +385,24 @@ public class UserServiceImpl implements UserService {
     }
 
     private void sendMail(User user, MailType mailType) {
-        ImmutableMap<String, Object> map;
+        Map<String, Object> map;
         if (mailType == MailType.NEW_BULK_LOGIN) {
-            map = ImmutableMap.<String, Object>builder()
-                    .put("username", user.getUsername())
-                    .put("email", user.getEmail())
-                    .put("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken24Hours(user.getEmail())))
-                    .build();
+            map = Map.of(
+                    "username", user.getUsername(),
+                    "email", user.getEmail(),
+                    "accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken24Hours(user.getEmail()))
+            );
         } else {
-            map = ImmutableMap.<String, Object>builder()
-                    .put("username", user.getUsername())
-                    .put("email", user.getEmail())
-                    .put("portal", this.portalAddress)
-                    .build();
+            map = Map.of(
+                    "username", user.getUsername(),
+                    "email", user.getEmail(),
+                    "portal", this.portalAddress);
         }
         MailAttributes mailAttributes = MailAttributes.builder()
                 .otherAttributes(map)
                 .mailType(mailType)
                 .build();
-        this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
+        eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
     }
 
     private String generateResetPasswordUrl(String token) {
@@ -400,7 +416,7 @@ public class UserServiceImpl implements UserService {
         return url + "reset/" + token;
     }
 
-    private UserListEntry mapUser(UserListEntry entry,final Map<Long, UserLoginDate> userLoginDateMap ) {
+    private UserListEntry mapUser(UserListEntry entry, final Map<Long, UserLoginDate> userLoginDateMap) {
         if (userLoginDateMap.containsKey(entry.getId())) {
             entry.setLastSuccessfulLoginDate(userLoginDateMap.get(entry.getId()).getMaxLoginDate());
             entry.setFirstLoginDate(userLoginDateMap.get(entry.getId()).getMinLoginDate());
@@ -410,5 +426,9 @@ public class UserServiceImpl implements UserService {
 
     private UserListEntry toListView(User user) {
         return new UserListEntry(user);
+    }
+
+    private UserListEntry toListView(User user, Long domainId) {
+        return new UserListEntry(user, domainId);
     }
 }

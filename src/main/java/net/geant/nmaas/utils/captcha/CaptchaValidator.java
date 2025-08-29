@@ -1,18 +1,18 @@
 package net.geant.nmaas.utils.captcha;
 
-import java.util.Map;
-import java.util.Objects;
-
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+import java.util.Objects;
+
 @Service
 @Slf4j
 public class CaptchaValidator {
+
     // set default value to `not_provided`
     @Value("${captcha.secret:not_provided}")
     private String secret;
@@ -22,7 +22,7 @@ public class CaptchaValidator {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public CaptchaValidator(){
+    public CaptchaValidator() {
         restTemplate = new RestTemplate();
     }
 
@@ -38,4 +38,5 @@ public class CaptchaValidator {
     private String prepareUrl(String token) {
         return String.format(GOOGLE_URL, secret, token);
     }
+
 }

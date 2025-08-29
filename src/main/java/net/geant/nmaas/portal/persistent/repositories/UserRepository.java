@@ -1,18 +1,14 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import net.geant.nmaas.portal.api.domain.UserListEntry;
-import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -39,6 +35,10 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     void setUserLanguage(Long userId, String userLanguage);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update User u set u.selectedThemeMode = ?2 where u.id = ?1")
+    void setUserThemeMode(Long userId, String themeMode);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update User u set u.termsOfUseAccepted = ?2 where u.id = ?1")
     void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag);
 
@@ -49,12 +49,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("SELECT count(distinct u.id) FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id != 1")
     int countWithDomain();
 
-    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
-    List<UserListEntry> findAllListEntry();
-
-    @Query("Select new net.geant.nmaas.portal.api.domain.UserListEntry(u) FROM User u")
-    Page<UserListEntry> findAllListEntry(Pageable pageable);
-
-    Page<User> findAll(Specification<User> spec, Pageable pageable);
+    @Query("SELECT u FROM User u JOIN UserRole r ON r.id.user.id = u.id WHERE r.id.domain.id = ?1")
+    Page<User> findAllInDomain(Long domainId, Pageable pageable);
 
 }

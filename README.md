@@ -45,7 +45,12 @@ nmaas applications are containerized and deployed using [Helm charts](https://he
 
 ## nmaas Platform Component 
 
-[nmaas Platform](https://github.com/nmaas-platform/nmaas-platform) is the central nmaas component, exposing a REST API consumed by the nmaas Portal. It stores the application catalog, the users, as well as information about any deployed applications. Upon a new request for an application deployment, it connects to the nmaas Helm component and executes the necessary Helm command via an SSH connection. It also communicates with a self-hosted instance of GitLab, in order to provision boilerplate configuration files for the deployed application instances by the users, allowing them to make any additional configuration changes exclusively through Git.
+[nmaas Platform](https://github.com/nmaas-platform/nmaas-platform) is the central nmaas component, exposing a REST API 
+consumed by the nmaas Portal. It stores the application catalog, the users, as well as information about all deployed 
+applications. Upon a new request for an application deployment, it uses a Helm client to execute necessary Helm operations. 
+It also communicates with a self-hosted instance of GitLab, in order to provision boilerplate configuration files for 
+the application instances deployed by the users, allowing them to make any additional configuration changes exclusively 
+through Git.
 
 ### nmaas Platform Development
 

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Application Tags", description = "Application tags")
 public class TagController {
 
     private final TagRepository tagRepo;

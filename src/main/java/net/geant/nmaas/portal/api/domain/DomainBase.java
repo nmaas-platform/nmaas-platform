@@ -13,6 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DomainBase implements Serializable {
+
     Long id;
     String name;
     String codename;
@@ -20,6 +21,10 @@ public class DomainBase implements Serializable {
     boolean deleted;
 
     public static DomainBase fromEntity(Domain domain) {
+        return new DomainBase(domain.getId(), domain.getName(), domain.getCodename(), domain.isActive(), domain.isDeleted());
+    }
+
+    public static DomainBase fromView(DomainView domain) {
         return new DomainBase(domain.getId(), domain.getName(), domain.getCodename(), domain.isActive(), domain.isDeleted());
     }
 

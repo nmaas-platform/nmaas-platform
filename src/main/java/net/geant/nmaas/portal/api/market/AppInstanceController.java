@@ -39,6 +39,7 @@ import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
+import net.geant.nmaas.portal.service.ApplicationInstanceBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ConfigurationManager;
@@ -48,6 +49,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -88,6 +91,8 @@ public class AppInstanceController extends AppBaseController {
     private final DomainService domainService;
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private final ApplicationEventPublisher eventPublisher;
+    private final ApplicationInstanceBaseService instanceBaseService;
+
 
     private final ConfigurationManager configurationManager;
 
@@ -105,7 +110,8 @@ public class AppInstanceController extends AppBaseController {
                                  DomainService domainService,
                                  AppDeploymentRepositoryManager appDeploymentRepositoryManager,
                                  ApplicationEventPublisher eventPublisher,
-                                 ConfigurationManager configurationManager) {
+                                 ConfigurationManager configurationManager,
+                                 ApplicationInstanceBaseService instanceBaseService) {
         super(modelMapper, userService, applicationService, appBaseService);
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
@@ -114,6 +120,7 @@ public class AppInstanceController extends AppBaseController {
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.eventPublisher = eventPublisher;
         this.configurationManager = configurationManager;
+        this.instanceBaseService = instanceBaseService;
     }
 
     /*
@@ -127,30 +134,91 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    public List<AppInstanceBase> getAllInstances(Pageable pageable) {
+    public List<AppInstanceBase> getAllInstances() {
+        return instanceService.findAll().stream()
+                .map(this::mapAppInstanceBase)
+                .toList();
+    }
+
+    @GetMapping(params = {"page"})
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @Transactional
+    public Page<AppInstanceBase> getAllInstances(Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        List<AppInstance> source = pageable == null ? instanceService.findAll() : instanceService.findAll(pageable).getContent();
-        return source.stream()
-                .map(this::mapAppInstanceBase)
-                .collect(Collectors.toList());
+        return instanceBaseService.findAll(pageable);
     }
 
     @GetMapping("/my")
     @Transactional
-    public List<AppInstanceBase> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
+    public List<AppInstanceBase> getMyAllInstances(@NotNull Principal principal) {
+        User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
+                new MissingElementException(MISSING_USER_MESSAGE));
+        return instanceService.findAllByOwner(user).stream()
+                .map(this::mapAppInstanceBase)
+                .toList();
+    }
+
+    @GetMapping(value = "/my", params = {"page"})
+    @Transactional
+    public Page<AppInstanceBase> getMyAllInstances(@NotNull Principal principal,
+                                                   Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceService.findAllByOwner(user, pageable).getContent().stream()
-                .map(this::mapAppInstanceBase)
-                .collect(Collectors.toList());
+        User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
+                new MissingElementException(MISSING_USER_MESSAGE));
+        return instanceBaseService.findAllByOwner(user, pageable);
     }
 
     @GetMapping("/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
-    public List<AppInstanceBase> getAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
+    public List<AppInstanceBase> getAllInstances(@PathVariable Long domainId,
+                                                 @NotNull Principal principal,
+                                                 @RequestParam(required = false) String status) {
+        List<AppInstanceBase> result;
+        Domain domain = domainService.findDomain(domainId)
+                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+        User user = this.userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+
+        // system admin on global view has an overall view over all instances
+        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
+            List<AppInstance> source = instanceService.findAll();
+            result = source.stream()
+                    .map(this::mapAppInstanceBase)
+                    .toList();
+        } else {
+            result = instanceService.findAllByDomain(domain).stream()
+                    .map(this::mapAppInstanceBase)
+                    .toList();
+        }
+
+        if (status != null && status.equals("deployed")) {
+
+            return result.stream().filter(instance ->
+                    instance.getState() != AppInstanceState.REMOVED
+                            && instance.getState() != AppInstanceState.DONE
+            ).toList();
+
+        } else if (status != null && status.equals("undeployed")) {
+            return result.stream().filter(instance ->
+                    instance.getState() == AppInstanceState.REMOVED
+                            || instance.getState() == AppInstanceState.DONE
+            ).toList();
+        }
+
+        return result;
+    }
+
+    @GetMapping(value = "/domain/{domainId}", params = {"page"})
+    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
+    @Transactional
+    public Page<AppInstanceBase> getAllInstances(@PathVariable Long domainId,
+                                                 @NotNull Principal principal,
+                                                 Pageable pageable,
+                                                 @RequestParam(required = false) String status,
+                                                 @RequestParam(required = false, defaultValue = "") String search) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         Domain domain = domainService.findDomain(domainId)
@@ -160,14 +228,19 @@ public class AppInstanceController extends AppBaseController {
 
         // system admin on global view has an overall view over all instances
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            List<AppInstance> source = pageable == null ? instanceService.findAll() : instanceService.findAll(pageable).getContent();
-            return source.stream()
-                    .map(this::mapAppInstanceBase)
-                    .collect(Collectors.toList());
+            if (status != null && status.equals("deployed")) {
+                return instanceBaseService.findAll(pageable, true, search);
+            } else if (status != null && status.equals("undeployed")) {
+                return instanceBaseService.findAll(pageable, false, search);
+            }
+            return instanceBaseService.findAll(pageable);
         } else {
-            return instanceService.findAllByDomain(domain, pageable).getContent().stream()
-                    .map(this::mapAppInstanceBase)
-                    .collect(Collectors.toList());
+            if (status != null && status.equals("deployed")) {
+                return instanceBaseService.findAllByDomain(domain, pageable, true, search);
+            } else if (status != null && status.equals("undeployed")) {
+                return instanceBaseService.findAllByDomain(domain, pageable, false, search);
+            }
+            return instanceBaseService.findAllByDomain(domain, pageable, search);
         }
     }
 
@@ -178,6 +251,18 @@ public class AppInstanceController extends AppBaseController {
                                                         @NotNull Principal principal) {
         Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         return getAllRunningByDomain(domain);
+    }
+
+    @GetMapping(value = "/running/domain/{domainId}", params = {"page"})
+    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
+    @Transactional
+    public Page<AppInstanceView> getRunningAppInstances(@PathVariable(value = "domainId") long domainId,
+                                                        @NotNull Principal principal,
+                                                        Pageable pageable) {
+        this.logPageable(pageable);
+        pageable = this.pageableValidator(pageable);
+        Domain domain = this.domainService.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
+        return getAllRunningByDomain(domain, pageable);
     }
 
     @GetMapping("/running/app/{id}")
@@ -196,7 +281,17 @@ public class AppInstanceController extends AppBaseController {
         return this.instanceService.findAllByDomain(domain).stream()
                 .filter(this::isInstanceRunning)
                 .map(this::mapAppInstance)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    private Page<AppInstanceView> getAllRunningByDomain(Domain domain, Pageable pageable) {
+        Page<AppInstance> page = instanceService.findAllByDomain(domain, pageable);
+        List<AppInstanceView> filtered = page.getContent()
+                .stream()
+                .filter(this::isInstanceRunning)
+                .map(this::mapAppInstance)
+                .toList();
+        return new PageImpl<>(filtered, pageable, filtered.size());
     }
 
     private boolean isInstanceRunning(AppInstance app) {
@@ -208,17 +303,79 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId,
                                                    @NotNull Principal principal,
-                                                   Pageable pageable) {
+                                                   @RequestParam(required = false) String status) {
+        User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
+
+        if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
+
+            if (status != null && status.equals("deployed")) {
+                return instanceService.findAllByOwner(user).stream()
+                        .map(this::mapAppInstanceBase)
+                        .filter(appInstanceBase ->
+                                appInstanceBase.getState() != AppInstanceState.REMOVED &&
+                                        appInstanceBase.getState() != AppInstanceState.DONE)
+                        .toList();
+
+            } else if (status != null && status.equals("undeployed")) {
+                return instanceService.findAllByOwner(user).stream()
+                        .map(this::mapAppInstanceBase)
+                        .filter(appInstanceBase ->
+                                appInstanceBase.getState() == AppInstanceState.REMOVED ||
+                                        appInstanceBase.getState() == AppInstanceState.DONE)
+                        .toList();
+            }
+            return instanceService.findAllByOwner(user).stream()
+                    .map(this::mapAppInstanceBase)
+                    .toList();
+        } else {
+            if (status != null && status.equals("deployed")) {
+                return getUserDomainAppInstances(domainId, principal.getName())
+                        .stream().filter(appInstanceBase ->
+                                appInstanceBase.getState() != AppInstanceState.REMOVED &&
+                                        appInstanceBase.getState() != AppInstanceState.DONE)
+                        .toList();
+            } else if (status != null && status.equals("undeployed")) {
+                return getUserDomainAppInstances(domainId, principal.getName())
+                        .stream().filter(appInstanceBase ->
+                                appInstanceBase.getState() == AppInstanceState.REMOVED ||
+                                        appInstanceBase.getState() == AppInstanceState.DONE)
+                        .toList();
+            }
+            return getUserDomainAppInstances(domainId, principal.getName());
+        }
+    }
+
+    @GetMapping(value = "/domain/{domainId}/my", params = {"page"})
+    @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
+    @Transactional
+    public Page<AppInstanceBase> getMyAllInstances(@PathVariable Long domainId,
+                                                   @NotNull Principal principal,
+                                                   Pageable pageable,
+                                                   @RequestParam(required = false) String status,
+                                                   @RequestParam(required = false, defaultValue = "") String search) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         User user = this.userService.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
+
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            return instanceService.findAllByOwner(user, pageable).getContent().stream()
-                    .map(this::mapAppInstanceBase)
-                    .collect(Collectors.toList());
+
+            if (status != null && status.equals("deployed")) {
+                    return instanceBaseService.findAllByOwner(user, pageable, true, search);
+            } else if (status != null && status.equals("undeployed")) {
+                    return instanceBaseService.findAllByOwner(user, pageable, false, search);
+            }
+
+            return instanceBaseService.findAllByOwner(user, pageable);
         } else {
-            return getUserDomainAppInstances(domainId, principal.getName(), pageable);
+
+            if (status != null) {
+                boolean deployed = status.equals("deployed");
+                return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, deployed, search);
+
+            }
+
+            return getPageUserDomainAppInstances(domainId, principal.getName(), pageable);
         }
     }
 
@@ -226,21 +383,51 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
     public List<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
+                                                     @PathVariable String username) {
+        return getUserDomainAppInstances(domainId, username);
+    }
+
+    @GetMapping(value = "/domain/{domainId}/user/{username}", params = {"page"})
+    @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+    @Transactional
+    public Page<AppInstanceBase> getUserAllInstances(@PathVariable Long domainId,
                                                      @PathVariable String username,
                                                      Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
-        return getUserDomainAppInstances(domainId, username, pageable);
+        return getPageUserDomainAppInstances(domainId, username, pageable);
     }
 
-    private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username, Pageable pageable) {
+    private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username) {
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceService.findAllByOwner(user, domain, pageable).getContent().stream()
+        return instanceService.findAllByOwner(user.getId(), domain.getId()).stream()
                 .map(this::mapAppInstanceBase)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    private Page<AppInstanceBase> getPageUserDomainAppInstances(Long domainId,
+                                                                String username,
+                                                                Pageable pageable) {
+        Domain domain = domainService.findDomain(domainId)
+                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
+        return instanceBaseService.findAllByOwner(user, domain, pageable);
+    }
+
+    private Page<AppInstanceBase> getPageUserDomainAppInstances(Long domainId,
+                                                                String username,
+                                                                Pageable pageable,
+                                                                boolean deployed,
+                                                                String search) {
+        Domain domain = domainService.findDomain(domainId)
+                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+        User user = userService.findByUsername(username)
+                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
+        return instanceBaseService.findAllByOwner(user, domain, pageable, deployed,search);
     }
 
     @GetMapping("/{appInstanceId}")
@@ -488,7 +675,7 @@ public class AppInstanceController extends AppBaseController {
         this.instanceService.update(appInstance);
 
         // get user data to be removed from members
-        List<User> usersToRemove = oldMembers.stream().filter(m -> toRemoveMemberUsernames.contains(m.getUsername())).collect(Collectors.toList());
+        List<User> usersToRemove = oldMembers.stream().filter(m -> toRemoveMemberUsernames.contains(m.getUsername())).toList();
 
         usersToRemove.forEach(r -> {
             RemoveUserFromRepositoryGitlabEvent event = new RemoveUserFromRepositoryGitlabEvent(
@@ -508,7 +695,7 @@ public class AppInstanceController extends AppBaseController {
                         a.getUsername(),
                         a.getEmail(),
                         a.getFirstname() + " " + a.getLastname(),
-                        a.getSshKeys().stream().map(SSHKeyEntity::getKeyValue).collect(Collectors.toList()),
+                        a.getSshKeys().stream().map(SSHKeyEntity::getKeyValue).toList(),
                         appInstance.getInternalId()
                 );
                 eventPublisher.publishEvent(event);
@@ -668,6 +855,7 @@ public class AppInstanceController extends AppBaseController {
             return null;
         }
         AppInstanceBase ai = modelMapper.map(appInstance, AppInstanceBase.class);
+        ai.setApplicationBaseId(appBaseService.findByName(appInstance.getApplication().getName()).getId());
         return addAppInstanceBaseProperties(ai, appInstance);
     }
 

@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterDeploymentManager;
-import net.geant.nmaas.externalservices.kubernetes.KubernetesClusterIngressManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
+import net.geant.nmaas.kubernetes.KubernetesClusterIngressManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;

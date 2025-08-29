@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.logs;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.service.ApplicationLogsService;
@@ -17,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Transactional
 @Slf4j
+@Tag(name = "Application Logs", description = "Access to running application logs")
 public class AppLogsController {
 
     private final ApplicationLogsService service;

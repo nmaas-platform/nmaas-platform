@@ -2,7 +2,6 @@ package net.geant.nmaas.notifications.templates;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
-import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +29,7 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void addTemplate(@RequestBody MailTemplateView mailTemplate){
+    public void addTemplate(@RequestBody MailTemplateView mailTemplate) {
         this.templateService.saveMailTemplate(mailTemplate);
     }
 
@@ -38,7 +37,7 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void updateTemplates(@RequestBody List<MailTemplateView> mailTemplates){
+    public void updateTemplates(@RequestBody List<MailTemplateView> mailTemplates) {
         mailTemplates.forEach(this.templateService::updateMailTemplate);
     }
 
@@ -46,14 +45,14 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void updateTemplate(@RequestBody MailTemplateView mailTemplate){
+    public void updateTemplate(@RequestBody MailTemplateView mailTemplate) {
         this.templateService.updateMailTemplate(mailTemplate);
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
-    public List<MailTemplateView> getTemplates(){
+    public List<MailTemplateView> getTemplates() {
         return this.templateService.getMailTemplates();
     }
 
@@ -61,7 +60,7 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void storeHtmlTemplate(@RequestBody MultipartFile file){
+    public void storeHtmlTemplate(@RequestBody MultipartFile file) {
         templateService.storeHTMLTemplate(file);
     }
 
@@ -69,13 +68,13 @@ public class TemplateController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Transactional
-    public void updateHtmlTemplate(@RequestBody MultipartFile file){
+    public void updateHtmlTemplate(@RequestBody MultipartFile file) {
         this.templateService.updateHTMLTemplate(file);
     }
 
     @ExceptionHandler(DataConflictException.class)
     @ResponseStatus(code = HttpStatus.CONFLICT)
-    public String handleDataConfigException(DataConflictException e){
+    public String handleDataConfigException(DataConflictException e) {
         return e.getMessage();
     }
 }

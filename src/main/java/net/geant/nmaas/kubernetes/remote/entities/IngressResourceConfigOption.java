@@ -1,8 +1,7 @@
 package net.geant.nmaas.kubernetes.remote.entities;
 
-import net.geant.nmaas.externalservices.kubernetes.api.model.KClusterView;
-
-import static com.google.common.base.Preconditions.checkArgument;
+import net.geant.nmaas.kubernetes.api.model.KClusterView;
+import org.apache.commons.lang3.Validate;
 
 public enum IngressResourceConfigOption {
 
@@ -17,9 +16,9 @@ public enum IngressResourceConfigOption {
     DEPLOY_FROM_CHART {
         @Override
         public void validate(KClusterView.KClusterIngressView ingress) {
-            checkArgument(ingress.getExternalServiceDomain() != null && !ingress.getExternalServiceDomain().isEmpty()
+            Validate.isTrue(ingress.getExternalServiceDomain() != null && !ingress.getExternalServiceDomain().isEmpty()
                     , "When deploying ingress resource the external service domain can't be empty.");
-            checkArgument(ingress.getTlsSupported() != null
+            Validate.isTrue(ingress.getTlsSupported() != null
                     , "When deploying ingress resource the TLS support flag must be set.");
         }
     };

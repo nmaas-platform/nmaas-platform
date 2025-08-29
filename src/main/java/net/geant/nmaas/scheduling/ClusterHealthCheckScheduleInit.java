@@ -1,9 +1,9 @@
 package net.geant.nmaas.scheduling;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.remote.RemoteClusterMonitoringJob;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,11 +38,11 @@ public class ClusterHealthCheckScheduleInit implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
         final String healthCheckJobCronFromDb = configurationManager.getConfiguration().getHealthCheckJobCron();
-        if (!Strings.isNullOrEmpty(healthCheckJobCronFromDb)) {
+        if (!StringUtils.isEmpty(healthCheckJobCronFromDb)) {
             log.debug("Scheduling cluster health check job based on cron loaded from the database");
             this.scheduleManager.createJob(remoteClusterMonitoringJob, CLUSTER_HEALTH_CHECK, healthCheckJobCronFromDb);
             log.error("Adding new job for health check cluster ...");
-        } else if (Strings.isNullOrEmpty(healthCheckJobCron)) {
+        } else if (StringUtils.isEmpty(healthCheckJobCron)) {
             log.warn("Cluster health check cron expression not provided");
         } else {
             log.debug("Scheduling cluster health check job based on cron loaded from properties");

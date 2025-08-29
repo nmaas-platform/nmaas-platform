@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.configuration.gitlab;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
@@ -55,7 +54,8 @@ public class GitLabConfigHelper {
         user.setName(name);
         user.setCanCreateGroup(false);
         user.setCanCreateProject(false);
-        log.info(String.format("Creating GitLab user (username: [%s], email: [%s], name: [%s])", username, email, name));
+        user.setSkipConfirmation(true);
+        log.info("Creating GitLab user (username: [{}], email: [{}], name: [{}])", username, email, name);
         return user;
     }
 

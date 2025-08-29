@@ -2,11 +2,10 @@ plugins {
     id 'java'
     id 'idea'
     id 'jacoco'
-    id 'org.springframework.boot' version '3.5.3'
+    id 'org.springframework.boot' version '3.5.5'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.gorylenko.gradle-git-properties' version '2.5.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.5.2'
     id 'org.sonarqube' version '6.2.0.5505'
-    id 'com.google.protobuf' version '0.9.5'
 }
 
 repositories {
@@ -26,25 +25,6 @@ gitProperties {
     gitPropertiesResourceDir = file("${project.rootDir}/src/main/resources")
     dotGitDirectory = file("${project.rootDir}/.git")
     keys = ['git.branch', 'git.commit.time', 'git.commit.id.abbrev', 'git.build.version']
-}
-
-protobuf {
-    protoc {
-        artifact = 'com.google.protobuf:protoc:4.31.1'
-    }
-    plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.73.0'
-        }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {
-                option 'jakarta_omit'
-                option '@generated=omit'
-            }
-        }
-    }
 }
 
 jar {
@@ -67,7 +47,6 @@ sourceSets {
 configurations {
     integrationTestImplementation.extendsFrom implementation
     integrationTestRuntimeOnly.extendsFrom runtimeOnly
-
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -96,52 +75,48 @@ dependencies {
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.security:spring-security-oauth2-client'
 
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.7'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.7'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.7'
 
-    implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9')
+    implementation('org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11')
 
     implementation('org.modelmapper:modelmapper:3.2.4')
     implementation('org.modelmapper.extensions:modelmapper-spring:3.2.4')
-    implementation('org.apache.commons:commons-lang3:3.17.0')
+    implementation('org.apache.commons:commons-lang3:3.18.0')
 
     // Database
     runtimeOnly('com.h2database:h2')
     runtimeOnly('org.postgresql:postgresql')
 
     // Database audit trail
-    implementation 'org.hibernate.orm:hibernate-envers:6.6.19.Final'
+    implementation 'org.hibernate.orm:hibernate-envers:6.6.27.Final'
 
     // Database migrations
-    implementation('org.flywaydb:flyway-core:11.10.0')
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.10.0'
+    implementation('org.flywaydb:flyway-core:11.11.2')
+    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.11.2'
 
+    // Templates
     implementation('org.freemarker:freemarker:2.3.34')
 
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.15.1')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.15.3')
 
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:7.3.1')
 
     // GitLab API client
-    implementation 'org.gitlab4j:gitlab4j-api:6.0.0' // version 6 for jakarta
-
-    // GRPC communication with Janitor
-    implementation('com.google.protobuf:protobuf-java:4.31.1')
-    implementation('io.grpc:grpc-netty-shaded:1.73.0')
-    implementation('io.grpc:grpc-protobuf:1.73.0')
-    implementation('io.grpc:grpc-stub:1.73.0')
+    implementation 'org.gitlab4j:gitlab4j-api:6.1.0'
 
     // CSV processing
-    implementation('com.opencsv:opencsv:5.11.2')
+    implementation('com.opencsv:opencsv:5.12.0')
 
     // Tests
-    testImplementation('org.mockito:mockito-core:5.18.0')
+    testImplementation('org.mockito:mockito-core:5.19.0')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.yaml:snakeyaml:2.4')
 
     integrationTestImplementation('org.springframework.boot:spring-boot-starter-test')
     integrationTestImplementation('org.springframework.security:spring-security-test')
@@ -162,7 +137,6 @@ test {
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/test.exec").get().asFile
         excludes = [
-                '**/inventory/janitor/**',
                 '**/exception/**',
                 '**/exceptions/**'
         ]
@@ -180,7 +154,6 @@ tasks.register('integrationTestOnly', Test) {
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
         excludes = [
-                '**/inventory/janitor/**',
                 '**/exception/**',
                 '**/exceptions/**'
         ]
@@ -198,12 +171,29 @@ tasks.register('integrationTest', Test) {
     jacoco {
         destinationFile = layout.buildDirectory.file("jacoco/integrationTest.exec").get().asFile
         excludes = [
-                '**/inventory/janitor/**',
                 '**/exception/**',
                 '**/exceptions/**'
         ]
     }
     dependsOn(test)
+}
+
+tasks.register('generateOpenApiYaml', Test) {
+    group = 'documentation'
+    description = 'Runs test that exports OpenAPI YAML from Spring context'
+
+    useJUnitPlatform()
+
+    // Run only the specific test class and method
+    include '**/OpenApiExportTest.class'
+
+    filter {
+        includeTestsMatching("net.geant.nmaas.openapi.OpenApiExportTest.exportOpenApiAsYaml")
+    }
+
+    // Make sure test classes and runtime classpath are ready
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
 jacoco {
@@ -220,7 +210,7 @@ jacocoTestReport {
     executionData(test, integrationTest)
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/inventory/janitor/**',])
+            fileTree(dir: it, exclude: [])
         }))
     }
 }
@@ -229,7 +219,7 @@ jacocoTestCoverageVerification {
     executionData(test, integrationTest)
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/inventory/janitor/**',])
+            fileTree(dir: it, exclude: [])
         }))
     }
     violationRules {
@@ -280,6 +270,6 @@ jacocoTestCoverageVerification.finalizedBy(jacocoTestReport)
 
 sonarqube {
     properties {
-        property "sonar.coverage.exclusions", ["**/inventory/janitor/**", "**/exception/**", "**/exceptions/**"]
+        property "sonar.coverage.exclusions", ["**/exception/**", "**/exceptions/**"]
     }
 }
