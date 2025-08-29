@@ -1417,6 +1417,7 @@
       "WEBHOOK": "Webhook data updated"
     },
     "ERROR": {
+      "NEW_GROUP": "Failed to add new group.",
       "NEW_DOMAIN": "Failed to add new domain",
       "SETTINGS": "Settings update failed",
       "NOTIFICATION": "Message could not be sent",
