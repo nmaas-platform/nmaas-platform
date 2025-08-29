@@ -1416,6 +1416,7 @@
       "WEBHOOK": "Webhook mis à jour"
     },
     "ERROR": {
+      "NEW_GROUP": "Échec de l’ajout d’un nouveau groupe.",
       "NEW_DOMAIN": "Échec de l'ajout d'un nouveau domaine",
       "SETTINGS": "La mise à jour des paramètres a échoué",
       "NOTIFICATION": "Le message n'a pas pu être envoyé.",

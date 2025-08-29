@@ -1416,6 +1416,7 @@
     },
     "ERROR": {
       "NEW_DOMAIN": "Nie udało się dodać nowej domeny",
+      "NEW_GROUP": "Nie udało się dodać nowej grupy",
       "SETTINGS": "Aktualizacja ustawień nie powiodła się",
       "NOTIFICATION": "Nie udało się wysłać wiadomości",
       "WEBHOOK": "Aktualizacja danych webhooka nie powiodła się"

@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,12 +27,13 @@ class DomainGroupServiceTest {
     private final ApplicationStatePerDomainService applicationStatePerDomainService = mock(ApplicationStatePerDomainService.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private final ModelMapper modelMapper = new ModelMapper();
+    private final UserRoleRepository userRoleRepository = mock(UserRoleRepository.class);
 
     private DomainGroupService domainGroupService;
 
     @BeforeEach
     void setup() {
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher, modelMapper);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher,userRoleRepository, modelMapper);
     }
 
     @Test
