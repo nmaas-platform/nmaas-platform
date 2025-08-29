@@ -28,7 +28,6 @@ public class TokenAuthenticationService {
     private static final String AUTH_METHOD = "Bearer";
     private static final Pattern UUID_PATTERN = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", Pattern.CASE_INSENSITIVE);
 
-
     private final JWTTokenService jwtTokenService;
     private final UserApiTokenRepository userApiTokenRepository;
     private final SecretPasswordService secretPasswordService;
@@ -48,7 +47,7 @@ public class TokenAuthenticationService {
         String token = authHeader.substring(AUTH_METHOD.length() + 1);
         if (isJWTToken(token)) {
 
-            log.trace("Jwt token auth service: {} {} ", jwtTokenService.getClaims(token).getSubject(), jwtTokenService.getClaims(token).get("roles"));
+            log.trace("Jwt token auth service: {} {}", jwtTokenService.getClaims(token).getSubject(), jwtTokenService.getClaims(token).get("roles"));
 
             String username = jwtTokenService.getClaims(token).getSubject();
             Object roles = jwtTokenService.getClaims(token).get("roles");
