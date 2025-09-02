@@ -1,6 +1,22 @@
 {
   "versions" : [
     {
+      "verNo" : "1.8.0",
+      "date" : "(2025/09/03)",
+      "topic" : [
+        {
+          "title" : "Brand new Portal layout",
+          "tags" : "[Enhancement]",
+          "description" : "Introduced new overall layout of the Portal based on an updated new design."
+        },
+        {
+          "title" : "Enabled missing email notification",
+          "tags" : "[Bugfix]",
+          "description" : "Administrators are now notified with an email about any new application version that requires activation."
+        }
+      ]
+    },
+    {
       "verNo" : "1.7.1",
       "date" : "(2025/04/15)",
       "topic" : [
