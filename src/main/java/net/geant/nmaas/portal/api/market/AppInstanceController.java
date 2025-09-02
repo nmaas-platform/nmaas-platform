@@ -22,6 +22,7 @@ import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtendedDTO;
 import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
@@ -433,11 +434,11 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'READ')")
     @Transactional
-    public AppInstanceViewExtended getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                                  @NotNull Principal principal) {
+    public AppInstanceViewExtendedDTO getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                                     @NotNull Principal principal) {
         AppInstance appInstance = instanceService.find(appInstanceId)
                 .orElseThrow(() -> new MissingElementException("App instance not found."));
-        return mapAppInstanceExtended(appInstance);
+        return new AppInstanceViewExtendedDTO(mapAppInstanceExtended(appInstance));
     }
 
     @PostMapping("/domain/{domainId}")
@@ -847,7 +848,9 @@ public class AppInstanceController extends AppBaseController {
         ApplicationBase applicationBase = this.appBaseService.findByName(appInstance.getApplication().getName());
         ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseView.class));
 
-        return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
+        AppInstanceViewExtended result = (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
+
+        return result;
     }
 
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
