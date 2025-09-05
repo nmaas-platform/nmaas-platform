@@ -32,12 +32,6 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 
     List<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain);
 
-    Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
-
-    Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
-
-    Page<AppInstance> findAllByOwnerAndDomain(User owner, Domain domain, Pageable pageable);
-
     List<AppInstance> findAllByApplication(Application application);
 
     @Query("select count(ai.id) FROM AppInstance ai JOIN AppDeployment ad on ad.deploymentId = ai.internalId where ad.state = 'APPLICATION_DEPLOYMENT_VERIFIED'")
@@ -68,38 +62,213 @@ public interface AppInstanceRepository extends JpaRepository<AppInstance, Long> 
 
     int countAllByOwner(User user);
 
-    @Query("SELECT a FROM AppInstance a " +
-            "WHERE a.domain.deleted = false " +
-            "AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<AppInstance> findFiltered(@Param("search") String search, Pageable pageable);
+    @Query("""
+            SELECT a FROM AppInstance a
+                        WHERE a.domain.deleted = false
+            """)
+    Page<AppInstance> findAllNotDeleted(Pageable pageable);
+
+    Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
+
+    Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
+
+    Page<AppInstance> findAllByOwnerAndDomain(User owner,
+                                              Domain domain,
+                                              Pageable pageable);
 
     @Query("""
-       SELECT a 
-       FROM AppInstance a 
-       WHERE a.domain = :domain
-       AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
-       """)
+                SELECT a
+                FROM AppInstance a
+                WHERE a.domain.deleted = false
+                  AND (:search IS NULL OR :search = '' OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+                  AND (
+                       (:deployed = true  AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state NOT IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                    OR (:deployed = false AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                  )
+            """)
+    Page<AppInstance> findAllNotDeletedByDeploy(@Param("search") String search,
+                                                Pageable pageable,
+                                                boolean deployed);
+
+    @Query("""
+            SELECT a
+            FROM AppInstance a 
+            WHERE a.domain = :domain
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            """)
     Page<AppInstance> findAllByDomainAndSearch(@Param("domain") Domain domain,
                                                @Param("search") String search,
                                                Pageable pageable);
 
     @Query("""
-       SELECT a 
-       FROM AppInstance a 
-       WHERE a.owner = :user
-       AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
-       """)
+            SELECT a
+            FROM AppInstance a
+            WHERE a.domain = :domain
+            AND a.domain.deleted = false
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            """)
+    Page<AppInstance> findAllNotDeletedByDomainAndSearch(@Param("domain") Domain domain,
+                                                         @Param("search") String search,
+                                                         Pageable pageable);
+
+    @Query("""
+            SELECT a
+            FROM AppInstance a
+            WHERE a.domain = :domain
+            AND a.domain.deleted = false
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (
+                       (:deployed = true  AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state NOT IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                    OR (:deployed = false AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                  )
+            """)
+    Page<AppInstance> findAllNotDeletedByDomainAndByDeployAndSearch(@Param("domain") Domain domain,
+                                                                    @Param("search") String search,
+                                                                    boolean deployed,
+                                                                    Pageable pageable);
+
+    @Query("""
+            SELECT a
+            FROM AppInstance a
+            WHERE a.owner = :user
+            AND a.domain.deleted = false
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            """)
+    Page<AppInstance> findAllNotDeletedByOwnerAndSearch(@Param("user") User user,
+                                                        @Param("search") String search,
+                                                        Pageable pageable);
+
+    @Query("""
+            SELECT a
+            FROM AppInstance a
+            WHERE a.owner = :user
+            AND a.domain.deleted = false
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (
+                       (:deployed = true  AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state NOT IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                    OR (:deployed = false AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                  )
+            """)
+    Page<AppInstance> findAllNotDeletedByOwnerAndByDeployAndSearch(@Param("user") User user,
+                                                                   @Param("search") String search,
+                                                                   boolean deployed,
+                                                                   Pageable pageable);
+
+    @Query("""
+            SELECT a
+            FROM AppInstance a
+            WHERE a.owner = :user
+            AND a.domain = :domain
+            AND a.domain.deleted = false
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            AND (
+                       (:deployed = true  AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state NOT IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                    OR (:deployed = false AND EXISTS (
+                           SELECT 1
+                           FROM net.geant.nmaas.orchestration.entities.AppDeployment l
+                           WHERE l.instanceId = a.id
+                             AND l.state IN (
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED,
+                               net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED
+                             )
+                       ))
+                  )
+            """)
+    Page<AppInstance> findAllNotDeletedByOwnerAndDomainAndByDeployAndSearch(@Param("user") User user,
+                                                                            @Param("search") String search,
+                                                                            @Param("domain") Domain domain,
+                                                                            boolean deployed,
+                                                                            Pageable pageable);
+
+    @Query("""
+            SELECT a
+            FROM AppInstance a
+            WHERE a.owner = :user
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            """)
     Page<AppInstance> findAllByOwnerAndSearch(@Param("user") User user,
                                               @Param("search") String search,
                                               Pageable pageable);
 
     @Query("""
-       SELECT a
-       FROM AppInstance a
-       WHERE a.owner = :user
-       AND a.domain = :domain
-       AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
-       """)
+            SELECT a
+            FROM AppInstance a
+            WHERE a.owner = :user
+            AND a.domain = :domain
+            AND (:search IS NULL OR LOWER(a.name) LIKE LOWER(CONCAT('%', :search, '%')))
+            """)
     Page<AppInstance> findAllByOwnerAndDomainAndSearch(@Param("user") User user,
                                                        @Param("domain") Domain domain,
                                                        @Param("search") String search,

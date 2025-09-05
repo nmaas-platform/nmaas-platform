@@ -162,12 +162,19 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping(value = "/my", params = {"page"})
     @Transactional
     public Page<AppInstanceBase> getMyAllInstances(@NotNull Principal principal,
+                                                   @RequestParam(required = false) String status,
+                                                   @RequestParam(required = false, defaultValue = "") String search,
                                                    Pageable pageable) {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         User user = userService.findByUsername(principal.getName()).orElseThrow(() ->
                 new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceBaseService.findAllByOwner(user, pageable);
+        if (status != null) {
+            return instanceBaseService.findAllByOwner(user, pageable, status.equals("deployed"), search);
+        } else {
+
+        }
+        return instanceBaseService.findAllByOwner(user, pageable, search);
     }
 
     @GetMapping("/domain/{domainId}")
@@ -228,17 +235,13 @@ public class AppInstanceController extends AppBaseController {
 
         // system admin on global view has an overall view over all instances
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-            if (status != null && status.equals("deployed")) {
-                return instanceBaseService.findAll(pageable, true, search);
-            } else if (status != null && status.equals("undeployed")) {
-                return instanceBaseService.findAll(pageable, false, search);
+            if (status != null) {
+                return instanceBaseService.findAll(pageable, status.equals("deployed"), search);
             }
             return instanceBaseService.findAll(pageable);
         } else {
-            if (status != null && status.equals("deployed")) {
-                return instanceBaseService.findAllByDomain(domain, pageable, true, search);
-            } else if (status != null && status.equals("undeployed")) {
-                return instanceBaseService.findAllByDomain(domain, pageable, false, search);
+            if (status != null) {
+                return instanceBaseService.findAllByDomain(domain, pageable, status.equals("deployed"), search);
             }
             return instanceBaseService.findAllByDomain(domain, pageable, search);
         }
@@ -359,23 +362,31 @@ public class AppInstanceController extends AppBaseController {
 
 
         if (this.isSystemAdminAndIsDomainGlobal(user, domainId)) {
-
-            if (status != null && status.equals("deployed")) {
-                    return instanceBaseService.findAllByOwner(user, pageable, true, search);
-            } else if (status != null && status.equals("undeployed")) {
-                    return instanceBaseService.findAllByOwner(user, pageable, false, search);
+            if (status != null) {
+                return instanceBaseService.findAllByOwner(
+                        user,
+                        pageable,
+                        status.equals("deployed"),
+                        search
+                );
             }
-
             return instanceBaseService.findAllByOwner(user, pageable);
         } else {
 
             if (status != null) {
-                boolean deployed = status.equals("deployed");
-                return getPageUserDomainAppInstances(domainId, principal.getName(), pageable, deployed, search);
-
+                return getPageUserDomainAppInstances(
+                        domainId,
+                        principal.getName(),
+                        pageable,
+                        status.equals("deployed"),
+                        search
+                );
             }
-
-            return getPageUserDomainAppInstances(domainId, principal.getName(), pageable);
+            return getPageUserDomainAppInstances(
+                    domainId,
+                    principal.getName(),
+                    pageable
+            );
         }
     }
 
@@ -427,7 +438,7 @@ public class AppInstanceController extends AppBaseController {
                 .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
-        return instanceBaseService.findAllByOwner(user, domain, pageable, deployed,search);
+        return instanceBaseService.findAllByOwner(user, domain, pageable, deployed, search);
     }
 
     @GetMapping("/{appInstanceId}")
