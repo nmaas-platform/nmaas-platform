@@ -1,6 +1,62 @@
 {
   "versions" : [
     {
+      "verNo" : "1.8.0",
+      "date" : "(2025/09/03)",
+      "topic" : [
+        {
+          "title" : "Brand new Portal layout",
+          "tags" : "[Enhancement]",
+          "description" : "Introduced new overall layout of the Portal based on a brand new design"
+        },
+        {
+          "title" : "Remote cluster management",
+          "tags" : "[New Feature]",
+          "description" : "Added possibility for domain administrators to onboard remote clusters based on kubeconfig files"
+        },
+        {
+          "title" : "Application deployment on remote clusters",
+          "tags" : "[New Feature]",
+          "description" : "Users are given an option during application deployment to select either central cluster or any of the remote clusters assigned to given domain as target locations for their instance"
+        },
+        {
+          "title" : "Webhooks support",
+          "tags" : "[New Feature]",
+          "description" : "Administrators can now define remote endpoints that should be notified once one of the supported actions takes place in the Platform"
+        },
+        {
+          "title" : "Application instance pausing support",
+          "tags" : "[New Feature]",
+          "description" : "..."
+        },
+        {
+          "title" : "Removed nmaas Janitor component",
+          "tags" : "[Enhancement]",
+          "description" : "Operations performed by the Janitor component have been rewritten within the Platform to ease further maintenance of the software"
+        },
+        {
+          "title" : "Local Helm client",
+          "tags" : "[Enhancement]",
+          "description" : "Simplified nmaas deployment architecture by incorporating Helm client in the Platform container thus removed the necessity to run Helm commands over SSH"
+        },
+        {
+          "title" : "Introduced more advanced readiness checks for applications",
+          "tags" : "[Enhancement]",
+          "description" : "Application instance readiness check process now waits for all relevant deployments and statefulsets to become ready before updating the state of the entire instance"
+        },
+        {
+          "title" : "Enabled missing email notification",
+          "tags" : "[Bugfix]",
+          "description" : "Administrators are now notified with an email about any new application version that requires activation"
+        },
+        {
+          "title" : "Upgrade of Java and version of all dependencies",
+          "tags" : "[Enhancement]",
+          "description" : "Platform now runs on Java 21 and all other dependencies were bumped to recent versions"
+        }
+      ]
+    },
+    {
       "verNo" : "1.7.1",
       "date" : "(2025/04/15)",
       "topic" : [
@@ -37,7 +93,7 @@
         },
         {
           "title" : "User access token management",
-          "tags" : "[New feature]",
+          "tags" : "[New Feature]",
           "description" : "Added possibility for users to generate personal access tokens to be used for interaction with the API bypassing the Portal"
         },
         {

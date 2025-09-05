@@ -78,13 +78,15 @@ class DomainServiceTest {
     private final DomainGroupRepository domainGroupRepository = mock(DomainGroupRepository.class);
     private final DomainAnnotationsRepository domainAnnotationsRepository = mock(DomainAnnotationsRepository.class);
     private final KClusterRepository kClusterRepository = mock(KClusterRepository.class);
+    private final UserRoleRepository userRoleRepository = mock(UserRoleRepository.class);
+
 
     private DomainGroupService domainGroupService;
     private DomainService domainService;
 
     @BeforeEach
     void setup() {
-        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher, modelMapper);
+        domainGroupService = new DomainGroupServiceImpl(domainGroupRepository, applicationStatePerDomainService, eventPublisher,userRoleRepository, modelMapper);
         domainService = new DomainServiceImpl(validator,
                 namespaceValidator, domainRepository, domainDcnDetailsRepository, domainTechDetailsRepository,
                 userService, userRoleRepo, dcnRepositoryManager,

@@ -72,7 +72,6 @@ public class WebhookEventController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public ResponseEntity<WebhookEventDto> getWebhook(@PathVariable Long id) throws GeneralSecurityException {
         return ResponseEntity.ok(webhookEventService.getById(id));
-
     }
 
     @GetMapping

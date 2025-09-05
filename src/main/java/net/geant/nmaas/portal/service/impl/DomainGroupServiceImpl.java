@@ -11,8 +11,10 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationStatePerDomain;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.DomainGroup;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,8 @@ public class DomainGroupServiceImpl implements DomainGroupService {
     private final DomainGroupRepository domainGroupRepository;
     private final ApplicationStatePerDomainService applicationStatePerDomainService;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserRoleRepository userRoleRepository;
+
 
     private final ModelMapper modelMapper;
 
@@ -80,6 +84,9 @@ public class DomainGroupServiceImpl implements DomainGroupService {
         DomainGroup domainGroup = domainGroupRepository.findById(domainGroupId).orElseThrow();
         log.debug("Removing domain {} from group {}", domain.getCodename(), domainGroup.getCodename());
         domainGroup.removeDomain(domain);
+        domainGroup.getManagers().forEach(manager ->
+                userRoleRepository.deleteBy(manager.getId(), domain.getId(), Role.ROLE_GROUP_DOMAIN_ADMIN)
+        );
         return modelMapper.map(domainGroupRepository.save(domainGroup), DomainGroupView.class);
     }
 
