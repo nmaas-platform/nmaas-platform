@@ -1,90 +1,67 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.util.List;
 import java.util.Set;
 
 public record AppInstanceViewExtendedDTO(
-        ApplicationDTO application,
+
+        Long appBaseId,
+        Long domainId,
+        String appBaseName,
+        String appLicense,
+        String appLicenseUrl,
+        String appWwwUrl,
+        String appSourceUrl,
+        String appIssuesUrl,
+        String appNmaasDocumentationUrl,
         String applicationName,
         String applicationVersion,
-        boolean autoUpgradesEnabled,
-        ConfigWizardTemplateView configWizardTemplate,
         String descriptiveDeploymentId,
-        String name,
-        AppInstanceState state,
+        String chartVersion,
+
+        boolean autoUpgradesEnabled,
         boolean upgradePossible,
         boolean allowSshAccess,
-        Long applicationBaseId
+        boolean configUpdateEnabled,
+        boolean allowLogAccess,
+        boolean configFileRepositoryRequired,
+
+        ConfigWizardTemplateView configWizardTemplate,
+        AppInstanceState state,
+        Set<TagView> tags,
+        List<ApplicationStatePerDomainView>applicationStatePerDomain
 ) {
-    public AppInstanceViewExtendedDTO(AppInstanceViewExtended appInstanceViewExtended) {
+    public AppInstanceViewExtendedDTO(AppInstanceViewExtended app) {
 
         this(
-                new ApplicationDTO(appInstanceViewExtended.getApplication()),
-                appInstanceViewExtended.getApplicationName(),
-                appInstanceViewExtended.getApplicationVersion(),
-                appInstanceViewExtended.isAutoUpgradesEnabled(),
-                appInstanceViewExtended.getConfigWizardTemplate(),
-                appInstanceViewExtended.getDescriptiveDeploymentId(),
-                appInstanceViewExtended.getName(),
-                appInstanceViewExtended.getState(),
-                appInstanceViewExtended.isUpgradePossible(),
-                appInstanceViewExtended.getApplication().getApplication().getAppDeploymentSpec().isAllowSshAccess(),
-                appInstanceViewExtended.getApplication().getApplicationBase().id
+                app.getApplication().getApplicationBase().getId(),
+                app.getDomain().getId(),
+                app.getApplication().getApplicationBase().getName(),
+                app.getApplication().getApplicationBase().getLicense(),
+                app.getApplication().getApplicationBase().getLicenseUrl(),
+                app.getApplication().getApplicationBase().getWwwUrl(),
+                app.getApplication().getApplicationBase().getSourceUrl(),
+                app.getApplication().getApplicationBase().getIssuesUrl(),
+                app.getApplication().getApplicationBase().getNmaasDocumentationUrl(),
+                app.getApplication().getApplication().getName(),
+                app.getApplication().getApplication().getVersion(),
+                app.getDescriptiveDeploymentId(),
+                app.getApplication().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+
+                app.isAutoUpgradesEnabled(),
+                app.isUpgradePossible(),
+                app.getApplication().getApplication().getAppDeploymentSpec().isAllowSshAccess(),
+                app.getApplication().getApplication().getAppConfigurationSpec().isConfigUpdateEnabled(),
+                app.getApplication().getApplication().getAppDeploymentSpec().isAllowLogAccess(),
+                app.getApplication().getApplication().getAppConfigurationSpec().isConfigFileRepositoryRequired(),
+
+                app.getConfigWizardTemplate(),
+                app.getState(),
+                app.getApplication().getApplicationBase().getTags(),
+                app.getDomain().getApplicationStatePerDomain()
 
         );
-
-
-    }
-
-    private record ApplicationDTO(
-            ApplicationBaseViewDTO applicationBase,
-            ApplicationViewDTO application
-    ) {
-        public ApplicationDTO(net.geant.nmaas.portal.api.domain.ApplicationDTO application) {
-            this(
-                    new ApplicationBaseViewDTO(application.getApplicationBase()),
-                    new ApplicationViewDTO(application.getApplication())
-            );
-        }
-    }
-
-    private record ApplicationBaseViewDTO(
-            Long id,
-            String name,
-            String license,
-            String licenseUrl,
-            String wwwUrl,
-            String sourceUrl,
-            String issuesUrl,
-            String nmaasDocumentationUrl,
-            Set<TagView> tags
-    ) {
-        public ApplicationBaseViewDTO(ApplicationBaseView applicationBaseView) {
-            this(
-                    applicationBaseView.id,
-                    applicationBaseView.getName(),
-                    applicationBaseView.getLicense(),
-                    applicationBaseView.getLicenseUrl(),
-                    applicationBaseView.getWwwUrl(),
-                    applicationBaseView.getSourceUrl(),
-                    applicationBaseView.getIssuesUrl(),
-                    applicationBaseView.getNmaasDocumentationUrl(),
-                    applicationBaseView.getTags()
-            );
-        }
-    }
-
-
-    private record ApplicationViewDTO(
-            boolean allowSshAccess,
-            boolean configUpdateEnabled,
-            boolean allowLogAccess
-    ) {
-        public ApplicationViewDTO(ApplicationView applicationView) {
-            this(
-                    applicationView.getAppDeploymentSpec().isAllowSshAccess(),
-                    applicationView.getAppConfigurationSpec().isConfigUpdateEnabled(),
-                    applicationView.getAppDeploymentSpec().isAllowLogAccess()
-            );
-        }
     }
 }
+
+
