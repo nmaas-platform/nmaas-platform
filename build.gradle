@@ -102,7 +102,7 @@ dependencies {
     implementation('com.vdurmont:semver4j:3.1.0')
 
     // nmaas statistics extracted from the database
-    implementation('io.micrometer:micrometer-registry-prometheus:1.15.3')
+    implementation('io.micrometer:micrometer-registry-prometheus:1.15.4')
 
     // Kubernetes API client
     implementation('io.fabric8:kubernetes-client:7.3.1')
