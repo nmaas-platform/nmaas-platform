@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -64,6 +66,9 @@ public class DomainGroup implements Serializable {
     )
     private List<User> managers = new ArrayList<>();
 
+    @OneToOne(mappedBy = "domainGroup", cascade = CascadeType.REMOVE)
+    private ResourcesLimit resourcesLimit;
+
     public DomainGroup(String name, String codename) {
         super();
         this.name = name;
@@ -74,6 +79,10 @@ public class DomainGroup implements Serializable {
         this.id = id;
         this.name = name;
         this.codename = codename;
+    }
+
+    public DomainGroup(Long id) {
+        this.id = id;
     }
 
     public void addDomain(Domain domain) {

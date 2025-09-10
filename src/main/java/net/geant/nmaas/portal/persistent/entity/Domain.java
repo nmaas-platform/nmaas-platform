@@ -79,6 +79,13 @@ public class Domain implements Serializable {
     @ManyToMany(mappedBy = "domains")
     private List<KCluster> clusters = new ArrayList<>();
 
+    @OneToOne(mappedBy = "domain", cascade = CascadeType.REMOVE)
+    private ResourcesLimit resourcesLimit;
+
+    public Domain(Long id) {
+        this.id = id;
+    }
+
     public Domain(String name, String codename) {
         super();
         this.name = name;
