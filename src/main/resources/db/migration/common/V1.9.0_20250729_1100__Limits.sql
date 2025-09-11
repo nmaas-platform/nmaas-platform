@@ -6,7 +6,7 @@ CREATE TABLE resources_limit (
     containers_no integer,
     limit_type varchar(50) not null,
     domain_group_id bigint,
-    domain_id bigint,
+    domain_id bigint
 );
 
 alter table limit
