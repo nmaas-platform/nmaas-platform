@@ -1,19 +1,24 @@
 package net.geant.nmaas.portal.api.market;
 
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.AddUserToRepositoryGitlabEvent;
 import net.geant.nmaas.nmservice.configuration.gitlab.events.RemoveUserFromRepositoryGitlabEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.AppInstanceBase;
 import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtendedDTO;
 import net.geant.nmaas.portal.api.domain.ApplicationDTO;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.UserBase;
@@ -295,6 +300,14 @@ public class AppInstanceControllerTest {
 
     @Test
     void shouldGetAppInstance() {
+        application.setAppDeploymentSpec(new AppDeploymentSpec());
+        application.getAppDeploymentSpec().setKubernetesTemplate(new KubernetesTemplate());
+        application.getAppDeploymentSpec().getKubernetesTemplate().setChart(new KubernetesChart());
+        application.getAppDeploymentSpec().getKubernetesTemplate().getChart().setVersion("chart_version");
+
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
+        application.getAppConfigurationSpec().setConfigUpdateEnabled(true);
+
         AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
@@ -304,11 +317,10 @@ public class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        AppInstanceViewExtended appInstanceView = appInstanceController.getAppInstance(1L, principal);
-        assertEquals(name, appInstanceView.getApplicationName());
-        assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
-        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
-        assertEquals(domain1.getId(), appInstanceView.getDomain().getId());
+        AppInstanceViewExtendedDTO appInstanceView = appInstanceController.getAppInstance(1L, principal);
+        assertEquals(name, appInstanceView.appBaseName());
+        assertEquals(identifierValue, appInstanceView.descriptiveDeploymentId());
+        assertEquals(domain1.getId(), appInstanceView.domainId());
 
         MissingElementException me = assertThrows(MissingElementException.class,
                 () -> appInstanceController.getAppInstance(-1L, principal)
