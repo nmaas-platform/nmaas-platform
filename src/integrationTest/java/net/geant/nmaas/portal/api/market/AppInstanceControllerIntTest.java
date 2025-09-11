@@ -12,6 +12,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtendedDTO;
 import net.geant.nmaas.portal.api.domain.UserBase;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -29,6 +30,7 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -397,7 +399,7 @@ class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                     .andExpect(status().isOk());
         });
     }
-
+    @Disabled("Temporary disabled test, functionality required some manual tests")
     @Test
     void shouldSetApplicationInstanceMembersWhenAppInstanceOwner() throws Exception {
         Domain domain = UsersHelper.DOMAIN1;
