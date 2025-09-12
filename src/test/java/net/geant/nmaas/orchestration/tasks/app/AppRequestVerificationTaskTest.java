@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class AppRequestVerificationTaskTest {
+class AppRequestVerificationTaskTest {
 
     private final NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
     private final AppDeploymentRepository deployments = mock(AppDeploymentRepository.class);

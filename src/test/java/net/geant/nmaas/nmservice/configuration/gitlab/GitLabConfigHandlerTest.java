@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class GitLabConfigHandlerTest {
+class GitLabConfigHandlerTest {
 
     private final KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
     private final GitLabManager gitLabManager = mock(GitLabManager.class);

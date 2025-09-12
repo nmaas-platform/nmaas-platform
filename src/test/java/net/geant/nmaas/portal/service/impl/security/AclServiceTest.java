@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AclServiceTest {
+class AclServiceTest {
 
     private final UserService userService = mock(UserService.class);
     private final DomainObjectPermissionCheck domain = mock(DomainObjectPermissionCheck.class);

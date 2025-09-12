@@ -65,7 +65,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-public class BulkApplicationServiceImplTest {
+class BulkApplicationServiceImplTest {
 
     private static final String TEST_APP_NAME = "testApplication";
     private static final String TEST_APP_VERSION = "testVersion";

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class HelmCommandExecutorTest {
+class HelmCommandExecutorTest {
 
     private static final String EXAMPLE_HELM_STATUS_COMMAND_OUTPUT =
             """

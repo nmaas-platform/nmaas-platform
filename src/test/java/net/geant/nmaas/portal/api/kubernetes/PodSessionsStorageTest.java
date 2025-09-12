@@ -29,7 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PodSessionsStorageTest {
+class PodSessionsStorageTest {
 
     private final ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
     private final AsyncConnectorFactory connectorFactory = mock(AsyncConnectorFactory.class);
@@ -38,7 +38,7 @@ public class PodSessionsStorageTest {
     private PodSessionsStorage storage;
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
         when(connectorFactory.preparePodShellConnection(any())).thenReturn(connector);
         storage = new PodSessionsStorage(instanceService, connectorFactory);
 
@@ -59,7 +59,7 @@ public class PodSessionsStorageTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenAppInstanceDoesNotExist() {
+    void shouldThrowExceptionWhenAppInstanceDoesNotExist() {
         when(instanceService.find(anyLong())).thenReturn(Optional.empty());
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
             storage.createSession(1L);
@@ -68,7 +68,7 @@ public class PodSessionsStorageTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSSHAccessDisabled() {
+    void shouldThrowExceptionWhenSSHAccessDisabled() {
         AppDeploymentSpec appDeploymentSpec = mock(AppDeploymentSpec.class);
         when(appDeploymentSpec.isAllowSshAccess()).thenReturn(false);
         Application application = mock(Application.class);
@@ -85,7 +85,7 @@ public class PodSessionsStorageTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenRetrievingNotExistingConnection() {
+    void shouldThrowExceptionWhenRetrievingNotExistingConnection() {
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
             storage.executeCommand("sessionId", new K8sShellCommandRequest("command",""));
         });
@@ -93,7 +93,7 @@ public class PodSessionsStorageTest {
     }
 
     @Test
-    public void shouldCreateAndRemoveSession() {
+    void shouldCreateAndRemoveSession() {
         AppDeploymentSpec appDeploymentSpec = mock(AppDeploymentSpec.class);
         when(appDeploymentSpec.isAllowSshAccess()).thenReturn(true);
         Application application = mock(Application.class);

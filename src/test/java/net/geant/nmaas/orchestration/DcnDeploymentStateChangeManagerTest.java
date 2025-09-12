@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DcnDeploymentStateChangeManagerTest {
+class DcnDeploymentStateChangeManagerTest {
 
     private DcnDeploymentStateChangeManager manager;
 
@@ -35,14 +35,14 @@ public class DcnDeploymentStateChangeManagerTest {
     }
 
     @Test
-    public void shouldNotTriggerAnyNewEventInNormalState() {
+    void shouldNotTriggerAnyNewEventInNormalState() {
         when(event.getState()).thenReturn(DEPLOYMENT_INITIATED);
         ApplicationEvent newEvent = manager.triggerActionOnStateChange(event);
         assertThat(newEvent, is(nullValue()));
     }
 
     @Test
-    public void shouldTriggerActionEventIfRequired() {
+    void shouldTriggerActionEventIfRequired() {
         Optional<ApplicationEvent> newEvent = manager.triggerActionEventIfRequired(DOMAIN, DEPLOYMENT_INITIATED);
         assertThat(newEvent.isPresent(), is(false));
         newEvent = manager.triggerActionEventIfRequired(DOMAIN, REQUEST_VERIFIED);

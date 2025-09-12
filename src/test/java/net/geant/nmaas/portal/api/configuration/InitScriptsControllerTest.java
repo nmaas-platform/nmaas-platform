@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class InitScriptsControllerTest {
+class InitScriptsControllerTest {
 
     private final InitScriptsStateService service = mock(InitScriptsStateService.class);
 

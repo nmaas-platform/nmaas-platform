@@ -14,7 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class NmServiceConfigurationExecutorTest {
+class NmServiceConfigurationExecutorTest {
 
     private final ConfigFilePreparer filePreparer = mock(ConfigFilePreparer.class);
     private final GitConfigHandler configHandler = mock(GitConfigHandler.class);

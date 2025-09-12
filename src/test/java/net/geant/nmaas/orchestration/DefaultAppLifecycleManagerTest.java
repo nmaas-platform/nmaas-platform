@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class DefaultAppLifecycleManagerTest {
+class DefaultAppLifecycleManagerTest {
 
     private final AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
     private final ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);

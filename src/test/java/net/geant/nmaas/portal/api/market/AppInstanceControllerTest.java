@@ -71,7 +71,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-public class AppInstanceControllerTest {
+class AppInstanceControllerTest {
 
     private final AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
     private final AppDeploymentMonitor appDeploymentMonitor = mock(AppDeploymentMonitor.class);

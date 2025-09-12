@@ -6,7 +6,7 @@ import java.security.GeneralSecurityException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EncryptionServiceTest {
+class EncryptionServiceTest {
 
     private static final String KEY = "nmaasplatformgn5";
     private static final String ALGORITHM = "AES/GCM/NoPadding";

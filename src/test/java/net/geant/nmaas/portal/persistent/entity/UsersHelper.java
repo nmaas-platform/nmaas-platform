@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.persistent.entity;
 import java.util.Arrays;
 import java.util.List;
 
-public class UsersHelper {
+class UsersHelper {
 
 	public final static Domain GLOBAL = new Domain(1L, "GLOBAL", "GLOBAL");
 	public final static Domain DOMAIN1 = new Domain(2L, "domain1", "D1");

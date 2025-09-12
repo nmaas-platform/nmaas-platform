@@ -19,14 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AppTemplatePermissionCheckTest {
+class AppTemplatePermissionCheckTest {
 
 	private AppTemplatePermissionCheck atpch;
 	
 	private final ApplicationRepository applications = mock(ApplicationRepository.class);
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	void setUp() throws Exception {
 		this.atpch = new AppTemplatePermissionCheck();
 
 		when(applications.findById(UsersHelper.APP1.getId())).thenReturn(Optional.of(UsersHelper.APP1));
@@ -35,7 +35,7 @@ public class AppTemplatePermissionCheckTest {
 	}
 
 	@Test
-	public final void testSupports() {
+	final void testSupports() {
 		assertNotNull(theInstance(atpch));
 
 		assertTrue(atpch.supports("appTemplate"));
@@ -47,14 +47,14 @@ public class AppTemplatePermissionCheckTest {
 	}
 
 	@Test
-	public void testSystemAdminEvaluatePermissions() {
+	void testSystemAdminEvaluatePermissions() {
 		Set<Permissions> perms = atpch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.APP1.getId(), AppTemplatePermissionCheck.APPTEMPLATE);
 		assertEquals(5, perms.size());
 		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
 	}
 	
 	@Test
-	public void testDomainAdminEvaluatePermissions() {
+	void testDomainAdminEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = atpch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.APP1.getId(), AppTemplatePermissionCheck.APPTEMPLATE);
@@ -63,7 +63,7 @@ public class AppTemplatePermissionCheckTest {
 	}
 	
 	@Test
-	public void testToolManagerEvaluatePermissions() {
+	void testToolManagerEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = atpch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.APP1.getId(), AppTemplatePermissionCheck.APPTEMPLATE);
@@ -72,7 +72,7 @@ public class AppTemplatePermissionCheckTest {
 	}
 	
 	@Test
-	public void testDomainUserEvaluatePermissions() {
+	void testDomainUserEvaluatePermissions() {
 		Set<Permissions> perms = null;
 
 		perms = atpch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.APP1.getId(), AppTemplatePermissionCheck.APPTEMPLATE);
@@ -81,7 +81,7 @@ public class AppTemplatePermissionCheckTest {
 	}
 	
 	@Test
-	public void testDomainGuestEvaluatePermissions() {
+	void testDomainGuestEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = atpch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.APP1.getId(), AppTemplatePermissionCheck.APPTEMPLATE);

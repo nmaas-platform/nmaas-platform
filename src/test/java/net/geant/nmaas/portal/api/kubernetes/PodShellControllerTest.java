@@ -11,10 +11,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PodShellControllerTest {
+class PodShellControllerTest {
 
     @Test
-    public void shouldCallProperMethods() {
+    void shouldCallProperMethods() {
         K8sShellService k8sShellService = mock(K8sShellService.class);
         SseEmitter emitter = mock(SseEmitter.class);
         when(k8sShellService.getEmitterForShellSession(anyString())).thenReturn(emitter);

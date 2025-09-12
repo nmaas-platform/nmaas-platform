@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TemplateServiceTest {
+class TemplateServiceTest {
 
     private final MailTemplateRepository repository = mock(MailTemplateRepository.class);
     private final LocalFileStorageService fileStorageService = mock(LocalFileStorageService.class);

@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IdentifierTest {
+class IdentifierTest {
 
     @Test
-    public void shouldBeEqual() {
+    void shouldBeEqual() {
         final String commonValue = "value";
         assertEquals(new Identifier(commonValue), Identifier.newInstance(commonValue));
     }

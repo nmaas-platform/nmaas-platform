@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class AppConfigurationJsonToMapTest {
+class AppConfigurationJsonToMapTest {
 
     static final String EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT =
     "{" +
@@ -43,7 +43,7 @@ public class AppConfigurationJsonToMapTest {
     "}";
 
     @Test
-    public void shouldMapOxidizedJsonToMap() throws UserConfigHandlingException {
+    void shouldMapOxidizedJsonToMap() throws UserConfigHandlingException {
         AppConfiguration appConfiguration = new AppConfiguration(EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT);
         List<Map> list = (List<Map>) ConfigFilePreparerHelper.createModelEntriesFromUserInput(appConfiguration).get("targets");
         assertThat(list.size(), equalTo(2));
@@ -51,7 +51,7 @@ public class AppConfigurationJsonToMapTest {
     }
 
     @Test
-    public void shouldMapLibreNmsJsonToMap() throws UserConfigHandlingException {
+    void shouldMapLibreNmsJsonToMap() throws UserConfigHandlingException {
         AppConfiguration appConfiguration = new AppConfiguration(EXAMPLE_LIBRENMS_CONFIG_FORM_INPUT);
         List<Map> list = (List<Map>) ConfigFilePreparerHelper.createModelEntriesFromUserInput(appConfiguration).get("targets");
         assertThat(list.size(), equalTo(2));

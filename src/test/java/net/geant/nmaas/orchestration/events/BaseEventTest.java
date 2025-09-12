@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
-public class BaseEventTest {
+class BaseEventTest {
 
     @Test
-    public void shouldPrintCorrectString() {
+    void shouldPrintCorrectString() {
         AppApplyConfigurationActionEvent event = new AppApplyConfigurationActionEvent(this, Identifier.newInstance("123"));
         assertThat(event.toString(), containsString(AppApplyConfigurationActionEvent.class.getSimpleName()));
     }

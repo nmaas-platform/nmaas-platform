@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @TestPropertySource(properties = {"nmaas.domains.auto.create.annotations=true"})
-public class BulkDomainServiceImplTest {
+class BulkDomainServiceImplTest {
 
     private final DomainService domainService = mock(DomainService.class);
     private final DomainGroupService domainGroupService = mock(DomainGroupService.class);
