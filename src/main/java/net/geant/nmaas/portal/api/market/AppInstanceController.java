@@ -85,6 +85,7 @@ public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
     private static final String MISSING_USER_MESSAGE = "User not found";
+    private static final String DOMAIN_NOT_FOUND_MESSAGE = "Domain %s not found";
 
     private final AppLifecycleManager appLifecycleManager;
     private final AppDeploymentMonitor appDeploymentMonitor;
@@ -186,7 +187,7 @@ public class AppInstanceController extends AppBaseController {
                                                  @RequestParam(required = false) String status) {
         List<AppInstanceBase> result;
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
@@ -230,7 +231,7 @@ public class AppInstanceController extends AppBaseController {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
@@ -412,7 +413,7 @@ public class AppInstanceController extends AppBaseController {
 
     private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username) {
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instanceService.findAllByOwner(user.getId(), domain.getId()).stream()
@@ -424,7 +425,7 @@ public class AppInstanceController extends AppBaseController {
                                                                 String username,
                                                                 Pageable pageable) {
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instanceBaseService.findAllByOwner(user, domain, pageable);
@@ -436,7 +437,7 @@ public class AppInstanceController extends AppBaseController {
                                                                 boolean deployed,
                                                                 String search) {
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instanceBaseService.findAllByOwner(user, domain, pageable, deployed, search);
