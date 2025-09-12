@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GroupController extends BaseController {
 
+    private static final String ACCESS_DENIED_MESSAGE = "You have no access to this domain group";
     private final DomainService domainService;
     private final DomainGroupService domainGroupService;
 
@@ -93,7 +94,7 @@ public class GroupController extends BaseController {
                 domainGroupView.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
             return domainGroupView;
         } else {
-            throw new AccessDeniedException("You have no access to this domain group");
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
     }
 
@@ -127,7 +128,7 @@ public class GroupController extends BaseController {
             domainService.updateRolesInDomainGroupByUsers(domainGroupView);
             return new Id(domainGroupService.updateDomainGroup(domainGroupId, domainGroupView).getId());
         } else {
-            throw new AccessDeniedException("You have no access to this domain group");
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
     }
 
@@ -140,7 +141,7 @@ public class GroupController extends BaseController {
                 domainGroup.getManagers().stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(principal.getName()))) {
             return domainService.updateMembers(members, domainGroup);
         } else {
-            throw new AccessDeniedException("You have no access to this domain group");
+            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
         }
     }
 
