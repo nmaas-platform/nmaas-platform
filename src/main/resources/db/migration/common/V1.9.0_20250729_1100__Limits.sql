@@ -9,12 +9,12 @@ CREATE TABLE resources_limit (
     domain_id bigint
 );
 
-alter table limit
-   add constraint domain_group_fk_limit
+alter table resources_limit
+   add constraint domain_group_fk_resources_limit
    foreign key (domain_group_id)
    references domain_group;
 
-alter table limit
-   add constraint domain_fk_limit
+alter table resources_limit
+   add constraint domain_fk_resources_limit
    foreign key (domain_id)
    references domain;
