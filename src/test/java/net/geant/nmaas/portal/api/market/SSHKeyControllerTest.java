@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-public class SSHKeyControllerTest {
+class SSHKeyControllerTest {
 
     private SSHKeyService sshKeyService = mock(SSHKeyService.class);
     private UserService userService = mock(UserService.class);
@@ -54,14 +54,14 @@ public class SSHKeyControllerTest {
     }
 
     @Test
-    public void shouldGetAllKeysForPresentUser() {
+    void shouldGetAllKeysForPresentUser() {
         this.sut.getAllByUser(present);
 
         verify(sshKeyService, times(1)).findAllByUser(presentUser);
     }
 
     @Test
-    public void shouldThrowExceptionWhenUserDoesNotExist() {
+    void shouldThrowExceptionWhenUserDoesNotExist() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
             this.sut.getAllByUser(absent);
         });
@@ -70,14 +70,14 @@ public class SSHKeyControllerTest {
     }
 
     @Test
-    public void shouldInvalidateKey() {
+    void shouldInvalidateKey() {
         this.sut.invalidate(present, 12L);
 
         verify(sshKeyService, times(1)).invalidate(presentUser, 12L);
     }
 
     @Test
-    public void shouldCreateKeyFromRequest() {
+    void shouldCreateKeyFromRequest() {
         SSHKeyRequest request = new SSHKeyRequest("name", "key");
 
         this.sut.create(present, request);
@@ -86,14 +86,14 @@ public class SSHKeyControllerTest {
     }
 
     @Test
-    public void shouldGetUserKeyById() {
+    void shouldGetUserKeyById() {
         this.sut.getAllByUserId(adminPrincipal, 1L);
 
         verify(sshKeyService, times(1)).findAllByUser(presentUser);
     }
 
     @Test
-    public void shouldGetUserKeyByIdTriggerError() {
+    void shouldGetUserKeyByIdTriggerError() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
             this.sut.getAllByUserId(present, 1L);
         });
@@ -103,14 +103,14 @@ public class SSHKeyControllerTest {
 
 
     @Test
-    public void shouldInvalidateKeyUser() {
+    void shouldInvalidateKeyUser() {
         this.sut.invalidateUserKey(adminPrincipal,12L, 1L);
 
         verify(sshKeyService, times(1)).invalidate(presentUser, 12L);
     }
 
     @Test
-    public void shouldCreateKeyFromRequestForUser() {
+    void shouldCreateKeyFromRequestForUser() {
         SSHKeyRequest request = new SSHKeyRequest("name", "key");
 
         this.sut.createUserKey(adminPrincipal, 1L, request);

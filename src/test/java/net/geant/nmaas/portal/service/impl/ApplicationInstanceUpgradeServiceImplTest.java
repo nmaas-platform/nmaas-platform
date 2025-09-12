@@ -10,7 +10,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class ApplicationInstanceUpgradeServiceImplTest {
+class ApplicationInstanceUpgradeServiceImplTest {
 
     private static final String CURRENT_CHART_VERSION = "1.2.3";
 

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class FormTypeServiceTest {
+class FormTypeServiceTest {
 
     private final FormTypeRepository repository = mock(FormTypeRepository.class);
 

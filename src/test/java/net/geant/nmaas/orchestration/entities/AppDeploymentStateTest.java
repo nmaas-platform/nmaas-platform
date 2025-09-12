@@ -52,7 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class AppDeploymentStateTest {
+class AppDeploymentStateTest {
 
     @ParameterizedTest
     @EnumSource(

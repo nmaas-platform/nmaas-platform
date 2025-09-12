@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public class UsersControllerTest {
+class UsersControllerTest {
 
     private static final Domain GLOBAL_DOMAIN = new Domain(1L, "global", "global", true);
 
@@ -71,7 +71,7 @@ public class UsersControllerTest {
     private final ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService, instanceService);
         User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
         tester.setId(1L);
@@ -90,13 +90,13 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldReturnRoles() {
+    void shouldReturnRoles() {
         List<Role> roles = usersController.getRoles();
         assertThat("Number of roles mismatch", roles.size() == 10);
     }
 
     @Test
-    public void shouldGetUser() {
+    void shouldGetUser() {
         when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
         when(userLoginService.getUserFirstAndLastSuccessfulLoginDate(userList.get(0))).thenReturn(Optional.empty());
         UserRoleView userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRoleView.class);
@@ -106,7 +106,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotRetrieveNonExistingUser() {
+    void shouldNotRetrieveNonExistingUser() {
         assertThrows(MissingElementException.class, () -> {
             Long userId = 5L;
             when(userService.findById(userId)).thenReturn(Optional.empty());
@@ -115,7 +115,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldUpdateUser() {
+    void shouldUpdateUser() {
         when(principal.getName()).thenReturn(userList.get(0).getUsername());
         UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
         userRequest.setEmail("test@nmaas.net");
@@ -125,7 +125,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotUpdateNonExistingUser() {
+    void shouldNotUpdateNonExistingUser() {
         assertThrows(MissingElementException.class, () -> {
             Long userId = 5L;
             when(userService.findById(userId)).thenReturn(Optional.empty());
@@ -135,7 +135,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotUpdateWithNullId() {
+    void shouldNotUpdateWithNullId() {
         assertThrows(MissingElementException.class, () -> {
             Long userId = null;
             UserRequest userRequest = new UserRequest(userId, userList.get(0).getUsername(), userList.get(0).getPassword());
@@ -145,7 +145,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotUpdateWithNullUserRequest() {
+    void shouldNotUpdateWithNullUserRequest() {
         assertThrows(MissingElementException.class, () -> {
             Long userId = 1L;
             usersController.updateUser(userId, null, principal);
@@ -153,7 +153,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotUpdateUserWithNonUniqueEmail() {
+    void shouldNotUpdateUserWithNonUniqueEmail() {
         when(principal.getName()).thenReturn(userList.get(0).getUsername());
         assertThrows(ProcessingException.class, () -> {
             when(userService.existsByEmail(anyString())).thenReturn(true);
@@ -166,7 +166,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldUpdateUserWithNullEmail() {
+    void shouldUpdateUserWithNullEmail() {
         when(principal.getName()).thenReturn(userList.get(0).getUsername());
         UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
         userRequest.setEmail(null);
@@ -176,14 +176,14 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldGetUserRoles() {
+    void shouldGetUserRoles() {
         Set<UserRoleView> result = usersController.getUserRoles(userList.get(0).getId());
         UserRoleView userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRoleView.class);
         assertThat("Wrong roles set", result.iterator().next().getRole().equals(userRole.getRole()));
     }
 
     @Test
-    public void shouldNotGetUserRolesForNonExistingUser() {
+    void shouldNotGetUserRolesForNonExistingUser() {
         assertThrows(MissingElementException.class, () -> {
             Long userId = 5L;
             when(userService.findById(userId)).thenReturn(Optional.empty());
@@ -192,7 +192,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldRemoveUserRoleWithGlobalDomainAndAddGuestRole() {
+    void shouldRemoveUserRoleWithGlobalDomainAndAddGuestRole() {
         UserRoleView userRole = new UserRoleView();
         userRole.setRole(Role.ROLE_OPERATOR);
         usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
@@ -201,7 +201,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldRemoveUserRoleWithNonGlobalDomain() {
+    void shouldRemoveUserRoleWithNonGlobalDomain() {
         UserRoleView userRole = new UserRoleView();
         userRole.setRole(Role.ROLE_OPERATOR);
         userRole.setDomainId(DOMAIN.getId());
@@ -210,7 +210,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotRemoveUserRoleWithNullRequest() {
+    void shouldNotRemoveUserRoleWithNullRequest() {
         MissingElementException me = assertThrows(MissingElementException.class, () -> {
             usersController.removeUserRole(userList.get(0).getId(), null, principal);
         });
@@ -219,7 +219,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotRemoveUserRoleWithNullUserRole() {
+    void shouldNotRemoveUserRoleWithNullUserRole() {
         UserRoleView ur = new UserRoleView();
         ur.setRole(null);
         MissingElementException me = assertThrows(MissingElementException.class, () -> {
@@ -230,7 +230,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotRemoveUserRoleWhenUserIdIsNull() {
+    void shouldNotRemoveUserRoleWhenUserIdIsNull() {
         assertThrows(MissingElementException.class, () -> {
             Long userId = null;
             UserRoleView userRole = new UserRoleView();
@@ -241,7 +241,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotRemoveUserRoleWhenUserRoleIsNull() {
+    void shouldNotRemoveUserRoleWhenUserRoleIsNull() {
         assertThrows(MissingElementException.class, () -> {
             UserRoleView userRole = null;
             usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
@@ -249,7 +249,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotRemoveUserRoleWithoutDomain() {
+    void shouldNotRemoveUserRoleWithoutDomain() {
         assertThrows(MissingElementException.class, () -> {
             UserRoleView userRole = new UserRoleView();
             userRole.setRole(Role.ROLE_OPERATOR);
@@ -259,7 +259,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldChangePassword() {
+    void shouldChangePassword() {
         when(principal.getName()).thenReturn(userList.get(0).getUsername());
         when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
         PasswordChange passwordChange = new PasswordChange(userList.get(0).getPassword(), "test1234");
@@ -269,7 +269,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotChangePasswordOnPreviousPasswordMismatch() {
+    void shouldNotChangePasswordOnPreviousPasswordMismatch() {
         assertThrows(ProcessingException.class, () -> {
             when(principal.getName()).thenReturn(userList.get(0).getUsername());
             when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
@@ -281,7 +281,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldGetDomainUsers() {
+    void shouldGetDomainUsers() {
         Long domainId = 1L;
         when(domainService.getMembers(domainId)).thenReturn(userList);
         List<UserViewMinimal> users = usersController.getDomainUsers(domainId);
@@ -289,7 +289,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldGetDomainUser() {
+    void shouldGetDomainUser() {
         Long domainId = 1L;
         Long userId = 1L;
         when(domainService.getMember(domainId, userId)).thenReturn(userList.get(0));
@@ -298,7 +298,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotGetDomainUserWhenDomainNotExists() {
+    void shouldNotGetDomainUserWhenDomainNotExists() {
         assertThrows(MissingElementException.class, () -> {
             Long domainId = 5L;
             Long userId = 1L;
@@ -308,7 +308,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotGetDomainUserWhenUserNotExist() {
+    void shouldNotGetDomainUserWhenUserNotExist() {
         assertThrows(ProcessingException.class, () -> {
             Long domainId = 1L;
             Long userId = 8L;
@@ -318,19 +318,19 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldRemoveDomainUser() {
+    void shouldRemoveDomainUser() {
         usersController.removeDomainUser(DOMAIN.getId(), userList.get(0).getId());
         verify(domainService, times(1)).removeMember(DOMAIN.getId(), userList.get(0).getId());
     }
 
     @Test
-    public void shouldGetUserDomainRoles() {
+    void shouldGetUserDomainRoles() {
         Set<Role> roles = usersController.getUserRoles(DOMAIN.getId(), userList.get(0).getId());
         verify(domainService, times(1)).getMemberRoles(DOMAIN.getId(), userList.get(0).getId());
     }
 
     @Test
-    public void shouldAddUserRoleToCustomDomain() throws SchedulerException {
+    void shouldAddUserRoleToCustomDomain() throws SchedulerException {
         UserRoleView userRole = new UserRoleView();
         userRole.setDomainId(DOMAIN.getId());
         userRole.setRole(Role.ROLE_USER);
@@ -341,7 +341,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldAddUserRoleToGlobalDomain() {
+    void shouldAddUserRoleToGlobalDomain() {
         UserRoleView userRole = new UserRoleView();
         userRole.setDomainId(GLOBAL_DOMAIN.getId());
         userRole.setRole(Role.ROLE_OPERATOR);
@@ -353,14 +353,14 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotAddUserRoleWithNullRole() {
+    void shouldNotAddUserRoleWithNullRole() {
         assertThrows(MissingElementException.class, () -> {
             usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), null, principal);
         });
     }
 
     @Test
-    public void shouldNotAddUserRoleWithNullUserRole() {
+    void shouldNotAddUserRoleWithNullUserRole() {
         assertThrows(MissingElementException.class, () -> {
             UserRoleView userRole = new UserRoleView();
             userRole.setRole(null);
@@ -369,7 +369,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotAddGlobalUserRoleInNotGlobalDomain() {
+    void shouldNotAddGlobalUserRoleInNotGlobalDomain() {
         assertThrows(ProcessingException.class, () -> {
             UserRoleView userRole = new UserRoleView();
             userRole.setDomainId(DOMAIN.getId());
@@ -380,7 +380,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotAddNonGlobalRoleToGlobalDomain() {
+    void shouldNotAddNonGlobalRoleToGlobalDomain() {
         assertThrows(ProcessingException.class, () -> {
             UserRoleView userRole = new UserRoleView();
             userRole.setDomainId(GLOBAL_DOMAIN.getId());
@@ -391,7 +391,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotAddGlobalRoleToCustomDomain() {
+    void shouldNotAddGlobalRoleToCustomDomain() {
         assertThrows(ProcessingException.class, () -> {
             UserRoleView userRole = new UserRoleView();
             userRole.setDomainId(DOMAIN.getId());
@@ -401,7 +401,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldRemoveUserRole() {
+    void shouldRemoveUserRole() {
         String userRole = "ROLE_SYSTEM_ADMIN";
 
         usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
@@ -411,7 +411,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotConvertIncorrectStringWhenRemovingUserRole() {
+    void shouldNotConvertIncorrectStringWhenRemovingUserRole() {
         assertThrows(MissingElementException.class, () -> {
             String userRole = "ROLE_WRONG";
             usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
@@ -419,21 +419,21 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldSetEnabledFlag() {
+    void shouldSetEnabledFlag() {
         usersController.setEnabledFlag(userList.get(0).getId(), true, principal);
         verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), true);
         verify(eventPublisher, times(1)).publishEvent(any());
     }
 
     @Test
-    public void shouldSetDisabledFlag() {
+    void shouldSetDisabledFlag() {
         usersController.setEnabledFlag(userList.get(0).getId(), false, principal);
         verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), false);
         verify(eventPublisher, times(1)).publishEvent(any());
     }
 
     @Test
-    public void shouldCompleteRegistration() {
+    void shouldCompleteRegistration() {
         UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
         when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
         usersController.completeRegistration(principal, userRequest);
@@ -441,7 +441,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldCompleteRegistrationAndSendEmail() {
+    void shouldCompleteRegistrationAndSendEmail() {
         UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
         when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
         usersController.completeRegistration(principal, userRequest);
@@ -450,7 +450,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldCompleteRegistrationWithFullData() {
+    void shouldCompleteRegistrationWithFullData() {
         UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
         userRequest.setFirstname("First");
         userRequest.setLastname("Last");
@@ -460,7 +460,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotCompleteRegistrationWithNonUniqueUsername() {
+    void shouldNotCompleteRegistrationWithNonUniqueUsername() {
         assertThrows(ProcessingException.class, () -> {
             UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
             when(userService.existsByUsername(userRequest.getUsername())).thenReturn(true);
@@ -469,7 +469,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldNotCompleteRegistrationWithNonUniqueMail() {
+    void shouldNotCompleteRegistrationWithNonUniqueMail() {
         assertThrows(ProcessingException.class, () -> {
             UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.getFirst().getPassword());
             userRequest.setEmail("test@test.com");
@@ -480,7 +480,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldCompleteRegistrationAndRemoveIncompleteRole() {
+    void shouldCompleteRegistrationAndRemoveIncompleteRole() {
         UserRequest userRequest = new UserRequest(userList.getFirst().getId(), userList.getFirst().getUsername(), userList.getFirst().getPassword());
         userRequest.setEmail("test@nmaas.net");
         when(principal.getName()).thenReturn(userList.getFirst().getUsername());
@@ -493,7 +493,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void shouldDeleteUser() {
+    void shouldDeleteUser() {
         User tester = userList.getFirst();
         tester.setRoles(new ArrayList<>());
         when(this.instanceService.findAllByOwner(tester.getId())).thenReturn(new ArrayList<>());

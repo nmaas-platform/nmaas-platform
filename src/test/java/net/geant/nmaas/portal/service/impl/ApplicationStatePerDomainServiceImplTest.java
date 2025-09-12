@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ApplicationStatePerDomainServiceImplTest {
+class ApplicationStatePerDomainServiceImplTest {
 
     private final DomainRepository domains = mock(DomainRepository.class);
     private final ApplicationBaseRepository applications = mock(ApplicationBaseRepository.class);

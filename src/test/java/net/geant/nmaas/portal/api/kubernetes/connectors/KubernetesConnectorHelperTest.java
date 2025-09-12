@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class KubernetesConnectorHelperTest {
+class KubernetesConnectorHelperTest {
 
     private final ApplicationInstanceService applicationInstanceService = mock(ApplicationInstanceService.class);
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);

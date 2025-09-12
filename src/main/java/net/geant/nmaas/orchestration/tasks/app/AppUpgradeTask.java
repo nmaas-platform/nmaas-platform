@@ -37,6 +37,8 @@ import static net.geant.nmaas.orchestration.AppUpgradeStatus.SUCCESS;
 @Slf4j
 public class AppUpgradeTask {
 
+    private static final String DOES_NOT_EXIST = " does not exist";
+
     private final NmServiceDeploymentProvider serviceDeployment;
     private final ApplicationService applicationService;
     private final ApplicationInstanceService applicationInstanceService;
@@ -49,7 +51,7 @@ public class AppUpgradeTask {
     public void trigger(AppUpgradeActionEvent event) {
         try {
             final Identifier deploymentId = event.getRelatedTo();
-            final Application application = applicationService.findApplication(event.getApplicationId().longValue()).orElseThrow(() -> new InvalidApplicationIdException("Application with id " + event.getApplicationId() + " does not exist"));
+            final Application application = applicationService.findApplication(event.getApplicationId().longValue()).orElseThrow(() -> new InvalidApplicationIdException("Application with id " + event.getApplicationId() + DOES_NOT_EXIST));
             serviceDeployment.upgradeKubernetesService(deploymentId, event.getAppUpgradeMode(), event.getApplicationId(), application.getAppDeploymentSpec().getKubernetesTemplate());
         } catch (Exception ex) {
             logGenericError(ex);
@@ -83,8 +85,8 @@ public class AppUpgradeTask {
     }
 
     private void sendAppUpgradeNotificationEmail(Identifier deploymentId, Identifier previousApplicationId) {
-        final AppInstance appInstance = applicationInstanceService.findByInternalId(deploymentId).orElseThrow(() -> new InvalidApplicationIdException("Application instance with id " + deploymentId.getValue() + " does not exist"));
-        final Application previousApplication = applicationService.findApplication(previousApplicationId.longValue()).orElseThrow(() -> new InvalidApplicationIdException("Application with id " + previousApplicationId.getValue() + " does not exist"));
+        final AppInstance appInstance = applicationInstanceService.findByInternalId(deploymentId).orElseThrow(() -> new InvalidApplicationIdException("Application instance with id " + deploymentId.getValue() + DOES_NOT_EXIST));
+        final Application previousApplication = applicationService.findApplication(previousApplicationId.longValue()).orElseThrow(() -> new InvalidApplicationIdException("Application with id " + previousApplicationId.getValue() + DOES_NOT_EXIST));
         MailAttributes attributes = MailAttributes.builder().otherAttributes(Map.of("domainName", appInstance.getDomain().getName(), "owner", appInstance.getOwner().getUsername(), "appInstanceName", appInstance.getName(), "appName", appInstance.getApplication().getName(), "appVersion", appInstance.getApplication().getVersion(), "appVersionPrevious", previousApplication.getVersion())).mailType(MailType.APP_UPGRADED).build();
         eventPublisher.publishEvent(new NotificationEvent(this, attributes));
     }

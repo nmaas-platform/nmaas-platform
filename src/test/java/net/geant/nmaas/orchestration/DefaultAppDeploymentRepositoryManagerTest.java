@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DefaultAppDeploymentRepositoryManagerTest {
+class DefaultAppDeploymentRepositoryManagerTest {
 
     Identifier deploymentId = Identifier.newInstance(1L);
 
@@ -28,13 +28,13 @@ public class DefaultAppDeploymentRepositoryManagerTest {
     private DefaultAppDeploymentRepositoryManager manager;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         manager = new DefaultAppDeploymentRepositoryManager(appDeploymentRepository, userRepository, sshKeyRepository);
         when(appDeploymentRepository.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().owner("user1").build()));
     }
 
     @Test
-    public void shouldReturnAppDeploymentOwnerWithDefaultNameAndNoKeys() {
+    void shouldReturnAppDeploymentOwnerWithDefaultNameAndNoKeys() {
         User user1 = new User("user1");
         user1.setEmail("user1@test.eu");
         when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user1));
@@ -47,7 +47,7 @@ public class DefaultAppDeploymentRepositoryManagerTest {
     }
 
     @Test
-    public void shouldReturnAppDeploymentOwnerWithProperNameAndAKey() {
+    void shouldReturnAppDeploymentOwnerWithProperNameAndAKey() {
         User user1 = new User("user1");
         user1.setEmail("user1@test.eu");
         user1.setFirstname("firstname1");

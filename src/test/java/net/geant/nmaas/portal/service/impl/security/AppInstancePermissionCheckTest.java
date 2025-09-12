@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AppInstancePermissionCheckTest {
+class AppInstancePermissionCheckTest {
 
 	private AppInstancePermissionCheck aipch;
 
@@ -27,7 +27,7 @@ public class AppInstancePermissionCheckTest {
 	private final DomainService domains = mock(DomainService.class);
 	
 	@BeforeEach
-	public void setUp(){
+	void setUp(){
 		this.aipch = new AppInstancePermissionCheck(appInstances, domains);
 
 		when(domains.getGlobalDomain()).thenReturn(Optional.of(UsersHelper.GLOBAL));
@@ -42,7 +42,7 @@ public class AppInstancePermissionCheckTest {
 	}
 
 	@Test
-	public final void testSupports() {
+	final void testSupports() {
 		assertTrue(aipch.supports("appinstance"));
 		assertTrue(aipch.supports("appInstance"));
 		assertTrue(aipch.supports("APPINSTANCE"));
@@ -52,14 +52,14 @@ public class AppInstancePermissionCheckTest {
 	}
 
 	@Test
-	public void testSystemAdminEvaluatePermissions() {
+	void testSystemAdminEvaluatePermissions() {
 		Set<Permissions> perms = aipch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
 		assertEquals(5, perms.size());
 		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
 	}
 	
 	@Test
-	public void testDomainAdminEvaluatePermissions() {
+	void testDomainAdminEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
@@ -71,7 +71,7 @@ public class AppInstancePermissionCheckTest {
 	}
 	
 	@Test
-	public void testToolManagerEvaluatePermissions() {
+	void testToolManagerEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = aipch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
@@ -80,7 +80,7 @@ public class AppInstancePermissionCheckTest {
 	}
 	
 	@Test
-	public void testDomainUserEvaluatePermissions() {
+	void testDomainUserEvaluatePermissions() {
 		Set<Permissions> perms = null;
 
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);
@@ -96,7 +96,7 @@ public class AppInstancePermissionCheckTest {
 	}
 	
 	@Test
-	public void testDomainGuestEvaluatePermissions() {
+	void testDomainGuestEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = aipch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APP_INSTANCE);

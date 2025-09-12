@@ -19,7 +19,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BasicAuthControllerTest {
+class BasicAuthControllerTest {
 
     private final DomainService domains = mock(DomainService.class);
     private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);

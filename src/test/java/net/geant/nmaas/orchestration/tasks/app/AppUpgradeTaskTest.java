@@ -34,7 +34,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AppUpgradeTaskTest {
+class AppUpgradeTaskTest {
 
     private final NmServiceDeploymentProvider deploymentProvider = mock(NmServiceDeploymentProvider.class);
     private final AppDeploymentRepository deployments = mock(AppDeploymentRepository.class);

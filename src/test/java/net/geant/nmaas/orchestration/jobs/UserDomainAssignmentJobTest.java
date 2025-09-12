@@ -24,7 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class UserDomainAssignmentJobTest {
+class UserDomainAssignmentJobTest {
 
     private final RestClient restClient = RestClient.create();
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);

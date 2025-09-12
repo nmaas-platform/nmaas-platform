@@ -21,7 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SchedulingManagerTest {
+class SchedulingManagerTest {
 
     private final GitLabManager gitLabManager = mock(GitLabManager.class);
     private final MonitorManager monitorManager = mock(MonitorManager.class);

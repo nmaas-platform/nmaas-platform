@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class KubernetesClusterDeploymentManagerTest {
+class KubernetesClusterDeploymentManagerTest {
 
     private static final String DOMAIN = "testDomain";
 

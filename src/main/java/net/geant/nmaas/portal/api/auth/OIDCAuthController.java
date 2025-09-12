@@ -40,6 +40,8 @@ import static java.lang.String.format;
 @RequestMapping()
 public class OIDCAuthController {
 
+    private static final String OIDC_LOGOUT_PATH = "/protocol/openid-connect/logout";
+
     private final OidcUserService oidcUserService;
     private final JWTTokenService jwtTokenService;
     private final UserLoginRegisterService loginRegisterService;
@@ -126,18 +128,18 @@ public class OIDCAuthController {
             return new RedirectView(redirectUrl);
         } catch (ExternalUserMatchException exception) {
             //TODO handle this exception on the portal
-            String logoutUrl = oidcAddress + "/protocol/openid-connect/logout";
+            String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
             return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
         } catch (ExternalUserCanNotBeLinked exception) {
             //TODO handle this exception on the portal
-            String logoutUrl = oidcAddress + "/protocol/openid-connect/logout";
+            String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
             return new RedirectView(logoutUrl + "?id_token_hint=" + oidcUser.getIdToken().getTokenValue());
         }
     }
 
     @GetMapping("/api/oidc/logout/{oidcToken}")
     public RedirectView logout(@PathVariable String oidcToken) {
-        String logoutUrl = oidcAddress + "/protocol/openid-connect/logout";
+        String logoutUrl = oidcAddress + OIDC_LOGOUT_PATH;
         return new RedirectView(logoutUrl + "?id_token_hint=" + oidcToken);
     }
 

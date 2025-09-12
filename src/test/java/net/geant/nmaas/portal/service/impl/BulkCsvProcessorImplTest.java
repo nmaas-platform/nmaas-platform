@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BulkCsvProcessorImplTest {
+class BulkCsvProcessorImplTest {
 
     private final BulkCsvProcessor processor = new BulkCsvProcessorImpl();
 

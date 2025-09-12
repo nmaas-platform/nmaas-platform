@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class FormTypeControllerTest {
+class FormTypeControllerTest {
 
     private final FormTypeService formTypeService = mock(FormTypeService.class);
 

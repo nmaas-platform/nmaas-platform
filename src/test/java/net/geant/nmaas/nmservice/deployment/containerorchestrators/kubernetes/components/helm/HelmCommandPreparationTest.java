@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class HelmCommandPreparationTest {
+class HelmCommandPreparationTest {
 
     private static final String NAMESPACE = "nmaas";
     private static final String RELEASE_NAME = "releaseName";

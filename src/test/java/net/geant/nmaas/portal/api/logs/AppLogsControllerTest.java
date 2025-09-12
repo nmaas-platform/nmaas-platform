@@ -13,7 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AppLogsControllerTest {
+class AppLogsControllerTest {
 
     private static final long APP_INSTANCE_ID = 1L;
     private static final String POD_NAME = "podName";
