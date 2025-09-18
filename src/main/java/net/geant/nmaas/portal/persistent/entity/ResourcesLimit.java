@@ -31,12 +31,16 @@ public class ResourcesLimit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Integer memory;
 
+    @Column(nullable = false)
     private Integer cpu;
 
+    @Column(nullable = false)
     private Integer instancesNo;
 
+    @Column(nullable = false)
     private Integer containersNo;
 
     @Enumerated(EnumType.STRING)
