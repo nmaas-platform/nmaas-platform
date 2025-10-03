@@ -19,6 +19,8 @@ public record AppInstanceViewExtendedDTO(
         String applicationVersion,
         String descriptiveDeploymentId,
         String chartVersion,
+        String ownerUsername,
+        String configuration,
 
         boolean autoUpgradesEnabled,
         boolean upgradePossible,
@@ -30,7 +32,8 @@ public record AppInstanceViewExtendedDTO(
         ConfigWizardTemplateView configWizardTemplate,
         AppInstanceState state,
         Set<TagView> tags,
-        List<ApplicationStatePerDomainView>applicationStatePerDomain
+        List<ApplicationStatePerDomainView> applicationStatePerDomain,
+        Set<UserViewMinimal> members
 ) {
     public AppInstanceViewExtendedDTO(AppInstanceViewExtended app) {
 
@@ -49,6 +52,8 @@ public record AppInstanceViewExtendedDTO(
                 app.getApplication().getApplication().getVersion(),
                 app.getDescriptiveDeploymentId(),
                 app.getApplication().getApplication().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+                app.getOwner().getUsername(),
+                app.getConfiguration(),
 
                 app.isAutoUpgradesEnabled(),
                 app.isUpgradePossible(),
@@ -60,7 +65,8 @@ public record AppInstanceViewExtendedDTO(
                 app.getConfigWizardTemplate(),
                 app.getState(),
                 app.getApplication().getApplicationBase().getTags(),
-                app.getDomain().getApplicationStatePerDomain()
+                app.getDomain().getApplicationStatePerDomain(),
+                app.getMembers()
 
         );
     }
