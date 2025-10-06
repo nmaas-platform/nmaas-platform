@@ -308,7 +308,7 @@ public class AppInstanceControllerTest {
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
-        when(applicationBaseService.findByName(anyString())).thenReturn(new ApplicationBase(NAME));
+        when(applicationBaseService.findByVersionId(1L)).thenReturn(new ApplicationBase(NAME));
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());

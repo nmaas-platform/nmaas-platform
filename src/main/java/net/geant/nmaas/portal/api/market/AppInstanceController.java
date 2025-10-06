@@ -845,12 +845,10 @@ public class AppInstanceController extends AppBaseController {
         AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
 
         // explicitly set application base
-        ApplicationBase applicationBase = this.appBaseService.findByName(appInstance.getApplication().getName());
+        ApplicationBase applicationBase = this.appBaseService.findByVersionId(appInstance.getApplication().getId());
         ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseView.class));
 
-        AppInstanceViewExtended result = (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
-
-        return result;
+        return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
     }
 
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
