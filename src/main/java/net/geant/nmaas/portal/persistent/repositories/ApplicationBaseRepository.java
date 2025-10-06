@@ -35,4 +35,7 @@ public interface ApplicationBaseRepository extends JpaRepository<ApplicationBase
     @Query("SELECT ab.descriptions FROM ApplicationBase ab WHERE ab.id =?1")
     List<AppDescription> findAllBaseDescription(Long baseId);
 
+    @Query("SELECT ab FROM ApplicationBase ab JOIN ab.versions v WHERE v.appVersionId =?1")
+    Optional<ApplicationBase> findByVersionId(Long versionId);
+
 }

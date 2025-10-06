@@ -125,14 +125,6 @@ public class AppInstanceController extends AppBaseController {
         this.instanceBaseService = instanceBaseService;
     }
 
-    /*
-    NOTICE:
-    NMAAS-756
-    temporary fix on pagination size issue involves changing default pagination size in application.properties
-    to mitigate this issue in the future, it is advised to implement server-side pagination,
-    currently both api and user interface does not support this feature
-     */
-
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
@@ -204,17 +196,13 @@ public class AppInstanceController extends AppBaseController {
         }
 
         if (status != null && status.equals("deployed")) {
-
-            return result.stream().filter(instance ->
-                    instance.getState() != AppInstanceState.REMOVED
-                            && instance.getState() != AppInstanceState.DONE
-            ).toList();
-
+            return result.stream()
+                    .filter(instance -> instance.getState() != AppInstanceState.REMOVED && instance.getState() != AppInstanceState.DONE)
+                    .toList();
         } else if (status != null && status.equals("undeployed")) {
-            return result.stream().filter(instance ->
-                    instance.getState() == AppInstanceState.REMOVED
-                            || instance.getState() == AppInstanceState.DONE
-            ).toList();
+            return result.stream()
+                    .filter(instance -> List.of(AppInstanceState.REMOVED, AppInstanceState.DONE).contains(instance.getState()))
+                    .toList();
         }
 
         return result;
@@ -870,7 +858,7 @@ public class AppInstanceController extends AppBaseController {
             return null;
         }
         AppInstanceBase ai = modelMapper.map(appInstance, AppInstanceBase.class);
-        ai.setApplicationBaseId(appBaseService.findByName(appInstance.getApplication().getName()).getId());
+        ai.setApplicationBaseId(appBaseService.findByVersionId(appInstance.getApplication().getId()).getId());
         return addAppInstanceBaseProperties(ai, appInstance);
     }
 

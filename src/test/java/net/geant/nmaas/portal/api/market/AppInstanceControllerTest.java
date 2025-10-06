@@ -70,8 +70,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+public class AppInstanceControllerTest {
 
-class AppInstanceControllerTest {
+    private static final String NAME = "app1";
+    private static final String TEMPLATE_STRING = "{\"template\":\"xD\"}";
+    private static final String IDENTIFIER_VALUE = "id12";
 
     private final AppLifecycleManager appLifecycleManager = mock(AppLifecycleManager.class);
     private final AppDeploymentMonitor appDeploymentMonitor = mock(AppDeploymentMonitor.class);
@@ -92,9 +95,6 @@ class AppInstanceControllerTest {
     private Domain domain1;
     private Domain domain2;
     private Domain global;
-    private final String name = "app1";
-    private String templateString = "{\"template\":\"xD\"}";
-    private String identifierValue = "id12";
     private User owner;
     private User admin;
     private ApplicationBase appBase;
@@ -113,7 +113,7 @@ class AppInstanceControllerTest {
         domain1 = new Domain(2L, "domain one", "dom-1");
         domain2 = new Domain(3L, "domain two", "dom-2");
         global = new Domain(1L, "GLOBAL", "GLOBAL");
-        application = new Application(name,"1.0");
+        application = new Application(NAME, "1.0");
         application.setId(1L);
         application.setState(ApplicationState.ACTIVE);
         Set<UserRole> roleSet = new HashSet<>();
@@ -125,13 +125,13 @@ class AppInstanceControllerTest {
         when(userService.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(userService.findById(owner.getId())).thenReturn(Optional.of(owner));
 
-        when(applicationBaseService.findByName(any())).thenReturn(appBase);
+        when(applicationBaseService.findByVersionId(1L)).thenReturn(appBase);
 
         when(domainService.findDomain(global.getId())).thenReturn(Optional.of(global));
         when(domainService.findDomain(domain1.getId())).thenReturn(Optional.of(domain1));
 
         ConfigWizardTemplate configWizardTemplate = mock(ConfigWizardTemplate.class);
-        when(configWizardTemplate.getTemplate()).thenReturn(templateString);
+        when(configWizardTemplate.getTemplate()).thenReturn(TEMPLATE_STRING);
         application.setConfigWizardTemplate(configWizardTemplate);
 
         appInstanceController = new AppInstanceController(
@@ -171,7 +171,7 @@ class AppInstanceControllerTest {
 
         when(appDeploymentMonitor.userAccessDetails(any())).thenThrow(new InvalidDeploymentIdException());
         AppDeployment appDeployment = mock(AppDeployment.class);
-        when(appDeployment.getDescriptiveDeploymentId()).thenReturn(new Identifier(identifierValue));
+        when(appDeployment.getDescriptiveDeploymentId()).thenReturn(new Identifier(IDENTIFIER_VALUE));
         when(appDeploymentRepositoryManager.load(any())).thenReturn(appDeployment);
     }
 
@@ -180,10 +180,10 @@ class AppInstanceControllerTest {
         AppInstanceBase appInstance = new AppInstanceBase();
         appInstance.setApplicationBaseId(application.getId());
         appInstance.setApplicationName(application.getName());
-        appInstance.setName(name);
+        appInstance.setName(NAME);
         appInstance.setAutoUpgradesEnabled(true);
         appInstance.setDomainId(domain1.getId());
-        appInstance.setOwner(new UserBase(owner.getId(),owner.getUsername(),true));
+        appInstance.setOwner(new UserBase(owner.getId(), owner.getUsername(), true));
         List<AppInstanceBase> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
         Page<AppInstanceBase> appInstancePage = new PageImpl<>(appInstanceList);
@@ -194,14 +194,14 @@ class AppInstanceControllerTest {
 
         assertEquals(1, result.getTotalElements());
         AppInstanceBase appInstanceView = result.getContent().getFirst();
-        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
         assertTrue(appInstanceView.isAutoUpgradesEnabled());
     }
 
     @Test
     void shouldGetAllInstancesWithParamsWhenIsSystemAdminAndDomainIsGlobal() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
 
@@ -214,18 +214,16 @@ class AppInstanceControllerTest {
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.get(0);
-        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
         assertFalse(appInstanceView.isAutoUpgradesEnabled());
     }
 
-
     @Test
     void shouldGetAllMyInstancesInAllDomainWhenIsSystemAdminAndDomainIsGlobal() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
-        Page<AppInstance> appInstancePage = new PageImpl<>(appInstanceList);
 
         when(applicationInstanceService.findAllByOwner(admin)).thenReturn(appInstanceList);
 
@@ -236,13 +234,13 @@ class AppInstanceControllerTest {
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
     }
 
     @Test
     void shouldGetAllUserInstancesInDomain() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, admin, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, admin, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
 
@@ -252,13 +250,13 @@ class AppInstanceControllerTest {
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(admin.getUsername(), appInstanceView.getOwner().getUsername());
     }
 
     @Test
     void shouldGetAllMyInstancesInDomain() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
 
@@ -271,29 +269,27 @@ class AppInstanceControllerTest {
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.getFirst();
-        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
 //        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
 
     @Test
     void shouldGetAllRunningInstancesOfUserInDomain() {
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
         List<AppInstance> appInstanceList = new ArrayList<>();
         appInstanceList.add(appInstance);
-
         when(applicationInstanceService.findAllByDomain(domain1)).thenReturn(appInstanceList);
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
-
         when(appDeploymentMonitor.state(any())).thenReturn(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED);
 
         List<AppInstanceView> result = appInstanceController.getRunningAppInstances(domain1.getId(), principal);
 
         assertEquals(1, result.size());
         AppInstanceBase appInstanceView = result.get(0);
-        assertEquals(name, appInstanceView.getApplicationName());
+        assertEquals(NAME, appInstanceView.getApplicationName());
         assertEquals(owner.getUsername(), appInstanceView.getOwner().getUsername());
 //        assertEquals(identifierValue, appInstanceView.getDescriptiveDeploymentId());
     }
@@ -312,14 +308,14 @@ class AppInstanceControllerTest {
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
-        when(applicationBaseService.findByName(anyString())).thenReturn(new ApplicationBase(name));
+        when(applicationBaseService.findByName(anyString())).thenReturn(new ApplicationBase(NAME));
 
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
         AppInstanceViewExtendedDTO appInstanceView = appInstanceController.getAppInstance(1L, principal);
-        assertEquals(name, appInstanceView.appBaseName());
-        assertEquals(identifierValue, appInstanceView.descriptiveDeploymentId());
+        assertEquals(NAME, appInstanceView.appBaseName());
+        assertEquals(IDENTIFIER_VALUE, appInstanceView.descriptiveDeploymentId());
         assertEquals(domain1.getId(), appInstanceView.domainId());
 
         MissingElementException me = assertThrows(MissingElementException.class,
@@ -332,7 +328,7 @@ class AppInstanceControllerTest {
     @Test
     void shouldConvertAppInstanceToAppInstanceViewWithApplicationIdAndDomainId() {
         ModelMapper modelMapper = new ModelMapper();
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
         AppInstanceView appInstanceView = modelMapper.map(appInstance, AppInstanceView.class);
         assertEquals(application.getId(), appInstanceView.getApplicationId());
         assertEquals(domain1.getId(), appInstanceView.getDomainId());
@@ -341,7 +337,7 @@ class AppInstanceControllerTest {
     @Test
     void shouldConvertAppInstanceToAppInstanceViewExtendedWithApplicationViewAndDomainView() {
         ModelMapper modelMapper = new ModelMapper();
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
         AppInstanceViewExtended appInstanceView = modelMapper.map(appInstance, AppInstanceViewExtended.class);
 
         assertEquals(application.getId(), appInstanceView.getApplicationId());
@@ -365,9 +361,9 @@ class AppInstanceControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn(owner.getUsername());
 
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
         appInstance.setId(1L);
-        appInstance.setInternalId(new Identifier(identifierValue));
+        appInstance.setInternalId(new Identifier(IDENTIFIER_VALUE));
 
         when(appDeploymentMonitor.state(any(Identifier.class))).thenReturn(AppLifecycleState.APPLICATION_DEPLOYED);
         when(appDeploymentMonitor.previousState(any(Identifier.class))).thenReturn(AppLifecycleState.APPLICATION_CONFIGURATION_IN_PROGRESS);
@@ -386,19 +382,19 @@ class AppInstanceControllerTest {
     void shouldUpdateAppInstanceMembersList() {
         ModelMapper modelMapper = new ModelMapper();
 
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
         appInstance.setId(1L);
-        appInstance.setInternalId(new Identifier(identifierValue));
+        appInstance.setInternalId(new Identifier(IDENTIFIER_VALUE));
         appInstance.setMembers(new HashSet<>());
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
 
-        User user1domain1 = getUserWithSshKey("username1",  domain1);
-        User user2domain1 = getUserWithSshKey("username2",  domain1);
-        User user3domain2 = getUserWithSshKey("username3",  domain2);
-        User user4domain1 = getUserWithSshKey("username4",  domain1);
-        User user5domain1 = getUserWithSshKey("username5",  domain1);
+        User user1domain1 = getUserWithSshKey("username1", domain1);
+        User user2domain1 = getUserWithSshKey("username2", domain1);
+        User user3domain2 = getUserWithSshKey("username3", domain2);
+        User user4domain1 = getUserWithSshKey("username4", domain1);
+        User user5domain1 = getUserWithSshKey("username5", domain1);
 
         appInstance.getMembers().add(user4domain1);
         appInstance.getMembers().add(user5domain1);
@@ -422,7 +418,7 @@ class AppInstanceControllerTest {
     }
 
     @Test
-    void shouldCreateAppInstanceThrowExceptionIfNameOfNewInstanceAlreadyExists(){
+    void shouldCreateAppInstanceThrowExceptionIfNameOfNewInstanceAlreadyExists() {
         Principal principal = mock(Principal.class);
         AppInstanceRequest appInstanceRequest = new AppInstanceRequest();
         Long domainId = 2L;
@@ -437,7 +433,7 @@ class AppInstanceControllerTest {
         when(applicationService.findApplication(appInstanceRequest.getApplicationId())).thenReturn(Optional.of(application));
 
         assertThrows(IllegalArgumentException.class, () -> {
-            this.appInstanceController.createAppInstance(appInstanceRequest, principal,domainId, null);
+            this.appInstanceController.createAppInstance(appInstanceRequest, principal, domainId, null);
         });
     }
 
@@ -446,7 +442,7 @@ class AppInstanceControllerTest {
     }
 
     public static User getUserWithSshKey(String username, Domain domain) {
-        User user = new User(username, true, "", domain,  Role.ROLE_GUEST);
+        User user = new User(username, true, "", domain, Role.ROLE_GUEST);
         user.setSshKeys(new HashSet<>());
         user.getSshKeys().add(getDefaultSSHKey(user));
         return user;

@@ -26,6 +26,8 @@ public interface ApplicationBaseService {
 
     ApplicationBase findByName(String name);
 
+    ApplicationBase findByVersionId(Long versionId);
+
     boolean exists(String name);
 
     boolean isAppActive(ApplicationBase application);
