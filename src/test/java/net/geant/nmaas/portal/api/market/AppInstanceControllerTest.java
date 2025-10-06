@@ -304,7 +304,7 @@ public class AppInstanceControllerTest {
         application.setAppConfigurationSpec(new AppConfigurationSpec());
         application.getAppConfigurationSpec().setConfigUpdateEnabled(true);
 
-        AppInstance appInstance = new AppInstance(application, name, domain1, owner, false);
+        AppInstance appInstance = new AppInstance(application, NAME, domain1, owner, false);
 
         when(applicationInstanceService.find(1L)).thenReturn(Optional.of(appInstance));
         when(applicationInstanceService.find(-1L)).thenReturn(Optional.empty());
