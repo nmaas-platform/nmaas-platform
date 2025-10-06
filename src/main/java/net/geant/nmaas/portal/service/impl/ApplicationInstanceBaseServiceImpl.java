@@ -42,16 +42,14 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
     @Override
     public Page<AppInstanceBase> findAll(Pageable pageable, boolean deployed, String search) {
         return getAppInstanceBases(appInstanceRepo.findAllNotDeletedByDeploy(
-                search,
-                pageable,
-                deployed),
+                        search,
+                        pageable,
+                        deployed),
                 pageable);
     }
 
     @Override
     public Page<AppInstanceBase> findAllByOwner(User owner, Pageable pageable) {
-
-
         checkParam(owner);
         Page<AppInstance> page = appInstanceRepo.findAllByOwner(owner, pageable);
         List<AppInstanceBase> filtered = page.getContent()
@@ -157,13 +155,12 @@ public class ApplicationInstanceBaseServiceImpl implements ApplicationInstanceBa
         );
     }
 
-
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
         if (appInstance == null) {
             return null;
         }
         AppInstanceBase ai = modelMapper.map(appInstance, AppInstanceBase.class);
-        ai.setApplicationBaseId(appBaseService.findByName(appInstance.getApplication().getName()).getId());
+        ai.setApplicationBaseId(appBaseService.findByVersionId(appInstance.getApplication().getId()).getId());
         return addAppInstanceBaseProperties(ai, appInstance);
     }
 

@@ -42,7 +42,7 @@ public class DcnRepositoryManagerIntTest {
                 .deploymentId(DEPLOYMENT_ID)
                 .descriptiveDeploymentId(Identifier.newInstance("descriptiveDeploymentId"))
                 .domain(DOMAIN)
-                .applicationId(Identifier.newInstance(""))
+                .applicationId(Identifier.newInstance(1L))
                 .deploymentName("deploymentName")
                 .configFileRepositoryRequired(true)
                 .build();
