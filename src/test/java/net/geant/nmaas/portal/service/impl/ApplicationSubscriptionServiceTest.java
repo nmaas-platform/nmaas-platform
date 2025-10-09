@@ -35,7 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ApplicationSubscriptionServiceTest {
+class ApplicationSubscriptionServiceTest {
 
     private static final Long APPLICATION_ID = 1L;
     private static final Long DOMAIN_ID = 1L;

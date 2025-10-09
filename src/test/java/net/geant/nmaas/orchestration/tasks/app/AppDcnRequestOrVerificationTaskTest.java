@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AppDcnRequestOrVerificationTaskTest {
+class AppDcnRequestOrVerificationTaskTest {
 
     private DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private DcnDeploymentProvidersManager deploy = mock(DcnDeploymentProvidersManager.class);
@@ -34,35 +34,35 @@ public class AppDcnRequestOrVerificationTaskTest {
     private AppRequestNewOrVerifyExistingDcnEvent event = new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId);
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(deployments.loadDomain(deploymentId)).thenReturn("domain");
         when(deploy.getDcnDeploymentProvider(any())).thenReturn(deploymentProvider);
         task = new AppDcnRequestOrVerificationTask(deployments, deploy);
     }
 
     @Test
-    public void shouldGenerateNewDcnDeploymentActionIfDcnNotExists() {
+    void shouldGenerateNewDcnDeploymentActionIfDcnNotExists() {
         when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.NONE);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(instanceOf(DcnVerifyRequestActionEvent.class)));
     }
 
     @Test
-    public void shouldGenerateNewDcnDeploymentActionIfDcnRemoved() {
+    void shouldGenerateNewDcnDeploymentActionIfDcnRemoved() {
         when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.REMOVED);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(instanceOf(DcnVerifyRequestActionEvent.class)));
     }
 
     @Test
-    public void shouldNotifyReadyForDeploymentState() {
+    void shouldNotifyReadyForDeploymentState() {
         when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.DEPLOYED);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(instanceOf(NmServiceDeploymentStateChangeEvent.class)));
     }
 
     @Test
-    public void shouldDoNothingWhenDcnCurrentlyProcessed() {
+    void shouldDoNothingWhenDcnCurrentlyProcessed() {
         when(deploymentProvider.checkState("domain")).thenReturn(DcnState.PROCESSED);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(nullValue()));

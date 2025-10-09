@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ApplicationLogsServiceImplTest {
+class ApplicationLogsServiceImplTest {
 
     private static final long APP_INSTANCE_ID = 1L;
     private static final String POD_NAME = "pod1";

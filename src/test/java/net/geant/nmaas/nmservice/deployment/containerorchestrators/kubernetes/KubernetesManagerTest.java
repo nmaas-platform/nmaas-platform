@@ -57,7 +57,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class KubernetesManagerTest {
+class KubernetesManagerTest {
 
     private final KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
     private final KubernetesDeploymentParametersProvider deploymentParametersProvider = mock(KubernetesDeploymentParametersProvider.class);

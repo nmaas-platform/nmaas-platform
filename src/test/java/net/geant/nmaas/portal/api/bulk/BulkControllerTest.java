@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public class BulkControllerTest {
+class BulkControllerTest {
 
     private final BulkCsvProcessor bulkCsvProcessor = mock(BulkCsvProcessor.class);
     private final BulkDomainService bulkDomainService = mock(BulkDomainService.class);

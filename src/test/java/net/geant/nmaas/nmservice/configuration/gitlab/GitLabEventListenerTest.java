@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-public class GitLabEventListenerTest {
+class GitLabEventListenerTest {
 
     private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
 
@@ -26,14 +26,14 @@ public class GitLabEventListenerTest {
     private GitLabEventsListener eventsListener = new GitLabEventsListener(repositoryManager, gitConfigHandler);
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         GitLabProject project = mock(GitLabProject.class);
         when(project.getId()).thenReturn(1L);
         when(repositoryManager.loadGitLabProject(any())).thenReturn(Optional.of(project));
     }
 
     @Test
-    public void addMemberToProjectGitlabEventShouldDelegateToGitConfigHandlerMethods() {
+    void addMemberToProjectGitlabEventShouldDelegateToGitConfigHandlerMethods() {
         AddUserToRepositoryGitlabEvent event = new AddUserToRepositoryGitlabEvent(
                 "source",
                 "username",
@@ -50,7 +50,7 @@ public class GitLabEventListenerTest {
     }
 
     @Test
-    public void removeMemberFromProjectGitlabEventShouldDelegateToGitConfigHandlerMethod() {
+    void removeMemberFromProjectGitlabEventShouldDelegateToGitConfigHandlerMethod() {
         RemoveUserFromRepositoryGitlabEvent event = new RemoveUserFromRepositoryGitlabEvent(
                 "source",
                 "username",
@@ -63,7 +63,7 @@ public class GitLabEventListenerTest {
     }
 
     @Test
-    public void updateUserSshKeysGitlabEventShouldDelegateToGitConfigHandlerCreateUserMethod() {
+    void updateUserSshKeysGitlabEventShouldDelegateToGitConfigHandlerCreateUserMethod() {
         UserSshKeysUpdatedGitlabEvent event = new UserSshKeysUpdatedGitlabEvent(
                 "source",
                 "username",

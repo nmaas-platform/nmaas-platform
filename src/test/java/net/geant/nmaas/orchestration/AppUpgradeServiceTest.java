@@ -37,7 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AppUpgradeServiceTest {
+class AppUpgradeServiceTest {
 
     private static final Identifier DEPLOYMENT_ID1 = Identifier.newInstance(10L);
     private static final Identifier DEPLOYMENT_ID2 = Identifier.newInstance(20L);

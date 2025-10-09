@@ -8,7 +8,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class ConfigFilePreparerHelperTest {
+class ConfigFilePreparerHelperTest {
 
     @Test
     void shouldGenerateNewConfigFileId() {

@@ -85,6 +85,7 @@ public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
     private static final String MISSING_USER_MESSAGE = "User not found";
+    private static final String DOMAIN_NOT_FOUND_MESSAGE = "Domain %s not found";
 
     private final AppLifecycleManager appLifecycleManager;
     private final AppDeploymentMonitor appDeploymentMonitor;
@@ -123,14 +124,6 @@ public class AppInstanceController extends AppBaseController {
         this.configurationManager = configurationManager;
         this.instanceBaseService = instanceBaseService;
     }
-
-    /*
-    NOTICE:
-    NMAAS-756
-    temporary fix on pagination size issue involves changing default pagination size in application.properties
-    to mitigate this issue in the future, it is advised to implement server-side pagination,
-    currently both api and user interface does not support this feature
-     */
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
@@ -186,7 +179,7 @@ public class AppInstanceController extends AppBaseController {
                                                  @RequestParam(required = false) String status) {
         List<AppInstanceBase> result;
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
@@ -203,17 +196,13 @@ public class AppInstanceController extends AppBaseController {
         }
 
         if (status != null && status.equals("deployed")) {
-
-            return result.stream().filter(instance ->
-                    instance.getState() != AppInstanceState.REMOVED
-                            && instance.getState() != AppInstanceState.DONE
-            ).toList();
-
+            return result.stream()
+                    .filter(instance -> instance.getState() != AppInstanceState.REMOVED && instance.getState() != AppInstanceState.DONE)
+                    .toList();
         } else if (status != null && status.equals("undeployed")) {
-            return result.stream().filter(instance ->
-                    instance.getState() == AppInstanceState.REMOVED
-                            || instance.getState() == AppInstanceState.DONE
-            ).toList();
+            return result.stream()
+                    .filter(instance -> List.of(AppInstanceState.REMOVED, AppInstanceState.DONE).contains(instance.getState()))
+                    .toList();
         }
 
         return result;
@@ -230,7 +219,7 @@ public class AppInstanceController extends AppBaseController {
         this.logPageable(pageable);
         pageable = this.pageableValidator(pageable);
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = this.userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
 
@@ -412,7 +401,7 @@ public class AppInstanceController extends AppBaseController {
 
     private List<AppInstanceBase> getUserDomainAppInstances(Long domainId, String username) {
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instanceService.findAllByOwner(user.getId(), domain.getId()).stream()
@@ -424,7 +413,7 @@ public class AppInstanceController extends AppBaseController {
                                                                 String username,
                                                                 Pageable pageable) {
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instanceBaseService.findAllByOwner(user, domain, pageable);
@@ -436,7 +425,7 @@ public class AppInstanceController extends AppBaseController {
                                                                 boolean deployed,
                                                                 String search) {
         Domain domain = domainService.findDomain(domainId)
-                .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
+                .orElseThrow(() -> new MissingElementException(String.format(DOMAIN_NOT_FOUND_MESSAGE, domainId)));
         User user = userService.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instanceBaseService.findAllByOwner(user, domain, pageable, deployed, search);
@@ -856,12 +845,10 @@ public class AppInstanceController extends AppBaseController {
         AppInstanceViewExtended ai = modelMapper.map(appInstance, AppInstanceViewExtended.class);
 
         // explicitly set application base
-        ApplicationBase applicationBase = this.appBaseService.findByName(appInstance.getApplication().getName());
+        ApplicationBase applicationBase = this.appBaseService.findByVersionId(appInstance.getApplication().getId());
         ai.getApplication().setApplicationBase(modelMapper.map(applicationBase, ApplicationBaseView.class));
 
-        AppInstanceViewExtended result = (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
-
-        return result;
+        return (AppInstanceViewExtended) addAppInstanceProperties(ai, appInstance);
     }
 
     private AppInstanceBase mapAppInstanceBase(AppInstance appInstance) {
@@ -869,7 +856,7 @@ public class AppInstanceController extends AppBaseController {
             return null;
         }
         AppInstanceBase ai = modelMapper.map(appInstance, AppInstanceBase.class);
-        ai.setApplicationBaseId(appBaseService.findByName(appInstance.getApplication().getName()).getId());
+        ai.setApplicationBaseId(appBaseService.findByVersionId(appInstance.getApplication().getId()).getId());
         return addAppInstanceBaseProperties(ai, appInstance);
     }
 

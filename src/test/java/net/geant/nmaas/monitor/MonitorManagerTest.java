@@ -22,7 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MonitorManagerTest {
+class MonitorManagerTest {
 
     private final ModelMapper modelMapper = new ModelMapper();
     private final MonitorRepository repository = mock(MonitorRepository.class);

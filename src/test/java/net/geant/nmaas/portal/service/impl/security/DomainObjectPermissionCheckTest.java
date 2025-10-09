@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DomainObjectPermissionCheckTest {
+class DomainObjectPermissionCheckTest {
 	
 	private final DomainService domains = mock(DomainService.class);
 
 	DomainObjectPermissionCheck dopch;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.dopch = new DomainObjectPermissionCheck(domains);
 
 		when(domains.getGlobalDomain()).thenReturn(Optional.of(UsersHelper.GLOBAL));
@@ -34,7 +34,7 @@ public class DomainObjectPermissionCheckTest {
 	}
 
 	@Test
-	public void testSupports() {
+	void testSupports() {
 		assertTrue(dopch.supports("domain"));
 		assertTrue(dopch.supports("DOMAIN"));
 		
@@ -43,14 +43,14 @@ public class DomainObjectPermissionCheckTest {
 	}
 
 	@Test
-	public void testSystemAdminEvaluatePermissions() {
+	void testSystemAdminEvaluatePermissions() {
 		Set<Permissions> perms = dopch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(5, perms.size());
 		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
 	}
 	
 	@Test
-	public void testDomainAdminEvaluatePermissions() {
+	void testDomainAdminEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_ADMIN, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
@@ -62,7 +62,7 @@ public class DomainObjectPermissionCheckTest {
 	}
 	
 	@Test
-	public void testToolManagerEvaluatePermissions() {
+	void testToolManagerEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = dopch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
@@ -71,7 +71,7 @@ public class DomainObjectPermissionCheckTest {
 	}
 	
 	@Test
-	public void testDomainUserEvaluatePermissions() {
+	void testDomainUserEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_USER1, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
@@ -84,7 +84,7 @@ public class DomainObjectPermissionCheckTest {
 	}
 	
 	@Test
-	public void testDomainGuestEvaluatePermissions() {
+	void testDomainGuestEvaluatePermissions() {
 		Set<Permissions> perms = null;
 		
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);

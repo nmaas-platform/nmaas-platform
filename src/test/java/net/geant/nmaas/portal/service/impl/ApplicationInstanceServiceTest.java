@@ -44,7 +44,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ApplicationInstanceServiceTest {
+class ApplicationInstanceServiceTest {
 
     private final AppInstanceRepository appInstanceRepo = mock(AppInstanceRepository.class);
     private final ApplicationService applications = mock(ApplicationService.class);

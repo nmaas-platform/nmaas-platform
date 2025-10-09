@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class DefaultCommandExecutorTest {
+class DefaultCommandExecutorTest {
 
     private final CommandExecutor executor = new DefaultCommandExecutor();
 

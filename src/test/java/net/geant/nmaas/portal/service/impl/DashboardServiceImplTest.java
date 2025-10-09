@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DashboardServiceImplTest {
+class DashboardServiceImplTest {
 
     private final UserRepository userRepository = mock(UserRepository.class);
     private final DomainService domainService = mock(DomainService.class);

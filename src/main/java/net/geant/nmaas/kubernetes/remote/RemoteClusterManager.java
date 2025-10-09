@@ -41,6 +41,7 @@ import static net.geant.nmaas.kubernetes.remote.RemoteClusterHelper.saveFileToTm
 @Slf4j
 public class RemoteClusterManager implements RemoteClusterManagementService {
 
+    private static final String CLUSTER_NAME_NULL_MESSAGE = "Name of the cluster is null";
     private final KClusterRepository kClusterRepository;
     private final KubernetesClusterIngressManager kClusterIngressManager;
     private final KubernetesClusterDeploymentManager kClusterDeploymentManager;
@@ -246,7 +247,7 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     private void checkRequest(RemoteClusterView view) {
         if (view.getName() == null) {
-            throw new IllegalArgumentException("Name of the cluster is null");
+            throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
         if (view.getDescription() == null) {
             throw new IllegalArgumentException("Description of the cluster is null");
@@ -258,13 +259,13 @@ public class RemoteClusterManager implements RemoteClusterManagementService {
 
     private void checkRequestRead(RemoteClusterView view) {
         if (view.getName() == null) {
-            throw new IllegalArgumentException("Name of the cluster is null");
+            throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
     }
 
     private void checkRequest(KCluster entity, RemoteClusterView view, Long id) {
         if (view.getName() == null) {
-            throw new IllegalArgumentException("Name of the cluster is null");
+            throw new IllegalArgumentException(CLUSTER_NAME_NULL_MESSAGE);
         }
         if (view.getCodename() == null) {
             throw new IllegalArgumentException("Codename of the cluster is null");

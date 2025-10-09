@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-public class ShellSessionObserverTest {
+class ShellSessionObserverTest {
 
     /**
      * extend object under test to provide custom parameters
@@ -32,7 +32,7 @@ public class ShellSessionObserverTest {
 
     @Disabled
     @Test
-    public void testObserver() throws IOException {
+    void testObserver() throws IOException {
         GenericShellSessionObservable observable = new EchoShellSessionObservable("someId");
         SseEmitter mockEmitter = mock(SseEmitter.class);
         ShellSessionObserver observer = new TestableShellSessionObserver(mockEmitter);

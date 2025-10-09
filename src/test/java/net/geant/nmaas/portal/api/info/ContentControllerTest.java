@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ContentControllerTest {
+class ContentControllerTest {
 
     private static final Content CONTENT = new Content(1L, "Test name", "Test content", "Test title");
 

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class BasePermissionCheckTest {
+class BasePermissionCheckTest {
 
 	User user = mock(User.class);
 	
@@ -26,7 +26,7 @@ public class BasePermissionCheckTest {
 	Set<Permissions> emptyPerms = null;
 	
 	@BeforeEach
-	public void setUp() throws Exception {
+	void setUp() throws Exception {
 		perms = new HashSet<Permissions>();
 		perms.addAll(Arrays.asList(new Permissions[] { Permissions.CREATE, Permissions.OWNER }));
 		perms = Collections.unmodifiableSet(perms);
@@ -58,7 +58,7 @@ public class BasePermissionCheckTest {
 	}
 
 	@Test
-	public final void testHasPermissionSetOfPermissionsPermissions() {
+	final void testHasPermissionSetOfPermissionsPermissions() {
 		
 		assertTrue(bpch.hasPermission(perms, Permissions.ANY));
 		assertFalse(bpch.hasPermission(emptyPerms, Permissions.ANY));
@@ -70,7 +70,7 @@ public class BasePermissionCheckTest {
 	}
 
 	@Test
-	public final void testHasPermissionSetOfPermissionsPermissionsArray() {		
+	final void testHasPermissionSetOfPermissionsPermissionsArray() {
 		
 		assertTrue(bpch.hasPermission(perms, new Permissions[] { Permissions.WRITE, Permissions.CREATE }));
 		assertFalse(bpch.hasPermission(perms, new Permissions[] { Permissions.DELETE, Permissions.READ }));
@@ -81,7 +81,7 @@ public class BasePermissionCheckTest {
 	}
 
 	@Test
-	public final void testCheckUserSerializableStringPermissions() {
+	final void testCheckUserSerializableStringPermissions() {
 		assertTrue(bpch.check(user, 1, "supported", Permissions.OWNER));
 		assertFalse(bpch.check(user, 1, "notSupported", Permissions.OWNER));
 		
@@ -93,7 +93,7 @@ public class BasePermissionCheckTest {
 	}
 
 	@Test
-	public final void testCheckUserSerializableStringPermissionsArray() {
+	final void testCheckUserSerializableStringPermissionsArray() {
 		assertTrue(bpch.check(user, 1, "supported", new Permissions[] { Permissions.OWNER, Permissions.READ }));
 		assertFalse(bpch.check(user, 1, "notSupported", new Permissions [] { Permissions.OWNER, Permissions.ANY} ));
 		

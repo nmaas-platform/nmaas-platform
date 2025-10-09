@@ -169,7 +169,12 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
 
     @Override
     public ApplicationBase findByName(String name) {
-        return appBaseRepository.findByName(name).orElseThrow(() -> new MissingElementException(name + " app base not found"));
+        return appBaseRepository.findByName(name).orElseThrow(() -> new MissingElementException("Application base not found with name: " + name));
+    }
+
+    @Override
+    public ApplicationBase findByVersionId(Long versionId) {
+        return appBaseRepository.findByVersionId(versionId).orElseThrow(() -> new MissingElementException("Application base not found for application: " + versionId));
     }
 
     @Override

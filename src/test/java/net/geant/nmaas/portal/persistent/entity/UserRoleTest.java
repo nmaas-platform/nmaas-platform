@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UserRoleTest {
+class UserRoleTest {
 
     final private User user = new User("username");
     final private Domain domain = new Domain(1L, "name", "codename");

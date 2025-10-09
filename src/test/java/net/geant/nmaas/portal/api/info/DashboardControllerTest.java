@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class DashboardControllerTest {
+class DashboardControllerTest {
 
     private final DashboardService dashboardService = mock(DashboardService.class);
     private final DashboardController dashboardController = new DashboardController(dashboardService);

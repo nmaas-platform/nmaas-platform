@@ -51,7 +51,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AppDeploymentStateChangeManagerTest {
+class AppDeploymentStateChangeManagerTest {
 
     private final Identifier deploymentId = Identifier.newInstance("deploymentId");
     private final NmServiceDeploymentStateChangeEvent event = mock(NmServiceDeploymentStateChangeEvent.class);
