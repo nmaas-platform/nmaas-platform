@@ -544,6 +544,7 @@
     "INSTANCE_NAME_PATTERN_ERROR": "Le nom de l'Instance name ne doit contenir que des lettres alphanumériques: a-z, A-Z, 0-9 et - .",
     "INSTANCE_NAME_LENGTH_ERROR": "Le nom de l'Instance doit être long de 3-10 caractères.",
     "INSTANCE_NAME_REQUIRED_ERROR": "Le nom de l'instance name est requis.",
+    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "Le nom ne peut pas contenir le mot „test“",
     "DOMAIN": "Organisation",
     "CLOSE_BUTTON": "Fermer",
     "DEPLOY_BUTTON": "Déployer",
