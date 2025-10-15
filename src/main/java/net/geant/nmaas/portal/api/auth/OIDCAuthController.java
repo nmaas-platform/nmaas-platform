@@ -18,6 +18,7 @@ import net.geant.nmaas.portal.service.OidcUserService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +39,10 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping()
+@ConditionalOnProperty(
+        value = "portal.config.ssoLoginAllowed",
+        havingValue = "true"
+)
 public class OIDCAuthController {
 
     private static final String OIDC_LOGOUT_PATH = "/protocol/openid-connect/logout";
