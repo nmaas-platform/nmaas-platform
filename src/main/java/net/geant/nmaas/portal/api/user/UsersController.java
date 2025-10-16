@@ -24,6 +24,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.repositories.UserEntryListRepository;
 import net.geant.nmaas.portal.persistent.results.UserLoginDate;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
@@ -106,6 +107,9 @@ public class UsersController {
 
     private final ApplicationInstanceService instanceService;
 
+    private final UserEntryListRepository userEntryListRepository;
+
+
     @Autowired
     public UsersController(UserService userService,
                            DomainService domainService,
@@ -114,7 +118,8 @@ public class UsersController {
                            JWTTokenService jwtTokenService,
                            ApplicationEventPublisher eventPublisher,
                            UserLoginRegisterService userLoginService,
-                           ApplicationInstanceService instanceService) {
+                           ApplicationInstanceService instanceService,
+                           UserEntryListRepository userEntryListRepository) {
         this.userService = userService;
         this.domainService = domainService;
         this.modelMapper = modelMapper;
@@ -123,6 +128,7 @@ public class UsersController {
         this.eventPublisher = eventPublisher;
         this.userLoginService = userLoginService;
         this.instanceService = instanceService;
+        this.userEntryListRepository = userEntryListRepository;
     }
 
     @GetMapping("/users")
@@ -166,7 +172,7 @@ public class UsersController {
     public Page<UserListEntry> getUsersList(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                             @RequestParam(required = false) String searchValue,
                                             Principal principal) {
-        return userService.findAllListEntry(pageable, searchValue);
+        return userEntryListRepository.findAll(searchValue, pageable);
     }
 
     @GetMapping("/domains/{domainId}/users/list")
