@@ -544,7 +544,7 @@
     "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0-9 and - characters",
     "INSTANCE_NAME_LENGTH_ERROR": "Instance name has to be 3-10 characters long",
     "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required",
-    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "The name cannot contain the word „test“",
+    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "Name „test“ cannot be used",
     "DOMAIN": "Domain",
     "CLOSE_BUTTON": "Cancel",
     "DEPLOY_BUTTON": "Deploy",

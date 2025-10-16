@@ -543,7 +543,7 @@
     "INSTANCE_NAME_PATTERN_ERROR": "Nazwa instancji może zawierać tylko znaki a-z, A-Z, 0-9 oraz -",
     "INSTANCE_NAME_LENGTH_ERROR": "Nazwa instancji może mieć długość od 3 do 10 znaków",
     "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana",
-    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "Nazwa nie może zawierać słowa „test“",
+    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "Nie można ustawić nazwy „test“",
     "DOMAIN": "Domena",
     "CLOSE_BUTTON": "Anuluj",
     "DEPLOY_BUTTON": "Uruchom",

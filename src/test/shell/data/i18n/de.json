@@ -542,7 +542,7 @@
     "INSTANCE_NAME_PATTERN_ERROR": "Name der Instanz darf nur folgende Zeichen beinhalten a-z, A-Z, 0-9 und - .",
     "INSTANCE_NAME_LENGTH_ERROR": "Name der Instanz muss 3-10 Zeichen lang sein.",
     "INSTANCE_NAME_REQUIRED_ERROR": "Name der Instanz wird benötigt.",
-    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "Der Name darf nicht das Wort „test“ enthalten",
+    "INSTANCE_NAME_FORBIDDEN_WORD_ERROR": "Der Name „Test“ kann nicht verwendet werden",
     "DOMAIN": "Domain",
     "CLOSE_BUTTON": "Schließen",
     "DEPLOY_BUTTON": "Installieren",
