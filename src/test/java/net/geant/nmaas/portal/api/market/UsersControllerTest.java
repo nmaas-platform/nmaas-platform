@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.repositories.UserEntryListRepository;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
@@ -70,9 +71,11 @@ class UsersControllerTest {
 
     private final ApplicationInstanceService instanceService = mock(ApplicationInstanceService.class);
 
+    private final UserEntryListRepository userEntryListRepository = mock(UserEntryListRepository.class);
+
     @BeforeEach
     void setup() {
-        usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService, instanceService);
+        usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher, userLoginService, instanceService, userEntryListRepository);
         User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
         tester.setId(1L);
         User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
