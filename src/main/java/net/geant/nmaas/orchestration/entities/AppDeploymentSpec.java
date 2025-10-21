@@ -74,6 +74,12 @@ public class AppDeploymentSpec implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<AppAccessMethod> accessMethods;
 
+    private Integer consumedPods;
+
+    private Integer consumedMemory;
+
+    private Integer consumedCpu;
+
     public void validate() {
         Validate.isTrue(kubernetesTemplate != null, "Kubernetes template cannot be null");
         Validate.isTrue(accessMethods != null && !accessMethods.isEmpty(), "At least one access method has to be specified");
