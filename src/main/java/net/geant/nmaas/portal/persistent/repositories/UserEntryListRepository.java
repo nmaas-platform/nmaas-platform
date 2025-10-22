@@ -22,4 +22,16 @@ public interface UserEntryListRepository extends JpaRepository<User, Long> {
             WHERE (:search IS NULL OR LOWER(user.username) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
             """)
     Page<UserListEntry> findAll(@Param("search") String searchValue, Pageable pageable);
+
+    @Query("""
+            SELECT new net.geant.nmaas.portal.api.domain.UserListEntry(
+                        user,
+                        (SELECT MAX(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as lastSuccessfulLoginDate,
+                        (SELECT MIN(l.date) FROM UserLoginRegister l WHERE l.userId = user.id ) as firstLoginDate
+                        )
+            FROM User user JOIN UserRole userRole ON userRole.id.user.id = user.id
+            WHERE (:search IS NULL OR LOWER(user.username) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
+            AND (userRole.id.domain.id = :domainId)
+            """)
+    Page<UserListEntry> findAllByDomainId(@Param("domainId") long domainId,@Param("search") String searchValue, Pageable pageable);
 }
