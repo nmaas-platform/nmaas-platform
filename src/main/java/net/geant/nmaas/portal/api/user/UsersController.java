@@ -180,7 +180,7 @@ public class UsersController {
     public Page<UserListEntry> getUsersListDomain(@PageableDefault(page = 0, size = 15, sort = "id") Pageable pageable,
                                                   @RequestParam(required = false) String searchValue,
                                                   @PathVariable Long domainId) {
-        return userService.findAllInDomainListEntry(domainId, pageable, searchValue);
+        return userEntryListRepository.findAllByDomainId(domainId, searchValue, pageable);
     }
 
     @GetMapping(value = "/users/{userId}")
