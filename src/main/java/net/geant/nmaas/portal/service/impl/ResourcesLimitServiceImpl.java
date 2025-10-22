@@ -171,20 +171,7 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
 
     private int countRunningContainersInNamespace(KCluster cluster, String namespace) {
         try {
-            PodList pods = kubernetesApiClientService.getPods(cluster, namespace);
-            if (pods == null || pods.getItems() == null) {
-                return 0;
-            }
-            return pods.getItems().stream()
-                    .mapToInt(pod -> {
-                        if (pod.getStatus() == null || pod.getStatus().getContainerStatuses() == null) {
-                            return 0;
-                        }
-                        return (int) pod.getStatus().getContainerStatuses().stream()
-                                .filter(cs -> cs.getState() != null && cs.getState().getRunning() != null)
-                                .count();
-                    })
-                    .sum();
+            return kubernetesApiClientService.getPods(cluster, namespace).getItems().size();
         } catch (Exception e) {
             return 0;
         }

@@ -89,7 +89,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
             // Validate against resource limits
             ResourcesLimitValidationResult validation = resourcesLimitService
-                    .validateNewDeployment(appDeployment.getDomain(), appDeployment.getApplicationId(), 1, 1);
+                    .validateNewDeployment(appDeployment.getDomain(), appDeployment.getApplicationId(), 1, deploymentSpec.getConsumedPods());
             if (!validation.isAccepted()) {
                 notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, validation.getReason().getDescription());
                 throw new ServiceRequestVerificationException(validation.getReason().getDescription());
