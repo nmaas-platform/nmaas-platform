@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public record AppInstanceViewExtendedDTO(
@@ -32,10 +33,10 @@ public record AppInstanceViewExtendedDTO(
         boolean allowLogAccess,
         boolean configFileRepositoryRequired,
 
+        ApplicationStatePerDomainView applicationStatePerDomain,
         ConfigWizardTemplateView configWizardTemplate,
         AppInstanceState state,
         Set<TagView> tags,
-        List<ApplicationStatePerDomainView> applicationStatePerDomain,
         Set<UserViewMinimal> members,
         AppInstanceView.AppInstanceUpgradeInfo upgradeInfo,
         Set<ServiceAccessMethodView> serviceAccessMethods
@@ -68,10 +69,14 @@ public record AppInstanceViewExtendedDTO(
                 app.getApplication().getApplication().getAppDeploymentSpec().isAllowLogAccess(),
                 app.getApplication().getApplication().getAppConfigurationSpec().isConfigFileRepositoryRequired(),
 
+                app.getDomain().getApplicationStatePerDomain().stream().filter(
+                        state -> Objects.equals(
+                                state.getApplicationBaseId(), app.getApplication().getApplicationBase().getId()
+                        )
+                ).findFirst().orElse(null),
                 app.getConfigWizardTemplate(),
                 app.getState(),
                 app.getApplication().getApplicationBase().getTags(),
-                app.getDomain().getApplicationStatePerDomain(),
                 app.getMembers(),
                 app.getUpgradeInfo(),
                 app.getServiceAccessMethods()
