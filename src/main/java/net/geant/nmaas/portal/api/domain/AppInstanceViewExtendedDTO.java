@@ -5,6 +5,7 @@ import java.util.Set;
 
 public record AppInstanceViewExtendedDTO(
 
+        Long appId,
         Long appBaseId,
         Long domainId,
         String appBaseName,
@@ -39,6 +40,7 @@ public record AppInstanceViewExtendedDTO(
     public AppInstanceViewExtendedDTO(AppInstanceViewExtended app) {
 
         this(
+                app.getId(),
                 app.getApplication().getApplicationBase().getId(),
                 app.getDomain().getId(),
                 app.getApplication().getApplicationBase().getName(),
