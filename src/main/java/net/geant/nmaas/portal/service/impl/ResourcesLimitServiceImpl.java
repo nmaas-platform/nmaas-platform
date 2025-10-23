@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import io.fabric8.kubernetes.api.model.PodList;
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
@@ -120,7 +119,9 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
                 return validateAgainst(true, limit, groupsLimits, domainCodename, requestedInstances, requestedContainers);
             }
         }
-        return accepted();
+        ResourcesLimitValidationResult validationResult =  new ResourcesLimitValidationResult();
+        validationResult.setAccepted(true);
+        return validationResult;
     }
 
     private ResourcesLimitValidationResult validateAgainst(boolean basedOnGlobal,
@@ -129,31 +130,23 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
                                                            String domainCodename,
                                                            int requestedInstances,
                                                            int requestedContainers) {
+        ResourcesLimitValidationResult validationResult =  new ResourcesLimitValidationResult();
+        validationResult.setAccepted(true);
         if (limit.getInstancesNo() != null && (appInstanceRepository.countAllActiveInDomain(domainCodename) + requestedInstances > limit.getInstancesNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getInstancesNo).sum())) {
-            return ResourcesLimitValidationResult.builder()
-                    .accepted(false)
-                    .reason(basedOnGlobal
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
                             ? RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED
-                            : RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED)
-                    .build();
+                            : RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED);
         }
 
         if (limit.getContainersNo() != null && (countRunningContainersInDomain(domainCodename) + requestedContainers > limit.getContainersNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getContainersNo).sum())) {
-            return ResourcesLimitValidationResult.builder()
-                    .accepted(false)
-                    .reason(basedOnGlobal
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
                             ? RejectionReason.GLOBAL_CONTAINERS_LIMIT_REACHED
-                            : RejectionReason.DOMAIN_CONTAINERS_LIMIT_REACHED)
-                    .build();
+                            : RejectionReason.DOMAIN_CONTAINERS_LIMIT_REACHED);
         }
 
-        return accepted();
-    }
-
-    private ResourcesLimitValidationResult accepted() {
-        return ResourcesLimitValidationResult.builder()
-                .accepted(true)
-                .build();
+        return validationResult;
     }
 
     private int countRunningContainersInDomain(String domainCodename) {

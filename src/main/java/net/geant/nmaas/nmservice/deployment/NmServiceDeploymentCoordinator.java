@@ -26,6 +26,7 @@ import net.geant.nmaas.orchestration.AppUpgradeMode;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.domain.RejectionReason;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitValidationResult;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYED;
 import static net.geant.nmaas.nmservice.deployment.entities.ServiceDeploymentState.DEPLOYMENT_FAILED;
@@ -91,8 +93,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             ResourcesLimitValidationResult validation = resourcesLimitService
                     .validateNewDeployment(appDeployment.getDomain(), appDeployment.getApplicationId(), 1, deploymentSpec.getConsumedPods());
             if (!validation.isAccepted()) {
-                notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, validation.getReason().getDescription());
-                throw new ServiceRequestVerificationException(validation.getReason().getDescription());
+                String errorReason = "Request validation failed for the following reasons: " + validation.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(","));
+                notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, errorReason);
+                throw new ServiceRequestVerificationException(errorReason);
             }
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);

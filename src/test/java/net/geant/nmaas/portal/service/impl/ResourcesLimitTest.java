@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -155,7 +156,7 @@ public class ResourcesLimitTest {
 
         ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, 1);
         assertFalse(result.isAccepted());
-        assertEquals(RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED, result.getReason());
+        assertEquals(RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED.getDescription(), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
     }
 
     @Test
@@ -217,7 +218,7 @@ public class ResourcesLimitTest {
 
         ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, 1);
         assertFalse(result.isAccepted());
-        assertEquals(RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED, result.getReason());
+        assertEquals( RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED.getDescription(), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
     }
 
 }
