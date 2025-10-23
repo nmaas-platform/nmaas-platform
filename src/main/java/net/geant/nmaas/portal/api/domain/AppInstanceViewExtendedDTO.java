@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.api.domain;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
+
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +37,8 @@ public record AppInstanceViewExtendedDTO(
         Set<TagView> tags,
         List<ApplicationStatePerDomainView> applicationStatePerDomain,
         Set<UserViewMinimal> members,
-        AppInstanceView.AppInstanceUpgradeInfo upgradeInfo
+        AppInstanceView.AppInstanceUpgradeInfo upgradeInfo,
+        Set<ServiceAccessMethodView> serviceAccessMethods
 ) {
     public AppInstanceViewExtendedDTO(AppInstanceViewExtended app) {
 
@@ -70,7 +73,8 @@ public record AppInstanceViewExtendedDTO(
                 app.getApplication().getApplicationBase().getTags(),
                 app.getDomain().getApplicationStatePerDomain(),
                 app.getMembers(),
-                app.getUpgradeInfo()
+                app.getUpgradeInfo(),
+                app.getServiceAccessMethods()
 
         );
     }
