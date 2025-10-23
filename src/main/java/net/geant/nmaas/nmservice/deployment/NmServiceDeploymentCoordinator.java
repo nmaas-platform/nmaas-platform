@@ -91,7 +91,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
             // Validate against resource limits
             ResourcesLimitValidationResult validation = resourcesLimitService
-                    .validateNewDeployment(appDeployment.getDomain(), appDeployment.getApplicationId(), 1, deploymentSpec.getConsumedPods());
+                    .validateNewDeployment(appDeployment.getDomain(), appDeployment.getApplicationId(), 1, deploymentSpec);
             if (!validation.isAccepted()) {
                 String errorReason = "Request validation failed for the following reasons: " + validation.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(","));
                 notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, errorReason);

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitValidationResult;
@@ -22,6 +23,6 @@ public interface ResourcesLimitService {
     ResourcesLimitValidationResult validateNewDeployment(String domainCodename,
                                                          Identifier applicationId,
                                                          int requestedInstances,
-                                                         int requestedContainers);
+                                                         AppDeploymentSpec deploymentSpec);
 
 }

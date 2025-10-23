@@ -4,17 +4,21 @@ import net.geant.nmaas.kubernetes.KubernetesApiClientService;
 import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.RejectionReason;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitValidationResult;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistent.entity.ResourcesLimitType;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.ResourcesLimitRepository;
+import net.geant.nmaas.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -122,13 +127,16 @@ public class ResourcesLimitTest {
     void validateNewDeploymentPasses() {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
-        ResourcesLimit domainLimit = Mockito.mock(ResourcesLimit.class);
-        when(domainLimit.getInstancesNo()).thenReturn(5);
-        when(domainLimit.getContainersNo()).thenReturn(10);
+        ResourcesLimit domainLimit = ResourcesLimit.builder().instancesNo(5).containersNo(10).memory(4028).cpu(1000).build();
         when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(domainLimit);
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Collections.emptyList());
 
-        when(appInstanceRepository.countAllActiveInDomain(domainCodename)).thenReturn(2);
+        List<AppInstance> runningDeployments = List.of(
+                createAppInstance(200, 1024),
+                createAppInstance(100, 512)
+        );
+
+        when(appInstanceRepository.findAllActiveInDomain(domainCodename)).thenReturn(runningDeployments);
 
         Domain domain = Mockito.mock(Domain.class);
         when(domain.getId()).thenReturn(1L);
@@ -138,7 +146,7 @@ public class ResourcesLimitTest {
         when(clusterDeploymentManager.namespace(domainCodename)).thenReturn("nmaas-test-domain");
         when(kubernetesApiClientService.getPods(any(), eq("nmaas-test-domain"))).thenReturn(null);
 
-        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, 1);
+        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, new AppDeploymentSpec());
         assertTrue(result.isAccepted());
     }
 
@@ -146,41 +154,43 @@ public class ResourcesLimitTest {
     void validateNewDeploymentFailsForLimitExceeded() {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
-        ResourcesLimit domainLimit = Mockito.mock(ResourcesLimit.class);
-        when(domainLimit.getInstancesNo()).thenReturn(3);
-        when(domainLimit.getContainersNo()).thenReturn(10);
+        ResourcesLimit domainLimit = ResourcesLimit.builder().instancesNo(2).containersNo(10).memory(4028).cpu(300).build();
         when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(domainLimit);
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Collections.emptyList());
 
-        when(appInstanceRepository.countAllActiveInDomain(domainCodename)).thenReturn(3);
+        List<AppInstance> runningDeployments = List.of(
+                createAppInstance(200, 1024),
+                createAppInstance(100, 512)
+        );
 
-        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, 1);
+        when(appInstanceRepository.findAllActiveInDomain(domainCodename)).thenReturn(runningDeployments);
+
+        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, new AppDeploymentSpec());
         assertFalse(result.isAccepted());
-        assertEquals(RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED.getDescription(), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
+        assertEquals(Stream.of(RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED.getDescription(), RejectionReason.DOMAIN_CPU_LIMIT_REACHED.getDescription()).collect(Collectors.joining(",")), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
     }
 
     @Test
     void validateNewDeploymentWithDomainGroupLimits() {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
-        ResourcesLimit globalLimit = Mockito.mock(ResourcesLimit.class);
-        when(globalLimit.getInstancesNo()).thenReturn(10);
-        when(globalLimit.getContainersNo()).thenReturn(20);
+        ResourcesLimit globalLimit = ResourcesLimit.builder().instancesNo(10).containersNo(20).memory(1024).cpu(500).build();
         when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(globalLimit);
 
         when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(null);
 
-        ResourcesLimit groupLimit1 = Mockito.mock(ResourcesLimit.class);
-        when(groupLimit1.getInstancesNo()).thenReturn(2);
-        when(groupLimit1.getContainersNo()).thenReturn(5);
-        
-        ResourcesLimit groupLimit2 = Mockito.mock(ResourcesLimit.class);
-        when(groupLimit2.getInstancesNo()).thenReturn(3);
-        when(groupLimit2.getContainersNo()).thenReturn(8);
-        
+        ResourcesLimit groupLimit1 = ResourcesLimit.builder().instancesNo(2).containersNo(5).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
+        ResourcesLimit groupLimit2 = ResourcesLimit.builder().instancesNo(2).containersNo(5).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
+
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Arrays.asList(groupLimit1, groupLimit2));
 
-        when(appInstanceRepository.countAllActiveInDomain(domainCodename)).thenReturn(2);
+
+        List<AppInstance> runningDeployments = List.of(
+                createAppInstance(200, 124),
+                createAppInstance(100, 112)
+        );
+
+        when(appInstanceRepository.findAllActiveInDomain(domainCodename)).thenReturn(runningDeployments);
 
         Domain domain = Mockito.mock(Domain.class);
         when(domain.getId()).thenReturn(1L);
@@ -190,7 +200,7 @@ public class ResourcesLimitTest {
         when(clusterDeploymentManager.namespace(domainCodename)).thenReturn("nmaas-test-domain");
         when(kubernetesApiClientService.getPods(any(), eq("nmaas-test-domain"))).thenReturn(null);
 
-        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, 1);
+        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, new AppDeploymentSpec());
         assertTrue(result.isAccepted());
     }
 
@@ -198,27 +208,40 @@ public class ResourcesLimitTest {
     void validateNewDeploymentFailsForDomainGroupLimitExceeded() {
         Identifier applicationId = Mockito.mock(Identifier.class);
 
-        ResourcesLimit globalLimit = Mockito.mock(ResourcesLimit.class);
-        when(globalLimit.getInstancesNo()).thenReturn(10);
-        when(globalLimit.getContainersNo()).thenReturn(20);
+        ResourcesLimit globalLimit = ResourcesLimit.builder().instancesNo(1).containersNo(5).memory(128).cpu(300).build();
         when(resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL)).thenReturn(globalLimit);
 
         when(resourcesLimitRepository.findByDomain_Codename(domainCodename)).thenReturn(null);
 
-        ResourcesLimit groupLimit1 = Mockito.mock(ResourcesLimit.class);
-        when(groupLimit1.getInstancesNo()).thenReturn(1);
-        when(groupLimit1.getContainersNo()).thenReturn(1);
-        
-        ResourcesLimit groupLimit2 = Mockito.mock(ResourcesLimit.class);
-        when(groupLimit2.getInstancesNo()).thenReturn(1);
-        when(groupLimit2.getContainersNo()).thenReturn(1);
+        ResourcesLimit groupLimit1 = ResourcesLimit.builder().instancesNo(1).containersNo(1).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
+        ResourcesLimit groupLimit2 = ResourcesLimit.builder().instancesNo(1).containersNo(1).memory(Utils.DEFAULT_CONSUMED_MEMORY).cpu(Utils.DEFAULT_CONSUMED_CPU).build();
         
         when(resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename)).thenReturn(Arrays.asList(groupLimit1, groupLimit2));
-        when(appInstanceRepository.countAllActiveInDomain(domainCodename)).thenReturn(12);
+        List<AppInstance> runningDeployments = List.of(
+                createAppInstance(200, 252),
+                createAppInstance(100, 252),
+                createAppInstance(100, 252)
+        );
 
-        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, 1);
+        when(appInstanceRepository.findAllActiveInDomain(domainCodename)).thenReturn(runningDeployments);
+
+        ResourcesLimitValidationResult result = resourcesLimitService.validateNewDeployment(domainCodename, applicationId, 1, new AppDeploymentSpec());
         assertFalse(result.isAccepted());
-        assertEquals( RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED.getDescription(), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
+        assertEquals( Stream.of(RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED.getDescription(), RejectionReason.GLOBAL_MEMORY_LIMIT_REACHED.getDescription()).collect(Collectors.joining(",")), result.getReasons().stream().map(RejectionReason::getDescription).collect(Collectors.joining(",")));
+    }
+
+    private AppInstance createAppInstance(int cpu, int memory) {
+        AppDeploymentSpec spec = new AppDeploymentSpec();
+        spec.setConsumedCpu(cpu);
+        spec.setConsumedMemory(memory);
+
+        Application app = new Application();
+        app.setAppDeploymentSpec(spec);
+
+        AppInstance instance = new AppInstance();
+        instance.setApplication(app);
+
+        return instance;
     }
 
 }

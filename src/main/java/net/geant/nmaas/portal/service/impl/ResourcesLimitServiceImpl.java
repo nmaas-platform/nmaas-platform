@@ -6,10 +6,13 @@ import net.geant.nmaas.kubernetes.KubernetesClusterDeploymentManager;
 import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.kubernetes.remote.repositories.KClusterRepository;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.RejectionReason;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistent.entity.ResourcesLimitType;
@@ -108,15 +111,15 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
     public ResourcesLimitValidationResult validateNewDeployment(String domainCodename,
                                                                 Identifier applicationId,
                                                                 int requestedInstances,
-                                                                int requestedContainers) {
+                                                                AppDeploymentSpec deploymentSpec) {
         ResourcesLimit limit = resourcesLimitRepository.findByDomain_Codename(domainCodename);
         List<ResourcesLimit> groupsLimits = resourcesLimitRepository.findForGroupsBasedOnDomain(domainCodename);
         if (limit != null) {
-            return validateAgainst(false, limit, groupsLimits, domainCodename, requestedInstances, requestedContainers);
+            return validateAgainst(false, limit, groupsLimits, domainCodename, requestedInstances, deploymentSpec);
         } else {
             limit = resourcesLimitRepository.findByLimitType(ResourcesLimitType.GLOBAL);
             if (limit != null) {
-                return validateAgainst(true, limit, groupsLimits, domainCodename, requestedInstances, requestedContainers);
+                return validateAgainst(true, limit, groupsLimits, domainCodename, requestedInstances, deploymentSpec);
             }
         }
         ResourcesLimitValidationResult validationResult =  new ResourcesLimitValidationResult();
@@ -129,21 +132,37 @@ public class ResourcesLimitServiceImpl implements ResourcesLimitService {
                                                            List<ResourcesLimit> groupsLimits,
                                                            String domainCodename,
                                                            int requestedInstances,
-                                                           int requestedContainers) {
+                                                           AppDeploymentSpec deploymentSpec) {
         ResourcesLimitValidationResult validationResult =  new ResourcesLimitValidationResult();
         validationResult.setAccepted(true);
-        if (limit.getInstancesNo() != null && (appInstanceRepository.countAllActiveInDomain(domainCodename) + requestedInstances > limit.getInstancesNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getInstancesNo).sum())) {
+        List<AppInstance> runningDeployments = appInstanceRepository.findAllActiveInDomain(domainCodename);
+
+        if (limit.getInstancesNo() != null && (runningDeployments.size() + requestedInstances > limit.getInstancesNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getInstancesNo).sum())) {
             validationResult.setAccepted(false);
             validationResult.getReasons().add(basedOnGlobal
                             ? RejectionReason.GLOBAL_INSTANCES_LIMIT_REACHED
                             : RejectionReason.DOMAIN_INSTANCES_LIMIT_REACHED);
         }
 
-        if (limit.getContainersNo() != null && (countRunningContainersInDomain(domainCodename) + requestedContainers > limit.getContainersNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getContainersNo).sum())) {
+        if (limit.getContainersNo() != null && (countRunningContainersInDomain(domainCodename) + deploymentSpec.getConsumedPods() > limit.getContainersNo()+ groupsLimits.stream().mapToInt(ResourcesLimit::getContainersNo).sum())) {
             validationResult.setAccepted(false);
             validationResult.getReasons().add(basedOnGlobal
                             ? RejectionReason.GLOBAL_CONTAINERS_LIMIT_REACHED
                             : RejectionReason.DOMAIN_CONTAINERS_LIMIT_REACHED);
+        }
+
+        if (limit.getCpu() != null && (runningDeployments.stream().mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedCpu()).sum() + deploymentSpec.getConsumedCpu() > limit.getCpu()+ groupsLimits.stream().mapToInt(ResourcesLimit::getCpu).sum())) {
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
+                    ? RejectionReason.GLOBAL_CPU_LIMIT_REACHED
+                    : RejectionReason.DOMAIN_CPU_LIMIT_REACHED);
+        }
+
+        if (limit.getMemory() != null && (runningDeployments.stream().mapToInt(x -> x.getApplication().getAppDeploymentSpec().getConsumedMemory()).sum() + deploymentSpec.getConsumedMemory() > limit.getMemory()+ groupsLimits.stream().mapToInt(ResourcesLimit::getMemory).sum())) {
+            validationResult.setAccepted(false);
+            validationResult.getReasons().add(basedOnGlobal
+                    ? RejectionReason.GLOBAL_MEMORY_LIMIT_REACHED
+                    : RejectionReason.DOMAIN_MEMORY_LIMIT_REACHED);
         }
 
         return validationResult;
