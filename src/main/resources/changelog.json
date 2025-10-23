@@ -1,6 +1,27 @@
 {
   "versions" : [
     {
+      "verNo" : "1.8.1",
+      "date" : "(2025/10/24)",
+      "topic" : [
+        {
+          "title" : "New application description fields",
+          "tags" : "[Enhancement]",
+          "description" : "Added fields in application deployment specification to indicate the amount of resources consumed by given application instance"
+        },
+        {
+          "title" : "Few minor issues resolved",
+          "tags" : "[Bugfix]",
+          "description" : "Addressed a number of bugs on the Portal side"
+        },
+        {
+          "title" : "Reduced amount of data returned by the REST API",
+          "tags" : "[Enhancement]",
+          "description" : "Improved performance by trimming the data model for some of the platform API endpoints"
+        }
+      ]
+    },
+    {
       "verNo" : "1.8.0",
       "date" : "(2025/09/05)",
       "topic" : [

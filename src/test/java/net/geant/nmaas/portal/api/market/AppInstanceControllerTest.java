@@ -97,14 +97,13 @@ public class AppInstanceControllerTest {
     private Domain global;
     private User owner;
     private User admin;
-    private ApplicationBase appBase;
 
     private final Pageable pageable = mock(Pageable.class);
     private final Pageable pageableInvalid = mock(Pageable.class);
 
     @BeforeEach
     void setup() {
-        appBase = new ApplicationBase();
+        ApplicationBase appBase = new ApplicationBase();
         appBase.setId(1L);
         owner = new User("owner");
         owner.setId(2L);

@@ -22,8 +22,8 @@ import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.AppInstanceViewExtendedDTO;
 import net.geant.nmaas.portal.api.domain.AppInstanceViewExtended;
+import net.geant.nmaas.portal.api.domain.AppInstanceViewExtendedDTO;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.api.domain.Id;
@@ -947,18 +947,14 @@ public class AppInstanceController extends AppBaseController {
     }
 
     private boolean isSystemAdminAndIsDomainGlobal(User user, Long domainId) {
-
         boolean isSystemAdmin = false;
         boolean isDomainGlobal = false;
-
         if (user.getRoles().stream().anyMatch((UserRole ur) -> ur.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
             isSystemAdmin = true;
         }
-
         if (domainId.equals(domainService.getGlobalDomain().orElseThrow(() -> new InvalidDomainException("Global Domain not found")).getId())) {
             isDomainGlobal = true;
         }
-
         return isSystemAdmin && isDomainGlobal;
     }
 
@@ -969,35 +965,35 @@ public class AppInstanceController extends AppBaseController {
         return pageable;
     }
 
-    /**
-     * @param deploymentId unique identifier of the deployed user application
-     */
-    @PutMapping("/{deploymentId}/scale-down")
+    @PutMapping("/{appInstanceId}/scale-down")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void scaleDownAppInstance(@PathVariable String deploymentId) {
-        if (appDeploymentMonitor.state(Identifier.newInstance(deploymentId)).equals(AppLifecycleState.APPLICATION_PAUSED)) {
+    public void scaleDownAppInstance(@PathVariable Long appInstanceId) {
+        final AppInstance appInstance = getAppInstance(appInstanceId);
+        final Identifier deploymentId = appInstance.getInternalId();
+        if (appDeploymentMonitor.state(deploymentId).equals(AppLifecycleState.APPLICATION_PAUSED)) {
             log.warn("Won't pause since application instance is already paused");
             return;
         }
         eventPublisher.publishEvent(
                 new AppScaleActionEvent(
                         this,
-                        new Identifier(deploymentId),
+                        deploymentId,
                         AppScaleDirection.DOWN)
         );
     }
 
-    /**
-     * @param deploymentId unique identifier of the deployed user application
-     */
-    @PutMapping("/{deploymentId}/scale-up")
+    @PutMapping("/{appInstanceId}/scale-up")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void scaleUpAppInstance(@PathVariable String deploymentId) {
-        if (appDeploymentMonitor.state(Identifier.newInstance(deploymentId)).equals(AppLifecycleState.APPLICATION_PAUSED)) {
+    public void scaleUpAppInstance(@PathVariable Long appInstanceId) {
+        final AppInstance appInstance = getAppInstance(appInstanceId);
+        final Identifier deploymentId = appInstance.getInternalId();
+        if (appDeploymentMonitor.state(deploymentId).equals(AppLifecycleState.APPLICATION_PAUSED)) {
             eventPublisher.publishEvent(
                     new AppScaleActionEvent(
                             this,
-                            new Identifier(deploymentId),
+                            deploymentId,
                             AppScaleDirection.UP)
             );
         } else {
