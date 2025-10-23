@@ -970,6 +970,10 @@ public class AppInstanceController extends AppBaseController {
     @PutMapping("/{deploymentId}/scale-down")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void scaleDownAppInstance(@PathVariable String deploymentId) {
+        if (appDeploymentMonitor.state(Identifier.newInstance(deploymentId)).equals(AppLifecycleState.APPLICATION_PAUSED)) {
+            log.warn("Won't pause since application instance is already paused");
+            return;
+        }
         eventPublisher.publishEvent(
                 new AppScaleActionEvent(
                         this,
