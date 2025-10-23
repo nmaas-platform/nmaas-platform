@@ -666,17 +666,22 @@ public class AppInstanceController extends AppBaseController {
         Set<String> toAddMemberUsernames = new HashSet<>(newMemberUsernames);
         toAddMemberUsernames.removeAll(commonMemberUsernames); // get usernames to be added to members list
 
+        // retrieve users from usernames to be added to members
         List<User> usersToAdd = toAddMemberUsernames.stream()
                 .map(this::getUser)
                 .filter(u -> !u.getSshKeys().isEmpty()) // skip users with no ssh keys
                 .filter(u -> u.getRoles().stream().anyMatch(r -> r.getDomain().getId().equals(appInstance.getDomain().getId()))) // allow only users with role in app instance domain
-                .toList(); // retrieve users from usernames to be added to members
-
-        appInstance.getMembers().addAll(new HashSet<>(usersToAdd));
-        this.instanceService.update(appInstance);
+                .toList();
 
         // get user data to be removed from members
-        List<User> usersToRemove = oldMembers.stream().filter(m -> toRemoveMemberUsernames.contains(m.getUsername())).toList();
+        List<User> usersToRemove = oldMembers.stream()
+                .filter(m -> toRemoveMemberUsernames.contains(m.getUsername()))
+                .toList();
+
+        // update list of members in the database
+        usersToRemove.forEach(appInstance.getMembers()::remove);
+        appInstance.getMembers().addAll(new HashSet<>(usersToAdd));
+        this.instanceService.update(appInstance);
 
         usersToRemove.forEach(r -> {
             RemoveUserFromRepositoryGitlabEvent event = new RemoveUserFromRepositoryGitlabEvent(
