@@ -33,7 +33,8 @@ public record AppInstanceViewExtendedDTO(
         AppInstanceState state,
         Set<TagView> tags,
         List<ApplicationStatePerDomainView> applicationStatePerDomain,
-        Set<UserViewMinimal> members
+        Set<UserViewMinimal> members,
+        AppInstanceView.AppInstanceUpgradeInfo upgradeInfo
 ) {
     public AppInstanceViewExtendedDTO(AppInstanceViewExtended app) {
 
@@ -66,7 +67,8 @@ public record AppInstanceViewExtendedDTO(
                 app.getState(),
                 app.getApplication().getApplicationBase().getTags(),
                 app.getDomain().getApplicationStatePerDomain(),
-                app.getMembers()
+                app.getMembers(),
+                app.getUpgradeInfo()
 
         );
     }
