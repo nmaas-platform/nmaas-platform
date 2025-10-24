@@ -28,7 +28,10 @@ public class DefaultCommandExecutor implements CommandExecutor {
             Process process = new ProcessBuilder(new String[]{"sh", "-c", command.asString()}).start();
             final String errorOutput = new String(process.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
             if (Strings.isNotEmpty(errorOutput)) {
-                throw new CommandExecutionException("Error received during command execution (details: " + errorOutput + ")");
+                // warnings should not be considered as errors
+                if (!errorOutput.contains("Warning")) {
+                    throw new CommandExecutionException("Error received during command execution (details: " + errorOutput + ")");
+                }
             }
             final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             validateOutput(output, command.isOutputCorrect());
