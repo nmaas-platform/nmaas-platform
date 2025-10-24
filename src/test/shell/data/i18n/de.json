@@ -1379,6 +1379,7 @@
     "DOMAIN_ACTION" : "Domain action",
     "DOMAIN_GROUP_ACTION" : "Domain group action",
     "APPLICATION_DEPLOYMENT" : "Application deployment",
+    "APPLICATION_REMOVAL": "Application removal",
     "USER_ASSIGNMENT" : "User assignment",
     "NEW" : "Add",
     "DETAILS" : "Webhooks details",
