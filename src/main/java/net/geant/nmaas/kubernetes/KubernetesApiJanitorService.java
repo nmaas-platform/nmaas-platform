@@ -106,9 +106,11 @@ public class KubernetesApiJanitorService {
                 .toList();
     }
 
-    public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain) {
+    public List<String> getPodLogs(KCluster kCluster, String podName, String containerName, String domain, int limit) {
         final String namespace = namespaceService.namespace(domain);
-        return Collections.singletonList(kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName));
+        return Collections.singletonList(
+                kubernetesApiClientService.getLogs(kCluster, namespace, podName, containerName, limit)
+        );
     }
 
     public void createOrReplaceConfigMaps(KCluster kCluster, Identifier deploymentId, String domain, List<ConfigFile> configFiles) {

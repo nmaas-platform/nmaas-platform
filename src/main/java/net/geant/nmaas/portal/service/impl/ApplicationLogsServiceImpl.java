@@ -41,10 +41,10 @@ public class ApplicationLogsServiceImpl implements ApplicationLogsService {
     }
 
     @Override
-    public PodLogs getPodLogs(Long appInstanceId, String podName, String containerName) {
+    public PodLogs getPodLogs(Long appInstanceId, String podName, String containerName, int limit) {
         AppInstance appInstance = applicationInstanceService.find(appInstanceId)
                 .orElseThrow(IllegalArgumentException::new);
-        AppComponentLogs appComponentLogs = appDeploymentMonitor.appComponentLogs(appInstance.getInternalId(), podName, containerName);
+        AppComponentLogs appComponentLogs = appDeploymentMonitor.appComponentLogs(appInstance.getInternalId(), podName, containerName, limit);
         return new PodLogs(appComponentLogs.getName(), processLogs(appComponentLogs.getLines()));
     }
 
