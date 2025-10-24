@@ -59,7 +59,7 @@ public class TemplateService {
     }
 
     void storeHTMLTemplate(MultipartFile file) {
-        Validate.isTrue(file != null && !file.isEmpty(), "HTML template cannot be null or empty");
+        Validate.isTrue(Objects.nonNull(file) && !file.isEmpty(), "HTML template cannot be null or empty");
         Validate.isTrue(Objects.equals(file.getContentType(), MailTemplateElements.HTML_TYPE), "HTML template must be in html format");
         checkArgumentConflict(fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE).isEmpty(), "Only one HTML template is supported.");
         fileStorageService.store(file);

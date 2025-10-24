@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration.jobs;
+package net.geant.nmaas.webhooks.jobs;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;

@@ -2,13 +2,15 @@ package net.geant.nmaas.webhooks;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.orchestration.jobs.AppDeploymentJob;
-import net.geant.nmaas.orchestration.jobs.DomainActionJob;
-import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
-import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
+import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
+import net.geant.nmaas.webhooks.jobs.AppRemovalJob;
+import net.geant.nmaas.webhooks.jobs.DomainActionJob;
+import net.geant.nmaas.webhooks.jobs.DomainGroupActionJob;
+import net.geant.nmaas.webhooks.jobs.UserDomainAssignmentJob;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
+import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
 import net.geant.nmaas.portal.events.DomainRemovalEvent;
@@ -78,7 +80,7 @@ public class WebhooksEventListener {
         webhookEventRepository.findIdByEventType(WebhookEventType.DOMAIN_GROUP_ACTION)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
-                                DomainGroupJob.class,
+                                DomainGroupActionJob.class,
                                 "DomainGroup_" + id + "_" + domainGroup.getId() + "_" + LocalDateTime.now(),
                                 Map.of("webhookId", id, "action", event.getAction(), "domainGroup", domainGroup)
                         )
@@ -106,6 +108,19 @@ public class WebhooksEventListener {
                         scheduleManager.createOneTimeJob(
                                 AppDeploymentJob.class,
                                 "AppDeploymentJob_" + id + "_" + event.getDeploymentId() + "_time" + LocalDateTime.now(),
+                                Map.of("webhookId", id, "deploymentId", event.getDeploymentId())
+                        )
+                );
+    }
+
+    @EventListener
+    @Loggable(LogLevel.INFO)
+    public void trigger(ApplicationRemovedEvent event) {
+        webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_REMOVAL)
+                .forEach(id ->
+                        scheduleManager.createOneTimeJob(
+                                AppRemovalJob.class,
+                                "AppRemovalJob_" + id + "_" + event.getDeploymentId() + "_time" + LocalDateTime.now(),
                                 Map.of("webhookId", id, "deploymentId", event.getDeploymentId())
                         )
                 );

@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration.jobs;
+package net.geant.nmaas.webhooks.jobs;
 
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class DomainGroupJobTest {
+class DomainGroupActionJobTest {
 
     private final RestClient restClient = RestClient.create();
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
@@ -39,7 +39,7 @@ class DomainGroupJobTest {
                 new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.DOMAIN_GROUP_ACTION));
 
         assertThrows(JobExecutionException.class, () -> {
-            DomainGroupJob job = new DomainGroupJob(restClient, webhookEventService, new ModelMapper());
+            DomainGroupActionJob job = new DomainGroupActionJob(restClient, webhookEventService, new ModelMapper());
             job.execute(jobExecutionContext);
         });
         verify(webhookEventService).getById(10L);

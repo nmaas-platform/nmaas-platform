@@ -13,4 +13,5 @@ public class AppDeploymentWebhookDto {
 
     private AppDeploymentView appDeployment;
     private WebhookEventType webhookEventType;
+
 }
