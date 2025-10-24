@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@DependsOn("portalConfiguration")
 @Slf4j
 public class DefaultContentInit implements InitializingBean {
 
