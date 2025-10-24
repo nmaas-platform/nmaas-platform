@@ -46,7 +46,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return createApiError(ex, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = {MissingElementException.class, InvalidWebhookException.class, InvalidDeploymentIdException.class})
+    @ExceptionHandler(value = {MissingElementException.class,
+            InvalidWebhookException.class,
+            InvalidDeploymentIdException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleMissingElementException(WebRequest req, Exception ex) {
         return createApiError(ex, HttpStatus.NOT_FOUND);

@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration.jobs;
+package net.geant.nmaas.webhooks.jobs;
 
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistent.entity.Domain;

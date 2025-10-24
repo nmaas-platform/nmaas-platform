@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration.jobs;
+package net.geant.nmaas.webhooks.jobs;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,8 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 public abstract class WebhookJob implements Job {
 
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
     protected final RestClient restClient;
     protected final WebhookEventService webhookEventService;
     protected final ModelMapper modelMapper;
@@ -23,13 +25,13 @@ public abstract class WebhookJob implements Job {
                 .uri(webhook.getTargetUrl())
                 .body(payload);
 
-        if ("Authorization".equals(webhook.getAuthorizationHeader())) {
+        if (AUTHORIZATION_HEADER.equals(webhook.getAuthorizationHeader())) {
             request.header("Authorization", "Bearer " + webhook.getTokenValue());
         } else if (webhook.getAuthorizationHeader() != null) {
             request.header(webhook.getAuthorizationHeader(), webhook.getTokenValue());
         }
 
-        //throw WebServiceCommunicationException for any possible error in calling webhook
+        // throw WebServiceCommunicationException for any possible error in calling webhook
         try {
             ResponseEntity<String> response = request.retrieve()
                     .onStatus(

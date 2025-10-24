@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.security.EncryptionService;
@@ -7,27 +8,20 @@ import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
 import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class WebhookEventService {
+
+    private static final String WEBHOOK_EVENT_NOT_FOUND = "WebhookEvent not found.";
 
     private final WebhookEventRepository webhookRepository;
     private final EncryptionService encryptionService;
     private final ModelMapper modelMapper;
-    private static final String WEBHOOK_EVENT_NOT_FOUND = "WebhookEvent not found.";
-
-    @Autowired
-    public WebhookEventService(WebhookEventRepository webhookRepository, EncryptionService encryptionService, ModelMapper modelMapper) {
-        this.webhookRepository = webhookRepository;
-        this.encryptionService = encryptionService;
-        this.modelMapper = modelMapper;
-    }
 
     public WebhookEvent create(WebhookEventDto webhookEventDto) throws GeneralSecurityException {
         WebhookEvent webhookEvent = new WebhookEvent();

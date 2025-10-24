@@ -16,7 +16,8 @@ import net.geant.nmaas.orchestration.events.app.AppUpgradeCompleteEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpgradeFailedEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
-import net.geant.nmaas.portal.events.AppDeploymentEvent;
+import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
+import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.quartz.SchedulerException;
@@ -33,6 +34,7 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVAL_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTARTED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_UPGRADED;
@@ -45,6 +47,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -55,10 +58,10 @@ class AppDeploymentStateChangeManagerTest {
 
     private final Identifier deploymentId = Identifier.newInstance("deploymentId");
     private final NmServiceDeploymentStateChangeEvent event = mock(NmServiceDeploymentStateChangeEvent.class);
-
     private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+
     private AppDeploymentStateChangeManager manager;
 
     @BeforeEach
@@ -91,7 +94,7 @@ class AppDeploymentStateChangeManagerTest {
     }
 
     @Test
-    void shouldTriggerNewEventInDeployedVerifiedState() throws SchedulerException {
+    void shouldTriggerNewEventInDeployedVerifiedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
         when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
@@ -110,8 +113,7 @@ class AppDeploymentStateChangeManagerTest {
 
         assertThat(newEvent, is(nullValue()));
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
-        verify(publisher, times(1)).publishEvent(any(AppDeploymentEvent.class));
-
+        verify(publisher, times(1)).publishEvent(any(ApplicationDeployedEvent.class));
     }
 
     @Test
@@ -237,6 +239,18 @@ class AppDeploymentStateChangeManagerTest {
         when(event.getState()).thenReturn(ServiceDeploymentState.VERIFIED);
         manager.notifyStateChange(event);
         verify(publisher, never()).publishEvent(any(NotificationEvent.class));
+    }
+
+    @Test
+    void shouldTriggerNewEventInRemovedState() {
+        when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_REMOVAL_IN_PROGRESS);
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
+        when(deployments.isFirstTimeDeployment(deploymentId)).thenReturn(true);
+        when(event.getState()).thenReturn(ServiceDeploymentState.REMOVED);
+
+        manager.notifyStateChange(event);
+
+        verify(publisher, times(1)).publishEvent(any(ApplicationRemovedEvent.class));
     }
 
 }
