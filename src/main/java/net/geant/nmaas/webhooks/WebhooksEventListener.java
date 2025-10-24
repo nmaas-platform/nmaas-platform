@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.service.impl;
+package net.geant.nmaas.webhooks;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,7 @@ import net.geant.nmaas.orchestration.jobs.DomainGroupJob;
 import net.geant.nmaas.orchestration.jobs.UserDomainAssignmentJob;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
-import net.geant.nmaas.portal.api.domain.DomainView;
-import net.geant.nmaas.portal.events.AppDeploymentEvent;
+import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
 import net.geant.nmaas.portal.events.DomainCreatedEvent;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;
 import net.geant.nmaas.portal.events.DomainRemovalEvent;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Map;
 
 @Component
@@ -102,13 +100,13 @@ public class WebhooksEventListener {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppDeploymentEvent event) {
+    public void trigger(ApplicationDeployedEvent event) {
         webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT)
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 AppDeploymentJob.class,
-                                "AppDeploymentJob_" + id + "_" + event.getDeploymentIdStr() + "_time" + LocalDateTime.now(),
-                                Map.of("webhookId", id, "deploymentId", event.getDeploymentIdStr())
+                                "AppDeploymentJob_" + id + "_" + event.getDeploymentId() + "_time" + LocalDateTime.now(),
+                                Map.of("webhookId", id, "deploymentId", event.getDeploymentId())
                         )
                 );
     }
