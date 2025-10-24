@@ -45,7 +45,7 @@ public interface AppDeploymentMonitor {
      *
      * @param deploymentId unique identifier of the deployed user application
      * @return application user access details
-     * @throws InvalidAppStateException if application deployment state {@link AppLifecycleState} is not the expected one
+     * @throws InvalidAppStateException     if application deployment state {@link AppLifecycleState} is not the expected one
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
     AppUiAccessDetails userAccessDetails(Identifier deploymentId);
@@ -89,11 +89,12 @@ public interface AppDeploymentMonitor {
     /**
      * Retrieves logs from specified application deployment component.
      *
-     * @param deploymentId unique identifier of the deployed user application
-     * @param appComponentName name of the component which logs should be collected
+     * @param deploymentId        unique identifier of the deployed user application
+     * @param appComponentName    name of the component which logs should be collected
      * @param appSubComponentName name of a subcomponent (added if required)
+     * @param limit               number of log lines to be returned (optional)
      * @return objects representing logs from application component
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
-    AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName, String appSubComponentName);
+    AppComponentLogs appComponentLogs(Identifier deploymentId, String appComponentName, String appSubComponentName, int limit);
 }

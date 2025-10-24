@@ -42,7 +42,7 @@ class AppLogsControllerTest {
         when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(false);
 
         assertThrows(IllegalStateException.class, () ->
-                    appLogsController.getPodNames(APP_INSTANCE_ID)
+                appLogsController.getPodNames(APP_INSTANCE_ID)
         );
         verify(appLogsService, times(0)).getPodNames(APP_INSTANCE_ID);
     }
@@ -50,21 +50,31 @@ class AppLogsControllerTest {
     @Test
     void shouldRetrievePodLogs() {
         when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(true);
-        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME))
+        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, 0))
                 .thenReturn(new PodLogs(POD_NAME, List.of("line1", "line2")));
 
-        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME)).isNotNull();
-        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME);
+        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, null)).isNotNull();
+        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, 0);
+    }
+
+    @Test
+    void shouldRetrievePodLogsWithLimit() {
+        when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(true);
+        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, 10))
+                .thenReturn(new PodLogs(POD_NAME, List.of("line1", "line2")));
+
+        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, 10)).isNotNull();
+        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, 10);
     }
 
     @Test
     void shouldRetrievePodLogsWhenContainerNotSpecified() {
         when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(true);
-        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, null))
+        when(appLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, null, 0))
                 .thenReturn(new PodLogs(POD_NAME, List.of("line1", "line2")));
 
-        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, null)).isNotNull();
-        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME, null);
+        assertThat(appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, null, null)).isNotNull();
+        verify(appLogsService).getPodLogs(APP_INSTANCE_ID, POD_NAME, null, 0);
     }
 
     @Test
@@ -72,7 +82,7 @@ class AppLogsControllerTest {
         when(appLogsService.isLogAccessEnabled(APP_INSTANCE_ID)).thenReturn(false);
 
         assertThrows(IllegalStateException.class, () ->
-                appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME)
+                appLogsController.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, null)
         );
         verify(appLogsService, times(0)).getPodNames(APP_INSTANCE_ID);
     }

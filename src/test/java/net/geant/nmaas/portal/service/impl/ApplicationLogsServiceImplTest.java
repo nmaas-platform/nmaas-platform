@@ -64,9 +64,9 @@ class ApplicationLogsServiceImplTest {
     @Test
     void shouldGetPodLogs() {
         when(applicationInstanceService.find(APP_INSTANCE_ID)).thenReturn(Optional.of(appInstance));
-        when(appDeploymentMonitor.appComponentLogs(DEPLOYMENT_ID, POD_NAME, CONTAINER_NAME)).thenReturn(
+        when(appDeploymentMonitor.appComponentLogs(DEPLOYMENT_ID, POD_NAME, CONTAINER_NAME, 10)).thenReturn(
                 new AppComponentLogs(POD_NAME, List.of("l1", "l2", "l3")));
-        PodLogs podLogs = applicationLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME);
+        PodLogs podLogs = applicationLogsService.getPodLogs(APP_INSTANCE_ID, POD_NAME, CONTAINER_NAME, 10);
         assertThat(podLogs.getName()).isEqualTo(POD_NAME);
         assertThat(podLogs.getLines()).containsAll(List.of("l1", "l2", "l3"));
     }
