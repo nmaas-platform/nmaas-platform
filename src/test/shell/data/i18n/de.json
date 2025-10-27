@@ -605,7 +605,10 @@
       "REFRESH": "Refresh",
       "DOWNLOAD": "Download",
       "NO_LOGS": "No logs are available for this application",
-      "WAITING": "Waiting for logs..."
+      "WAITING": "Waiting for logs...",
+      "LIMIT": "Line limit",
+      "PLACEHOLDER_LIMIT": "Log limit",
+      "NO_LIMIT": "No limit"
     },
     "UPDATE_CONFIG_BUTTON": "Konfigurieren",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Auto upgrades aktivieren",

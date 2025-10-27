@@ -606,7 +606,10 @@
       "REFRESH": "Odśwież",
       "DOWNLOAD": "Pobierz",
       "NO_LOGS": "Logi nie są dostępne dla tej aplikacji",
-      "WAITING": "Oczekiwanie na logi..."
+      "WAITING": "Oczekiwanie na logi...",
+      "LIMIT": "Limit",
+      "PLACEHOLDER_LIMIT": "Limit logów",
+      "NO_LIMIT": "Bez limitu"
     },
     "UPDATE_CONFIG_BUTTON": "Konfiguracja",
     "ENABLE_AUTO_UPGRADES_BUTTON": "Włącz automatyczne aktualizacje",
