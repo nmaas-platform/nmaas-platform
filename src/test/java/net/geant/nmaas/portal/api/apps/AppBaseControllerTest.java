@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.Application;

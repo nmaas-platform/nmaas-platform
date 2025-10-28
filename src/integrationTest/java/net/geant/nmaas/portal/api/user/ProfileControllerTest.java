@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.profile;
+package net.geant.nmaas.portal.api.user;
 
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistence.entity.User;

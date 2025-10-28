@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.apps;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.domain.FileInfoView;

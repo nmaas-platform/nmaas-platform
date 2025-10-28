@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.exceptions;
 
-public class SignupException extends MarketException {
+public class SignupException extends PortalException {
 
 	public SignupException() {
 		super();

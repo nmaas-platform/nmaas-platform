@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.apps;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.domain.ApplicationBaseView;

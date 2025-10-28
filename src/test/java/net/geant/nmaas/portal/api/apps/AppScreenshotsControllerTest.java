@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.apps;
 
 import net.geant.nmaas.portal.domain.FileInfoView;
 import net.geant.nmaas.portal.domain.UserFile;

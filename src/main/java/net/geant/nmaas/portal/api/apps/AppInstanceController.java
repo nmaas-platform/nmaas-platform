@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.apps;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

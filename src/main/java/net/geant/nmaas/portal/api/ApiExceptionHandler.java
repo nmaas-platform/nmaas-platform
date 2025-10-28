@@ -7,7 +7,7 @@ import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookExceptio
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.domain.ApiError;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
-import net.geant.nmaas.portal.api.exceptions.MarketException;
+import net.geant.nmaas.portal.api.exceptions.PortalException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
@@ -56,25 +56,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {SignupException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleSignupException(WebRequest req, MarketException ex) {
+    public ApiError handleSignupException(WebRequest req, PortalException ex) {
         return createApiError(ex, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = {ProcessingException.class, UndergoingMaintenanceException.class})
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public ApiError handleProcessingException(WebRequest req, MarketException ex) {
+    public ApiError handleProcessingException(WebRequest req, PortalException ex) {
         return createApiError(ex, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(value = {StorageException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleStorageException(WebRequest req, MarketException ex) {
+    public ApiError handleStorageException(WebRequest req, PortalException ex) {
         return createApiError(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {MarketException.class})
+    @ExceptionHandler(value = {PortalException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleMarketException(WebRequest req, MarketException ex) {
+    public ApiError handleMarketException(WebRequest req, PortalException ex) {
         return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

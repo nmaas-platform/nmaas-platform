@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.apps;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import net.geant.nmaas.portal.domain.ApplicationStateChangeRequest;
 import net.geant.nmaas.portal.domain.ApplicationView;
 import net.geant.nmaas.portal.domain.Id;
 import net.geant.nmaas.portal.domain.UserView;
-import net.geant.nmaas.portal.api.exceptions.MarketException;
+import net.geant.nmaas.portal.api.exceptions.PortalException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -468,7 +468,7 @@ public class ApplicationController extends AppBaseController {
                 .anyMatch(userRole -> userRole.getRole().equals(Role.ROLE_SYSTEM_ADMIN));
         boolean isOwner = applicationBase.getOwner().equals(principal.getName());
         if (!isOwner && !isSystemAdmin) {
-            throw new MarketException("The user is not application owner");
+            throw new PortalException("The user is not application owner");
         }
     }
 

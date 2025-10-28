@@ -8,7 +8,9 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.market.AppBaseController;
+import net.geant.nmaas.portal.api.BaseController;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.domain.DomainBase;
 import net.geant.nmaas.portal.domain.DomainBaseWithState;
@@ -16,8 +18,6 @@ import net.geant.nmaas.portal.domain.DomainRequest;
 import net.geant.nmaas.portal.domain.DomainView;
 import net.geant.nmaas.portal.domain.Id;
 import net.geant.nmaas.portal.domain.KeyValueView;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationStatePerDomain;
@@ -25,9 +25,7 @@ import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.DomainAnnotation;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;
-import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
-import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -62,7 +60,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/domains")
 @Slf4j
-public class DomainController extends AppBaseController {
+public class DomainController extends BaseController {
 
     private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
     private static final String DOMAIN_NOT_FOUND = "Domain not found.";
@@ -73,8 +71,8 @@ public class DomainController extends AppBaseController {
     private final ApplicationInstanceService applicationInstanceService;
 
     @Autowired
-    public DomainController(ModelMapper modelMapper, ApplicationService applicationService, ApplicationBaseService appBaseService, UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher, ApplicationStatePerDomainService applicationStatePerDomainService, ApplicationInstanceService applicationInstanceService) {
-        super(modelMapper, userService, applicationService, appBaseService);
+    public DomainController(ModelMapper modelMapper, UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher, ApplicationStatePerDomainService applicationStatePerDomainService, ApplicationInstanceService applicationInstanceService) {
+        super(modelMapper, userService);
         this.domainService = domainService;
         this.eventPublisher = eventPublisher;
         this.applicationStatePerDomainService = applicationStatePerDomainService;

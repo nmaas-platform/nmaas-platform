@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.exceptions;
 
-public class StorageException extends MarketException {
+public class StorageException extends PortalException {
 
 	public StorageException() {
 		super();
