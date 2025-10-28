@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.domain.Pong;
+import net.geant.nmaas.portal.domain.Pong;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;

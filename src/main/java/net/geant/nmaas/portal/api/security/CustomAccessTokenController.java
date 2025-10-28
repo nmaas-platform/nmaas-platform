@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.security;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.domain.UserApiTokenView;
+import net.geant.nmaas.portal.domain.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;

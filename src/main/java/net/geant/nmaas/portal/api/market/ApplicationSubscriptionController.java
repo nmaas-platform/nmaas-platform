@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.portal.api.domain.AppRateView;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
-import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
+import net.geant.nmaas.portal.domain.AppRateView;
+import net.geant.nmaas.portal.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.domain.ApplicationSubscription;
+import net.geant.nmaas.portal.domain.ApplicationSubscriptionBase;
 import net.geant.nmaas.portal.persistence.repositories.RatingRepository;
 import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;

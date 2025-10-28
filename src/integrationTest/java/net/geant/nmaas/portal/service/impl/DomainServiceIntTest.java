@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
-import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
-import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
+import net.geant.nmaas.portal.domain.DomainDcnDetailsView;
+import net.geant.nmaas.portal.domain.DomainRequest;
+import net.geant.nmaas.portal.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.DomainService;

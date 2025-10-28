@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.portal.api.domain.FileInfoView;
-import net.geant.nmaas.portal.api.domain.UserFile;
+import net.geant.nmaas.portal.domain.FileInfoView;
+import net.geant.nmaas.portal.domain.UserFile;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.FileInfo;

@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.exceptions.InvalidWebhookException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.domain.ApiError;
+import net.geant.nmaas.portal.domain.ApiError;
 import net.geant.nmaas.portal.api.exceptions.AuthenticationException;
 import net.geant.nmaas.portal.api.exceptions.MarketException;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;

@@ -1,7 +1,7 @@
 package net.geant.nmaas.webhooks.jobs;
 
-import net.geant.nmaas.portal.api.domain.DomainView;
-import net.geant.nmaas.portal.api.domain.WebhookEventDto;
+import net.geant.nmaas.portal.domain.DomainView;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.DomainService;

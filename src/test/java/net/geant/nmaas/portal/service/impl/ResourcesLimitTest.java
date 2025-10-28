@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
+import net.geant.nmaas.portal.domain.DomainBase;
+import net.geant.nmaas.portal.domain.ResourcesLimitDto;
+import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;

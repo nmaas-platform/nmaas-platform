@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
-import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
+import net.geant.nmaas.portal.domain.ResourcesLimitDto;
+import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
 import net.geant.nmaas.portal.persistence.entity.ResourcesLimitType;

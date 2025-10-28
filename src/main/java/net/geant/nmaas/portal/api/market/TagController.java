@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
+import net.geant.nmaas.portal.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import net.geant.nmaas.portal.persistence.entity.Tag;
 import net.geant.nmaas.portal.persistence.repositories.TagRepository;

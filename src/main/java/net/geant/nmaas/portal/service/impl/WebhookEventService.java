@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.geant.nmaas.portal.api.domain.WebhookEventDto;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.security.EncryptionService;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;

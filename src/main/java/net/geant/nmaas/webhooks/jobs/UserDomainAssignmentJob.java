@@ -2,10 +2,10 @@ package net.geant.nmaas.webhooks.jobs;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
-import net.geant.nmaas.portal.api.domain.DomainBase;
-import net.geant.nmaas.portal.api.domain.UserDomainAssignmentWebhookDto;
-import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.api.domain.WebhookEventDto;
+import net.geant.nmaas.portal.domain.DomainBase;
+import net.geant.nmaas.portal.domain.UserDomainAssignmentWebhookDto;
+import net.geant.nmaas.portal.domain.UserView;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;

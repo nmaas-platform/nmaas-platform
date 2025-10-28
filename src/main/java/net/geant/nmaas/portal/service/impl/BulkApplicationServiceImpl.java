@@ -25,7 +25,7 @@ import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;

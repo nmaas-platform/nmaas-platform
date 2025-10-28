@@ -3,7 +3,7 @@ package net.geant.nmaas.webhooks.jobs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
-import net.geant.nmaas.portal.api.domain.WebhookEventDto;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.modelmapper.ModelMapper;
 import org.quartz.Job;

@@ -1,0 +1,23 @@
+package net.geant.nmaas.portal.domain;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.portal.persistence.entity.Role;
+
+import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
+
+@Setter
+@Getter
+@NoArgsConstructor
+public class UserRoleView extends DomainAware implements Serializable {
+
+    @NotNull
+	Role role;
+
+	public UserRoleView(Role role, Long domainId, String domainName){
+		super(domainId, domainName);
+		this.role = role;
+	}
+}

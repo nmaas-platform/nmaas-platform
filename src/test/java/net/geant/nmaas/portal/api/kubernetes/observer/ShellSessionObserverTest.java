@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.kubernetes.observer;
 
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
-import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
+import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
 import net.geant.nmaas.kubernetes.shell.observable.EchoShellSessionObservable;
 import net.geant.nmaas.kubernetes.shell.observable.GenericShellSessionObservable;
 import org.junit.jupiter.api.Disabled;
@@ -10,7 +10,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;

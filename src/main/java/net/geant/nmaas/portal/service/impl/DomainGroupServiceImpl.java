@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
-import net.geant.nmaas.portal.api.domain.DomainGroupView;
+import net.geant.nmaas.portal.domain.ApplicationStatePerDomainView;
+import net.geant.nmaas.portal.domain.DomainGroupView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.events.DomainGroupChangedEvent;

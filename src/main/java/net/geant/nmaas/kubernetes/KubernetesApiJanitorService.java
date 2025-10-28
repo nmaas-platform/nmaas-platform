@@ -11,7 +11,7 @@ import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import net.geant.nmaas.nmservice.configuration.ConfigFile;
 import net.geant.nmaas.orchestration.AppComponentDetails;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.api.domain.KeyValueView;
+import net.geant.nmaas.portal.domain.KeyValueView;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

@@ -16,7 +16,7 @@ import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentReviewEvent;
 import net.geant.nmaas.orchestration.events.app.AppAutoDeploymentStatusUpdateEvent;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
-import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;

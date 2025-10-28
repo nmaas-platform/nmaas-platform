@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.portal.api.domain.CommentRequest;
-import net.geant.nmaas.portal.api.domain.CommentView;
+import net.geant.nmaas.portal.domain.CommentRequest;
+import net.geant.nmaas.portal.domain.CommentView;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;

@@ -8,7 +8,7 @@ import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentEntryView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentView;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
-import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;

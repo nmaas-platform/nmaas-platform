@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
+import net.geant.nmaas.portal.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

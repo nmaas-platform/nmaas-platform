@@ -7,7 +7,7 @@ import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
-import net.geant.nmaas.portal.api.domain.DomainBase;
+import net.geant.nmaas.portal.domain.DomainBase;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;

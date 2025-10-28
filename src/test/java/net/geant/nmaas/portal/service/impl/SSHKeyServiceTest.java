@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
-import net.geant.nmaas.portal.api.domain.SSHKeyView;
+import net.geant.nmaas.portal.domain.SSHKeyRequest;
+import net.geant.nmaas.portal.domain.SSHKeyView;
 import net.geant.nmaas.portal.persistence.entity.SSHKeyEntity;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.SSHKeyRepository;

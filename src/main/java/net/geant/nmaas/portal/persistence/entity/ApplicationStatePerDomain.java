@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.api.domain.ApplicationStatePerDomainView;
+import net.geant.nmaas.portal.domain.ApplicationStatePerDomainView;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

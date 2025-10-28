@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.persistence.repositories;
 
-import net.geant.nmaas.portal.api.domain.ApplicationBaseS;
+import net.geant.nmaas.portal.domain.ApplicationBaseS;
 import net.geant.nmaas.portal.persistence.entity.AppDescription;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.Tag;

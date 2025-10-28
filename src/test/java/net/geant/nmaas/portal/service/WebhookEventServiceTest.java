@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.api.domain.WebhookEventDto;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.security.EncryptionService;
 import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;

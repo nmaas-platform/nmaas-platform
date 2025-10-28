@@ -5,7 +5,7 @@ import net.geant.nmaas.portal.api.bulk.BulkType;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
 import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
 import net.geant.nmaas.portal.persistence.entity.BulkDeploymentState;
 import net.geant.nmaas.portal.persistence.entity.Configuration;

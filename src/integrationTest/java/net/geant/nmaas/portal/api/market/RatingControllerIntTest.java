@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.domain.AppRateView;
+import net.geant.nmaas.portal.domain.AppRateView;
 import net.geant.nmaas.portal.persistence.entity.AppRate;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;

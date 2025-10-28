@@ -4,6 +4,7 @@ import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +32,20 @@ public class ApplicationBaseRepositoryTest {
     private static final String APP2_NAME = "app2";
     private static final String APP3_NAME = "app3";
 
+    @BeforeEach
+    void setUp() {
+        repository.deleteAll();
+        applicationRepository.deleteAll();
+    }
+
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         repository.deleteAll();
         applicationRepository.deleteAll();
     }
 
     @Test
-    public void shouldQueryApplicationBaseData() {
+    void shouldQueryApplicationBaseData() {
         ApplicationBase appBase1 = new ApplicationBase();
         appBase1.setName(APP1_NAME);
         appBase1.setOwner("admin");

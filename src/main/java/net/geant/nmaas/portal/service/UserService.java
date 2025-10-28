@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.bulk.CsvDomain;
-import net.geant.nmaas.portal.api.domain.UserListEntry;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.domain.UserListEntry;
+import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;

@@ -3,7 +3,7 @@ package net.geant.nmaas.webhooks.jobs;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.portal.api.domain.WebhookEventDto;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.junit.jupiter.api.Test;

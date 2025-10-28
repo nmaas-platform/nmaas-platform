@@ -5,7 +5,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.domain.AppInstanceView;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;

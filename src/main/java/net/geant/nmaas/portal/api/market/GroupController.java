@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.api.market;
 
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.DomainGroupView;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.domain.UserViewMinimal;
+import net.geant.nmaas.portal.domain.DomainGroupView;
+import net.geant.nmaas.portal.domain.Id;
+import net.geant.nmaas.portal.domain.UserViewMinimal;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import net.geant.nmaas.portal.persistence.entity.Role;

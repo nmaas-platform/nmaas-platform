@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.domain.DomainRequest;
-import net.geant.nmaas.portal.api.domain.UserListEntry;
+import net.geant.nmaas.portal.domain.DomainRequest;
+import net.geant.nmaas.portal.domain.UserListEntry;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.persistence.repositories.DomainRepository;

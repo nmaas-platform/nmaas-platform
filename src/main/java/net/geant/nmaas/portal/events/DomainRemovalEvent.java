@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.events;
 
 import lombok.Getter;
 import lombok.ToString;
-import net.geant.nmaas.portal.api.domain.DomainView;
+import net.geant.nmaas.portal.domain.DomainView;
 import org.springframework.context.ApplicationEvent;
 
 @Getter

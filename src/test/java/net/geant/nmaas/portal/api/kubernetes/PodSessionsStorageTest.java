@@ -5,7 +5,7 @@ import net.geant.nmaas.kubernetes.shell.AsyncConnector;
 import net.geant.nmaas.kubernetes.shell.AsyncConnectorFactory;
 import net.geant.nmaas.kubernetes.shell.observer.ShellSessionObserver;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
+import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;

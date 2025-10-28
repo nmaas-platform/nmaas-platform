@@ -1,6 +1,6 @@
 package net.geant.nmaas.kubernetes.shell.observable;
 
-import net.geant.nmaas.portal.api.domain.K8sShellCommandRequest;
+import net.geant.nmaas.portal.domain.K8sShellCommandRequest;
 
 import java.io.Serializable;
 import java.util.Observable;

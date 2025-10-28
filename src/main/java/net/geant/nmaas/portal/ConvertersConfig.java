@@ -1,12 +1,12 @@
 package net.geant.nmaas.portal;
 
-import net.geant.nmaas.portal.api.domain.converters.ApplicationSubscriptionConverter;
-import net.geant.nmaas.portal.api.domain.converters.InetAddressConverter;
-import net.geant.nmaas.portal.api.domain.converters.InetAddressInverseConverter;
-import net.geant.nmaas.portal.api.domain.converters.RoleInverseConverter;
-import net.geant.nmaas.portal.api.domain.converters.TagConverter;
-import net.geant.nmaas.portal.api.domain.converters.TagInverseConverter;
-import net.geant.nmaas.portal.api.domain.converters.UserConverter;
+import net.geant.nmaas.portal.domain.converters.ApplicationSubscriptionConverter;
+import net.geant.nmaas.portal.domain.converters.InetAddressConverter;
+import net.geant.nmaas.portal.domain.converters.InetAddressInverseConverter;
+import net.geant.nmaas.portal.domain.converters.RoleInverseConverter;
+import net.geant.nmaas.portal.domain.converters.TagConverter;
+import net.geant.nmaas.portal.domain.converters.TagInverseConverter;
+import net.geant.nmaas.portal.domain.converters.UserConverter;
 import net.geant.nmaas.portal.persistence.repositories.TagRepository;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;

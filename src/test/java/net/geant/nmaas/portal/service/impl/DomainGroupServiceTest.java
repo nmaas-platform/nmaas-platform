@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.domain.DomainGroupView;
+import net.geant.nmaas.portal.domain.DomainGroupView;
 import net.geant.nmaas.portal.persistence.entity.DomainGroup;
 import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
 import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;

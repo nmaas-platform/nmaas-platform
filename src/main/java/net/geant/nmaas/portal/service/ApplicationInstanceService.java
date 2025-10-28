@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
-import net.geant.nmaas.portal.api.domain.AppInstanceView;
+import net.geant.nmaas.portal.domain.AppInstanceView;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
 import net.geant.nmaas.portal.persistence.entity.Domain;

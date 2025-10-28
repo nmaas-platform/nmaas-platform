@@ -8,7 +8,7 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.types.persistence.entity.FormType;
 import net.geant.nmaas.notifications.types.service.FormTypeService;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
-import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.domain.UserView;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
