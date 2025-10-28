@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.domains;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;

@@ -1,6 +1,5 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.auth;
 
-import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.domain.DomainBase;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;

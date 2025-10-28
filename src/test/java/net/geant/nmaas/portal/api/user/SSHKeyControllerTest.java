@@ -1,7 +1,6 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.user;
 
 import net.geant.nmaas.portal.domain.SSHKeyRequest;
-import net.geant.nmaas.portal.api.user.SSHKeysController;
 import net.geant.nmaas.portal.persistence.entity.Domain;
 import net.geant.nmaas.portal.persistence.entity.Role;
 import net.geant.nmaas.portal.persistence.entity.User;

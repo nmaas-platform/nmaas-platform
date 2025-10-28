@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.domains;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
+import net.geant.nmaas.portal.api.market.AppBaseController;
 import net.geant.nmaas.portal.domain.DomainAnnotationView;
 import net.geant.nmaas.portal.domain.DomainBase;
 import net.geant.nmaas.portal.domain.DomainBaseWithState;

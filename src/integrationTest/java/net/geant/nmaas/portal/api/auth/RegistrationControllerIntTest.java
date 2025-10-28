@@ -1,8 +1,7 @@
-package net.geant.nmaas.portal.api.market;
+package net.geant.nmaas.portal.api.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
-import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.persistence.entity.UsersHelper;
 import net.geant.nmaas.portal.persistence.repositories.UserRepository;
 import net.geant.nmaas.utils.captcha.CaptchaValidator;
