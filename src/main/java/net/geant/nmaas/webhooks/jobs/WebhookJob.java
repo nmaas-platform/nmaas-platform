@@ -43,8 +43,7 @@ public abstract class WebhookJob implements Job {
                             }
                     )
                     .toEntity(String.class);
-
-            log.info("Webhook call successful. Response: {}", response.getBody());
+            log.info("Webhook call for {} was successful. Response: {}", webhook.getEventType(), response.getBody());
         } catch (WebServiceCommunicationException e) {
             throw e;
         } catch (Exception error) {

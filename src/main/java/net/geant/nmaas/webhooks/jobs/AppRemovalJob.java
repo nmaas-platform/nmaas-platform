@@ -50,7 +50,7 @@ public class AppRemovalJob extends WebhookJob {
 
             AppDeployment appDeployment = appDeploymentRepositoryManager.load(Identifier.newInstance(deploymentId));
             // webhook content to be updated if required
-            callWebhook(webhook, new AppDeploymentWebhookDto(modelMapper.map(appDeployment, AppDeploymentView.class), WebhookEventType.APPLICATION_DEPLOYMENT));
+            callWebhook(webhook, new AppDeploymentWebhookDto(modelMapper.map(appDeployment, AppDeploymentView.class), WebhookEventType.APPLICATION_REMOVAL));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
