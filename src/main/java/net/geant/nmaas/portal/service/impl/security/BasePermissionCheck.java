@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.service.impl.security;
 import java.io.Serializable;
 import java.util.Set;
 
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.impl.security.AclServiceImpl.PermissionCheck;
 

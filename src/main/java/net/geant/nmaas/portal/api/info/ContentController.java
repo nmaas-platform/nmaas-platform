@@ -3,8 +3,8 @@ package net.geant.nmaas.portal.api.info;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.domain.ContentView;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Content;
-import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import net.geant.nmaas.portal.persistence.entity.Content;
+import net.geant.nmaas.portal.persistence.repositories.ContentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ public class ContentController {
         return this.modelMapper.map(content, ContentView.class);
     }
 
-    private net.geant.nmaas.portal.persistent.entity.Content getContentByName(String name) {
+    private net.geant.nmaas.portal.persistence.entity.Content getContentByName(String name) {
         return this.contentRepo.findByName(name).orElseThrow(() -> new ProcessingException("Content not found"));
     }
 }

@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domain.converters;
 import net.geant.nmaas.portal.api.domain.SSHKeyView;
 import net.geant.nmaas.portal.api.domain.UserRoleView;
 import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistence.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.AbstractConverter;
 

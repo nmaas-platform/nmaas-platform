@@ -1,0 +1,160 @@
+package net.geant.nmaas.portal.persistence;
+
+import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.portal.persistence.entity.*;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
+import net.geant.nmaas.portal.persistence.repositories.UserLoginRegisterRepository;
+import net.geant.nmaas.portal.persistence.repositories.UserRepository;
+import net.geant.nmaas.portal.persistence.results.UserLoginDate;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@Slf4j
+public class UserLoginRegisterRepositoryTest {
+
+    private static final String DOMAIN = "userdom";
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    DomainRepository domainRepository;
+
+    @Autowired
+    UserLoginRegisterRepository userLoginRegisterRepository;
+
+    @BeforeEach
+    @Transactional
+    void setUp() {
+        if (!domainRepository.existsByCodename(DOMAIN)) {
+            domainRepository.save(new Domain(DOMAIN, DOMAIN, true));
+        }
+        User tester = new User("tester", true, "test123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_USER);
+        tester.setEmail("test@test.com");
+        User admin = new User("testadmin", true, "testadmin123", domainRepository.findByName(DOMAIN).get(), Role.ROLE_SYSTEM_ADMIN);
+        admin.setEmail("admin@test.com");
+        admin.getRoles().add(new UserRole(admin, domainRepository.findByName(DOMAIN).orElseThrow(), Role.ROLE_USER));
+        userRepository.save(tester);
+        userRepository.save(admin);
+    }
+
+    @AfterEach
+    void tearDown() {
+        userLoginRegisterRepository.deleteAllInBatch();
+        userLoginRegisterRepository.flush();
+        try {
+            userRepository.findAll().stream()
+                    .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
+                    .forEach(user -> userRepository.delete(user));
+            domainRepository.findAll().stream()
+                    .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+                    .forEach(domain -> domainRepository.delete(domain));
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+        }
+    }
+
+    @Test
+    void shouldContainNoLoginRecords() {
+        for (UserLoginRegister u : userLoginRegisterRepository.findAll()) {
+            log.info("{}\t{}", u.getUser().getUsername(), u.getDate());
+        }
+        assertEquals(0, userLoginRegisterRepository.count());
+    }
+
+    @Test
+    void shouldInsertNewLoginEntry() {
+        User user = userRepository.findByUsername("testadmin").get();
+
+        UserLoginRegister ulr = new UserLoginRegister(OffsetDateTime.now(), user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(ulr);
+
+        assertEquals(1, userLoginRegisterRepository.count());
+    }
+
+    @Test
+    void shouldReturnFirstAndLastLoginDates() {
+        OffsetDateTime midLoginDate = OffsetDateTime.now();
+        OffsetDateTime firstLoginDate = midLoginDate.minusWeeks(4);
+        OffsetDateTime lastLoginDate = midLoginDate.plusWeeks(4);
+
+        User user = userRepository.findByUsername("testadmin").get();
+        UserLoginRegister temp = new UserLoginRegister(firstLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(midLoginDate, user, UserLoginRegisterType.FAILURE, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(lastLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+
+        user = userRepository.findByUsername("tester").get();
+        temp = new UserLoginRegister(firstLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(midLoginDate, user, UserLoginRegisterType.FAILURE, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(lastLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+
+        assertEquals(6, userLoginRegisterRepository.count());
+
+        List<UserLoginDate> lst = userLoginRegisterRepository.findAllFirstAndLastLogin();
+
+        assertEquals(2, lst.size());
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(0).getMinLoginDate().toEpochSecond());
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(1).getMinLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(0).getMaxLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(1).getMaxLoginDate().toEpochSecond());
+
+        lst = userLoginRegisterRepository.findAllFirstAndLastLoginByType(UserLoginRegisterType.SUCCESS);
+
+        assertEquals(2, lst.size());
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(0).getMinLoginDate().toEpochSecond());
+        assertEquals(firstLoginDate.toEpochSecond(), lst.get(1).getMinLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(0).getMaxLoginDate().toEpochSecond());
+        assertEquals(lastLoginDate.toEpochSecond(), lst.get(1).getMaxLoginDate().toEpochSecond());
+    }
+
+    @Test
+    void shouldReturnLastFailedLoginDates() {
+        OffsetDateTime midLoginDate = OffsetDateTime.now();
+        OffsetDateTime firstLoginDate = midLoginDate.minusWeeks(4);
+        OffsetDateTime lastLoginDate = midLoginDate.plusWeeks(4);
+
+        User user = userRepository.findByUsername("testadmin").get();
+        UserLoginRegister temp = new UserLoginRegister(firstLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(midLoginDate, user, UserLoginRegisterType.FAILURE, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(lastLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+
+        user = userRepository.findByUsername("tester").get();
+        temp = new UserLoginRegister(firstLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(midLoginDate, user, UserLoginRegisterType.FAILURE, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+        temp = new UserLoginRegister(lastLoginDate, user, UserLoginRegisterType.SUCCESS, null, null, null);
+        this.userLoginRegisterRepository.save(temp);
+
+        assertEquals(6, userLoginRegisterRepository.count());
+
+        List<UserLoginDate> lst = userLoginRegisterRepository.findAllFirstAndLastLoginByType(UserLoginRegisterType.FAILURE);
+
+        assertEquals(2, lst.size());
+        assertEquals(midLoginDate.toEpochSecond(), lst.get(0).getMaxLoginDate().toEpochSecond());
+        assertEquals(midLoginDate.toEpochSecond(), lst.get(1).getMaxLoginDate().toEpochSecond());
+    }
+
+}

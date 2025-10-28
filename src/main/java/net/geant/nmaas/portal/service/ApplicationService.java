@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistence.entity.Application;
+import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

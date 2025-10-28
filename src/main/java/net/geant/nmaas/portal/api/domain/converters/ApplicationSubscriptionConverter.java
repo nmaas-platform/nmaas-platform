@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domain.converters;
 import org.modelmapper.AbstractConverter;
 
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
+import net.geant.nmaas.portal.persistence.entity.ApplicationSubscription;
 
 public class ApplicationSubscriptionConverter
 		extends AbstractConverter<ApplicationSubscription, ApplicationSubscriptionBase> {

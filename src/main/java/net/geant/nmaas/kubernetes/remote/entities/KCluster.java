@@ -18,7 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;

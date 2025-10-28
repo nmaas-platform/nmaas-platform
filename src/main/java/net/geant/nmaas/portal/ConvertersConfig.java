@@ -7,7 +7,7 @@ import net.geant.nmaas.portal.api.domain.converters.RoleInverseConverter;
 import net.geant.nmaas.portal.api.domain.converters.TagConverter;
 import net.geant.nmaas.portal.api.domain.converters.TagInverseConverter;
 import net.geant.nmaas.portal.api.domain.converters.UserConverter;
-import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import net.geant.nmaas.portal.persistence.repositories.TagRepository;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

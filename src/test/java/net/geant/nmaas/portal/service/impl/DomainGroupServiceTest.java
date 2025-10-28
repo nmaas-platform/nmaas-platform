@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.domain.DomainGroupView;
-import net.geant.nmaas.portal.persistent.entity.DomainGroup;
-import net.geant.nmaas.portal.persistent.repositories.DomainGroupRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistence.entity.DomainGroup;
+import net.geant.nmaas.portal.persistence.repositories.DomainGroupRepository;
+import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.ApplicationStatePerDomainService;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import org.junit.jupiter.api.BeforeEach;

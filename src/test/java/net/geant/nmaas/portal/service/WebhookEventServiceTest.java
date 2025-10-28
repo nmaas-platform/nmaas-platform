@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.security.EncryptionService;
-import net.geant.nmaas.portal.persistent.entity.WebhookEvent;
-import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
-import net.geant.nmaas.portal.persistent.repositories.WebhookEventRepository;
+import net.geant.nmaas.portal.persistence.entity.WebhookEvent;
+import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
 import net.geant.nmaas.portal.service.impl.WebhookEventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

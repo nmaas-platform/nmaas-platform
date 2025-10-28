@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.service.impl.security;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserApiToken;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserApiToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

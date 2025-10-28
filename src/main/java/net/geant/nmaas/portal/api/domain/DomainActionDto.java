@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.geant.nmaas.portal.persistent.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
 
 @AllArgsConstructor
 @Getter

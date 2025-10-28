@@ -2,10 +2,10 @@ package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.api.user.SSHKeysController;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserRole;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.jupiter.api.BeforeEach;

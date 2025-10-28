@@ -4,7 +4,7 @@ import net.geant.nmaas.kubernetes.remote.entities.IngressControllerConfigOption;
 import net.geant.nmaas.kubernetes.remote.entities.IngressResourceConfigOption;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
-import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

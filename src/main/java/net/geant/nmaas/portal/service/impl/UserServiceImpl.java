@@ -14,14 +14,14 @@ import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.api.exceptions.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.persistent.results.UserLoginDate;
-import net.geant.nmaas.portal.persistent.spec.UserSpecification;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserRole;
+import net.geant.nmaas.portal.persistence.repositories.UserRepository;
+import net.geant.nmaas.portal.persistence.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.persistence.results.UserLoginDate;
+import net.geant.nmaas.portal.persistence.spec.UserSpecification;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainGroupService;
 import net.geant.nmaas.portal.service.UserLoginRegisterService;
@@ -46,8 +46,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistence.entity.Role.ROLE_SYSTEM_ADMIN;
 
 @Service
 @RequiredArgsConstructor

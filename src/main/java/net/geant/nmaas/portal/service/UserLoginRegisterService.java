@@ -1,8 +1,8 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserLoginRegister;
-import net.geant.nmaas.portal.persistent.results.UserLoginDate;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.entity.UserLoginRegister;
+import net.geant.nmaas.portal.persistence.results.UserLoginDate;
 
 import java.util.List;
 import java.util.Optional;

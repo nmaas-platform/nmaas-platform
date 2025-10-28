@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.configuration.model.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
-import net.geant.nmaas.portal.persistent.repositories.InternationalizationSimpleRepository;
+import net.geant.nmaas.portal.persistence.repositories.InternationalizationSimpleRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.InternationalizationService;
 import org.apache.commons.lang3.StringUtils;

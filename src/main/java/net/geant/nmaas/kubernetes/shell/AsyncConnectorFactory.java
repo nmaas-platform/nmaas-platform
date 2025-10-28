@@ -4,7 +4,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.kubernetes.KubernetesApiClientFactory;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 

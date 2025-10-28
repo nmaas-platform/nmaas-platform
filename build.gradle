@@ -239,7 +239,7 @@ jacocoTestCoverageVerification {
                     '**.model*',
                     '**.exceptions**',
                     'net.geant.nmaas.portal.api.webhooks',
-                    'net.geant.nmaas.portal.persistent.spec'
+                    'net.geant.nmaas.portal.persistence.spec'
             ]
             limit {
                 counter = 'INSTRUCTION'

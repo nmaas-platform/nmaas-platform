@@ -9,7 +9,7 @@ import net.geant.nmaas.notifications.templates.entities.LanguageMailContent;
 import net.geant.nmaas.notifications.templates.entities.MailTemplate;
 import net.geant.nmaas.notifications.templates.repository.MailTemplateRepository;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
-import net.geant.nmaas.portal.persistent.entity.FileInfo;
+import net.geant.nmaas.portal.persistence.entity.FileInfo;
 import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 import org.apache.commons.lang3.Validate;
 import org.modelmapper.ModelMapper;

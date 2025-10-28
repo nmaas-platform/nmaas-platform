@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.api.domain.converters;
 
 import org.modelmapper.AbstractConverter;
 
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistence.entity.Role;
+import net.geant.nmaas.portal.persistence.entity.UserRole;
 
 public class RoleInverseConverter extends AbstractConverter<UserRole, Role> {
 

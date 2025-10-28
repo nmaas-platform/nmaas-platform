@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.persistent.entity.InternationalizationNode;
-import net.geant.nmaas.portal.persistent.entity.InternationalizationSimple;
+import net.geant.nmaas.portal.persistence.entity.InternationalizationNode;
+import net.geant.nmaas.portal.persistence.entity.InternationalizationSimple;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.domain;
 
 import lombok.*;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistence.entity.ApplicationState;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 /**
- * DTO for {@link net.geant.nmaas.portal.persistent.entity.Application}
+ * DTO for {@link net.geant.nmaas.portal.persistence.entity.Application}
  */
 @Getter
 @Setter

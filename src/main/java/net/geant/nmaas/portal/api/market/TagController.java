@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.api.market;
 
 import lombok.RequiredArgsConstructor;
 import net.geant.nmaas.portal.api.domain.ApplicationBaseView;
-import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.Tag;
-import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import net.geant.nmaas.portal.persistence.entity.ApplicationState;
+import net.geant.nmaas.portal.persistence.entity.Tag;
+import net.geant.nmaas.portal.persistence.repositories.TagRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;

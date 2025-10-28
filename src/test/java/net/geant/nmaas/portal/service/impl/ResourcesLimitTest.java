@@ -3,14 +3,13 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.domain.DomainBase;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.api.domain.ResourcesLimitUpdateDto;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.ResourcesLimit;
-import net.geant.nmaas.portal.persistent.repositories.ResourcesLimitRepository;
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.persistence.entity.ResourcesLimit;
+import net.geant.nmaas.portal.persistence.repositories.ResourcesLimitRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
-import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

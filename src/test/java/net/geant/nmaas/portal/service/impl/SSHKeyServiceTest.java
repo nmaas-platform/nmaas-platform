@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.domain.SSHKeyRequest;
 import net.geant.nmaas.portal.api.domain.SSHKeyView;
-import net.geant.nmaas.portal.persistent.entity.SSHKeyEntity;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.SSHKeyRepository;
+import net.geant.nmaas.portal.persistence.entity.SSHKeyEntity;
+import net.geant.nmaas.portal.persistence.entity.User;
+import net.geant.nmaas.portal.persistence.repositories.SSHKeyRepository;
 import net.geant.nmaas.portal.service.SSHKeyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

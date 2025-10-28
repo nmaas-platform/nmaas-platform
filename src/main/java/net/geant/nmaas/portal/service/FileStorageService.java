@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import net.geant.nmaas.portal.persistent.entity.FileInfo;
+import net.geant.nmaas.portal.persistence.entity.FileInfo;
 
 public interface FileStorageService {
 

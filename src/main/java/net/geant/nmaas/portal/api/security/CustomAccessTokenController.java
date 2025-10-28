@@ -5,7 +5,7 @@ import net.geant.nmaas.portal.api.domain.UserApiTokenView;
 import net.geant.nmaas.portal.exceptions.DataConflictException;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistence.entity.User;
 import net.geant.nmaas.portal.service.CustomAccessTokenService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.http.HttpStatus;

@@ -5,7 +5,7 @@ import net.geant.nmaas.orchestration.AppComponentLogs;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.portal.api.logs.PodInfo;
 import net.geant.nmaas.portal.api.logs.PodLogs;
-import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.ApplicationLogsService;
 import org.springframework.stereotype.Service;

@@ -9,8 +9,8 @@ import net.geant.nmaas.portal.api.bulk.model.BulkDeploymentViewS;
 import net.geant.nmaas.portal.api.bulk.model.BulkQueueDetails;
 import net.geant.nmaas.portal.api.bulk.CsvApplication;
 import net.geant.nmaas.portal.api.domain.UserViewMinimal;
-import net.geant.nmaas.portal.persistent.entity.BulkDeployment;
-import net.geant.nmaas.portal.persistent.entity.BulkDeploymentEntry;
+import net.geant.nmaas.portal.persistence.entity.BulkDeployment;
+import net.geant.nmaas.portal.persistence.entity.BulkDeploymentEntry;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.io.InputStreamResource;
 
