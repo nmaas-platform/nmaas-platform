@@ -68,6 +68,8 @@ public class AppInstance extends DomainAware implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<User> members = new HashSet<>();
 
+    private Long remoteClusterId;
+
     public AppInstance(Application application, Domain domain, String name, boolean autoUpgradesEnabled) {
         this.application = application;
         this.domain = domain;

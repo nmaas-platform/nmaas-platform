@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.domain;
 
+import lombok.Getter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ServiceAccessMethodView;
 import net.geant.nmaas.orchestration.AppConfigRepositoryAccessDetails;
 
@@ -38,6 +39,7 @@ public record AppInstanceViewExtendedDTO(
         ConfigWizardTemplateView configWizardTemplate,
         AppInstanceState state,
         Set<TagView> tags,
+        @Getter
         Set<UserViewMinimal> members,
         AppInstanceView.AppInstanceUpgradeInfo upgradeInfo,
         Set<ServiceAccessMethodView> serviceAccessMethods

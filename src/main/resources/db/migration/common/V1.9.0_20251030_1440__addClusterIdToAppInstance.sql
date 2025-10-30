@@ -1,0 +1,1 @@
+alter table app_instance add column remote_cluster_id integer;

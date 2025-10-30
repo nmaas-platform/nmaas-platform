@@ -1,21 +1,9 @@
 package net.geant.nmaas.kubernetes.remote;
 
 import net.geant.nmaas.kubernetes.remote.api.model.RemoteClusterView;
-import net.geant.nmaas.kubernetes.remote.entities.KCluster;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
-import java.util.List;
-
-public interface RemoteClusterManagementService {
-
-    RemoteClusterView getCluster(Long id, Principal principal);
-
-    KCluster getClusterEntity(Long id);
-
-    List<RemoteClusterView> getAllClusters();
-
-    List<RemoteClusterView> getClustersInDomain(Long domainId);
+public interface RemoteClusterManagementService extends RemoteClusterInfoService {
 
     RemoteClusterView processNewCluster(RemoteClusterView remoteClusterSpec, MultipartFile kubeConfigFile, boolean createNamespace);
 

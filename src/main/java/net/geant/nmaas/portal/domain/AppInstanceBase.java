@@ -37,4 +37,6 @@ public class AppInstanceBase extends DomainAware {
     // indicates if this application instance can be manually upgraded to newer version
     private boolean upgradePossible = false;
 
+    private Long remoteClusterId;
+
 }

@@ -17,6 +17,8 @@ import net.geant.nmaas.orchestration.events.app.AppScaleActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
+import net.geant.nmaas.portal.api.exceptions.MissingElementException;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.domain.AppInstanceBase;
 import net.geant.nmaas.portal.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.domain.AppInstanceState;
@@ -28,8 +30,6 @@ import net.geant.nmaas.portal.domain.ApplicationBaseView;
 import net.geant.nmaas.portal.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.domain.Id;
 import net.geant.nmaas.portal.domain.UserBase;
-import net.geant.nmaas.portal.api.exceptions.MissingElementException;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistence.entity.AppInstance;
 import net.geant.nmaas.portal.persistence.entity.Application;
@@ -75,6 +75,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -92,11 +93,10 @@ public class AppInstanceController extends AppBaseController {
     private final ApplicationInstanceService instanceService;
     private final DomainService domainService;
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager;
-    private final ApplicationEventPublisher eventPublisher;
     private final ApplicationInstanceBaseService instanceBaseService;
 
-
     private final ConfigurationManager configurationManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${nmaas.platform.multi-instance}")
     private boolean useDeploymentPrefix;
@@ -448,31 +448,24 @@ public class AppInstanceController extends AppBaseController {
                                 @NotNull Principal principal,
                                 @PathVariable Long domainId,
                                 @RequestParam(name = "clusterId", required = false) Long clusterId) {
-        log.error("Cluster = {}", clusterId);
+        log.info("Processing new application instance request");
         Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domainService.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
-        AppInstance appInstance;
-        /*
-        check name uniqueness
-        forbidden names - names of all app instances in domain, where state is different from 'DONE' and 'REMOVED'
-         */
-        Set<String> forbiddenNames = instanceService.findAllByDomain(domain).stream() // get all app instances in domain
-                .filter(appInst -> {
-                    AppInstanceState state = mapAppInstanceState(appDeploymentMonitor.state(appInst.getInternalId())); // map their internal state to app instance state
-                    return !(state.equals(AppInstanceState.DONE) || state.equals(AppInstanceState.REMOVED)); // check if it does not equal 'DONE' or 'REMOVED'
-                })
-                .map(AppInstance::getName) // take names only
-                .map(String::toLowerCase) // set all names to lower case
-                .collect(Collectors.toSet());
-        if (forbiddenNames.contains(appInstanceRequest.getName().toLowerCase())) {
-            throw new IllegalArgumentException("Name is already taken");
-        }
+        log.info("for application {} in domain {} ({})",
+                app.getName(),
+                domain.getCodename(),
+                Objects.isNull(clusterId) ? "central cluster" : "remote cluster: " + clusterId);
+        verifyName(appInstanceRequest, domain);
 
+        AppInstance appInstance;
         try {
             appInstance = instanceService.create(domain, app, appInstanceRequest.getName(), appInstanceRequest.isAutoUpgradesEnabled());
+            if (Objects.nonNull(clusterId)) {
+                appInstance.setRemoteClusterId(clusterId);
+            }
         } catch (ApplicationSubscriptionNotActiveException e) {
-            throw new ProcessingException("Unable to create instance. " + e.getMessage());
+            throw new ProcessingException("Unable to create instance: " + e.getMessage());
         }
 
         AppDeployment appDeployment = AppDeployment.builder()
@@ -482,10 +475,6 @@ public class AppInstanceController extends AppBaseController {
                 .deploymentName(appInstance.getName())
                 .configFileRepositoryRequired(app.getAppConfigurationSpec().isConfigFileRepositoryRequired())
                 .configUpdateEnabled(app.getAppConfigurationSpec().isConfigUpdateEnabled())
-                /*
-                 * NMAAS-967
-                 * information if terms acceptance are required is passed to app deployment
-                 */
                 .termsAcceptanceRequired(app.getAppConfigurationSpec().isTermsAcceptanceRequired())
                 .owner(principal.getName())
                 .appName(app.getName())
@@ -499,6 +488,24 @@ public class AppInstanceController extends AppBaseController {
         instanceService.update(appInstance);
 
         return new Id(appInstance.getId());
+    }
+
+    private void verifyName(AppInstanceRequest appInstanceRequest, Domain domain) {
+        /*
+        check name uniqueness
+        forbidden names - names of all app instances in domain, where state is different from 'DONE' and 'REMOVED'
+        */
+        Set<String> forbiddenNames = instanceService.findAllByDomain(domain).stream() // get all app instances in domain
+                .filter(appInst -> {
+                    AppInstanceState state = mapAppInstanceState(appDeploymentMonitor.state(appInst.getInternalId())); // map their internal state to app instance state
+                    return !(state.equals(AppInstanceState.DONE) || state.equals(AppInstanceState.REMOVED)); // check if it does not equal 'DONE' or 'REMOVED'
+                })
+                .map(AppInstance::getName) // take names only
+                .map(String::toLowerCase) // set all names to lower case
+                .collect(Collectors.toSet());
+        if (forbiddenNames.contains(appInstanceRequest.getName().toLowerCase())) {
+            throw new IllegalArgumentException("Name is already taken");
+        }
     }
 
     public Identifier createDescriptiveDeploymentId(String domain, String appName, Long appInstanceNumber) {
