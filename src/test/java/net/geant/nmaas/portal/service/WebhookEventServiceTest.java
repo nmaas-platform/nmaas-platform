@@ -29,9 +29,9 @@ class WebhookEventServiceTest {
     WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
 
     private final ModelMapper modelMapper = new ModelMapper();
-    EncryptionService encryptionService = mock(EncryptionService.class);
-
-    WebhookEventService webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper);
+    private final EncryptionService encryptionService = mock(EncryptionService.class);
+    private final UserService userService = mock(UserService.class);
+    private final WebhookEventService webhookEventService = new WebhookEventService(webhookEventRepository, encryptionService, modelMapper, userService);
 
     private WebhookEventDto webhookEventDto;
     private WebhookEvent webhookEvent;
@@ -45,8 +45,8 @@ class WebhookEventServiceTest {
 
     @Test
     void crudWebhookEvent() throws GeneralSecurityException {
-        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "xxxxyyyy", "Authorization");
-        webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization");
+        webhookEventDto = new WebhookEventDto(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "xxxxyyyy", "Authorization", null);
+        webhookEvent = new WebhookEvent(2L, "webhook2", "https://example.com/webhook2", WebhookEventType.DOMAIN_ACTION, "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT", "Authorization", null);
         when(webhookEventRepository.save(isA(WebhookEvent.class))).thenReturn(webhookEvent);
         when(encryptionService.encrypt(anyString())).thenAnswer(i -> "sjxV/ytRIoHjXy+CtXMzD4T+bntbqzQX25eztXbJ9r4gIZXT");
         when(encryptionService.decrypt(anyString())).thenAnswer(i -> "xxxxyyyy");
@@ -62,12 +62,14 @@ class WebhookEventServiceTest {
 
         webhookEventDto.setName("updated webhook");
         when(webhookEventRepository.findById(2L)).thenReturn(Optional.of(webhookEvent));
-        webhookEventService.update(webhookEventDto);
+        when(userService.isAdmin("test")).thenReturn(true);
+        webhookEventService.update(webhookEventDto, "test");
 
         when(webhookEventRepository.existsById(2L)).thenReturn(true);
         doNothing().when(webhookEventRepository).deleteById(2L);
 
-        webhookEventService.remove(2L);
+        when(userService.isAdmin("test")).thenReturn(true);
+        webhookEventService.remove(2L, "test");
     }
 
     @Test
@@ -101,7 +103,8 @@ class WebhookEventServiceTest {
         when(webhookEventRepository.existsById(999L)).thenReturn(false);
 
         assertThrows(RuntimeException.class, () -> {
-            webhookEventService.remove(999L);
+            when(userService.isAdmin("test")).thenReturn(true);
+            webhookEventService.remove(999L, "test");
         });
     }
 }

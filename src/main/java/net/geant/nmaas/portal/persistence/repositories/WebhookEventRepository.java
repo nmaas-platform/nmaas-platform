@@ -12,4 +12,30 @@ import java.util.List;
 public interface WebhookEventRepository extends JpaRepository<WebhookEvent, Long> {
     @Query("select w.id from WebhookEvent w where w.eventType = :eventType")
     List<Long> findIdByEventType(WebhookEventType eventType);
+
+    @Query("""
+    select w.id
+    from WebhookEvent w
+    where w.eventType = :eventType
+      and (
+           w.domain is null
+           or w.domain.codename = (
+               select a.domain
+               from AppDeployment a
+               where a.deploymentId = :deploymentId
+           )
+      )
+    """)
+    List<Long> findIdByEventTypeAndDeployment(WebhookEventType eventType, String deploymentId);
+
+    @Query("""
+    select w.id
+    from WebhookEvent w
+    where w.eventType = :eventType
+      and (
+           w.domain is null
+           or w.domain.id = :domainId
+      )
+    """)
+    List<Long> findIdByEventTypeAndDomain(WebhookEventType eventType, Long domainId);
 }

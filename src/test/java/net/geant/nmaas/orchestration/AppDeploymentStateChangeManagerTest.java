@@ -18,8 +18,13 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEven
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.portal.events.ApplicationDeployedEvent;
 import net.geant.nmaas.portal.events.ApplicationRemovedEvent;
+import net.geant.nmaas.portal.persistence.repositories.WebhookEventRepository;
+import net.geant.nmaas.scheduling.ScheduleManager;
+import net.geant.nmaas.webhooks.WebhooksEventListener;
+import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -54,6 +59,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import net.geant.nmaas.portal.persistence.entity.Domain;
+import net.geant.nmaas.portal.domain.DomainBase;
+import net.geant.nmaas.portal.domain.WebhookEventDto;
+import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
+import net.geant.nmaas.portal.persistence.repositories.DomainRepository;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.service.impl.WebhookEventService;
+import org.mockito.ArgumentMatchers;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
+
 class AppDeploymentStateChangeManagerTest {
 
     private final Identifier deploymentId = Identifier.newInstance("deploymentId");
@@ -61,13 +78,18 @@ class AppDeploymentStateChangeManagerTest {
     private final DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private final AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+    private final WebhookEventRepository webhookEventRepository = mock(WebhookEventRepository.class);
+    private final ModelMapper modelMapper = new ModelMapper();
+    private final ScheduleManager scheduleManager = mock(ScheduleManager.class);
 
     private AppDeploymentStateChangeManager manager;
+    private WebhooksEventListener listener;
 
     @BeforeEach
     void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
         manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
+        listener = new WebhooksEventListener(webhookEventRepository, scheduleManager, modelMapper);
     }
 
     @Test
@@ -114,6 +136,34 @@ class AppDeploymentStateChangeManagerTest {
         assertThat(newEvent, is(nullValue()));
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
         verify(publisher, times(1)).publishEvent(any(ApplicationDeployedEvent.class));
+    }
+
+    @Test
+    void shouldTriggerAppDeploymentJobWhenWebhookMatchesDomain() {
+        ApplicationDeployedEvent appDeployedEvent = new ApplicationDeployedEvent(this, deploymentId.value());
+        when(webhookEventRepository.findIdByEventTypeAndDeployment(net.geant.nmaas.portal.persistence.entity.WebhookEventType.APPLICATION_DEPLOYMENT,  deploymentId.value()))
+            .thenReturn(java.util.List.of(1L));
+
+        listener.trigger(appDeployedEvent);
+        verify(scheduleManager, times(1)).createOneTimeJob(
+            eq(AppDeploymentJob.class),
+            anyString(),
+            anyMap()
+        );
+    }
+
+    @Test
+    void shouldNotTriggerAppDeploymentJobWhenWebhookForDifferentDomain() {
+        ApplicationDeployedEvent appDeployedEvent = new ApplicationDeployedEvent(this, deploymentId.value());
+        when(webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_DEPLOYMENT,  deploymentId.value()))
+            .thenReturn(java.util.List.of());
+
+        listener.trigger(appDeployedEvent);
+        verify(scheduleManager, never()).createOneTimeJob(
+            eq(AppDeploymentJob.class),
+            anyString(),
+            anyMap()
+        );
     }
 
     @Test
@@ -252,5 +302,4 @@ class AppDeploymentStateChangeManagerTest {
 
         verify(publisher, times(1)).publishEvent(any(ApplicationRemovedEvent.class));
     }
-
 }
