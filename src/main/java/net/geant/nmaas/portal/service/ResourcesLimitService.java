@@ -17,4 +17,7 @@ public interface ResourcesLimitService {
 
     List<ResourcesLimitDto> getAllResourcesLimits();
 
+    ResourcesLimitDto getGlobalResourcesLimit();
+
+    void setGlobalResourcesLimit(ResourcesLimitDto resourcesLimit);
 }

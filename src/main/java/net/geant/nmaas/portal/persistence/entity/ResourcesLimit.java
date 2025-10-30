@@ -48,15 +48,23 @@ public class ResourcesLimit {
     @JoinColumn(name = "domain_id")
     private Domain domain;
 
-    public ResourcesLimit (Long id, Integer memory, Integer cpu, Integer instancesNo, Integer containersNo, Domain domain){
+    public ResourcesLimit(Long id, Integer memory, Integer cpu, Integer instancesNo, Integer containersNo) {
         this.id = id;
-        this.memory= memory;
+        this.memory = memory;
+        this.cpu = cpu;
+        this.instancesNo = instancesNo;
+        this.containersNo = containersNo;
+        this.limitType = ResourcesLimitType.GLOBAL;
+    }
+
+    public ResourcesLimit(Long id, Integer memory, Integer cpu, Integer instancesNo, Integer containersNo, Domain domain) {
+        this.id = id;
+        this.memory = memory;
         this.cpu = cpu;
         this.instancesNo = instancesNo;
         this.containersNo = containersNo;
         this.domain = domain;
-        this.limitType= ResourcesLimitType.DOMAIN;
+        this.limitType = ResourcesLimitType.DOMAIN;
     }
-
 
 }

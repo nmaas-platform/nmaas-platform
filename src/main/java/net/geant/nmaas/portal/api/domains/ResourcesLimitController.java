@@ -3,10 +3,10 @@ package net.geant.nmaas.portal.api.domains;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.domain.Id;
 import net.geant.nmaas.portal.domain.ResourcesLimitDto;
 import net.geant.nmaas.portal.domain.ResourcesLimitUpdateDto;
-import net.geant.nmaas.portal.api.exceptions.ProcessingException;
 import net.geant.nmaas.portal.service.ResourcesLimitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
@@ -29,6 +30,19 @@ import java.util.List;
 public class ResourcesLimitController {
 
     private final ResourcesLimitService resourcesLimitService;
+
+    @PostMapping("/global")
+    @Transactional
+    public ResponseEntity<Void> setGlobalResourcesLimit(@RequestBody @Valid ResourcesLimitDto resourcesLimit) {
+        resourcesLimitService.setGlobalResourcesLimit(resourcesLimit);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/global")
+    @Transactional
+    public ResponseEntity<ResourcesLimitDto> getGlobalResourcesLimit() {
+        return ResponseEntity.ok(resourcesLimitService.getGlobalResourcesLimit());
+    }
 
     @PostMapping
     @Transactional
