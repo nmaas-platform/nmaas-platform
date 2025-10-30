@@ -90,7 +90,7 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(UserDomainAssignmentEvent event) {
-        webhookEventRepository.findIdByEventType(WebhookEventType.USER_ASSIGNMENT)
+        webhookEventRepository.findIdByEventTypeAndDomain(WebhookEventType.USER_ASSIGNMENT, event.getDomainId())
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 UserDomainAssignmentJob.class,
@@ -103,7 +103,7 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(ApplicationDeployedEvent event) {
-        webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_DEPLOYMENT)
+        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_DEPLOYMENT, event.getDeploymentId())
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 AppDeploymentJob.class,
@@ -116,7 +116,7 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(ApplicationRemovedEvent event) {
-        webhookEventRepository.findIdByEventType(WebhookEventType.APPLICATION_REMOVAL)
+        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_REMOVAL, event.getDeploymentId())
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 AppRemovalJob.class,

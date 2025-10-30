@@ -24,6 +24,7 @@ public class WebhookEventDto {
     private String tokenValue;
     @Pattern(regexp = "^(Authorization|X-.*)?$", message = "Authorization header must be either 'Authorization' or start with 'X-'")
     private String authorizationHeader;
+    private DomainBase domain;
 
     public WebhookEventDto(Long id, String name, String targetUrl, WebhookEventType eventType) {
         this.id = id;
