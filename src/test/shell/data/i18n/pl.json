@@ -269,6 +269,14 @@
     "DELETE_BUTTON": "Usuń",
     "ITEMS_PER_PAGE" : "Liczba domen na liście",
     "NOTACTIVE": "Pokaż nieaktywne domeny",
+    "GLOBAL_SETTINGS": {
+      "HEADER": "Limity zasobów domeny",
+      "DESCRIPTION": "Zestaw limitów stosowanych do każdej domeny",
+      "INSTANCES": "Liczba instancji",
+      "MEMORY": "Ilość pamięci (w MB)",
+      "CPU": "Liczba vCPU",
+      "CONTAINERS": "Liczba kontenerów"
+    },
     "LIST" : {
       "GROUPS" : "Grupy domen",
       "GROUP" : "Grupa domen",
@@ -294,9 +302,9 @@
       "DELETE_MYSELF" : "Usuń mój dostęp"
     },
     "ANNOTATIONS" : {
-      "HEADER" : "Adnotacje domeny",
+      "HEADER" : "Adnotacje przestrzeni domeny",
       "SUBHEADER" : "Globalne ustawienie adnotacji domeny. Poniższy zestaw adnotacji zostanie dodany do obiektów Kubernetes tworzonych dla każdej nowej domeny.",
-      "CREATION" : "Adnotację przestrzeni domeny",
+      "CREATION" : "Zestaw adnotacji, które mają zostać dodane do przestrzeni nazw Kubernetes, tworzony dla każdej nowej domeny",
       "ADD" : "Dodaj adnotację",
       "KEY" : "Klucz",
       "VALUE" : "Wartość",
