@@ -268,6 +268,14 @@
     "DELETE_BUTTON": "Remove",
     "ITEMS_PER_PAGE": "Domains per page",
     "NOTACTIVE": "Show not active domains",
+    "GLOBAL_SETTINGS": {
+      "HEADER": "Domain resource limits",
+      "DESCRIPTION": "Set of limits to be applied to each domain",
+      "INSTANCES": "Number of instances",
+      "MEMORY": "Amount of memory (in MB)",
+      "CPU": "Amount of vCPU",
+      "CONTAINERS": "Number of containers"
+    },
     "LIST": {
       "GROUPS": "Domain groups",
       "GROUP": "Domain group",
@@ -293,9 +301,9 @@
       "DELETE_MYSELF" : "Remove my access"
     },
     "ANNOTATIONS" : {
-      "HEADER" : "Domain annotations",
+      "HEADER" : "Domain namespace annotations",
       "SUBHEADER" : "Global domain annotations. This set of annotations will be added to Kubernetes objects created for each new domain.",
-      "CREATION" : "Domain namespace annotations",
+      "CREATION" : "Set of annotations to be added to Kubernetes namespace created for each new domain",
       "ADD" : "Add annotation",
       "KEY" : "Key",
       "VALUE" : "Value",
