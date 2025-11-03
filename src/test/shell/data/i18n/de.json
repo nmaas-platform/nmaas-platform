@@ -316,6 +316,7 @@
     "NAME": "Name",
     "DOMAIN": "Domain",
     "OWNER": "Eigentümer",
+    "CLUSTER": "Cluster",
     "DEPLOYED_AT": "Bereitstellungszeit",
     "APPLICATION": "Anwendung",
     "VERSION": "Version",

@@ -318,6 +318,7 @@
     "NAME": "Nom",
     "DOMAIN": "Organisation",
     "OWNER": "Propriétaire",
+    "CLUSTER": "Cluster",
     "DEPLOYED_AT": "Temps de déploiement",
     "APPLICATION": "Application",
     "VERSION": "Version",
