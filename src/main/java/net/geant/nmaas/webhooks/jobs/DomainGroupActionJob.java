@@ -3,7 +3,7 @@ package net.geant.nmaas.webhooks.jobs;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
 import net.geant.nmaas.portal.domain.DomainGroupView;
-import net.geant.nmaas.portal.domain.DomainGroupWebhookDto;
+import net.geant.nmaas.webhooks.DomainGroupWebhookDto;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;

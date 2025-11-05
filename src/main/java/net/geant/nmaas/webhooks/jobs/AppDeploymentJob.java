@@ -7,7 +7,7 @@ import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.WebServiceCommunicationException;
-import net.geant.nmaas.portal.domain.AppDeploymentWebhookDto;
+import net.geant.nmaas.webhooks.AppDeploymentWebhookDto;
 import net.geant.nmaas.portal.domain.WebhookEventDto;
 import net.geant.nmaas.portal.api.exceptions.MissingElementException;
 import net.geant.nmaas.portal.persistence.entity.WebhookEventType;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -46,9 +47,10 @@ public class AppDeploymentJob extends WebhookJob {
                 log.warn("Webhook's event type with id {} has been updated. AppDeploymentJob is abandoned", webhookId);
                 return;
             }
-
             AppDeployment appDeployment = appDeploymentRepositoryManager.load(Identifier.newInstance(deploymentId));
-            callWebhook(webhook, new AppDeploymentWebhookDto(modelMapper.map(appDeployment, AppDeploymentView.class), WebhookEventType.APPLICATION_DEPLOYMENT));
+            AppDeploymentWebhookDto.AppDeploymentView appDeploymentView = modelMapper.map(appDeployment, AppDeploymentWebhookDto.AppDeploymentView.class);
+            appDeploymentView.setLogicalDate(LocalDateTime.now().toString());
+            callWebhook(webhook, new AppDeploymentWebhookDto(appDeploymentView, WebhookEventType.APPLICATION_DEPLOYMENT));
         } catch (GeneralSecurityException e) {
             log.error("Failed to decrypt webhook with id {}", webhookId);
             throw new JobExecutionException("Failed webhook decryption");
