@@ -2,6 +2,7 @@ package net.geant.nmaas.webhooks;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.webhooks.jobs.AppDeploymentJob;
 import net.geant.nmaas.webhooks.jobs.AppRemovalJob;
 import net.geant.nmaas.webhooks.jobs.DomainActionJob;
@@ -103,7 +104,7 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(ApplicationDeployedEvent event) {
-        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_DEPLOYMENT, event.getDeploymentId())
+        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_DEPLOYMENT, Identifier.newInstance(event.getDeploymentId()))
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 AppDeploymentJob.class,
@@ -116,7 +117,7 @@ public class WebhooksEventListener {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(ApplicationRemovedEvent event) {
-        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_REMOVAL, event.getDeploymentId())
+        webhookEventRepository.findIdByEventTypeAndDeployment(WebhookEventType.APPLICATION_REMOVAL, Identifier.newInstance(event.getDeploymentId()))
                 .forEach(id ->
                         scheduleManager.createOneTimeJob(
                                 AppRemovalJob.class,
