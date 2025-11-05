@@ -449,7 +449,7 @@
     "APP_NAME": "Anwendungsname",
     "APP_ENABLED": "Aktiviert",
     "PV_STORAGE_SIZE_LIMIT": "Storage size limit",
-    "RESOURCE_LIMIT": "Resource limit",
+    "RESOURCE_LIMIT": "Resource limits",
     "DISABLE_BUTTON": "Disable Limits",
     "MODAL": {
       "HEADER": "Domain removal confirmation",
