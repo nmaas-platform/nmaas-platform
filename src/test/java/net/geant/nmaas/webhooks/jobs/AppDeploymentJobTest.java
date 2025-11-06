@@ -1,5 +1,7 @@
 package net.geant.nmaas.webhooks.jobs;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -25,6 +27,7 @@ class AppDeploymentJobTest {
     private final RestClient restClient = RestClient.create();
     private final WebhookEventService webhookEventService = mock(WebhookEventService.class);
     private final AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
+    private final KubernetesRepositoryManager kubernetesRepositoryManager = mock(KubernetesRepositoryManager.class);
 
     @Test
     void shouldExecuteSampleJob() throws GeneralSecurityException {
@@ -39,9 +42,12 @@ class AppDeploymentJobTest {
                 new WebhookEventDto(10L, "webhook-name", "https://example.webhook-url.pl", WebhookEventType.APPLICATION_DEPLOYMENT));
         when(appDeploymentRepositoryManager.load(Identifier.newInstance("id"))).thenReturn(
                 new AppDeployment());
+        when(kubernetesRepositoryManager.loadService(Identifier.newInstance("id"))).thenReturn(
+                new KubernetesNmServiceInfo());
 
         assertThrows(JobExecutionException.class, () -> {
-            AppDeploymentJob job = new AppDeploymentJob(restClient, webhookEventService, new ModelMapper(), appDeploymentRepositoryManager);
+            AppDeploymentJob job = new AppDeploymentJob(restClient, webhookEventService, new ModelMapper(),
+                    appDeploymentRepositoryManager, kubernetesRepositoryManager);
             job.execute(jobExecutionContext);
         });
     }
